@@ -1,4 +1,0 @@
-gradual-java
-============
-
-Gradual Java
