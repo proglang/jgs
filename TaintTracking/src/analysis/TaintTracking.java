@@ -202,7 +202,6 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 				}
 			} else if (right instanceof Local) {
 				Local local = (Local) right;
-				
 				if (in.containsLocal(local)) {
 					rightLevel = in.getLevelOfLocal(local);
 				} else {
