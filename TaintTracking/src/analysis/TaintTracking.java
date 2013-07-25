@@ -85,6 +85,9 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 		Stmt statement = (Stmt) d;
 		in.prettyPrint(log, "flowThrough() in for " +  securityMethod.getSootMethod().getName());
 		out.prettyPrint(log, "flowThrough() out@begin for " +  securityMethod.getSootMethod().getName());
+		if (isEndOfImplicitFlow(statement)) {
+			out.removeLastProgramCounterLevel();
+		}
 		long sourceLine = SootUtils.extractLineNumberFrom(statement);
 		log.jimple(d.toString() + " [" + d.getClass().toString() + "]^" + in.getStrongestProgramCounterLevel() + "(" +  in.getStack().size() + ")");
 		//System.err.println(d.toString());
@@ -144,9 +147,9 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 					//System.err.println("Condition contains an unknown usebox: " + obj.getClass().getName() + " -> " + obj.toString());
 				}
 			}
+			out.addProgramCounterLevel(conditionMaxLevel);
 			// TODO
 //			Stmt stmt = jIfStmt.getTarget();
-//			out.addProgramCounterLevel(conditionMaxLevel);
 //			if (stmt instanceof JNopStmt) {
 //				JNopStmt jNopStmt = (JNopStmt) stmt;
 //				List<JNopStmt> list = new ArrayList<JNopStmt>();
@@ -221,6 +224,9 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 					}
 				}
 			} else if (right instanceof InvokeExpr) {
+				/**
+				 * TODO Check SideEffects if stronger security
+				 */	
 				InvokeExpr invokeExpr = (InvokeExpr) right;
 				SecurityMethod securityInvokedMethod = new SecurityMethod(invokeExpr.getMethod(), true);
 				// TODO: check the left of the object
@@ -291,15 +297,44 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 					}
 				}
 			}
+			/**
+			 * TODO Ask PC-Level: 
+			 * - Local: change level of Local to PC-level if pc-level is stronger than rightLevel
+			 * - Field: Error if field level is weaker than PC-level
+			 */
 			if (left instanceof Local) {
 				Local local = (Local) left;
 				//log.debug("LOCAL" + " Assign " + i);
+				String leftLevel = securityAnnotation.getWeakestSecurityLevel();
+				if (in.containsLocal(local)) {
+					leftLevel = in.getLevelOfLocal(local);
+				} else {
+					// TODO Error Local not present
+					System.err.println("Error Local not present");
+				}
+				if (out.hasProgramCounterLevel()) {
+					String pcLevel = out.getStrongestProgramCounterLevel();
+					if (securityAnnotation.isWeakerOrEqualsThan(rightLevel, pcLevel)) {
+						rightLevel = pcLevel;
+					}
+				}
+				if (securityAnnotation.isWeakerOrEqualsThan(rightLevel, leftLevel)) {
+					if (! leftLevel.equals(rightLevel)) {
+						System.err.println("Security of local variable was weakened from " + leftLevel + " to " + rightLevel);
+					}
+				}
 				if (!out.update(local,rightLevel)) {
 					// TODO NO UPDATE
 				}
 			} else if (left instanceof FieldRef) {
 				FieldRef fieldRef = (FieldRef) left;
 				String leftLevel = securityAnnotation.getWeakestSecurityLevel();
+				if (out.hasProgramCounterLevel()) {
+					String pcLevel = out.getStrongestProgramCounterLevel();
+					if (securityAnnotation.isWeakerOrEqualsThan(rightLevel, pcLevel)) {
+						rightLevel = pcLevel;
+					}
+				}
 				SecurityField securityField = new SecurityField(fieldRef.getField(), true);
 				if (!securityField.isLibraryClass()) {
 					if (securityField.isFieldSecurityLevelValid(securityAnnotation, log)) {
@@ -318,6 +353,9 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 			}
 			
 		} else if (statement instanceof JInvokeStmt) {
+			/**
+			 * TODO Check SideEffects if stronger security
+			 */	
 			JInvokeStmt jInvokeStmt = (JInvokeStmt) statement;
 			InvokeExpr invokeExpr =  jInvokeStmt.getInvokeExpr();
 			SecurityMethod securityInvokedMethod = new SecurityMethod(invokeExpr.getMethod(), true); 
@@ -416,6 +454,10 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 		dest.addAll(source.getExtendedLocals(), source.getStack());
 		dest.prettyPrint(log, "copy() dest@result for " +  securityMethod.getSootMethod().getName());
 		
+	}
+	
+	private boolean isEndOfImplicitFlow(Stmt statement) {
+		return false;
 	}
 	
 	public void checkAnalyis() {
