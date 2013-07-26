@@ -9,7 +9,7 @@ some quick setup instructions:
 - Go to http://www.sable.mcgill.ca/soot/soot_download.html, download soot-2.5.0, the complete package
 - Unpack the archive somewhere (three directories, (soot, polyglot, jasmin) will be created)
 - Download a binary distribution of [[http://ant.apache.org/bindownload.cgi][Apache Ant]].
-- Follow instructions in =soot-2.5.0/index.html=. 
+- Follow instructions in =soot-2.5.0/soot_in_eclipse_howto.html=. 
 - Install the [[http://www.sable.mcgill.ca/soot/eclipse/updates/index.html][Soot Eclipse plugin]]
 - Now you should be able to import projects from this repository
   without soot-related compilation errors.
