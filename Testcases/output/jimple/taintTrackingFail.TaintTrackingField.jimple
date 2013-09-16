@@ -1,0 +1,58 @@
+public class taintTrackingFail.TaintTrackingField extends java.lang.Object
+{
+    public int low;
+    public int high;
+
+    public int returnLowSecurity()
+    {
+        taintTrackingFail.TaintTrackingField this;
+        int temp$0;
+
+        this := @this: taintTrackingFail.TaintTrackingField;
+        temp$0 = this.<taintTrackingFail.TaintTrackingField: int high>;
+        return temp$0;
+    }
+
+    public int returnLowSecurity2()
+    {
+        taintTrackingFail.TaintTrackingField this;
+        int high2;
+
+        this := @this: taintTrackingFail.TaintTrackingField;
+        high2 = this.<taintTrackingFail.TaintTrackingField: int high>;
+        return high2;
+    }
+
+    public void assignHighSecurity()
+    {
+        taintTrackingFail.TaintTrackingField this;
+        int high2, temp$0;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: taintTrackingFail.TaintTrackingField;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high2 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<taintTrackingFail.TaintTrackingField: int low> = high2;
+        return;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        taintTrackingFail.TaintTrackingField this;
+        int temp$0, temp$1;
+
+        this := @this: taintTrackingFail.TaintTrackingField;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        temp$0 = 42;
+        this.<taintTrackingFail.TaintTrackingField: int low> = temp$0;
+        temp$1 = 42;
+        this.<taintTrackingFail.TaintTrackingField: int high> = temp$1;
+        return;
+    }
+}

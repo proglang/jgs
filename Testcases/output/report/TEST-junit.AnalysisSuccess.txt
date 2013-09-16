@@ -1,0 +1,40 @@
+Testsuite: junit.AnalysisSuccess
+Tests run: 28, Failures: 0, Errors: 0, Time elapsed: 0,284 sec
+------------- Standard Output ---------------
+Message Report
+Security: 0
+Exception: 0
+Error: 0
+Warning: 342
+Security Checker: 0
+Information: 0
+------------- ---------------- ---------------
+
+Testcase: securityCompleteCheck took 0,003 sec
+Testcase: errorCompleteCheck took 0,001 sec
+Testcase: exceptionMessagesField took 0 sec
+Testcase: exceptionMessagesStaticMethod took 0 sec
+Testcase: exceptionMessagesStaticField took 0 sec
+Testcase: errorMessagesStaticMethod took 0 sec
+Testcase: securityCheckerCompleteCheck took 0,001 sec
+Testcase: exceptionMessagesIfElse took 0 sec
+Testcase: exceptionCompleteCheck took 0,002 sec
+Testcase: exceptionMessagesMethod took 0,001 sec
+Testcase: securityMessagesStaticMethod took 0,002 sec
+Testcase: errorMessagesStaticField took 0 sec
+Testcase: exceptionMessagesObject took 0 sec
+Testcase: errorMessagesIdMethods took 0 sec
+Testcase: securityMessagesIfElse took 0,001 sec
+Testcase: exceptionMessagesIdMethods took 0 sec
+Testcase: securityMessagesMethod took 0 sec
+Testcase: exceptionMessagesMain took 0 sec
+Testcase: securityMessagesObject took 0 sec
+Testcase: errorMessagesMain took 0 sec
+Testcase: securityMessagesIdMethods took 0 sec
+Testcase: securityMessagesMain took 0 sec
+Testcase: securityMessagesStaticField took 0 sec
+Testcase: errorMessagesIfElse took 0,001 sec
+Testcase: errorMessagesMethod took 0,001 sec
+Testcase: errorMessagesObject took 0,001 sec
+Testcase: securityMessagesField took 0 sec
+Testcase: errorMessagesField took 0 sec

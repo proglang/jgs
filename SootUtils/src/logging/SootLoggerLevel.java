@@ -11,9 +11,8 @@ import java.util.logging.Level;
  */
 public class SootLoggerLevel extends Level {
 
-	
+	/** */
 	private static final long serialVersionUID = 4614063859303032668L;
-	
 	/**
 	 * Level which is used to print exceptions. The SootLogger provides therefore a method that
 	 * takes a Throwable.
@@ -37,17 +36,15 @@ public class SootLoggerLevel extends Level {
 			Level.FINE.intValue());
 	/** Level which is used to print debug information. */
 	public static final Level DEBUG = new SootLoggerLevel("DEBUG", Level.FINER.intValue());
-	/** Level which is used to print the jimple source code. */
-	public static final Level JIMPLE = new SootLoggerLevel("JIMPLE", Level.FINEST.intValue());
-	
+	/** */
 	public static final Level SIDEEFFECT = new SootLoggerLevel("SIDEEFFECT", 200);
-	
+	/** */
 	public static final Level SECURITY = new SootLoggerLevel("SECURITY", 100);
-	
+	/** */
 	public static final Level SECURITYCHECKER = new SootLoggerLevel("SECURITYCHECKER", 99);
-	
 	/** Level which should be used only internal for headings. */
 	protected static final Level HEADING = new SootLoggerLevel("HEADING", 42);
+	
 	/**
 	 * Constructor of a SootLoggerLevel.
 	 * 

@@ -1,4 +1,3 @@
-import security.SecurityAnnotation.*;
 import effect.EffectAnnotation.*;
 
 @ReadEffect({})

@@ -209,7 +209,7 @@ public abstract class ElementAnnotation<T extends AbstractHost> {
 								}
 							}
 						} catch (ClassNotFoundException e) {
-							log.exception("Class of annotation type was not found.", e);
+							log.exception("", 0, "Class of annotation type was not found.", e);
 						}
 					}
 				}

@@ -260,7 +260,6 @@ public class SideEffectAnalysis extends ForwardFlowAnalysis<Unit, Set<Local>> {
 	protected void flowThrough(Set<Local> in, Unit d, Set<Local> out) {
 		Stmt statement = (Stmt) d;
 		long sourceLine = SootUtils.extractLineNumberFrom(statement);
-		log.jimple(statement.toString() + " " + sourceLine);
 		// -> Stores the new effects:
 		// if Stmt is JAssignStmt and rhs contains JNewExpr so the type is effected.
 		if (statement instanceof JAssignStmt) {

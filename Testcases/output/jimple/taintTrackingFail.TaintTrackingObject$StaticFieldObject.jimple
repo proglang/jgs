@@ -1,0 +1,25 @@
+public static class taintTrackingFail.TaintTrackingObject$StaticFieldObject extends java.lang.Object
+{
+    public static int low;
+    public static int high;
+
+    static void <clinit>()
+    {
+        int temp$0, temp$1;
+
+        temp$0 = 42;
+        <taintTrackingFail.TaintTrackingObject$StaticFieldObject: int low> = temp$0;
+        temp$1 = 42;
+        <taintTrackingFail.TaintTrackingObject$StaticFieldObject: int high> = temp$1;
+        return;
+    }
+
+    public void <init>()
+    {
+        taintTrackingFail.TaintTrackingObject$StaticFieldObject this;
+
+        this := @this: taintTrackingFail.TaintTrackingObject$StaticFieldObject;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+}

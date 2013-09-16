@@ -12,16 +12,27 @@ import model.MinimalHeadingInformation;
 /**
  * 
  * @author Thomas Vogel
- *
+ * @version 0.1
  */
 public class SootLoggerFileFormatter extends Formatter {
 	
+	/** */
 	private static final String CLOSE_TAG = " ] --|";
+	/** */
 	private static final String OPEN_TAG = "|-- [ ";
+	/** */
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	/** */
 	private static final String TAB = "   ";
+	/** */
 	private static final int TRACE_ELEMENTS_MAX = 15;
 	
+	/**
+	 * 
+	 * @param record
+	 * @return
+	 * @see java.util.logging.Formatter#format(java.util.logging.LogRecord)
+	 */
 	@Override
 	public String format(LogRecord record) {
 		StringBuilder result = new StringBuilder();
@@ -52,8 +63,6 @@ public class SootLoggerFileFormatter extends Formatter {
 			result.append(OPEN_TAG + formatMessage(record) + CLOSE_TAG + LINE_SEPARATOR);
 		} else if (record.getLevel().equals(SootLoggerLevel.DEBUG)) {
 			createReadableMsg(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.JIMPLE)) {
-			result.append(formatMessage(record) + LINE_SEPARATOR);
 		} else if (record.getLevel().equals(SootLoggerLevel.SIDEEFFECT)) {
 			createReadableMsg(result, formatMessage(record), TAB);
 		} else if (record.getLevel().equals(SootLoggerLevel.SECURITY)) {
@@ -71,6 +80,12 @@ public class SootLoggerFileFormatter extends Formatter {
 		return result.toString();
 	}
 
+	/**
+	 * 
+	 * @param result
+	 * @param thrown
+	 * @param threadID
+	 */
 	private void handleThrownException(StringBuilder result, Throwable thrown, int threadID) {
 		if (thrown != null) {
 			String thread = "unknown";
@@ -94,6 +109,12 @@ public class SootLoggerFileFormatter extends Formatter {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param result
+	 * @param msg
+	 * @param prefix
+	 */
 	private static void createReadableMsg(StringBuilder result, String msg, String prefix) {
 		List<String> list = new ArrayList<String>(Arrays.asList(msg.split(LINE_SEPARATOR)));
 		for (String string : list) {
@@ -103,6 +124,12 @@ public class SootLoggerFileFormatter extends Formatter {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param str
+	 * @param n
+	 * @return
+	 */
 	private static String repeat(String str, int n) {
 		if (n < 0)
 			return "";

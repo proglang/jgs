@@ -1,0 +1,9 @@
+Testsuite: junit.PreTestSecurityAnnotation
+Tests run: 6, Failures: 0, Errors: 0, Time elapsed: 0,03 sec
+
+Testcase: testGetAvailableLevels took 0,001 sec
+Testcase: testGetStrongestLevelOf took 0 sec
+Testcase: testGetMinLevel took 0,001 sec
+Testcase: testIsWeakerOrEqualsThan took 0,001 sec
+Testcase: testGetWeakestSecurityLevel took 0 sec
+Testcase: testGetMaxLevel took 0 sec

@@ -1,7 +1,5 @@
 package security;
 
-import security.SecurityAnnotation.*;
-
 public class SootSecurityLevel extends SecurityLevel {
 
 	@Override
@@ -10,17 +8,16 @@ public class SootSecurityLevel extends SecurityLevel {
 	}
 
 	public static void main(String[] args) {
-		new SootSecurityLevel();
+		//SecurityLevelImplChecker c = new SecurityLevelImplChecker(new SootSecurityLevel());
 	}
 	
-	@ReturnSecurity("high")
+	@Annotations.ReturnSecurity("high")
 	public static <T> T highId(T object) {
 		return object;
 	}
 	
-	@ReturnSecurity("low")
+	@Annotations.ReturnSecurity("low")
 	public static <T> T lowId(T object) {
 		return object;
 	}
-
 }

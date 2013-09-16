@@ -1,0 +1,749 @@
+public class taintTrackingSuccess.TaintTrackingIfElse extends java.lang.Object
+{
+
+    public int IfExpr()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, elseLow, temp$4, temp$8, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        temp$12 = thenLow;
+        goto label2;
+
+     label1:
+        nop;
+        temp$12 = elseLow;
+
+     label2:
+        nop;
+        return temp$12;
+    }
+
+    public int IfExpr2()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, elseHigh, temp$4, temp$8, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        temp$12 = thenLow;
+        goto label2;
+
+     label1:
+        nop;
+        temp$12 = elseHigh;
+
+     label2:
+        nop;
+        return temp$12;
+    }
+
+    public int IfExpr3()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenHigh, temp$0, elseLow, temp$4, temp$8, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        temp$12 = thenHigh;
+        goto label2;
+
+     label1:
+        nop;
+        temp$12 = elseLow;
+
+     label2:
+        nop;
+        return temp$12;
+    }
+
+    public int IfExpr4()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, elseLow, temp$4, temp$8, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        temp$12 = thenLow;
+        goto label2;
+
+     label1:
+        nop;
+        temp$12 = elseLow;
+
+     label2:
+        nop;
+        return temp$12;
+    }
+
+    public int IfExpr5()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, elseHigh, temp$4, temp$8, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        temp$12 = thenLow;
+        goto label2;
+
+     label1:
+        nop;
+        temp$12 = elseHigh;
+
+     label2:
+        nop;
+        return temp$12;
+    }
+
+    public int ifStmt()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionLow;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 0;
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionLow = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return thenLow;
+    }
+
+    public int ifStmt2()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, afterLow, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return afterLow;
+    }
+
+    public int ifStmt3()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, afterHigh, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return afterHigh;
+    }
+
+    public int ifStmt4()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionHigh;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 0;
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionHigh = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return thenLow;
+    }
+
+    public int ifStmt5()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, afterLow, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return afterLow;
+    }
+
+    public int ifStmt6()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, afterHigh, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return afterHigh;
+    }
+
+    public int ifStmt7()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, afterHigh, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return afterHigh;
+    }
+
+    public int ifStmt8()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenHigh, temp$0, afterLow, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenHigh;
+
+     label1:
+        nop;
+        return afterLow;
+    }
+
+    public int ifStmt9()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, afterHigh, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return afterHigh;
+    }
+
+    public int ifStmt10()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenHigh, temp$0, afterLow, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        afterLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenHigh;
+
+     label1:
+        nop;
+        return afterLow;
+    }
+
+    public int ifElseStmt()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, elseLow, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return elseLow;
+    }
+
+    public int ifElseStmt2()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, elseLow, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return elseLow;
+    }
+
+    public int ifElseStmt3()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenLow, temp$0, elseHigh, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenLow;
+
+     label1:
+        nop;
+        return elseHigh;
+    }
+
+    public int ifElseStmt4()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+        int thenHigh, temp$0, elseLow, temp$4, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = 0;
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(temp$8);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label1;
+
+        goto label0;
+
+     label0:
+        nop;
+        return thenHigh;
+
+     label1:
+        nop;
+        return elseLow;
+    }
+
+    public void <init>()
+    {
+        taintTrackingSuccess.TaintTrackingIfElse this;
+
+        this := @this: taintTrackingSuccess.TaintTrackingIfElse;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+}

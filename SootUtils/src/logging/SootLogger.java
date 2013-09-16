@@ -1,6 +1,8 @@
 package logging;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -13,89 +15,149 @@ import model.ExtendedHeadingInformation;
 import model.MessageStore;
 import model.MinimalHeadingInformation;
 
+/**
+ * 
+ * @author Thomas Vogel
+ * @version 0.4
+ */
 public class SootLogger {
 
+	/** */
 	protected static final Logger LOG = Logger.getLogger(SootLogger.class.getName());
-
-	protected static boolean EXPORT_FILE = false;
-	protected static boolean EXPORT_JIMPLE = false;
-	protected static Level[] LEVELS = {};
-
+	/** */
+	protected static boolean exportFile = false;
+	/** */
+	protected static Level[] levels = {};
+	/** */
 	protected MessageStore messageStore = null;
+	/** */
 	protected Handler jimpleFileHandler = null;
+	/** */
 	protected Handler standardFileHandler = null;
+	/** */
 	protected Handler standardConsoleHandler = null;
 
-	public SootLogger(boolean exportFile, boolean exportJimple, Level[] levels) {
+	/**
+	 * 
+	 * @param fileExport
+	 * @param levelList
+	 */
+	public SootLogger(boolean fileExport, Level[] levelList) {
 		super();
-		EXPORT_FILE = exportFile;
-		EXPORT_JIMPLE = exportJimple;
-		LEVELS = levels;
+		exportFile = fileExport;
+		levels = levelList;
 		setupStandardConfigurations();
 	}
 
+	/**
+	 * 
+	 * @param fileName
+	 * @param sourceLine
+	 * @param msg
+	 * @param e
+	 */
 	public void exception(String fileName, long sourceLine, String msg, Throwable e) {
-		ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
 		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.EXCEPTION);
-		LOG.log(SootLoggerLevel.HEADING, "EXCEPTION", new Object[] { info });
+		if (isLevelEnabled(SootLoggerLevel.EXCEPTION)) {
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			LOG.log(SootLoggerLevel.HEADING, "EXCEPTION", new Object[] { info });
+		}
 		LOG.log(SootLoggerLevel.EXCEPTION, msg, e);
 	}
 
-	public void exception(String msg, Throwable e) {
-		MinimalHeadingInformation info = new MinimalHeadingInformation(1);
-		LOG.log(SootLoggerLevel.HEADING, "EXCEPTION", new Object[] { info });
-		LOG.log(SootLoggerLevel.EXCEPTION, msg, e);
-	}
-
+	/**
+	 * 
+	 * @param fileName
+	 * @param sourceLine
+	 * @param msg
+	 */
 	public void error(String fileName, long sourceLine, String msg) {
-		ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
 		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.ERROR);
-		LOG.log(SootLoggerLevel.HEADING, "ERROR", new Object[] { info });
+		if (isLevelEnabled(SootLoggerLevel.ERROR)) {
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			LOG.log(SootLoggerLevel.HEADING, "ERROR", new Object[] { info });
+		}
 		LOG.log(SootLoggerLevel.ERROR, msg);
 	}
 
+	/**
+	 * 
+	 * @param fileName
+	 * @param sourceLine
+	 * @param msg
+	 */
 	public void warning(String fileName, long sourceLine, String msg) {
-		ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
 		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.WARNING);
-		LOG.log(SootLoggerLevel.HEADING, "WARNING", new Object[] { info });
+		if (isLevelEnabled(SootLoggerLevel.WARNING)) {
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			LOG.log(SootLoggerLevel.HEADING, "WARNING", new Object[] { info });
+		}
 		LOG.log(SootLoggerLevel.WARNING, msg);
 	}
 
+	/**
+	 * 
+	 * @param fileName
+	 * @param sourceLine
+	 * @param msg
+	 */
 	public void information(String fileName, long sourceLine, String msg) {
-		ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
 		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.INFORMATION);
-		LOG.log(SootLoggerLevel.HEADING, "INFORMATION", new Object[] { info });
+		if (isLevelEnabled(SootLoggerLevel.INFORMATION)) {
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			LOG.log(SootLoggerLevel.HEADING, "INFORMATION", new Object[] { info });
+		}
 		LOG.log(SootLoggerLevel.INFORMATION, msg);
 	}
 
+	/**
+	 * 
+	 * @param msg
+	 */
 	public void structure(String msg) {
 		LOG.log(SootLoggerLevel.STRUCTURE, msg);
 	}
 
+	/**
+	 * 
+	 * @param configurations
+	 */
 	public void configuration(Configurations configurations) {
-		MinimalHeadingInformation info = new MinimalHeadingInformation(0);
-		LOG.log(SootLoggerLevel.HEADING, "CONFIGURATION", new Object[] { info });
+		if (isLevelEnabled(SootLoggerLevel.CONFIGURATION)) {
+			MinimalHeadingInformation info = new MinimalHeadingInformation(0);
+			LOG.log(SootLoggerLevel.HEADING, "CONFIGURATION", new Object[] { info });
+		}
 		LOG.log(SootLoggerLevel.CONFIGURATION, extractConfoguration(configurations));
 	}
 
+	/**
+	 * 
+	 * @param msg
+	 */
 	public void debug(String msg) {
-		MinimalHeadingInformation info = new MinimalHeadingInformation(1);
-		LOG.log(SootLoggerLevel.HEADING, "DEBUG", new Object[] { info });
+		if (isLevelEnabled(SootLoggerLevel.DEBUG)) {
+			MinimalHeadingInformation info = new MinimalHeadingInformation(1);
+			LOG.log(SootLoggerLevel.HEADING, "DEBUG", new Object[] { info });
+		}
 		LOG.log(SootLoggerLevel.DEBUG, msg);
 	}
 
-	public void jimple(String msg) {
-		LOG.log(SootLoggerLevel.JIMPLE, msg);
-	}
-
+	/**
+	 * 
+	 */
 	private void setupStandardConfigurations() {
 		this.messageStore = new MessageStore();
 		LOG.setUseParentHandlers(false);
 		LOG.setLevel(Level.ALL);
-		this.standardConsoleHandler = SootLoggerConfiguration.getStandardConsoleHandler(LEVELS);
+		this.standardConsoleHandler = SootLoggerConfiguration.getStandardConsoleHandler(levels);
 		LOG.addHandler(this.standardConsoleHandler);
 	}
 
+	/**
+	 * 
+	 * @param configurations
+	 * @return
+	 */
 	private String extractConfoguration(Configurations configurations) {
 		String result = "";
 		Map<String, String> configurationMap = configurations.getConfigurationMap();
@@ -106,40 +168,31 @@ public class SootLogger {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	protected String getLoggerPath() {
 		return "";
 	}
-
-	private void addJimpleFileHandlerForMethod(SootMethod sootMethod) {
-		if (EXPORT_JIMPLE) {
-			try {
-				this.jimpleFileHandler = SootLoggerConfiguration.getJimpleFileHandler(sootMethod,
-						this);
-				LOG.addHandler(this.jimpleFileHandler);
-			} catch (SecurityException | NullPointerException | IOException e) {
-				LOG.log(SootLoggerLevel.EXCEPTION,
-						"Couldn't start to output the jimple source via file.", e);
-			}
-		}
+	
+	/**
+	 * 
+	 * @param level
+	 * @return
+	 */
+	protected boolean isLevelEnabled(Level level) {
+		return SootLoggerConfiguration.shouldLogLevel(level, levels);
 	}
 
-	private void removeJimpleFileHandler() {
-		if (EXPORT_JIMPLE && this.jimpleFileHandler != null) {
-			try {
-				LOG.removeHandler(this.jimpleFileHandler);
-				this.jimpleFileHandler.close();
-				this.jimpleFileHandler = null;
-			} catch (SecurityException e) {
-				LOG.log(SootLoggerLevel.EXCEPTION,
-						"Couldn't finish to output the jimple source via file.", e);
-			}
-		}
-	}
-
+	/**
+	 * 
+	 * @param sootMethod
+	 */
 	private void addStandardFileHandlerForMethod(SootMethod sootMethod) {
-		if (EXPORT_FILE) {
+		if (exportFile) {
 			try {
-				this.standardFileHandler = SootLoggerConfiguration.getStandardFileHandler(LEVELS,
+				this.standardFileHandler = SootLoggerConfiguration.getStandardFileHandler(levels,
 						sootMethod, this);
 				LOG.addHandler(this.standardFileHandler);
 			} catch (SecurityException | NullPointerException | IOException e) {
@@ -148,8 +201,11 @@ public class SootLogger {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	private void removeStandardFileHandler() {
-		if (EXPORT_FILE && this.standardFileHandler != null) {
+		if (exportFile && this.standardFileHandler != null) {
 			try {
 				LOG.removeHandler(this.standardFileHandler);
 				this.standardFileHandler.close();
@@ -160,17 +216,40 @@ public class SootLogger {
 		}
 	}
 
+	/**
+	 * 
+	 * @param sootMethod
+	 */
 	public void addAdditionalHandlerFor(SootMethod sootMethod) {
 		addStandardFileHandlerForMethod(sootMethod);
-		addJimpleFileHandlerForMethod(sootMethod);
 	}
 
+	/**
+	 * 
+	 */
 	public void removeAdditional() {
-		removeJimpleFileHandler();
 		removeStandardFileHandler();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public MessageStore getMessageStore() {
 		return this.messageStore;
+	}
+	
+	/**
+	 * 
+	 */
+	public void storeSerializedMessageStore() {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream(SootLoggerConfiguration.getSerializeFile(true));
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+			objectOutputStream.writeObject(this.messageStore);
+			objectOutputStream.close();
+		} catch (IOException e) {
+			LOG.log(SootLoggerLevel.EXCEPTION, "Couldn't create the serialized file.", e);
+		}
 	}
 }

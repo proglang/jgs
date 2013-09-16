@@ -6,11 +6,8 @@ import java.util.logging.*;
 import logging.*;
 import model.Configurations;
 import model.Configurations.Config;
-import model.MessageStore.Message;
 
 import soot.*;
-import soot.tagkit.Host;
-import soot.tagkit.Tag;
 import soot.toolkits.graph.*;
 import utils.*;
 
@@ -31,7 +28,6 @@ import utils.*;
  * <li><b>CONFIGURATION</b>: Configuration information</li>
  * <li><b>STRUCTURE</b>: Structural information</li>
  * <li><b>DEBUG</b>: Debug information</li>
- * <li><b>JIMPLE</b>: Jimple Source Code</li>
  * </ol>
  * 
  * 
@@ -41,11 +37,10 @@ import utils.*;
  */
 public class Main {
 
-	private static SideEffectLogger LOG;
-	private static boolean CHECK_CLASSES = false;
-	private static Level[] LOG_LEVEL = {};
-	private static boolean EXPORT_JIMPLE = false;
-	private static boolean EXPORT_FILE = false;
+	private static SideEffectLogger log;
+	private static boolean checkClasses = false;
+	private static Level[] logLevels = {};
+	private static boolean exportFile = false;
 
 	private static final String PHASE_NAME = "jtp.sideeffect";
 
@@ -55,22 +50,21 @@ public class Main {
 		protected void internalTransform(Body body, String phaseName, Map options) {
 			UnitGraph g = new BriefUnitGraph(body);
 			SootMethod sootMethod = g.getBody().getMethod();
-			LOG.structure(SootUtils.generateMethodSignature(sootMethod));
-			LOG.addAdditionalHandlerFor(sootMethod);
-			SideEffectAnalysis se = new SideEffectAnalysis(g, g.getBody().getMethod(), LOG,
-					CHECK_CLASSES);
+			log.structure(SootUtils.generateMethodSignature(sootMethod));
+			log.addAdditionalHandlerFor(sootMethod);
+			SideEffectAnalysis se = new SideEffectAnalysis(g, g.getBody().getMethod(), log,
+					checkClasses);
 			se.checkAnnotation();
-			LOG.removeAdditional();
+			log.removeAdditional();
 		}
 	}
 
 	public static void main(String[] args) {
 		args = GeneralUtils.precheckArguments(args);
-		LOG = new SideEffectLogger(EXPORT_FILE, EXPORT_JIMPLE, LOG_LEVEL);
-		LOG.configuration(new Configurations(
-				new Config("Export File", (EXPORT_FILE ? "ON" : "OFF")), new Config(
-						"Export Jimple", (EXPORT_JIMPLE ? "ON" : "OFF")), new Config(
-						"Check Classes", (CHECK_CLASSES ? "ON" : "OFF")), new Config("Log levels",
+		log = new SideEffectLogger(exportFile, logLevels);
+		log.configuration(new Configurations(
+				new Config("Export File", (exportFile ? "ON" : "OFF")), new Config(
+						"Check Classes", (checkClasses ? "ON" : "OFF")), new Config("Log levels",
 						generateLevelList())));
 		PackManager.v().getPack("jtp").add(new Transform(PHASE_NAME, new EffectTransformer()));
 		soot.Main.main(args);
@@ -83,7 +77,7 @@ public class Main {
 	 */
 	public static String generateLevelList() {
 		String levels = "";
-		for (Level level : LOG_LEVEL) {
+		for (Level level : logLevels) {
 			if (!levels.equals(""))
 				levels += ", ";
 			levels += level.getLocalizedName();
@@ -95,21 +89,14 @@ public class Main {
 	 * Enables the check of classes.
 	 */
 	public static void checkClasses() {
-		CHECK_CLASSES = true;
-	}
-
-	/**
-	 * Enables the export of the jimple source code to a file.
-	 */
-	public static void exportJimple() {
-		EXPORT_JIMPLE = true;
+		checkClasses = true;
 	}
 
 	/**
 	 * Enables the export of the console output to a file.
 	 */
 	public static void exportFile() {
-		EXPORT_FILE = true;
+		exportFile = true;
 	}
 
 	/**
@@ -119,9 +106,9 @@ public class Main {
 	 *            Level which should be printed.
 	 */
 	public static void addLevel(Level level) {
-		Level[] levels = new Level[LOG_LEVEL.length + 1];
-		System.arraycopy(LOG_LEVEL, 0, levels, 0, LOG_LEVEL.length);
-		levels[LOG_LEVEL.length] = level;
-		LOG_LEVEL = levels;
+		Level[] levels = new Level[logLevels.length + 1];
+		System.arraycopy(logLevels, 0, levels, 0, logLevels.length);
+		levels[logLevels.length] = level;
+		logLevels = levels;
 	}
 }

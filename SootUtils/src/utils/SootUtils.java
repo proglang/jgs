@@ -1,10 +1,10 @@
 package utils;
 
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.tagkit.SourceLnPosTag;
-import soot.tagkit.Tag;
 
 /**
  * Class, which offers various methods, which are in relation with Soot.
@@ -14,6 +14,11 @@ import soot.tagkit.Tag;
  * 
  */
 public class SootUtils {
+	
+	/**	 */
+	private static final String CLINIT_MEHTOD_NAME = "<clinit>";
+	/**	 */
+	private static final String INIT_MEHTOD_NAME = "<init>";
 
 	/**
 	 * Extracts the source line number from a statement, if this statement has the corresponding
@@ -61,10 +66,29 @@ public class SootUtils {
 		return sootMethod.getDeclaringClass().getName() + "." + methodName + " : " + methodType;
 	}
 	
+	/**
+	 * 
+	 * @param sootField
+	 * @return
+	 */
+	public static String generateFieldSignature(SootField sootField) {
+		return sootField.getSignature();
+	}
+	
+	/**
+	 * 
+	 * @param sootMethod
+	 * @return
+	 */
 	public static String generateFileName(SootMethod sootMethod) {
 		return generateFileName(sootMethod.getDeclaringClass());
 	}
 	
+	/**
+	 * 
+	 * @param sootClass
+	 * @return
+	 */
 	public static String generateFileName(SootClass sootClass) {
 		String className = sootClass.getShortName();
 		String[] classNameComponents = className.split("\\$");
@@ -74,4 +98,23 @@ public class SootUtils {
 			return "unknown";
 		}
 	}
+	
+	/**
+	 * 
+	 * @param sootMethod
+	 * @return
+	 */
+	public static boolean isClinitMethod(SootMethod sootMethod) {
+		return sootMethod.isEntryMethod() && sootMethod.getName().equals(CLINIT_MEHTOD_NAME);
+	}
+	
+	/**
+	 * 
+	 * @param sootMethod
+	 * @return
+	 */
+	public static boolean isInitMethod(SootMethod sootMethod) {
+		return sootMethod.isConstructor() && sootMethod.getName().equals(INIT_MEHTOD_NAME);
+	}
+	
 }

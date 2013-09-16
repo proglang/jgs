@@ -13,7 +13,6 @@ import analysis.Main;
  * 
  * @author Thomas Vogel
  * @version 0.1
- *
  */
 public class GeneralUtils {
 
@@ -37,10 +36,6 @@ public class GeneralUtils {
 			arguments.remove("-log-levels");
 		} else {
 			Main.addLevel(SootLoggerLevel.ALL);
-		}
-		if (arguments.contains("-export-jimple")) {
-			Main.exportJimple();
-			arguments.remove("-export-jimple");
 		}
 		if (arguments.contains("-export-file")) {
 			Main.exportFile();
@@ -79,9 +74,6 @@ public class GeneralUtils {
 				break;
 			case "debug":
 				Main.addLevel(SootLoggerLevel.DEBUG);
-				break;
-			case "jimple":
-				Main.addLevel(SootLoggerLevel.JIMPLE);
 				break;
 			case "sideeffect":
 				Main.addLevel(SootLoggerLevel.SIDEEFFECT);

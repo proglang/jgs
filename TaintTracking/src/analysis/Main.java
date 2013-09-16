@@ -6,7 +6,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 
+import exception.SecurityLevelException;
+
 import logging.SecurityLogger;
+import logging.SootLoggerConfiguration;
 import model.Configurations;
 import model.Configurations.Config;
 import security.SecurityAnnotation;
@@ -15,63 +18,92 @@ import soot.BodyTransformer;
 import soot.PackManager;
 import soot.SootMethod;
 import soot.Transform;
+import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
+import soot.toolkits.graph.MHGDominatorsFinder;
+import soot.toolkits.graph.MHGPostDominatorsFinder;
+import soot.toolkits.graph.SimpleDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;
+import utils.ExtendedSecurityLevelImplChecker;
 import utils.GeneralUtils;
-import utils.SecurityLevelChecker;
+import utils.SecurityMessages;
 import utils.SootUtils;
 
+/**
+ * 
+ * 
+ * @author Thomas Vogel
+ * @version 0.4
+ */
 public class Main {
-	
-	private static final String PHASE_NAME = "jtp.tainttracking";
 
-	private static Level[] LOG_LEVEL = {};
-	private static SecurityLogger LOG;
-	private static boolean EXPORT_JIMPLE;
-	private static boolean EXPORT_FILE;
-	private static SecurityAnnotation SECURITY_ANNOTATIONS;
+	/** */
+	private static final String OFF = "OFF";
+	/** */
+	private static final String ON = "ON";
+	/**  */
+	private static final String PHASE_NAME = "jtp.tainttracking";
+	/**  */
+	private static Level[] logLevels = {};
+	/**  */
+	private static SecurityLogger log;
+	/**  */
+	private static boolean exportFile;
+	/**  */
+	private static SecurityAnnotation securityAnnotation;
 	
+	/**
+	 * 
+	 * 
+	 * @author Thomas Vogel
+	 * @version 0.2
+	 */
 	public static class SecurityTransformer extends BodyTransformer {
 		
+		/**
+		 * 
+		 * 
+		 * @param b
+		 * @param phaseName
+		 * @param options
+		 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
+		 */
 		@Override
 		protected void internalTransform(Body b, String phaseName, Map options) {
 			UnitGraph g = new BriefUnitGraph(b);
 			SootMethod sootMethod = g.getBody().getMethod();
-			if (! SECURITY_ANNOTATIONS.isMethodOfSootSecurity(sootMethod)) {
-				LOG.structure(SootUtils.generateMethodSignature(sootMethod));
-				LOG.addAdditionalHandlerFor(sootMethod);
-				TaintTracking tt = new TaintTracking(LOG, sootMethod, SECURITY_ANNOTATIONS, g);
-				LOG.removeAdditional();
+			if (! securityAnnotation.isMethodOfSootSecurity(sootMethod)) {
+				log.structure(SootUtils.generateMethodSignature(sootMethod));
+				log.addAdditionalHandlerFor(sootMethod);				
+				TaintTracking tt = new TaintTracking(log, sootMethod, securityAnnotation, g);
+				tt.checkAnalysis();
+				log.removeAdditional();
 			}
 		}
 		
 	}
 
 	/**
+	 * 
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		args = GeneralUtils.precheckArguments(args);
-		LOG = new SecurityLogger(EXPORT_FILE, EXPORT_JIMPLE, LOG_LEVEL);
-		LOG.configuration(
-				new Configurations(new Config("Export File", (EXPORT_FILE ? "ON" : "OFF")), 
-						new Config("Export Jimple", (EXPORT_JIMPLE ? "ON" : "OFF")), 
-						new Config("Log level", generateLevelList())));
-		if (SecurityLevelChecker.checkSecurityLevel(LOG)) {
-			String[] orderedLevels = new String[] {};
-			try {
-				orderedLevels = SecurityLevelChecker.getOrderSecurityLevels();
-			} catch (NullPointerException e) {
-				LOG.exception("Couldn't fetch the security levels from the SootSecurityLevel file. The analysis will not performed.", e);
-				return;
-			}
-			SECURITY_ANNOTATIONS = new SecurityAnnotation(new ArrayList<String>(Arrays.asList(orderedLevels)));
-			PackManager.v().getPack("jtp").add(new Transform(PHASE_NAME,new SecurityTransformer()));
+		log = new SecurityLogger(exportFile, logLevels);
+		log.configuration(
+				new Configurations(new Config(SootLoggerConfiguration.EXPORT_FILE_TXT, (exportFile ? ON : OFF)), 
+						new Config(SootLoggerConfiguration.LOG_LEVELS_TXT, generateLevelList())));
+		try {
+			ExtendedSecurityLevelImplChecker extendedSecurityLevelImplChecker = ExtendedSecurityLevelImplChecker.getExtendedSecurityLevelImplChecker(log, true, true);
+			String[] orderedLevels = extendedSecurityLevelImplChecker.getOrderedLevels();
+			securityAnnotation = new SecurityAnnotation(new ArrayList<String>(Arrays.asList(orderedLevels)));
+			PackManager.v().getPack("jtp").add(new Transform(PHASE_NAME, new SecurityTransformer()));
 			soot.Main.main(args);
-		} else {
-			LOG.securitychecker("The SootSecurityLevel class is invalid. The analysis will not performed.");
-			return;
+		} catch (SecurityLevelException e) {
+			log.securitychecker(SecurityMessages.reflectionInvalidSootSecurityLevelClass(), e);
 		}
+		log.storeSerializedMessageStore();
 	}
 	
 	/**
@@ -81,26 +113,19 @@ public class Main {
 	 */
 	public static String generateLevelList() {
 		String levels = "";
-		for (Level level : LOG_LEVEL) {
+		for (Level level : logLevels) {
 			if (!levels.equals(""))
 				levels += ", ";
 			levels += level.getLocalizedName();
 		}
 		return levels;
 	}
-	
-	/**
-	 * Enables the export of the jimple source code to a file.
-	 */
-	public static void exportJimple() {
-		EXPORT_JIMPLE = true;
-	}
 
 	/**
 	 * Enables the export of the console output to a file.
 	 */
 	public static void exportFile() {
-		EXPORT_FILE = true;
+		exportFile = true;
 	}
 
 	/**
@@ -110,9 +135,9 @@ public class Main {
 	 *            Level which should be printed.
 	 */
 	public static void addLevel(Level level) {
-		Level[] levels = new Level[LOG_LEVEL.length + 1];
-		System.arraycopy(LOG_LEVEL, 0, levels, 0, LOG_LEVEL.length);
-		levels[LOG_LEVEL.length] = level;
-		LOG_LEVEL = levels;
+		Level[] levels = new Level[logLevels.length + 1];
+		System.arraycopy(logLevels, 0, levels, 0, logLevels.length);
+		levels[logLevels.length] = level;
+		logLevels = levels;
 	}
 }

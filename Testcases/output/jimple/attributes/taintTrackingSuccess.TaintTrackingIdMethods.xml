@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<attributes>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="4" eline="4" spos="0" epos="0"/>
+<text info="[]" aType="ParamNamesTag"/>
+<text info="Visibility Annotation: level: RUNTIME (runtime-visible)
+ Annotations:
+Annotation: type: Lsecurity/Annotations$ParameterSecurity; num elems: 1 elems: 
+Annotation Element: kind: [ name: value values: []
+
+Annotation: type: Lsecurity/Annotations$ReturnSecurity; num elems: 1 elems: 
+Annotation Element: kind: s name: value value: high
+
+" aType="VisibilityAnnotationTag"/>
+</attribute>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="20" eline="20" spos="0" epos="0"/>
+<text info="[]" aType="ParamNamesTag"/>
+<text info="Visibility Annotation: level: RUNTIME (runtime-visible)
+ Annotations:
+Annotation: type: Lsecurity/Annotations$ParameterSecurity; num elems: 1 elems: 
+Annotation Element: kind: [ name: value values: []
+
+Annotation: type: Lsecurity/Annotations$ReturnSecurity; num elems: 1 elems: 
+Annotation Element: kind: s name: value value: low
+
+" aType="VisibilityAnnotationTag"/>
+</attribute>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="36" eline="36" spos="0" epos="0"/>
+<text info="[]" aType="ParamNamesTag"/>
+<text info="Visibility Annotation: level: RUNTIME (runtime-visible)
+ Annotations:
+Annotation: type: Lsecurity/Annotations$ParameterSecurity; num elems: 1 elems: 
+Annotation Element: kind: [ name: value values: []
+
+Annotation: type: Lsecurity/Annotations$ReturnSecurity; num elems: 1 elems: 
+Annotation Element: kind: s name: value value: void
+
+" aType="VisibilityAnnotationTag"/>
+</attribute>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="58" eline="58" spos="0" epos="0"/>
+<text info="[]" aType="ParamNamesTag"/>
+<text info="Visibility Annotation: level: RUNTIME (runtime-visible)
+ Annotations:
+Annotation: type: Lsecurity/Annotations$ParameterSecurity; num elems: 1 elems: 
+Annotation Element: kind: [ name: value values: []
+
+Annotation: type: Lsecurity/Annotations$ReturnSecurity; num elems: 1 elems: 
+Annotation Element: kind: s name: value value: void
+
+" aType="VisibilityAnnotationTag"/>
+</attribute>
+<attribute>
+<srcPos sline="0" eline="0" spos="0" epos="0"/>
+<jmpPos sline="80" eline="80" spos="0" epos="0"/>
+<text info="[]" aType="ParamNamesTag"/>
+</attribute>
+</attributes>

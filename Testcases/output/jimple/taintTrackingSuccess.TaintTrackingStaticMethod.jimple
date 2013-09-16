@@ -1,0 +1,607 @@
+public class taintTrackingSuccess.TaintTrackingStaticMethod extends java.lang.Object
+{
+
+    public static void simpleVoidMethod()
+    {
+        return;
+
+        return;
+    }
+
+    public static void invokeSimpleVoidMethod()
+    {
+        staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: void simpleVoidMethod()>();
+        return;
+
+        return;
+    }
+
+    public static int simpleLowSecurityMethod()
+    {
+        int temp$0, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return temp$4;
+    }
+
+    public static int invokeSimpleLowSecurityMethod()
+    {
+        int temp$0;
+
+        temp$0 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int simpleLowSecurityMethod()>();
+        return temp$0;
+    }
+
+    public static int simpleHighSecurityMethod()
+    {
+        int temp$0, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return temp$4;
+    }
+
+    public static int invokeSimpleHighSecurityMethod()
+    {
+        int temp$0;
+
+        temp$0 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int simpleHighSecurityMethod()>();
+        return temp$0;
+    }
+
+    public static int invokeSimpleHighSecurityMethod2()
+    {
+        int temp$0;
+
+        temp$0 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int simpleLowSecurityMethod()>();
+        return temp$0;
+    }
+
+    public static void oneLowParameterVoidMethod(int)
+    {
+        int low;
+
+        low := @parameter0: int;
+        return;
+
+        return;
+    }
+
+    public static void invokeOneLowParameterVoidMethod()
+    {
+        int low, temp$0;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: void oneLowParameterVoidMethod(int)>(low);
+        return;
+
+        return;
+    }
+
+    public static int oneLowParameterLowMethod(int)
+    {
+        int low;
+
+        low := @parameter0: int;
+        return low;
+    }
+
+    public static int invokeOneLowParameterLowMethod()
+    {
+        int low, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneLowParameterLowMethod(int)>(low);
+        result = temp$4;
+        return result;
+    }
+
+    public static int oneLowParameterHighMethod(int)
+    {
+        int low, temp$0, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        low := @parameter0: int;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return temp$4;
+    }
+
+    public static int invokeOneLowParameterHighMethod()
+    {
+        int low, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneLowParameterHighMethod(int)>(low);
+        result = temp$4;
+        return result;
+    }
+
+    public static int invokeOneLowParameterHighMethod2()
+    {
+        int low, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneLowParameterLowMethod(int)>(low);
+        result = temp$4;
+        return result;
+    }
+
+    public static void oneHighParameterVoidMethod(int)
+    {
+        int high;
+
+        high := @parameter0: int;
+        return;
+
+        return;
+    }
+
+    public static void invokeOneHighParameterVoidMethod()
+    {
+        int high, temp$0;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: void oneHighParameterVoidMethod(int)>(high);
+        return;
+
+        return;
+    }
+
+    public static void invokeOneHighParameterVoidMethod2()
+    {
+        int low, temp$0;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: void oneHighParameterVoidMethod(int)>(low);
+        return;
+
+        return;
+    }
+
+    public static int oneHighParameterLowMethod(int)
+    {
+        int high, temp$0, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        high := @parameter0: int;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return temp$4;
+    }
+
+    public static int invokeOneHighParameterLowMethod()
+    {
+        int high, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneHighParameterLowMethod(int)>(high);
+        result = temp$4;
+        return result;
+    }
+
+    public static int invokeOneHighParameterLowMethod2()
+    {
+        int low, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneHighParameterLowMethod(int)>(low);
+        result = temp$4;
+        return result;
+    }
+
+    public static int invokeOneHighParameterLowMethod3()
+    {
+        int high, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneHighParameterLowMethod(int)>(high);
+        result = temp$4;
+        return result;
+    }
+
+    public static int oneHighParameterHighMethod(int)
+    {
+        int high;
+
+        high := @parameter0: int;
+        return high;
+    }
+
+    public static int invokeOneHighParameterHighMethod()
+    {
+        int high, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneHighParameterHighMethod(int)>(high);
+        result = temp$4;
+        return result;
+    }
+
+    public static int invokeOneHighParameterHighMethod2()
+    {
+        int low, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneHighParameterHighMethod(int)>(low);
+        result = temp$4;
+        return result;
+    }
+
+    public static int invokeOneHighParameterHighMethod3()
+    {
+        int high, temp$0, result, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int oneHighParameterLowMethod(int)>(high);
+        result = temp$4;
+        return result;
+    }
+
+    public static int twoLowLowParameterLowMethod(int, int)
+    {
+        int low1, low2;
+
+        low1 := @parameter0: int;
+        low2 := @parameter1: int;
+        return low1;
+    }
+
+    public static int invokeTwoLowLowParameterLowMethod()
+    {
+        int low1, temp$0, low2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoLowLowParameterLowMethod(int,int)>(low1, low2);
+        result = temp$8;
+        return result;
+    }
+
+    public static int invokeTwoLowLowParameterLowMethod2()
+    {
+        int low1, temp$0, low2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoLowLowParameterLowMethod(int,int)>(low1, low2);
+        result = temp$8;
+        return result;
+    }
+
+    public static int twoLowHighParameterLowMethod(int, int)
+    {
+        int low, high;
+
+        low := @parameter0: int;
+        high := @parameter1: int;
+        return low;
+    }
+
+    public static int invokeTwoLowHighParameterLowMethod()
+    {
+        int low, temp$0, high, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoLowHighParameterLowMethod(int,int)>(low, high);
+        result = temp$8;
+        return result;
+    }
+
+    public static int invokeTwoLowHighParameterLowMethod2()
+    {
+        int low, temp$0, high, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoLowHighParameterLowMethod(int,int)>(low, high);
+        result = temp$8;
+        return result;
+    }
+
+    public static int invokeTwoLowHighParameterLowMethod3()
+    {
+        int low1, temp$0, low2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoLowHighParameterLowMethod(int,int)>(low1, low2);
+        result = temp$8;
+        return result;
+    }
+
+    public static int twoHighLowParameterHighMethod(int, int)
+    {
+        int high, low;
+
+        high := @parameter0: int;
+        low := @parameter1: int;
+        return high;
+    }
+
+    public static int invokeTwoHighLowParameterLowMethod()
+    {
+        int low, temp$0, high, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoHighLowParameterHighMethod(int,int)>(high, low);
+        result = temp$8;
+        return result;
+    }
+
+    public static int invokeTwoHighLowParameterLowMethod2()
+    {
+        int low1, temp$0, low2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoHighLowParameterHighMethod(int,int)>(low1, low2);
+        result = temp$8;
+        return result;
+    }
+
+    public static int invokeTwoHighLowParameterLowMethod3()
+    {
+        int low1, temp$0, low2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoLowLowParameterLowMethod(int,int)>(low1, low2);
+        result = temp$8;
+        return result;
+    }
+
+    public static int twoHighHighParameterHighMethod(int, int)
+    {
+        int high1, high2;
+
+        high1 := @parameter0: int;
+        high2 := @parameter1: int;
+        return high1;
+    }
+
+    public static int invokeTwoHighHighParameterLowMethod()
+    {
+        int high1, temp$0, high2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoHighHighParameterHighMethod(int,int)>(high1, high2);
+        result = temp$8;
+        return result;
+    }
+
+    public static int invokeTwoHighHighParameterLowMethod2()
+    {
+        int low1, temp$0, low2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoHighHighParameterHighMethod(int,int)>(low1, low2);
+        result = temp$8;
+        return result;
+    }
+
+    public static int invokeTwoHighHighParameterLowMethod3()
+    {
+        int low1, temp$0, low2, temp$4, result, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = 42;
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$4);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <taintTrackingSuccess.TaintTrackingStaticMethod: int twoLowLowParameterLowMethod(int,int)>(low1, low2);
+        result = temp$8;
+        return result;
+    }
+
+    public void <init>()
+    {
+        taintTrackingSuccess.TaintTrackingStaticMethod this;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticMethod;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+}

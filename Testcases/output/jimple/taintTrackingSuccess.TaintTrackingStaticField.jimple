@@ -1,0 +1,122 @@
+public class taintTrackingSuccess.TaintTrackingStaticField extends java.lang.Object
+{
+    public static int low;
+    public static int high;
+
+    static void <clinit>()
+    {
+        int temp$0, temp$1;
+
+        temp$0 = 42;
+        <taintTrackingSuccess.TaintTrackingStaticField: int low> = temp$0;
+        temp$1 = 42;
+        <taintTrackingSuccess.TaintTrackingStaticField: int high> = temp$1;
+        return;
+    }
+
+    public int returnLowSecurity()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+        int temp$0;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        temp$0 = <taintTrackingSuccess.TaintTrackingStaticField: int low>;
+        return temp$0;
+    }
+
+    public int returnLowSecurity2()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+        int low2;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        low2 = <taintTrackingSuccess.TaintTrackingStaticField: int low>;
+        return low2;
+    }
+
+    public int returnHighSecurity()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+        int temp$0;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        temp$0 = <taintTrackingSuccess.TaintTrackingStaticField: int high>;
+        return temp$0;
+    }
+
+    public int returnHighSecurity2()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+        int high2;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        high2 = <taintTrackingSuccess.TaintTrackingStaticField: int high>;
+        return high2;
+    }
+
+    public void assignLowSecurity()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+        int low2, temp$0;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low2 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        <taintTrackingSuccess.TaintTrackingStaticField: int low> = low2;
+        return;
+
+        return;
+    }
+
+    public void assignHighSecurity()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+        int low, temp$0;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        <taintTrackingSuccess.TaintTrackingStaticField: int high> = low;
+        return;
+
+        return;
+    }
+
+    public void assignHigh2Security()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+        int high2, temp$0;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        temp$0 = 42;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(temp$0);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high2 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        <taintTrackingSuccess.TaintTrackingStaticField: int high> = high2;
+        return;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        taintTrackingSuccess.TaintTrackingStaticField this;
+
+        this := @this: taintTrackingSuccess.TaintTrackingStaticField;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+}

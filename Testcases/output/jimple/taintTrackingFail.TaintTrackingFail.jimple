@@ -1,0 +1,12 @@
+public class taintTrackingFail.TaintTrackingFail extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        taintTrackingFail.TaintTrackingFail this;
+
+        this := @this: taintTrackingFail.TaintTrackingFail;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+}
