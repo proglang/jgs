@@ -1,4 +1,4 @@
-package analysis;
+package pattern;
 
 import utils.*;
 import model.*;

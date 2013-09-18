@@ -212,10 +212,10 @@ public class LocalMap {
 	public void removeProgramCounterLevel(IfStmt ifStmt) {
 		if (!programCounter.isEmpty()) {
 			if (null != programCounter.remove(ifStmt)) {
-				throw new ProgramCounterException(SecurityMessages.noSuchProgramCounter(ifStmt.toString()));
+				//throw new ProgramCounterException(SecurityMessages.noSuchProgramCounter(ifStmt.toString()));
 			}
 		} else {
-			throw new ProgramCounterException(SecurityMessages.noProgramCounter(ifStmt.toString()));
+			//throw new ProgramCounterException(SecurityMessages.noProgramCounter(ifStmt.toString()));
 		}
 	}
 	
@@ -327,21 +327,6 @@ public class LocalMap {
         if (obj == null || obj.getClass() != this.getClass()) return false;
         LocalMap other = (LocalMap) obj;
 		return localMap.equals(other.localMap) && programCounter.equals(other.programCounter);
-	}
-	
-	/**
-	 * 
-	 * @param logger
-	 * @param methodName
-	 */
-	public void prettyPrint(SootLogger logger, String methodName) {
-		String newline = System.getProperty("line.separator");
-		StringBuilder sb = new StringBuilder();
-		sb.append("LocalMap " + " --> " + methodName + newline);
-		for (Local local : this.localMap.keySet()) {
-			sb.append(local.getName() + "^" + this.localMap.get(local) + " / ");
-		}
-		//logger.debug(sb.toString());
 	}
 
 	/**

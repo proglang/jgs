@@ -33,12 +33,19 @@ public class TaintTrackingObject {
 		return fo.low;
 	}
 	
-	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
 	public int accessFieldHigh() {
 		FieldObject fo = new FieldObject();
 		fo = SootSecurityLevel.lowId(fo);
+		return fo.high;
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int accessFieldHigh2() {
+		FieldObject fo = new FieldObject();
+		fo = SootSecurityLevel.highId(fo);
 		return fo.high;
 	}
 	
@@ -64,6 +71,14 @@ public class TaintTrackingObject {
 		FieldObject fo = new FieldObject();
 		fo = SootSecurityLevel.highId(fo);
 		fo.low = high;
+		return;
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void assignStaticFieldLow() {
+		int high = SootSecurityLevel.highId(42);
+		StaticFieldObject.low = high;
 		return;
 	}
 	
@@ -177,76 +192,76 @@ public class TaintTrackingObject {
 		return mo.returnHighSecurity(low);
 	}
 	
-//	public static class StaticMethodObject {
-//		
-//		@ParameterSecurity({})
-//		@ReturnSecurity("low")
-//		public static int returnLowSecurity() {
-//			return SootSecurityLevel.lowId(42);
-//		}
-//		
-//		@ParameterSecurity({})
-//		@ReturnSecurity("high")
-//		public static int returnHighSecurity() {
-//			return SootSecurityLevel.highId(42);
-//		}
-//		
-//		@ParameterSecurity({"low"})
-//		@ReturnSecurity("low")
-//		public static int returnLowSecurity(int low) {
-//			return low;
-//		}
-//		
-//		@ParameterSecurity({"high"})
-//		@ReturnSecurity("high")
-//		public static int returnHighSecurity(int high) {
-//			return high;
-//		}
-//	}
-//	
-//	@ParameterSecurity({})
-//	@ReturnSecurity("low")
-//	public int invokeSimpleLowStaticMethod() {
-//		return StaticMethodObject.returnLowSecurity();
-//	}
-//	
-//	@ParameterSecurity({})
-//	@ReturnSecurity("high")
-//	public int invokeSimpleLowStaticMethod2() {
-//		return StaticMethodObject.returnLowSecurity();
-//	}
-//	
-//	@ParameterSecurity({})
-//	@ReturnSecurity("high")
-//	public int invokeSimpleHighStaticMethod() {
-//		return StaticMethodObject.returnHighSecurity();
-//	}
-//	
-//	@ParameterSecurity({})
-//	@ReturnSecurity("low")
-//	public int invokeLowStaticMethod() {
-//		int low = SootSecurityLevel.lowId(42);
-//		return StaticMethodObject.returnLowSecurity(low);
-//	}
-//	
-//	@ParameterSecurity({})
-//	@ReturnSecurity("high")
-//	public int invokeLowStaticMethod2() {
-//		int low = SootSecurityLevel.lowId(42);
-//		return StaticMethodObject.returnLowSecurity(low);
-//	}
-//	
-//	@ParameterSecurity({})
-//	@ReturnSecurity("high")
-//	public int invokeHighStaticMethod() {
-//		int high = SootSecurityLevel.highId(42);
-//		return StaticMethodObject.returnHighSecurity(high);
-//	}
-//	
-//	@ParameterSecurity({})
-//	@ReturnSecurity("high")
-//	public int invokeHighStaticMethod2() {
-//		int low = SootSecurityLevel.lowId(42);
-//		return StaticMethodObject.returnHighSecurity(low);
-//	}
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int invokeHighMethod6() {
+		int high = SootSecurityLevel.highId(42);
+		MethodObject mo = new MethodObject();
+		mo = SootSecurityLevel.highId(mo);
+		return mo.returnLowSecurity(high);
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int invokeHighMethod7() {
+		int high = SootSecurityLevel.highId(42);
+		MethodObject mo = new MethodObject();
+		mo = SootSecurityLevel.lowId(mo);
+		return mo.returnLowSecurity(high);
+	}
+	
+	public static class StaticMethodObject {
+		
+		@Annotations.ParameterSecurity({})
+		@Annotations.ReturnSecurity("low")
+		public static int returnLowSecurity() {
+			return SootSecurityLevel.lowId(42);
+		}
+		
+		@Annotations.ParameterSecurity({})
+		@Annotations.ReturnSecurity("high")
+		public static int returnHighSecurity() {
+			return SootSecurityLevel.highId(42);
+		}
+		
+		@Annotations.ParameterSecurity({"low"})
+		@Annotations.ReturnSecurity("low")
+		public static int returnLowSecurity(int low) {
+			return low;
+		}
+		
+		@Annotations.ParameterSecurity({"high"})
+		@Annotations.ReturnSecurity("high")
+		public static int returnHighSecurity(int high) {
+			return high;
+		}
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int invokeSimpleLowStaticMethod() {
+		return StaticMethodObject.returnHighSecurity();
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int invokeLowStaticMethod() {
+		int high = SootSecurityLevel.highId(42);
+		return StaticMethodObject.returnLowSecurity(high);
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int invokeLowStaticMethod2() {
+		int high = SootSecurityLevel.highId(42);
+		return StaticMethodObject.returnLowSecurity(high);
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int invokeHighStaticMethod() {
+		int low = SootSecurityLevel.lowId(42);
+		return StaticMethodObject.returnHighSecurity(low);
+	}
+	
 }

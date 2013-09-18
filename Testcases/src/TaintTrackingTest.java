@@ -1,4 +1,4 @@
-package taintTrackingSuccess;
+
 import security.Annotations;
 import security.SootSecurityLevel;
 

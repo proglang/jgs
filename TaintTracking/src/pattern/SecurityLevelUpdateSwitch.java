@@ -1,4 +1,4 @@
-package analysis;
+package pattern;
 
 import model.*;
 import model.SecurityMethod.MethodParameter;

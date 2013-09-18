@@ -2,6 +2,8 @@ package analysis;
 
 import java.util.Set;
 
+import pattern.StatementSwitch;
+
 import logging.SecurityLogger;
 import model.LocalMap;
 import model.MethodAnalysisEnvironment;
@@ -11,11 +13,11 @@ import security.SecurityAnnotation;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IfStmt;
+import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.MHGDominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.toolkits.graph.SimpleDominatorsFinder;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
 import utils.SecurityMessages;
 import utils.SootUtils;
@@ -28,34 +30,69 @@ import utils.SootUtils;
  */
 public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	
+	/**
+	 * 
+	 * @author Thomas Vogel
+	 * @version 0.1
+	 *
+	 */
 	public static class DominatorContainer {
 		
+		/** */
 		private final MHGDominatorsFinder<Unit> dominatorFinder;
+		/** */
 		private final MHGPostDominatorsFinder postDominatorFinder;
-		private final SimpleDominatorsFinder simpleDominatorsFinder;
 		
+		/**
+		 * 
+		 * @param graph
+		 */
 		public DominatorContainer(DirectedGraph<Unit> graph) {
 			this.dominatorFinder = new MHGDominatorsFinder<Unit>(graph);
 			this.postDominatorFinder = new MHGPostDominatorsFinder(graph);
-			this.simpleDominatorsFinder = new SimpleDominatorsFinder(graph);
 		}
-
+		
+		/**
+		 * 
+		 * @return
+		 */
 		public MHGDominatorsFinder<Unit> getDominatorFinder() {
 			return dominatorFinder;
 		}
 
+		/**
+		 * 
+		 * @return
+		 */
 		public MHGPostDominatorsFinder getPostDominatorFinder() {
 			return postDominatorFinder;
 		}
-
-		public SimpleDominatorsFinder getSimpleDominatorsFinder() {
-			return simpleDominatorsFinder;
+		
+		/**
+		 * 
+		 * @param ifStmt
+		 * @param s
+		 * @return
+		 */
+		public boolean postDomSetOfIfContainsS(IfStmt ifStmt, Stmt s) {
+			return postDominatorFinder.getDominators(ifStmt).contains(s);
+		}
+		
+		/**
+		 * 
+		 * @param s
+		 * @param ifStmt
+		 * @return
+		 */
+		public boolean domSetOfSContainsIf(Stmt s, IfStmt ifStmt) {
+			return dominatorFinder.getDominators(s).contains(ifStmt);
 		}
 		
 	}
 
 	/** */
 	private final MethodAnalysisEnvironment methodAnalysisEnvironment;
+	/** */
 	private final DominatorContainer container;
 
 	/**
@@ -94,16 +131,14 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 		copy(in, out);
 		Stmt stmt = (Stmt) d;
 		methodAnalysisEnvironment.setStmt(stmt);
-		//in.prettyPrint(log, "flowThrough() in for " +  securityMethod.getSootMethod().getName());
-		//out.prettyPrint(log, "flowThrough() out@begin for " +  securityMethod.getSootMethod().getName());
 		checkEndOfImplicitFlow(stmt, in, out);
 		StatementSwitch stmtSwitch = new StatementSwitch(in, out, this.methodAnalysisEnvironment);
 		try {
 			stmt.apply(stmtSwitch);
 		} catch (Exception e) {
+			// TODO: Throw Exception
 			System.err.println("Exception --> Stmt");
 		}
-		out.prettyPrint(methodAnalysisEnvironment.getLog(), "flowThrough() out@result for " +  methodAnalysisEnvironment.getSootMethod().getName());
 	}
 
 	/**
@@ -115,7 +150,6 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	@Override
 	protected LocalMap newInitialFlow() {
 		LocalMap map = new LocalMap(methodAnalysisEnvironment.getSootMethod().getActiveBody().getLocals(), methodAnalysisEnvironment.getSecurityAnnotation());
-		map.prettyPrint(methodAnalysisEnvironment.getLog(), "newIntialFlow() for " + methodAnalysisEnvironment.getSootMethod().getName());
 		return map;
 	}
 
@@ -128,7 +162,6 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	@Override
 	protected LocalMap entryInitialFlow() {
 		LocalMap map = new LocalMap(methodAnalysisEnvironment.getSootMethod().getActiveBody().getLocals(), methodAnalysisEnvironment.getSecurityAnnotation());
-		map.prettyPrint(methodAnalysisEnvironment.getLog(), "entryInitialFlow() for " +  methodAnalysisEnvironment.getSootMethod().getName());
 		return map;
 	}
 
@@ -142,13 +175,8 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	 */
 	@Override
 	protected void merge(LocalMap in1, LocalMap in2, LocalMap out) {
-		in1.prettyPrint(methodAnalysisEnvironment.getLog(), "merge() in1 for " +  methodAnalysisEnvironment.getSootMethod().getName());
-		in2.prettyPrint(methodAnalysisEnvironment.getLog(), "merge() in2 for " +  methodAnalysisEnvironment.getSootMethod().getName());
-		out.prettyPrint(methodAnalysisEnvironment.getLog(), "merge() out@begin for " +  methodAnalysisEnvironment.getSootMethod().getName());
 		copy(in1, out);
 		out.addAllStronger(in2.getExtendedLocals());
-		// TODO out.removeLastProgramCounterLevel();
-		out.prettyPrint(methodAnalysisEnvironment.getLog(), "merge() out@result for " +  methodAnalysisEnvironment.getSootMethod().getName());
 	}
 
 	/**
@@ -160,51 +188,26 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	 */
 	@Override
 	protected void copy(LocalMap source, LocalMap dest) {
-		source.prettyPrint(methodAnalysisEnvironment.getLog(), "copy() source for " +  methodAnalysisEnvironment.getSootMethod().getName());
-		dest.prettyPrint(methodAnalysisEnvironment.getLog(), "copy() dest@begin for " +  methodAnalysisEnvironment.getSootMethod().getName());
 		dest.clear();
 		dest.addAll(source.getExtendedLocals(), source.getProgramCounter());
-		dest.prettyPrint(methodAnalysisEnvironment.getLog(), "copy() dest@result for " +  methodAnalysisEnvironment.getSootMethod().getName());
-		
 	}
 	
 	/**
 	 * 
 	 * @param statement
-	 * @param out 
+	 * @param in
+	 * @param out
 	 */
 	private void checkEndOfImplicitFlow(Stmt statement, LocalMap in, LocalMap out) {
-		
 		Set<IfStmt> ifStmts = in.getProgramCounter().keySet();
-		StringBuilder complete = new StringBuilder("");
 		for (IfStmt ifStmt : ifStmts) {
-			boolean sInPostDomIf = container.postDominatorFinder.getDominators(ifStmt).contains(statement);
-			boolean ifInDomS = container.dominatorFinder.getDominators(statement).contains(ifStmt);
-			/*complete.append("> If-statement '" + ifStmt.toString() + "' [ s in postDom(if) = " + String.valueOf(sInPostDomIf) + " && if in dom(s) = " + String.valueOf(ifInDomS) + "]:\n");
-			int postCount = 0;
-			StringBuilder mhgPostDom = new StringBuilder("MHG Post Dominator:\n");
-			for (Object obj : container.postDominatorFinder.getDominators(statement)) {
-				if (obj != null) {
-					if (postCount++ != 0) mhgPostDom.append(", ");
-					mhgPostDom.append(obj.toString());
+			if (container.postDomSetOfIfContainsS(ifStmt, statement)) {
+				if (container.domSetOfSContainsIf(statement, ifStmt)) {
+					if (! (statement instanceof NopStmt)) {
+						out.removeProgramCounterLevel(ifStmt);
+					}
 				}
 			}
-			complete.append(mhgPostDom.toString() + "\n");
-			StringBuilder mhgDom = new StringBuilder("MHG Dominator:\n");
-			int count = 0;
-			for (Unit unit : container.dominatorFinder.getDominators(statement)) {
-				if (count++ != 0) mhgDom.append(", ");
-				mhgDom.append(unit.toString());
-			}
-			complete.append(mhgDom.toString() + "\n");*/
-			if (sInPostDomIf) {
-				if (ifInDomS) {
-					complete.append("Dominator Information for statement '" + statement.toString() + "':\n");
-					complete.append(">> If remove: " + ifStmt.toString() + " will be removed at statement " + statement.toString());
-				}
-			}
-			if (! complete.toString().equals(""))
-				methodAnalysisEnvironment.getLog().debug(complete.toString());
 		}
 	}
 	

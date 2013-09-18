@@ -1,4 +1,4 @@
-package analysis;
+package pattern;
 
 import java.util.*;
 import model.*;

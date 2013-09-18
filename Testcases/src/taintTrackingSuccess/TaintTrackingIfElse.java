@@ -1,14 +1,85 @@
 package taintTrackingSuccess;
 
-import security.Annotations;
-import security.SootSecurityLevel;
+import security.*;
+import security.Annotations.FieldSecurity;
 
 public class TaintTrackingIfElse {
 	
-	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		return conditionHigh ? thenHigh : elseHigh;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr2() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		return conditionLow ? thenHigh : elseHigh;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr3() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		return conditionHigh ? thenHigh : elseLow;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr4() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		return conditionLow ? thenHigh : elseLow;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr5() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		return conditionHigh ? thenLow : elseHigh;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr6() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		return conditionLow ? thenLow : elseHigh;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr7() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		return conditionHigh ? thenLow : elseLow;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturnExpr8() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		return conditionLow ? thenLow : elseLow;
+	}
+
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
-	public int IfExpr() {
+	public int ifReturnExpr9() {
 		int thenLow = SootSecurityLevel.lowId(42);
 		int elseLow = SootSecurityLevel.lowId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
@@ -17,187 +88,180 @@ public class TaintTrackingIfElse {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
-	public int IfExpr2() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int elseHigh = SootSecurityLevel.highId(42);
-		boolean conditionLow = SootSecurityLevel.lowId(false);
-		return conditionLow ? thenLow : elseHigh;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int IfExpr3() {
+	public int ifReturn() {
 		int thenHigh = SootSecurityLevel.highId(42);
-		int elseLow = SootSecurityLevel.lowId(42);
-		boolean conditionLow = SootSecurityLevel.lowId(false);
-		return conditionLow ? thenHigh : elseLow;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int IfExpr4() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int elseLow = SootSecurityLevel.lowId(42);
-		boolean conditionHigh = SootSecurityLevel.highId(false);
-		return conditionHigh ? thenLow : elseLow;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int IfExpr5() {
-		int thenLow = SootSecurityLevel.lowId(42);
 		int elseHigh = SootSecurityLevel.highId(42);
-		boolean conditionHigh = SootSecurityLevel.highId(false);
-		return conditionHigh ? thenLow : elseHigh;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("low")
-	public int ifStmt() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		boolean conditionLow = SootSecurityLevel.lowId(false);
-		if (conditionLow) {
-			return thenLow;
-		}
-		return thenLow;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("low")
-	public int ifStmt2() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int afterLow = SootSecurityLevel.lowId(42);
-		boolean conditionLow = SootSecurityLevel.lowId(false);
-		if (conditionLow) {
-			return thenLow;
-		}
-		return afterLow;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int ifStmt3() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int afterHigh = SootSecurityLevel.highId(42);
-		boolean conditionLow = SootSecurityLevel.lowId(false);
-		if (conditionLow) {
-			return thenLow;
-		}
-		return afterHigh;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int ifStmt4() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		boolean conditionHigh = SootSecurityLevel.highId(false);
-		if (conditionHigh) {
-			return thenLow;
-		}
-		return thenLow;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int ifStmt5() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int afterLow = SootSecurityLevel.lowId(42);
-		boolean conditionHigh = SootSecurityLevel.highId(false);
-		if (conditionHigh) {
-			return thenLow;
-		}
-		return afterLow;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int ifStmt6() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int afterHigh = SootSecurityLevel.highId(42);
-		boolean conditionHigh = SootSecurityLevel.highId(false);
-		if (conditionHigh) {
-			return thenLow;
-		}
-		return afterHigh;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int ifStmt7() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int afterHigh = SootSecurityLevel.highId(42);
-		boolean conditionHigh = SootSecurityLevel.highId(false);
-		if (conditionHigh) {
-			return thenLow;
-		}
-		return afterHigh;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int ifStmt8() {
-		int thenHigh = SootSecurityLevel.highId(42);
-		int afterLow = SootSecurityLevel.lowId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
 		if (conditionHigh) {
 			return thenHigh;
 		}
-		return afterLow;
+		return elseHigh;
 	}
-	
+
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
-	public int ifStmt9() {
-		int thenLow = SootSecurityLevel.lowId(42);
-		int afterHigh = SootSecurityLevel.highId(42);
-		boolean conditionLow = SootSecurityLevel.lowId(false);
-		if (conditionLow) {
-			return thenLow;
-		}
-		return afterHigh;
-	}
-	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("high")
-	public int ifStmt10() {
+	public int ifReturn2() {
 		int thenHigh = SootSecurityLevel.highId(42);
-		int afterLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
 		if (conditionLow) {
 			return thenHigh;
 		}
-		return afterLow;
+		return elseHigh;
 	}
-	
+
 	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("low")
-	public int ifElseStmt() {
-		int thenLow = SootSecurityLevel.lowId(42);
+	@Annotations.ReturnSecurity("high")
+	public int ifReturn3() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			return thenHigh;
+		}
+		return elseLow;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturn4() {
+		int thenHigh = SootSecurityLevel.highId(42);
 		int elseLow = SootSecurityLevel.lowId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
 		if (conditionLow) {
-			return thenLow;
-		} else {
-			return elseLow;
+			return thenHigh;
 		}
+		return elseLow;
 	}
-	
+
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
-	public int ifElseStmt2() {
+	public int ifReturn5() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			return thenLow;
+		}
+		return elseHigh;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturn6() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			return thenLow;
+		}
+		return elseHigh;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturn7() {
 		int thenLow = SootSecurityLevel.lowId(42);
 		int elseLow = SootSecurityLevel.lowId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
 		if (conditionHigh) {
 			return thenLow;
-		} else {
-			return elseLow;
 		}
+		return elseLow;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifReturn8() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			return thenLow;
+		}
+		return elseLow;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifReturn9() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			return thenLow;
+		}
+		return elseLow;
 	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
-	public int ifElseStmt3() {
+	public int ifElseReturn() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			return thenHigh;
+		} else {
+			return elseHigh;
+		}
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseReturn2() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			return thenHigh;
+		} else {
+			return elseHigh;
+		}
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseReturn3() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			return thenHigh;
+		} else {
+			return elseLow;
+		}
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseReturn4() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			return thenHigh;
+		} else {
+			return elseLow;
+		}
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseReturn5() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			return thenLow;
+		} else {
+			return elseHigh;
+		}
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseReturn6() {
 		int thenLow = SootSecurityLevel.lowId(42);
 		int elseHigh = SootSecurityLevel.highId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
@@ -207,24 +271,996 @@ public class TaintTrackingIfElse {
 			return elseHigh;
 		}
 	}
-	
+
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
-	public int ifElseStmt4() {
-		int thenHigh = SootSecurityLevel.highId(42);
+	public int ifElseReturn7() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			return thenLow;
+		} else {
+			return elseLow;
+		}
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseReturn8() {
+		int thenLow = SootSecurityLevel.lowId(42);
 		int elseLow = SootSecurityLevel.lowId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
 		if (conditionLow) {
-			return thenHigh;
+			return thenLow;
+		} else {
+			return elseLow;
+		}
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifElseReturn9() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			return thenLow;
 		} else {
 			return elseLow;
 		}
 	}
 	
-	// TODO: Assign (Local, Field or Method) to Local or Field
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign2() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign3() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign4() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign5() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign6() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign7() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign8() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign9() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign10() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign11() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign12() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign13() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign14() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign15() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssign16() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifElseAssign17() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
 	
-	// TODO: IF ELSE
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifElseAssign18() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			highField = thenHigh;
+		} else {
+			highField = elseHigh;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField2() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			highField = thenHigh;
+		} else {
+			highField = elseHigh;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField3() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			highField = thenHigh;
+		} else {
+			highField = elseLow;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField4() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			highField = thenHigh;
+		} else {
+			highField = elseLow;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField5() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			highField = thenLow;
+		} else {
+			highField = elseHigh;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField6() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			highField = thenLow;
+		} else {
+			highField = elseHigh;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField7() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			highField = thenLow;
+		} else {
+			highField = elseLow;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField8() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			highField = thenLow;
+		} else {
+			highField = elseLow;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifElseAssignField9() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			lowField = thenLow;
+		} else {
+			lowField = elseLow;
+		}
+		return lowField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifElseAssignField10() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			lowField = thenLow;
+		} else {
+			lowField = elseLow;
+		}
+		return lowField;
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifAssign() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			highField = thenHigh;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifAssign2() {
+		int thenHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			highField = thenHigh;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifAssign3() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			highField = thenLow;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifAssign4() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			highField = thenLow;
+		}
+		return highField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifAssign5() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			lowField = thenLow;
+		}
+		return lowField;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifAssign6() {
+		int thenLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			lowField = thenLow;
+		}
+		return lowField;
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenHigh : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign2() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenHigh : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign3() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenHigh : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign4() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenHigh : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign5() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenHigh : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign6() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenHigh : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign7() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenHigh : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign8() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenHigh : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign9() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenLow : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign10() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenLow : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign11() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenLow : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign12() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenLow : elseHigh;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign13() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenLow : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign14() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenLow : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign15() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		result = conditionHigh ? thenLow : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("high")
+	public int ifExprAssign16() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenLow : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifExprAssign17() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenLow : elseLow;
+		return result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("low")
+	public int ifExprAssign18() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		result = conditionLow ? thenLow : elseLow;
+		return result;
+	}
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField2() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField3() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField4() {
+		int result = SootSecurityLevel.highId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField5() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField6() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField7() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField8() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField9() {
+		int result = SootSecurityLevel.highId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		lowField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField10() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField11() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField12() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField13() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenHigh = SootSecurityLevel.highId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenHigh;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField14() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField15() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseHigh = SootSecurityLevel.highId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseHigh;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField16() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionHigh = SootSecurityLevel.highId(false);
+		if (conditionHigh) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField17() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		highField = result;
+	}
+
+	@Annotations.ParameterSecurity({})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseAssignLocalField18() {
+		int result = SootSecurityLevel.lowId(42);
+		int thenLow = SootSecurityLevel.lowId(42);
+		int elseLow = SootSecurityLevel.lowId(42);
+		boolean conditionLow = SootSecurityLevel.lowId(false);
+		if (conditionLow) {
+			result = thenLow;
+		} else {
+			result = elseLow;
+		}
+		lowField = result;
+	}
 	
 	// TODO: Multiple condition values
+	
+	@FieldSecurity("low")
+	int lowField = SootSecurityLevel.lowId(42);
+	
+	@FieldSecurity("high")
+	int highField = SootSecurityLevel.highId(42);
 
 }

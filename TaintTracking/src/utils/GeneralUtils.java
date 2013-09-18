@@ -17,8 +17,8 @@ import analysis.Main;
 public class GeneralUtils {
 
 	/**
-	 * Method that handles customized arguments. Arguments such as "-log-levels", "-check-classes",
-	 * "-export-file" and "-export-jimple" lead to specific method invocation.
+	 * Method that handles customized arguments. Arguments such as "-log-levels", "-check-classes"
+	 * and "-export-file" lead to specific method invocation.
 	 * 
 	 * @param args
 	 *            The original arguments array of the main method.

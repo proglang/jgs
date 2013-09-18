@@ -18,6 +18,7 @@ public class AnalysisSuccess {
 	
 	private static final String MAIN = "TaintTrackingSuccess";
 	private static final String FIELD = "TaintTrackingField";
+	private static final String EXPR = "TaintTrackingExpr";
 	private static final String ID_METHODS = "TaintTrackingIdMethods";
 	private static final String IF_ELSE = "TaintTrackingIfElse";
 	private static final String METHOD = "TaintTrackingMethod";
@@ -84,6 +85,21 @@ public class AnalysisSuccess {
 	@Test
 	public final void errorMessagesField() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(FIELD, SootLoggerLevel.ERROR)));
+	}
+	
+	@Test
+	public final void securityMessagesExpr() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void exceptionMessagesExpr() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.EXCEPTION)));
+	}
+	
+	@Test
+	public final void errorMessagesExpr() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.ERROR)));
 	}
 	
 	@Test
