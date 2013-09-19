@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 
  * @author Thomas Vogel
- * @version 0.2
+ * @version 0.3
  */
 public class Annotations {
 	
@@ -51,6 +51,20 @@ public class Annotations {
 		
 		/** */
 		String value();
+	
+	}
+	
+	/**
+	 * 
+	 * @author Thomas Vogel
+	 * @version 0.1
+	 */
+	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface WriteEffect {
+		
+		/** */
+		String[] value();
 	
 	}
 

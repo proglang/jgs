@@ -16,7 +16,7 @@ public class AbstractTaintTrackingSwitch {
 	/** */
 	protected final LocalMap out;
 	/** */
-	protected final MethodAnalysisEnvironment methodAnalysisEnvironment;
+	protected final MethodEnvironment methodEnvironment;
 	
 	/**
 	 * 
@@ -24,8 +24,8 @@ public class AbstractTaintTrackingSwitch {
 	 * @param in
 	 * @param out
 	 */
-	public AbstractTaintTrackingSwitch(MethodAnalysisEnvironment methodAnalysisEnvironment, LocalMap in, LocalMap out) {
-		this.methodAnalysisEnvironment = methodAnalysisEnvironment;
+	public AbstractTaintTrackingSwitch(MethodEnvironment methodEnvironment, LocalMap in, LocalMap out) {
+		this.methodEnvironment = methodEnvironment;
 		this.out = out;
 		this.in = in;
 	}
@@ -35,7 +35,7 @@ public class AbstractTaintTrackingSwitch {
 	 * @return
 	 */
 	public long getSourceLine() {
-		return methodAnalysisEnvironment.getSourceLine();
+		return methodEnvironment.getSourceLine();
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class AbstractTaintTrackingSwitch {
 	 * @return
 	 */
 	public String getMethodSignature() {
-		return SootUtils.generateMethodSignature(methodAnalysisEnvironment.getSootMethod());
+		return SootUtils.generateMethodSignature(methodEnvironment.getSootMethod());
 	}
 	
 	/**
@@ -51,6 +51,6 @@ public class AbstractTaintTrackingSwitch {
 	 * @return
 	 */
 	public String getFileName() {
-		return SootUtils.generateFileName(methodAnalysisEnvironment.getSootMethod());
+		return SootUtils.generateFileName(methodEnvironment.getSootMethod());
 	}
 }

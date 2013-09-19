@@ -17,6 +17,7 @@ import org.junit.Test;
 public class AnalysisSuccess {
 	
 	private static final String MAIN = "TaintTrackingSuccess";
+	private static final String ARRAY = "TaintTrackingArray";
 	private static final String FIELD = "TaintTrackingField";
 	private static final String EXPR = "TaintTrackingExpr";
 	private static final String ID_METHODS = "TaintTrackingIdMethods";
@@ -65,6 +66,21 @@ public class AnalysisSuccess {
 	@Test
 	public final void errorMessagesMain() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.ERROR)));
+	}
+	
+	@Test
+	public final void securityMessagesArray() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void exceptionMessagesArray() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.EXCEPTION)));
+	}
+	
+	@Test
+	public final void errorMessagesArray() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.ERROR)));
 	}
 	
 	@Ignore

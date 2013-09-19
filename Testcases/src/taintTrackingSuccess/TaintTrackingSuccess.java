@@ -9,6 +9,7 @@ import taintTrackingSuccess.TaintTrackingMethod;
 import taintTrackingSuccess.TaintTrackingStaticMethod;
 import taintTrackingSuccess.TaintTrackingObject;
 import taintTrackingSuccess.TaintTrackingIfElse;
+import taintTrackingSuccess.TaintTrackingArray;
 
 
 @SuppressWarnings("unused")

@@ -1255,6 +1255,48 @@ public class TaintTrackingIfElse {
 		lowField = result;
 	}
 	
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf(boolean var1Low, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2Low) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+	
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond(boolean var1Low, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1Low && var2Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+	
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond(boolean var1Low, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1Low && var2Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		} else {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+	
 	// TODO: Multiple condition values
 	
 	@FieldSecurity("low")

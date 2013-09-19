@@ -3,16 +3,28 @@ package utils;
 import soot.Value;
 
 public class SecurityMessages {
-	
+
+	/** */
+	private static final String ASSIGNMENT_WEAKER_ARRAY = "In method <%s> at source line %d a value with '%s' security level is assigned to an array which has the weaker security level '%s'.";
+	/** */
 	private static final String MORE_PARAMETER_THAN_LEVEL = "Method <%s> has %d %s. But unfortunately only %d parameter security %s are defined.";
+	/** */
 	private static final String MORE_LEVEL_THAN_PARAMETER = "Method <%s> has %d %s. But %d parameter security %s are defined.";
+	/** */
 	private static final String INVALID_PARAMETER_LEVEL = "Method <%s> has an invalid parameter security level named '%s'.";
+	/** */
 	private static final String NO_PARAMETER_ANNOTATION = "Method <%s> has no parameter security levels annotation.";
+	/** */
 	private static final String INVALID_RETURN_EQUATION = "Method <%s> has an invalid return security level equation.";
+	/** */
 	private static final String INVALID_RETURN_LEVEL = "Method <%s> has an invalid return security level '%s'.";
+	/** */
 	private static final String INCOMPATIBLE_EQUATION_LEVEL = "Method <%s> has an invalid return security level equation. The level '%s' is not compatible with other levels.";
+	/** */
 	private static final String NO_METHOD_LEVEL = "Method <%s> has no return security level.";
+	/** */
 	private static final String NOT_REQUIRED_METHOD_ANNOTATION = "Constructor <%s> do not need a return security level.";
+	/** */
 	private static final String NO_METHOD_ANNOTATION = "Method <%s> has no return security level annotation.";
 	/** */
 	private static final String NO_COUNTER = "Analysis tries to remove the statement '%s' from the program counter but the program counter is empty.";
@@ -657,6 +669,18 @@ public class SecurityMessages {
 		String level = countLev == 1 ? "level" : "levels";
 		String parameter = countParam == 1 ? "parameter" : "parameters";
 		return String.format(MORE_PARAMETER_THAN_LEVEL, methodSignature, countParam, parameter, countLev, level);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param sourceLine
+	 * @param arrayLevel
+	 * @param rightLevel
+	 * @return
+	 */
+	public static String assignmentToWeakerArray(String methodSignature, long sourceLine, String arrayLevel, String rightLevel) {
+		return String.format(ASSIGNMENT_WEAKER_ARRAY, methodSignature, sourceLine, rightLevel, arrayLevel);
 	}
 	
 }

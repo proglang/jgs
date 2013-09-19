@@ -1,7 +1,7 @@
 package pattern;
 
 import model.*;
-import model.SecurityMethod.MethodParameter;
+import model.MethodEnvironment.MethodParameter;
 import soot.*;
 import soot.jimple.*;
 import utils.*;
@@ -30,8 +30,8 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 * @param out
 	 * @param level
 	 */
-	public SecurityLevelUpdateSwitch(MethodAnalysisEnvironment methodAnalysisEnvironment, LocalMap in, LocalMap out, String level) {
-		super(methodAnalysisEnvironment, in, out);
+	public SecurityLevelUpdateSwitch(MethodEnvironment methodEnvironment, LocalMap in, LocalMap out, String level) {
+		super(methodEnvironment, in, out);
 		this.level = level;
 	}
 	
@@ -60,7 +60,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseIntConstant(IntConstant v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseLongConstant(LongConstant v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseNullConstant(NullConstant v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseStringConstant(StringConstant v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseClassConstant(ClassConstant v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("constant", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void defaultCase(Object object) {
-		throw new UnimplementedSwitchException(SecurityMessages.unimplementedSwitchCase("default", "SecurityLevelUpdateSwitch", object.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new UnimplementedSwitchException(SecurityMessages.unimplementedSwitchCase("default", "SecurityLevelUpdateSwitch", object.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseAddExpr(AddExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseAndExpr(AndExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -160,7 +160,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -190,7 +190,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseDivExpr(DivExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseEqExpr(EqExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseNeExpr(NeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseGeExpr(GeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -230,7 +230,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseGtExpr(GtExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -240,7 +240,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseLeExpr(LeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -250,7 +250,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseLtExpr(LtExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -260,7 +260,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseMulExpr(MulExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -270,7 +270,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseOrExpr(OrExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -280,7 +280,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseRemExpr(RemExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -290,7 +290,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseShlExpr(ShlExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -300,7 +300,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseShrExpr(ShrExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -310,7 +310,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -320,7 +320,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseSubExpr(SubExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -330,7 +330,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseXorExpr(XorExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -360,7 +360,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -370,7 +370,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -380,7 +380,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("invocation", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -390,7 +390,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseCastExpr(CastExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -400,7 +400,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -410,7 +410,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -420,7 +420,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -430,7 +430,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseNewExpr(NewExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -440,7 +440,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseLengthExpr(LengthExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -450,7 +450,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseNegExpr(NegExpr v) {
-		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new InvalidSwitchException(SecurityMessages.noLevelUpdatePossible("expression", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -460,8 +460,26 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseArrayRef(ArrayRef v) {
-		throw new UnimplementedSwitchException(SecurityMessages.unimplementedSwitchCase("array ref", "SecurityLevelUpdateSwitch", v.toString(), methodAnalysisEnvironment.getSourceLine()));
-
+		String arrayLevel = methodEnvironment.getWeakestSecurityLevel();
+		String indexLevel = methodEnvironment.getWeakestSecurityLevel();
+		String rightLevel = level;
+		if (out.hasProgramCounterLevel()) {
+			String pcLevel = out.getStrongestProgramCounterLevel();
+			if (methodEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(rightLevel, pcLevel)) {
+				rightLevel = pcLevel;
+			}
+		}
+		Value base = v.getBase();
+		Value index = v.getIndex();
+		SecurityLevelLookupValueSwitch securityLevelLookupValueSwitchBase = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
+		SecurityLevelLookupValueSwitch securityLevelLookupValueSwitchIndex = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
+		base.apply(securityLevelLookupValueSwitchBase);
+		arrayLevel = securityLevelLookupValueSwitchBase.getLevel();
+		index.apply(securityLevelLookupValueSwitchIndex);
+		indexLevel = securityLevelLookupValueSwitchIndex.getLevel();
+		if (!methodEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(rightLevel, arrayLevel)) {
+			methodEnvironment.getLog().security(getFileName(), getSourceLine(), SecurityMessages.assignmentToWeakerArray(getMethodSignature(), getSourceLine(), arrayLevel, rightLevel));
+		} 
 	}
 
 	/**
@@ -489,27 +507,27 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 * @param fieldRef
 	 */
 	private void handleFieldRef(FieldRef fieldRef) {
-		String leftLevel = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		String leftLevel = methodEnvironment.getWeakestSecurityLevel();
 		String rightLevel = level;
 		SootField sootField = fieldRef.getField();
 		if (out.hasProgramCounterLevel()) {
 			String pcLevel = out.getStrongestProgramCounterLevel();
-			if (methodAnalysisEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(rightLevel, pcLevel)) {
+			if (methodEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(rightLevel, pcLevel)) {
 				rightLevel = pcLevel;
 			}
 		}
-		SecurityField securityField = new SecurityField(sootField, true);
+		FieldEnvironment securityField = new FieldEnvironment(sootField, methodEnvironment.getLog(), methodEnvironment.getSecurityAnnotation());
 		if (!securityField.isLibraryClass()) {
-			if (securityField.isFieldSecurityLevelValid(methodAnalysisEnvironment.getSecurityAnnotation(), methodAnalysisEnvironment.getLog())) {
+			if (securityField.isFieldSecurityLevelValid()) {
 				leftLevel = securityField.getLevel();
 			} else {
-				methodAnalysisEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.invalidFieldAnnotation(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
+				methodEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.invalidFieldAnnotation(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
 			}
 		} else {
-			methodAnalysisEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.assignmentToLibraryField(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
+			methodEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.assignmentToLibraryField(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
 		}
-		if (!methodAnalysisEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(rightLevel, leftLevel)) {
-			methodAnalysisEnvironment.getLog().security(getFileName(), getSourceLine(), SecurityMessages.assignmentToWeakerField(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine(), leftLevel, rightLevel));
+		if (!methodEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(rightLevel, leftLevel)) {
+			methodEnvironment.getLog().security(getFileName(), getSourceLine(), SecurityMessages.assignmentToWeakerField(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine(), leftLevel, rightLevel));
 		} 
 	}
 
@@ -521,8 +539,8 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	@Override
 	public void caseParameterRef(ParameterRef v) {
 		if (level == null && value != null) {
-			MethodParameter methodParameter = methodAnalysisEnvironment.getSecurityMethod().getMethodParameterAtIndex(v.getIndex());
-			SecurityLevelUpdateSwitch securityLevelUpdateSwitch = new SecurityLevelUpdateSwitch(methodAnalysisEnvironment, in, out, methodParameter.getLevel());
+			MethodParameter methodParameter = methodEnvironment.getMethodParameterAtIndex(v.getIndex());
+			SecurityLevelUpdateSwitch securityLevelUpdateSwitch = new SecurityLevelUpdateSwitch(methodEnvironment, in, out, methodParameter.getLevel());
 			securityLevelUpdateSwitch.setParameterInformation(v, methodParameter);
 			value.apply(securityLevelUpdateSwitch);
 		} else {
@@ -537,7 +555,7 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		throw new UnimplementedSwitchException(SecurityMessages.unimplementedSwitchCase("caught exception ref", "SecurityLevelUpdateSwitch", v.toString(), methodAnalysisEnvironment.getSourceLine()));
+		throw new UnimplementedSwitchException(SecurityMessages.unimplementedSwitchCase("caught exception ref", "SecurityLevelUpdateSwitch", v.toString(), methodEnvironment.getSourceLine()));
 	}
 
 	/**
@@ -548,8 +566,8 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	@Override
 	public void caseThisRef(ThisRef v) {
 		if (level == null && value != null) {
-			String level = methodAnalysisEnvironment.getWeakestSecurityLevel();
-			SecurityLevelUpdateSwitch securityLevelUpdateSwitch = new SecurityLevelUpdateSwitch(methodAnalysisEnvironment, in, out, level);
+			String level = methodEnvironment.getWeakestSecurityLevel();
+			SecurityLevelUpdateSwitch securityLevelUpdateSwitch = new SecurityLevelUpdateSwitch(methodEnvironment, in, out, level);
 			value.apply(securityLevelUpdateSwitch);	
 		} else {
 			throw new UnimplementedSwitchException("This Ref not implemented");
@@ -563,31 +581,31 @@ public class SecurityLevelUpdateSwitch extends AbstractTaintTrackingSwitch imple
 	 */
 	@Override
 	public void caseLocal(Local l) {
-		String localLevel = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		String localLevel = methodEnvironment.getWeakestSecurityLevel();
 		String valueLevel = level; 
 		if (in.containsLocal(l)) {
 			localLevel = in.getLevelOfLocal(l);
 		} else {
-			methodAnalysisEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.localNotFoundUpdate(getMethodSignature(), getSourceLine(), l.getName(), valueLevel));
+			methodEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.localNotFoundUpdate(getMethodSignature(), getSourceLine(), l.getName(), valueLevel));
 		}
 		if (parameterRef != null && methodParameter != null) {
 			if (! (methodParameter.getPosition() >= 0 && methodParameter.getName().equals(l.getName()) && methodParameter.getType().equals(parameterRef.getType()))) {
-				methodAnalysisEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.noParameterMatch(getMethodSignature(), getSourceLine(), methodParameter.getName(), l.getName(), valueLevel));
+				methodEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.noParameterMatch(getMethodSignature(), getSourceLine(), methodParameter.getName(), l.getName(), valueLevel));
 			}
 		}
 		if (out.hasProgramCounterLevel()) {
 			String pcLevel = out.getStrongestProgramCounterLevel();
-			if (methodAnalysisEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(valueLevel, pcLevel)) {
+			if (methodEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(valueLevel, pcLevel)) {
 				valueLevel = pcLevel;
 			}
 		}
-		if (methodAnalysisEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(valueLevel, localLevel)) {
+		if (methodEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(valueLevel, localLevel)) {
 			if (! localLevel.equals(valueLevel)) {
-				methodAnalysisEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.weakenLocalVariable(getMethodSignature(), getSourceLine(), l.getName(), localLevel, valueLevel));
+				methodEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.weakenLocalVariable(getMethodSignature(), getSourceLine(), l.getName(), localLevel, valueLevel));
 			}
 		}
 		if (!out.update(l, valueLevel)) {
-			methodAnalysisEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.localNotFoundUpdate(getMethodSignature(), getSourceLine(), l.getName(), valueLevel));
+			methodEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.localNotFoundUpdate(getMethodSignature(), getSourceLine(), l.getName(), valueLevel));
 		}
 	}
 }

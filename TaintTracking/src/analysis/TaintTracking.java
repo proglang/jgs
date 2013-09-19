@@ -6,8 +6,7 @@ import pattern.StatementSwitch;
 
 import logging.SecurityLogger;
 import model.LocalMap;
-import model.MethodAnalysisEnvironment;
-import model.SecurityMethod;
+import model.MethodEnvironment;
 
 import security.SecurityAnnotation;
 import soot.SootMethod;
@@ -91,7 +90,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	}
 
 	/** */
-	private final MethodAnalysisEnvironment methodAnalysisEnvironment;
+	private final MethodEnvironment methodEnvironment;
 	/** */
 	private final DominatorContainer container;
 
@@ -105,16 +104,16 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	public TaintTracking(SecurityLogger log, SootMethod sootMethod, SecurityAnnotation securityAnnotations, DirectedGraph<Unit> graph) {
 		super(graph);
 		container = new DominatorContainer(graph);
-		methodAnalysisEnvironment  = new MethodAnalysisEnvironment(log, new SecurityMethod(sootMethod, true, securityAnnotations), securityAnnotations);
+		methodEnvironment = new MethodEnvironment(sootMethod, log, securityAnnotations);
 		long sourceLine = 0;
-		if (methodAnalysisEnvironment.getSecurityMethod().areMethodParameterSecuritiesValid(log)) {
-			if (methodAnalysisEnvironment.getSecurityMethod().isReturnSecurityValid(log)) {
+		if (methodEnvironment.areMethodParameterSecuritiesValid()) {
+			if (methodEnvironment.isReturnSecurityValid()) {
 				doAnalysis();
 			} else {
-				methodAnalysisEnvironment.getLog().error(SootUtils.generateFileName(sootMethod), sourceLine, SecurityMessages.interruptInvalidReturn(SootUtils.generateMethodSignature(sootMethod)));
+				methodEnvironment.getLog().error(SootUtils.generateFileName(sootMethod), sourceLine, SecurityMessages.interruptInvalidReturn(SootUtils.generateMethodSignature(sootMethod)));
 			}
 		} else {
-			methodAnalysisEnvironment.getLog().error(SootUtils.generateFileName(sootMethod), sourceLine, SecurityMessages.interruptInvalidParameters(SootUtils.generateMethodSignature(sootMethod)));
+			methodEnvironment.getLog().error(SootUtils.generateFileName(sootMethod), sourceLine, SecurityMessages.interruptInvalidParameters(SootUtils.generateMethodSignature(sootMethod)));
 		}
 	}
 
@@ -130,9 +129,9 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	public void flowThrough(LocalMap in, Unit d, LocalMap out) {
 		copy(in, out);
 		Stmt stmt = (Stmt) d;
-		methodAnalysisEnvironment.setStmt(stmt);
+		methodEnvironment.setStmt(stmt);
 		checkEndOfImplicitFlow(stmt, in, out);
-		StatementSwitch stmtSwitch = new StatementSwitch(in, out, this.methodAnalysisEnvironment);
+		StatementSwitch stmtSwitch = new StatementSwitch(in, out, methodEnvironment);
 		try {
 			stmt.apply(stmtSwitch);
 		} catch (Exception e) {
@@ -149,7 +148,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	 */
 	@Override
 	protected LocalMap newInitialFlow() {
-		LocalMap map = new LocalMap(methodAnalysisEnvironment.getSootMethod().getActiveBody().getLocals(), methodAnalysisEnvironment.getSecurityAnnotation());
+		LocalMap map = new LocalMap(methodEnvironment.getSootMethod().getActiveBody().getLocals(), methodEnvironment.getSecurityAnnotation());
 		return map;
 	}
 
@@ -161,7 +160,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalMap> {
 	 */
 	@Override
 	protected LocalMap entryInitialFlow() {
-		LocalMap map = new LocalMap(methodAnalysisEnvironment.getSootMethod().getActiveBody().getLocals(), methodAnalysisEnvironment.getSecurityAnnotation());
+		LocalMap map = new LocalMap(methodEnvironment.getSootMethod().getActiveBody().getLocals(), methodEnvironment.getSecurityAnnotation());
 		return map;
 	}
 

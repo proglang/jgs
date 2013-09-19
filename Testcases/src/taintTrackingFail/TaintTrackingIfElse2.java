@@ -480,6 +480,420 @@ public class TaintTrackingIfElse2 {
 		lowField = result;
 	}
 	
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf(boolean var1High, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1High) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2High) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf2(boolean var1High, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1High) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2High) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf3(boolean var1High, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1High) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2High) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf4(boolean var1High, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1High) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2High) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf5(boolean var1High, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1High) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2Low) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf6(boolean var1High, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1High) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2Low) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf7(boolean var1High, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1High) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2Low) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf8(boolean var1High, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1High) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2Low) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf9(boolean var1Low, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1Low) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2High) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf10(boolean var1Low, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1Low) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2High) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf11(boolean var1Low, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2High) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf12(boolean var1Low, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2High) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf13(boolean var1Low, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1Low) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2Low) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf14(boolean var1Low, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		int var4Low = SootSecurityLevel.lowId(42);
+		if (var1Low) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		if (var2Low) {
+			highField = var4Low;
+			lowField = var4Low;
+		}
+	}
+
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifIf15(boolean var1Low, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		int var4High = SootSecurityLevel.highId(42);
+		if (var1Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		if (var2Low) {
+			highField = var4High;
+			lowField = var4High;
+		}
+	}
+	
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond(boolean var1High, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1High && var2High) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond2(boolean var1High, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1High && var2High) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond3(boolean var1High, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1High && var2Low) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond4(boolean var1High, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1High && var2Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond5(boolean var1Low, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1Low && var2High) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond6(boolean var1Low, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1Low && var2High) {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifDoubleCond7(boolean var1Low, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1Low && var2Low) {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+	
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond(boolean var1High, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1High && var2High) {
+			highField = var3High;
+			lowField = var3High;
+		} else {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+
+	@Annotations.ParameterSecurity({"high", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond2(boolean var1High, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1High && var2High) {
+			highField = var3Low;
+			lowField = var3Low;
+		} else {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond3(boolean var1High, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1High && var2Low) {
+			highField = var3High;
+			lowField = var3High;
+		} else {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+
+	@Annotations.ParameterSecurity({"high", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond4(boolean var1High, boolean var2Low) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1High && var2Low) {
+			highField = var3Low;
+			lowField = var3Low;
+		} else {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond5(boolean var1Low, boolean var2High) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1Low && var2High) {
+			highField = var3High;
+			lowField = var3High;
+		} else {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+
+	@Annotations.ParameterSecurity({"low", "high"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond6(boolean var1Low, boolean var2High) {
+		int var3Low = SootSecurityLevel.lowId(42);
+		if (var1Low && var2High) {
+			highField = var3Low;
+			lowField = var3Low;
+		} else {
+			highField = var3Low;
+			lowField = var3Low;
+		}
+		highField = var3Low;
+		lowField = var3Low;
+	}
+
+	@Annotations.ParameterSecurity({"low", "low"})
+	@Annotations.ReturnSecurity("void")
+	public void ifElseDoubleCond7(boolean var1Low, boolean var2Low) {
+		int var3High = SootSecurityLevel.highId(42);
+		if (var1Low && var2Low) {
+			highField = var3High;
+			lowField = var3High;
+		} else {
+			highField = var3High;
+			lowField = var3High;
+		}
+		highField = var3High;
+		lowField = var3High;
+	}
+	
 	@FieldSecurity("low")
 	int lowField = SootSecurityLevel.lowId(42);
 	

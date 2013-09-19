@@ -30,12 +30,10 @@ import utils.SootUtils;
 /**
  * 
  * @author Thomas Vogel
- * @version 0.1
+ * @version 0.2
  */
-public class SecurityMethod {
+public class MethodEnvironment extends Environment {
 	
-	/** */
-	private SecurityAnnotation securityAnnotation = null;
 	/** */
 	private Map<Integer, MethodParameter> methodParameters = null;
 	/** */
@@ -51,7 +49,7 @@ public class SecurityMethod {
 	
 	/**
 	 * 
-	 * @author tVogel
+	 * @author Thomas Vogel
 	 * @version 0.1
 	 */
 	public class MethodParameter {
@@ -116,17 +114,14 @@ public class SecurityMethod {
 	/**
 	 * 
 	 * @param sootMethod
-	 * @param shouldExtract
+	 * @param log
 	 * @param securityAnnotation
 	 */
-	public SecurityMethod(SootMethod sootMethod, boolean shouldExtract, SecurityAnnotation securityAnnotation) {
-		super();
+	public MethodEnvironment(SootMethod sootMethod, SecurityLogger log, SecurityAnnotation securityAnnotation) {
+		super(log, securityAnnotation);
 		this.sootMethod = sootMethod;
-		this.securityAnnotation = securityAnnotation;
-		if (shouldExtract) {
-			extractReturnSecurityLevel();
-			extractParameter();
-		}		
+		extractReturnSecurityLevel();
+		extractParameter();	
 	}
 	
 	/**
@@ -141,9 +136,9 @@ public class SecurityMethod {
 	 * 
 	 */
 	private void extractReturnSecurityLevel() {
-		if (securityAnnotation.isIdMethod(this.sootMethod)) {
+		if (getSecurityAnnotation().isIdMethod(this.sootMethod)) {
 			this.returnAnnotationAvailable  = true;
-			this.returnLevel = securityAnnotation.getReturnSecurityLevelOfIdMethod(sootMethod);
+			this.returnLevel = getSecurityAnnotation().getReturnSecurityLevelOfIdMethod(sootMethod);
 		} else if (SootUtils.isClinitMethod(sootMethod) || SootUtils.isInitMethod(sootMethod)) {
 			this.returnLevel = SecurityAnnotation.VOID_LEVEL;
 		} else {
@@ -200,9 +195,9 @@ public class SecurityMethod {
 	 */
 	public List<String> extractParameterSecurityLevel() {
 		List<String> parameterSecurityLevels = new ArrayList<String>();
-		if (securityAnnotation.isIdMethod(this.sootMethod)) {
+		if (getSecurityAnnotation().isIdMethod(this.sootMethod)) {
 			this.parameterAnnotationAvailable = true;
-			parameterSecurityLevels.add(securityAnnotation.getReturnSecurityLevelOfIdMethod(sootMethod));
+			parameterSecurityLevels.add(getSecurityAnnotation().getReturnSecurityLevelOfIdMethod(sootMethod));
 		} else if (SootUtils.isClinitMethod(sootMethod)) {
 			this.parameterAnnotationAvailable = true;
 		} else {
@@ -238,26 +233,25 @@ public class SecurityMethod {
 	
 	/**
 	 * 
-	 * @param log
 	 * @return
 	 */
-	public boolean isReturnSecurityValid(SecurityLogger log) {
+	public boolean isReturnSecurityValid() {
 		if (! returnAnnotationAvailable && ! (SootUtils.isClinitMethod(sootMethod) || SootUtils.isInitMethod(sootMethod))) {
-			log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noMethodAnnotation(SootUtils.generateMethodSignature(sootMethod)));
+			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noMethodAnnotation(SootUtils.generateMethodSignature(sootMethod)));
 			return false;
 		}
 		if (returnAnnotationAvailable && SootUtils.isInitMethod(sootMethod)) {
-			log.warning(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.constructorReturnNotRequired(SootUtils.generateMethodSignature(sootMethod)));
+			getLog().warning(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.constructorReturnNotRequired(SootUtils.generateMethodSignature(sootMethod)));
 		}
 		if (returnLevel == null) {
-			log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noMethodLevel(SootUtils.generateMethodSignature(sootMethod)));
+			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noMethodLevel(SootUtils.generateMethodSignature(sootMethod)));
 			return false;
 		}
 		try {
-			LevelEquationValidityVistitor visitor = securityAnnotation.checkValidityOfReturnLevel(returnLevel, getListOfParameterLevels());
+			LevelEquationValidityVistitor visitor = getSecurityAnnotation().checkValidityOfReturnLevel(returnLevel, getListOfParameterLevels());
 			if (visitor.isValid()) {
 				if (visitor.isVoidInvalid()) {
-					log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.incompatibaleParameterLevels(SootUtils.generateMethodSignature(sootMethod), SecurityAnnotation.VOID_LEVEL));
+					getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.incompatibaleParameterLevels(SootUtils.generateMethodSignature(sootMethod), SecurityAnnotation.VOID_LEVEL));
 					return false;
 				} else {
 					this.returnLevelEquation = visitor.getLevelEquation();
@@ -267,27 +261,26 @@ public class SecurityMethod {
 				List<String> invalidLevel = visitor.getValidLevels();
 				if (invalidLevel.size() != 0) {
 					for (String level : invalidLevel) {
-						log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnLevel(SootUtils.generateMethodSignature(sootMethod), level));
+						getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnLevel(SootUtils.generateMethodSignature(sootMethod), level));
 					}
 				} else {
-					log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnEquation(SootUtils.generateMethodSignature(sootMethod)));
+					getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnEquation(SootUtils.generateMethodSignature(sootMethod)));
 				}
 				return false;
 			}
 		} catch (InvalidLevelException | InvalidEquationException e) {
-			log.exception(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnEquation(SootUtils.generateMethodSignature(sootMethod)), e);
+			getLog().exception(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnEquation(SootUtils.generateMethodSignature(sootMethod)), e);
 			return false;
 		}
 	}
 	
 	/**
 	 * 
-	 * @param log
 	 * @return
 	 */
-	public boolean areMethodParameterSecuritiesValid(SecurityLogger log) {
+	public boolean areMethodParameterSecuritiesValid() {
 		if (!this.parameterAnnotationAvailable) {
-			log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noParameterAnnotation(SootUtils.generateMethodSignature(sootMethod)));
+			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noParameterAnnotation(SootUtils.generateMethodSignature(sootMethod)));
 			return false;
 		}
 		if (this.methodParameters == null) return true;
@@ -304,15 +297,15 @@ public class SecurityMethod {
 			}
 		}
 		if (countLevels > countParameter) {
-			log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.moreParameterLevels(SootUtils.generateMethodSignature(sootMethod), countParameter, countLevels));
+			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.moreParameterLevels(SootUtils.generateMethodSignature(sootMethod), countParameter, countLevels));
 			valid = false;
 		} else if ( countLevels < countParameter) {
-			log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.moreParameterLevels(SootUtils.generateMethodSignature(sootMethod), countParameter, countLevels));
+			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.moreParameterLevels(SootUtils.generateMethodSignature(sootMethod), countParameter, countLevels));
 			valid = false;
 		}
-		if (! securityAnnotation.checkValidityOfParameterLevels(getListOfParameterLevels())) {
-			for (String level : securityAnnotation.getInvalidParameterLevels(getListOfParameterLevels())) {
-				log.error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidParameterLevel(SootUtils.generateMethodSignature(sootMethod), level));
+		if (! getSecurityAnnotation().checkValidityOfParameterLevels(getListOfParameterLevels())) {
+			for (String level : getSecurityAnnotation().getInvalidParameterLevels(getListOfParameterLevels())) {
+				getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidParameterLevel(SootUtils.generateMethodSignature(sootMethod), level));
 			}
 			valid = false;
 		}
@@ -388,7 +381,7 @@ public class SecurityMethod {
 	 * @return
 	 */
 	public boolean isReturnSecurityVoid() {
-		LevelEquationCalculateVoidVisitor visitor = securityAnnotation.getLevelEquationCalculateVoidVisitor();
+		LevelEquationCalculateVoidVisitor visitor = getSecurityAnnotation().getLevelEquationCalculateVoidVisitor();
 		returnLevelEquation.accept(visitor);
 		return visitor.isValid();
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 
 import exception.SootException.*;
 import model.*;
-import model.SecurityMethod.MethodParameter;
+import model.MethodEnvironment.MethodParameter;
 import security.LevelEquation;
 import security.LevelEquationVisitor.LevelEquationEvaluationVisitor;
 import soot.*;
@@ -28,8 +28,8 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 * @param in
 	 * @param out
 	 */
-	public SecurityLevelLookupValueSwitch(MethodAnalysisEnvironment methodAnalysisEnvironment, LocalMap in,	LocalMap out) {
-		super(methodAnalysisEnvironment, in, out);
+	public SecurityLevelLookupValueSwitch(MethodEnvironment methodEnvironment, LocalMap in,	LocalMap out) {
+		super(methodEnvironment, in, out);
 	}
 	
 	/**
@@ -39,7 +39,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	public String getLevel() throws NoSecurityLevelException {
 		if (this.level == null) {
-			throw new NoSecurityLevelException(SecurityMessages.accessToValueWithoutSecurityLevel(methodAnalysisEnvironment.getSourceLine(), SootUtils.generateMethodSignature(methodAnalysisEnvironment.getSootMethod())));
+			throw new NoSecurityLevelException(SecurityMessages.accessToValueWithoutSecurityLevel(methodEnvironment.getSourceLine(), SootUtils.generateMethodSignature(methodEnvironment.getSootMethod())));
 		}
 		return level;
 		
@@ -52,7 +52,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseIntConstant(IntConstant v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseLongConstant(LongConstant v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseNullConstant(NullConstant v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -102,7 +102,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseStringConstant(StringConstant v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseClassConstant(ClassConstant v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -333,25 +333,25 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 		Value left = expr.getOp1();
 		Value right = expr.getOp2();
 		List<String>  levels = new ArrayList<String>();
-		SecurityLevelLookupValueSwitch leftSecurityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodAnalysisEnvironment, in, out);
-		SecurityLevelLookupValueSwitch rightSecurityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodAnalysisEnvironment, in, out);
+		SecurityLevelLookupValueSwitch leftSecurityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
+		SecurityLevelLookupValueSwitch rightSecurityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
 		try {
 			left.apply(leftSecurityLevelLookupValueSwitch);
 			right.apply(rightSecurityLevelLookupValueSwitch);
 		} catch (SwitchException e) {
-			methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), expr.toString()), e);
+			methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), expr.toString()), e);
 		}
 		try {
 			levels.add(leftSecurityLevelLookupValueSwitch.getLevel());
 		} catch (NoSecurityLevelException e) {
-			methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), left), e);
+			methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), left), e);
 		}
 		try {
 			levels.add(rightSecurityLevelLookupValueSwitch.getLevel());
 		} catch (NoSecurityLevelException e) {
-			methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), right), e);
+			methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), right), e);
 		}
-		this.level = methodAnalysisEnvironment.getSecurityAnnotation().getStrongestLevelOf(levels);
+		this.level = methodEnvironment.getSecurityAnnotation().getStrongestLevelOf(levels);
 	}
 
 	/**
@@ -415,7 +415,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 * @param invokeExpr
 	 */
 	private void handleInvokeExpr(InvokeExpr invokeExpr) {
-		SecurityMethod securityInvokedMethod = new SecurityMethod(invokeExpr.getMethod(), true, methodAnalysisEnvironment.getSecurityAnnotation());
+		MethodEnvironment securityInvokedMethod = new MethodEnvironment(invokeExpr.getMethod(), methodEnvironment.getLog(), methodEnvironment.getSecurityAnnotation());
 		String invokedMethodSignature = SootUtils.generateMethodSignature(securityInvokedMethod.getSootMethod());
 		if (!securityInvokedMethod.isLibraryMethod()) {
 			List<MethodParameter> invokedMethodParameter = securityInvokedMethod.getMethodParameters();
@@ -424,56 +424,56 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 				List<String> argumentLevels = new ArrayList<String>();
 				for (int j = 0; j < invokeExpr.getArgCount(); j++) {
 					Value value = invokeExpr.getArg(j);
-					String argumentLevel = methodAnalysisEnvironment.getWeakestSecurityLevel();
+					String argumentLevel = methodEnvironment.getWeakestSecurityLevel();
 					String parameterLevel = invokedMethodParameter.get(j).getLevel();
 					String parameterName = invokedMethodParameter.get(j).getName();
-					SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodAnalysisEnvironment, in, out);
+					SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
 					try {
 						value.apply(securityLevelLookupValueSwitch);
 					} catch (SwitchException e) {
-						methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), invokeExpr.toString()), e);
+						methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), invokeExpr.toString()), e);
 					}
 					try {
 						argumentLevel = securityLevelLookupValueSwitch.getLevel();
 					} catch (NoSecurityLevelException e) {
-						methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), value), e);
+						methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), value), e);
 					}
-					if (!methodAnalysisEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(argumentLevel, parameterLevel)) {
-						methodAnalysisEnvironment.getLog().security(getFileName(), getSourceLine(), SecurityMessages.weakerArgumentExpected(getMethodSignature(), invokedMethodSignature, getSourceLine(), argumentLevel, parameterLevel, parameterName));
+					if (!methodEnvironment.getSecurityAnnotation().isWeakerOrEqualsThan(argumentLevel, parameterLevel)) {
+						methodEnvironment.getLog().security(getFileName(), getSourceLine(), SecurityMessages.weakerArgumentExpected(getMethodSignature(), invokedMethodSignature, getSourceLine(), argumentLevel, parameterLevel, parameterName));
 					}
 					argumentLevels.add(argumentLevel);
 					parameterLevels.add(parameterLevel);
 				}
-				if (!securityInvokedMethod.isReturnSecurityValid(methodAnalysisEnvironment.getLog())) {
-					methodAnalysisEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.invalidReturnAnnotation(getMethodSignature(), invokedMethodSignature, getSourceLine())); 
+				if (!securityInvokedMethod.isReturnSecurityValid()) {
+					methodEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.invalidReturnAnnotation(getMethodSignature(), invokedMethodSignature, getSourceLine())); 
 				}
 				LevelEquation levelEquation = securityInvokedMethod.getReturnLevelEquation();
-				LevelEquationEvaluationVisitor levelEquationEvaluationVisitor = methodAnalysisEnvironment.getSecurityAnnotation().getLevelEquationEvaluationVisitor(argumentLevels, parameterLevels); 
+				LevelEquationEvaluationVisitor levelEquationEvaluationVisitor = methodEnvironment.getSecurityAnnotation().getLevelEquationEvaluationVisitor(argumentLevels, parameterLevels); 
 				levelEquation.accept(levelEquationEvaluationVisitor);
 				this.level = levelEquationEvaluationVisitor.getResultLevel();
 			} else {
-				methodAnalysisEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.wrongArgumentParameterAmount(getMethodSignature(), invokedMethodSignature, getSourceLine()));
+				methodEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.wrongArgumentParameterAmount(getMethodSignature(), invokedMethodSignature, getSourceLine()));
 			}
 		} else {
 			List<String> argumentLevels = new ArrayList<String>();
 			for (int j = 0; j < invokeExpr.getArgCount(); j++) {
 				Value value = invokeExpr.getArg(j);
-				String argumentLevel = methodAnalysisEnvironment.getWeakestSecurityLevel();
-				SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodAnalysisEnvironment, in, out);
+				String argumentLevel = methodEnvironment.getWeakestSecurityLevel();
+				SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
 				try {
 					value.apply(securityLevelLookupValueSwitch);
 				} catch (SwitchException e) {
-					methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), invokeExpr.toString()), e);
+					methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), invokeExpr.toString()), e);
 				}
 				try {
 					argumentLevel = securityLevelLookupValueSwitch.getLevel();
 				} catch (NoSecurityLevelException e) {
-					methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), value), e);
+					methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), value), e);
 				}
 				argumentLevels.add(argumentLevel);
 			}
-			this.level = methodAnalysisEnvironment.getSecurityAnnotation().getStrongestLevelOf(argumentLevels);
-			methodAnalysisEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.invocationOfLibraryMethodMaxArgumentLevel(getMethodSignature(), invokedMethodSignature, getSourceLine(), level));
+			this.level = methodEnvironment.getSecurityAnnotation().getStrongestLevelOf(argumentLevels);
+			methodEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.invocationOfLibraryMethodMaxArgumentLevel(getMethodSignature(), invokedMethodSignature, getSourceLine(), level));
 		}
 	}
 
@@ -506,7 +506,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -516,7 +516,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -526,7 +526,7 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseNewExpr(NewExpr v) {
-		this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
+		this.level = methodEnvironment.getWeakestSecurityLevel();
 	}
 
 	/**
@@ -556,7 +556,10 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	@Override
 	public void caseArrayRef(ArrayRef v) {
-		throw new UnimplementedSwitchException(SecurityMessages.unimplementedSwitchCase("array ref", "SecurityLevelLookupValueSwitch", v.toString(), getSourceLine()));
+		level = methodEnvironment.getWeakestSecurityLevel();
+		Value base = v.getBase();
+		handleBase(base);
+		Value index = v.getIndex();
 	}
 	
 	/**
@@ -574,16 +577,16 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 * @param expr
 	 */
 	private void handleOneValue(Value value, Expr expr) {
-		SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodAnalysisEnvironment, in, out);
+		SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
 		try {
 			value.apply(securityLevelLookupValueSwitch);
 		} catch (SwitchException e) {
-			methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), expr.toString()), e);
+			methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), expr.toString()), e);
 		}
 		try {
 			this.level = securityLevelLookupValueSwitch.getLevel();
 		} catch (NoSecurityLevelException e) {
-			methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), value), e);
+			methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), value), e);
 		}
 	}
 
@@ -615,16 +618,16 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 */
 	public void handleFieldAccess(FieldRef fieldRef) {
 		SootField sootField = fieldRef.getField();
-		SecurityField securityField = new SecurityField(sootField, true);
+		FieldEnvironment securityField = new FieldEnvironment(sootField, methodEnvironment.getLog(), methodEnvironment.getSecurityAnnotation());
 		if (! securityField.isLibraryClass()) {
-			if (securityField.isFieldSecurityLevelValid(methodAnalysisEnvironment.getSecurityAnnotation(), methodAnalysisEnvironment.getLog())) {
+			if (securityField.isFieldSecurityLevelValid()) {
 				this.level = securityField.getLevel();
 			} else {
-				methodAnalysisEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.invalidFieldAnnotation(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
+				methodEnvironment.getLog().error(getFileName(), getSourceLine(), SecurityMessages.invalidFieldAnnotation(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
 			}
 		} else {
-			this.level = methodAnalysisEnvironment.getWeakestSecurityLevel();
-			methodAnalysisEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.accessOfLibraryField(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
+			this.level = methodEnvironment.getWeakestSecurityLevel();
+			methodEnvironment.getLog().warning(getFileName(), getSourceLine(), SecurityMessages.accessOfLibraryField(getMethodSignature(), SootUtils.generateFieldSignature(sootField), getSourceLine()));
 		}
 	}
 	
@@ -633,20 +636,20 @@ public class SecurityLevelLookupValueSwitch extends AbstractTaintTrackingSwitch 
 	 * @param baseValue
 	 */
 	public void handleBase(Value baseValue) {
-		String baseLevel = methodAnalysisEnvironment.getWeakestSecurityLevel();
-		SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodAnalysisEnvironment, in, out);
+		String baseLevel = methodEnvironment.getWeakestSecurityLevel();
+		SecurityLevelLookupValueSwitch securityLevelLookupValueSwitch = new SecurityLevelLookupValueSwitch(methodEnvironment, in, out);
 		try {
 			baseValue.apply(securityLevelLookupValueSwitch);
 		} catch (SwitchException e) {
-			methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), baseValue.toString()), e);
+			methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.catchSwitchException(getMethodSignature(), getSourceLine(), baseValue.toString()), e);
 		}
 		try {
 			baseLevel = securityLevelLookupValueSwitch.getLevel();
 			
 		} catch (NoSecurityLevelException e) {
-			methodAnalysisEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), baseValue), e);
+			methodEnvironment.getLog().exception(getFileName(), getSourceLine(), SecurityMessages.noSecurityLevel(getSourceLine(), getMethodSignature(), baseValue), e);
 		}
-		this.level = methodAnalysisEnvironment.getSecurityAnnotation().getMaxLevel(level, baseLevel);
+		this.level = methodEnvironment.getSecurityAnnotation().getMaxLevel(level, baseLevel);
 	}
 
 	/**

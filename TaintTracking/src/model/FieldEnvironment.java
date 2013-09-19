@@ -16,9 +16,9 @@ import utils.SootUtils;
 /**
  * 
  * @author Thomas Vogel
- * @version 0.1
+ * @version 0.2
  */
-public class SecurityField {
+public class FieldEnvironment extends Environment {
 
 	/** */
 	private String level = null;
@@ -32,15 +32,14 @@ public class SecurityField {
 	/**
 	 * 
 	 * @param sootField
-	 * @param shouldExtract
+	 * @param log
+	 * @param securityAnnotation
 	 */
-	public SecurityField(SootField sootField, boolean shouldExtract){
-		super();
+	public FieldEnvironment(SootField sootField, SecurityLogger log, SecurityAnnotation securityAnnotation){
+		super(log, securityAnnotation);
 		this.sootField = sootField;
 		this.sootClass = sootField.getDeclaringClass();
-		if (shouldExtract) {
-			extractFieldSecurityLevel();
-		}
+		extractFieldSecurityLevel();
 	}
 	
 	/**
@@ -108,21 +107,19 @@ public class SecurityField {
 	
 	/**
 	 * 
-	 * @param securityAnnotation
-	 * @param log
 	 * @return
 	 */
-	public boolean isFieldSecurityLevelValid(SecurityAnnotation securityAnnotation, SecurityLogger log) {
+	public boolean isFieldSecurityLevelValid() {
 		if (! annotationAvailable) {
-			log.error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldAnnotation(SootUtils.generateFieldSignature(sootField)));
+			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldAnnotation(SootUtils.generateFieldSignature(sootField)));
 			return false;
 		}
 		if (level == null) {
-			log.error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldLevel(SootUtils.generateFieldSignature(sootField)));
+			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldLevel(SootUtils.generateFieldSignature(sootField)));
 			return false;
 		}
-		if (! securityAnnotation.checkValidityOfFieldLevel(level)) {
-			log.error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.invalidFieldLevel(SootUtils.generateFieldSignature(sootField), level));
+		if (! getSecurityAnnotation().checkValidityOfFieldLevel(level)) {
+			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.invalidFieldLevel(SootUtils.generateFieldSignature(sootField), level));
 			return false;
 		}
 		return true;

@@ -10,7 +10,7 @@ import logging.SecurityLogger;
  * @author Thomas Vogel
  * @version 0.1
  */
-public class AnalysisEnvironment {
+public class Environment {
 	
 	/** */
 	private final SecurityLogger log;
@@ -26,7 +26,7 @@ public class AnalysisEnvironment {
 	 * @param log
 	 * @param securityAnnotations
 	 */
-	public AnalysisEnvironment(SecurityLogger log, SecurityAnnotation securityAnnotations) {
+	public Environment(SecurityLogger log, SecurityAnnotation securityAnnotations) {
 		super();
 		this.securityAnnotation = securityAnnotations;
 		this.log = log;

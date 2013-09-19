@@ -10,6 +10,7 @@ import taintTrackingFail.TaintTrackingObject;
 import taintTrackingFail.TaintTrackingIfElse;
 import taintTrackingFail.TaintTrackingIfElse2;
 import taintTrackingFail.TaintTrackingExpr;
+import taintTrackingFail.TaintTrackingArray;
 
 @SuppressWarnings("unused")
 public class TaintTrackingFail {
