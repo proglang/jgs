@@ -1,35 +1,14 @@
 package taintTrackingSuccess;
 
 import security.Annotations;
-import security.Annotations.FieldSecurity;
-import security.Annotations.ParameterSecurity;
-import security.Annotations.ReturnSecurity;
 import security.SootSecurityLevel;
 
+@Annotations.WriteEffect({})
 public class TaintTrackingObject {
-	
-	public static class FieldObject {
-		
-		@Annotations.FieldSecurity("low")
-		public int low = 42;
-		
-		@Annotations.FieldSecurity("high")
-		public int high = 42;
-		
-	}
-	
-	public static class StaticFieldObject {
-		
-		@Annotations.FieldSecurity("low")
-		public static int low = 42;
-		
-		@Annotations.FieldSecurity("high")
-		public static int high = 42;
-		
-	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"low", "high"})
 	public int accessFieldLow() {
 		FieldObject fo = new FieldObject();
 		return fo.low;
@@ -37,6 +16,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"low", "high"})
 	public int accessFieldLow2() {
 		FieldObject fo = new FieldObject();
 		fo = SootSecurityLevel.lowId(fo);
@@ -45,6 +25,7 @@ public class TaintTrackingObject {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low", "high"})
 	public int accessFieldLow3() {
 		FieldObject fo = new FieldObject();
 		fo = SootSecurityLevel.highId(fo);
@@ -53,6 +34,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low", "high"})
 	public int accessFieldLow4() {
 		FieldObject fo = new FieldObject();
 		return fo.low;
@@ -60,6 +42,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low", "high"})
 	public int accessFieldHigh() {
 		FieldObject fo = new FieldObject();
 		return fo.high;
@@ -67,6 +50,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low", "high"})
 	public int accessFieldHigh2() {
 		FieldObject fo = new FieldObject();
 		fo = SootSecurityLevel.lowId(fo);
@@ -75,6 +59,7 @@ public class TaintTrackingObject {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low", "high"})
 	public int accessFieldHigh3() {
 		FieldObject fo = new FieldObject();
 		fo = SootSecurityLevel.highId(fo);
@@ -83,24 +68,28 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int accessStaticFieldLow() {
 		return StaticFieldObject.low;
 	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int accessStaticFieldLow2() {
 		return StaticFieldObject.low;
 	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int accessStaticFieldHigh() {
 		return StaticFieldObject.high;
 	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void assignFieldLow() {
 		int low = SootSecurityLevel.lowId(42);
 		FieldObject fo = new FieldObject();
@@ -110,6 +99,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void assignFieldLow2() {
 		int low = SootSecurityLevel.lowId(42);
 		FieldObject fo = new FieldObject();
@@ -120,6 +110,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void assignFieldHigh() {
 		int high = SootSecurityLevel.highId(42);
 		FieldObject fo = new FieldObject();
@@ -129,6 +120,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void assignFieldHigh2() {
 		int high = SootSecurityLevel.highId(42);
 		FieldObject fo = new FieldObject();
@@ -139,6 +131,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void assignFieldHigh3() {
 		int low = SootSecurityLevel.lowId(42);
 		FieldObject fo = new FieldObject();
@@ -148,6 +141,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void assignFieldHigh4() {
 		int low = SootSecurityLevel.lowId(42);
 		FieldObject fo = new FieldObject();
@@ -156,35 +150,9 @@ public class TaintTrackingObject {
 		return;
 	}
 	
-	public static class MethodObject {
-		
-		@Annotations.ParameterSecurity({})
-		@Annotations.ReturnSecurity("low")
-		public int returnLowSecurity() {
-			return SootSecurityLevel.lowId(42);
-		}
-		
-		@Annotations.ParameterSecurity({})
-		@Annotations.ReturnSecurity("high")
-		public int returnHighSecurity() {
-			return SootSecurityLevel.highId(42);
-		}
-		
-		@Annotations.ParameterSecurity({"low"})
-		@Annotations.ReturnSecurity("low")
-		public int returnLowSecurity(int low) {
-			return low;
-		}
-		
-		@Annotations.ParameterSecurity({"high"})
-		@Annotations.ReturnSecurity("high")
-		public int returnHighSecurity(int high) {
-			return high;
-		}
-	}
-	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleLowMethod() {
 		MethodObject mo = new MethodObject();
 		return mo.returnLowSecurity();
@@ -192,6 +160,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleLowMethod2() {
 		MethodObject mo = new MethodObject();
 		mo = SootSecurityLevel.lowId(mo);
@@ -200,6 +169,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleLowMethod3() {
 		MethodObject mo = new MethodObject();
 		mo = SootSecurityLevel.highId(mo);
@@ -208,6 +178,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleHighMethod() {
 		MethodObject mo = new MethodObject();
 		return mo.returnHighSecurity();
@@ -215,6 +186,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleHighMethod2() {
 		MethodObject mo = new MethodObject();
 		mo = SootSecurityLevel.lowId(mo);
@@ -223,6 +195,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleHighMethod3() {
 		MethodObject mo = new MethodObject();
 		mo = SootSecurityLevel.highId(mo);
@@ -231,6 +204,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int invokeLowMethod() {
 		int low = SootSecurityLevel.lowId(42);
 		MethodObject mo = new MethodObject();
@@ -239,6 +213,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int invokeLowMethod2() {
 		int low = SootSecurityLevel.lowId(42);
 		MethodObject mo = new MethodObject();
@@ -248,6 +223,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeLowMethod3() {
 		int low = SootSecurityLevel.lowId(42);
 		MethodObject mo = new MethodObject();
@@ -257,6 +233,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeHighMethod() {
 		int high = SootSecurityLevel.highId(42);
 		MethodObject mo = new MethodObject();
@@ -265,6 +242,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeHighMethod2() {
 		int low = SootSecurityLevel.lowId(42);
 		MethodObject mo = new MethodObject();
@@ -273,6 +251,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeHighMethod3() {
 		int high = SootSecurityLevel.highId(42);
 		MethodObject mo = new MethodObject();
@@ -282,6 +261,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeHighMethod4() {
 		int high = SootSecurityLevel.highId(42);
 		MethodObject mo = new MethodObject();
@@ -291,6 +271,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeHighMethod5() {
 		int low = SootSecurityLevel.lowId(42);
 		MethodObject mo = new MethodObject();
@@ -298,53 +279,30 @@ public class TaintTrackingObject {
 		return mo.returnHighSecurity(low);
 	}
 	
-	public static class StaticMethodObject {
-		
-		@Annotations.ParameterSecurity({})
-		@Annotations.ReturnSecurity("low")
-		public static int returnLowSecurity() {
-			return SootSecurityLevel.lowId(42);
-		}
-		
-		@Annotations.ParameterSecurity({})
-		@Annotations.ReturnSecurity("high")
-		public static int returnHighSecurity() {
-			return SootSecurityLevel.highId(42);
-		}
-		
-		@Annotations.ParameterSecurity({"low"})
-		@Annotations.ReturnSecurity("low")
-		public static int returnLowSecurity(int low) {
-			return low;
-		}
-		
-		@Annotations.ParameterSecurity({"high"})
-		@Annotations.ReturnSecurity("high")
-		public static int returnHighSecurity(int high) {
-			return high;
-		}
-	}
-	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleLowStaticMethod() {
 		return StaticMethodObject.returnLowSecurity();
 	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleLowStaticMethod2() {
 		return StaticMethodObject.returnLowSecurity();
 	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeSimpleHighStaticMethod() {
 		return StaticMethodObject.returnHighSecurity();
 	}
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int invokeLowStaticMethod() {
 		int low = SootSecurityLevel.lowId(42);
 		return StaticMethodObject.returnLowSecurity(low);
@@ -352,6 +310,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeLowStaticMethod2() {
 		int low = SootSecurityLevel.lowId(42);
 		return StaticMethodObject.returnLowSecurity(low);
@@ -359,6 +318,7 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeHighStaticMethod() {
 		int high = SootSecurityLevel.highId(42);
 		return StaticMethodObject.returnHighSecurity(high);
@@ -366,8 +326,104 @@ public class TaintTrackingObject {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({})
 	public int invokeHighStaticMethod2() {
 		int low = SootSecurityLevel.lowId(42);
 		return StaticMethodObject.returnHighSecurity(low);
 	}
+
+	@Annotations.WriteEffect({})
+	public static class FieldObject {
+		
+		@Annotations.FieldSecurity("low")
+		public int low = 42;
+		
+		@Annotations.FieldSecurity("high")
+		public int high = 42;
+		
+		@Annotations.ParameterSecurity({})
+		@Annotations.WriteEffect({"low", "high"})
+		public FieldObject() {
+			super();
+		}
+		
+	}
+
+	@Annotations.WriteEffect({"low", "high"})
+	public static class StaticFieldObject {
+		
+		@Annotations.FieldSecurity("low")
+		public static int low = 42;
+		
+		@Annotations.FieldSecurity("high")
+		public static int high = 42;
+		
+	}
+
+	@Annotations.WriteEffect({})
+	public static class MethodObject {
+		
+		@Annotations.ParameterSecurity({})
+		@Annotations.ReturnSecurity("low")
+		@Annotations.WriteEffect({})
+		public int returnLowSecurity() {
+			return SootSecurityLevel.lowId(42);
+		}
+		
+		@Annotations.ParameterSecurity({})
+		@Annotations.ReturnSecurity("high")
+		@Annotations.WriteEffect({})
+		public int returnHighSecurity() {
+			return SootSecurityLevel.highId(42);
+		}
+		
+		@Annotations.ParameterSecurity({"low"})
+		@Annotations.ReturnSecurity("low")
+		@Annotations.WriteEffect({})
+		public int returnLowSecurity(int low) {
+			return low;
+		}
+		
+		@Annotations.ParameterSecurity({"high"})
+		@Annotations.ReturnSecurity("high")
+		@Annotations.WriteEffect({})
+		public int returnHighSecurity(int high) {
+			return high;
+		}
+		
+	}
+
+	@Annotations.WriteEffect({})
+	public static class StaticMethodObject {
+		
+		@Annotations.ParameterSecurity({})
+		@Annotations.ReturnSecurity("low")
+		@Annotations.WriteEffect({})
+		public static int returnLowSecurity() {
+			return SootSecurityLevel.lowId(42);
+		}
+		
+		@Annotations.ParameterSecurity({})
+		@Annotations.ReturnSecurity("high")
+		@Annotations.WriteEffect({})
+		public static int returnHighSecurity() {
+			return SootSecurityLevel.highId(42);
+		}
+		
+		@Annotations.ParameterSecurity({"low"})
+		@Annotations.ReturnSecurity("low")
+		@Annotations.WriteEffect({})
+		public static int returnLowSecurity(int low) {
+			return low;
+		}
+		
+		@Annotations.ParameterSecurity({"high"})
+		@Annotations.ReturnSecurity("high")
+		@Annotations.WriteEffect({})
+		public static int returnHighSecurity(int high) {
+			return high;
+		}
+		
+	}
+	
 }

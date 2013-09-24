@@ -39,9 +39,13 @@ import java.util.List;
 public abstract class SecurityLevel {
 
 	/** */
-	protected static String VOID_LEVEL = "void";
+	protected static final String VOID_LEVEL = "void";
 	/** */
-	protected static List<String> ADDITIONAL_LEVELS = new ArrayList<String>(Arrays.asList(VOID_LEVEL));
+	protected static final List<String> ADDITIONAL_LEVELS = new ArrayList<String>(Arrays.asList(VOID_LEVEL));
+	/** */
+	public static final String IMPLEMENTED_CLASS_NAME = "security.SootSecurityLevel";
+	/** */
+	protected static final String SUFFIX_ID_METHOD = "Id";
 	
 	
 	/**

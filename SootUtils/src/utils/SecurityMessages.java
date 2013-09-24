@@ -1,9 +1,42 @@
 package utils;
 
-import soot.Value;
+import java.util.List;
+
+import soot.SootMethod;
+import soot.jimple.FieldRef;
 
 public class SecurityMessages {
-
+	
+	/** */
+	private static final String USING_LIBRARY_WRITE_EFFECT = "In method <%s> at source line %d the library field <%s> is used. No side effect check can be done.";
+	/** */
+	private static final String INVALID_WRITE_EFFECT_USING = "In method <%s> at source line %d the write effect to '%s' is invalid. This effect doesn't exist.";
+	/** */
+	private static final String USING_LIBRARY_CLASS_WRITE_EFFECT = "In method <%s> at source line %d the library class <%s> is used. No side effect check can be done.";
+	/** */
+	private static final String INVALID_CLASS_WRITE_EFFECT_USING = "The class <%s> which is used in method <%s> at source line %d has an invalid write effects to '%s'. This effect doesn't exist.";
+	/** */
+	private static final String NO_CLASS_WRITE_EFFECT_ANNOTATION_USING = "Class <%s> which is used in method <%s> at source line %d has no write effect annotation.";
+	/** */
+	private static final String INVALID_CLASS_WRITE_EFFECT = "At class <%s> the write effects to '%s' is invalid. This effect doesn't exist.";
+	/** */
+	private static final String NO_CLASS_WRITE_EFFECT_ANNOTATION = "Class <%s> has no write effect annotation.";
+	/** */
+	private static final String INVALID_WRITE_EFFECT = "At method <%s> the write effects to '%s' is invalid. This effect doesn't exist.";
+	/** */
+	private static final String NO_WRITE_EFFECT_ANNOTATION = "Method <%s> has no write effect annotation.";
+	/** */
+	private static final String INVALID_INVOKED_CLASS_WRITE_EFFECTS = "Method <%s> invokes at sourceline %d the method <%s>. This invocation requires also the class write effects which are invalid.";
+	/** */
+	private static final String INVALID_INVOKED_WRITE_EFFECTS = "Method <%s> invokes at sourceline %d the method <%s> which has invalid write effects.";
+	/** */
+	private static final String EXCEPTION_LEVELS_COMPARISON_LOCALMAP = "Invalid comparison of the levels in method <%s> at source line %d during processing of the program counter.";
+	/** */
+	private static final String EXCEPTION_LEVELS_COMPARISON = "Invalid comparison of the levels in method <%s> at source line %d. At least one of the levels { %s } is invalid.";
+	/** */
+	private static final String INVALID_LEVELS_COMPARISON = "The comparison of the levels { %s } isn't possible. At least one of these levels is invalid.";
+	/** */
+	private static final String INVALID_LEVEL_COMPARISON = "The comparison of the levels '%s' and '%s' isn't possible. At least one of these levels is invalid.";
 	/** */
 	private static final String ASSIGNMENT_WEAKER_ARRAY = "In method <%s> at source line %d a value with '%s' security level is assigned to an array which has the weaker security level '%s'.";
 	/** */
@@ -87,7 +120,9 @@ public class SecurityMessages {
 	/** */
 	private static final String INVALID_RETURN_ANNOTATION = "The invoked method <%s> at source line %d in method <%s> has invalid return security level annotation.";
 	/** */
-	private static final String INVOCATION_LIBRARY_METHOD = "The invoked method <%s> at source line %d in method <%s> is a library method. No security check can be done.";
+	private static final String INVOCATION_LIBRARY_METHOD_SIDEEFFECT = "The invoked method <%s> at source line %d in method <%s> is a library method. No side effect check can be done.";
+	/** */
+	private static final String INVOCATION_LIBRARY_METHOD_SECURITY = "The invoked method <%s> at source line %d in method <%s> is a library method. No security check can be done.";
 	/** */
 	private static final String INVOCATION_LIBRARY_METHOD_MAX_LEVEL = "The invoked method <%s> at source line %d in method <%s> is a library method. Therefore the maximal security level '%s' of the arguments will be taken as result security level.";
 	/** */
@@ -105,45 +140,48 @@ public class SecurityMessages {
 	/** */
 	private static final String VOID_RETURN = "Method <%s> has a void return statement at source line %d. But the expected return security level '%s' doesn't match the level '%s'.";
 	/** */
+	private static final String VOID_RETURN_EXPECTED = "Method <%s> has a '%s' security level return at source line %d. But the expected return security level '%s' doesn't match this level.";
+	/** */
 	private static final String WEAKER_ARGUMENT_EXPECTED = "In method <%s> at source line %d another method <%s> will be invoked. For parameter \"%s\" a '%s' security level or weaker is expected, but the argument has a '%s' security level.";
 	/** */
 	private static final String WEAKER_RETURN_EXPECTED = "Method <%s> returns value with '%s' security level at source line %d. Expected was '%s' or weaker.";
 	/** */
 	private static final String WRONG_PARAMETER_ARGUMENT_AMOUNT = "The invocation of method <%s> in the method <%s> at source line %d has another amount of arguments than the security level annotation for this method defines.";
 
+
 	/**
 	 * 
 	 * @param methodSignature
 	 * @param accessedField
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
 	public static String accessOfLibraryField(String methodSignature, String accessedField,
-			long sourceLine) {
-		return String.format(ACCESS_LIBRARY_FIELD, accessedField, sourceLine, methodSignature);
+			long srcLn) {
+		return String.format(ACCESS_LIBRARY_FIELD, accessedField, srcLn, methodSignature);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param stmt
 	 * @return
 	 */
-	public static String catchSwitchException(String methodSignature, long sourceLine, String stmt) {
-		return String.format(SWITCH_EXCEPTION_CATCHED, stmt, methodSignature, sourceLine);
+	public static String catchSwitchException(String methodSignature, long srcLn, String stmt) {
+		return String.format(SWITCH_EXCEPTION_CATCHED, stmt, methodSignature, srcLn);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
 	 * @param accessedFieldSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
 	public static String invalidFieldAnnotation(String methodSignature,
-			String accessedFieldSignature, long sourceLine) {
-		return String.format(INVALID_FIELD_ANNOTATION, accessedFieldSignature, sourceLine,
+			String accessedFieldSignature, long srcLn) {
+		return String.format(INVALID_FIELD_ANNOTATION, accessedFieldSignature, srcLn,
 				methodSignature);
 	}
 
@@ -151,12 +189,12 @@ public class SecurityMessages {
 	 * 
 	 * @param methodSignature
 	 * @param invokedMethodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
 	public static String invalidReturnAnnotation(String methodSignature,
-			String invokedMethodSignature, long sourceLine) {
-		return String.format(INVALID_RETURN_ANNOTATION, invokedMethodSignature, sourceLine,
+			String invokedMethodSignature, long srcLn) {
+		return String.format(INVALID_RETURN_ANNOTATION, invokedMethodSignature, srcLn,
 				methodSignature);
 	}
 
@@ -164,12 +202,12 @@ public class SecurityMessages {
 	 * 
 	 * @param methodSignature
 	 * @param invokedMethodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
-	public static String invocationOfLibraryMethod(String methodSignature,
-			String invokedMethodSignature, long sourceLine) {
-		return String.format(INVOCATION_LIBRARY_METHOD, invokedMethodSignature, sourceLine,
+	public static String invocationOfLibraryMethodNoSecurityLevel(String methodSignature,
+			String invokedMethodSignature, long srcLn) {
+		return String.format(INVOCATION_LIBRARY_METHOD_SECURITY, invokedMethodSignature, srcLn,
 				methodSignature);
 	}
 
@@ -177,53 +215,53 @@ public class SecurityMessages {
 	 * 
 	 * @param methodSignature
 	 * @param invokedMethodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param maxLevel
 	 * @return
 	 */
 	public static String invocationOfLibraryMethodMaxArgumentLevel(String methodSignature,
-			String invokedMethodSignature, long sourceLine, String maxLevel) {
+			String invokedMethodSignature, long srcLn, String maxLevel) {
 		return String.format(INVOCATION_LIBRARY_METHOD_MAX_LEVEL, invokedMethodSignature,
-				sourceLine, methodSignature, maxLevel);
+				srcLn, methodSignature, maxLevel);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param localName
 	 * @param level
 	 * @return
 	 */
-	public static String localNotFoundUpdate(String methodSignature, long sourceLine, String localName,
+	public static String localNotFoundUpdate(String methodSignature, long srcLn, String localName,
 			String level) {
-		return String.format(LOCAL_NOT_FOUND, localName, methodSignature, sourceLine, level);
+		return String.format(LOCAL_NOT_FOUND, localName, methodSignature, srcLn, level);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param parameterName
 	 * @param localName
 	 * @param level
 	 * @return
 	 */
-	public static String noParameterMatch(String methodSignature, long sourceLine,
+	public static String noParameterMatch(String methodSignature, long srcLn,
 			String parameterName, String localName, String level) {
-		return String.format(NO_PARAMETER_MATCH, level, localName, methodSignature, sourceLine,
+		return String.format(NO_PARAMETER_MATCH, level, localName, methodSignature, srcLn,
 				parameterName);
 	}
 
 	/**
 	 * 
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param methodSignature
 	 * @param value
 	 * @return
 	 */
-	public static String noSecurityLevel(long sourceLine, String methodSignature, Value value) {
-		return String.format(NO_SECURITY_LEVEL, methodSignature, sourceLine, value.toString());
+	public static String noSecurityLevel(long srcLn, String methodSignature, String value) {
+		return String.format(NO_SECURITY_LEVEL, methodSignature, srcLn, value);
 	}
 
 	/**
@@ -231,68 +269,80 @@ public class SecurityMessages {
 	 * @param switchCase
 	 * @param switchName
 	 * @param sourceCode
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
 	public static String unimplementedSwitchCase(String switchCase, String switchName,
-			String sourceCode, long sourceLine) {
+			String sourceCode, long srcLn) {
 		return String.format(UNIMPLEMENTED_SWITCH_CASE, switchCase, switchName, sourceCode,
-				sourceLine);
+				srcLn);
 	}
 
 	/**
 	 * 
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param methodSignature
 	 * @param obj
 	 * @return
 	 */
-	public static String unknownConditionContent(long sourceLine, String methodSignature, Object obj) {
-		return String.format(UNKNOWN_CONDITION_CONTENT, sourceLine, methodSignature,
+	public static String unknownConditionContent(long srcLn, String methodSignature, Object obj) {
+		return String.format(UNKNOWN_CONDITION_CONTENT, srcLn, methodSignature,
 				obj.toString(), obj.getClass().getName());
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param expectedReturnLevel
 	 * @param voidLevel
 	 * @return
 	 */
-	public static String voidReturn(String methodSignature, long sourceLine,
+	public static String voidReturn(String methodSignature, long srcLn,
 			String expectedReturnLevel, String voidLevel) {
-		return String.format(VOID_RETURN, methodSignature, sourceLine, expectedReturnLevel, voidLevel);
+		return String.format(VOID_RETURN, methodSignature, srcLn, expectedReturnLevel, voidLevel);
+	}
+	
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param level
+	 * @param voidLevel
+	 * @return
+	 */
+	public static String voidReturnExpected(String methodSignature, long srcLn,	String level, String voidLevel) {
+		return String.format(VOID_RETURN_EXPECTED, methodSignature, level, srcLn, voidLevel);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
 	 * @param invokedMethodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param level
 	 * @param expectedLevel
 	 * @param parameterName
 	 * @return
 	 */
 	public static String weakerArgumentExpected(String methodSignature,
-			String invokedMethodSignature, long sourceLine, String level, String expectedLevel,
+			String invokedMethodSignature, long srcLn, String level, String expectedLevel,
 			String parameterName) {
-		return String.format(WEAKER_ARGUMENT_EXPECTED, methodSignature, sourceLine,
+		return String.format(WEAKER_ARGUMENT_EXPECTED, methodSignature, srcLn,
 				invokedMethodSignature, parameterName, expectedLevel, level);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param level
 	 * @param expectedLevel
 	 * @return
 	 */
-	public static String weakerReturnExpected(String methodSignature, long sourceLine,
+	public static String weakerReturnExpected(String methodSignature, long srcLn,
 			String level, String expectedLevel) {
-		return String.format(WEAKER_RETURN_EXPECTED, methodSignature, level, sourceLine,
+		return String.format(WEAKER_RETURN_EXPECTED, methodSignature, level, srcLn,
 				expectedLevel);
 	}
 
@@ -300,27 +350,27 @@ public class SecurityMessages {
 	 * 
 	 * @param methodSignature
 	 * @param invokedMethodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
 	public static String wrongArgumentParameterAmount(String methodSignature,
-			String invokedMethodSignature, long sourceLine) {
+			String invokedMethodSignature, long srcLn) {
 		return String.format(WRONG_PARAMETER_ARGUMENT_AMOUNT, invokedMethodSignature,
-				methodSignature, sourceLine);
+				methodSignature, srcLn);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
 	 * @param fieldSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param fieldLevel
 	 * @param level
 	 * @return
 	 */
 	public static String assignmentToWeakerField(String methodSignature,
-			String fieldSignature, long sourceLine, String fieldLevel, String level) {
-		return String.format(ASSIGNMENT_WEAKER_FIELD, methodSignature, sourceLine, level, 
+			String fieldSignature, long srcLn, String fieldLevel, String level) {
+		return String.format(ASSIGNMENT_WEAKER_FIELD, methodSignature, srcLn, level, 
 				fieldSignature, fieldLevel);
 	}
 
@@ -328,27 +378,27 @@ public class SecurityMessages {
 	 * 
 	 * @param methodSignature
 	 * @param fieldSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
 	public static String assignmentToLibraryField(String methodSignature,
-			String fieldSignature, long sourceLine) {
-		return String.format(ASSIGNMENT_LIBRARY_FIELD, fieldSignature, sourceLine, 
+			String fieldSignature, long srcLn) {
+		return String.format(ASSIGNMENT_LIBRARY_FIELD, fieldSignature, srcLn, 
 				methodSignature);
 	}
 
 	/**
 	 * 
 	 * @param methodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param name
 	 * @param localLevel
 	 * @param valueLevel
 	 * @return
 	 */
-	public static String weakenLocalVariable(String methodSignature, long sourceLine, String name,
+	public static String weakenLocalVariable(String methodSignature, long srcLn, String name,
 			String localLevel, String valueLevel) {
-		return String.format(WEAKEN_LOCAL_VARIABLE, methodSignature, sourceLine, name, localLevel, 
+		return String.format(WEAKEN_LOCAL_VARIABLE, methodSignature, srcLn, name, localLevel, 
 				valueLevel);
 	}
 
@@ -487,12 +537,12 @@ public class SecurityMessages {
 
 	/**
 	 * 
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param methodSignature
 	 * @return
 	 */
-	public static String accessToValueWithoutSecurityLevel(long sourceLine, String methodSignature) {
-		return String.format(VALUE_WITHOUT_LEVEL, sourceLine, methodSignature);
+	public static String accessToValueWithoutSecurityLevel(long srcLn, String methodSignature) {
+		return String.format(VALUE_WITHOUT_LEVEL, srcLn, methodSignature);
 	}
 
 	/**
@@ -545,11 +595,11 @@ public class SecurityMessages {
 	 * 
 	 * @param type
 	 * @param sourceCode
-	 * @param sourceLine
+	 * @param srcLn
 	 * @return
 	 */
-	public static String noLevelUpdatePossible(String type, String sourceCode, long sourceLine) {
-		return String.format(IMPOSSIBLE_LEVEL_UPDATE, type, sourceCode, sourceLine);
+	public static String noLevelUpdatePossible(String type, String sourceCode, long srcLn) {
+		return String.format(IMPOSSIBLE_LEVEL_UPDATE, type, sourceCode, srcLn);
 	}
 
 	/**
@@ -674,13 +724,218 @@ public class SecurityMessages {
 	/**
 	 * 
 	 * @param methodSignature
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param arrayLevel
 	 * @param rightLevel
 	 * @return
 	 */
-	public static String assignmentToWeakerArray(String methodSignature, long sourceLine, String arrayLevel, String rightLevel) {
-		return String.format(ASSIGNMENT_WEAKER_ARRAY, methodSignature, sourceLine, rightLevel, arrayLevel);
+	public static String assignmentToWeakerArray(String methodSignature, long srcLn, String arrayLevel, String rightLevel) {
+		return String.format(ASSIGNMENT_WEAKER_ARRAY, methodSignature, srcLn, rightLevel, arrayLevel);
+	}
+
+	/**
+	 * 
+	 * @param level1
+	 * @param level2
+	 * @return
+	 */
+	public static String invalidLevelComparison(String level1, String level2) {
+		return String.format(INVALID_LEVEL_COMPARISON, level1, level2);
+	}
+
+	/**
+	 * 
+	 * @param levelList
+	 * @return
+	 */
+	public static String invalidLevelsComparison(List<String> levelList) {
+		String levels = "";
+		for (String level : levelList) {
+			if (! levels.equals("")) levels += ", ";
+			levels += level;
+		}
+		return String.format(INVALID_LEVELS_COMPARISON, levels);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param levelList
+	 * @return
+	 */
+	public static String invalidLevelsComparison(String methodSignature, long srcLn, String... levelList) {
+		String levels = "";
+		for (String level : levelList) {
+			if (! levels.equals("")) levels += ", ";
+			levels += level;
+		}
+		return String.format(EXCEPTION_LEVELS_COMPARISON, methodSignature, srcLn, levels);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @return
+	 */
+	public static String invalidLevelsComparisonInMap(String methodSignature, long srcLn) {
+		return String.format(EXCEPTION_LEVELS_COMPARISON_LOCALMAP, methodSignature, srcLn);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param invokedMethodSignature
+	 * @param srcLn
+	 * @return
+	 */
+	public static String invocationOfLibraryMethodNoSideEffect(String methodSignature, String invokedMethodSignature, long srcLn) {
+		return String.format(INVOCATION_LIBRARY_METHOD_SIDEEFFECT, invokedMethodSignature, srcLn, methodSignature);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param invokedMethodSignature
+	 * @return
+	 */
+	public static String invalidInvokedWriteEffects(String methodSignature, long srcLn, String invokedMethodSignature) {
+		return String.format(INVALID_INVOKED_WRITE_EFFECTS, methodSignature, srcLn, invokedMethodSignature);
+	}
+	
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param invokedMethodSignature
+	 * @param classSignature
+	 * @return
+	 */
+	public static String invalidInvokedClassWriteEffects(String methodSignature, long srcLn, String invokedMethodSignature, String classSignature) {
+		return String.format(INVALID_INVOKED_CLASS_WRITE_EFFECTS, methodSignature, srcLn, invokedMethodSignature, classSignature);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @return
+	 */
+	public static String noWriteEffectAnnotation(String methodSignature) {
+		return String.format(NO_WRITE_EFFECT_ANNOTATION, methodSignature);
+	}
+	
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param invalidEffect
+	 * @return
+	 */
+	public static String invalidWriteEffect(String methodSignature, String invalidEffect ) {
+		return String.format(INVALID_WRITE_EFFECT, methodSignature, invalidEffect);
+	}
+	
+	/**
+	 * 
+	 * @param classSignature
+	 * @return
+	 */
+	public static String noClassWriteEffectAnnotation(String classSignature) {
+		return String.format(NO_CLASS_WRITE_EFFECT_ANNOTATION, classSignature);
+	}
+	
+	/**
+	 * 
+	 * @param classSignature
+	 * @param invalidEffect
+	 * @return
+	 */
+	public static String invalidClassWriteEffect(String classSignature, String invalidEffect ) {
+		return String.format(INVALID_CLASS_WRITE_EFFECT, classSignature, invalidEffect);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param classSignature
+	 * @return
+	 */
+	public static String noClassWriteEffectUsingClass(String methodSignature, long srcLn, String classSignature) {
+		return String.format(NO_CLASS_WRITE_EFFECT_ANNOTATION_USING, classSignature, methodSignature, srcLn);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param classSignature
+	 * @param invalidEffect
+	 * @return
+	 */
+	public static String invalidClassWriteEffectUsingClass(String methodSignature, long srcLn, String classSignature, String invalidEffect) {
+		return String.format(INVALID_CLASS_WRITE_EFFECT_USING, classSignature, methodSignature, srcLn, invalidEffect);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param classSignature
+	 * @return
+	 */
+	public static String usingLibraryClassNoClassWriteEffect(String methodSignature, long srcLn, String classSignature) {
+		return String.format(USING_LIBRARY_CLASS_WRITE_EFFECT, methodSignature, srcLn, classSignature);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param effected
+	 * @return
+	 */
+	public static String invalidWriteEffect(String methodSignature, long srcLn, String effected) {
+		return String.format(INVALID_WRITE_EFFECT_USING, methodSignature, srcLn, effected);
+	}
+
+	/**
+	 * 
+	 * @param methodSignature
+	 * @param srcLn
+	 * @param fieldRef
+	 * @return
+	 */
+	public static String usingLibraryFieldNoWriteEffect(String methodSignature, long srcLn,	FieldRef fieldRef) {
+		return String.format(USING_LIBRARY_WRITE_EFFECT, methodSignature, srcLn, fieldRef);
+	}
+
+	/**
+	 * 
+	 * @param sootMethod
+	 * @param effected
+	 * @return
+	 */
+	public static String superfluousWriteEffect(SootMethod sootMethod, String effected) {
+		return String.format("At method <%s> a write effect to '%s' is maybe superfluous.", sootMethod, effected);
+	}
+
+	/**
+	 * 
+	 * @param sootMethod
+	 * @param srcLn
+	 * @param effected
+	 * @param cause
+	 * @return
+	 */
+	public static String missingWriteEffect(SootMethod sootMethod, long srcLn, String effected,	String cause) {
+		boolean isVocal = false;
+		for (String vocal : new String[] {"a", "e", "i", "o", "u"}) {
+			if (cause.startsWith(vocal)) isVocal = true;
+		}
+		String a = isVocal ? "an " : "a ";
+		return String.format("In method <%s> at source line %d a write effect to '%s' is missed caused by %s%s.", sootMethod, srcLn, effected, a, cause);
 	}
 	
 }

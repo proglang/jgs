@@ -111,15 +111,15 @@ public class FieldEnvironment extends Environment {
 	 */
 	public boolean isFieldSecurityLevelValid() {
 		if (! annotationAvailable) {
-			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldAnnotation(SootUtils.generateFieldSignature(sootField)));
+			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldAnnotation(SootUtils.generateFieldSignature(sootField, false, true, true)));
 			return false;
 		}
 		if (level == null) {
-			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldLevel(SootUtils.generateFieldSignature(sootField)));
+			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.noFieldLevel(SootUtils.generateFieldSignature(sootField, false, true, true)));
 			return false;
 		}
-		if (! getSecurityAnnotation().checkValidityOfFieldLevel(level)) {
-			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.invalidFieldLevel(SootUtils.generateFieldSignature(sootField), level));
+		if (! getSecurityAnnotation().checkValidityOfLevel(level)) {
+			getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.invalidFieldLevel(SootUtils.generateFieldSignature(sootField, false, true, true), level));
 			return false;
 		}
 		return true;

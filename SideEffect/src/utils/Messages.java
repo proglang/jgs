@@ -55,7 +55,7 @@ public class Messages {
 	 */
 	public static String missingMethodAnnotation(String effectID, SootMethod sootMethod) {
 		String readableEffectType = EffectAnnotation.readableNameOf(effectID);
-		String readableMethodName = SootUtils.generateReadableMethodNameFrom(sootMethod);
+		String readableMethodName = SootUtils.generateMethodSignature(sootMethod, false, true, true);
 		return String.format(MISSING_METHOD_ANNOTATION, readableEffectType, readableMethodName);
 	}
 
@@ -75,8 +75,8 @@ public class Messages {
 	public static String invokeOfLibraryMethod(SootMethod methodUnderCheck, long sourceLine,
 			SootMethod invokedMethod) {
 		String readableMethodUnderCheckName = SootUtils
-				.generateReadableMethodNameFrom(methodUnderCheck);
-		String readableInvokedMethodName = SootUtils.generateReadableMethodNameFrom(invokedMethod);
+				.generateMethodSignature(methodUnderCheck, false, true, true);
+		String readableInvokedMethodName = SootUtils.generateMethodSignature(invokedMethod, false, true, true);
 		return String.format(JAVA_LIBRARY_METHOD_INVOKED, readableMethodUnderCheckName,
 				readableInvokedMethodName, sourceLine);
 	}
@@ -99,8 +99,8 @@ public class Messages {
 	public static String missingInvokedMethodAnnotation(SootMethod methodUnderCheck,
 			long sourceLine, SootMethod invokedMethod, String effectID) {
 		String readableMethodUnderCheckName = SootUtils
-				.generateReadableMethodNameFrom(methodUnderCheck);
-		String readableInvokedMethodName = SootUtils.generateReadableMethodNameFrom(invokedMethod);
+				.generateMethodSignature(methodUnderCheck, false, true, true);
+		String readableInvokedMethodName = SootUtils.generateMethodSignature(invokedMethod, false, true, true);
 		String readableEffectType = EffectAnnotation.readableNameOf(effectID);
 		return String.format(MISSING_INVOKED_METHOD_ANNOTATION, readableMethodUnderCheckName,
 				sourceLine, readableInvokedMethodName, readableEffectType);
@@ -140,7 +140,7 @@ public class Messages {
 	 */
 	public static String uselessMethodEffect(SootMethod sootMethod, String effect, String effectID) {
 		String readableEffectType = EffectAnnotation.readableNameOf(effectID);
-		String readableMethodName = SootUtils.generateReadableMethodNameFrom(sootMethod);
+		String readableMethodName = SootUtils.generateMethodSignature(sootMethod, false, true, true);
 		return String.format(USELESS_METHOD_EFFECT, readableMethodName, readableEffectType, effect);
 	}
 
@@ -182,7 +182,7 @@ public class Messages {
 	 */
 	public static String missingEffectOfMethod(SootMethod sootMethod, Effect effect, String effectID) {
 		String readableEffectType = EffectAnnotation.readableNameOf(effectID);
-		String readableMethodName = SootUtils.generateReadableMethodNameFrom(sootMethod);
+		String readableMethodName = SootUtils.generateMethodSignature(sootMethod, false, true, true);
 		long sourceLine = effect.getSourceLine();
 		String effected = effect.getEffected();
 		Cause cause = effect.getCause();
@@ -205,7 +205,7 @@ public class Messages {
 	 */
 	public static String useOfLibraryClass(SootMethod sootMethod, long sourceLine,
 			SootClass sootClass) {
-		String readableMethodName = SootUtils.generateReadableMethodNameFrom(sootMethod);
+		String readableMethodName = SootUtils.generateMethodSignature(sootMethod, false, true, true);
 		String readableClassName = sootClass.getName();
 		return String.format(JAVA_LIBRARY_CLASS_USED, readableMethodName, readableClassName,
 				sourceLine);
@@ -228,7 +228,7 @@ public class Messages {
 	 */
 	public static String missingUsedClassAnnotation(SootMethod sootMethod, long sourceLine,
 			SootClass sootClass, String effectID) {
-		String readableMethodName = SootUtils.generateReadableMethodNameFrom(sootMethod);
+		String readableMethodName = SootUtils.generateMethodSignature(sootMethod, false, true, true);
 		String readableClassName = sootClass.getName();
 		String readableEffectType = EffectAnnotation.readableNameOf(effectID);
 		return String.format(MISSING_USED_CLASS_ANNOTATION, readableMethodName, sourceLine,

@@ -799,6 +799,12 @@
             <echo level="info">POST-TESTS SUCCESSFUL.</echo>
         </target>
         
+      <!-- Generate JavaDoc -->
+        <target name="javadoc">
+            <javadoc packagenames="src" sourcepath="${src.dir}" destdir="${docs.dir}">
+            </javadoc>
+        </target>
+        
       <!-- Cleanup after the ant script -->
         <target name="cleanup.soot" if="${enable.soot.compile}">
             <delete dir="${soot.build.dir}" />

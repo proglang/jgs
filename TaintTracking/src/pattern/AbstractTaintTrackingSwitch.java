@@ -1,6 +1,9 @@
 package pattern;
 
+import security.SecurityAnnotation;
+import soot.SootMethod;
 import utils.*;
+import logging.SecurityLogger;
 import model.*;
 
 /**
@@ -16,7 +19,7 @@ public class AbstractTaintTrackingSwitch {
 	/** */
 	protected final LocalMap out;
 	/** */
-	protected final MethodEnvironment methodEnvironment;
+	protected final AnalyzedMethodEnvironment analyzedMethodEnvironment;
 	
 	/**
 	 * 
@@ -24,8 +27,8 @@ public class AbstractTaintTrackingSwitch {
 	 * @param in
 	 * @param out
 	 */
-	public AbstractTaintTrackingSwitch(MethodEnvironment methodEnvironment, LocalMap in, LocalMap out) {
-		this.methodEnvironment = methodEnvironment;
+	public AbstractTaintTrackingSwitch(AnalyzedMethodEnvironment methodEnvironment, LocalMap in, LocalMap out) {
+		this.analyzedMethodEnvironment = methodEnvironment;
 		this.out = out;
 		this.in = in;
 	}
@@ -34,23 +37,56 @@ public class AbstractTaintTrackingSwitch {
 	 * 
 	 * @return
 	 */
-	public long getSourceLine() {
-		return methodEnvironment.getSourceLine();
+	protected long getSrcLn() {
+		return analyzedMethodEnvironment.getSrcLn();
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public String getMethodSignature() {
-		return SootUtils.generateMethodSignature(methodEnvironment.getSootMethod());
+	protected String getMethodSignature() {
+		return SootUtils.generateMethodSignature(analyzedMethodEnvironment.getSootMethod(), false, true, true);
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public String getFileName() {
-		return SootUtils.generateFileName(methodEnvironment.getSootMethod());
+	protected String getFileName() {
+		return SootUtils.generateFileName(analyzedMethodEnvironment.getSootMethod());
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected SecurityLogger getLog() {
+		return analyzedMethodEnvironment.getLog();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected SootMethod getSootMethod() {
+		return analyzedMethodEnvironment.getSootMethod();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected SecurityAnnotation getSecurityAnnotation() {
+		return analyzedMethodEnvironment.getSecurityAnnotation();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected String getWeakestSecurityLevel() {
+		return analyzedMethodEnvironment.getWeakestSecurityLevel();
+	}
+	
 }

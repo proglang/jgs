@@ -22,10 +22,6 @@ public class SecurityLevelImplChecker {
 	/** */
 	protected static final String ID_SIGNATURE = "public static <T> T ";
 	/** */
-	protected static final String ID_POSTFIX = "Id";
-	/** */
-	protected static final String CLASS_NAME = "security.SootSecurityLevel";
-	/** */
 	protected static final String JAVA_PATH = "security/SootSecurityLevel.java";
 	/** */
 	protected static final String CLASS_PATH = "security/SootSecurityLevel.class";
@@ -132,7 +128,7 @@ public class SecurityLevelImplChecker {
 	 * @param methodName
 	 */
 	private void checkForPossibleMistakes(Class<?> sootSecurityLevelClass, List<String> levels,	String methodName) {
-		if ((!levels.contains(methodName.substring(0, methodName.length() - 2))) && methodName.endsWith(ID_POSTFIX)) {
+		if ((!levels.contains(methodName.substring(0, methodName.length() - 2))) && methodName.endsWith(SecurityLevel.SUFFIX_ID_METHOD)) {
 			try {
 				Method method = sootSecurityLevelClass.getMethod(methodName, Object.class);
 				Class<?>[] parameters = method.getParameterTypes();
@@ -176,9 +172,9 @@ public class SecurityLevelImplChecker {
 			illegalLevelNames.add(level);
 			valid = false;
 		}
-		if (! methodNames.contains(level + ID_POSTFIX)) {
-			printException(SecurityMessages.reflectionNoMethod(ID_SIGNATURE + level + ID_POSTFIX +"(T)"));
-			unavailableIdMethods.add(level + ID_POSTFIX);
+		if (! methodNames.contains(level + SecurityLevel.SUFFIX_ID_METHOD)) {
+			printException(SecurityMessages.reflectionNoMethod(ID_SIGNATURE + level + SecurityLevel.SUFFIX_ID_METHOD +"(T)"));
+			unavailableIdMethods.add(level + SecurityLevel.SUFFIX_ID_METHOD);
 			valid = false;
 		} else {
 			valid = valid && checkValidityOfIdMethod(sootSecurityLevelClass, level);
@@ -194,12 +190,12 @@ public class SecurityLevelImplChecker {
 	 */
 	private boolean checkValidityOfIdMethod(Class<?> sootSecurityLevelClass, String level) {
 		boolean valid = true;
-		String methodSignatureId = ID_SIGNATURE + level + ID_POSTFIX + "(T)";
+		String methodSignatureId = ID_SIGNATURE + level + SecurityLevel.SUFFIX_ID_METHOD + "(T)";
 		try {
-			Method method = sootSecurityLevelClass.getMethod(level + ID_POSTFIX, Object.class);
+			Method method = sootSecurityLevelClass.getMethod(level + SecurityLevel.SUFFIX_ID_METHOD, Object.class);
 			if (! Modifier.isStatic(method.getModifiers())) {
-				printException(SecurityMessages.reflectionNonStaticMethod("'public <T> T " + level + ID_POSTFIX + "(T)'"));
-				invalidIdMethods.add(level + ID_POSTFIX);
+				printException(SecurityMessages.reflectionNonStaticMethod("'public <T> T " + level + SecurityLevel.SUFFIX_ID_METHOD + "(T)'"));
+				invalidIdMethods.add(level + SecurityLevel.SUFFIX_ID_METHOD);
 				valid = false;
 			}
 			boolean exists = false;
@@ -209,19 +205,19 @@ public class SecurityLevelImplChecker {
 					Annotations.ReturnSecurity security = (Annotations.ReturnSecurity) annotation;
 					if (!security.value().equals(level)) { 
 						printException(SecurityMessages.reflectionInvalidMethodAnnotation(methodSignatureId));
-						invalidIdMethodsAnnotation.add(level + ID_POSTFIX);
+						invalidIdMethodsAnnotation.add(level + SecurityLevel.SUFFIX_ID_METHOD);
 						valid = false;
 					}
 				}
 			}
 			if (!exists) {
 				printException(SecurityMessages.reflectionNoMethodAnnotation(methodSignatureId));
-				unavailableIdMethodsAnnotation.add(level + ID_POSTFIX);
+				unavailableIdMethodsAnnotation.add(level + SecurityLevel.SUFFIX_ID_METHOD);
 				valid = false;
 			}
 		} catch (Exception e) {
 			printException(SecurityMessages.reflectionNoMethodAccess(methodSignatureId));
-			unavailableIdMethods.add(level + ID_POSTFIX);
+			unavailableIdMethods.add(level + SecurityLevel.SUFFIX_ID_METHOD);
 			valid = false;
 		}
 		return valid;

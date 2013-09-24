@@ -52,14 +52,14 @@ public class SootLogger {
 	/**
 	 * 
 	 * @param fileName
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param msg
 	 * @param e
 	 */
-	public void exception(String fileName, long sourceLine, String msg, Throwable e) {
-		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.EXCEPTION);
+	public void exception(String fileName, long srcLn, String msg, Throwable e) {
+		this.messageStore.addMessage(msg, fileName, srcLn, SootLoggerLevel.EXCEPTION);
 		if (isLevelEnabled(SootLoggerLevel.EXCEPTION)) {
-			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
 			LOG.log(SootLoggerLevel.HEADING, "EXCEPTION", new Object[] { info });
 		}
 		LOG.log(SootLoggerLevel.EXCEPTION, msg, e);
@@ -68,13 +68,13 @@ public class SootLogger {
 	/**
 	 * 
 	 * @param fileName
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param msg
 	 */
-	public void error(String fileName, long sourceLine, String msg) {
-		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.ERROR);
+	public void error(String fileName, long srcLn, String msg) {
+		this.messageStore.addMessage(msg, fileName, srcLn, SootLoggerLevel.ERROR);
 		if (isLevelEnabled(SootLoggerLevel.ERROR)) {
-			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
 			LOG.log(SootLoggerLevel.HEADING, "ERROR", new Object[] { info });
 		}
 		LOG.log(SootLoggerLevel.ERROR, msg);
@@ -83,13 +83,13 @@ public class SootLogger {
 	/**
 	 * 
 	 * @param fileName
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param msg
 	 */
-	public void warning(String fileName, long sourceLine, String msg) {
-		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.WARNING);
+	public void warning(String fileName, long srcLn, String msg) {
+		this.messageStore.addMessage(msg, fileName, srcLn, SootLoggerLevel.WARNING);
 		if (isLevelEnabled(SootLoggerLevel.WARNING)) {
-			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
 			LOG.log(SootLoggerLevel.HEADING, "WARNING", new Object[] { info });
 		}
 		LOG.log(SootLoggerLevel.WARNING, msg);
@@ -98,13 +98,13 @@ public class SootLogger {
 	/**
 	 * 
 	 * @param fileName
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param msg
 	 */
-	public void information(String fileName, long sourceLine, String msg) {
-		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.INFORMATION);
+	public void information(String fileName, long srcLn, String msg) {
+		this.messageStore.addMessage(msg, fileName, srcLn, SootLoggerLevel.INFORMATION);
 		if (isLevelEnabled(SootLoggerLevel.INFORMATION)) {
-			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
 			LOG.log(SootLoggerLevel.HEADING, "INFORMATION", new Object[] { info });
 		}
 		LOG.log(SootLoggerLevel.INFORMATION, msg);

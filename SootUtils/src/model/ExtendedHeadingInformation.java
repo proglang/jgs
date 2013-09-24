@@ -8,19 +8,19 @@ package model;
 public class ExtendedHeadingInformation extends MinimalHeadingInformation {
 	
 	/** */
-	private long sourceLine = Long.MIN_VALUE;
+	private long srcLn = Long.MIN_VALUE;
 	/** */
 	private String fileName = null;
 	
 	/**
 	 * 
 	 * @param tabs
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param fileName
 	 */
-	public ExtendedHeadingInformation(int tabs, long sourceLine, String fileName) {
+	public ExtendedHeadingInformation(int tabs, long srcLn, String fileName) {
 		super(tabs);
-		this.sourceLine = sourceLine;
+		this.srcLn = srcLn;
 		this.fileName = fileName;
 	}
 
@@ -28,8 +28,8 @@ public class ExtendedHeadingInformation extends MinimalHeadingInformation {
 	 * 
 	 * @return
 	 */
-	public long getSourceLine() {
-		return sourceLine;
+	public long getSrcLn() {
+		return srcLn;
 	}
 
 	/**

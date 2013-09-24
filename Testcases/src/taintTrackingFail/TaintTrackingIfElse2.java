@@ -2,12 +2,13 @@ package taintTrackingFail;
 
 import security.Annotations;
 import security.SootSecurityLevel;
-import security.Annotations.FieldSecurity;
 
+@Annotations.WriteEffect({})
 public class TaintTrackingIfElse2 {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low"})
 	public int ifAssign() {
 		int thenHigh = SootSecurityLevel.highId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
@@ -19,6 +20,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low"})
 	public int ifAssign2() {
 		int thenHigh = SootSecurityLevel.highId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
@@ -30,6 +32,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("high")
+	@Annotations.WriteEffect({"low"})
 	public int ifAssign3() {
 		int thenLow = SootSecurityLevel.lowId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
@@ -41,6 +44,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"high"})
 	public int ifAssign4() {
 		int thenHigh = SootSecurityLevel.highId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
@@ -52,6 +56,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"low"})
 	public int ifAssign5() {
 		int thenHigh = SootSecurityLevel.highId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
@@ -63,6 +68,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"high"})
 	public int ifAssign6() {
 		int thenHigh = SootSecurityLevel.highId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
@@ -74,6 +80,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"low"})
 	public int ifAssign7() {
 		int thenHigh = SootSecurityLevel.highId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
@@ -85,6 +92,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"high"})
 	public int ifAssign8() {
 		int thenLow = SootSecurityLevel.lowId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
@@ -96,6 +104,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"low"})
 	public int ifAssign9() {
 		int thenLow = SootSecurityLevel.lowId(42);
 		boolean conditionHigh = SootSecurityLevel.highId(false);
@@ -107,6 +116,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({"high"})
 	public int ifAssign10() {
 		int thenLow = SootSecurityLevel.lowId(42);
 		boolean conditionLow = SootSecurityLevel.lowId(false);
@@ -118,6 +128,7 @@ public class TaintTrackingIfElse2 {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -129,6 +140,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign2() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -140,6 +152,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign3() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -151,6 +164,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign4() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -162,6 +176,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign5() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -173,6 +188,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign6() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -184,6 +200,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign7() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -195,6 +212,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign8() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -206,6 +224,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign9() {
 		int result = SootSecurityLevel.highId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -217,6 +236,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign10() {
 		int result = SootSecurityLevel.highId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -228,6 +248,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign11() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -239,6 +260,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign12() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -250,6 +272,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign13() {
 		int result = SootSecurityLevel.highId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -261,6 +284,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("low")
+	@Annotations.WriteEffect({})
 	public int ifExprAssign14() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -272,6 +296,7 @@ public class TaintTrackingIfElse2 {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField2() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -287,6 +312,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField4() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -302,6 +328,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField6() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -317,6 +344,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField8() {
 		int result = SootSecurityLevel.highId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -332,6 +360,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField10() {
 		int result = SootSecurityLevel.highId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -347,6 +376,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField12() {
 		int result = SootSecurityLevel.highId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -362,6 +392,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField14() {
 		int result = SootSecurityLevel.highId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -377,6 +408,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField18() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -392,6 +424,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField20() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -407,6 +440,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField22() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -422,6 +456,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField24() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenHigh = SootSecurityLevel.highId(42);
@@ -437,6 +472,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField26() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -452,6 +488,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField28() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -467,6 +504,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low"})
 	public void ifElseAssignLocalField30() {
 		int result = SootSecurityLevel.lowId(42);
 		int thenLow = SootSecurityLevel.lowId(42);
@@ -482,6 +520,7 @@ public class TaintTrackingIfElse2 {
 	
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf(boolean var1High, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -497,6 +536,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf2(boolean var1High, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4Low = SootSecurityLevel.lowId(42);
@@ -512,6 +552,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf3(boolean var1High, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -527,6 +568,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf4(boolean var1High, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		int var4Low = SootSecurityLevel.lowId(42);
@@ -542,6 +584,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf5(boolean var1High, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -557,6 +600,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf6(boolean var1High, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4Low = SootSecurityLevel.lowId(42);
@@ -572,6 +616,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf7(boolean var1High, boolean var2Low) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -587,6 +632,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf8(boolean var1High, boolean var2Low) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		int var4Low = SootSecurityLevel.lowId(42);
@@ -602,6 +648,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf9(boolean var1Low, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -617,6 +664,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf10(boolean var1Low, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4Low = SootSecurityLevel.lowId(42);
@@ -632,6 +680,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf11(boolean var1Low, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -647,6 +696,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf12(boolean var1Low, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		int var4Low = SootSecurityLevel.lowId(42);
@@ -662,6 +712,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf13(boolean var1Low, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -677,6 +728,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf14(boolean var1Low, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		int var4Low = SootSecurityLevel.lowId(42);
@@ -692,6 +744,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifIf15(boolean var1Low, boolean var2Low) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		int var4High = SootSecurityLevel.highId(42);
@@ -707,6 +760,7 @@ public class TaintTrackingIfElse2 {
 	
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifDoubleCond(boolean var1High, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1High && var2High) {
@@ -719,6 +773,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifDoubleCond2(boolean var1High, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		if (var1High && var2High) {
@@ -731,6 +786,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifDoubleCond3(boolean var1High, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1High && var2Low) {
@@ -743,6 +799,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifDoubleCond4(boolean var1High, boolean var2Low) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		if (var1High && var2Low) {
@@ -755,6 +812,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifDoubleCond5(boolean var1Low, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1Low && var2High) {
@@ -767,6 +825,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifDoubleCond6(boolean var1Low, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		if (var1Low && var2High) {
@@ -779,6 +838,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifDoubleCond7(boolean var1Low, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1Low && var2Low) {
@@ -791,6 +851,7 @@ public class TaintTrackingIfElse2 {
 	
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifElseDoubleCond(boolean var1High, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1High && var2High) {
@@ -806,6 +867,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifElseDoubleCond2(boolean var1High, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		if (var1High && var2High) {
@@ -821,6 +883,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifElseDoubleCond3(boolean var1High, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1High && var2Low) {
@@ -836,6 +899,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"high", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifElseDoubleCond4(boolean var1High, boolean var2Low) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		if (var1High && var2Low) {
@@ -851,6 +915,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifElseDoubleCond5(boolean var1Low, boolean var2High) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1Low && var2High) {
@@ -866,6 +931,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "high"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifElseDoubleCond6(boolean var1Low, boolean var2High) {
 		int var3Low = SootSecurityLevel.lowId(42);
 		if (var1Low && var2High) {
@@ -881,6 +947,7 @@ public class TaintTrackingIfElse2 {
 
 	@Annotations.ParameterSecurity({"low", "low"})
 	@Annotations.ReturnSecurity("void")
+	@Annotations.WriteEffect({"low", "high"})
 	public void ifElseDoubleCond7(boolean var1Low, boolean var2Low) {
 		int var3High = SootSecurityLevel.highId(42);
 		if (var1Low && var2Low) {
@@ -894,9 +961,16 @@ public class TaintTrackingIfElse2 {
 		lowField = var3High;
 	}
 	
-	@FieldSecurity("low")
+	@Annotations.FieldSecurity("low")
 	int lowField = SootSecurityLevel.lowId(42);
 	
-	@FieldSecurity("high")
+	@Annotations.FieldSecurity("high")
 	int highField = SootSecurityLevel.highId(42);
+	
+	@Annotations.ParameterSecurity({})
+	@Annotations.WriteEffect({"low", "high"})
+	public TaintTrackingIfElse2() {
+		super();
+	}
+	
 }

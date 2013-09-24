@@ -44,7 +44,7 @@ public class SootLoggerFileFormatter extends Formatter {
 				if (obj instanceof ExtendedHeadingInformation) {
 					ExtendedHeadingInformation info = (ExtendedHeadingInformation) obj;
 					prefix = repeat(TAB, info.getTabs());
-					additionalInfo = "(" + info.getFileName() + ".java:" + info.getSourceLine() + ")";
+					additionalInfo = "(" + info.getFileName() + ".java:" + info.getSrcLn() + ")";
 				} else if (obj instanceof MinimalHeadingInformation) {
 					MinimalHeadingInformation info = (MinimalHeadingInformation) obj;
 					prefix = repeat(TAB, info.getTabs());

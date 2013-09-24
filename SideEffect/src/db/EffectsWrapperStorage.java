@@ -297,7 +297,7 @@ public class EffectsWrapperStorage {
 		@Override
 		public String getCauseString() {
 			return String.format("effect annotations of the method %s or the invocation of this method",
-					SootUtils.generateReadableMethodNameFrom(sootMethod));
+					SootUtils.generateMethodSignature(sootMethod, false, true, true));
 		}
 
 	}

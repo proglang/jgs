@@ -23,8 +23,6 @@ import utils.*;
  *
  */
 public class SideEffectAnalysis extends ForwardFlowAnalysis<Unit, Set<Local>> {
-	private static final String CLINIT_MEHTOD_NAME = "<clinit>";
-	private static final String INIT_MEHTOD_NAME = "<init>";
 	public static final List<String> EFFECT_IDS = EffectAnnotation
 			.getListOfEffectIDs();
 	private static boolean CHECK_CLASSES = true;
@@ -38,7 +36,7 @@ public class SideEffectAnalysis extends ForwardFlowAnalysis<Unit, Set<Local>> {
 			SideEffectLogger log, boolean checkClasses) {
 		super(graph);
 		this.log = log;
-		IS_CLINIT = sootMethod.getName().contains(CLINIT_MEHTOD_NAME) && sootMethod.isEntryMethod();
+		IS_CLINIT = sootMethod.getName().contains(SootMethod.staticInitializerName) && sootMethod.isEntryMethod();
 		CHECK_CLASSES = checkClasses || IS_CLINIT;
 		this.expectedMethodEffects = new MethodAnnotation(sootMethod, 0, this.log);
 		this.expectedClassEffects = new ClassAnnotation(sootMethod.getDeclaringClass(), 0, this.log);
@@ -259,7 +257,7 @@ public class SideEffectAnalysis extends ForwardFlowAnalysis<Unit, Set<Local>> {
 	@Override
 	protected void flowThrough(Set<Local> in, Unit d, Set<Local> out) {
 		Stmt statement = (Stmt) d;
-		long sourceLine = SootUtils.extractLineNumberFrom(statement);
+		long sourceLine = SootUtils.extractLn(statement);
 		// -> Stores the new effects:
 		// if Stmt is JAssignStmt and rhs contains JNewExpr so the type is effected.
 		if (statement instanceof JAssignStmt) {
@@ -290,7 +288,7 @@ public class SideEffectAnalysis extends ForwardFlowAnalysis<Unit, Set<Local>> {
 				this.calculatedEffectsStorage.addReadEffect(readEffectToClass);
 			} else if (invokeExpr instanceof StaticInvokeExpr
 					|| (invokeExpr instanceof SpecialInvokeExpr && invokedMethod.getName()
-							.contains(INIT_MEHTOD_NAME))) {
+							.contains(SootMethod.constructorName))) {
 				if (CHECK_CLASSES) {
 					// 3. Read/Write/New effects of the class which declares the method. (???)
 					// Static, special && <init>() => Java Spec!!! Class initialization

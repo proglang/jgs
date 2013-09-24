@@ -1,9 +1,7 @@
 package model;
 
-import security.SecurityAnnotation;
-import soot.jimple.Stmt;
-import utils.SootUtils;
-import logging.SecurityLogger;
+import security.*;
+import logging.*;
 
 /**
  * 
@@ -16,10 +14,7 @@ public class Environment {
 	private final SecurityLogger log;
 	/** */
 	private final SecurityAnnotation securityAnnotation;
-	/** */
-	private Stmt stmt = null;
-	/** */
-	private long sourceLine = 0;
+	
 
 	/**
 	 * 
@@ -36,23 +31,6 @@ public class Environment {
 	 * 
 	 * @return
 	 */
-	public Stmt getStmt() {
-		return stmt;
-	}
-
-	/**
-	 * 
-	 * @param stmt
-	 */
-	public void setStmt(Stmt stmt) {
-		this.stmt = stmt;
-		this.sourceLine = SootUtils.extractLineNumberFrom(stmt);
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
 	public SecurityLogger getLog() {
 		return log;
 	}
@@ -63,14 +41,6 @@ public class Environment {
 	 */
 	public SecurityAnnotation getSecurityAnnotation() {
 		return securityAnnotation;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public long getSourceLine() {
-		return sourceLine;
 	}
 	
 	/**

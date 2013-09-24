@@ -50,7 +50,7 @@ public class Main {
 		protected void internalTransform(Body body, String phaseName, Map options) {
 			UnitGraph g = new BriefUnitGraph(body);
 			SootMethod sootMethod = g.getBody().getMethod();
-			log.structure(SootUtils.generateMethodSignature(sootMethod));
+			log.structure(SootUtils.generateMethodSignature(sootMethod, false, true, false));
 			log.addAdditionalHandlerFor(sootMethod);
 			SideEffectAnalysis se = new SideEffectAnalysis(g, g.getBody().getMethod(), log,
 					checkClasses);

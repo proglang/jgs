@@ -59,7 +59,7 @@ public class Annotations {
 	 * @author Thomas Vogel
 	 * @version 0.1
 	 */
-	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
+	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR,  ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface WriteEffect {
 		

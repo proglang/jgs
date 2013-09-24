@@ -18,11 +18,7 @@ import soot.BodyTransformer;
 import soot.PackManager;
 import soot.SootMethod;
 import soot.Transform;
-import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
-import soot.toolkits.graph.MHGDominatorsFinder;
-import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.toolkits.graph.SimpleDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;
 import utils.ExtendedSecurityLevelImplChecker;
 import utils.GeneralUtils;
@@ -68,13 +64,14 @@ public class Main {
 		 * @param options
 		 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
 		 */
+		@SuppressWarnings("rawtypes")
 		@Override
 		protected void internalTransform(Body b, String phaseName, Map options) {
 			UnitGraph g = new BriefUnitGraph(b);
 			SootMethod sootMethod = g.getBody().getMethod();
 			if (! securityAnnotation.isMethodOfSootSecurity(sootMethod)) {
-				log.structure(SootUtils.generateMethodSignature(sootMethod));
-				log.addAdditionalHandlerFor(sootMethod);				
+				log.structure(SootUtils.generateMethodSignature(sootMethod, false, true, false));
+				log.addAdditionalHandlerFor(sootMethod);
 				TaintTracking tt = new TaintTracking(log, sootMethod, securityAnnotation, g);
 				tt.checkAnalysis();
 				log.removeAdditional();

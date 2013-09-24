@@ -240,9 +240,13 @@ public interface LevelEquationVisitor {
 		@Override
 		public void visit(LevelMinEquation levelEquation) {
 			if (resultingLevel.size() == 2) {
-				String result = securityAnnotation.getMinLevel(resultingLevel.get(0), resultingLevel.get(1));
-				resultingLevel.clear();
-				resultingLevel.add(result);
+				try {
+					String result = securityAnnotation.getMinLevel(resultingLevel.get(0), resultingLevel.get(1));
+					resultingLevel.clear();
+					resultingLevel.add(result);
+				} catch (Exception e) {
+					System.out.println("MIN ERR");
+				}
 			} else {
 				// TODO throw exception
 				System.out.println("MIN ERR");
@@ -257,9 +261,14 @@ public interface LevelEquationVisitor {
 		@Override
 		public void visit(LevelMaxEquation levelEquation) {
 			if (resultingLevel.size() == 2) {
-				String result = securityAnnotation.getMaxLevel(resultingLevel.get(0), resultingLevel.get(1));
-				resultingLevel.clear();
-				resultingLevel.add(result);
+				try {
+					String result = securityAnnotation.getMaxLevel(resultingLevel.get(0), resultingLevel.get(1));
+					resultingLevel.clear();
+					resultingLevel.add(result);
+				} catch (Exception e) {
+					// TODO: handle exception
+					System.out.println("MAX ERR");
+				}
 			} else {
 				// TODO throw exception
 				System.out.println("MAX ERR");

@@ -1,22 +1,12 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import logging.SootLogger;
-
-import security.SecurityAnnotation;
+import security.*;
 import exception.SootException.*;
-import soot.Local;
-import soot.Type;
-import soot.UnitPrinter;
-import soot.jimple.IfStmt;
-import soot.util.Chain;
-import soot.util.Switch;
-import utils.SecurityMessages;
+import soot.*;
+import soot.jimple.*;
+import soot.util.*;
 
 /**
  * 
@@ -87,6 +77,7 @@ public class LocalMap {
 		 * 
 		 * @return
 		 */
+		@SuppressWarnings("rawtypes")
 		public List getUseBoxes() {
 			return local.getUseBoxes();
 		}
@@ -180,20 +171,15 @@ public class LocalMap {
 	/** */
 	private Map<IfStmt, String> programCounter = new HashMap<IfStmt, String>();
 	/** */
-	private SecurityAnnotation securityAnnotation = null;
+	private final SecurityAnnotation securityAnnotation;
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public String getStrongestProgramCounterLevel() {
-		String resultLevel = securityAnnotation.getWeakestSecurityLevel();
-		for (String pcLevel : programCounter.values()) {
-			if (securityAnnotation.isWeakerOrEqualsThan(resultLevel, pcLevel)) {
-				resultLevel = pcLevel;
-			}
-		}
-		return resultLevel;
+	public String getStrongestProgramCounterLevel() throws InvalidLevelException {
+		List<String> levels = new ArrayList<String>(programCounter.values());
+		return securityAnnotation.getStrongestLevelOf(levels);
 	}
 	
 	/**
@@ -210,13 +196,8 @@ public class LocalMap {
 	 * @param ifStmt
 	 */
 	public void removeProgramCounterLevel(IfStmt ifStmt) {
-		if (!programCounter.isEmpty()) {
-			if (null != programCounter.remove(ifStmt)) {
-				//throw new ProgramCounterException(SecurityMessages.noSuchProgramCounter(ifStmt.toString()));
-			}
-		} else {
-			//throw new ProgramCounterException(SecurityMessages.noProgramCounter(ifStmt.toString()));
-		}
+		if (!programCounter.isEmpty())
+			programCounter.remove(ifStmt);
 	}
 	
 	/**
@@ -333,7 +314,7 @@ public class LocalMap {
 	 * 
 	 * @param locals
 	 */
-	public void addAllStronger(List<ExtendedLocal> locals) {
+	public void addAllStronger(List<ExtendedLocal> locals) throws InvalidLevelException {
 		for (ExtendedLocal extendedLocal : locals) {
 			if (extendedLocal.getLevel() == null) {
 				extendedLocal.setLevel(securityAnnotation.getWeakestSecurityLevel());
@@ -341,7 +322,7 @@ public class LocalMap {
 			if (localMap.containsKey(extendedLocal.getLocal())) {
 				String existingLevel = localMap.get(extendedLocal.getLocal());
 				String possibleNewLevel = extendedLocal.getLevel();
-				if (existingLevel == null) existingLevel = securityAnnotation.getWeakestSecurityLevel();
+				if (existingLevel == null) existingLevel = securityAnnotation.getWeakestSecurityLevel();				
 				if (securityAnnotation.isWeakerOrEqualsThan(existingLevel, possibleNewLevel)) {
 					localMap.put(extendedLocal.getLocal(), possibleNewLevel);
 				}

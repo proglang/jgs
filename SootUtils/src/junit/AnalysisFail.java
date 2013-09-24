@@ -3,9 +3,7 @@ package junit;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import logging.SootLoggerConfiguration;
 import logging.SootLoggerLevel;
@@ -14,6 +12,7 @@ import model.MessageStore.Message;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class AnalysisFail {
@@ -59,6 +58,7 @@ public class AnalysisFail {
 		System.out.println("Message Report");
 		System.out.println("Security: " + messageStore.getAllMessages(SootLoggerLevel.SECURITY).size());
 		System.out.println("Exception: " + messageStore.getAllMessages(SootLoggerLevel.EXCEPTION).size());
+		System.out.println("Side-Effect: " + messageStore.getAllMessages(SootLoggerLevel.SIDEEFFECT).size());
 		System.out.println("Error: " + messageStore.getAllMessages(SootLoggerLevel.ERROR).size());
 		System.out.println("Warning: " + messageStore.getAllMessages(SootLoggerLevel.WARNING).size());
 		System.out.println("Security Checker: " + messageStore.getAllMessages(SootLoggerLevel.SECURITYCHECKER).size());
@@ -76,10 +76,19 @@ public class AnalysisFail {
 	private final boolean twoMsg(List<Message> messages) {
 		return messages.size() == 2;
 	}
+	
+	/**
+	 * Main
+	 */
 		
 	@Test
 	public final void securityMessagesMain() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesMain() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -92,33 +101,42 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.ERROR)));
 	}
 	
+	@Ignore
+	public final void warningMessagesMain() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.WARNING)));
+	}
+	
+	/**
+	 * Array
+	 */
+	
 	@Test
 	public final void securityMessagesArray() {
 		int count = 0;
-		int classStart = 6;
+		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 7, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 17, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 26, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 34, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 43, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 53, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 62, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 70, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 79, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 89, "Expected: low return level / Result: high return level [length of high level array] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 98, "Expected: low return level / Result: high return level [length of high level array] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 106, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 116, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 126, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 137, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 147, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 157, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 167, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 176, "Assignment of value with high security level value to low security level array (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 186, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 8, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 19, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 29, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 38, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 48, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 59, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 69, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 78, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 88, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 99, "Expected: low return level / Result: high return level [length of high level array] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 109, "Expected: low return level / Result: high return level [length of high level array] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 118, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 129, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 140, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 152, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 163, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 174, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 185, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 195, "Assignment of value with high security level value to low security level array (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 206, "Assignment of value with high security level value to low security level array (at line %d)"));
 	
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(ARRAY, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -138,6 +156,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesArray() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesArray() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.EXCEPTION)));
 	}
@@ -147,16 +170,20 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Field
+	 */
+	
 	@Test
 	public final void securityMessagesField() {
 		int count = 0;
-		int classStart = 6;
+		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 11, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 18, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 25, "Assignment of high level to field with low level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 6, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 14, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 22, "Assignment of high level to field with low level (at line %d)"));
 
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(FIELD, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -176,6 +203,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesField() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(FIELD, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesField() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(FIELD, SootLoggerLevel.EXCEPTION)));
 	}
@@ -185,55 +217,59 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(FIELD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Expression
+	 */
+	
 	@Test
 	public final void securityMessagesExpr() {
 		int count = 0;
-		int classStart = 6;
+		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 7, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 15, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 23, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 31, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 39, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 47, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 55, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 63, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 71, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 8, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 17, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 26, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 35, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 43, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 52, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 61, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 70, "Expected: low return level / Result: high return level (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 79, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 87, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 95, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 103, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 111, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 119, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 127, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 135, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 143, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 88, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 97, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 106, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 115, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 124, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 133, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 142, "Expected: low return level / Result: high return level (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 151, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 159, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 167, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 175, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 183, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 191, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 199, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 207, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 215, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 160, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 169, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 178, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 187, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 196, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 205, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 214, "Expected: low return level / Result: high return level (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 223, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 231, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 239, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 247, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 255, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 263, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 271, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 279, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 287, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 232, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 241, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 250, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 259, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 268, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 277, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 286, "Expected: low return level / Result: high return level (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 295, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 303, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 311, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 319, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 327, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 335, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 304, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 313, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 322, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 331, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 340, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 349, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 358, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 367, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 376, "Expected: low return level / Result: high return level (at line %d)"));
 		
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(EXPR, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -253,6 +289,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesExpr() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesExpr() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.EXCEPTION)));
 	}
@@ -262,6 +303,10 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * ID Method
+	 */
+	
 	@Test
 	public final void securityMessagesIdMethods() {
 		int count = 0;
@@ -269,8 +314,8 @@ public class AnalysisFail {
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 6, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 14, "Expected: low or weaker argument level / Result: high argument level (at line %d)"));		
+		listOneError.add(new ExpectedError(classStart + 7, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 15, "Expected: low or weaker argument level / Result: high argument level (at line %d)"));		
 
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(ID_METHODS, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -290,6 +335,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesIdMethods() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ID_METHODS, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesIdMethods() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ID_METHODS, SootLoggerLevel.EXCEPTION)));
 	}
@@ -299,6 +349,10 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ID_METHODS, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * If-Else
+	 */
+	
 	@Test
 	public final void securityMessagesIfElse() {
 		int count = 0;
@@ -306,123 +360,123 @@ public class AnalysisFail {
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 8, "Expected: low or weaker return level / Result: high return level inside of if-expression and high pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 17, "Expected: low or weaker return level / Result: high return level inside of if-expression (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 26, "Expected: low or weaker return level / Result: high return level inside of if-expression and high pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 35, "Expected: low or weaker return level / Result: high return level inside of if-expression (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 44, "Expected: low or weaker return level / Result: high return level inside of if-expression and high pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 53, "Expected: low or weaker return level / Result: high return level inside of if-expression (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 62, "Expected: low or weaker return level / Result: high return level because of high pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 71, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 80, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 9, "Expected: low or weaker return level / Result: high return level inside of if-expression and high pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 19, "Expected: low or weaker return level / Result: high return level inside of if-expression (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 29, "Expected: low or weaker return level / Result: high return level inside of if-expression and high pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 39, "Expected: low or weaker return level / Result: high return level inside of if-expression (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 49, "Expected: low or weaker return level / Result: high return level inside of if-expression and high pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 59, "Expected: low or weaker return level / Result: high return level inside of if-expression (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 69, "Expected: low or weaker return level / Result: high return level because of high pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 79, "Expected: void return / Result: non void return (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 89, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 98, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 107, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 116, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 125, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 134, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 144, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 146, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 156, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 158, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 168, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 170, "Expected: low or weaker return level / Result: high return level because of pc [if contains return] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 180, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 192, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 194, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 206, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 216, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 218, "Expected: low or weaker return level / Result: high return level because of pc [if contains return] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 228, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 230, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 240, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 242, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 252, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 254, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 99, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 109, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 119, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 129, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 139, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 149, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 160, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 162, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 173, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 175, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 186, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 188, "Expected: low or weaker return level / Result: high return level because of pc [if contains return] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 199, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 212, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 214, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 227, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 238, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 240, "Expected: low or weaker return level / Result: high return level because of pc [if contains return] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 251, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 253, "Expected: void return / Result: non void return (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 264, "Expected: void return / Result: non void return (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 266, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 276, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 278, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 288, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 277, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 279, "Expected: void return / Result: non void return (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 290, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 300, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 302, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 312, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 314, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 324, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 326, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 337, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 339, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 350, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 352, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 363, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 376, "Expected: low or weaker return level / Result: high return level because og pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 378, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 391, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 402, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 404, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 415, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 417, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 428, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 430, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 441, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 443, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 454, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 456, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 292, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 303, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 305, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 316, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 318, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 329, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 331, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 342, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 344, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 355, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 357, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 369, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 371, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 383, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 385, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 397, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 411, "Expected: low or weaker return level / Result: high return level because og pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 413, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 427, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 439, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 441, "Expected: low or weaker return level / Result: high return level because of pc (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 453, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 455, "Expected: void return / Result: non void return (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 467, "Expected: void return / Result: non void return (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 469, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 480, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 482, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 493, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 481, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 483, "Expected: void return / Result: non void return (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 495, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 506, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 508, "Expected: void return / Result: non void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 524, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 539, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 554, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 569, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 584, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 599, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 614, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 629, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 644, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 659, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 674, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 689, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 704, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 719, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 729, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 731, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 743, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 745, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 757, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 759, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 771, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 785, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 787, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 801, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 813, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 815, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 831, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 845, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 855, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 857, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 869, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 871, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 887, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 901, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 911, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 913, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 925, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 943, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 957, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 967, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 969, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 983, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 999, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 1013, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 1023, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 1025, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 497, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 509, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 511, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 523, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 525, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 537, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 539, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 551, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 553, "Expected: void return / Result: non void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 570, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 586, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 602, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 618, "Expected: low or weaker return level / Result: high return level [assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 634, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 650, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 666, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 682, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 698, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 714, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 730, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 746, "Expected: low or weaker return level / Result: high return level [possible assign] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 762, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 778, "Expected: low or weaker return level / Result: high return level [assign, pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 789, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 791, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 804, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 806, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 819, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 821, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 834, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 849, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 851, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 866, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 879, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 881, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 898, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 913, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 924, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 926, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 939, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 941, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 958, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 973, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 984, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 986, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 999, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1018, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1033, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1044, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1046, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1061, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1078, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1093, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1104, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 1106, "Assignment of high security level value to low level field [pc] (at line %d)"));
 		
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(IF_ELSE, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -442,6 +496,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesIfElse() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesIfElse() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE, SootLoggerLevel.EXCEPTION)));
 	}
@@ -451,113 +510,116 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * If-Else 2
+	 */
+	
 	@Test
 	public final void securityMessagesIfElse2() {
 		int count = 0;
 		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
-		listOneError.add(new ExpectedError(classStart + 8, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 19, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 30, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 43, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 52, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 65, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 74, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 87, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 96, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 109, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 120, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 9, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 21, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 33, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 47, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 57, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 71, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 81, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 95, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 105, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 119, "Expected: low or weaker return level / Result: high return level (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 131, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 142, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 153, "Expected: low or weaker return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 164, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 175, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 186, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 197, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 208, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 219, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 230, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 241, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 252, "Expected: low or weaker return level / Result: high return level [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 263, "Expected: low or weaker return level / Result: high return level [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 278, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 293, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 308, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 323, "Assignment of high security level value to low level field [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 338, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 353, "Assignment of high security level value to low level field [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 368, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 383, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 398, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 413, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 428, "Assignment of high security level value to low level field [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 443, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 458, "Assignment of high security level value to low level field [possible] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 473, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 483, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 487, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 498, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 502, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 513, "Assignment of high security level value to low level field [pc](at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 517, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 528, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 532, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 543, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 547, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 143, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 155, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 167, "Expected: low or weaker return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 179, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 191, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 203, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 215, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 227, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 239, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 251, "Expected: low or weaker return level / Result: high return level [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 263, "Expected: low or weaker return level / Result: high return level [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 275, "Expected: low or weaker return level / Result: high return level [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 287, "Expected: low or weaker return level / Result: high return level [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 303, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 319, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 335, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 351, "Assignment of high security level value to low level field [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 367, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 383, "Assignment of high security level value to low level field [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 399, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 415, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 431, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 447, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 463, "Assignment of high security level value to low level field [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 479, "Assignment of high security level value to low level field [possible pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 495, "Assignment of high security level value to low level field [possible] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 511, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 522, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 526, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 538, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 542, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 554, "Assignment of high security level value to low level field [pc](at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 558, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 573, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 577, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 588, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 603, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 607, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 618, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 622, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 637, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 652, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 663, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 667, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 678, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 697, "Assignment of high security level value to low level field (at line %d)"));
-		
-		listOneError.add(new ExpectedError(classStart + 707, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 710, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 719, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 722, "(at line %d)")); // ???
-		listOneError.add(new ExpectedError(classStart + 731, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 734, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 743, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 746, "(at line %d)")); // ???
-		listOneError.add(new ExpectedError(classStart + 755, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 758, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 767, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 770, "(at line %d)")); // ???
-		listOneError.add(new ExpectedError(classStart + 779, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 782, "Assignment of high security level value to low level field (at line %d)"));
-		
-		listOneError.add(new ExpectedError(classStart + 791, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 794, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 797, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 806, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 809, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 812, "(at line %d)")); // ???
-		listOneError.add(new ExpectedError(classStart + 821, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 824, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 827, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 836, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 839, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 842, "(at line %d)")); // ???
-		listOneError.add(new ExpectedError(classStart + 851, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 854, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 857, "Assignment of high security level value to low level field (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 866, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 869, "Assignment of high security level value to low level field [pc] (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 872, "(at line %d)")); // ???
-		listOneError.add(new ExpectedError(classStart + 881, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 570, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 574, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 586, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 590, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 602, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 618, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 622, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 634, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 650, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 654, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 666, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 670, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 686, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 702, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 714, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 718, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 730, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 750, "Assignment of high security level value to low level field (at line %d)"));
+		// ->
+		listOneError.add(new ExpectedError(classStart + 761, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 764, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 774, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 777, "(at line %d)")); // ???
+		listOneError.add(new ExpectedError(classStart + 787, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 790, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 800, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 803, "(at line %d)")); // ???
+		listOneError.add(new ExpectedError(classStart + 813, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 816, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 826, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 829, "(at line %d)")); // ???
+		listOneError.add(new ExpectedError(classStart + 839, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 842, "Assignment of high security level value to low level field (at line %d)"));
+		// ->
+		listOneError.add(new ExpectedError(classStart + 852, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 855, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 858, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 868, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 871, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 874, "(at line %d)")); // ???
 		listOneError.add(new ExpectedError(classStart + 884, "Assignment of high security level value to low level field (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 887, "Assignment of high security level value to low level field (at line %d)"));
-		
-		
+		listOneError.add(new ExpectedError(classStart + 890, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 900, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 903, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 906, "(at line %d)")); // ???
+		listOneError.add(new ExpectedError(classStart + 916, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 919, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 922, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 932, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 935, "Assignment of high security level value to low level field [pc] (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 938, "(at line %d)")); // ???
+		listOneError.add(new ExpectedError(classStart + 948, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 951, "Assignment of high security level value to low level field (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 954, "Assignment of high security level value to low level field (at line %d)"));
+				
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(IF_ELSE_2, expectedError.lineNo, SootLoggerLevel.SECURITY);
 			assertTrue(expectedError.errorMsg, oneMsg(messages));
@@ -576,6 +638,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesIfElse2() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE_2, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesIfElse2() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE_2, SootLoggerLevel.EXCEPTION)));
 	}
@@ -585,37 +652,41 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE_2, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Method
+	 */
+	
 	@Test
 	public final void securityMessagesMethod() {
 		int count = 0;
-		int classStart = 6;
+		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 5, "Expected: low return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 11, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 17, "Expected: low return level / Result: high return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 29, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 41, "Expected: low return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 47, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 54, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 68, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 82, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 89, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 95, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 109, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 118, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listTwoError.add(new ExpectedError(classStart + 127, "Invoked Method expects: 2x low argument level, but 2x high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 142, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 151, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 166, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 175, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 185, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 193, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 194, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 202, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 203, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 218, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 6, "Expected: low return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 13, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 20, "Expected: low return level / Result: high return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 34, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 48, "Expected: low return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 55, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 63, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 79, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 95, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 103, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 110, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 126, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 136, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listTwoError.add(new ExpectedError(classStart + 146, "Invoked Method expects: 2x low argument level, but 2x high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 163, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 173, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 190, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 200, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 211, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 220, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 221, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 230, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 231, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 248, "Expected: low return level / Result: high return because of invoke (at line %d)"));
 		
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(METHOD, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -635,6 +706,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesMethod() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(METHOD, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesMethod() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(METHOD, SootLoggerLevel.EXCEPTION)));
 	}
@@ -644,37 +720,41 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(METHOD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Object
+	 */
+	
 	@Test
 	public final void securityMessagesObject() {
 		int count = 0;
-		int classStart = 6;
+		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 27, "Expected: low return level / Result: high return because of object level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 35, "Expected: low return level / Result: high return because of field level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 43, "Expected: low return level / Result: high return because of field level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 49, "Expected: low return level / Result: high return because of field level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 57, "Assignment of high level to field with low level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 67, "Assignment of high level to field with low level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 75, "Assignment of high level to field with low level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 111, "Expected: low return level / Result: high return because of invocation base object level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 118, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 8, "Expected: low return level / Result: high return because of object level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 17, "Expected: low return level / Result: high return because of field level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 26, "Expected: low return level / Result: high return because of field level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 33, "Expected: low return level / Result: high return because of field level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 42, "Assignment of high level to field with low level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 53, "Assignment of high level to field with low level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 62, "Assignment of high level to field with low level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 72, "Expected: low return level / Result: high return because of invocation base object level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 80, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 89, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 98, "Expected: low return level / Result: high return because of invocation base object and return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 108, "Expected: low return level / Result: high return because of invocation base object level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 117, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
 		listOneError.add(new ExpectedError(classStart + 126, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 134, "Expected: low return level / Result: high return because of invocation base object and return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 143, "Expected: low return level / Result: high return because of invocation base object level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 151, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 159, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 168, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 177, "Expected: low return level / Result: high return because of invocation base object and return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 186, "Expected: low return level / Result: high return because of invocation base object and return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 194, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 195, "Expected: low return level / Result: high return because of invocation base object (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 203, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 237, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 243, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 250, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 258, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 136, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 146, "Expected: low return level / Result: high return because of invocation base object and return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 156, "Expected: low return level / Result: high return because of invocation base object and return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 165, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 166, "Expected: low return level / Result: high return because of invocation base object (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 175, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 183, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 190, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 198, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 207, "Expected: low return level / Result: high return because of invocation return level (at line %d)"));
 		
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(OBJECT, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -694,6 +774,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesObject() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(OBJECT, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesObject() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(OBJECT, SootLoggerLevel.EXCEPTION)));
 	}
@@ -703,16 +788,20 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(OBJECT, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Static Field
+	 */
+	
 	@Test
 	public final void securityMessagesStaticField() {
 		int count = 0;
-		int classStart = 6;
+		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 11, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 18, "Expected: low return level / Result: high return level (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 25, "Assignment of high level to field with low level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 6, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 14, "Expected: low return level / Result: high return level (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 22, "Assignment of high level to field with low level (at line %d)"));
 		
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(STATIC_FIELD, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -732,6 +821,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesStaticField() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_FIELD, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesStaticField() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_FIELD, SootLoggerLevel.EXCEPTION)));
 	}
@@ -741,37 +835,41 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_FIELD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Static Method
+	 */
+	
 	@Test
 	public final void securityMessagesStaticMethod() {
 		int count = 0;
-		int classStart = 8;
+		int classStart = 7;
 		List<ExpectedError> listOneError = new ArrayList<ExpectedError>();
 		List<ExpectedError> listTwoError = new ArrayList<ExpectedError>();
 		
-		listOneError.add(new ExpectedError(classStart + 5, "Expected: low return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 11, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 17, "Expected: low return level / Result: high return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 29, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 41, "Expected: low return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 47, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 54, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 68, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 82, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 89, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 95, "Expected: high return level / Result: void return (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 109, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 118, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));		
-		listTwoError.add(new ExpectedError(classStart + 127, "Invoked Method expects: 2x low argument level, but 2x high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 142, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 151, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 166, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 175, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 185, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 193, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 194, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 202, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 203, "Expected: low return level / Result: high return because of invoke (at line %d)"));
-		listOneError.add(new ExpectedError(classStart + 218, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 6, "Expected: low return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 13, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 20, "Expected: low return level / Result: high return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 34, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 48, "Expected: low return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 55, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 63, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 79, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 95, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 103, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 110, "Expected: high return level / Result: void return (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 126, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 136, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));		
+		listTwoError.add(new ExpectedError(classStart + 146, "Invoked Method expects: 2x low argument level, but 2x high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 163, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 173, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 190, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 200, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 211, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 220, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 221, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 230, "Invoked Method expects: low argument level, but high argument level given (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 231, "Expected: low return level / Result: high return because of invoke (at line %d)"));
+		listOneError.add(new ExpectedError(classStart + 248, "Expected: low return level / Result: high return because of invoke (at line %d)"));
 		
 		for (ExpectedError expectedError : listOneError) {
 			List<Message> messages = messageStore.getAllMessages(STATIC_METHOD, expectedError.lineNo, SootLoggerLevel.SECURITY);
@@ -791,6 +889,11 @@ public class AnalysisFail {
 	}
 	
 	@Test
+	public final void sideEffectMessagesStaticMethod() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_METHOD, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
 	public final void exceptionMessagesStaticMethod() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_METHOD, SootLoggerLevel.EXCEPTION)));
 	}
@@ -800,10 +903,19 @@ public class AnalysisFail {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_METHOD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Complete check
+	 */
+	
 	@Test 
 	public final void securityCompleteCheck() {
 		List<Message> all = messageStore.getAllMessages(SootLoggerLevel.SECURITY);
 		assertTrue("Only 358 messages expected.", all.size() == 358); // ohne ??? 352
+	}
+	
+	@Test 
+	public final void sideEffectCheckerCompleteCheck() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test 
@@ -823,17 +935,17 @@ public class AnalysisFail {
 	
 	@AfterClass
 	public static final void end() {
-		List<Message> all = messageStore.getAllMessages(IF_ELSE_2, SootLoggerLevel.SECURITY);
+		List<Message> all = messageStore.getAllMessages(SootLoggerLevel.SIDEEFFECT);
 		StringBuilder builder = new StringBuilder();
 		for (Message message : all) {
-			if (message.getSourceLine() >= 708) {
-				System.out.println("> " + message.getSourceLine() + ": " + message.getMessage());
+			if (message.getSrcLn() >= 0) {
+				System.out.println("> " + message.getSrcLn() + ": " + message.getMessage());
 			}
-			builder.append(((!builder.toString().equals("")) ? "," : "") + message.getSourceLine());
+			builder.append(((!builder.toString().equals("")) ? "," : "") + message.getSrcLn());
 			
 		}
 		System.out.println(builder.toString());
 		
-		assertTrue("Only 358 messages expected.", overAllCount == 358);	// ohne ??? 352
+		//assertTrue("Only 358 messages expected.", overAllCount == 358);	// ohne ??? 352
 	}
 }

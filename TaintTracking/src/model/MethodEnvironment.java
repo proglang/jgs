@@ -1,36 +1,19 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import exception.SootException.InvalidEquationException;
-import exception.SootException.InvalidLevelException;
-
+import exception.SootException.*;
 import logging.SecurityLogger;
-
-import security.Annotations;
-import security.LevelEquation;
-import security.LevelEquationVisitor.LevelEquationCalculateVoidVisitor;
-import security.LevelEquationVisitor.LevelEquationValidityVistitor;
-import security.SecurityAnnotation;
-import soot.SootMethod;
-import soot.Type;
-import soot.tagkit.AnnotationArrayElem;
-import soot.tagkit.AnnotationElem;
-import soot.tagkit.AnnotationStringElem;
-import soot.tagkit.AnnotationTag;
-import soot.tagkit.ParamNamesTag;
-import soot.tagkit.Tag;
-import soot.tagkit.VisibilityAnnotationTag;
-import utils.SecurityMessages;
-import utils.SootUtils;
+import security.*;
+import security.LevelEquationVisitor.*;
+import soot.*;
+import soot.tagkit.*;
+import utils.*;
 
 /**
  * 
  * @author Thomas Vogel
- * @version 0.2
+ * @version 0.3
  */
 public class MethodEnvironment extends Environment {
 	
@@ -46,6 +29,14 @@ public class MethodEnvironment extends Environment {
 	private LevelEquation returnLevelEquation = null;
 	/** */
 	private boolean returnAnnotationAvailable = false;
+	/** */
+	private List<String> expectedWriteEffects = new ArrayList<String>();
+	/** */
+	private boolean writeEffectAnnotationAvailable = false;
+	/** */
+	private List<String> expectedClassWriteEffects = new ArrayList<String>();
+	/** */
+	private boolean classWriteEffectAnnotationAvailable = false;
 	
 	/**
 	 * 
@@ -121,9 +112,11 @@ public class MethodEnvironment extends Environment {
 		super(log, securityAnnotation);
 		this.sootMethod = sootMethod;
 		extractReturnSecurityLevel();
-		extractParameter();	
+		extractParameter();
+		extractWriteEffects();
+		extractClassWriteEffects();
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -142,22 +135,10 @@ public class MethodEnvironment extends Environment {
 		} else if (SootUtils.isClinitMethod(sootMethod) || SootUtils.isInitMethod(sootMethod)) {
 			this.returnLevel = SecurityAnnotation.VOID_LEVEL;
 		} else {
-			for (Tag tag : this.sootMethod.getTags()) {
-				if (tag instanceof VisibilityAnnotationTag) {
-					VisibilityAnnotationTag visibilityAnnotationTag = (VisibilityAnnotationTag) tag;
-					for (AnnotationTag  annotationTag : visibilityAnnotationTag.getAnnotations()) {
-						if (annotationTag.getType().equals(SecurityAnnotation.getSootAnnotationTag(Annotations.ReturnSecurity.class))) {
-							this.returnAnnotationAvailable  = true;
-							for (int i = 0; i < annotationTag.getNumElems(); i++) {
-								AnnotationElem annotationElem =  annotationTag.getElemAt(i);
-								if (annotationElem.getKind() == "s".charAt(0)) {
-									AnnotationStringElem annotationStringElem = (AnnotationStringElem) annotationElem;
-									this.returnLevel = annotationStringElem.getValue();
-								}
-							}
-						}
-					}
-				}
+			String annotations = SootUtils.extractAnnotationString(SecurityAnnotation.getSootAnnotationTag(Annotations.ReturnSecurity.class), sootMethod.getTags());
+			this.returnAnnotationAvailable = annotations != null;
+			if (returnAnnotationAvailable) {
+				this.returnLevel = annotations;
 			}
 		}
 	}
@@ -203,29 +184,12 @@ public class MethodEnvironment extends Environment {
 		} else {
 			if (SootUtils.isInitMethod(sootMethod) && sootMethod.getParameterCount() == 0) {
 				this.parameterAnnotationAvailable = true;
-			}
-			for (Tag tag : sootMethod.getTags()) {
-				if (tag instanceof VisibilityAnnotationTag) {
-					VisibilityAnnotationTag visibilityAnnotationTag = (VisibilityAnnotationTag) tag;
-					for (AnnotationTag  annotationTag : visibilityAnnotationTag.getAnnotations()) {
-						if (annotationTag.getType().equals(SecurityAnnotation.getSootAnnotationTag(Annotations.ParameterSecurity.class))) {
-							this.parameterAnnotationAvailable = true;
-							for (int i = 0; i < annotationTag.getNumElems(); i++) {
-								AnnotationElem annotationElem =  annotationTag.getElemAt(i);
-								if (annotationElem.getKind() == "[".charAt(0)) {
-									AnnotationArrayElem annotationArrayElem = (AnnotationArrayElem) annotationElem;
-									for (int j = 0; j < annotationArrayElem.getNumValues(); j++) {
-										AnnotationElem annotationElem1 = annotationArrayElem.getValueAt(j);
-										if (annotationElem1.getKind() == "s".charAt(0)) {
-											AnnotationStringElem annotationStringElem = (AnnotationStringElem) annotationElem1;
-											parameterSecurityLevels.add(annotationStringElem.getValue());
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+			} 
+			List<String> annotations = SootUtils.extractAnnotationStringArray(SecurityAnnotation.getSootAnnotationTag(Annotations.ParameterSecurity.class), sootMethod.getTags());
+			boolean annotationsAvailable = annotations != null;
+			if (annotationsAvailable) {
+				this.parameterAnnotationAvailable = true;
+				parameterSecurityLevels = annotations;
 			}
 		}
 		return parameterSecurityLevels;
@@ -233,25 +197,62 @@ public class MethodEnvironment extends Environment {
 	
 	/**
 	 * 
+	 */
+	private void extractWriteEffects() {
+		if (SootUtils.isClinitMethod(sootMethod) || getSecurityAnnotation().isIdMethod(this.sootMethod)) {
+			this.writeEffectAnnotationAvailable = true;
+		} else {
+			if (SootUtils.isInitMethod(sootMethod) && sootMethod.getParameterCount() == 0) {
+				this.writeEffectAnnotationAvailable = true;
+			} 
+			List<String> annotations = SootUtils.extractAnnotationStringArray(SecurityAnnotation.getSootAnnotationTag(Annotations.WriteEffect.class), sootMethod.getTags());
+			boolean annotationAvailable = annotations != null;
+			if (annotationAvailable) {
+				this.writeEffectAnnotationAvailable = true;
+				this.expectedWriteEffects = annotations;
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void extractClassWriteEffects() {
+		if (getSecurityAnnotation().isIdMethod(this.sootMethod)) {
+			this.classWriteEffectAnnotationAvailable = true;
+		} else {
+			SootClass sootClass = sootMethod.getDeclaringClass();
+			List<String> annotations = SootUtils.extractAnnotationStringArray(SecurityAnnotation.getSootAnnotationTag(Annotations.WriteEffect.class), sootClass.getTags());
+			this.classWriteEffectAnnotationAvailable = annotations != null;
+			if (classWriteEffectAnnotationAvailable) {
+				this.expectedClassWriteEffects = annotations;
+			}
+		}
+	}
+	
+	/**
+	 * 
 	 * @return
 	 */
 	public boolean isReturnSecurityValid() {
+		String methodSignature = SootUtils.generateMethodSignature(sootMethod, false, true, true);
+		String fileName = SootUtils.generateFileName(sootMethod);
 		if (! returnAnnotationAvailable && ! (SootUtils.isClinitMethod(sootMethod) || SootUtils.isInitMethod(sootMethod))) {
-			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noMethodAnnotation(SootUtils.generateMethodSignature(sootMethod)));
+			getLog().error(fileName, 0, SecurityMessages.noMethodAnnotation(methodSignature));
 			return false;
 		}
 		if (returnAnnotationAvailable && SootUtils.isInitMethod(sootMethod)) {
-			getLog().warning(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.constructorReturnNotRequired(SootUtils.generateMethodSignature(sootMethod)));
+			getLog().warning(fileName, 0, SecurityMessages.constructorReturnNotRequired(methodSignature));
 		}
 		if (returnLevel == null) {
-			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noMethodLevel(SootUtils.generateMethodSignature(sootMethod)));
+			getLog().error(fileName, 0, SecurityMessages.noMethodLevel(methodSignature));
 			return false;
 		}
 		try {
 			LevelEquationValidityVistitor visitor = getSecurityAnnotation().checkValidityOfReturnLevel(returnLevel, getListOfParameterLevels());
 			if (visitor.isValid()) {
 				if (visitor.isVoidInvalid()) {
-					getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.incompatibaleParameterLevels(SootUtils.generateMethodSignature(sootMethod), SecurityAnnotation.VOID_LEVEL));
+					getLog().error(fileName, 0, SecurityMessages.incompatibaleParameterLevels(methodSignature, SecurityAnnotation.VOID_LEVEL));
 					return false;
 				} else {
 					this.returnLevelEquation = visitor.getLevelEquation();
@@ -261,15 +262,15 @@ public class MethodEnvironment extends Environment {
 				List<String> invalidLevel = visitor.getValidLevels();
 				if (invalidLevel.size() != 0) {
 					for (String level : invalidLevel) {
-						getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnLevel(SootUtils.generateMethodSignature(sootMethod), level));
+						getLog().error(fileName, 0, SecurityMessages.invalidReturnLevel(methodSignature, level));
 					}
 				} else {
-					getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnEquation(SootUtils.generateMethodSignature(sootMethod)));
+					getLog().error(fileName, 0, SecurityMessages.invalidReturnEquation(methodSignature));
 				}
 				return false;
 			}
 		} catch (InvalidLevelException | InvalidEquationException e) {
-			getLog().exception(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidReturnEquation(SootUtils.generateMethodSignature(sootMethod)), e);
+			getLog().exception(fileName, 0, SecurityMessages.invalidReturnEquation(methodSignature), e);
 			return false;
 		}
 	}
@@ -279,8 +280,10 @@ public class MethodEnvironment extends Environment {
 	 * @return
 	 */
 	public boolean areMethodParameterSecuritiesValid() {
-		if (!this.parameterAnnotationAvailable) {
-			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.noParameterAnnotation(SootUtils.generateMethodSignature(sootMethod)));
+		String methodSignature = SootUtils.generateMethodSignature(sootMethod, false, true, true);
+		String fileName = SootUtils.generateFileName(sootMethod);
+		if (! this.parameterAnnotationAvailable) {
+			getLog().error(fileName, 0, SecurityMessages.noParameterAnnotation(methodSignature));
 			return false;
 		}
 		if (this.methodParameters == null) return true;
@@ -297,19 +300,91 @@ public class MethodEnvironment extends Environment {
 			}
 		}
 		if (countLevels > countParameter) {
-			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.moreParameterLevels(SootUtils.generateMethodSignature(sootMethod), countParameter, countLevels));
+			getLog().error(fileName, 0, SecurityMessages.moreParameterLevels(methodSignature, countParameter, countLevels));
 			valid = false;
 		} else if ( countLevels < countParameter) {
-			getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.moreParameterLevels(SootUtils.generateMethodSignature(sootMethod), countParameter, countLevels));
+			getLog().error(fileName, 0, SecurityMessages.moreParameterLevels(methodSignature, countParameter, countLevels));
 			valid = false;
 		}
 		if (! getSecurityAnnotation().checkValidityOfParameterLevels(getListOfParameterLevels())) {
 			for (String level : getSecurityAnnotation().getInvalidParameterLevels(getListOfParameterLevels())) {
-				getLog().error(SootUtils.generateFileName(sootMethod), 0, SecurityMessages.invalidParameterLevel(SootUtils.generateMethodSignature(sootMethod), level));
+				getLog().error(fileName, 0, SecurityMessages.invalidParameterLevel(methodSignature, level));
 			}
 			valid = false;
 		}
 		return valid;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean areWriteEffectsValid() {
+		String methodSignature = SootUtils.generateMethodSignature(sootMethod, false, true, true);
+		String fileName = SootUtils.generateFileName(sootMethod);
+		if (! this.writeEffectAnnotationAvailable) {
+			getLog().error(fileName, 0, SecurityMessages.noWriteEffectAnnotation(methodSignature));
+			return false;
+		}
+		if (! getSecurityAnnotation().checkValidityOfLevels(expectedWriteEffects)) {
+			for (String invalidEffect : getSecurityAnnotation().getInvalidLevels(expectedWriteEffects)) {
+				getLog().error(fileName, 0, SecurityMessages.invalidWriteEffect(methodSignature, invalidEffect));
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean areClassWriteEffectsValid() {
+		String classSignature = SootUtils.generateClassSignature(sootMethod.getDeclaringClass(), false);
+		String fileName = SootUtils.generateFileName(sootMethod);
+		if (! this.classWriteEffectAnnotationAvailable) {
+			getLog().error(fileName, 0, SecurityMessages.noClassWriteEffectAnnotation(classSignature));
+			return false;
+		}
+		if (! getSecurityAnnotation().checkValidityOfLevels(expectedClassWriteEffects)) {
+			for (String invalidEffect : getSecurityAnnotation().getInvalidLevels(expectedClassWriteEffects)) {
+				getLog().error(fileName, 0, SecurityMessages.invalidClassWriteEffect(classSignature, invalidEffect));
+			}
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> getExpectedWriteEffects() {
+		return expectedWriteEffects;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isWriteEffectAnnotationAvailable() {
+		return writeEffectAnnotationAvailable;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public List<String> getExpectedClassWriteEffects() {
+		return expectedClassWriteEffects;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isClassWriteEffectAnnotationAvailable() {
+		return classWriteEffectAnnotationAvailable;
 	}
 
 	/**
@@ -413,4 +488,5 @@ public class MethodEnvironment extends Environment {
 	public boolean isReturnAnnotationAvailable() {
 		return returnAnnotationAvailable;
 	}
+	
 }

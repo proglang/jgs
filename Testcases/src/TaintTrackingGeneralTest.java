@@ -4,7 +4,7 @@ import security.SootSecurityLevel;
 
 
 
-public class TaintTrackingTest {
+public class TaintTrackingGeneralTest {
 	
 	@Annotations.ReturnSecurity("void")
 	@Annotations.ParameterSecurity({ })

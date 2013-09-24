@@ -45,7 +45,7 @@ public class ExtendedSecurityLevelImplChecker extends SecurityLevelImplChecker {
 			URLClassLoader classLoader;
 			try {
 				classLoader = new URLClassLoader(new URL[] { generateURLOfSootSecurityLevelClass() });
-				Class<?> sootSecurityLevelClass = classLoader.loadClass(CLASS_NAME);
+				Class<?> sootSecurityLevelClass = classLoader.loadClass(SecurityLevel.IMPLEMENTED_CLASS_NAME);
 				SecurityLevel impl = (SecurityLevel) sootSecurityLevelClass.newInstance();
 				classLoader.close();
 				removeSootSecurityLevelClass();
@@ -53,7 +53,7 @@ public class ExtendedSecurityLevelImplChecker extends SecurityLevelImplChecker {
 			} catch (MalformedURLException e) {
 				log.securitychecker(SecurityMessages.invalidURLOfWorkingFolder(), e);
 			} catch (ClassNotFoundException e) {
-				log.securitychecker(SecurityMessages.impossibleToLoadSecurityLevelClass(CLASS_NAME), e);
+				log.securitychecker(SecurityMessages.impossibleToLoadSecurityLevelClass(SecurityLevel.IMPLEMENTED_CLASS_NAME), e);
 			} catch (InstantiationException | IllegalAccessException e) {
 				log.securitychecker(SecurityMessages.impossibleToInstantiateSecurityLevelClass(), e);
 			} catch (IOException | SecurityException e) {

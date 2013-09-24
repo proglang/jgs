@@ -3,6 +3,7 @@ package junit;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -35,6 +36,7 @@ public class PreTestSecurityAnnotation {
 	@Test
 	public final void testGetWeakestSecurityLevel() {
 		assertTrue("Correct weakest item", securityAnnotation.getWeakestSecurityLevel().equals("low"));
+		assertTrue("Incorrect weakest item", ! securityAnnotation.getWeakestSecurityLevel().equals("high"));
 	}
 
 	@Test
@@ -56,13 +58,6 @@ public class PreTestSecurityAnnotation {
 		assertTrue("Correct strongest item of low low low", securityAnnotation.getStrongestLevelOf(levels).equals("low"));
 		clearListAndAddToList(levels, "normal", "normal", "normal");
 		assertTrue("Correct strongest item of normal normal normal", securityAnnotation.getStrongestLevelOf(levels).equals("normal"));
-	}
-	
-	private final void clearListAndAddToList(List<String> list, String ... strings) {
-		list.clear();
-		for (String string : strings) {
-			list.add(string);
-		}
 	}
 
 	@Test
@@ -103,5 +98,193 @@ public class PreTestSecurityAnnotation {
 		assertTrue("Correct maximal level of {'high', 'normal'}", securityAnnotation.getMaxLevel("high", "normal").equals("high"));
 		assertTrue("Correct maximal level of {'high', 'high'}", securityAnnotation.getMaxLevel("high", "high").equals("high"));
 	}
+	
 
+	@Test
+	public final void testCheckValidityOfParameterLevels() {
+		List<String> valid1 = new ArrayList<String>(Arrays.asList("low", "normal", "high"));
+		assertTrue("Correct parameter list {'low', 'normal', 'high'}", securityAnnotation.checkValidityOfParameterLevels(valid1));
+		List<String> valid2 = new ArrayList<String>(Arrays.asList("high", "normal", "low"));
+		assertTrue("Correct parameter list {'high', 'normal', 'low'}", securityAnnotation.checkValidityOfParameterLevels(valid2));
+		List<String> valid3 = new ArrayList<String>(Arrays.asList("high", "high", "high"));
+		assertTrue("Correct parameter list {'high', 'high', 'high'}", securityAnnotation.checkValidityOfParameterLevels(valid3));
+		List<String> valid4 = new ArrayList<String>(Arrays.asList("high"));
+		assertTrue("Correct parameter list {'high'}", securityAnnotation.checkValidityOfParameterLevels(valid4));
+		List<String> valid5 = new ArrayList<String>(Arrays.asList("low"));
+		assertTrue("Correct parameter list {'low'}", securityAnnotation.checkValidityOfParameterLevels(valid5));
+		List<String> valid6 = new ArrayList<String>(Arrays.asList("*0"));
+		assertTrue("Correct parameter list {'*0'}", securityAnnotation.checkValidityOfParameterLevels(valid6));
+		List<String> valid7 = new ArrayList<String>(Arrays.asList("*0", "*1"));
+		assertTrue("Correct parameter list {'*0', '*1'}", securityAnnotation.checkValidityOfParameterLevels(valid7));
+		List<String> valid8 = new ArrayList<String>(Arrays.asList("normal", "*0", "*1"));
+		assertTrue("Correct parameter list {'normal', '*0', '*1'}", securityAnnotation.checkValidityOfParameterLevels(valid8));
+		List<String> valid9 = new ArrayList<String>(Arrays.asList("*0", "normal", "*1"));
+		assertTrue("Correct parameter list {'*1', 'normal', '*0'}", securityAnnotation.checkValidityOfParameterLevels(valid9));
+		List<String> valid10 = new ArrayList<String>(Arrays.asList("*0", "*1", "high"));
+		assertTrue("Correct parameter list {'*0', '*1', 'high'}", securityAnnotation.checkValidityOfParameterLevels(valid10));
+		List<String> invalid1 = new ArrayList<String>(Arrays.asList("high", "void", "high"));
+		assertTrue("Incorrect parameter list {'high', 'void', 'high'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid1));
+		List<String> invalid2 = new ArrayList<String>(Arrays.asList("high", "low", "hallo"));
+		assertTrue("Incorrect parameter list {'high', 'low', 'hallo'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid2));
+		List<String> invalid3 = new ArrayList<String>(Arrays.asList("high", "hallo", "low"));
+		assertTrue("Incorrect parameter list {'high', 'hallo', 'low'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid3));
+		List<String> invalid4 = new ArrayList<String>(Arrays.asList("welt", "hallo", "low"));
+		assertTrue("Incorrect parameter list {'welt', 'hallo', 'low'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid4));
+		List<String> invalid5 = new ArrayList<String>(Arrays.asList("normal", "void", "low"));
+		assertTrue("Incorrect parameter list {'normal', 'void', 'low'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid5));
+		List<String> invalid6 = new ArrayList<String>(Arrays.asList("*1"));
+		assertTrue("Incorrect parameter list {'*1'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid6));
+		List<String> invalid7 = new ArrayList<String>(Arrays.asList("*0", "*2"));
+		assertTrue("Incorrect parameter list {'*0', '*2'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid7));
+		List<String> invalid8 = new ArrayList<String>(Arrays.asList("hallo", "*0", "*1"));
+		assertTrue("Incorrect parameter list {'hallo', '*0', '*1'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid8));
+		List<String> invalid9 = new ArrayList<String>(Arrays.asList("*0", "hallo", "*1"));
+		assertTrue("Incorrect parameter list {'*0', 'hallo', '*1'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid9));
+		List<String> invalid10 = new ArrayList<String>(Arrays.asList("*0", "*1", "hallo"));
+		assertTrue("Incorrect parameter list {'*0', '*1', 'hallo'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid10));
+		List<String> invalid11 = new ArrayList<String>(Arrays.asList("normal", "*0", "*2"));
+		assertTrue("Incorrect parameter list {'normal', '*0', '*2'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid11));
+		List<String> invalid12 = new ArrayList<String>(Arrays.asList("*2", "normal", "*0"));
+		assertTrue("Incorrect parameter list {'*2', 'normal', '*0'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid12));
+		List<String> invalid13 = new ArrayList<String>(Arrays.asList("*0", "*2", "hallo"));
+		assertTrue("Incorrect parameter list {'*0', '*2', 'hallo'}", ! securityAnnotation.checkValidityOfParameterLevels(invalid13));
+	}
+	
+	@Test
+	public final void testCheckValidityOfLevels() {
+		List<String> list = new ArrayList<String>();
+		clearListAndAddToList(list, "low", "normal", "high");
+		assertTrue("Correct level list {'low', 'normal', 'high'}", securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "high", "normal", "low");
+		assertTrue("Correct level list {'high', 'normal', 'low'}", securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "high", "high", "high");
+		assertTrue("Correct level list {'high', 'high', 'high'}", securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "high");
+		assertTrue("Correct level list {'high'}", securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "low");
+		assertTrue("Correct level list {'low'}", securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "high", "void", "high");
+		assertTrue("Incorrect level list {'high', 'void', 'high'}", ! securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "high", "low", "hallo");
+		assertTrue("Incorrect level list {'high', 'low', 'hallo'}", ! securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "high", "hallo", "low");
+		assertTrue("Incorrect level list {'high', 'hallo', 'low'}", ! securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "welt", "hallo", "low");
+		assertTrue("Incorrect level list {'welt', 'hallo', 'low'}", ! securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "normal", "void", "low");
+		assertTrue("Incorrect level list {'normal', '*0', 'low'}", ! securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "normal", "low", "*0");
+		assertTrue("Incorrect level list {'normal', 'low', '*0'}", ! securityAnnotation.checkValidityOfLevels(list));
+		clearListAndAddToList(list, "*0");
+		assertTrue("Incorrect level list {'*0'}", ! securityAnnotation.checkValidityOfLevels(list));
+	}
+	
+	@Test
+	public final void testGetInvalidLevels() {
+		List<String> list = new ArrayList<String>();
+		List<String> result = new ArrayList<String>();
+		clearListAndAddToList(list, "low", "normal", "high");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for list {'low', 'normal', 'high'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "high", "normal", "low");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for list {'high', 'normal', 'low'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "high", "high", "high");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for list {'high', 'high', 'high'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "high");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for list {'high'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "low");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for list {'low'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "low", "hallo");
+		clearListAndAddToList(result, "hallo");
+		assertTrue("Incorrect level for list {'low', 'hallo'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "low", "hallo", "normal");
+		clearListAndAddToList(result, "hallo");
+		assertTrue("Incorrect level for list {'low', 'hallo'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "low", "hallo", "welt");
+		clearListAndAddToList(result, "hallo", "welt");
+		assertTrue("Incorrect level for list {'low', 'hallo', 'welt'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "!", "hallo", "welt");
+		clearListAndAddToList(result, "!", "hallo", "welt");
+		assertTrue("Incorrect level for list {'!', 'hallo', 'welt'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list, "normal", "*0", "high");
+		clearListAndAddToList(result, "*0");
+		assertTrue("Incorrect level for list {'normal', '*0', 'high'}", securityAnnotation.getInvalidLevels(list).equals(result));
+		clearListAndAddToList(list);
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for list {}", securityAnnotation.getInvalidLevels(list).equals(result));
+	}
+
+	@Test
+	public final void testCheckValidityOfLevel() {
+		assertTrue("Correct level 'high'", securityAnnotation.checkValidityOfLevel("high"));
+		assertTrue("Correct level 'low'", securityAnnotation.checkValidityOfLevel("low"));
+		assertTrue("Correct level 'normal'", securityAnnotation.checkValidityOfLevel("normal"));
+		assertTrue("Incorrect level '*0'", ! securityAnnotation.checkValidityOfLevel("*0"));
+		assertTrue("Incorrect level 'void'", ! securityAnnotation.checkValidityOfLevel("void"));
+		assertTrue("Incorrect level 'hallo'", ! securityAnnotation.checkValidityOfLevel("hallo"));
+		assertTrue("Incorrect level '*2'", ! securityAnnotation.checkValidityOfLevel("*2"));
+	}
+	
+	@Test
+	public final void testGetInvalidParameterLevels() {
+		List<String> list = new ArrayList<String>();
+		List<String> result = new ArrayList<String>();
+		clearListAndAddToList(list, "low", "normal", "high");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'low', 'normal', 'high'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "high", "normal", "low");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'high', 'normal', 'low'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "high", "high", "high");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'high', 'high', 'high'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "high");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'high'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "low");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'low'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "low", "hallo");
+		clearListAndAddToList(result, "hallo");
+		assertTrue("Incorrect level for parameter list {'low', 'hallo'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "low", "hallo", "normal");
+		clearListAndAddToList(result, "hallo");
+		assertTrue("Incorrect level for parameter list {'low', 'hallo'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "low", "hallo", "welt");
+		clearListAndAddToList(result, "hallo", "welt");
+		assertTrue("Incorrect level for parameter list {'low', 'hallo', 'welt'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "!", "hallo", "welt");
+		clearListAndAddToList(result, "!", "hallo", "welt");
+		assertTrue("Incorrect level for parameter list {'!', 'hallo', 'welt'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "normal", "*0", "high");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'normal', '*0', 'high'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list);
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "normal", "*0", "*1");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'normal', '*0', '*1'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "normal", "*1", "*0");
+		clearListAndAddToList(result);
+		assertTrue("Incorrect level for parameter list {'normal', '*1', '*0'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "normal", "*2", "*0");
+		clearListAndAddToList(result, "*2");
+		assertTrue("Incorrect level for parameter list {'normal', '*2', '*0'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+		clearListAndAddToList(list, "hallo", "*2", "*0");
+		clearListAndAddToList(result, "hallo", "*2");
+		assertTrue("Incorrect level for parameter list {'hallo', '*2', '*0'}", securityAnnotation.getInvalidParameterLevels(list).equals(result));
+	}
+	
+	private final void clearListAndAddToList(List<String> list, String ... strings) {
+		list.clear();
+		for (String string : strings) {
+			list.add(string);
+		}
+	}
+	
 }

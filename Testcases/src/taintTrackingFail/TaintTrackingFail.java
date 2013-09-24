@@ -1,6 +1,6 @@
 package taintTrackingFail;
 
-
+import security.Annotations;
 import taintTrackingFail.TaintTrackingIdMethods;
 import taintTrackingFail.TaintTrackingField;
 import taintTrackingFail.TaintTrackingStaticField;
@@ -13,6 +13,7 @@ import taintTrackingFail.TaintTrackingExpr;
 import taintTrackingFail.TaintTrackingArray;
 
 @SuppressWarnings("unused")
+@Annotations.WriteEffect({})
 public class TaintTrackingFail {
 
 }

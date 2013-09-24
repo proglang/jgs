@@ -23,13 +23,13 @@ public class SideEffectLogger extends SootLogger {
 	/**
 	 * 
 	 * @param fileName
-	 * @param sourceLine
+	 * @param srcLn
 	 * @param msg
 	 */
-	public void sideeffect(String fileName, long sourceLine, String msg) {
-		this.messageStore.addMessage(msg, fileName, sourceLine, SootLoggerLevel.SIDEEFFECT);
+	public void sideeffect(String fileName, long srcLn, String msg) {
+		this.messageStore.addMessage(msg, fileName, srcLn, SootLoggerLevel.SIDEEFFECT);
 		if (isLevelEnabled(SootLoggerLevel.SIDEEFFECT)) {
-			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, sourceLine, fileName);
+			ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
 			LOG.log(SootLoggerLevel.HEADING, "SIDEEFFECT", new Object[] { info });
 		}
 		LOG.log(SootLoggerLevel.SIDEEFFECT, msg);

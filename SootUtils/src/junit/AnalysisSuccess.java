@@ -43,6 +43,7 @@ public class AnalysisSuccess {
 		System.out.println("Message Report");
 		System.out.println("Security: " + messageStore.getAllMessages(SootLoggerLevel.SECURITY).size());
 		System.out.println("Exception: " + messageStore.getAllMessages(SootLoggerLevel.EXCEPTION).size());
+		System.out.println("Side-Effect: " + messageStore.getAllMessages(SootLoggerLevel.SIDEEFFECT).size());
 		System.out.println("Error: " + messageStore.getAllMessages(SootLoggerLevel.ERROR).size());
 		System.out.println("Warning: " + messageStore.getAllMessages(SootLoggerLevel.WARNING).size());
 		System.out.println("Security Checker: " + messageStore.getAllMessages(SootLoggerLevel.SECURITYCHECKER).size());
@@ -52,10 +53,19 @@ public class AnalysisSuccess {
 	private final boolean noMsg(List<Message> messages) {
 		return messages.isEmpty();
 	}
+
+	/**
+	 * Main
+	 */
 	
 	@Test
 	public final void securityMessagesMain() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesMain() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -68,9 +78,23 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.ERROR)));
 	}
 	
+	@Ignore
+	public final void warningMessagesMain() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.WARNING)));
+	}
+
+	/**
+	 * Array
+	 */
+	
 	@Test
 	public final void securityMessagesArray() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesArray() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -82,15 +106,19 @@ public class AnalysisSuccess {
 	public final void errorMessagesArray() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ARRAY, SootLoggerLevel.ERROR)));
 	}
-	
-	@Ignore
-	public final void warningMessagesMain() {
-		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(MAIN, SootLoggerLevel.WARNING)));
-	}
+
+	/**
+	 * Field
+	 */
 	
 	@Test
 	public final void securityMessagesField() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(FIELD, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesField() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(FIELD, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -103,9 +131,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(FIELD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Expression
+	 */
+	
 	@Test
 	public final void securityMessagesExpr() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesExpr() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -118,9 +155,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(EXPR, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * ID Method
+	 */
+	
 	@Test
 	public final void securityMessagesIdMethods() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ID_METHODS, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesIdMethods() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ID_METHODS, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -133,9 +179,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(ID_METHODS, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * If-Else
+	 */
+	
 	@Test
 	public final void securityMessagesIfElse() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesIfElse() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -148,9 +203,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(IF_ELSE, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Method
+	 */
+	
 	@Test
 	public final void securityMessagesMethod() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(METHOD, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesMethod() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(METHOD, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -163,9 +227,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(METHOD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Object
+	 */
+	
 	@Test
 	public final void securityMessagesObject() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(OBJECT, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesObject() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(OBJECT, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -178,9 +251,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(OBJECT, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Static Field
+	 */
+	
 	@Test
 	public final void securityMessagesStaticField() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_FIELD, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesStaticField() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_FIELD, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -193,9 +275,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_FIELD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Static Method
+	 */
+	
 	@Test
 	public final void securityMessagesStaticMethod() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_METHOD, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesStaticMethod() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_METHOD, SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test
@@ -208,9 +299,18 @@ public class AnalysisSuccess {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(STATIC_METHOD, SootLoggerLevel.ERROR)));
 	}
 	
+	/**
+	 * Complete check
+	 */
+	
 	@Test 
 	public final void securityCompleteCheck() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test 
+	public final void sideEffectCheckerCompleteCheck() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(SootLoggerLevel.SIDEEFFECT)));
 	}
 	
 	@Test 
@@ -227,4 +327,21 @@ public class AnalysisSuccess {
 	public final void securityCheckerCompleteCheck() {
 		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(SootLoggerLevel.SECURITYCHECKER)));
 	}
+	
+	@AfterClass
+	public static final void end() {
+		List<Message> all = messageStore.getAllMessages(SootLoggerLevel.SIDEEFFECT);
+		StringBuilder builder = new StringBuilder();
+		for (Message message : all) {
+			if (message.getSrcLn() >= 0) {
+				System.out.println("> " + message.getSrcLn() + ": " + message.getMessage());
+			}
+			builder.append(((!builder.toString().equals("")) ? "," : "") + message.getSrcLn());
+			
+		}
+		System.out.println(builder.toString());
+		
+		//assertTrue("Only 358 messages expected.", overAllCount == 358);	// ohne ??? 352
+	}
+	
 }
