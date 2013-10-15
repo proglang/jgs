@@ -10,6 +10,7 @@ import taintTrackingSuccess.TaintTrackingStaticMethod;
 import taintTrackingSuccess.TaintTrackingObject;
 import taintTrackingSuccess.TaintTrackingIfElse;
 import taintTrackingSuccess.TaintTrackingArray;
+import taintTrackingSuccess.TaintTrackingLoop;
 
 @SuppressWarnings("unused")
 @Annotations.WriteEffect({})

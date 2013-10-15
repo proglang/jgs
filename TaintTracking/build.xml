@@ -31,6 +31,8 @@
          <property name="enable.junit" value="true" />
          <!-- Should print the jimple source code? -->
          <property name="enable.jimple" value="true" />
+         <!-- Should print the javadoc? -->
+         <property name="enable.javadoc" value="true" />
        
          
 <!--_________________________________________________________________-->   
@@ -48,6 +50,7 @@
         <property name="jimple.dir.name" value="jimple" />
         <property name="report.dir.name" value="report" />
         <property name="junit.dir.name" value="junit" />
+        <property name="javadoc.dir.name" value="javadoc" />
         <property name="serialize.dir.name" value="serialize" />
         <property name="soot.jar.name" value="Soot.jar" />
         <property name="junit.jar.name" value="JUnit.jar" />
@@ -68,12 +71,14 @@
         <property name="report.dir" value="/${report.dir.name}" />
         <property name="jimple.dir" value="/${jimple.dir.name}" />
         <property name="junit.dir" value="/${junit.dir.name}" />
+        <property name="javadoc.dir" value="/${javadoc.dir.name}" />
         
         <!-- Absolute pahts: -->
         <property name="output.home" value="${testcases.dir}${output.dir}" />
         <property name="temp.home" value="${output.home}${temp.dir}" />
         <property name="report.home" value="${output.home}${report.dir}" />
         <property name="jimple.home" value="${output.home}${jimple.dir}" />
+        <property name="javadoc.home" value="${output.home}${javadoc.dir}" />
         
       <!-- TaintTracking properties: -->
         <property name="taintTracking.src.dir" value="${taintTracking.dir}${src.dir}" />
@@ -297,7 +302,22 @@
             <echo level="info">Jimple directory: OK (${jimple.home})</echo>
         </target>
         
-        <target name="precheck.folders" depends="precheck.testcases, precheck.output, precheck.jimple, precheck.report, precheck.temp">
+        <condition property="javadoc.exists">
+            <resourceexists>
+                <file file="${javadoc.home}"/>
+            </resourceexists>
+        </condition>
+        
+        <target name="precheck.javadoc.ok" if="javadoc.exists">
+            <delete dir="${javadoc.home}" />
+        </target>
+        
+        <target name="precheck.javadoc" depends="precheck.javadoc.ok, precheck.testcases">
+            <mkdir dir="${javadoc.home}" />
+            <echo level="info">JavaDoc directory: OK (${javadoc.home})</echo>
+        </target>
+        
+        <target name="precheck.folders" depends="precheck.testcases, precheck.output, precheck.jimple, precheck.report, precheck.temp, precheck.javadoc">
             <echo level="info">Pre-check and preparation of the folders successful.</echo>
         </target>
         
@@ -800,9 +820,25 @@
         </target>
         
       <!-- Generate JavaDoc -->
-        <target name="javadoc">
-            <javadoc packagenames="src" sourcepath="${src.dir}" destdir="${docs.dir}">
-            </javadoc>
+        <target name="javadoc" depends="post.junit" if="${enable.javadoc}">
+            
+            <path id="classpath.javadoc">
+                <fileset dir="${taintTracking.src.dir}">
+                    <filename name="*.java"/>
+                    <exclude name="junit/PreTest*.java" />
+                </fileset>
+                <fileset dir="${annotations.src.dir}">
+                    <exclude name="junit/PreTest*.java" />
+                    <filename name="*.java"/>
+                </fileset>
+                <fileset dir="${sootUtils.src.dir}">
+                    <exclude name="junit/PreTest*.java" />
+                    <filename name="*.java"/>
+                </fileset>
+            </path>
+            
+          <!--   <javadoc sourcepathref="classpath.javadoc" destdir="${javadoc.home}">
+            </javadoc> -->
         </target>
         
       <!-- Cleanup after the ant script -->
@@ -824,7 +860,7 @@
             </delete>
         </target>
     
-        <target name="cleanup" depends="post.junit, cleanup.soot, cleanup.other">
+        <target name="cleanup" depends="javadoc, cleanup.soot, cleanup.other">
             <echo level="info">CLEANUP SUCCESSFUL.</echo>
         </target>
         

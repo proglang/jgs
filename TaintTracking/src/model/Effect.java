@@ -1,29 +1,37 @@
 package model;
 
 /**
- * The effect class represents a calculated effect to a class/object which occurs at a specific
- * source line. Each effect has also a cause why this effect has occurred, or from where this
- * effect was inherited.
+ * <h1>Side effect to a <em>security level</em></h1>
+ * 
+ * The {@link Effect} represents a calculated effect to a <em>security level</em> which occurs at a
+ * specific source line number inside of a analyzed method. Each effect has also a cause that
+ * indicates why this effect has occurred, or from where this effect was inherited.
+ * 
+ * <hr />
  * 
  * @author Thomas Vogel
  * @version 0.2
+ * @see Cause
  */
 public class Effect {
 
-	private long srcLn;
-	private String effected;
-	private Cause cause;
+	/** The reason that indicates why this effect has occurred. */
+	private final Cause cause;
+	/** The effected <em>security level</em> of this effect. */
+	private final String effected;
+	/** The source line number at which this effect occurs. */
+	private final long srcLn;
 
 	/**
-	 * Constructor of an effect that requires the class of the effected object, the source line
-	 * number on which the effect occurs and also a cause.
+	 * Constructor of an {@link Effect} that requires the effected <em>security level</em>, the
+	 * source line number at which the effect occurs and also a cause why this effect occurs.
 	 * 
 	 * @param effected
-	 *            Class of the effected object as String.
+	 *            <em>Security level</em> that is effected.
 	 * @param srcLn
 	 *            Source line where the effect occurs.
 	 * @param cause
-	 *            Subtype of cause which specifies the reason of this effect.
+	 *            Subclass of {@link Cause} which specifies the reason of this effect.
 	 */
 	public Effect(String effected, long srcLn, Cause cause) {
 		super();
@@ -33,30 +41,30 @@ public class Effect {
 	}
 
 	/**
-	 * Returns the source line number where the effect occurs.
+	 * Returns a subclass of {@link Cause} which represents the reason of the effect.
 	 * 
-	 * @return The source line number where the effect occurs.
+	 * @return The cause of the effect.
 	 */
-	public long getSrcLn() {
-		return this.srcLn;
+	public Cause getCause() {
+		return this.cause;
 	}
 
 	/**
-	 * Returns the effected class name as String.
+	 * Returns the effected <em>security level</em>.
 	 * 
-	 * @return The effected class.
+	 * @return The effected <em>security level</em>.
 	 */
 	public String getEffected() {
 		return this.effected;
 	}
 
 	/**
-	 * Returns a subtype of cause which represents the reason of the effect.
+	 * Returns the source line number where the effect occurs.
 	 * 
-	 * @return The cause of the effect.
+	 * @return The source line number where the effect occurs.
 	 */
-	public Cause getCause() {
-		return this.cause;
+	public long getSrcLn() {
+		return this.srcLn;
 	}
 
 }

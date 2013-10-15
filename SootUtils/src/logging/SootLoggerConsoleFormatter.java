@@ -5,134 +5,67 @@ import java.util.List;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-import model.ExtendedHeadingInformation;
-import model.MinimalHeadingInformation;
-
-
 /**
+ * <h1>Console formatter for the SootLogger</h1>
+ * 
+ * The {@link SootLoggerConsoleFormatter} extends the {@link Formatter} and provides methods to
+ * format logged message with the customized {@link SootLoggerLevel} to export them via console. The
+ * formatting for the console provides that lines do not exceed the specified length
+ * {@link SootLoggerConsoleFormatter#LINE_WIDTH} and all messages are displayed in boxes.
+ * 
+ * <hr />
  * 
  * @author Thomas Vogel
  * @version 0.1
+ * @see SootLoggerUtils
+ * @see SootLogger
+ * @see SootLoggerLevel
  */
 public class SootLoggerConsoleFormatter extends Formatter {
-	
-	/** */
-	private static final String CLOSE_TAG = " ] --|";
-	/** */
-	private static final String OPEN_TAG = "|-- [ ";
-	/** */
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	/** */
-	private static final String TAB = "   ";
-	/** */
-	private static final int TRACE_ELEMENTS_MAX = 15;
-	/** */
-	private static final int LINE_WIDTH = 100;
-	
-	/**
-	 * 
-	 * @param record
-	 * @return
-	 * @see java.util.logging.Formatter#format(java.util.logging.LogRecord)
-	 */
-	@Override
-	public String format(LogRecord record) {
-		StringBuilder result = new StringBuilder();
-		if (record.getLevel().equals(SootLoggerLevel.HEADING)) {
-			String prefix = "";
-			String additionalInfo = "";
-			if (record.getParameters() != null && record.getParameters().length == 1) {
-				Object obj = record.getParameters()[0];
-				if (obj instanceof ExtendedHeadingInformation) {
-					ExtendedHeadingInformation info = (ExtendedHeadingInformation) obj;
-					prefix = repeat(TAB, info.getTabs());
-					additionalInfo = " (" + info.getFileName() + ".java:" + info.getSrcLn() + ")";
-				} else if (obj instanceof MinimalHeadingInformation) {
-					MinimalHeadingInformation info = (MinimalHeadingInformation) obj;
-					prefix = repeat(TAB, info.getTabs());
-				}
-			}
-			result.append(prefix + OPEN_TAG + formatMessage(record) + additionalInfo + CLOSE_TAG + LINE_SEPARATOR);
-		} else if (record.getLevel().equals(SootLoggerLevel.EXCEPTION)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.ERROR)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.WARNING)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.INFORMATION)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.STRUCTURE)) {
-			result.append(OPEN_TAG + formatMessage(record) + CLOSE_TAG + LINE_SEPARATOR);
-		} else if (record.getLevel().equals(SootLoggerLevel.DEBUG)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.CONFIGURATION)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.SIDEEFFECT)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.SECURITY)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else if (record.getLevel().equals(SootLoggerLevel.SECURITYCHECKER)) {
-			buildMsgBox(result, formatMessage(record), TAB);
-		} else {
-			result.append(record.getLevel().getLocalizedName() + ":" + TAB);
-			result.append(formatMessage(record));
-			result.append(LINE_SEPARATOR);
-		}
-		handleThrownException(result, record.getThrown(), record.getThreadID());
-		return result.toString();
-	}
 
 	/**
-	 * @param result
-	 * @param thrown
-	 * @param threadID
+	 * Maximal character number of a single line. I.e. a printed line has to have at most the given
+	 * number of characters.
 	 */
-	private void handleThrownException(StringBuilder result, Throwable thrown, int threadID) {
-		if (thrown != null) {
-			String thread = "unknown";
-			for (Thread t : Thread.getAllStackTraces().keySet()) {
-				if (t.getId() == threadID) {
-					thread = t.getName();
-				}
-			}
-			result.append(TAB + "Exception in thread \"" + thread + "\" "+ thrown.getClass().getName());
-			result.append(": " + thrown.getLocalizedMessage() + LINE_SEPARATOR);
-			StackTraceElement[] stackTraceElements = thrown.getStackTrace();
-			for(int i = 0; i < TRACE_ELEMENTS_MAX && i < stackTraceElements.length; i++) {
-				StackTraceElement stackTraceElement = stackTraceElements[i];
-				result.append(TAB + TAB +"at " + stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName());
-				result.append("(" + stackTraceElement.getFileName() + ":" + stackTraceElement.getLineNumber() +")");
-				result.append(LINE_SEPARATOR);
-			}
-			if (TRACE_ELEMENTS_MAX <= stackTraceElements.length) {
-				result.append(TAB + TAB + "..." + LINE_SEPARATOR);
-			}
-		}
-	}
-	
+	private static final int LINE_WIDTH = 120;
+
 	/**
+	 * Stores the given message formatted in the given {@link StringBuilder}. The given message will
+	 * be divided in lines with maximal {@link SootLoggerConsoleFormatter#LINE_WIDTH} characters and
+	 * in front of each line the given prefix will be placed as well as a suffix and a newline
+	 * character will be appended to the end of each line. Thus a box will be placed around the
+	 * message.
 	 * 
 	 * @param result
+	 *            StringBuilder instance to which the formatted message will be appended.
 	 * @param msg
+	 *            Message which should be formatted.
 	 * @param prefix
+	 *            String which will be added to the message at the start of each new line.
+	 * @see SootLoggerFileFormatter#format(LogRecord)
 	 */
 	private static void buildMsgBox(StringBuilder result, String msg, String prefix) {
 		List<String> list = reduceToSuitableLineWidth(msg, prefix.length());
 		int maxWidth = maxString(list);
-		result.append(prefix + "+" + repeat("-", maxWidth + 2) + "+" + LINE_SEPARATOR);
+		result.append(prefix + "+" + SootLoggerUtils.repeat("-", maxWidth + 2) + "+"
+				+ SootLoggerUtils.TXT_LINE_SEPARATOR);
 		for (String string : list) {
 			result.append(prefix);
-			string = "| " + string + repeat(" ", maxWidth - string.length()) + " |";
+			string = "| " + string + SootLoggerUtils.repeat(" ", maxWidth - string.length()) + " |";
 			result.append(string);
-			result.append(LINE_SEPARATOR);
+			result.append(SootLoggerUtils.TXT_LINE_SEPARATOR);
 		}
-		result.append(prefix + "+" + repeat("-", maxWidth + 2) + "+" + LINE_SEPARATOR);
+		result.append(prefix + "+" + SootLoggerUtils.repeat("-", maxWidth + 2) + "+"
+				+ SootLoggerUtils.TXT_LINE_SEPARATOR);
 	}
-	
+
 	/**
+	 * Returns the maximal character count of the Strings contained the given list.
 	 * 
 	 * @param list
-	 * @return
+	 *            List of strings for which the maximum character count of a string contained by the
+	 *            list is returned.
+	 * @return The maximal character number of the Strings which are contained by the given list.
 	 */
 	private static int maxString(List<String> list) {
 		int max = 0;
@@ -141,15 +74,23 @@ public class SootLoggerConsoleFormatter extends Formatter {
 		}
 		return max;
 	}
-	
+
 	/**
+	 * Method that divides the given message String into single lines Strings and for each single
+	 * line including the given prefix will be checked whether it contains at most
+	 * {@link SootLoggerConsoleFormatter#LINE_WIDTH} characters if yes, then the line will be stored
+	 * in the returned list, if not, then the line will be reduced recursively.
 	 * 
 	 * @param msg
+	 *            Message which should be divided in lines with maximal
+	 *            {@link SootLoggerConsoleFormatter#LINE_WIDTH} characters.
 	 * @param prefix
-	 * @return
+	 *            Prefix that will be placed in front of each list element.
+	 * @return A list with the message divided into Strings, where each string has at most
+	 *         {@link SootLoggerConsoleFormatter#LINE_WIDTH} characters.
 	 */
 	private static List<String> reduceToSuitableLineWidth(String msg, int prefix) {
-		String[] preResult = msg.split(LINE_SEPARATOR);
+		String[] preResult = msg.split(SootLoggerUtils.TXT_LINE_SEPARATOR);
 		List<String> result = new ArrayList<String>();
 		for (String subMsg : preResult) {
 			subMsg = subMsg.trim();
@@ -165,16 +106,40 @@ public class SootLoggerConsoleFormatter extends Formatter {
 		}
 		return result;
 	}
-	
+
 	/**
+	 * Format the given log record and return the formatted string. The resulting formatted String
+	 * will include a localized and formatted version of the LogRecord's message field. The format
+	 * of the message depends on the log record level. For the {@link SootLoggerLevel#HEADING} level
+	 * a heading will be generated (see {@link SootLoggerUtils#generateLogHeading(String, Object[])}
+	 * ), for the {@link SootLoggerLevel#STRUCTURE} level a structural message will be generated
+	 * (see {@link SootLoggerUtils#generateStructureMessage(String)}) and for all other
+	 * {@link SootLoggerLevel} a standard message will be generated (see
+	 * {@link SootLoggerConsoleFormatter#buildMsgBox(StringBuilder, String, String)}).
 	 * 
-	 * @param str
-	 * @param n
-	 * @return
+	 * @param record
+	 *            The log record to be formatted.
+	 * @return The formatted log record String.
+	 * @see java.util.logging.Formatter#format(java.util.logging.LogRecord)
+	 * @see SootLoggerConsoleFormatter#buildMsgBox(StringBuilder, String, String)
 	 */
-	private static String repeat(String str, int n) {
-		if (n < 0)
-			return "";
-		return new String(new char[n]).replace("\0", str);
+	@Override
+	public String format(LogRecord record) {
+		StringBuilder result = new StringBuilder();
+		if (record.getLevel().equals(SootLoggerLevel.HEADING)) {
+			result.append(SootLoggerUtils.generateLogHeading(formatMessage(record),
+					record.getParameters()));
+		} else if (SootLoggerUtils.isStandardLoggableMessage(record.getLevel())) {
+			buildMsgBox(result, formatMessage(record), SootLoggerUtils.TXT_TAB);
+		} else if (record.getLevel().equals(SootLoggerLevel.STRUCTURE)) {
+			result.append(SootLoggerUtils.generateStructureMessage(formatMessage(record)));
+		} else {
+			result.append(SootLoggerUtils.generateDefaultMessage(record.getLevel()
+					.getLocalizedName(), formatMessage(record)));
+		}
+		result.append(SootLoggerUtils.handleThrownException(record.getThrown(),
+				record.getThreadID()));
+		return result.toString();
 	}
+
 }

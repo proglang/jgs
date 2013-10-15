@@ -27,22 +27,22 @@ public class LevelChecker {
 	
 	@Test
 	public final void unavailableIdMethod() {
-		assertTrue("Id-Method for every specified level is available.", extendedSecurityLevelImplChecker.getUnavailableIdMethods().isEmpty());
+		assertTrue("Id-Method for every specified level is available.", extendedSecurityLevelImplChecker.getUnavailableIdFunctions().isEmpty());
 	}
 	
 	@Test
 	public final void invalidIdMethod() {
-		assertTrue("For every Id-Method the corresponding annotation is available.", extendedSecurityLevelImplChecker.getInvalidIdMethods().isEmpty());
+		assertTrue("For every Id-Method the corresponding annotation is available.", extendedSecurityLevelImplChecker.getInvalidIdFunctions().isEmpty());
 	}
 	
 	@Test
 	public final void unavailableAnnotation() {
-		assertTrue("Id-Method for every specified level is valid.", extendedSecurityLevelImplChecker.getUnavailableIdMethodsAnnotation().isEmpty());
+		assertTrue("Id-Method for every specified level is valid.", extendedSecurityLevelImplChecker.getUnavailableIdFunctionAnnotation().isEmpty());
 	}
 	
 	@Test
 	public final void invalidAnnotation() {
-		assertTrue("For every Id-Method the corresponding annotation is valid.", extendedSecurityLevelImplChecker.getInvalidIdMethodsAnnotation().isEmpty());
+		assertTrue("For every Id-Method the corresponding annotation is valid.", extendedSecurityLevelImplChecker.getInvalidIdFunctionAnnotation().isEmpty());
 	}
 	
 	@Test

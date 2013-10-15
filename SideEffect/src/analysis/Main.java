@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.logging.*;
 
 import logging.*;
-import model.Configurations;
-import model.Configurations.Config;
+import model.Settings;
+import model.Settings.Setting;
 
 import soot.*;
 import soot.toolkits.graph.*;
@@ -51,20 +51,20 @@ public class Main {
 			UnitGraph g = new BriefUnitGraph(body);
 			SootMethod sootMethod = g.getBody().getMethod();
 			log.structure(SootUtils.generateMethodSignature(sootMethod, false, true, false));
-			log.addAdditionalHandlerFor(sootMethod);
+			log.addStandardFileHandlerForMethod(sootMethod);
 			SideEffectAnalysis se = new SideEffectAnalysis(g, g.getBody().getMethod(), log,
 					checkClasses);
 			se.checkAnnotation();
-			log.removeAdditional();
+			log.removeStandardFileHandler();
 		}
 	}
 
 	public static void main(String[] args) {
 		args = GeneralUtils.precheckArguments(args);
 		log = new SideEffectLogger(exportFile, logLevels);
-		log.configuration(new Configurations(
-				new Config("Export File", (exportFile ? "ON" : "OFF")), new Config(
-						"Check Classes", (checkClasses ? "ON" : "OFF")), new Config("Log levels",
+		log.configuration(new Settings(
+				new Setting("Export File", (exportFile ? "ON" : "OFF")), new Setting(
+						"Check Classes", (checkClasses ? "ON" : "OFF")), new Setting("Log levels",
 						generateLevelList())));
 		PackManager.v().getPack("jtp").add(new Transform(PHASE_NAME, new EffectTransformer()));
 		soot.Main.main(args);

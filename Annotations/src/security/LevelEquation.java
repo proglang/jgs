@@ -9,13 +9,6 @@ import exception.SootException.*;
  */
 public interface LevelEquation {
 	
-	/** */
-	public void accept(LevelEquationVisitor visitor);
-	/** */
-	public boolean isEquation();
-	/** */
-	public boolean isLevel();
-	
 	/**
 	 * 
 	 * @author Thomas Vogel
@@ -73,7 +66,6 @@ public interface LevelEquation {
 		}
 
 	}
-	
 	/**
 	 * 
 	 * @author Thomas Vogel
@@ -131,7 +123,6 @@ public interface LevelEquation {
 			return -1;
 		}
 	}
-	
 	/**
 	 * 
 	 * @author Thomas Vogel
@@ -247,4 +238,13 @@ public interface LevelEquation {
 		}
 
 	}
+	
+	/** */
+	public void accept(LevelEquationVisitor visitor);
+	
+	/** */
+	public boolean isEquation();
+	
+	/** */
+	public boolean isLevel();
 }

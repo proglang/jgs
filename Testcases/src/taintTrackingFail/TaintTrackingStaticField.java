@@ -23,7 +23,7 @@ public class TaintTrackingStaticField {
 	
 	@Annotations.ParameterSecurity({})
 	@Annotations.ReturnSecurity("void")
-	@Annotations.WriteEffect({"low"})
+	@Annotations.WriteEffect({"low", "high"})
 	public void assignHighSecurity() {
 		int high2 = SootSecurityLevel.highId(42);
 		low = high2;

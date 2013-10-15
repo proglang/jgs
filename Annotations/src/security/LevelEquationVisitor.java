@@ -18,110 +18,6 @@ import security.LevelEquation.LevelMinEquation;
  */
 public interface LevelEquationVisitor {
 
-	/** */
-	public void visit(Level level);
-	/** */
-	public void visit(LevelMinEquation levelEquation);
-	/** */
-	public void visit(LevelMaxEquation levelEquation);
-	
-	/**
-	 * 
-	 * @author Thomas Vogel
-	 * @version 0.1
-	 */
-	public static class LevelEquationValidityVistitor implements LevelEquationVisitor {
-		
-		/** */
-		private SecurityAnnotation securityAnnotation = null;
-		/** */
-		private Set<String> containedLevels = new HashSet<String>();
-		/** */
-		private List<String> validLevels = new ArrayList<String>();
-		/** */
-		private LevelEquation levelEquation = null;
-		/** */
-		private boolean valid = true;
-		
-		/**
-		 * 
-		 * @param levelEquation
-		 * @param securityAnnotation
-		 */
-		protected LevelEquationValidityVistitor(LevelEquation levelEquation, SecurityAnnotation securityAnnotation) {
-			this.securityAnnotation = securityAnnotation;
-			this.levelEquation = levelEquation;
-		}
-
-		/**
-		 * 
-		 * @param level
-		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.Level)
-		 */
-		@Override
-		public void visit(Level level) {
-			containedLevels.add(level.getLevel());
-			boolean result = securityAnnotation.getAvailableLevels().contains(level.getLevel()) || level.getLevel().equals(SecurityAnnotation.VOID_LEVEL);
-			if (! result) {
-				valid = false;
-			} else {
-				validLevels.add(level.getLevel());
-			}
-		}
-
-		/**
-		 * 
-		 * @param levelEquation
-		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMinEquation)
-		 */
-		@Override
-		public void visit(LevelMinEquation levelEquation) {
-			return;	
-		}
-
-		/**
-		 * 
-		 * @param levelEquation
-		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMaxEquation)
-		 */
-		@Override
-		public void visit(LevelMaxEquation levelEquation) {
-			return;			
-		}
-		
-		/**
-		 * 
-		 * @return
-		 */
-		public List<String> getValidLevels() {
-			return validLevels;
-		}
-		
-		/**
-		 * 
-		 * @return
-		 */
-		public boolean isValid() {
-			return valid;
-		}
-		
-		/**
-		 * 
-		 * @return
-		 */
-		public boolean isVoidInvalid() {
-			return containedLevels.size() > 1 && containedLevels.contains(SecurityAnnotation.VOID_LEVEL);
-		}
-
-		/**
-		 * 
-		 * @return
-		 */
-		public LevelEquation getLevelEquation() {
-			return levelEquation;
-		}		
-	}
-	
 	/**
 	 * 
 	 * @author Thomas Vogel
@@ -141,22 +37,20 @@ public interface LevelEquationVisitor {
 
 		/**
 		 * 
+		 * @return
+		 */
+		public boolean isValid() {
+			return containedLevels.size() == 1 && containedLevels.contains(SecurityAnnotation.VOID_LEVEL);
+		}
+
+		/**
+		 * 
 		 * @param level
 		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.Level)
 		 */
 		@Override
 		public void visit(Level level) {
 			containedLevels.add(level.getLevel());			
-		}
-
-		/**
-		 * 
-		 * @param levelEquation
-		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMinEquation)
-		 */
-		@Override
-		public void visit(LevelMinEquation levelEquation) {
-			return;			
 		}
 
 		/**
@@ -171,14 +65,15 @@ public interface LevelEquationVisitor {
 		
 		/**
 		 * 
-		 * @return
+		 * @param levelEquation
+		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMinEquation)
 		 */
-		public boolean isValid() {
-			return containedLevels.size() == 1 && containedLevels.contains(SecurityAnnotation.VOID_LEVEL);
+		@Override
+		public void visit(LevelMinEquation levelEquation) {
+			return;			
 		}
 		
 	}
-	
 	/**
 	 * 
 	 * @author Thomas Vogel
@@ -187,11 +82,11 @@ public interface LevelEquationVisitor {
 	public static class LevelEquationEvaluationVisitor implements LevelEquationVisitor {
 		
 		/** */
-		private Map<String, String> translateMap = new HashMap<String, String>();
+		private List<String> resultingLevel = new ArrayList<String>();
 		/** */
 		private SecurityAnnotation securityAnnotation = null;
 		/** */
-		private List<String> resultingLevel = new ArrayList<String>();
+		private Map<String, String> translateMap = new HashMap<String, String>();
 
 		/**
 		 * 
@@ -218,6 +113,20 @@ public interface LevelEquationVisitor {
 
 		/**
 		 * 
+		 * @return
+		 */
+		public String getResultLevel() {
+			if (resultingLevel.size() == 1) {
+				return resultingLevel.get(0);
+			} else {
+				// TODO throw exception
+				System.out.println("NONE ERR");
+				return null;
+			}
+		}
+
+		/**
+		 * 
 		 * @param level
 		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.Level)
 		 */
@@ -230,27 +139,6 @@ public interface LevelEquationVisitor {
 			} else {
 				resultingLevel.add(lev);
 			}		
-		}
-
-		/**
-		 * 
-		 * @param levelEquation
-		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMinEquation)
-		 */
-		@Override
-		public void visit(LevelMinEquation levelEquation) {
-			if (resultingLevel.size() == 2) {
-				try {
-					String result = securityAnnotation.getMinLevel(resultingLevel.get(0), resultingLevel.get(1));
-					resultingLevel.clear();
-					resultingLevel.add(result);
-				} catch (Exception e) {
-					System.out.println("MIN ERR");
-				}
-			} else {
-				// TODO throw exception
-				System.out.println("MIN ERR");
-			}
 		}
 
 		/**
@@ -278,16 +166,128 @@ public interface LevelEquationVisitor {
 		
 		/**
 		 * 
-		 * @return
+		 * @param levelEquation
+		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMinEquation)
 		 */
-		public String getResultLevel() {
-			if (resultingLevel.size() == 1) {
-				return resultingLevel.get(0);
+		@Override
+		public void visit(LevelMinEquation levelEquation) {
+			if (resultingLevel.size() == 2) {
+				try {
+					String result = securityAnnotation.getMinLevel(resultingLevel.get(0), resultingLevel.get(1));
+					resultingLevel.clear();
+					resultingLevel.add(result);
+				} catch (Exception e) {
+					System.out.println("MIN ERR");
+				}
 			} else {
 				// TODO throw exception
-				System.out.println("NONE ERR");
-				return null;
+				System.out.println("MIN ERR");
 			}
 		}
 	}
+	/**
+	 * 
+	 * @author Thomas Vogel
+	 * @version 0.1
+	 */
+	public static class LevelEquationValidityVistitor implements LevelEquationVisitor {
+		
+		/** */
+		private Set<String> containedLevels = new HashSet<String>();
+		/** */
+		private LevelEquation levelEquation = null;
+		/** */
+		private SecurityAnnotation securityAnnotation = null;
+		/** */
+		private boolean valid = true;
+		/** */
+		private List<String> validLevels = new ArrayList<String>();
+		
+		/**
+		 * 
+		 * @param levelEquation
+		 * @param securityAnnotation
+		 */
+		protected LevelEquationValidityVistitor(LevelEquation levelEquation, SecurityAnnotation securityAnnotation) {
+			this.securityAnnotation = securityAnnotation;
+			this.levelEquation = levelEquation;
+		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public LevelEquation getLevelEquation() {
+			return levelEquation;
+		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public List<String> getValidLevels() {
+			return validLevels;
+		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public boolean isValid() {
+			return valid;
+		}
+		
+		/**
+		 * 
+		 * @return
+		 */
+		public boolean isVoidInvalid() {
+			return containedLevels.size() > 1 && containedLevels.contains(SecurityAnnotation.VOID_LEVEL);
+		}
+		
+		/**
+		 * 
+		 * @param level
+		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.Level)
+		 */
+		@Override
+		public void visit(Level level) {
+			containedLevels.add(level.getLevel());
+			boolean result = securityAnnotation.getAvailableLevels().contains(level.getLevel()) || level.getLevel().equals(SecurityAnnotation.VOID_LEVEL);
+			if (! result) {
+				valid = false;
+			} else {
+				validLevels.add(level.getLevel());
+			}
+		}
+		
+		/**
+		 * 
+		 * @param levelEquation
+		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMaxEquation)
+		 */
+		@Override
+		public void visit(LevelMaxEquation levelEquation) {
+			return;			
+		}
+
+		/**
+		 * 
+		 * @param levelEquation
+		 * @see security.LevelEquationVisitor#visit(security.LevelEquation.LevelMinEquation)
+		 */
+		@Override
+		public void visit(LevelMinEquation levelEquation) {
+			return;	
+		}		
+	}
+	
+	/** */
+	public void visit(Level level);
+	
+	/** */
+	public void visit(LevelMaxEquation levelEquation);
+	
+	/** */
+	public void visit(LevelMinEquation levelEquation);
 }

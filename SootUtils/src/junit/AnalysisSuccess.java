@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import logging.SootLoggerConfiguration;
+import logging.SootLoggerUtils;
 import logging.SootLoggerLevel;
 import model.MessageStore;
 import model.MessageStore.Message;
@@ -24,6 +24,7 @@ public class AnalysisSuccess {
 	private static final String IF_ELSE = "TaintTrackingIfElse";
 	private static final String METHOD = "TaintTrackingMethod";
 	private static final String OBJECT = "TaintTrackingObject";
+	private static final String LOOP = "TaintTrackingLoop";
 	private static final String STATIC_FIELD = "TaintTrackingStaticField";
 	private static final String STATIC_METHOD = "TaintTrackingStaticMethod";
 	
@@ -32,7 +33,7 @@ public class AnalysisSuccess {
 	@BeforeClass
 	public static final void init() {
 		try {
-			messageStore = SootLoggerConfiguration.restoreSerializedMessageStore();
+			messageStore = SootLoggerUtils.restoreSerializedMessageStore();
 		} catch (NullPointerException e) {
 			fail("Can't fetch the serialized message store.");
 		}
@@ -300,6 +301,35 @@ public class AnalysisSuccess {
 	}
 	
 	/**
+	 * Loop
+	 */
+	
+	@Test
+	public final void securityMessagesLoop() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(LOOP, SootLoggerLevel.SECURITY)));
+	}
+	
+	@Test
+	public final void sideEffectMessagesLoop() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(LOOP, SootLoggerLevel.SIDEEFFECT)));
+	}
+	
+	@Test
+	public final void exceptionMessagesLoop() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(LOOP, SootLoggerLevel.EXCEPTION)));
+	}
+	
+	@Test
+	public final void errorMessagesLoop() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(LOOP, SootLoggerLevel.ERROR)));
+	}
+	
+	@Ignore
+	public final void warningMessagesLoop() {
+		assertTrue("No messages expected.", noMsg(messageStore.getAllMessages(LOOP, SootLoggerLevel.WARNING)));
+	}
+	
+	/**
 	 * Complete check
 	 */
 	
@@ -330,18 +360,18 @@ public class AnalysisSuccess {
 	
 	@AfterClass
 	public static final void end() {
-		List<Message> all = messageStore.getAllMessages(SootLoggerLevel.SIDEEFFECT);
-		StringBuilder builder = new StringBuilder();
-		for (Message message : all) {
-			if (message.getSrcLn() >= 0) {
-				System.out.println("> " + message.getSrcLn() + ": " + message.getMessage());
-			}
-			builder.append(((!builder.toString().equals("")) ? "," : "") + message.getSrcLn());
-			
-		}
-		System.out.println(builder.toString());
-		
-		//assertTrue("Only 358 messages expected.", overAllCount == 358);	// ohne ??? 352
+//		List<Message> all = messageStore.getAllMessages(LOOP, SootLoggerLevel.SECURITY);
+//////		StringBuilder builder = new StringBuilder();
+//		for (Message message : all) {
+//			if (message.getSrcLn() >= 0) {
+//				System.out.println(message.getFileName() + " > " + (message.getSrcLn() - 7) + ": " + message.getMessage());
+//			}
+//////			builder.append(((!builder.toString().equals("")) ? "," : "") + message.getSrcLn());
+//			
+//		}
+////		System.out.println(builder.toString());
+//		
+//		//assertTrue("Only 358 messages expected.", overAllCount == 358);	// ohne ??? 352
 	}
 	
 }
