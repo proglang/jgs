@@ -6,6 +6,7 @@ dimensions, effects, security, ...)
 Required software:
 1. Eclipse
 1. Soot
+1. 
 *** Soot 
 The static analysis is based on the [[http://www.sable.mcgill.ca/soot/][Soot compiler framework]]. Here are
 some quick setup instructions:
