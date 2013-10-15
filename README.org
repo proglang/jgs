@@ -1,8 +1,12 @@
 * gradual-java
-A reasearch project with the goal to allow gradual integration of
+A research project with the goal to allow gradual integration of
 refined type systems in Java (e.g. type systems for physical
 dimensions, effects, security, ...)
-** Soot 
+** Setup
+Required software:
+1. Eclipse
+1. Soot
+*** Soot 
 The static analysis is based on the [[http://www.sable.mcgill.ca/soot/][Soot compiler framework]]. Here are
 some quick setup instructions:
 - Get Eclipse (Juno is fine)
