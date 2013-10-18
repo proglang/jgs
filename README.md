@@ -25,7 +25,7 @@ The static analysis is based on the [Soot compiler framework][Soot]. Here are so
 - Download a binary distribution of [Apache Ant][4]
 - Follow instructions in `soot-2.5.0/soot_in_eclipse_howto.html`.
 - Install the [Soot Eclipse plugin][3]
-- Now you should be able to import the projects ([TaintTracking], [Annotations] and [SootUtils]) from this repository without soot-related compilation errors.
+- Now you should be able to import the projects ([TaintTracking], [Annotations] and [SootUtils]) from this repository without soot-related compilation errors (see [next step](#output)).
   
 ### Setup the Gradual Java projects
 - Import the projects [TaintTracking], [Annotations] and [SootUtils] from this repository into Eclipse.
@@ -46,60 +46,72 @@ The static analysis is based on the [Soot compiler framework][Soot]. Here are so
 	- use the Java 1.7 JRE
 
 ## How to use
-To check a specific source with the Gradual Java project for security violations, several requirements must be satisfied. This includes on the one hand the implementation of the class `SootSecurityLevel` in the to be checked project, which is a subclass of `SecurityLevel` and which specifies the *security levels*, and on the other hand, to add the required annotations in the source code as well as to add also the *security level* of local variables.
+To check a specific source with the Gradual Java project for security violations, several requirements must be satisfied. This includes on the one hand the implementation of the class `SootSecurityLevel` in the to be checked project, which is a subclass of [`SecurityLevel`][SecurityLevel] and which specifies the *security levels*, and on the other hand, to add the required annotations in the source code as well as to add also the *security levels* of local variables.
 
 ### Subclass of `SecurityLevel.java`
 The class `SootSecurityLevel` has to define the customized hierarchy of the *security levels*. Also the class has to provide for each *security level* a so-called id function, which takes a value of a specific type and with a weaker or equal *security level* and returns the value with original type and the *security level* of the id function. Thus, following restrictions have to be considered:
 
 1. In the project, which is to be checked, a class named `SootSecurityLevel` needs to be implemented. The package of this implementation needs to be `security` and the implementation needs to inherit from the class [`SecurityLevel`][SecurityLevel].
 
-        java
-        package security;
-        
-        public class SootSecurityLevel extends SecurityLevel {
-        	
-        	…
-        
-        }
 
-2. sdfdgdf
-3. 
+    ```java
+    package security;
+    
+    public class SootSecurityLevel extends SecurityLevel {
+    	
+    	…
+    	
+    }
+    ```
+
+2. The class has to inherit the method `SecurityLevel#getOrderedSecurityLevels()` which returns a `String` array. This array has to contain at least two *security levels*. Those levels are ordered, i.e. the strongest *security level* has the smallest index and the weakest *security level* has the greatest index in the returned list. Each provided level has to be valid, i.e. contains none of the characters `*`, `(`, `)` and `,` as well as none of the provided *security levels* is equals to the internal `void` non return *security level*.
 
 
+    ```java
+    @Override
+    public String[] getOrderedSecurityLevels() {
+    	return new String[] { "high", "normal", "low" };
+    }
+    ```
+  
+3. The class provides an id function for every *security level*, which is defined by the returned `String` array of the method `SootSecurityLevel#getOrderedSecurityLevels()`. Such an id function is `public`, `static`, takes an object of generic type `T` and returns this object of generic type `T`. The name of the id function starts with the corresponding *security level* name and ends with the suffix 'Id', e.g. for level 'high' the id function name will be 'highId'. Also each id function is annotated with the corresponding return *security level* (see [Security annotation](#security-annotation)), e.g. for level 'high' the id function is annotated with `@ReturnSecurity("high")`.
 
-```
-@Override
-public String[] getOrderedSecurityLevels() {
-	return new String[] { "level", … };
-}
-```
 
-```
-@Annotations.ReturnSecurity("level")
-public static <T> T levelId(T object) {
-	return object;
-}
-```
+    ```java
+    @Annotations.ReturnSecurity("high")
+	public static <T> T highId(T object) {
+		return object;
+	}
+    ```
 
 #### Implementation check
-```
+To verify whether the implementation of the class `SootSecurityLevel` is complete and correct, create an instance of the class [`SecurityLevelImplChecker`][SecurityLevelImplChecker]. By calling the constructor of [`SecurityLevelImplChecker`][SecurityLevelImplChecker], the specified instance of the `SootSecurityLevel` implementation will be checked and errors will be printed to the console.
+
+```java
 SecurityLevelImplChecker checker = 
 		new SecurityLevelImplChecker(new SootSecurityLevel());
 ```
 
 #### Example
-```
+The following example of an implementation specifies three *security levels*: the strongest level is 'high', the weakest level is 'low'. Between those two levels exists also a third level which is weaker than 'high', but stronger than 'low'.
+
+```java
 package security;
 
 public class SootSecurityLevel extends SecurityLevel {
 
 	@Override
 	public String[] getOrderedSecurityLevels() {
-		return new String[] { "high", "low" };
+		return new String[] { "high", "normal", "low" };
 	}
 		
 	@Annotations.ReturnSecurity("high")
 	public static <T> T highId(T object) {
+		return object;
+	}
+	
+	@Annotations.ReturnSecurity("normal")
+	public static <T> T normalId(T object) {
 		return object;
 	}
 	
@@ -111,29 +123,29 @@ public class SootSecurityLevel extends SecurityLevel {
 ```
 
 
-### Source code to check
+### Source code specific
 #### Effect annotation
 
-```
+```java
 @Annotations.WriteEffect("level", … )
 ```
 
 #### Security annotation
 
-```
+```java
 @Annotations.ReturnSecurity("level")
 ```
 
-```
+```java
 @Annotations.FieldSecurity("level")
 ```
 
-```
+```java
 @Annotations.ParameterSecurity("arg1_level", … )
 ```
 
 #### Security level of locals
-```
+```java
 int value = SootSecurityLevel.levelId(42);
 ```
 ### Run the analysis
@@ -177,3 +189,4 @@ int value = SootSecurityLevel.levelId(42);
 [Annotations]: Annotations/ "Project Annotation"
 [SootUtils]: SootUtils/ "Project SootUtils"
 [SecurityLevel]: Annotations/src/security/SecurityLevel.java "Class SecurityLevel"
+[SecurityLevelImplChecker]: Annotations/src/security/SecurityLevelImplChecker.java "Class SecurityLevelImplChecker"
