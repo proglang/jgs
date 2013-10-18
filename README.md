@@ -119,34 +119,42 @@ public class SootSecurityLevel extends SecurityLevel {
 	public static <T> T lowId(T object) {
 		return object;
 	}
+	
 }
 ```
 
 
 ### Source code specific
-#### Effect annotation
-
-```java
-@Annotations.WriteEffect("level", … )
-```
+Also the source code of the to be checked project has to be prepared for the analysis. Thus, annotations have to be added for classes, fields and methods as well as the *security level* of local variables have to be specified by calling the id functions. 
 
 #### Security annotation
+Because the analysis checks for security violations, each field in the project has to provied a *security level*, no matter if it is an instance or a static field. For this purpose, the annotation `@FieldSecurity` in the class [`Annotations`][Annotations class] can be used. The value of the annotation specifies the level of the field. 
+(Consider that it is invalid if the declaration includes also an assignment and the assigned value has a stronger *security level*. In the case of a static field the check of the static initializer method will fail, in the case of an instance field the check of the constructors will fail.)
+
+```java
+@Annotations.FieldSecurity("high")
+public int highField;
+```
 
 ```java
 @Annotations.ReturnSecurity("level")
 ```
 
 ```java
-@Annotations.FieldSecurity("level")
-```
-
-```java
 @Annotations.ParameterSecurity("arg1_level", … )
 ```
 
-#### Security level of locals
+#### Effect annotation
+
 ```java
-int value = SootSecurityLevel.levelId(42);
+@Annotations.WriteEffect("level", … )
+```
+
+#### Security level of locals
+To specify the *security level* of a specific local variable, the id functions can be used. The *security level* of the returned object, respectively value is the *security level* which the called id function corresponds to. The id functions take only an argument which has a weaker or equal *security level* than the level to which the id function corresponds. It is not possible to weaken the *security level* of an object, respectively a value.
+ 
+```java
+int value = SootSecurityLevel.highId(42);
 ```
 ### Run the analysis
 ```
@@ -190,3 +198,4 @@ int value = SootSecurityLevel.levelId(42);
 [SootUtils]: SootUtils/ "Project SootUtils"
 [SecurityLevel]: Annotations/src/security/SecurityLevel.java "Class SecurityLevel"
 [SecurityLevelImplChecker]: Annotations/src/security/SecurityLevelImplChecker.java "Class SecurityLevelImplChecker"
+[Annotations class]: Annotations/src/security/Annotations.java "Class Annotations"
