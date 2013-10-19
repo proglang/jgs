@@ -128,21 +128,115 @@ public class SootSecurityLevel extends SecurityLevel {
 Also the source code of the to be checked project has to be prepared for the analysis. Thus, annotations have to be added for classes, fields and methods as well as the *security level* of local variables have to be specified by calling the id functions. 
 
 #### Security annotation
-Because the analysis checks for security violations, each field in the project has to provied a *security level*, no matter if it is an instance or a static field. For this purpose, the annotation `@FieldSecurity` in the class [`Annotations`][Annotations class] can be used. The value of the annotation specifies the level of the field. 
-(Consider that it is invalid if the declaration includes also an assignment and the assigned value has a stronger *security level*. In the case of a static field the check of the static initializer method will fail, in the case of an instance field the check of the constructors will fail.)
 
-```java
-@Annotations.FieldSecurity("high")
-public int highField;
-```
+1. fields:  
+because the analysis checks for security violations, each field in the project has to provied a *security level*, no matter if it is an instance or a static field. For this purpose, the annotation `@FieldSecurity` in the class [`Annotations`][Annotations class] can be used. The value of the annotation specifies the level of the field. The level has to be one of the *security levels* specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.  
+(Consider that it is invalid if the declaration includes also an assignment and if the assigned value has a stronger *security level*. In the case of a static field the check of the static initializer method will fail, in the case of an instance field the check of the constructors will fail.)
 
-```java
-@Annotations.ReturnSecurity("level")
-```
 
-```java
-@Annotations.ParameterSecurity("arg1_level", … )
-```
+    ```java
+    @Annotations.FieldSecurity("high")
+    public int highField;
+    ```
+
+  Note: the `@FieldSecurity` annotation can be used only on fields. If the annotation is not present at a field declaration, this results in an error message.
+
+2. methods:  
+to check for security violations, the analysis requires also for every method in the project the annotation which specifies the *security levels* of the parameters and the annotation which specifies the *security level* of the returned value. This implies also that the **default constructor must be implemented**, otherwise it is possible that the analysis prints an error for this virtual constructor.
+
+
+    1. parameter *security levels*:  
+    the `@ParameterSecurity` annotation in the class [`Annotations`][Annotations class] can be used to specify the *security levels* of methods parameters. I.e. for each parameter of the method the array has to contain a corresponding *security level*. The arrangement of the levels is identical to the order of the parameters. This means that the first level of the array corresponds to the security level of the first parameter, and so on. In the case of calling the method, it must be ensured that the used arguments have the same or a weaker *security level* than the parameters.  
+As a level in the required array on the one hand a *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` and on the other hand, also a variable *security level* can be used. 
+
+
+      ```java
+      @Annotations.ParameterSecurity({})
+      …
+      public int test() {
+      	
+      	…
+      	
+      }
+      ```
+
+      ```java
+      @Annotations.ParameterSecurity({"high"})
+      …
+      public int test(int high) {
+      	
+      	…
+      	
+      }
+      ```
+      
+      ```java
+      @Annotations.ParameterSecurity({"high", "low"})
+      …
+      public int test(int high, int low) {
+      	
+      	…
+      	
+      }
+      ```
+
+    A variable level begins with the character '\*' followed by a number. This number starts always at 0 for a method and will be increased by 1 per additional variable level. Consider that the choice of the numbers has to be without interruptions. The benefit of the variable *security level* is the calculation of the return *security level* based on the *security level* of the arguments.
+	
+	
+      ```java
+      @Annotations.ParameterSecurity({"*0"})
+      …
+      public int test(int var) {
+      	
+      	…
+      	
+      }
+      ```
+      
+      ```java
+      @Annotations.ParameterSecurity({"*0", "*1"})
+      …
+      public int test(int var1, int var2) {
+      	
+      	…
+      	
+      }
+      ```
+      
+    Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration or the count of the parameters and the count of the given *security levels* is not equals, this results in an error message. Also, if the method doesn't accept arguments use an empty array, otherwise an error occurs.
+
+  2. return *security level*:  
+    to specify the return *security level*, the annotation `@ReturnSecurity` in the class [`Annotations`][Annotations class] can be used.
+        
+        
+      ```java
+      @Annotations.ReturnSecurity("high")
+      ```
+      
+    dfgfgfg   
+        
+      ```java
+      @Annotations.ReturnSecurity("void")
+      ```
+      
+    dgfgf
+      
+      ```java
+      @Annotations.ReturnSecurity("max(high,low)")
+      ```
+    
+    dgfgdfg   
+        
+      ```java
+      @Annotations.ReturnSecurity("*1")
+      ```
+      
+    dfgfdgdfg   
+        
+      ```java
+      @Annotations.ReturnSecurity("min(*1,normal)")
+      ```
+
 
 #### Effect annotation
 
