@@ -57,11 +57,7 @@ The class `SootSecurityLevel` has to define the customized hierarchy of the *sec
     ```java
     package security;
     
-    public class SootSecurityLevel extends SecurityLevel {
-    	
-    	…
-    	
-    }
+    public class SootSecurityLevel extends SecurityLevel { … }
     ```
 
 2. The class has to inherit the method `SecurityLevel#getOrderedSecurityLevels()` which returns a `String` array. This array has to contain at least two *security levels*. Those levels are ordered, i.e. the strongest *security level* has the smallest index and the weakest *security level* has the greatest index in the returned list. Each provided level has to be valid, i.e. contains none of the characters `*`, `(`, `)` and `,` as well as none of the provided *security levels* is equals to the internal `void` non return *security level*.
@@ -147,97 +143,76 @@ to check for security violations, the analysis requires also for every method in
 
     1. parameter *security levels*:  
     the `@ParameterSecurity` annotation in the class [`Annotations`][Annotations class] can be used to specify the *security levels* of methods parameters. I.e. for each parameter of the method the array has to contain a corresponding *security level*. The arrangement of the levels is identical to the order of the parameters. This means that the first level of the array corresponds to the security level of the first parameter, and so on. In the case of calling the method, it must be ensured that the used arguments have the same or a weaker *security level* than the parameters.  
-As a level in the required array on the one hand a *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` and on the other hand, also a variable *security level* can be used. 
+    As a level in the required array on the one hand a *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` and on the other hand, also a variable *security level* can be used. 
 
 
       ```java
       @Annotations.ParameterSecurity({})
       …
-      public int test() {
-      	
-      	…
-      	
-      }
+      public int test() { … }
       ```
 
       ```java
       @Annotations.ParameterSecurity({"high"})
       …
-      public int test(int high) {
-      	
-      	…
-      	
-      }
+      public int test(int high) { … }
       ```
       
       ```java
       @Annotations.ParameterSecurity({"high", "low"})
       …
-      public int test(int high, int low) {
-      	
-      	…
-      	
-      }
+      public int test(int high, int low) { … }
       ```
-
-    A variable level begins with the character '\*' followed by a number. This number starts always at 0 for a method and will be increased by 1 per additional variable level. Consider that the choice of the numbers has to be without interruptions. The benefit of the variable *security level* is the calculation of the return *security level* based on the *security level* of the arguments.
+      
+      A variable level begins with the character '\*' followed by a number. This number starts always at 0 for a method and will be increased by 1 per additional variable level. Consider that the choice of the numbers has to be without interruptions. The benefit of the variable *security level* is the calculation of the return *security level* based on the *security level* of the arguments.
 	
 	
       ```java
       @Annotations.ParameterSecurity({"*0"})
       …
-      public int test(int var) {
-      	
-      	…
-      	
-      }
+      public int test(int var) { … }
       ```
       
       ```java
       @Annotations.ParameterSecurity({"*0", "*1"})
       …
-      public int test(int var1, int var2) {
-      	
-      	…
-      	
-      }
+      public int test(int var1, int var2) { … }
       ```
       
-    Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration or the count of the parameters and the count of the given *security levels* is not equals, this results in an error message. Also, if the method doesn't accept arguments use an empty array, otherwise an error occurs.
+      Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration or the count of the parameters and the count of the given *security levels* is not equals, this results in an error message. Also, if the method doesn't accept arguments use an empty array, otherwise an error occurs.
 
-  2. return *security level*:  
+    2. return *security level*:  
     to specify the return *security level*, the annotation `@ReturnSecurity` in the class [`Annotations`][Annotations class] can be used.
-        
-        
+      
+      
       ```java
       @Annotations.ReturnSecurity("high")
       ```
       
-    dfgfgfg   
-        
+      dfgfgfg   
+      
       ```java
       @Annotations.ReturnSecurity("void")
       ```
       
-    dgfgf
+      dgfgf
       
       ```java
       @Annotations.ReturnSecurity("max(high,low)")
       ```
-    
-    dgfgdfg   
-        
+      
+      dgfgdfg   
+      
       ```java
       @Annotations.ReturnSecurity("*1")
       ```
       
-    dfgfdgdfg   
-        
+      dfgfdgdfg   
+      
       ```java
       @Annotations.ReturnSecurity("min(*1,normal)")
       ```
-
-
+      
 #### Effect annotation
 
 ```java
