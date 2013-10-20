@@ -280,13 +280,30 @@ As an example, the class `Example` will be analyzed by the following options, al
 	> Results in the *write effects* which are defined for the invoked method, as well as in the *write effects* of the class which declares the static method.
 	+ instance method:
 	> Results in the *write effects* which are defined for the invoked method.
+	
+On the one hand a *write effect* violation happens if the *write effect* annotation doesn't contain a calculated effect. On the other hand also a *write effect* violation occurs if a *write effect* takes place inside of a context which is stronger or equals than the affected *security level*.
 
 ### Security
 
 ## Output
+The output depends on the specified options when performing the analysis (see [Run the analysis](#run-the-analysis)). If no log-levels are specified, then the analysis will not output any message, otherwise it will output the messages which are of the specified levels. As default the analysis outputs the messages via the console, but the analysis can also output the messages in one or more files using the corresponding option. Depending on the option whether it should print the messages instantaneously the output occurs at the moment in which a message is logged. In this case and if the export to a file is enabled, a file for each method will be created which contains the messages corresponding to this method. Otherwise, if it shouldn't print immediately and the export to a file is enabled, a file for each class will be created which contains all messages corresponding to the class or to a method of the class. The files will be stored in the folder `output/security/` inside of the working directory.
 
-## Bugfixes
+## Bugs
 
+| number | status | title | description | date	|
+| ------ | ------ | ----- | ----------- | ----	|
+| | | | | |
+
+Currently no bugs are known. 
+
+### Bugfixes
+-
+
+## TODO
+- Advanced handling of variable *security levels* (!!)
+- Inheritance for classes and methods (!!!)
+- Specific statements: `switch-case`, `exception` (!)
+- Change the data structure of *security levels* (!!)
 
 [1]: http://www.eclipse.org/juno/ "Download Eclipse Juno"
 [2]: http://www.sable.mcgill.ca/soot/soot_download.html "Download Soot Framework"
