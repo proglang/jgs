@@ -349,7 +349,7 @@ Currently no bugs are known.
 -----
 
 ## Informations
-developer: [Thomas Vogel](vogelt@informatik.uni-freiburg.de)
+developer: [Thomas Vogel](mailto:vogelt@informatik.uni-freiburg.de)
 last-modified: 23:20:00 10/20/2013
 
 
