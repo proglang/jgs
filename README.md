@@ -179,39 +179,48 @@ to check for security violations, the analysis requires also for every method in
       public int test(int var1, int var2) { … }
       ```
       
-      Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration or the count of the parameters and the count of the given *security levels* is not equals, this results in an error message. Also, if the method doesn't accept arguments use an empty array, otherwise an error occurs.
+      Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration, the count of the parameters and the count of the given *security levels* are not equals or the array contains an invalid level, this results in an error message. Also, if the method doesn't accept arguments use an empty array, otherwise an error occurs.
 
     2. return *security level*:  
-    to specify the return *security level*, the annotation `@ReturnSecurity` in the class [`Annotations`][Annotations class] can be used.
+    to specify the return *security level*, i.e. the level of the returned value of the method, the annotation `@ReturnSecurity` in the class [`Annotations`][Annotations class] can be used. The analysis will check whether the calculated return *security level* is weaker or equals than the expected level.  
+    The value of this annotation has to be a concrete *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` or if the method has no return value, then the value of this annotation should be the void return *security level* ('void').
       
       
       ```java
+      …
       @Annotations.ReturnSecurity("high")
-      ```
-      
-      dfgfgfg   
+      public int test() { … return high; } 
+      ```   
       
       ```java
+      …
       @Annotations.ReturnSecurity("void")
+      public void test() { … return; } 
       ```
       
-      dgfgf
+      A variable *security levels* can be used as value of the annotation, too. It must be ensured that the used variable level was defined in the corresponding parameter *security levels* annotation. The benefit of using a variable *security level* is that the return *security level* depends on the *security level* of a specific argument. I.e. the analysis tries solving the return level by looking up the corresponding *security level* of the argument.
       
       ```java
+      @Annotations.ParameterSecurity({"*0"})
+      @Annotations.ReturnSecurity("*0")
+      public int test(int var) { … return var; }
+      ```
+      
+      Also, the value of the annotation can be a *security level* equation. A level equation allows the usage of the operators `min` and `max` and the usage of concrete *security levels*, variable *security levels* as well as a nested equation as operands. I.e. the analysis tries solving the given equation by inserting the corresponding *security levels* of the arguments.
+      
+      ```java
+      …
       @Annotations.ReturnSecurity("max(high,low)")
+      public int test() { … return high; }
       ```
-      
-      dgfgdfg   
       
       ```java
-      @Annotations.ReturnSecurity("*1")
+      @Annotations.ParameterSecurity({"*0"})
+      @Annotations.ReturnSecurity("min(*0,normal)")
+      public int test(int var) { … return … ? var : normal; }
       ```
       
-      dfgfdgdfg   
-      
-      ```java
-      @Annotations.ReturnSecurity("min(*1,normal)")
-      ```
+      Note: the `@ReturnSecurity` annotation can be used only on methods. If the annotation is not present at a method declaration or the level is invalid, this results in an error message. Also, if the method is a void method and the given return *security level* isn't the 'void' *security level*. **Constructors do not require a return *security level*.**
       
 #### Effect annotation
 
