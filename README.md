@@ -138,7 +138,7 @@ because the analysis checks for security violations, each field in the project h
   Note: the `@FieldSecurity` annotation can be used only on fields. If the annotation is not present at a field declaration, this results in an error message.
 
 2. methods:  
-to check for security violations, the analysis requires also for every method in the project the annotation which specifies the *security levels* of the parameters and the annotation which specifies the *security level* of the returned value. This implies also that the **default constructor must be implemented**, otherwise it is possible that the analysis prints an error for this virtual constructor.
+to check for security violations, the analysis requires also for every method, no matter if it is a static or instance method, in the project the annotation which specifies the *security levels* of the parameters and the annotation which specifies the *security level* of the returned value. This implies also that the **default constructor must be implemented**, otherwise it is possible that the analysis prints an error for this virtual constructor.
 
 
     1. parameter *security levels*:  
@@ -220,13 +220,26 @@ to check for security violations, the analysis requires also for every method in
       public int test(int var) { … return … ? var : normal; }
       ```
       
-      Note: the `@ReturnSecurity` annotation can be used only on methods. If the annotation is not present at a method declaration or the level is invalid, this results in an error message. Also, if the method is a void method and the given return *security level* isn't the 'void' *security level*. **Constructors do not require a return *security level*.**
+      Note: the `@ReturnSecurity` annotation can be used only on methods. If the annotation is not present at a method declaration or the level is invalid, this results in an error message. Also, if the method is a void method and the given return *security level* isn't the 'void' *security level*. **Constructors do not require a return *security level* annotation.**
       
 #### Effect annotation
+the `@WriteEffect` annotation in the class [`Annotations`][Annotations class] can be used to specify the *write effects* of a specific class or a specific method. I.e. the *write effects* of a method indicate which *write effects* may occur when executing the method and the *write effects* of a class incdicate which *write effects* occur when the static initializer will be executed (e.g. when an instance of class is created, a static method of class is invoked, a value to a static field is assigned or a non-constant field is used). The value of the annotation has to be an array which contains the *security levels* to which a *write effect* is expected. A valid *security level* is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.
 
 ```java
-@Annotations.WriteEffect("level", … )
+@Annotations.WriteEffect("low")
+public class Example {
+	
+	…
+	
+	@Annotations.ParameterSecurity({})
+    @Annotations.ReturnSecurity("void")
+    @Annotations.WriteEffect("low", "high")
+	public void test() { … }
+	
+}
 ```
+
+Note: the `@WriteEffect` annotation can be used on methods, constructors and on classes. If the annotation is not present at those declarations or one of the specified level, to which a *write effect* is expected, is invalid, this results in an error message.
 
 #### Security level of locals
 To specify the *security level* of a specific local variable, the id functions can be used. The *security level* of the returned object, respectively value is the *security level* which the called id function corresponds to. The id functions take only an argument which has a weaker or equal *security level* than the level to which the id function corresponds. It is not possible to weaken the *security level* of an object, respectively a value.
