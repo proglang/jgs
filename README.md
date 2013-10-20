@@ -349,6 +349,8 @@ Currently no bugs are known.
 -----
 
 ## Informations
+developer: [Thomas Vogel](vogelt@informatik.uni-freiburg.de)
+last-modified: 23:20:00 10/20/2013
 
 
 [1]: http://www.eclipse.org/juno/ "Download Eclipse Juno"
