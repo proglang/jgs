@@ -126,7 +126,7 @@ Also the source code of the to be checked project has to be prepared for the ana
 #### Security annotation
 
 1. fields:  
-because the analysis checks for security violations, each field in the project has to provied a *security level*, no matter if it is an instance or a static field. For this purpose, the annotation `@FieldSecurity` in the class [`Annotations`][Annotations class] can be used. The value of the annotation specifies the level of the field. The level has to be one of the *security levels* specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.  
+because the analysis checks for security violations, each field in the project has to provied a *security level*, no matter if it is an instance or a static field. For this purpose, the annotation `@FieldSecurity` in the class [`Annotations`][AnnotationsClass] can be used. The value of the annotation specifies the level of the field. The level has to be one of the *security levels* specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.  
 (Consider that it is invalid if the declaration includes also an assignment and if the assigned value has a stronger *security level*. In the case of a static field the check of the static initializer method will fail, in the case of an instance field the check of the constructors will fail.)
 
 
@@ -142,7 +142,7 @@ to check for security violations, the analysis requires also for every method, n
 
 
     1. parameter *security levels*:  
-    the `@ParameterSecurity` annotation in the class [`Annotations`][Annotations class] can be used to specify the *security levels* of methods parameters. I.e. for each parameter of the method the array has to contain a corresponding *security level*. The arrangement of the levels is identical to the order of the parameters. This means that the first level of the array corresponds to the security level of the first parameter, and so on. In the case of calling the method, it must be ensured that the used arguments have the same or a weaker *security level* than the parameters.  
+    the `@ParameterSecurity` annotation in the class [`Annotations`][AnnotationsClass] can be used to specify the *security levels* of methods parameters. I.e. for each parameter of the method the array has to contain a corresponding *security level*. The arrangement of the levels is identical to the order of the parameters. This means that the first level of the array corresponds to the security level of the first parameter, and so on. In the case of calling the method, it must be ensured that the used arguments have the same or a weaker *security level* than the parameters.  
     As a level in the required array on the one hand a *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` and on the other hand, also a variable *security level* can be used. 
 
 
@@ -182,7 +182,7 @@ to check for security violations, the analysis requires also for every method, n
       Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration, the count of the parameters and the count of the given *security levels* are not equals or the array contains an invalid level, this results in an error message. Also, if the method doesn't accept arguments use an empty array, otherwise an error occurs.
 
     2. return *security level*:  
-    to specify the return *security level*, i.e. the level of the returned value of the method, the annotation `@ReturnSecurity` in the class [`Annotations`][Annotations class] can be used. The analysis will check whether the calculated return *security level* is weaker or equals than the expected level.  
+    to specify the return *security level*, i.e. the level of the returned value of the method, the annotation `@ReturnSecurity` in the class [`Annotations`][AnnotationsClass] can be used. The analysis will check whether the calculated return *security level* is weaker or equals than the expected level.  
     The value of this annotation has to be a concrete *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` or if the method has no return value, then the value of this annotation should be the void return *security level* ('void').
       
       
@@ -223,23 +223,23 @@ to check for security violations, the analysis requires also for every method, n
       Note: the `@ReturnSecurity` annotation can be used only on methods. If the annotation is not present at a method declaration or the level is invalid, this results in an error message. Also, if the method is a void method and the given return *security level* isn't the 'void' *security level*. **Constructors do not require a return *security level* annotation.**
       
 #### Effect annotation
-the `@WriteEffect` annotation in the class [`Annotations`][Annotations class] can be used to specify the *write effects* of a specific class or a specific method. I.e. the *write effects* of a method indicate which *write effects* may occur when executing the method and the *write effects* of a class incdicate which *write effects* occur when the static initializer will be executed (e.g. when an instance of class is created, a static method of class is invoked, a value to a static field is assigned or a non-constant field is used). The value of the annotation has to be an array which contains the *security levels* to which a *write effect* is expected. A valid *security level* is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.
+the `@WriteEffect` annotation in the class [`Annotations`][AnnotationsClass] can be used to specify the *write effects* of a specific class or a specific method. I.e. the *write effects* of a method indicate which *write effects* may occur when executing the method and the *write effects* of a class incdicate which *write effects* occur when the static initializer will be executed (e.g. when an instance of class is created, a static method of class is invoked, a value to a static field is assigned or a non-constant field is used). The value of the annotation has to be an array which contains the *security levels* to which a *write effect* is expected. A valid *security level* is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.
 
 ```java
-@Annotations.WriteEffect("low")
+@Annotations.WriteEffect({"low"})
 public class Example {
 	
 	…
 	
 	@Annotations.ParameterSecurity({})
     @Annotations.ReturnSecurity("void")
-    @Annotations.WriteEffect("low", "high")
+    @Annotations.WriteEffect({"low", "high"})
 	public void test() { … }
 	
 }
 ```
 
-Note: the `@WriteEffect` annotation can be used on methods, constructors and on classes. If the annotation is not present at those declarations or one of the specified level, to which a *write effect* is expected, is invalid, this results in an error message.
+Note: the `@WriteEffect` annotation can be used on methods, constructors and on classes. If the annotation is not present at those declarations or one of the specified level, to which a *write effect* is expected, is invalid, this results in an error message. Also, if no *write effects* are expected for a class, a constructor or a method, an empty array should be used, otherwise an error occurs.
 
 #### Security level of locals
 To specify the *security level* of a specific local variable, the id functions can be used. The *security level* of the returned object, respectively value is the *security level* which the called id function corresponds to. The id functions take only an argument which has a weaker or equal *security level* than the level to which the id function corresponds. It is not possible to weaken the *security level* of an object, respectively a value.
@@ -248,8 +248,19 @@ To specify the *security level* of a specific local variable, the id functions c
 int value = SootSecurityLevel.highId(42);
 ```
 ### Run the analysis
-```
+To perform the analysis, the method `Main#main(String[] args)` in the [main class][MainClass] must be called. 
+In addition to the usual soot command-line options, the following options can be used:
 
+- `-instant-logging`: all logged messages are displayed immediately
+- `-export-file`: all logged messages are exported also to a file
+- `-log-levels` *{levels}*:  expects a list of the log-levels *{levels}* which can include the levels 'exception', 'error', warning', 'information', 'effect', 'security', 'securitychecker', 'debug', 'all', 'off', 'structure' and 'configuration'. Messages of the listed levels are printed from the logger.
+
+Note that the options should contain the classpath option with the path to the `rt.jar`.
+
+As an example, the class `Example` will be analyzed by the following options, all messages will be logged and exported in a file. The logging takes place after the analysis.
+
+```bash
+-cp .:…/rt.jar -pp -f none -no-bodies-for-excluded -log-levels all -export-file -keep-line-number Example
 ```
 
 ## Violation policy
@@ -284,9 +295,11 @@ int value = SootSecurityLevel.highId(42);
 [5]: https://github.com/junit-team/junit/wiki/Download-and-Install "JUnit 4"
 
 [Soot]: http://www.sable.mcgill.ca/soot/ "Soot compiler framework"
+[SootCommandline]: http://www.sable.mcgill.ca/soot/tutorial/usage/ "Soot command-line options"
 [TaintTracking]: TaintTracking/ "Project TaintTracking"
 [Annotations]: Annotations/ "Project Annotation"
 [SootUtils]: SootUtils/ "Project SootUtils"
 [SecurityLevel]: Annotations/src/security/SecurityLevel.java "Class SecurityLevel"
 [SecurityLevelImplChecker]: Annotations/src/security/SecurityLevelImplChecker.java "Class SecurityLevelImplChecker"
-[Annotations class]: Annotations/src/security/Annotations.java "Class Annotations"
+[AnnotationsClass]: Annotations/src/security/Annotations.java "Class Annotations"
+[MainClass]: TaintTracking/src/analysis/Main.java "Analysis Main Class"
