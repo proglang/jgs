@@ -60,7 +60,7 @@ The class `SootSecurityLevel` has to define the customized hierarchy of the *sec
     public class SootSecurityLevel extends SecurityLevel { … }
     ```
 
-2. The class has to inherit the method `SecurityLevel#getOrderedSecurityLevels()` which returns a `String` array. This array has to contain at least two *security levels*. Those levels are ordered, i.e. the strongest *security level* has the smallest index and the weakest *security level* has the greatest index in the returned list. Each provided level has to be valid, i.e. contains none of the characters `*`, `(`, `)` and `,` as well as none of the provided *security levels* is equals to the internal `void` non return *security level*.
+2. The class has to inherit the method `SecurityLevel#getOrderedSecurityLevels()` which returns a `String` array. This array has to contain at least two *security levels*. Those levels are in a specific order, i.e. the strongest *security level* has the smallest index and the weakest *security level* has the greatest index in the returned list. Each provided level has to be valid, i.e. contains none of the characters `*`, `(`, `)` and `,` as well as none of the provided *security levels* is equal to the internal `void` non return *security level*.
 
 
     ```java
@@ -89,7 +89,7 @@ SecurityLevelImplChecker checker =
 ```
 
 #### Example
-The following example of an implementation specifies three *security levels*: the strongest level is 'high', the weakest level is 'low'. Between those two levels exists also a third level which is weaker than 'high', but stronger than 'low'.
+The following example of an implementation specifies three *security levels*: the strongest level is 'high', the weakest level is 'low'. Between those two levels also exists a third level which is weaker than 'high', but stronger than 'low'.
 
 ```java
 package security;
@@ -121,12 +121,12 @@ public class SootSecurityLevel extends SecurityLevel {
 
 
 ### Source code specific
-Also the source code of the to be checked project has to be prepared for the analysis. Thus, annotations have to be added for classes, fields and methods as well as the *security level* of local variables have to be specified by calling the id functions. 
+Also the source code of the to-be-checked project has to be prepared for the analysis. Thus, annotations have to be added for classes, fields and methods and  the *security level* of local variables has to be specified by calling the id functions as well. 
 
 #### Security annotation
 
 1. fields:  
-because the analysis checks for security violations, each field in the project has to provied a *security level*, no matter if it is an instance or a static field. For this purpose, the annotation `@FieldSecurity` in the class [`Annotations`][AnnotationsClass] can be used. The value of the annotation specifies the level of the field. The level has to be one of the *security levels* specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.  
+because of the analysis checks for security violations, each field in the project has to provide a *security level*, no matter if it is an instance or a static field. For this purpose, the annotation `@FieldSecurity` in the class [`Annotations`][AnnotationsClass] can be used. The value of the annotation specifies the level of the field. The level has to be one of the *security levels* specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.  
 (Consider that it is invalid if the declaration includes also an assignment and if the assigned value has a stronger *security level*. In the case of a static field the check of the static initializer method will fail, in the case of an instance field the check of the constructors will fail.)
 
 
@@ -138,7 +138,7 @@ because the analysis checks for security violations, each field in the project h
   Note: the `@FieldSecurity` annotation can be used only on fields. If the annotation is not present at a field declaration, this results in an error message.
 
 2. methods:  
-to check for security violations, the analysis requires also for every method, no matter if it is a static or instance method, in the project the annotation which specifies the *security levels* of the parameters and the annotation which specifies the *security level* of the returned value. This implies also that the **default constructor must be implemented**, otherwise it is possible that the analysis prints an error for this virtual constructor.
+to check for security violations, the analysis is also required for every method, no matter if it is a static or an instance method, in the project the annotation which specifies the *security levels* of the parameters and the annotation which specifies the *security level* of the returned value. This implies also that the **default constructor must be implemented**, otherwise it is possible that the analysis prints an error for this virtual constructor.
 
 
     1. parameter *security levels*:  
@@ -164,7 +164,7 @@ to check for security violations, the analysis requires also for every method, n
       public int test(int high, int low) { … }
       ```
       
-      A variable level begins with the character '\*' followed by a number. This number starts always at 0 for a method and will be increased by 1 per additional variable level. Consider that the choice of the numbers has to be without interruptions. The benefit of the variable *security level* is the calculation of the return *security level* based on the *security level* of the arguments.
+      A variable level begins with the character '\*' followed by a number. This number always starts at 0 for a method and will be increased by 1 per additional variable level. Consider that the choice of the numbers has to be without interruptions. The benefit of the variable *security level* is the calculation of the return *security level* based on the *security level* of the arguments.
 	
 	
       ```java
@@ -179,11 +179,11 @@ to check for security violations, the analysis requires also for every method, n
       public int test(int var1, int var2) { … }
       ```
       
-      Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration, the count of the parameters and the count of the given *security levels* are not equals or the array contains an invalid level, this results in an error message. Also, if the method doesn't accept arguments use an empty array, otherwise an error occurs.
+      Note: the `@ParameterSecurity` annotation can be used only on methods and constructors. If the annotation is not present at a method declaration, the count of the parameters and the count of the given *security levels* are not equals or the array contains an invalid level, this results in an error message. Also, if the method does not accept arguments use an empty array, otherwise an error occurs.
 
     2. return *security level*:  
-    to specify the return *security level*, i.e. the level of the returned value of the method, the annotation `@ReturnSecurity` in the class [`Annotations`][AnnotationsClass] can be used. The analysis will check whether the calculated return *security level* is weaker or equals than the expected level.  
-    The value of this annotation has to be a concrete *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` or if the method has no return value, then the value of this annotation should be the void return *security level* ('void').
+    to specify the return *security level*, i.e. the level of the returned value of the method, the annotation `@ReturnSecurity` in the class [`Annotations`][AnnotationsClass] can be used. The analysis will check whether the calculated return *security level* is weaker or if it equals the expected level.  
+    The value of this annotation has to be a concrete *security level* which is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()` or if the method has no return value, the value of this annotation should be the void return *security level* ('void').
       
       
       ```java
@@ -220,10 +220,10 @@ to check for security violations, the analysis requires also for every method, n
       public int test(int var) { … return … ? var : normal; }
       ```
       
-      Note: the `@ReturnSecurity` annotation can be used only on methods. If the annotation is not present at a method declaration or the level is invalid, this results in an error message. Also, if the method is a void method and the given return *security level* isn't the 'void' *security level*. **Constructors do not require a return *security level* annotation.**
+      Note: the `@ReturnSecurity` annotation can be used only on methods. If the annotation is not present at a method declaration or if the level is invalid, this results in an error message. Also, if the method is a void method and the given return *security level* is not the 'void' *security level*. **Constructors do not require a return *security level* annotation.**
       
 #### Effect annotation
-the `@WriteEffect` annotation in the class [`Annotations`][AnnotationsClass] can be used to specify the *write effects* of a specific class or a specific method. I.e. the *write effects* of a method indicate which *write effects* may occur when executing the method and the *write effects* of a class incdicate which *write effects* occur when the static initializer will be executed (e.g. when an instance of class is created, a static method of class is invoked, a value to a static field is assigned or a non-constant field is used). The value of the annotation has to be an array which contains the *security levels* to which a *write effect* is expected. A valid *security level* is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.
+the `@WriteEffect` annotation in the class [`Annotations`][AnnotationsClass] can be used to specify the *write effects* of a specific class or a specific method. I.e. the *write effects* of a method indicate which *write effects* may occur when executing the method and the *write effects* of a class incdicate which *write effects* occur when the static initializer will be executed (e.g. when an instance of class is created, a static method of class is invoked, a value is assigned to a static field or a non-constant field is used). The value of the annotation has to be an array which contains the *security levels* to which a *write effect* is expected. A valid *security level* is specified by the method `SootSecurityLevel#getOrderedSecurityLevels()`.
 
 ```java
 @Annotations.WriteEffect({"low"})
@@ -242,7 +242,7 @@ public class Example {
 Note: the `@WriteEffect` annotation can be used on methods, constructors and on classes. If the annotation is not present at those declarations or one of the specified level, to which a *write effect* is expected, is invalid, this results in an error message. Also, if no *write effects* are expected for a class, a constructor or a method, an empty array should be used, otherwise an error occurs.
 
 #### Security level of locals
-To specify the *security level* of a specific local variable, the id functions can be used. The *security level* of the returned object, respectively value is the *security level* which the called id function corresponds to. The id functions take only an argument which has a weaker or equal *security level* than the level to which the id function corresponds. It is not possible to weaken the *security level* of an object, respectively a value.
+To specify the *security level* of a specific local variable, the id functions can be used. The *security level* of the returned object, respectively the value is the *security level* which the called id function corresponds to. The id functions takes only an argument which has a weaker or equal *security level* than the level to which the id function corresponds. It is not possible to weaken the *security level* of an object, respectively a value.
  
 ```java
 int value = SootSecurityLevel.highId(42);
@@ -252,12 +252,12 @@ To perform the analysis, the method `Main#main(String[] args)` in the [main clas
 In addition to the usual soot command-line options, the following options can be used:
 
 - `-instant-logging`: all logged messages are displayed immediately
-- `-export-file`: all logged messages are exported also to a file
+- `-export-file`: all logged messages are also exported to a file
 - `-log-levels` *{levels}*:  expects a list of the log-levels *{levels}* which can include the levels 'exception', 'error', warning', 'information', 'effect', 'security', 'securitychecker', 'debug', 'all', 'off', 'structure' and 'configuration'. Messages of the listed levels are printed from the logger.
 
 Note that the options should contain the classpath option with the path to the `rt.jar`. Also all the required projects should be included in the classpath. 
 
-As an example, the class `Example` will be analyzed by the following options, all messages will be logged and exported in a file. The logging takes place after the analysis.
+As an example, the class `Example` will be analyzed by the following options, all messages will be logged and exported to a file. The logging takes place after the analysis.
 
 ```bash
 -cp .:…/rt.jar -pp -f none -no-bodies-for-excluded -log-levels all -export-file -keep-line-number Example
@@ -281,14 +281,14 @@ As an example, the class `Example` will be analyzed by the following options, al
 	+ **instance method**:  
 	Results in the *write effects* which are defined for the invoked method.
 	
-On the one hand a *write effect* violation happens if the *write effect* annotation doesn't contain a calculated effect. On the other hand also a *write effect* violation occurs if a *write effect* takes place inside of a context which is stronger or equals than the affected *security level*.
+On the one hand a *write effect* violation happens if the *write effect* annotation doesn't contain a calculated effect. On the other hand also a *write effect* violation occurs if a *write effect* takes place inside a context which is stronger or equals the affected *security level*.
 
 ### Security
 * **update of level**:
 	+ **local variable**:  
-	no restrictions, i.e. no matter if the *security level* of the assigned value is weaker, equals or stronger than the level of the local variable. The level of the local variable will be updated to this *security level*. Note: if the context is stronger than the level of the assigned value, then the level of the local variable will be updated to this stronger program counter *security level*.
+	no restrictions, i.e. no matter if the *security level* of the assigned value is weaker, equals or is stronger than the level of the local variable. The level of the local variable will be updated to this *security level*. Note: if the context is stronger than the level of the assigned value, the level of the local variable will be updated to this stronger program counter *security level*.
 	+ **field**:  
-	the *security level* of the assigned value has to be weaker or equals than the level of the field. The *security level* will not be updated. Note: the context will be considered, thus it is not possible to assign to a field if the the context is stronger than the level of the field.
+	the *security level* of the assigned value has to be weaker or equal to the level of the field. The *security level* will not be updated. Note: the context will be considered, thus it is not possible to assign to a field if the the context is stronger than the level of the field.
 	+ **array** (special case):  
 	no matter which *security level* an array itself has, the values which should be stored in the array must have the weakest *security level*. Also the level of the index should be weaker than the *security level* of the array.
 	
@@ -317,12 +317,12 @@ looks up the *security level* of the returned value and compares it with the exp
 
 *Security level* violations are triggered by the following phenomena:
 
-* Assignment of a value to a field, where the field has a weaker *security level* than the assigned value. Note that the *security level* of the assigned value depends also on the context.
+* Assignment of a value to a field, where the field has a weaker *security level* than the assigned value. Note that the *security level* of the assigned value also depends on the context.
 * The calculated return *security level* is stronger than the expected return level (or the levels are not comparable, e.g. 'void'). Note that if the context is stronger than the *security level* of the returned value, then this stronger program counter *security level* is the calculated return *security level*.
 * The *security level* of an argument of a method invocation is stronger than the expected level for this parameter.
 
 ## Output
-The output depends on the specified options when performing the analysis (see [Run the analysis](#run-the-analysis)). If no log-levels are specified, then the analysis will not output any message, otherwise it will output the messages which have one of the specified levels. As default the analysis outputs the messages via the console, but the analysis can also output the messages in multiple files using the corresponding option. Depending on the option whether it should print the messages instantaneously the output occurs at the moment in which a message is logged. In this case and if the export to a file is enabled, a file for each method will be created which contains the messages corresponding to this method. Otherwise, if it shouldn't print immediately and the export to a file is enabled, a file for each class will be created which contains all messages corresponding to the class or to a method of the class. The files will be stored in the folder `output/security/` inside of the working directory.
+The output depends on the specified options when performing the analysis (see [Run the analysis](#run-the-analysis)). If no log-levels are specified, then the analysis will not output any message, otherwise it will output the messages which have one of the specified levels. As default the analysis outputs the messages via the console, but the analysis can also output the messages in multiple files using the corresponding option. Depending on the option whether it should print the messages instantaneously the output occurs at the moment in which a message is logged. In this case and if the export to a file is enabled, a file for each method will be created which contains the messages corresponding to this method. Otherwise, if it should not print immediately and the export to a file is enabled, a file for each class will be created which contains all messages corresponding to the class or to a method of the class. The files will be stored in the folder `output/security/` inside of the working directory.
 
 -----
 
