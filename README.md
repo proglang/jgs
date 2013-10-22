@@ -29,27 +29,27 @@ The static analysis is based on the [Soot compiler framework][Soot]. Here are so
   
 ### Setup the Gradual Java projects
 - Import the projects [TaintTracking], [Annotations] and [SootUtils] from this repository into Eclipse.
-- The project [SootUtils] requires following:
+- The project [SootUtils] requires the following:
 	- Soot Eclipse project on the build path of the project [SootUtils]
 	- JUnit 4 JARs on the build path of the project [SootUtils]
 	- source folder on the build path is `src/`
 	- use the Java 1.7 JRE
-- The project [Annotations] requires following:
+- The project [Annotations] requires the following:
 	- Soot Eclipse project as well as [SootUtils] project on the build path of the project [Annotations]
 	- JUnit 4 JARs on the build path of the project [Annotations]
 	- source folder on the build path is `src/`
 	- use the Java 1.7 JRE
-- The project [TaintTracking] requires following:
+- The project [TaintTracking] requires the following:
 	- Soot Eclipse project, [Annotations] project as well as [SootUtils] project on the build path of the project [TaintTracking]
 	- JUnit 4 JARs on the build path of the project [TaintTracking]
 	- source folder on the build path is `src/`
 	- use the Java 1.7 JRE
 
 ## How to use
-To check a specific source with the Gradual Java project for security violations, several requirements must be satisfied. This includes on the one hand the implementation of the class `SootSecurityLevel` in the to be checked project, which is a subclass of [`SecurityLevel`][SecurityLevel] and which specifies the *security levels*, and on the other hand, to add the required annotations in the source code as well as to add also the *security levels* of local variables.
+To check a specific source with the Gradual Java project for security violations, several requirements must be satisfied. This includes on the one hand the implementation of the class `SootSecurityLevel` in the to-be-checked project, which is a subclass of [`SecurityLevel`][SecurityLevel] and which specifies the *security levels*, and on the other hand, adding the required annotations in the source code as well as adding also the *security levels* of local variables.
 
 ### Subclass of `SecurityLevel.java`
-The class `SootSecurityLevel` has to define the customized hierarchy of the *security levels*. Also the class has to provide for each *security level* a so-called id function, which takes a value of a specific type and with a weaker or equal *security level* and returns the value with original type and the *security level* of the id function. Thus, following restrictions have to be considered:
+The class `SootSecurityLevel` has to define the customized hierarchy of the *security levels*. Also the class has to provide for each *security level* a so-called id function, which takes a value of a specific type with a weaker or equal *security level* and returns the value with original type and the *security level* of the id function. Thus, the following restrictions have to be considered:
 
 1. In the project, which is to be checked, a class named `SootSecurityLevel` needs to be implemented. The package of this implementation needs to be `security` and the implementation needs to inherit from the class [`SecurityLevel`][SecurityLevel].
 
