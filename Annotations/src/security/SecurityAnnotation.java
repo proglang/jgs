@@ -368,6 +368,35 @@ public class SecurityAnnotation {
 	}
 
 	/**
+	 * Returns the weakest <em>security level</em> of the given level list. If one of the given
+	 * levels is invalid or 'void' ({@link SecurityAnnotation#VOID_LEVEL}), the method will throw an
+	 * exception. Otherwise the weakest level, i.e. the level with the largest index in the list of
+	 * available levels {@link SecurityAnnotation#availableLevels} which is also in the given list,
+	 * will be returned.
+	 * 
+	 * @param levels
+	 *            List of <em>security levels</em> for which the weakest contained level should be
+	 *            returned.
+	 * @return If all given levels of the list are valid, the weakest <em>security level</em>
+	 *         contained by the given list will be returned.
+	 * @throws InvalidLevelException
+	 *             If one of the given levels isn't valid or 'void' (
+	 *             {@link SecurityAnnotation#VOID_LEVEL}).
+	 * @see SecurityAnnotation#checkValidityOfLevels(List)
+	 */
+	public String getMinLevel(List<String> levels) throws InvalidLevelException {
+		if (checkValidityOfLevels(levels)) {
+			for (int i = availableLevels.size() - 1; i >= 0; i--) {
+				if (levels.contains(availableLevels.get(i))) {
+					return availableLevels.get(i);
+				}
+			}
+			return getWeakestSecurityLevel();
+		}
+		throw new InvalidLevelException(SecurityMessages.invalidLevelsComparison(levels));
+	}
+
+	/**
 	 * Returns the weakest <em>security level</em> of the given levels. If one of the two given
 	 * levels is 'void' ({@link SecurityAnnotation#VOID_LEVEL}), the resulting level is also 'void'.
 	 * Otherwise the level with largest index in the list of available levels
@@ -456,6 +485,17 @@ public class SecurityAnnotation {
 	public String getWeakestSecurityLevel() {
 		return availableLevels.get(availableLevels.size() - 1);
 	}
+	
+	/**
+	 * Returns the strongest <em>security level</em> from the list of available and valid
+	 * <em>security levels</em> {@link SecurityAnnotation#availableLevels}, i.e. the level with the
+	 * index {@code 0}.
+	 * 
+	 * @return The strongest valid <em>security level</em>.
+	 */
+	public String getStrongestSecurityLevel() {
+		return availableLevels.get(0);
+	}
 
 	/**
 	 * Checks whether the given method is an id function or not. It checks whether the package and
@@ -489,8 +529,7 @@ public class SecurityAnnotation {
 	 *         {@link Predefined#IMPL_SL_PATH_JAVA}, otherwise {@code false}.
 	 */
 	public boolean isMethodOfSootSecurityLevelClass(SootMethod sootMethod) {
-		return sootMethod.getDeclaringClass().getName()
-				.equals(Predefined.IMPL_SL_PATH_JAVA);
+		return sootMethod.getDeclaringClass().getName().equals(Predefined.IMPL_SL_PATH_JAVA);
 	}
 
 	/**

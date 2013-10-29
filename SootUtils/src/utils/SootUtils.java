@@ -3,11 +3,15 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import soot.Modifier;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
+import soot.VoidType;
+import soot.jimple.Jimple;
+import soot.jimple.JimpleBody;
 import soot.tagkit.AnnotationArrayElem;
 import soot.tagkit.AnnotationElem;
 import soot.tagkit.AnnotationStringElem;
@@ -15,6 +19,7 @@ import soot.tagkit.AnnotationTag;
 import soot.tagkit.SourceLnPosTag;
 import soot.tagkit.Tag;
 import soot.tagkit.VisibilityAnnotationTag;
+import soot.util.Chain;
 
 /**
  * <h1>Utilities for the Soot framework</h1>
@@ -331,6 +336,36 @@ public class SootUtils {
 	private static String generateVisibility(boolean isPrivate, boolean isProtected,
 			boolean isPublic) {
 		return (isPrivate ? "-" : (isProtected ? "#" : (isPublic ? "+" : "?")));
+	}
+	
+	/**
+	 * TODO
+	 * 
+	 * @param sootMethods
+	 * @return
+	 */
+	public static boolean containsStaticInitializer(List<SootMethod> sootMethods) {
+		for (SootMethod sootMethod : sootMethods) {
+			if (isClinitMethod(sootMethod)) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * TODO 
+	 * 
+	 * @param sootClass
+	 * @return
+	 */
+	public static SootMethod generatedEmptyStaticInitializer(SootClass sootClass) {
+		SootMethod sootMethod = new SootMethod(SootMethod.staticInitializerName, new ArrayList<Object>(), VoidType.v(), Modifier.STATIC);
+		sootMethod.setDeclaringClass(sootClass);
+		sootClass.addMethod(sootMethod);
+		JimpleBody body = Jimple.v().newBody(sootMethod);
+		sootMethod.setActiveBody(body);
+		Chain<Unit> units = body.getUnits();
+		units.add(Jimple.v().newReturnVoidStmt());
+		return sootMethod;
 	}
 
 }

@@ -1,11 +1,16 @@
 package model;
 
+import java.util.List;
+
+import exception.SootException.InvalidLevelException;
+
 import analysis.TaintTracking;
 import logging.SecurityLogger;
 import model.Cause.ArrayAssignCause;
 import model.Cause.AssignCause;
 import model.Cause.ClassCause;
 import model.Cause.MethodCause;
+import security.Annotations;
 import security.SecurityAnnotation;
 import soot.SootClass;
 import soot.SootField;
@@ -63,6 +68,270 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 	public AnalyzedMethodEnvironment(SootMethod sootMethod, SecurityLogger log,
 			SecurityAnnotation securityAnnotation) {
 		super(sootMethod, log, securityAnnotation);
+		checkInheritance();
+	}
+
+	/**
+	 * 
+	 */
+	private void checkInheritance() {
+		SootClass sootClass = getSootMethod().getDeclaringClass();
+		String classSignature = SootUtils.generateClassSignature(sootClass, false);
+		String methodSignature = SootUtils.generateMethodSignature(getSootMethod(), false, true,
+				true);
+		if (SootUtils.isClinitMethod(getSootMethod())) {
+			List<String> currentEffects = getExpectedClassWriteEffects();
+			String currentWeakestEffect = getSecurityAnnotation().getMinLevel(currentEffects);
+			boolean currentEmptyEffect = currentEffects.isEmpty();
+			// If clinit => effects of class
+			if (sootClass.hasSuperclass()) {
+				SootClass superClass = sootClass.getSuperclass();
+				String superClassSignature = SootUtils.generateClassSignature(superClass, false);
+				if (!superClass.isLibraryClass()) {
+					// Extract the class effects for superClass, take the weakest and check
+					// whether it is weaker or equals than the weakest effect of the current class.
+					List<String> superEffects = SootUtils.extractAnnotationStringArray(
+							SecurityAnnotation.getSootAnnotationTag(Annotations.WriteEffect.class),
+							superClass.getTags());
+					if (superEffects != null) {
+						String superWeakestEffect = getSecurityAnnotation().getMinLevel(
+								superEffects);
+						boolean superEmptyEffect = superEffects.isEmpty();
+						// A :> B
+						/*
+						 * if (superEmptyEffect && currentEmptyEffect) { // check, because {} = {}
+						 * => lightweight write effect } else if (!superEmptyEffect &&
+						 * currentEmptyEffect) { // check, because H requires {} || L requires {} }
+						 * else
+						 */
+						if (superEmptyEffect && !currentEmptyEffect) {
+							// !, because {} requires H (lightweight)
+							if (!currentWeakestEffect.equals(getSecurityAnnotation()
+									.getStrongestSecurityLevel())) {
+								// Log a write effect violation:
+								// the write effect of current class isn't stronger or equals
+								// because the current has no write effect
+								getLog().effect(
+										SootUtils.generateFileName(getSootMethod()),
+										0,
+										"The class <"
+												+ superClassSignature
+												+ "> has no write effects, thus this is a less serious effect as the most serious effect '"
+												+ currentWeakestEffect + "' of subclass <"
+												+ classSignature + ">.");
+							}
+						} else if (!superEmptyEffect && !currentEmptyEffect) {
+							// ! H requires H, L requires H, L
+							if (! getSecurityAnnotation().isWeakerOrEqualsThan(superWeakestEffect,
+									currentWeakestEffect)) {
+								// Log a write effect violation:
+								// the write effect of current class isn't stronger or equals
+								getLog().effect(
+										SootUtils.generateFileName(getSootMethod()),
+										0,
+										"The the most serious write effect '"
+												+ currentWeakestEffect
+												+ "' of class <"
+												+ classSignature
+												+ "> is less serious as the most serious effect '"
+												+ superWeakestEffect + "' of super class <"
+												+ superClassSignature + ">.");
+							}
+						}
+					} else {
+						logError(SecurityMessages.noClassWriteEffectAnnotation(superClassSignature));
+					}
+				} else {
+					// Log a warning:
+					// can not check whether the inheritance is valid for the class because of
+					// library dependencies.
+					logWarning("Can't check whether the inheritance of the class <"
+							+ classSignature + "> to the class <" + superClassSignature
+							+ "> is valid because it is a library class.");
+				}
+			}
+		} else if (!SootUtils.isInitMethod(getSootMethod())) {
+			// If normal => effects, security param & return of method
+			SootClass superClass = getSuperClassDeclaring();
+			SootMethod superMethod = superClass != null ? superClass.getMethod(getSootMethod()
+					.getSubSignature()) : null;
+			List<String> currentEffects = getExpectedWriteEffects();
+			String currentWeakestEffect = getSecurityAnnotation().getMinLevel(currentEffects);
+			boolean currentEmptyEffect = currentEffects.isEmpty();
+			if (superClass != null && superMethod != null) {
+				String superMethodSignature = SootUtils.generateMethodSignature(superMethod, false, true, true);
+				if (!superClass.isLibraryClass()) {
+					MethodEnvironment superEnvironement = new MethodEnvironment(superMethod,
+							getLog(), getSecurityAnnotation());
+					List<String> superEffects = superEnvironement.getExpectedWriteEffects();
+					String superWeakestEffect = getSecurityAnnotation().getMinLevel(superEffects);
+					boolean superEmptyEffect = superEffects.isEmpty();
+					if (superEmptyEffect && !currentEmptyEffect) {
+						// !, because {} requires H (lightweight)
+						if (!currentWeakestEffect.equals(getSecurityAnnotation()
+								.getStrongestSecurityLevel())) {
+							// Log a write effect violation:
+							// the write effect of current class isn't stronger or equals
+							// because the current has no write effect
+							getLog().effect(
+									SootUtils.generateFileName(getSootMethod()),
+									0,
+									"The method <"
+											+ superMethodSignature
+											+ "> has no write effects, thus this is a less serious effect as the most serious effect '"
+											+ currentWeakestEffect + "' of method <"
+											+ methodSignature + ">.");
+						}
+					} else if (!superEmptyEffect && !currentEmptyEffect) {
+						// ! H requires H, L requires H, L
+						if (! getSecurityAnnotation().isWeakerOrEqualsThan(superWeakestEffect,
+								currentWeakestEffect)) {
+							// Log a write effect violation:
+							// the write effect of current class isn't stronger or equals
+							getLog().effect(
+									SootUtils.generateFileName(getSootMethod()),
+									0,
+									"The the most serious write effect '"
+											+ currentWeakestEffect
+											+ "' of method <"
+											+ methodSignature
+											+ "> is less serious as the most serious effect '"
+											+ superWeakestEffect + "' of the overriden <"
+											+ superMethodSignature + ">.");
+						}
+					}
+					String returnLevelCurrent = getReturnLevel();
+					String returnLevelSuper = superEnvironement.getReturnLevel();
+					if (!(returnLevelCurrent.equals(SecurityAnnotation.VOID_LEVEL) && returnLevelSuper
+							.equals(SecurityAnnotation.VOID_LEVEL))) {
+						try {
+							if (!getSecurityAnnotation().isWeakerOrEqualsThan(returnLevelCurrent,
+									returnLevelSuper)) {
+								// Log a security violation:
+								// the return security level of current method isn't stronger or
+								// equals
+								getLog().security(
+										SootUtils.generateFileName(getSootMethod()),
+										0,
+										"The return security level '"
+												+ returnLevelCurrent
+												+ "' of method <"
+												+ methodSignature
+												+ "> isn't weaker or equals to the return security level '"
+												+ returnLevelSuper + "' of overridden method <"
+												+ superMethodSignature + ">.");
+							}
+						} catch (InvalidLevelException e) {
+							// handle exception which is thrown cause of a return level depending on
+							// specified arguments
+							logError("The return security level '"
+									+ returnLevelCurrent
+									+ "' of method <"
+									+ methodSignature
+									+ "> is not comparable to the return security level '"
+									+ returnLevelSuper
+									+ "' of overridden method <"
+									+ superMethodSignature
+									+ "> because at least one of the level is invalid or a variable level.");
+						}
+					}
+
+					List<MethodParameter> methodParameterCurrent = getMethodParameters();
+					List<MethodParameter> methodParameterSuper = superEnvironement
+							.getMethodParameters();
+					if (methodParameterCurrent.size() == methodParameterSuper.size()) {
+						for (int i = 0; i < methodParameterCurrent.size(); i++) {
+							MethodParameter parameterCurrent = methodParameterCurrent.get(i);
+							MethodParameter parameterSuper = methodParameterSuper.get(i);
+							if (parameterCurrent.getPosition() == parameterSuper.getPosition()
+									&& parameterCurrent.getType().equals(parameterSuper.getType())) {
+								String parameterLevelCurrent = parameterCurrent.getLevel();
+								String parameterLevelSuper = parameterSuper.getLevel();
+								try { // TODO: Handle variable security level
+									if (!getSecurityAnnotation().isWeakerOrEqualsThan(
+											parameterLevelSuper, parameterLevelCurrent)) {
+										// Log a security violation:
+										// the security level of super parameter is stronger than
+										// the current parameter level
+										getLog().security(
+												SootUtils.generateFileName(getSootMethod()),
+												0,
+												"The security level '" + parameterLevelSuper
+														+ "' of parameter '"
+														+ parameterSuper.getName()
+														+ "' at the overridden method <"
+														+ superMethodSignature + "> is stronger "
+														+ "than the parameter level '"
+														+ parameterLevelCurrent
+														+ "' of parameter '"
+														+ parameterCurrent.getName()
+														+ "' at method <" + methodSignature + ">.");
+									}
+								} catch (InvalidLevelException e) {
+									// handle exception which is thrown cause of a variable security
+									// level of a parameter
+									logError("The method parameter with the securitylevel '"
+											+ parameterCurrent.getLevel()
+											+ "' and the name '"
+											+ parameterCurrent.getName()
+											+ "' of <"
+											+ methodSignature
+											+ "> is not comparable to the method parameter with the security level '"
+											+ parameterSuper.getLevel()
+											+ "' and the name '"
+											+ parameterSuper.getName()
+											+ "' of method the overridden method <"
+											+ superMethodSignature
+											+ "> because at least one of the level is invalid or a variable level.");
+								}
+							} else {
+								// log a error
+								// Method parameter is not comparable
+								logError("The method parameter with the name '"
+										+ parameterCurrent.getName()
+										+ "' of method <"
+										+ methodSignature
+										+ "> is not comparable to the method parameter with the name '"
+										+ parameterSuper.getName()
+										+ "' of method the overridden method <"
+										+ superMethodSignature + ">.");
+							}
+						}
+					} else {
+						// log a error
+						// Method parameters are not comparable
+						logError("Method parameters of method <" + methodSignature
+								+ "> and of the overridden method <" + superMethodSignature
+								+ "> are not comparable.");
+					}
+				} else {
+					// Log a warning:
+					// can not check whether the inheritance is valid for the class because of
+					// library
+					// dependencies.
+					logWarning("Can't check whether the inheritance of the method <"
+							+ methodSignature + "> to the overridden method >"
+							+ superMethodSignature + "> is valid because it is a library method.");
+
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private SootClass getSuperClassDeclaring() {
+		SootClass result = null;
+		SootClass current = getSootMethod().getDeclaringClass();
+		while (current.hasSuperclass() && result == null) {
+			current = current.getSuperclass();
+			if (current.declaresMethod(getSootMethod().getSubSignature())) {
+				result = current;
+			}
+		}
+		return result;
 	}
 
 	/**

@@ -370,6 +370,33 @@ public class PreTestSecurityAnnotation {
 		assertTrue("Correct strongest item of low low low", securityAnnotation.getMaxLevel(levels).equals("low"));
 		clearListAndAddToList(levels, "normal", "normal", "normal");
 		assertTrue("Correct strongest item of normal normal normal", securityAnnotation.getMaxLevel(levels).equals("normal"));
+		clearListAndAddToList(levels);
+		assertTrue("Correct strongest item of {}", securityAnnotation.getMaxLevel(levels).equals("low"));
+	}
+	
+	@Test
+	public final void testGetMinLevel2() {
+		List<String> levels = new ArrayList<String>();
+		clearListAndAddToList(levels, "high", "normal", "low");
+		assertTrue("Correct weakest item of high normal low", securityAnnotation.getMinLevel(levels).equals("low"));
+		clearListAndAddToList(levels, "low", "normal", "high");
+		assertTrue("Correct weakest item of low normal high", securityAnnotation.getMinLevel(levels).equals("low"));
+		clearListAndAddToList(levels, "normal", "high", "low");
+		assertTrue("Correct weakest item of normal high low", securityAnnotation.getMinLevel(levels).equals("low"));
+		clearListAndAddToList(levels, "normal", "low", "high");
+		assertTrue("Correct weakest item of normal low high", securityAnnotation.getMinLevel(levels).equals("low"));
+		clearListAndAddToList(levels, "normal", "high", "high");
+		assertTrue("Correct weakest item of normal high high", securityAnnotation.getMinLevel(levels).equals("normal"));
+		clearListAndAddToList(levels, "normal", "normal", "low");
+		assertTrue("Correct weakest item of normal normal high", securityAnnotation.getMinLevel(levels).equals("low"));
+		clearListAndAddToList(levels, "low", "low", "low");
+		assertTrue("Correct weakest item of low low low", securityAnnotation.getMinLevel(levels).equals("low"));
+		clearListAndAddToList(levels, "normal", "normal", "normal");
+		assertTrue("Correct weakest item of normal normal normal", securityAnnotation.getMinLevel(levels).equals("normal"));
+		clearListAndAddToList(levels, "high");
+		assertTrue("Correct weakest item of high", securityAnnotation.getMinLevel(levels).equals("high"));
+		clearListAndAddToList(levels);
+		assertTrue("Correct weakest item of {}", securityAnnotation.getMinLevel(levels).equals("low"));
 	}
 	
 	@Test

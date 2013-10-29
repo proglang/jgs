@@ -2,6 +2,7 @@ package analysis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -13,6 +14,7 @@ import security.SecurityAnnotation;
 import soot.Body;
 import soot.BodyTransformer;
 import soot.PackManager;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.Transform;
 import soot.toolkits.graph.BriefUnitGraph;
@@ -37,6 +39,8 @@ import exception.SootException.SecurityLevelException;
  */
 public class Main {
 
+	
+
 	/**
 	 * <h1>Security Transformer</h1>
 	 * 
@@ -50,6 +54,28 @@ public class Main {
 	 * @version 0.2
 	 */
 	public static class SecurityTransformer extends BodyTransformer {
+		
+		/** TODO */
+		private List<SootClass> visitedClasses = new ArrayList<SootClass>();
+		
+		/**
+		 * TODO
+		 * 
+		 * @param sootMethod
+		 * @param graph
+		 */
+		private void doAnalysis(SootMethod sootMethod, UnitGraph graph){
+			if (!securityAnnotation.isMethodOfSootSecurityLevelClass(sootMethod)) {
+				if (instantLogging) {
+					log.structure(SootUtils.generateMethodSignature(sootMethod, false, true, false));
+					log.addStandardFileHandlerForMethod(sootMethod);
+				}
+				TaintTracking tt = new TaintTracking(log, sootMethod, securityAnnotation, graph);
+				tt.checkAnalysis();
+				if (instantLogging)
+					log.removeStandardFileHandler();
+			}
+		}
 
 		/**
 		 * This method is called to perform the transformation itself. The method executes the
@@ -68,20 +94,21 @@ public class Main {
 		@SuppressWarnings("rawtypes")
 		@Override
 		protected void internalTransform(Body body, String phaseName, Map options) {
-			UnitGraph g = new BriefUnitGraph(body);
-			SootMethod sootMethod = g.getBody().getMethod();
+			UnitGraph graph = new BriefUnitGraph(body);
+			SootMethod sootMethod = graph.getBody().getMethod();
+			SootClass sootClass = sootMethod.getDeclaringClass();
+			if (! visitedClasses.contains(sootClass)) {				
+				if (! SootUtils.containsStaticInitializer(sootClass.getMethods())) {
+					SootMethod clinit = SootUtils.generatedEmptyStaticInitializer(sootClass);
+					UnitGraph clinitGraph = new BriefUnitGraph(clinit.getActiveBody());
+					doAnalysis(clinit, clinitGraph);
+				} 
+				visitedClasses.add(sootClass);
+			}
 			if (!securityAnnotation.isMethodOfSootSecurityLevelClass(sootMethod)) {
-				if (instantLogging) {
-					log.structure(SootUtils.generateMethodSignature(sootMethod, false, true, false));
-					log.addStandardFileHandlerForMethod(sootMethod);
-				}
-				TaintTracking tt = new TaintTracking(log, sootMethod, securityAnnotation, g);
-				tt.checkAnalysis();
-				if (instantLogging)
-					log.removeStandardFileHandler();
+				doAnalysis(sootMethod, graph);
 			}
 		}
-
 	}
 
 	/** Indicates whether the messages should be logged also in a file. */
