@@ -310,7 +310,7 @@ On the one hand a *write effect* violation happens if the *write effect* annotat
 	+ **expression**:   
 	result will be the strongest *security level* of the operands.
 	+ **method**:  
-	the result will be the return *security level* of the method. During the lookup also the level of arguments are compared with the *security level* of the parameters. The *security level* of the argument has to be weaker or equals than the corresponding parameter *security level*.
+	the result will be the return *security level* of the method. If the method is an instance method and the instance has a stronger *security level* than the return level, then the result will be the stronger instance *security level*. During the lookup also the level of arguments are compared with the *security level* of the parameters. The *security level* of the argument has to be weaker or equals than the corresponding parameter *security level*.
 			
 * **return level**:  
 looks up the *security level* of the returned value and compares it with the expected return *security level*. The calculated level has to be weaker or equals than the expected return *security level*.
