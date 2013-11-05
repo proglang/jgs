@@ -27,7 +27,7 @@ public class SootLoggerConsoleFormatter extends Formatter {
 	 * Maximal character number of a single line. I.e. a printed line has to have at most the given
 	 * number of characters.
 	 */
-	private static final int LINE_WIDTH = 120;
+	private static final int LINE_WIDTH = 100;
 
 	/**
 	 * Stores the given message formatted in the given {@link StringBuilder}. The given message will
