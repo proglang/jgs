@@ -8,7 +8,7 @@
          <!-- Path to the Hamcrest jar. -->
          <property name="hamcrest.jar" value="/Users/tVogel/Downloads/hamcrest-all-1.3.jar" />
          <!-- Path to the Soot project. -->
-         <property name="soot.dir" value="/Users/tVogel/Documents/workspace/Soot" />
+         <property name="soot.dir" value="/Users/tVogel/Documents/Workspaces/workspace_juno/Soot" />
          <!-- Path to the SootUtils project. -->
          <property name="sootUtils.dir" location="SootUtils" />
          <!-- Path to the Annotations project. -->
@@ -26,7 +26,7 @@
          <!-- Path to the Soot jar. -->
          <property name="soot.jar" value="/Users/tVogel/Downloads/soot-2.5.0.jar" />
          <!-- Path to the rt jar. -->
-         <property name="rt.jar" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_21.jdk/Contents/Home/jre/lib/rt.jar" />
+         <property name="rt.jar" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar" />
          <!-- Should test the result? -->
          <property name="enable.junit" value="true" />
          <!-- Should print the jimple source code? -->
