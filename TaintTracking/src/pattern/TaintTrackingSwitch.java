@@ -14,8 +14,6 @@ import model.Environment;
 import model.LocalsMap;
 import model.MethodEnvironment;
 import model.MethodEnvironment.MethodParameter;
-import security.LevelEquation;
-import security.LevelEquationVisitor.LevelEquationEvaluationVisitor;
 import security.SecurityAnnotation;
 import soot.Local;
 import soot.SootClass;
@@ -324,148 +322,60 @@ abstract public class TaintTrackingSwitch {
 	protected String calculateInvokeExprLevel(InvokeExpr invokeExpr,
 			boolean assignment) {
 
-		if (Configuration.OLD_ANALYSIS) { // RENEW
-			MethodEnvironment invokedMethod = new MethodEnvironment(
-					invokeExpr.getMethod(), getLog(), getSecurityAnnotation());
+		try {
+			MethodEnvironment invokedMethod = store
+					.getMethodEnvironment(invokeExpr.getMethod());
+
 			String invokedMethodSignature = SootUtils.generateMethodSignature(
 					invokedMethod.getSootMethod(),
 					Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
 					Configuration.METHOD_SIGNATURE_PRINT_TYPE,
 					Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-			if (!invokedMethod.isLibraryMethod()) {
-				List<MethodParameter> invokedMethodParameter = invokedMethod
-						.getMethodParameters();
-				String level = getWeakestSecurityLevel();
-				if (invokeExpr.getArgCount() == invokedMethodParameter.size()) {
-					List<String> parameterLevels = new ArrayList<String>();
-					List<String> argumentLevels = new ArrayList<String>();
-					for (int j = 0; j < invokeExpr.getArgCount(); j++) {
-						Value value = invokeExpr.getArg(j);
-						String parameterLevel = invokedMethodParameter.get(j)
-								.getLevel();
-						String parameterName = invokedMethodParameter.get(j)
-								.getName();
-						String argumentLevel = calculateLevel(value,
-								invokeExpr.toString());
-						if (!isWeakerOrEqualLevel(argumentLevel, parameterLevel)) {
-							logSecurity(SecurityMessages
-									.weakerArgumentExpected(
-											getMethodSignature(),
-											invokedMethodSignature, getSrcLn(),
-											argumentLevel, parameterLevel,
-											parameterName));
-						}
-						argumentLevels.add(argumentLevel);
-						parameterLevels.add(parameterLevel);
+
+			List<MethodParameter> invokedMethodParameter = invokedMethod
+					.getMethodParameters();
+			String level = getWeakestSecurityLevel();
+			if (invokeExpr.getArgCount() == invokedMethodParameter.size()) {
+				List<String> parameterLevels = new ArrayList<String>();
+				List<String> argumentLevels = new ArrayList<String>();
+				for (int j = 0; j < invokeExpr.getArgCount(); j++) {
+					Value value = invokeExpr.getArg(j);
+					String parameterLevel = invokedMethodParameter.get(j)
+							.getLevel();
+					String parameterName = invokedMethodParameter.get(j)
+							.getName();
+					String argumentLevel = calculateLevel(value,
+							invokeExpr.toString());
+					if (!isWeakerOrEqualLevel(argumentLevel, parameterLevel)) {
+						logSecurity(SecurityMessages.weakerArgumentExpected(
+								getMethodSignature(), invokedMethodSignature,
+								getSrcLn(), argumentLevel, parameterLevel,
+								parameterName));
 					}
-					if (assignment) {
-						if (!invokedMethod.isReturnSecurityValid()) {
-							logError(SecurityMessages.invalidReturnAnnotation(
-									getMethodSignature(),
-									invokedMethodSignature, getSrcLn()));
-						}
-						LevelEquation levelEquation = invokedMethod
-								.getReturnLevelEquation();
-						LevelEquationEvaluationVisitor levelEquationEvaluationVisitor = getSecurityAnnotation()
-								.getLevelEquationEvaluationVisitor(
-										argumentLevels, parameterLevels);
-						levelEquation.accept(levelEquationEvaluationVisitor);
-						level = levelEquationEvaluationVisitor.getResultLevel();
-					} else {
-						level = SecurityAnnotation.VOID_LEVEL;
-					}
-				} else {
-					logError(SecurityMessages.wrongArgumentParameterAmount(
-							getMethodSignature(), invokedMethodSignature,
-							getSrcLn()));
+					argumentLevels.add(argumentLevel);
+					parameterLevels.add(parameterLevel);
 				}
-				checkSideEffectsOfInvokedMethod(invokedMethod);
-				return level;
-			} else {
-				String level = getWeakestSecurityLevel();
 				if (assignment) {
-					List<String> argumentLevels = new ArrayList<String>();
-					for (int j = 0; j < invokeExpr.getArgCount(); j++) {
-						Value value = invokeExpr.getArg(j);
-						argumentLevels.add(calculateLevel(value,
-								invokeExpr.toString()));
+					if (invokedMethod.isLibraryMethod()) {
+						level = getMaxLevel(argumentLevels);
+					} else {
+						level = invokedMethod.getReturnLevel();
 					}
-					level = getMaxLevel(argumentLevels);
-					logWarning(SecurityMessages
-							.invocationOfLibraryMethodMaxArgumentLevel(
-									getMethodSignature(),
-									invokedMethodSignature, getSrcLn(), level));
 				} else {
 					level = SecurityAnnotation.VOID_LEVEL;
-					logWarning(SecurityMessages
-							.invocationOfLibraryMethodNoSecurityLevel(
-									getMethodSignature(),
-									invokedMethodSignature, getSrcLn()));
 				}
-				logWarning(SecurityMessages
-						.invocationOfLibraryMethodNoSideEffect(
-								getMethodSignature(), invokedMethodSignature,
-								getSrcLn()));
-				return level;
+			} else {
+				logError(SecurityMessages.wrongArgumentParameterAmount(
+						getMethodSignature(), invokedMethodSignature,
+						getSrcLn()));
 			}
-		} else {
-			try {
-				MethodEnvironment invokedMethod = store
-						.getMethodEnvironment(invokeExpr.getMethod());
-
-				String invokedMethodSignature = SootUtils
-						.generateMethodSignature(invokedMethod.getSootMethod(),
-								Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-								Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-								Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-
-				List<MethodParameter> invokedMethodParameter = invokedMethod
-						.getMethodParameters();
-				String level = getWeakestSecurityLevel();
-				if (invokeExpr.getArgCount() == invokedMethodParameter.size()) {
-					List<String> parameterLevels = new ArrayList<String>();
-					List<String> argumentLevels = new ArrayList<String>();
-					for (int j = 0; j < invokeExpr.getArgCount(); j++) {
-						Value value = invokeExpr.getArg(j);
-						String parameterLevel = invokedMethodParameter.get(j)
-								.getLevel();
-						String parameterName = invokedMethodParameter.get(j)
-								.getName();
-						String argumentLevel = calculateLevel(value,
-								invokeExpr.toString());
-						if (!isWeakerOrEqualLevel(argumentLevel, parameterLevel)) {
-							logSecurity(SecurityMessages
-									.weakerArgumentExpected(
-											getMethodSignature(),
-											invokedMethodSignature, getSrcLn(),
-											argumentLevel, parameterLevel,
-											parameterName));
-						}
-						argumentLevels.add(argumentLevel);
-						parameterLevels.add(parameterLevel);
-					}
-					if (assignment) {
-						if (invokedMethod.isLibraryMethod()) {
-							level = getMaxLevel(argumentLevels);
-						} else {
-							level = invokedMethod.getReturnLevel();
-						}						
-					} else {
-						level = SecurityAnnotation.VOID_LEVEL;
-					}
-				} else {
-					logError(SecurityMessages.wrongArgumentParameterAmount(
-							getMethodSignature(), invokedMethodSignature,
-							getSrcLn()));
-				}
-				checkSideEffectsOfInvokedMethod(invokedMethod);
-				return level;
-			} catch (Exception e) {
-				// TODO: Logging
-				System.err.println("Method "
-						+ invokeExpr.getMethod().getSignature() + " not found");
-				return null;
-			}
+			checkSideEffectsOfInvokedMethod(invokedMethod);
+			return level;
+		} catch (Exception e) {
+			// TODO: Logging
+			System.err.println("Method "
+					+ invokeExpr.getMethod().getSignature() + " not found");
+			return null;
 		}
 
 	}
@@ -522,54 +432,15 @@ abstract public class TaintTrackingSwitch {
 	 */
 	protected void checkSideEffectsOfInvokedMethod(
 			MethodEnvironment invokedMethod) {
-		String invokedMethodSignature = SootUtils.generateMethodSignature(
-				invokedMethod.getSootMethod(),
-				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-		if (Configuration.OLD_ANALYSIS) { // RENEW
-			if (invokedMethod.areWriteEffectsValid()) {
-				for (String effected : invokedMethod.getWriteEffects()) {
-					addWriteEffectCausedByMethodInvocation(effected,
-							invokedMethod.getSootMethod());
-				}
-				if (SootUtils.isInitMethod(invokedMethod.getSootMethod())
-						|| invokedMethod.getSootMethod().isStatic()) {
-					if (invokedMethod.areClassWriteEffectsValid()) {
-						for (String effected : invokedMethod
-								.getClassWriteEffects()) {
-							addWriteEffectCausedByClass(effected, invokedMethod
-									.getSootMethod().getDeclaringClass());
-						}
-					} else {
-						String invokedClassSignature = SootUtils
-								.generateClassSignature(
-										invokedMethod.getSootMethod()
-												.getDeclaringClass(),
-										Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
-						logError(SecurityMessages
-								.invalidInvokedClassWriteEffects(
-										getMethodSignature(), getSrcLn(),
-										invokedMethodSignature,
-										invokedClassSignature));
-					}
-				}
-			} else {
-				logError(SecurityMessages.invalidInvokedWriteEffects(
-						getMethodSignature(), getSrcLn(),
-						invokedMethodSignature));
-			}
-		} else {
-			for (String effected : invokedMethod.getWriteEffects()) {
-				addWriteEffectCausedByMethodInvocation(effected,
-						invokedMethod.getSootMethod());
-			}
-			if (SootUtils.isInitMethod(invokedMethod.getSootMethod())
-					|| invokedMethod.getSootMethod().isStatic()) {
-				for (String effected : invokedMethod.getClassWriteEffects()) {
-					addWriteEffectCausedByClass(effected, invokedMethod
-							.getSootMethod().getDeclaringClass());
-				}
+		for (String effected : invokedMethod.getWriteEffects()) {
+			addWriteEffectCausedByMethodInvocation(effected,
+					invokedMethod.getSootMethod());
+		}
+		if (SootUtils.isInitMethod(invokedMethod.getSootMethod())
+				|| invokedMethod.getSootMethod().isStatic()) {
+			for (String effected : invokedMethod.getClassWriteEffects()) {
+				addWriteEffectCausedByClass(effected, invokedMethod
+						.getSootMethod().getDeclaringClass());
 			}
 		}
 

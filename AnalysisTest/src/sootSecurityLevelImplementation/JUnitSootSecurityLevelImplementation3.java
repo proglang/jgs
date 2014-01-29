@@ -1,4 +1,4 @@
-package junit;
+package sootSecurityLevelImplementation;
 
 import security.Annotations.ReturnSecurity;
 import security.SecurityLevel;
@@ -8,24 +8,19 @@ import security.SecurityLevel;
  * 
  * Represents an invalid implementation of the {@link SecurityLevel} class.
  * 
- * @see PreTestSecurityLevelImplChecker
+ * @see TestSecurityLevelImplChecker
  * @author Thomas Vogel
  * @version 0.1
  */
-public class JUnitSootSecurityLevelImplementation4 extends SecurityLevel {
+public class JUnitSootSecurityLevelImplementation3 extends SecurityLevel {
 
 	@Override
 	public String[] getOrderedSecurityLevels() {
-		return new String[] {"high", "low"};
-	}
-	
-	@ReturnSecurity("low")
-	public static <T> T highId(T obj) {
-		return obj;
+		return new String[] {"high"};
 	}
 	
 	@ReturnSecurity("high")
-	public static <T> T lowId(T obj) {
+	public static <T> T highId(T obj) {
 		return obj;
 	}
 

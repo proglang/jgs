@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.logging.Level;
 
-import junit.TestUtils.TestFile;
+import junit.JUnitTestUtils.TestFile;
 
 import logging.SootLoggerLevel;
 
@@ -26,7 +26,7 @@ import analysisFail.FailStaticMethod;
 import annotationValidity.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class FailingAnalysis {
+public class TestFailingAnalysis {
 
 	private static Level[] CHECK_LEVELS = { SootLoggerLevel.ERROR,
 			SootLoggerLevel.EXCEPTION, SootLoggerLevel.SECURITY,
@@ -113,167 +113,167 @@ public class FailingAnalysis {
 
 	@Test
 	public final void test01Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID01, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID01, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test02Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID02, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID02, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test03Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID03, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID03, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test04Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID04, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID04, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test05Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID05, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID05, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test06Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID06, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID06, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test07Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID07, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID07, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test08Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID08, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID08, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test09Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID09, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID09, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test10Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID10, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID10, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test11Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID11, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID11, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test12Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID12, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID12, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test13Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID13, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID13, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test14Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID14, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID14, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test15Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID15, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID15, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test16Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID16, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID16, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test17Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID17, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID17, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test18Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID18, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID18, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test19Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID19, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID19, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test20Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID20, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID20, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test21Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID21, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID21, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test22Invalid() {
-		TestUtils.checkMethodStoreEquality(INVALID22, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(INVALID22, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test23Array() {
-		TestUtils.checkMethodStoreEquality(ARRAY, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(ARRAY, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test24Expr() {
-		TestUtils.checkMethodStoreEquality(EXPR, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(EXPR, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test25IdFunction() {
-		TestUtils.checkMethodStoreEquality(ID, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(ID, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test26Field() {
-		TestUtils.checkMethodStoreEquality(FIELD, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(FIELD, CHECK_LEVELS);
 	}
 
 	@Test
 	public final void test27StaticField() {
-		TestUtils.checkMethodStoreEquality(STATIC_FIELD, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(STATIC_FIELD, CHECK_LEVELS);
 	}
 	
 	@Test
 	public final void test28Object() {
-		TestUtils.checkMethodStoreEquality(OBJECT, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(OBJECT, CHECK_LEVELS);
 	}
 	
 	@Test
 	public final void test29Method() {
-		TestUtils.checkMethodStoreEquality(METHOD, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(METHOD, CHECK_LEVELS);
 	}
 	
 	@Test
 	public final void test30StaticMethod() {
-		TestUtils.checkMethodStoreEquality(STATIC_METHOD, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(STATIC_METHOD, CHECK_LEVELS);
 	}
 	
 	@Test
 	public final void test31Lopp() {
-		TestUtils.checkMethodStoreEquality(LOOP, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(LOOP, CHECK_LEVELS);
 	}
 	
 	@Test
 	public final void test32IfElse() {
-		TestUtils.checkMethodStoreEquality(IF_ELSE, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(IF_ELSE, CHECK_LEVELS);
 	}
 	
 	@Test
 	public final void test33IfElse2() {
-		TestUtils.checkMethodStoreEquality(IF_ELSE2, CHECK_LEVELS);
+		JUnitTestUtils.checkMethodStoreEquality(IF_ELSE2, CHECK_LEVELS);
 	}
 	
 }

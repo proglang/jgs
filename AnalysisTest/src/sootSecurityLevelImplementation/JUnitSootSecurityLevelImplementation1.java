@@ -1,4 +1,4 @@
-package junit;
+package sootSecurityLevelImplementation;
 
 import security.Annotations.ReturnSecurity;
 import security.SecurityLevel;
@@ -8,7 +8,7 @@ import security.SecurityLevel;
  * 
  * Represents a valid implementation of the {@link SecurityLevel} class.
  * 
- * @see PreTestSecurityLevelImplChecker
+ * @see TestSecurityLevelImplChecker
  * @author Thomas Vogel
  * @version 0.1
  */

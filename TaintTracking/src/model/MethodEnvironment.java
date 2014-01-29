@@ -9,19 +9,12 @@ import logging.SecurityLogger;
 import main.Configuration;
 import security.Annotations;
 import security.LevelEquation;
-import security.LevelEquationVisitor.LevelEquationCalculateVoidVisitor;
 import security.LevelEquationVisitor.LevelEquationValidityVistitor;
 import security.SecurityAnnotation;
-import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
-import soot.VoidType;
-import soot.tagkit.ParamNamesTag;
-import soot.tagkit.Tag;
 import utils.SecurityMessages;
 import utils.SootUtils;
-import exception.SootException;
-import exception.SootException.ExtractionException;
 import exception.SootException.InvalidEquationException;
 import exception.SootException.InvalidLevelException;
 
@@ -135,12 +128,6 @@ public class MethodEnvironment extends Environment {
 	}
 
 	/**
-	 * Value which indicates whether the <em>effect annotation</em> at the class
-	 * which declares the analyzed method is available.
-	 */
-	@Deprecated
-	private boolean classWriteEffectAnnotationAvailable = false;
-	/**
 	 * The <em>write effects</em> of the class which declares the
 	 * {@link SootMethod}.
 	 */
@@ -154,38 +141,12 @@ public class MethodEnvironment extends Environment {
 	 */
 	private Map<Integer, MethodParameter> methodParameters = new HashMap<Integer, MethodParameter>();
 	/**
-	 * Value which indicates whether the parameter <em>security annotation</em>
-	 * at the analyzed method is available.
-	 */
-	@Deprecated
-	private boolean parameterAnnotationAvailable = false;
-	/**
-	 * Value which indicates whether the return <em>security annotation</em> at
-	 * the analyzed method is available.
-	 */
-	@Deprecated
-	private boolean returnAnnotationAvailable = false;
-	/**
 	 * The expected return <em>security level</em> of the analyzed
 	 * {@link SootMethod}.
 	 */
 	private String returnLevel = null;
-	/**
-	 * The return <em>security level</em> equation, if the return
-	 * <em>security level</em> depends on variable parameter
-	 * <em>security levels</em>.
-	 */
-	@Deprecated
-	private LevelEquation returnLevelEquation = null;
 	/** The analyzed method, for which this is the environment. */
 	private SootMethod sootMethod;
-	/**
-	 * Value which indicates whether the <em>effect annotation</em> at the
-	 * analyzed method is available.
-	 */
-	@Deprecated
-	private boolean writeEffectAnnotationAvailable = false;
-
 	/**
 	 * DOC
 	 */
@@ -206,6 +167,9 @@ public class MethodEnvironment extends Environment {
 	 * DOC
 	 */
 	private final boolean isSootSecurityMethod;
+	
+	@Deprecated
+	private LevelEquation returnLevelEquation = null;
 
 	/**
 	 * DOC
@@ -309,160 +273,6 @@ public class MethodEnvironment extends Environment {
 	 */
 
 	/**
-	 * Constructor of a {@link MethodEnvironment} that requires a
-	 * {@link SootMethod} which should be analyzed, a logger in order to allow
-	 * logging for this object as well as a security annotation object in order
-	 * to provide the handling of <em>security levels</em>. By calling the
-	 * constructor all required extractions of the annotations will be done
-	 * automatically.
-	 * 
-	 * @param sootMethod
-	 *            The {@link SootMethod} that should be analyzed.
-	 * @param log
-	 *            A {@link SecurityLogger} in order to allow logging for this
-	 *            object.
-	 * @param securityAnnotation
-	 *            A {@link SecurityAnnotation} in order to provide the handling
-	 *            of <em>security levels</em>.
-	 */
-	@Deprecated
-	public MethodEnvironment(SootMethod sootMethod, SecurityLogger log,
-			SecurityAnnotation securityAnnotation) {
-		super(log, securityAnnotation);
-		this.sootMethod = sootMethod;
-		this.isIdFunction = getSecurityAnnotation().isIdFunction(sootMethod);
-		this.isClinit = SootUtils.isClinitMethod(sootMethod);
-		this.isInit = SootUtils.isInitMethod(sootMethod);
-		this.isVoid = sootMethod.getReturnType().equals(VoidType.v());
-		this.isSootSecurityMethod = getSecurityAnnotation()
-				.isMethodOfSootSecurityLevelClass(sootMethod);
-		extractReturnSecurityLevel();
-		extractParameter();
-		extractWriteEffects();
-		extractClassWriteEffects();
-	}
-
-	/**
-	 * The method checks whether the class <em>write effects</em> are valid,
-	 * i.e. checks whether the annotation is available and also whether the
-	 * provided <em>write effects</em> are valid <em>security levels</em>. If a
-	 * failure is detected, this is logged with the logger
-	 * {@link MethodEnvironment#getLog()}.
-	 * 
-	 * @return {@code true} if the annotation is available and all provided
-	 *         class <em>write effect</em> are valid, otherwise {@code false}.
-	 */
-	@Deprecated
-	public boolean areClassWriteEffectsValid() {
-		String classSignature = SootUtils.generateClassSignature(
-				sootMethod.getDeclaringClass(),
-				Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
-		if (!this.classWriteEffectAnnotationAvailable) {
-			logError(SecurityMessages
-					.noClassWriteEffectAnnotation(classSignature));
-			return false;
-		}
-		if (!getSecurityAnnotation().checkValidityOfLevels(classWriteEffects)) {
-			for (String invalidEffect : getSecurityAnnotation()
-					.getInvalidLevels(classWriteEffects)) {
-				logError(SecurityMessages.invalidClassWriteEffect(
-						classSignature, invalidEffect));
-			}
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * The method checks whether the parameter <em>security levels</em> are
-	 * valid, i.e. checks whether the annotation is available, checks whether
-	 * the given number of parameter <em>security levels</em> match the number
-	 * of the method parameter and also whether the provided levels are valid
-	 * <em>security levels</em>. If a failure is detected, this is logged with
-	 * the logger {@link MethodEnvironment#getLog()}.
-	 * 
-	 * @return {@code true} if the security annotation is available for the
-	 *         method parameters as well as all provided
-	 *         <em>security levels</em> are valid and the number of the levels
-	 *         match the count of the method parameter, otherwise {@code false}.
-	 */
-	@Deprecated
-	public boolean areMethodParameterSecuritiesValid() {
-		String methodSignature = SootUtils.generateMethodSignature(sootMethod,
-				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-		if (!this.parameterAnnotationAvailable) {
-			logError(SecurityMessages.noParameterAnnotation(methodSignature));
-			return false;
-		}
-		if (this.methodParameters == null)
-			return true;
-		boolean valid = true;
-		int countParameter = 0;
-		int countLevels = 0;
-		for (Integer key : this.methodParameters.keySet()) {
-			MethodParameter methodParameter = this.methodParameters.get(key);
-			if (methodParameter.level != null) {
-				countLevels++;
-			}
-			if (methodParameter.type != null || methodParameter.name != null) {
-				countParameter++;
-			}
-		}
-		if (countLevels > countParameter) {
-			logError(SecurityMessages.moreParameterLevels(methodSignature,
-					countParameter, countLevels));
-			valid = false;
-		} else if (countLevels < countParameter) {
-			logError(SecurityMessages.moreParameterLevels(methodSignature,
-					countParameter, countLevels));
-			valid = false;
-		}
-		if (!getSecurityAnnotation().checkValidityOfParameterLevels(
-				getListOfParameterLevels())) {
-			for (String level : getSecurityAnnotation()
-					.getInvalidParameterLevels(getListOfParameterLevels())) {
-				logError(SecurityMessages.invalidParameterLevel(
-						methodSignature, level));
-			}
-			valid = false;
-		}
-		return valid;
-	}
-
-	/**
-	 * The method checks whether the <em>write effects</em> of the analyzed
-	 * method are valid, i.e. checks whether the annotation is available at the
-	 * method and also whether the provided <em>write effects</em> are valid
-	 * <em>security level</em>. If a failure is detected, this is logged with
-	 * the logger {@link MethodEnvironment#getLog()}.
-	 * 
-	 * @return {@code true} if the annotation is available and all provided
-	 *         <em>write effect</em> are valid, otherwise {@code false}.
-	 */
-	@Deprecated
-	public boolean areWriteEffectsValid() {
-		String methodSignature = SootUtils.generateMethodSignature(sootMethod,
-				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-		if (!this.writeEffectAnnotationAvailable) {
-			logError(SecurityMessages.noWriteEffectAnnotation(methodSignature));
-			return false;
-		}
-		if (!getSecurityAnnotation().checkValidityOfLevels(writeEffects)) {
-			for (String invalidEffect : getSecurityAnnotation()
-					.getInvalidLevels(writeEffects)) {
-				logError(SecurityMessages.invalidWriteEffect(methodSignature,
-						invalidEffect));
-			}
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Returns the <em>write effects</em> of the class which declares the
 	 * analyzed method.
 	 * 
@@ -536,21 +346,6 @@ public class MethodEnvironment extends Environment {
 	}
 
 	/**
-	 * Returns the <em>security level</em> equation of the analyzed method.
-	 * Note, that the method will return {@code null} as long as the method
-	 * {@link MethodEnvironment#isReturnSecurityValid()} was not called. This
-	 * method will create the equation from the return <em>security level</em>.
-	 * 
-	 * @return The <em>security level</em> equation, if the method
-	 *         {@link MethodEnvironment#isReturnSecurityValid()} was called,
-	 *         otherwise {@code null}.
-	 */
-	@Deprecated
-	public LevelEquation getReturnLevelEquation() {
-		return returnLevelEquation;
-	}
-
-	/**
 	 * The method returns the analyzed {@link SootMethod} for which this is the
 	 * environment.
 	 * 
@@ -561,18 +356,6 @@ public class MethodEnvironment extends Environment {
 	}
 
 	/**
-	 * Indicates whether the <em>effect annotation</em> at the analyzed class is
-	 * available.
-	 * 
-	 * @return {@code true} if the annotation is available, otherwise
-	 *         {@code false}.
-	 */
-	@Deprecated
-	public boolean isClassWriteEffectAnnotationAvailable() {
-		return classWriteEffectAnnotationAvailable;
-	}
-
-	/**
 	 * Indicates whether the analyzed {@link SootMethod} is a library method.
 	 * 
 	 * @return {@code true} if the method is a library method, otherwise
@@ -580,344 +363,6 @@ public class MethodEnvironment extends Environment {
 	 */
 	public boolean isLibraryMethod() {
 		return sootMethod.isJavaLibraryMethod();
-	}
-
-	/**
-	 * Indicates whether the parameter <em>security annotation</em> at the
-	 * analyzed method is available.
-	 * 
-	 * @return {@code true} if the annotation is available, otherwise
-	 *         {@code false}.
-	 */
-	@Deprecated
-	public boolean isParameterAnnotationAvailable() {
-		return parameterAnnotationAvailable;
-	}
-
-	/**
-	 * Indicates whether the return <em>security annotation</em> at the analyzed
-	 * method is available.
-	 * 
-	 * @return {@code true} if the annotation is available, otherwise
-	 *         {@code false}.
-	 */
-	@Deprecated
-	public boolean isReturnAnnotationAvailable() {
-		return returnAnnotationAvailable;
-	}
-
-	/**
-	 * The method checks whether the return <em>security level</em> is valid,
-	 * i.e. checks whether the annotation is available, checks whether the
-	 * extracted return <em>security level</em> is not {@code null}. If this is
-	 * the case, a visitor will be created, which checks the components of the
-	 * level equation for validity. If a failure is detected, this is logged
-	 * with the logger {@link MethodEnvironment#getLog()}. If none failure is
-	 * detected, then the method will store the return level equation in
-	 * {@link MethodEnvironment#returnLevelEquation} that is generated from the
-	 * {@link MethodEnvironment#returnLevel}.
-	 * 
-	 * @return {@code true} if the return security annotation is available for
-	 *         the method as well as all provided <em>security levels</em> are
-	 *         valid, otherwise {@code false}.
-	 */
-	@Deprecated
-	public boolean isReturnSecurityValid() {
-		String methodSignature = SootUtils.generateMethodSignature(sootMethod,
-				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-		if (!returnAnnotationAvailable && !(isClinit || isInit)) {
-			logError(SecurityMessages.noMethodAnnotation(methodSignature));
-			return false;
-		}
-		if (returnAnnotationAvailable && isInit) {
-			logWarning(SecurityMessages
-					.constructorReturnNotRequired(methodSignature));
-		}
-		if (returnLevel == null) {
-			logError(SecurityMessages.noMethodLevel(methodSignature));
-			return false;
-		}
-		try {
-			LevelEquationValidityVistitor visitor = getSecurityAnnotation()
-					.checkValidityOfReturnLevel(returnLevel,
-							getListOfParameterLevels());
-			if (visitor.isValid()) {
-				if (visitor.isVoidInvalid()) {
-					logError(SecurityMessages.incompatibaleParameterLevels(
-							methodSignature, SecurityAnnotation.VOID_LEVEL));
-					return false;
-				} else {
-					this.returnLevelEquation = visitor.getLevelEquation();
-					return true;
-				}
-			} else {
-				List<String> invalidLevel = visitor.getValidLevels();
-				if (invalidLevel.size() != 0) {
-					for (String level : invalidLevel) {
-						logError(SecurityMessages.invalidReturnLevel(
-								methodSignature, level));
-					}
-				} else {
-					logError(SecurityMessages
-							.invalidReturnEquation(methodSignature));
-				}
-				return false;
-			}
-		} catch (InvalidLevelException | InvalidEquationException e) {
-			logException(
-					SecurityMessages.invalidReturnEquation(methodSignature), e);
-			return false;
-		}
-	}
-
-	/**
-	 * Method checks whether the the analyzed method has a 'void' return
-	 * <em>security level</em>. This will done by generating a
-	 * {@link LevelEquationCalculateVoidVisitor} and calculating the
-	 * {@link MethodEnvironment#returnLevelEquation} with the help of this
-	 * visitor. Note, that the method will return {@code false} as long as the
-	 * method {@link MethodEnvironment#isReturnSecurityValid()} was not called.
-	 * 
-	 * @return {@code true} if the method
-	 *         {@link MethodEnvironment#isReturnSecurityValid()} was called and
-	 *         the corresponding visitor calculates that the return
-	 *         <em>security level</em> is 'void', otherwise {@code false}.
-	 * @see LevelEquationCalculateVoidVisitor
-	 * @see MethodEnvironment#isReturnSecurityValid()
-	 */
-	@Deprecated
-	public boolean isReturnSecurityVoid() {
-		if (returnLevelEquation == null) {
-			return false;
-		}
-		LevelEquationCalculateVoidVisitor visitor = getSecurityAnnotation()
-				.getLevelEquationCalculateVoidVisitor();
-		returnLevelEquation.accept(visitor);
-		return visitor.isValid();
-	}
-
-	/**
-	 * Indicates whether the <em>effect annotation</em> at the analyzed method
-	 * is available.
-	 * 
-	 * @return {@code true} if the annotation is available, otherwise
-	 *         {@code false}.
-	 */
-	@Deprecated
-	public boolean isWriteEffectAnnotationAvailable() {
-		return writeEffectAnnotationAvailable;
-	}
-
-	/**
-	 * Adds the given {@link MethodParameter} to the method parameter map. As
-	 * key in the map the position of the given method parameter is chosen.
-	 * 
-	 * @param methodParameter
-	 *            {@link MethodParameter} which should be stored as parameter of
-	 *            the analyzed method.
-	 */
-	@Deprecated
-	private void addMethodParameter(MethodParameter methodParameter) {
-		if (this.methodParameters == null)
-			this.methodParameters = new HashMap<Integer, MethodParameter>();
-		this.methodParameters.put(methodParameter.getPosition(),
-				methodParameter);
-	}
-
-	/**
-	 * Extracts the annotation of the type {@link Annotations.WriteEffect} which
-	 * should exist at the class that declares the analyzed method. The
-	 * extracted <em>write effects</em> will be stored in
-	 * {@link MethodEnvironment#classWriteEffects} and based on whether the
-	 * annotation at the class exists
-	 * {@link MethodEnvironment#classWriteEffectAnnotationAvailable} will be
-	 * set. Note, that if the analyzed method is an id function it doesn't
-	 * require those class <em>write effects</em>.
-	 * 
-	 * @see SootUtils#extractAnnotationStringArray(String, List)
-	 */
-	@Deprecated
-	private void extractClassWriteEffects() {
-		if (isIdFunction) {
-			this.classWriteEffectAnnotationAvailable = true;
-		} else {
-			SootClass sootClass = sootMethod.getDeclaringClass();
-			try {
-				this.classWriteEffects = getSecurityAnnotation()
-						.extractClassEffects(sootClass);
-				this.classWriteEffectAnnotationAvailable = true;
-			} catch (ExtractionException e) {
-				this.classWriteEffects = new ArrayList<String>();
-				this.classWriteEffectAnnotationAvailable = getSecurityAnnotation()
-						.hasClassWriteEffectAnnotation(sootClass);
-			}
-		}
-	}
-
-	/**
-	 * Extracts the <em>security levels</em> of the parameters and stores them
-	 * together with the name, the position and the {@link Type} of each
-	 * parameter in the method parameter map
-	 * {@link MethodEnvironment#methodParameters}. Note that when
-	 * inconsistencies are between the number of <em>security levels</em> and
-	 * the number of parameters, then a correct extraction is impossible.
-	 * 
-	 * @see MethodEnvironment#extractParameterSecurityLevel()
-	 * @see MethodParameter
-	 * @see MethodEnvironment#methodParameters
-	 */
-	@Deprecated
-	private void extractParameter() {
-		List<String> parameterNames = new ArrayList<String>();
-		List<Type> parameterTypes = new ArrayList<Type>();
-		for (Object object : sootMethod.getParameterTypes()) {
-			parameterTypes.add((Type) object);
-		}
-		List<String> parameterSecurityLevels = extractParameterSecurityLevel();
-		for (Tag tag : sootMethod.getTags()) {
-			if (tag instanceof ParamNamesTag) {
-				ParamNamesTag paramNamesTag = (ParamNamesTag) tag;
-				for (String name : paramNamesTag.getNames()) {
-					parameterNames.add(name);
-				}
-			}
-		}
-		final int seclevelCount = parameterSecurityLevels.size();
-		if ((seclevelCount > 0 && sootMethod.getParameterCount() != seclevelCount)) {
-			throw new SootException.NoSecurityLevelException(
-					String.format(
-							"The parameters of method `%s' of class `%s' "
-									+ "do not match the specified parameter security annotations \n"
-									+ "(param types: %s, param names: %s, sec. levels: %s, )",
-							sootMethod.getName(), sootMethod
-									.getDeclaringClass().getName(),
-							parameterTypes.toString(), parameterNames
-									.toString(), parameterSecurityLevels
-									.toString()));
-		} else {
-			for (int i = 0; i < sootMethod.getParameterCount(); i++) {
-				String name = (i < parameterNames.size()) ? parameterNames
-						.get(i) : "<unknown>";
-				Type type = parameterTypes.get(i);
-				String level = (i < parameterSecurityLevels.size()) ? parameterSecurityLevels
-						.get(i) : null;
-				this.addMethodParameter(new MethodParameter(i, name, type,
-						level));
-			}
-		}
-	}
-
-	/**
-	 * Extracts the annotation of the type {@link Annotations.ParameterSecurity}
-	 * which should exist at the analyzed method. The extracted
-	 * <em>security levels</em> will be stored in the list that the method
-	 * returns. Based on whether the annotation at the method exists
-	 * {@link MethodEnvironment#parameterAnnotationAvailable} will be set. Note,
-	 * that if the analyzed method is an id function, then the parameter
-	 * <em>security levels</em> is exactly the <em>security level</em> of the id
-	 * function. If the analyzed method is a static initializer then the
-	 * parameter <em>security level</em> is not required.
-	 * 
-	 * @see SootUtils#extractAnnotationStringArray(String, List)
-	 * @return The list with the
-	 *         <em>security levels<em> of the parameters of the analyzed method.
-	 */
-	@Deprecated
-	private List<String> extractParameterSecurityLevel() {
-		List<String> parameterSecurityLevels = new ArrayList<String>();
-		if (isIdFunction) {
-			this.parameterAnnotationAvailable = true;
-			parameterSecurityLevels.add(getSecurityAnnotation()
-					.getReturnSecurityLevelOfIdFunction(sootMethod));
-		} else if (isClinit) {
-			this.parameterAnnotationAvailable = true;
-		} else {
-
-			try {
-				parameterSecurityLevels = getSecurityAnnotation()
-						.extractParameterSecurityLevels(sootMethod);
-				this.parameterAnnotationAvailable = true;
-			} catch (ExtractionException e) {
-				parameterSecurityLevels = new ArrayList<String>();
-				if (isInit && sootMethod.getParameterCount() == 0) {
-					this.parameterAnnotationAvailable = true;
-				} else {
-					this.parameterAnnotationAvailable = getSecurityAnnotation()
-							.hasParameterSecurityAnnotation(sootMethod);
-				}
-			}
-		}
-		return parameterSecurityLevels;
-	}
-
-	/**
-	 * Extracts the annotation of the type {@link Annotations.ReturnSecurity}
-	 * which should exist at the analyzed method. The extracted return
-	 * <em>security effect</em> will be stored in
-	 * {@link MethodEnvironment#returnLevel} and based on whether the annotation
-	 * at the method exists {@link MethodEnvironment#returnAnnotationAvailable}
-	 * will be set. Note, that if the analyzed method is an id function, then
-	 * the return <em>security level</em> will be the level of the id
-	 * function,if it is a static initializer or an initialization method, then
-	 * the return <em>security level</em> will be the 'void'
-	 * <em>security level</em>.
-	 * 
-	 * @see SootUtils#extractAnnotationString(String, List)
-	 * @see SecurityAnnotation#VOID_LEVEL
-	 */
-	@Deprecated
-	private void extractReturnSecurityLevel() {
-		if (isIdFunction) {
-			this.returnAnnotationAvailable = true;
-			this.returnLevel = getSecurityAnnotation()
-					.getReturnSecurityLevelOfIdFunction(sootMethod);
-		} else if (isClinit || isInit) {
-			this.returnLevel = SecurityAnnotation.VOID_LEVEL;
-		} else {
-			try {
-				this.returnLevel = getSecurityAnnotation()
-						.extractReturnSecurityLevel(sootMethod);
-				this.returnAnnotationAvailable = true;
-			} catch (ExtractionException e) {
-				this.returnLevel = null;
-				this.returnAnnotationAvailable = getSecurityAnnotation()
-						.hasReturnSecurityAnnotation(sootMethod);
-			}
-		}
-	}
-
-	/**
-	 * Extracts the annotation of the type {@link Annotations.WriteEffect} which
-	 * should exist at the analyzed method. The extracted <em>write effects</em>
-	 * will be stored in {@link MethodEnvironment#writeEffects} and based on
-	 * whether the annotation at the method exists
-	 * {@link MethodEnvironment#writeEffectAnnotationAvailable} will be set.
-	 * Note, that if the analyzed method is an id function or the static
-	 * initializer it doesn't require those <em>write effects</em>.
-	 * 
-	 * @see SootUtils#extractAnnotationStringArray(String, List)
-	 */
-	@Deprecated
-	private void extractWriteEffects() {
-		if (isClinit || isIdFunction) {
-			this.writeEffectAnnotationAvailable = true;
-		} else {
-			try {
-				this.writeEffects = getSecurityAnnotation()
-						.extractMethodEffects(sootMethod);
-				this.writeEffectAnnotationAvailable = true;
-			} catch (ExtractionException e) {
-				this.writeEffects = new ArrayList<String>();
-				if (isInit && sootMethod.getParameterCount() == 0) {
-					this.writeEffectAnnotationAvailable = true;
-				} else {
-					this.writeEffectAnnotationAvailable = getSecurityAnnotation()
-							.hasMethodWriteEffectAnnotation(sootMethod);
-				}
-			}
-		}
 	}
 
 	/**

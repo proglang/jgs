@@ -1,7 +1,6 @@
 package pattern;
 
 import preanalysis.AnnotationExtractor.UsedObjectStore;
-import main.Configuration;
 import model.AnalyzedMethodEnvironment;
 import model.LocalsMap;
 import security.SecurityAnnotation;
@@ -321,20 +320,11 @@ public class StatementSwitch extends TaintTrackingSwitch implements StmtSwitch {
 	 */
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		if (Configuration.OLD_ANALYSIS) { // RENEW
-			if (!analyzedMethodEnvironment.isReturnSecurityVoid()) {
-				logSecurity(SecurityMessages.voidReturn(getMethodSignature(),
-						getSrcLn(), analyzedMethodEnvironment.getReturnLevel(),
-						SecurityAnnotation.VOID_LEVEL));
-			}
-		} else {
-			if (!analyzedMethodEnvironment.isVoid()) {
-				logSecurity(SecurityMessages.voidReturn(getMethodSignature(),
-						getSrcLn(), analyzedMethodEnvironment.getReturnLevel(),
-						SecurityAnnotation.VOID_LEVEL));
-			}
+		if (!analyzedMethodEnvironment.isVoid()) {
+			logSecurity(SecurityMessages.voidReturn(getMethodSignature(),
+					getSrcLn(), analyzedMethodEnvironment.getReturnLevel(),
+					SecurityAnnotation.VOID_LEVEL));
 		}
-
 	}
 
 	/**

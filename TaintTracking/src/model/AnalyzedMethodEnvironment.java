@@ -2,6 +2,8 @@ package model;
 
 import java.util.List;
 
+import preanalysis.AnnotationExtractor.UsedObjectStore;
+
 
 import exception.SootException.InvalidLevelException;
 
@@ -12,7 +14,6 @@ import model.Cause.ArrayAssignCause;
 import model.Cause.AssignCause;
 import model.Cause.ClassCause;
 import model.Cause.MethodCause;
-import security.Annotations;
 import security.SecurityAnnotation;
 import soot.SootClass;
 import soot.SootField;
@@ -55,31 +56,6 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 	private Stmt stmt = null;
 
 	/**
-	 * Constructor of a {@link AnalyzedMethodEnvironment} that requires a
-	 * {@link SootMethod} which should be analyzed, a logger in order to allow
-	 * logging for this object as well as a security annotation object in order
-	 * to provide the handling of <em>security levels</em>. By calling the
-	 * constructor all required extractions of the annotations will be done
-	 * automatically. This created {@link Environment} allows the direct
-	 * analysis of the given {@link SootMethod}.
-	 * 
-	 * @param sootMethod
-	 *            The {@link SootMethod} that should be analyzed.
-	 * @param log
-	 *            A {@link SecurityLogger} in order to allow logging for this
-	 *            object.
-	 * @param securityAnnotation
-	 *            A {@link SecurityAnnotation} in order to provide the handling
-	 *            of <em>security levels</em>.
-	 */
-	@Deprecated
-	public AnalyzedMethodEnvironment(SootMethod sootMethod, SecurityLogger log,
-			SecurityAnnotation securityAnnotation) {
-		super(sootMethod, log, securityAnnotation);
-		checkInheritance();
-	}
-
-	/**
 	 * DOC
 	 * 
 	 * @param me
@@ -94,8 +70,10 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 
 	/**
 	 * DOC
+	 * 
+	 * TODO: Include the Inheritance Check!!!
 	 */
-	private void checkInheritance() {
+	private void checkInheritance(UsedObjectStore store) {
 		SootClass sootClass = getSootMethod().getDeclaringClass();
 		String classSignature = SootUtils.generateClassSignature(sootClass,
 				Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
@@ -119,11 +97,8 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 					// weakest and check
 					// whether it is weaker or equals than the weakest effect of
 					// the current class.
-					List<String> superEffects = SootUtils
-							.extractAnnotationStringArray(
-									SecurityAnnotation
-											.getSootAnnotationTag(Annotations.WriteEffect.class),
-									superClass.getTags());
+					ClassEnvironment ce = store.getClassEnvironment(superClass);
+					List<String> superEffects = ce.getWriteEffects();
 					if (superEffects != null) {
 						String superWeakestEffect = getSecurityAnnotation()
 								.getMinLevel(superEffects);
@@ -209,8 +184,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 								Configuration.METHOD_SIGNATURE_PRINT_TYPE,
 								Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
 				if (!superClass.isLibraryClass()) {
-					MethodEnvironment superEnvironement = new MethodEnvironment(
-							superMethod, getLog(), getSecurityAnnotation());
+					MethodEnvironment superEnvironement = store.getMethodEnvironment(superMethod);
 					List<String> superEffects = superEnvironement
 							.getWriteEffects();
 					String superWeakestEffect = getSecurityAnnotation()

@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -42,7 +41,7 @@ import utils.SootUtils;
  * @author Thomas Vogel
  * @version 0.1
  */
-public class PreTestSootUtils {
+public class TestSootUtils {
 	
 	private static SootClass sootClass1;
 	private static SootField sootField1C1;
@@ -167,30 +166,6 @@ public class PreTestSootUtils {
 
 	@After
 	public void tearDown() throws Exception {
-	}
-
-	@Test
-	public final void testExtractAnnotationString() {
-		assertTrue("No annotation of type 'test' at class1.", SootUtils.extractAnnotationString("test", sootClass1.getTags()) == null);
-		assertTrue("Correct annotation value of type 'Ltest/AnnotationString;' at class1.", SootUtils.extractAnnotationString("Ltest/AnnotationString;", sootClass1.getTags()).equals("Test String Annotation"));
-		assertTrue("No annotation of type 'test' at field1 of class1.", SootUtils.extractAnnotationString("test", sootField1C1.getTags()) == null);
-		assertTrue("Correct annotation value of type 'Ltest/AnnotationString;' at field1 of class1.", SootUtils.extractAnnotationString("Ltest/AnnotationString;", sootField1C1.getTags()).equals("Test String Annotation"));
-		assertTrue("No annotation of type 'test' at method1 of class1.", SootUtils.extractAnnotationString("test", sootMethod1C1.getTags()) == null);
-		assertTrue("Correct annotation value of type 'Ltest/AnnotationString;' at method1 of class1.", SootUtils.extractAnnotationString("Ltest/AnnotationString;", sootMethod1C1.getTags()).equals("Test String Annotation"));
-	}
-
-	@Test
-	public final void testExtractAnnotationStringArray() {
-		assertTrue("No annotation of type 'test' at class2.", SootUtils.extractAnnotationString("test", sootClass2.getTags()) == null);
-		List<String> result1 = SootUtils.extractAnnotationStringArray("Ltest/AnnotationStringArray;", sootClass2.getTags());
-		assertTrue("Correct annotation value of type 'Ltest/AnnotationStringArray;' at class2.", result1.containsAll(Arrays.asList(new String[] {"Test String Annotation 1", "Test String Annotation 2"})) && result1.size() == 2);
-		assertTrue("No annotation of type 'test' at field1 of class2.", SootUtils.extractAnnotationString("test", sootField1C2.getTags()) == null);
-		List<String> result2 = SootUtils.extractAnnotationStringArray("Ltest/AnnotationStringArray;", sootField1C2.getTags());
-		assertTrue("Correct annotation value of type 'Ltest/AnnotationStringArray;' at field1 of class2.", result2.containsAll(Arrays.asList(new String[] {"Test String Annotation 1", "Test String Annotation 2"})) && result2.size() == 2);
-		assertTrue("No annotation of type 'test' at method1 of class2.", SootUtils.extractAnnotationString("test", sootMethod1C2.getTags()) == null);
-		List<String> result3 = SootUtils.extractAnnotationStringArray("Ltest/AnnotationStringArray;", sootMethod1C2.getTags());
-		assertTrue("Correct annotation value of type 'Ltest/AnnotationStringArray;' at method1 of class2.", result3.containsAll(Arrays.asList(new String[] {"Test String Annotation 1", "Test String Annotation 2"})) && result3.size() == 2);
-		
 	}
 
 	@Test

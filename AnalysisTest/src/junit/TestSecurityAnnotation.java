@@ -30,7 +30,7 @@ import soot.Type;
  * @author Thomas Vogel
  * @version 0.1
  */
-public class PreTestSecurityAnnotation {
+public class TestSecurityAnnotation {
 	
 	private static SecurityAnnotation securityAnnotation;
 

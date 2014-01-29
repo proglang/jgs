@@ -22,7 +22,6 @@ import soot.tagkit.AnnotationTag;
 import soot.tagkit.Host;
 import soot.tagkit.ParamNamesTag;
 import soot.tagkit.SourceLnPosTag;
-import soot.tagkit.Tag;
 import soot.tagkit.VisibilityAnnotationTag;
 import soot.util.Chain;
 
@@ -55,123 +54,6 @@ public class SootUtils {
 	public static final char ELEMENT_KIND_STRING = "s".charAt(0);
 	/** Character which indicates that the annotation element is of kind array. */
 	public static final char ELEMENT_KIND_ARRAY = "[".charAt(0);
-
-	/**
-	 * Extracts the String value of the annotation with the given annotation
-	 * type from the given list of annotations. If no annotation of the given
-	 * type which stores a String value is contained by the given list of tags,
-	 * the method will return {@code null}. Note, that the type of annotation
-	 * has a specific format: '{@code L}packageName{@code /}className{@code ;}'
-	 * or ' {@code L}packageName{@code /}parentClassName{@code $}className
-	 * {@code ;}'. Also note that for a list which contains more than one
-	 * annotation of the given type, only the last annotation value will be
-	 * return. The same applies if the annotation has more than one value, i.e.
-	 * only the last String value will be returned.
-	 * 
-	 * @param type
-	 *            Formatted String of the annotation type which should be
-	 *            extracted.
-	 * @param tags
-	 *            List of tags containing the annotation which should be
-	 *            extracted.
-	 * @return The last String value of the last annotation tag with the given
-	 *         type from the given list. If none such an annotation exist or the
-	 *         annotation doesn't contain a value, the method will return
-	 *         {@code null}.
-	 */
-	@Deprecated
-	public static String extractAnnotationString(String type, List<Tag> tags) {
-		String string = null;
-		boolean annotationsAvailable = false;
-		for (Tag tag : tags) {
-			if (tag instanceof VisibilityAnnotationTag) {
-				VisibilityAnnotationTag visibilityAnnotationTag = (VisibilityAnnotationTag) tag;
-				for (AnnotationTag annotationTag : visibilityAnnotationTag
-						.getAnnotations()) {
-					if (annotationTag.getType().equals(type)) {
-						annotationsAvailable = true;
-						for (int i = 0; i < annotationTag.getNumElems(); i++) {
-							AnnotationElem annotationElem = annotationTag
-									.getElemAt(i);
-							if (annotationElem.getKind() == "s".charAt(0)) {
-								AnnotationStringElem annotationStringElem = (AnnotationStringElem) annotationElem;
-								string = annotationStringElem.getValue();
-							}
-						}
-					}
-				}
-			}
-		}
-		if (annotationsAvailable) {
-			return string;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Extracts the String value of the String array that is contained by the
-	 * annotation with the given annotation type from the given list of
-	 * annotations. If no annotation of the given type which stores a String
-	 * array is contained by the given list of tags, the method will return
-	 * {@code null}. Note, that the type of annotation has a specific format: '
-	 * {@code L}packageName {@code /}className{@code ;}' or ' {@code L}
-	 * packageName{@code /}parentClassName{@code $} className{@code ;}'. Also
-	 * note that for a list which contains more than one annotation of the given
-	 * type, all values will be return in the list.
-	 * 
-	 * @param type
-	 *            Formatted String of the annotation type which should be
-	 *            extracted.
-	 * @param tag
-	 *            List of tags containing the annotation which should be
-	 *            extracted.
-	 * @return List which contains each String value of every String array that
-	 *         is contained by the annotation with the given annotation type
-	 *         from the given list. If none such an annotation exist or the
-	 *         annotation doesn't contain a array, the method will return
-	 *         {@code null}.
-	 */
-	@Deprecated
-	public static List<String> extractAnnotationStringArray(String type,
-			List<Tag> tags) {
-		List<String> array = new ArrayList<String>();
-		boolean annotationsAvailable = false;
-		for (Tag tag : tags) {
-			if (tag instanceof VisibilityAnnotationTag) {
-				VisibilityAnnotationTag visibilityAnnotationTag = (VisibilityAnnotationTag) tag;
-				for (AnnotationTag annotationTag : visibilityAnnotationTag
-						.getAnnotations()) {
-					if (annotationTag.getType().equals(type)) {
-						annotationsAvailable = true;
-						for (int i = 0; i < annotationTag.getNumElems(); i++) {
-							AnnotationElem annotationElem = annotationTag
-									.getElemAt(i);
-							if (annotationElem.getKind() == "[".charAt(0)) {
-								AnnotationArrayElem annotationArrayElem = (AnnotationArrayElem) annotationElem;
-								for (int j = 0; j < annotationArrayElem
-										.getNumValues(); j++) {
-									AnnotationElem annotationElem1 = annotationArrayElem
-											.getValueAt(j);
-									if (annotationElem1.getKind() == "s"
-											.charAt(0)) {
-										AnnotationStringElem annotationStringElem = (AnnotationStringElem) annotationElem1;
-										array.add(annotationStringElem
-												.getValue());
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		if (annotationsAvailable) {
-			return array;
-		} else {
-			return null;
-		}
-	}
 
 	/**
 	 * Extracts the source line number from a given unit, if this unit has the

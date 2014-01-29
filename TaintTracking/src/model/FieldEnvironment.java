@@ -36,18 +36,6 @@ import utils.SootUtils;
 public class FieldEnvironment extends Environment {
 
 	/**
-	 * Value which indicates whether the <em>security annotation</em> at the
-	 * analyzed field is available.
-	 */
-	@Deprecated
-	private boolean annotationAvailable = false;
-	/**
-	 * Value which indicates whether the <em>effect annotation</em> at the
-	 * analyzed class is available.
-	 */
-	@Deprecated
-	private boolean classWriteEffectAnnotationAvailable = false;
-	/**
 	 * The <em>write effects</em> of the class which declares the
 	 * {@link SootField}.
 	 */
@@ -58,31 +46,6 @@ public class FieldEnvironment extends Environment {
 	/** The {@link SootField} for which this is the environment. */
 	private SootField sootField;
 
-	/**
-	 * Constructor of a {@link FieldEnvironment} that requires a
-	 * {@link SootField} which should be analyzed, a logger in order to allow
-	 * logging for this object as well as a security annotation object in order
-	 * to provide the handling of <em>security levels</em>. By calling the
-	 * constructor all required extractions of the annotations will be done
-	 * automatically.
-	 * 
-	 * @param sootField
-	 *            The {@link SootField} that should be analyzed.
-	 * @param log
-	 *            A {@link SecurityLogger} in order to allow logging for this
-	 *            object.
-	 * @param securityAnnotation
-	 *            A {@link SecurityAnnotation} in order to provide the handling
-	 *            of <em>security levels</em>.
-	 */
-	@Deprecated
-	public FieldEnvironment(SootField sootField, SecurityLogger log,
-			SecurityAnnotation securityAnnotation) {
-		super(log, securityAnnotation);
-		this.sootField = sootField;
-		extractFieldSecurityLevel();
-		extractClassWriteEffects();
-	}
 
 	public FieldEnvironment(SootField sootField, String level,
 			List<String> classWriteEffect, SecurityLogger log,
@@ -91,35 +54,6 @@ public class FieldEnvironment extends Environment {
 		this.sootField = sootField;
 		this.level = level;
 		this.classWriteEffects.addAll(classWriteEffect);
-	}
-
-	/**
-	 * Checks whether the class <em>write effects</em> are valid. I.e. the
-	 * corresponding annotation has to be available and all by the annotation
-	 * provided <em>write effects</em> have to be a valid
-	 * <em>security level</em>.
-	 * 
-	 * @return {@code true} if the annotation is available and if all provided
-	 *         <em>write effects</em> are valid, otherwise {@code false}.
-	 */
-	@Deprecated
-	public boolean areClassWriteEffectsValid() {
-		String classSignature = SootUtils.generateClassSignature(
-				getDeclaringSootClass(), Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
-		if (!this.classWriteEffectAnnotationAvailable) {
-			logError(SecurityMessages
-					.noClassWriteEffectAnnotation(classSignature));
-			return false;
-		}
-		if (!getSecurityAnnotation().checkValidityOfLevels(classWriteEffects)) {
-			for (String invalidEffect : getSecurityAnnotation()
-					.getInvalidLevels(classWriteEffects)) {
-				logError(SecurityMessages.invalidClassWriteEffect(
-						classSignature, invalidEffect));
-			}
-			return false;
-		}
-		return true;
 	}
 
 	/**
@@ -163,70 +97,6 @@ public class FieldEnvironment extends Environment {
 	}
 
 	/**
-	 * Indicates whether the <em>security annotation</em> at the analyzed field
-	 * is available.
-	 * 
-	 * @return {@code true} if the annotation is available, otherwise
-	 *         {@code false}.
-	 */
-	@Deprecated
-	public boolean isAnnotationAvailable() {
-		return annotationAvailable;
-	}
-
-	/**
-	 * Indicates whether the <em>effect annotation</em> at the analyzed class is
-	 * available.
-	 * 
-	 * @return {@code true} if the annotation is available, otherwise
-	 *         {@code false}.
-	 */
-	@Deprecated
-	public boolean isClassWriteEffectAnnotationAvailable() {
-		return classWriteEffectAnnotationAvailable;
-	}
-
-	/**
-	 * Checks whether the field <em>security level</em> is valid. I.e. the
-	 * corresponding annotation has to be available and the
-	 * <em>security effects</em> by the annotation provided has to be a valid
-	 * <em>security level</em>.
-	 * 
-	 * @return {@code true} if the annotation is available and if the provided
-	 *         <em>security level</em> is valid, otherwise {@code false}.
-	 * @return
-	 */
-	@Deprecated
-	public boolean isFieldSecurityLevelValid() {
-		if (!annotationAvailable) {
-			logError(SecurityMessages.noFieldAnnotation(SootUtils
-					.generateFieldSignature(sootField,
-							Configuration.FIELD_SIGNATURE_PRINT_PACKAGE,
-							Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-							Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
-			return false;
-		}
-		if (level == null) {
-			logError(SecurityMessages.noFieldLevel(SootUtils
-					.generateFieldSignature(sootField,
-							Configuration.FIELD_SIGNATURE_PRINT_PACKAGE,
-							Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-							Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
-			return false;
-		}
-		if (!getSecurityAnnotation().checkValidityOfLevel(level)) {
-			logError(SecurityMessages.invalidFieldLevel(SootUtils
-					.generateFieldSignature(sootField,
-							Configuration.FIELD_SIGNATURE_PRINT_PACKAGE,
-							Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-							Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY),
-					level));
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Indicates whether the {@link SootClass} which declares the analyzed field
 	 * is a library class.
 	 * 
@@ -246,49 +116,6 @@ public class FieldEnvironment extends Environment {
 	 */
 	public boolean isStatic() {
 		return sootField.isStatic();
-	}
-
-	/**
-	 * Extracts the annotation of the type {@link Annotations.WriteEffect} which
-	 * should exist at the class that declares the analyzed field. The extracted
-	 * <em>write effects</em> will be stored in
-	 * {@link FieldEnvironment#classWriteEffects} and based on whether the
-	 * annotation at the class exists
-	 * {@link FieldEnvironment#classWriteEffectAnnotationAvailable} will be set.
-	 * 
-	 * @see SootUtils#extractAnnotationStringArray(String, List)
-	 */
-	@Deprecated
-	private void extractClassWriteEffects() {
-		List<String> annotations = SootUtils.extractAnnotationStringArray(
-				SecurityAnnotation
-						.getSootAnnotationTag(Annotations.WriteEffect.class),
-				getDeclaringSootClass().getTags());
-		this.classWriteEffectAnnotationAvailable = annotations != null;
-		if (classWriteEffectAnnotationAvailable) {
-			this.classWriteEffects = annotations;
-		}
-	}
-
-	/**
-	 * Extracts the annotation of the type {@link Annotations.FieldSecurity}
-	 * which should exist at the analyzed field. The extracted
-	 * <em>security level</em> will be stored in {@link FieldEnvironment#level}
-	 * and based on whether the annotation at the field exists
-	 * {@link FieldEnvironment#annotationAvailable} will be set.
-	 * 
-	 * @see SootUtils#extractAnnotationString(String, List)
-	 */
-	@Deprecated
-	private void extractFieldSecurityLevel() {
-		String annotation = SootUtils.extractAnnotationString(
-				SecurityAnnotation
-						.getSootAnnotationTag(Annotations.FieldSecurity.class),
-				sootField.getTags());
-		this.annotationAvailable = annotation != null;
-		if (annotationAvailable) {
-			this.level = annotation;
-		}
 	}
 
 	/**

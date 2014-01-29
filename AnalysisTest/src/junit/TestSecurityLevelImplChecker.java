@@ -21,6 +21,10 @@ import exception.SootException.SecurityLevelException;
 
 import security.SecurityLevel;
 import security.SecurityLevelImplChecker;
+import sootSecurityLevelImplementation.JUnitSootSecurityLevelImplementation1;
+import sootSecurityLevelImplementation.JUnitSootSecurityLevelImplementation2;
+import sootSecurityLevelImplementation.JUnitSootSecurityLevelImplementation3;
+import sootSecurityLevelImplementation.JUnitSootSecurityLevelImplementation4;
 
 /**
  * <h1>JUnit tests of class {@link SecurityLevelImplChecker}</h1>
@@ -36,7 +40,7 @@ import security.SecurityLevelImplChecker;
  * @author Thomas Vogel
  * @version 0.1
  */
-public class PreTestSecurityLevelImplChecker {
+public class TestSecurityLevelImplChecker {
 
 	private static SecurityLevelImplChecker getChecker(SecurityLevel securityLevel,
 			boolean throwException) throws SecurityLevelException {

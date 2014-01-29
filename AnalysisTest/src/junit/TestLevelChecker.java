@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import utils.ExtendedSecurityLevelImplChecker;
 
-public class LevelChecker {
+public class TestLevelChecker {
 	
 	private static ExtendedSecurityLevelImplChecker extendedSecurityLevelImplChecker;
 

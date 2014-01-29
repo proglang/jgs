@@ -609,7 +609,7 @@ public class UpdateSwitch extends TaintTrackingSwitch implements
 		String localLevel = getWeakestSecurityLevel();
 		String valueLevel = level;
 		if (in.containsLocal(l)) {
-			
+
 			localLevel = in.getLevelOfLocal(l);
 		} else {
 			logError(SecurityMessages.localNotFoundUpdate(getMethodSignature(),
@@ -1166,72 +1166,21 @@ public class UpdateSwitch extends TaintTrackingSwitch implements
 				Configuration.FIELD_SIGNATURE_PRINT_PACKAGE,
 				Configuration.FIELD_SIGNATURE_PRINT_TYPE,
 				Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY);
-		if (!Configuration.OLD_ANALYSIS) { // RENEW
-			try {
-				FieldEnvironment field = store.getFieldEnvironment(sootField);
-				leftLevel = field.getLevel();
-				// SIDE-EFFECTS: |----->
-				addWriteEffectCausedByAssign(leftLevel, sootField);
-				// SIDE-EFFECTS: Check class write effects for static field
-				if (field.isStatic()) {
-					SootClass sootClass = field.getDeclaringSootClass();
-					for (String effected : field.getClassWriteEffects()) {
-						addWriteEffectCausedByClass(effected, sootClass);
-					}
+		try {
+			FieldEnvironment field = store.getFieldEnvironment(sootField);
+			leftLevel = field.getLevel();
+			// SIDE-EFFECTS: |----->
+			addWriteEffectCausedByAssign(leftLevel, sootField);
+			// SIDE-EFFECTS: Check class write effects for static field
+			if (field.isStatic()) {
+				SootClass sootClass = field.getDeclaringSootClass();
+				for (String effected : field.getClassWriteEffects()) {
+					addWriteEffectCausedByClass(effected, sootClass);
 				}
-				// <-----| SIDE-EFFECTS
-
-			} catch (UnpreparedEnvironmentException e) {
-				// TODO: Logging
 			}
-		} else {
-			FieldEnvironment field = new FieldEnvironment(sootField, getLog(),
-					getSecurityAnnotation());
-			if (!field.isLibraryClass()) {
-				if (field.isFieldSecurityLevelValid()) {
-					leftLevel = field.getLevel();
-					// SIDE-EFFECTS: |----->
-					addWriteEffectCausedByAssign(leftLevel, sootField);
-					// SIDE-EFFECTS: Check class write effects for static field
-					if (field.isStatic()) {
-						SootClass sootClass = field.getDeclaringSootClass();
-						String classSignature = SootUtils
-								.generateClassSignature(
-										sootClass,
-										Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
-						if (!field.isLibraryClass()) {
-							if (field.areClassWriteEffectsValid()) {
-								for (String effected : field
-										.getClassWriteEffects()) {
-									addWriteEffectCausedByClass(effected,
-											sootClass);
-								}
-							} else {
-								logError(SecurityMessages
-										.invalidClassWriteEffectUsingClass(
-												getMethodSignature(),
-												getSrcLn(), classSignature));
-							}
-						} else {
-							logWarning(SecurityMessages
-									.usingLibraryClassNoClassWriteEffect(
-											getMethodSignature(), getSrcLn(),
-											classSignature));
-						}
-					}
-					// <-----| SIDE-EFFECTS
-				} else {
-					logError(SecurityMessages.invalidFieldAnnotation(
-							getMethodSignature(), fieldSignature, getSrcLn()));
-					logError(SecurityMessages.invalidWriteEffect(
-							getMethodSignature(), getSrcLn(), field.getLevel()));
-				}
-			} else {
-				logWarning(SecurityMessages.assignmentToLibraryField(
-						getMethodSignature(), fieldSignature, getSrcLn()));
-				logWarning(SecurityMessages.usingLibraryFieldNoWriteEffect(
-						getMethodSignature(), getSrcLn(), fieldSignature));
-			}
+			// <-----| SIDE-EFFECTS
+		} catch (UnpreparedEnvironmentException e) {
+			// TODO: Logging
 		}
 		if (!isWeakerOrEqualLevel(rightLevel, leftLevel)) {
 			logSecurity(SecurityMessages.assignmentToWeakerField(

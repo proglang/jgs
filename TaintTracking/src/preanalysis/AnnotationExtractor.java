@@ -1,7 +1,6 @@
 package preanalysis;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import model.MethodEnvironment.MethodParameter;
 
 import security.SecurityAnnotation;
 import soot.Body;
-import soot.BodyTransformer;
 import soot.Local;
 import soot.Scene;
 import soot.SceneTransformer;
@@ -30,9 +28,7 @@ import soot.Type;
 import soot.Unit;
 import soot.jimple.*;
 import soot.toolkits.graph.BriefUnitGraph;
-import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.UnitGraph;
-import soot.toolkits.scalar.ForwardFlowAnalysis;
 import soot.util.Chain;
 import utils.SootUtils;
 
@@ -89,9 +85,6 @@ public class AnnotationExtractor extends SceneTransformer {
 				return me;
 			}
 			// TODO: Exception message
-			for (SootMethod method : methods.keySet()) {
-				System.out.println(methods.get(method).getSootMethod().getSignature());
-			}
 			throw new UnpreparedEnvironmentException(
 					"Method wasn't prepared for the analysis, i.e. the method environment doesn't exist.");
 		}
@@ -854,80 +847,6 @@ public class AnnotationExtractor extends SceneTransformer {
 
 	/**
 	 * DOC
-	 * 
-	 * @author Thomas Vogel
-	 * 
-	 */
-	private class AnnotationChecker extends
-			ForwardFlowAnalysis<Unit, List<Unit>> {
-
-		/**
-		 * DOC
-		 * 
-		 * @param graph
-		 */
-		public AnnotationChecker(DirectedGraph<Unit> graph) {
-			super(graph);
-			doAnalysis();
-		}
-
-		/**
-		 * DOC
-		 * 
-		 * @see soot.toolkits.scalar.AbstractFlowAnalysis#copy(java.lang.Object,
-		 *      java.lang.Object)
-		 */
-		@Override
-		protected void copy(List<Unit> source, List<Unit> dest) {
-
-		}
-
-		/**
-		 * DOC
-		 * 
-		 * @see soot.toolkits.scalar.AbstractFlowAnalysis#entryInitialFlow()
-		 */
-		@Override
-		protected List<Unit> entryInitialFlow() {
-			return new ArrayList<Unit>();
-		}
-
-		/**
-		 * DOC
-		 * 
-		 * @see soot.toolkits.scalar.FlowAnalysis#flowThrough(java.lang.Object,
-		 *      java.lang.Object, java.lang.Object)
-		 */
-		@Override
-		protected void flowThrough(List<Unit> in, Unit d, List<Unit> out) {
-			d.apply(stmtSwitch);
-
-		}
-
-		/**
-		 * DOC
-		 * 
-		 * @see soot.toolkits.scalar.AbstractFlowAnalysis#merge(java.lang.Object,
-		 *      java.lang.Object, java.lang.Object)
-		 */
-		@Override
-		protected void merge(List<Unit> in1, List<Unit> in2, List<Unit> out) {
-		}
-
-		/**
-		 * DOC
-		 * 
-		 * @see soot.toolkits.scalar.AbstractFlowAnalysis#newInitialFlow()
-		 */
-		@Override
-		protected List<Unit> newInitialFlow() {
-			return new ArrayList<Unit>();
-		}
-
-	}
-
-	/**
-	 * DOC
 	 */
 	private boolean annotationValidity = true;
 	/**
@@ -1357,6 +1276,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		return store;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	protected void internalTransform(String phaseName, Map options) {
 		Chain<SootClass> classes = Scene.v().getApplicationClasses();

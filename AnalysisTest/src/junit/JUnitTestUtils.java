@@ -25,7 +25,7 @@ import model.MessageStore.Message;
  * @author Thomas Vogel
  * 
  */
-public class TestUtils {
+public class JUnitTestUtils {
 
 	/**
 	 * TODO: documentation
@@ -297,10 +297,10 @@ public class TestUtils {
 			Level[] levels) {
 		try {
 			MessageStore calculatedMessages = Main
-					.executeAndReturnMessageStore(TestUtils
+					.executeAndReturnMessageStore(JUnitTestUtils
 							.generateAnalysisArgumentsForAnalyzedFile(testFile
 									.getName()));
-			MessageStore expectedMessages = TestUtils.getMessages(testFile
+			MessageStore expectedMessages = JUnitTestUtils.getMessages(testFile
 					.getFile());
 			int calculatedCountAll = 0;
 			int expectedCountAll = 0;

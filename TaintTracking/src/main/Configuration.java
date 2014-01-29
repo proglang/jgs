@@ -42,10 +42,5 @@ public class Configuration {
 	 * and stored on the hard drive.
 	 */
 	public static final boolean MESSAGE_STORE_PERSISTENT = true;
-	
-	/**
-	 * RENEW
-	 */
-	public static final boolean OLD_ANALYSIS = false;
 
 }

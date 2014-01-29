@@ -2,27 +2,23 @@ package exgradual;
 
 import security.Annotations.*;
 
-@WriteEffect({})
 public class CSF2013 {
 	
-	@WriteEffect({})
 	static class Report {
 		@FieldSecurity("high")
 		private final String content;
 
-		@WriteEffect({})
 		@ParameterSecurity({"low"})
 		public Report(String content) {
 			super();
 			this.content = content;
 		}
 
-		@WriteEffect({})
+		@ReturnSecurity("low")
 		public String getContent() {
 			return content;
 		}
 		
-		@WriteEffect({})
 		@ReturnSecurity("low")
 		@ParameterSecurity({"low"})
 		public Report append(Report other) {
@@ -30,21 +26,16 @@ public class CSF2013 {
 		}
 	}
 	
-	@WriteEffect({})
 	static class Worker {
 		@FieldSecurity("low")
 		private final String dest;
 
-		@WriteEffect({})
-		@ReturnSecurity("void")
 		@ParameterSecurity({"low"})
 		public Worker(String dest) {
 			super();
 			this.dest = dest;
 		}
 
-		@WriteEffect({})
-		@ReturnSecurity("void")
 		@ParameterSecurity({"low"})
 		public void send(Report r) {
 			System.out.println(String.format("%s --> %s", r.getContent(), dest));
@@ -67,9 +58,6 @@ public class CSF2013 {
 	@FieldSecurity("low")
 	private static final Report r4 = new Report("R4");
 	
-	@WriteEffect({})
-	@ReturnSecurity("void")
-	@ParameterSecurity({})
 	public static void standardProcessing() {
 		manager.send(r1);
 		manager.send(r2.append(highInfo));
@@ -77,8 +65,6 @@ public class CSF2013 {
 		facebook.send(r4.append(highInfo));
 	}
 
-	@WriteEffect({})
-	@ReturnSecurity("void")
 	@ParameterSecurity({"low"})
 	public static void main(String[] args) {
 		standardProcessing();

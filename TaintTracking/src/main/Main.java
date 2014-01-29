@@ -151,10 +151,8 @@ public class Main {
 					Arrays.asList(orderedLevels)));
 			AnnotationExtractor extractor = new AnnotationExtractor(log,
 					securityAnnotation);
-			if (!Configuration.OLD_ANALYSIS) { // RENEW
-				PackManager.v().getPack("wjtp")
-						.add(new Transform(PHASE_NAME_ANNOTATION, extractor));
-			}
+			PackManager.v().getPack("wjtp")
+					.add(new Transform(PHASE_NAME_ANNOTATION, extractor));
 			PackManager
 					.v()
 					.getPack("jtp")
