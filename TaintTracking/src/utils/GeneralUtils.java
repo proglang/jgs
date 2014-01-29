@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import logging.SootLoggerLevel;
+import main.Main;
 
-import analysis.Main;
 import analysis.TaintTracking;
 
 /**

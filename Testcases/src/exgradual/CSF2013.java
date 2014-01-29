@@ -4,6 +4,7 @@ import security.Annotations.*;
 
 @WriteEffect({})
 public class CSF2013 {
+	
 	@WriteEffect({})
 	static class Report {
 		@FieldSecurity("high")

@@ -115,7 +115,7 @@ public class ExtendedSecurityLevelImplChecker extends SecurityLevelImplChecker {
 
 		};
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
-		return javaCompiler.run(null, null, System.err, JAVA_PATH);
+		return javaCompiler.run(null, null, stream, JAVA_PATH);
 	}
 
 	/**

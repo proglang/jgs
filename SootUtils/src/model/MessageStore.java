@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 
 import logging.SootLogger;
@@ -648,6 +651,25 @@ public class MessageStore implements Serializable {
 			}
 		}
 		Collections.sort(result);
+		return result;
+	}
+	
+	/**
+	 * TODO: documentation
+	 * 
+	 * @param fileName
+	 * @param level
+	 * @return
+	 */	
+	public TreeSet<Long> getLines(String fileName, Level level) {
+		TreeSet<Long> result = new TreeSet<Long>();
+		if (fileMessageStore.containsKey(fileName)) {
+			FileMessageStore fms = fileMessageStore.get(fileName);
+			List<Message> list = fms.getAllMessages(level);
+			for (Message message : list) {
+				result.add(message.getSrcLn());
+			}
+		}
 		return result;
 	}
 }

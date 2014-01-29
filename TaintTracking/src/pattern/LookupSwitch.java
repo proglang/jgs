@@ -3,8 +3,11 @@ package pattern;
 import java.util.ArrayList;
 import java.util.List;
 
+import preanalysis.AnnotationExtractor.UsedObjectStore;
+
 import analysis.TaintTracking;
 
+import main.Configuration;
 import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
 import model.LocalsMap;
@@ -115,9 +118,9 @@ public class LookupSwitch extends TaintTrackingSwitch implements JimpleValueSwit
 	 * @param out
 	 *            Current outgoing map of the local variables.
 	 */
-	public LookupSwitch(AnalyzedMethodEnvironment analyzedMethodEnvironment, LocalsMap in,
+	public LookupSwitch(AnalyzedMethodEnvironment analyzedMethodEnvironment, UsedObjectStore store, LocalsMap in,
 			LocalsMap out) {
-		super(analyzedMethodEnvironment, in, out);
+		super(analyzedMethodEnvironment, store, in, out);
 	}
 
 	/**
@@ -909,20 +912,31 @@ public class LookupSwitch extends TaintTrackingSwitch implements JimpleValueSwit
 	 */
 	private void handleFieldAccess(FieldRef fieldRef) {
 		SootField sootField = fieldRef.getField();
-		FieldEnvironment field = new FieldEnvironment(sootField, getLog(), getSecurityAnnotation());
-		String fieldLevel = getWeakestSecurityLevel();
-		if (!field.isLibraryClass()) {
-			if (field.isFieldSecurityLevelValid()) {
-				fieldLevel = field.getLevel();
+		if (Configuration.OLD_ANALYSIS) { // RENEW
+			FieldEnvironment field = new FieldEnvironment(sootField, getLog(), getSecurityAnnotation());
+			String fieldLevel = getWeakestSecurityLevel();
+			if (!field.isLibraryClass()) {
+				if (field.isFieldSecurityLevelValid()) {
+					fieldLevel = field.getLevel();
+				} else {
+					logError(SecurityMessages.invalidFieldAnnotation(getMethodSignature(),
+							SootUtils.generateFieldSignature(sootField, Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE, Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY), getSrcLn()));
+				}
 			} else {
-				logError(SecurityMessages.invalidFieldAnnotation(getMethodSignature(),
-						SootUtils.generateFieldSignature(sootField, false, true, true), getSrcLn()));
+				logWarning(SecurityMessages.accessOfLibraryField(getMethodSignature(),
+						SootUtils.generateFieldSignature(sootField, Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE, Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY), getSrcLn()));
 			}
+			this.level = fieldLevel;
 		} else {
-			logWarning(SecurityMessages.accessOfLibraryField(getMethodSignature(),
-					SootUtils.generateFieldSignature(sootField, false, true, true), getSrcLn()));
+			try {
+				FieldEnvironment field = store.getFieldEnvironment(sootField);
+				this.level =  field.getLevel();
+			} catch (Exception e) {
+				System.err.println("Field not found");
+			}
 		}
-		this.level = fieldLevel;
+		
+		
 	}
 
 	/**

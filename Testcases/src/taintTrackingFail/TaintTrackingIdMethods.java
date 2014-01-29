@@ -19,7 +19,7 @@ public class TaintTrackingIdMethods {
 	@Annotations.WriteEffect({})
 	public void changeSecurityHigh2Low() {
 		int high = SootSecurityLevel.highId(42);
-		int low = SootSecurityLevel.lowId(high);
+		SootSecurityLevel.lowId(high);
 		return;
 	}
 	

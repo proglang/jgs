@@ -1,5 +1,6 @@
 package model;
 
+import main.Configuration;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -107,7 +108,7 @@ public abstract class Cause {
 		@Override
 		public String getCauseString() {
 			return String.format("assignment to the field <%s>",
-					SootUtils.generateFieldSignature(getSootField(), false, true, true));
+					SootUtils.generateFieldSignature(getSootField(), Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE, Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY));
 		}
 
 	}
@@ -151,7 +152,7 @@ public abstract class Cause {
 		@Override
 		public String getCauseString() {
 			return String.format("effect annotations of the class <%s>",
-					SootUtils.generateClassSignature(getSootClass(), false));
+					SootUtils.generateClassSignature(getSootClass(), Configuration.CLASS_SIGNATURE_PRINT_PACKAGE));
 		}
 
 		/**
@@ -245,7 +246,7 @@ public abstract class Cause {
 		public String getCauseString() {
 			return String.format(
 					"effect annotations of the method <%s> or the invocation of this method",
-					SootUtils.generateMethodSignature(sootMethod, false, true, true));
+					SootUtils.generateMethodSignature(sootMethod, Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY));
 		}
 
 		/**
@@ -344,7 +345,7 @@ public abstract class Cause {
 		@Override
 		public String getCauseString() {
 			return String.format("reference to the field <%s>",
-					SootUtils.generateFieldSignature(getSootField(), false, true, true));
+					SootUtils.generateFieldSignature(getSootField(), Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE, Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY));
 		}
 
 	}

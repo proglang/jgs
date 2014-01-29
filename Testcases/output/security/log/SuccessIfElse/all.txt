@@ -1,0 +1,28 @@
+   |-- [ WARNING(SuccessIfElse.java:375) ] --|
+   In method <SuccessIfElse.ifElseAssign6() : int [+]> at source line 375 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:429) ] --|
+   In method <SuccessIfElse.ifElseAssign10() : int [+]> at source line 429 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:485) ] --|
+   In method <SuccessIfElse.ifElseAssign14() : int [+]> at source line 485 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:487) ] --|
+   In method <SuccessIfElse.ifElseAssign14() : int [+]> at source line 487 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:527) ] --|
+   In method <SuccessIfElse.ifElseAssign17() : int [+]> at source line 527 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:529) ] --|
+   In method <SuccessIfElse.ifElseAssign17() : int [+]> at source line 529 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:890) ] --|
+   In method <SuccessIfElse.ifExprAssign14() : int [+]> at source line 890 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:920) ] --|
+   In method <SuccessIfElse.ifExprAssign17() : int [+]> at source line 920 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:985) ] --|
+   In method <SuccessIfElse.ifElseAssignLocalField4() : void [+]> at source line 985 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:1011) ] --|
+   In method <SuccessIfElse.ifElseAssignLocalField6() : void [+]> at source line 1011 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:1039) ] --|
+   In method <SuccessIfElse.ifElseAssignLocalField8() : void [+]> at source line 1039 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:1041) ] --|
+   In method <SuccessIfElse.ifElseAssignLocalField8() : void [+]> at source line 1041 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:1053) ] --|
+   In method <SuccessIfElse.ifElseAssignLocalField9() : void [+]> at source line 1053 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ WARNING(SuccessIfElse.java:1055) ] --|
+   In method <SuccessIfElse.ifElseAssignLocalField9() : void [+]> at source line 1055 the variable "result" was weakened from 'high' to 'low' security level.

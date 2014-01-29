@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import logging.SecurityLogger;
+import main.Configuration;
 import security.Annotations;
 import security.LevelEquation;
 import security.LevelEquationVisitor.LevelEquationCalculateVoidVisitor;
@@ -14,11 +15,13 @@ import security.SecurityAnnotation;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
+import soot.VoidType;
 import soot.tagkit.ParamNamesTag;
 import soot.tagkit.Tag;
 import utils.SecurityMessages;
 import utils.SootUtils;
 import exception.SootException;
+import exception.SootException.ExtractionException;
 import exception.SootException.InvalidEquationException;
 import exception.SootException.InvalidLevelException;
 
@@ -59,7 +62,7 @@ public class MethodEnvironment extends Environment {
 	 * @author Thomas Vogel
 	 * @version 0.1
 	 */
-	public class MethodParameter {
+	public static class MethodParameter {
 
 		/** The <em>security level</em> of this parameter. */
 		private String level;
@@ -88,7 +91,7 @@ public class MethodEnvironment extends Environment {
 				String level) {
 			super();
 			this.position = position;
-			this.name = name;
+			this.name = (name != null) ? name : "arg" + position;
 			this.type = type;
 			this.level = level;
 		}
@@ -108,7 +111,7 @@ public class MethodEnvironment extends Environment {
 		 * @return The name of the parameter.
 		 */
 		public String getName() {
-			return String.format("%d: %s", getPosition(), this.name);
+			return this.name;
 		}
 
 		/**
@@ -135,29 +138,32 @@ public class MethodEnvironment extends Environment {
 	 * Value which indicates whether the <em>effect annotation</em> at the class
 	 * which declares the analyzed method is available.
 	 */
+	@Deprecated
 	private boolean classWriteEffectAnnotationAvailable = false;
 	/**
 	 * The <em>write effects</em> of the class which declares the
 	 * {@link SootMethod}.
 	 */
-	private List<String> expectedClassWriteEffects = new ArrayList<String>();
+	private List<String> classWriteEffects = new ArrayList<String>();
 	/** The expected <em>write effects</em> of the analyzed {@link SootMethod}. */
-	private List<String> expectedWriteEffects = new ArrayList<String>();
+	private List<String> writeEffects = new ArrayList<String>();
 	/**
 	 * Map that maps the position of a method parameter to the method parameter
 	 * object that contains the name, <em>security level</em>, the {@link Type}
 	 * as well as the position (see {@link MethodParameter}).
 	 */
-	private Map<Integer, MethodParameter> methodParameters = null;
+	private Map<Integer, MethodParameter> methodParameters = new HashMap<Integer, MethodParameter>();
 	/**
 	 * Value which indicates whether the parameter <em>security annotation</em>
 	 * at the analyzed method is available.
 	 */
+	@Deprecated
 	private boolean parameterAnnotationAvailable = false;
 	/**
 	 * Value which indicates whether the return <em>security annotation</em> at
 	 * the analyzed method is available.
 	 */
+	@Deprecated
 	private boolean returnAnnotationAvailable = false;
 	/**
 	 * The expected return <em>security level</em> of the analyzed
@@ -169,6 +175,7 @@ public class MethodEnvironment extends Environment {
 	 * <em>security level</em> depends on variable parameter
 	 * <em>security levels</em>.
 	 */
+	@Deprecated
 	private LevelEquation returnLevelEquation = null;
 	/** The analyzed method, for which this is the environment. */
 	private SootMethod sootMethod;
@@ -176,7 +183,130 @@ public class MethodEnvironment extends Environment {
 	 * Value which indicates whether the <em>effect annotation</em> at the
 	 * analyzed method is available.
 	 */
+	@Deprecated
 	private boolean writeEffectAnnotationAvailable = false;
+
+	/**
+	 * DOC
+	 */
+	private final boolean isIdFunction;
+	/**
+	 * DOC
+	 */
+	private final boolean isClinit;
+	/**
+	 * DOC
+	 */
+	private final boolean isInit;
+	/**
+	 * DOC
+	 */
+	private final boolean isVoid;
+	/**
+	 * DOC
+	 */
+	private final boolean isSootSecurityMethod;
+
+	/**
+	 * DOC
+	 * 
+	 * @param sootMethod
+	 * @param isIdFunction
+	 * @param isClinit
+	 * @param isInit
+	 * @param isVoid
+	 * @param isSootSecurityMethod
+	 * @param parameterSecurityLevel
+	 * @param returnSecurityLevel
+	 * @param methodWriteEffects
+	 * @param classWriteEffects
+	 * @param log
+	 * @param securityAnnotation
+	 */
+	public MethodEnvironment(SootMethod sootMethod, boolean isIdFunction,
+			boolean isClinit, boolean isInit, boolean isVoid,
+			boolean isSootSecurityMethod,
+			List<MethodParameter> parameterSecurityLevel,
+			String returnSecurityLevel, List<String> methodWriteEffects,
+			List<String> classWriteEffects, SecurityLogger log,
+			SecurityAnnotation securityAnnotation) {
+
+		super(log, securityAnnotation);
+		this.sootMethod = sootMethod;
+		this.isIdFunction = isIdFunction;
+		this.isClinit = isClinit;
+		this.isInit = isInit;
+		this.isVoid = isVoid;
+		this.isSootSecurityMethod = isSootSecurityMethod;
+		for (int i = 0; i < parameterSecurityLevel.size(); i++) {
+			methodParameters.put(new Integer(i), parameterSecurityLevel.get(i));
+		}
+		this.returnLevel = returnSecurityLevel;
+		this.writeEffects.addAll(methodWriteEffects);
+		this.classWriteEffects.addAll(classWriteEffects);
+	}
+
+	/**
+	 * Indicates whether this method is a method of the SootSecurity class.
+	 * 
+	 * @return {@code true} if it is a method of the SootSecurity class,
+	 *         otherwise {@code false}.
+	 */
+	public boolean isSootSecurityMethod() {
+		return isSootSecurityMethod;
+	}
+
+	/**
+	 * Indicates whether this method is an id function or not.
+	 * 
+	 * @return {@code true} if it is an id function, otherwise {@code false}.
+	 */
+	public boolean isIdFunction() {
+		return isIdFunction;
+	}
+
+	/**
+	 * Indicates whether this method is a clinit method.
+	 * 
+	 * @return {@code true} if it is a clinit method, otherwise {@code false}.
+	 */
+	public boolean isClinit() {
+		return isClinit;
+	}
+
+	/**
+	 * Indicates whether this method is an init method or not.
+	 * 
+	 * @return {@code true} if it is an init method, otherwise {@code false}.
+	 */
+	public boolean isInit() {
+		return isInit;
+	}
+
+	/**
+	 * DOC
+	 * 
+	 * @return
+	 */
+	public boolean isVoid() {
+		return isVoid;
+	}
+	
+	/**
+	 * DOC
+	 * 
+	 * @param sootMethod
+	 */
+	public void updateSootMethod(SootMethod sootMethod) {
+		this.sootMethod = sootMethod;
+		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+			methodParameters.get(new Integer(i)).type = sootMethod.getParameterType(i);
+		}
+	}
+
+	/*
+	 * ----------------------------------------------------
+	 */
 
 	/**
 	 * Constructor of a {@link MethodEnvironment} that requires a
@@ -195,10 +325,17 @@ public class MethodEnvironment extends Environment {
 	 *            A {@link SecurityAnnotation} in order to provide the handling
 	 *            of <em>security levels</em>.
 	 */
+	@Deprecated
 	public MethodEnvironment(SootMethod sootMethod, SecurityLogger log,
 			SecurityAnnotation securityAnnotation) {
 		super(log, securityAnnotation);
 		this.sootMethod = sootMethod;
+		this.isIdFunction = getSecurityAnnotation().isIdFunction(sootMethod);
+		this.isClinit = SootUtils.isClinitMethod(sootMethod);
+		this.isInit = SootUtils.isInitMethod(sootMethod);
+		this.isVoid = sootMethod.getReturnType().equals(VoidType.v());
+		this.isSootSecurityMethod = getSecurityAnnotation()
+				.isMethodOfSootSecurityLevelClass(sootMethod);
 		extractReturnSecurityLevel();
 		extractParameter();
 		extractWriteEffects();
@@ -215,18 +352,19 @@ public class MethodEnvironment extends Environment {
 	 * @return {@code true} if the annotation is available and all provided
 	 *         class <em>write effect</em> are valid, otherwise {@code false}.
 	 */
+	@Deprecated
 	public boolean areClassWriteEffectsValid() {
 		String classSignature = SootUtils.generateClassSignature(
-				sootMethod.getDeclaringClass(), false);
+				sootMethod.getDeclaringClass(),
+				Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
 		if (!this.classWriteEffectAnnotationAvailable) {
 			logError(SecurityMessages
 					.noClassWriteEffectAnnotation(classSignature));
 			return false;
 		}
-		if (!getSecurityAnnotation().checkValidityOfLevels(
-				expectedClassWriteEffects)) {
+		if (!getSecurityAnnotation().checkValidityOfLevels(classWriteEffects)) {
 			for (String invalidEffect : getSecurityAnnotation()
-					.getInvalidLevels(expectedClassWriteEffects)) {
+					.getInvalidLevels(classWriteEffects)) {
 				logError(SecurityMessages.invalidClassWriteEffect(
 						classSignature, invalidEffect));
 			}
@@ -248,9 +386,12 @@ public class MethodEnvironment extends Environment {
 	 *         <em>security levels</em> are valid and the number of the levels
 	 *         match the count of the method parameter, otherwise {@code false}.
 	 */
+	@Deprecated
 	public boolean areMethodParameterSecuritiesValid() {
 		String methodSignature = SootUtils.generateMethodSignature(sootMethod,
-				false, true, true);
+				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
+				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
+				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
 		if (!this.parameterAnnotationAvailable) {
 			logError(SecurityMessages.noParameterAnnotation(methodSignature));
 			return false;
@@ -300,17 +441,19 @@ public class MethodEnvironment extends Environment {
 	 * @return {@code true} if the annotation is available and all provided
 	 *         <em>write effect</em> are valid, otherwise {@code false}.
 	 */
+	@Deprecated
 	public boolean areWriteEffectsValid() {
 		String methodSignature = SootUtils.generateMethodSignature(sootMethod,
-				false, true, true);
+				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
+				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
+				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
 		if (!this.writeEffectAnnotationAvailable) {
 			logError(SecurityMessages.noWriteEffectAnnotation(methodSignature));
 			return false;
 		}
-		if (!getSecurityAnnotation()
-				.checkValidityOfLevels(expectedWriteEffects)) {
+		if (!getSecurityAnnotation().checkValidityOfLevels(writeEffects)) {
 			for (String invalidEffect : getSecurityAnnotation()
-					.getInvalidLevels(expectedWriteEffects)) {
+					.getInvalidLevels(writeEffects)) {
 				logError(SecurityMessages.invalidWriteEffect(methodSignature,
 						invalidEffect));
 			}
@@ -325,8 +468,8 @@ public class MethodEnvironment extends Environment {
 	 * 
 	 * @return The class <em>write effects</em>.
 	 */
-	public List<String> getExpectedClassWriteEffects() {
-		return expectedClassWriteEffects;
+	public List<String> getClassWriteEffects() {
+		return classWriteEffects;
 	}
 
 	/**
@@ -334,8 +477,8 @@ public class MethodEnvironment extends Environment {
 	 * 
 	 * @return The method <em>write effects</em>.
 	 */
-	public List<String> getExpectedWriteEffects() {
-		return expectedWriteEffects;
+	public List<String> getWriteEffects() {
+		return writeEffects;
 	}
 
 	/**
@@ -356,6 +499,7 @@ public class MethodEnvironment extends Environment {
 		if (i < this.methodParameters.size()) {
 			return this.methodParameters.get(new Integer(i));
 		}
+		// TODO: Exception Handling
 		return new MethodParameter(-1, null, null, null);
 	}
 
@@ -387,6 +531,7 @@ public class MethodEnvironment extends Environment {
 	 *         exists.
 	 */
 	public String getReturnLevel() {
+		// TODO: Exception Handling
 		return (returnLevel != null) ? returnLevel : "";
 	}
 
@@ -400,6 +545,7 @@ public class MethodEnvironment extends Environment {
 	 *         {@link MethodEnvironment#isReturnSecurityValid()} was called,
 	 *         otherwise {@code null}.
 	 */
+	@Deprecated
 	public LevelEquation getReturnLevelEquation() {
 		return returnLevelEquation;
 	}
@@ -421,6 +567,7 @@ public class MethodEnvironment extends Environment {
 	 * @return {@code true} if the annotation is available, otherwise
 	 *         {@code false}.
 	 */
+	@Deprecated
 	public boolean isClassWriteEffectAnnotationAvailable() {
 		return classWriteEffectAnnotationAvailable;
 	}
@@ -432,7 +579,7 @@ public class MethodEnvironment extends Environment {
 	 *         {@code false}.
 	 */
 	public boolean isLibraryMethod() {
-		return this.sootMethod.isJavaLibraryMethod();
+		return sootMethod.isJavaLibraryMethod();
 	}
 
 	/**
@@ -442,6 +589,7 @@ public class MethodEnvironment extends Environment {
 	 * @return {@code true} if the annotation is available, otherwise
 	 *         {@code false}.
 	 */
+	@Deprecated
 	public boolean isParameterAnnotationAvailable() {
 		return parameterAnnotationAvailable;
 	}
@@ -453,6 +601,7 @@ public class MethodEnvironment extends Environment {
 	 * @return {@code true} if the annotation is available, otherwise
 	 *         {@code false}.
 	 */
+	@Deprecated
 	public boolean isReturnAnnotationAvailable() {
 		return returnAnnotationAvailable;
 	}
@@ -472,16 +621,17 @@ public class MethodEnvironment extends Environment {
 	 *         the method as well as all provided <em>security levels</em> are
 	 *         valid, otherwise {@code false}.
 	 */
+	@Deprecated
 	public boolean isReturnSecurityValid() {
 		String methodSignature = SootUtils.generateMethodSignature(sootMethod,
-				false, true, true);
-		if (!returnAnnotationAvailable
-				&& !(SootUtils.isClinitMethod(sootMethod) || SootUtils
-						.isInitMethod(sootMethod))) {
+				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
+				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
+				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
+		if (!returnAnnotationAvailable && !(isClinit || isInit)) {
 			logError(SecurityMessages.noMethodAnnotation(methodSignature));
 			return false;
 		}
-		if (returnAnnotationAvailable && SootUtils.isInitMethod(sootMethod)) {
+		if (returnAnnotationAvailable && isInit) {
 			logWarning(SecurityMessages
 					.constructorReturnNotRequired(methodSignature));
 		}
@@ -537,6 +687,7 @@ public class MethodEnvironment extends Environment {
 	 * @see LevelEquationCalculateVoidVisitor
 	 * @see MethodEnvironment#isReturnSecurityValid()
 	 */
+	@Deprecated
 	public boolean isReturnSecurityVoid() {
 		if (returnLevelEquation == null) {
 			return false;
@@ -554,6 +705,7 @@ public class MethodEnvironment extends Environment {
 	 * @return {@code true} if the annotation is available, otherwise
 	 *         {@code false}.
 	 */
+	@Deprecated
 	public boolean isWriteEffectAnnotationAvailable() {
 		return writeEffectAnnotationAvailable;
 	}
@@ -566,6 +718,7 @@ public class MethodEnvironment extends Environment {
 	 *            {@link MethodParameter} which should be stored as parameter of
 	 *            the analyzed method.
 	 */
+	@Deprecated
 	private void addMethodParameter(MethodParameter methodParameter) {
 		if (this.methodParameters == null)
 			this.methodParameters = new HashMap<Integer, MethodParameter>();
@@ -577,27 +730,28 @@ public class MethodEnvironment extends Environment {
 	 * Extracts the annotation of the type {@link Annotations.WriteEffect} which
 	 * should exist at the class that declares the analyzed method. The
 	 * extracted <em>write effects</em> will be stored in
-	 * {@link MethodEnvironment#expectedClassWriteEffects} and based on whether
-	 * the annotation at the class exists
+	 * {@link MethodEnvironment#classWriteEffects} and based on whether the
+	 * annotation at the class exists
 	 * {@link MethodEnvironment#classWriteEffectAnnotationAvailable} will be
 	 * set. Note, that if the analyzed method is an id function it doesn't
 	 * require those class <em>write effects</em>.
 	 * 
 	 * @see SootUtils#extractAnnotationStringArray(String, List)
 	 */
+	@Deprecated
 	private void extractClassWriteEffects() {
-		if (getSecurityAnnotation().isIdFunction(this.sootMethod)) {
+		if (isIdFunction) {
 			this.classWriteEffectAnnotationAvailable = true;
 		} else {
 			SootClass sootClass = sootMethod.getDeclaringClass();
-			List<String> annotations = SootUtils
-					.extractAnnotationStringArray(
-							SecurityAnnotation
-									.getSootAnnotationTag(Annotations.WriteEffect.class),
-							sootClass.getTags());
-			this.classWriteEffectAnnotationAvailable = annotations != null;
-			if (classWriteEffectAnnotationAvailable) {
-				this.expectedClassWriteEffects = annotations;
+			try {
+				this.classWriteEffects = getSecurityAnnotation()
+						.extractClassEffects(sootClass);
+				this.classWriteEffectAnnotationAvailable = true;
+			} catch (ExtractionException e) {
+				this.classWriteEffects = new ArrayList<String>();
+				this.classWriteEffectAnnotationAvailable = getSecurityAnnotation()
+						.hasClassWriteEffectAnnotation(sootClass);
 			}
 		}
 	}
@@ -614,10 +768,11 @@ public class MethodEnvironment extends Environment {
 	 * @see MethodParameter
 	 * @see MethodEnvironment#methodParameters
 	 */
+	@Deprecated
 	private void extractParameter() {
 		List<String> parameterNames = new ArrayList<String>();
 		List<Type> parameterTypes = new ArrayList<Type>();
-		for (Object object : this.sootMethod.getParameterTypes()) {
+		for (Object object : sootMethod.getParameterTypes()) {
 			parameterTypes.add((Type) object);
 		}
 		List<String> parameterSecurityLevels = extractParameterSecurityLevel();
@@ -629,16 +784,7 @@ public class MethodEnvironment extends Environment {
 				}
 			}
 		}
-
-		// TODO: (Lu) We should not allow that the security levels do not match
-		// the method signature except when they are completely omitted.
-		// In general we should provide real default security levels to fill
-		// into the unspecified levels... dealing with a potential null security
-		// level
-		// feels brittle and dangerous (there was already a problem with
-		// null-Parameter names).
 		final int seclevelCount = parameterSecurityLevels.size();
-			
 		if ((seclevelCount > 0 && sootMethod.getParameterCount() != seclevelCount)) {
 			throw new SootException.NoSecurityLevelException(
 					String.format(
@@ -651,15 +797,10 @@ public class MethodEnvironment extends Environment {
 									.toString(), parameterSecurityLevels
 									.toString()));
 		} else {
-			// TODO: (Lu) I do not think it makes sense to specify more
-			// parameters than the sootMethod acutally lists. But we need to
-			// discuss this. (original:
-			// ba4e8c59ffccb2d1d49aafc3d0b6ce691f8ff692)
 			for (int i = 0; i < sootMethod.getParameterCount(); i++) {
 				String name = (i < parameterNames.size()) ? parameterNames
 						.get(i) : "<unknown>";
 				Type type = parameterTypes.get(i);
-				//TODO: see above... we should have a sensible default here.
 				String level = (i < parameterSecurityLevels.size()) ? parameterSecurityLevels
 						.get(i) : null;
 				this.addMethodParameter(new MethodParameter(i, name, type,
@@ -683,28 +824,29 @@ public class MethodEnvironment extends Environment {
 	 * @return The list with the
 	 *         <em>security levels<em> of the parameters of the analyzed method.
 	 */
+	@Deprecated
 	private List<String> extractParameterSecurityLevel() {
 		List<String> parameterSecurityLevels = new ArrayList<String>();
-		if (getSecurityAnnotation().isIdFunction(this.sootMethod)) {
+		if (isIdFunction) {
 			this.parameterAnnotationAvailable = true;
 			parameterSecurityLevels.add(getSecurityAnnotation()
 					.getReturnSecurityLevelOfIdFunction(sootMethod));
-		} else if (SootUtils.isClinitMethod(sootMethod)) {
+		} else if (isClinit) {
 			this.parameterAnnotationAvailable = true;
 		} else {
-			if (SootUtils.isInitMethod(sootMethod)
-					&& sootMethod.getParameterCount() == 0) {
+
+			try {
+				parameterSecurityLevels = getSecurityAnnotation()
+						.extractParameterSecurityLevels(sootMethod);
 				this.parameterAnnotationAvailable = true;
-			}
-			List<String> annotations = SootUtils
-					.extractAnnotationStringArray(
-							SecurityAnnotation
-									.getSootAnnotationTag(Annotations.ParameterSecurity.class),
-							sootMethod.getTags());
-			boolean annotationsAvailable = annotations != null;
-			if (annotationsAvailable) {
-				this.parameterAnnotationAvailable = true;
-				parameterSecurityLevels = annotations;
+			} catch (ExtractionException e) {
+				parameterSecurityLevels = new ArrayList<String>();
+				if (isInit && sootMethod.getParameterCount() == 0) {
+					this.parameterAnnotationAvailable = true;
+				} else {
+					this.parameterAnnotationAvailable = getSecurityAnnotation()
+							.hasParameterSecurityAnnotation(sootMethod);
+				}
 			}
 		}
 		return parameterSecurityLevels;
@@ -725,23 +867,23 @@ public class MethodEnvironment extends Environment {
 	 * @see SootUtils#extractAnnotationString(String, List)
 	 * @see SecurityAnnotation#VOID_LEVEL
 	 */
+	@Deprecated
 	private void extractReturnSecurityLevel() {
-		if (getSecurityAnnotation().isIdFunction(this.sootMethod)) {
+		if (isIdFunction) {
 			this.returnAnnotationAvailable = true;
 			this.returnLevel = getSecurityAnnotation()
 					.getReturnSecurityLevelOfIdFunction(sootMethod);
-		} else if (SootUtils.isClinitMethod(sootMethod)
-				|| SootUtils.isInitMethod(sootMethod)) {
+		} else if (isClinit || isInit) {
 			this.returnLevel = SecurityAnnotation.VOID_LEVEL;
 		} else {
-			String annotations = SootUtils
-					.extractAnnotationString(
-							SecurityAnnotation
-									.getSootAnnotationTag(Annotations.ReturnSecurity.class),
-							sootMethod.getTags());
-			this.returnAnnotationAvailable = annotations != null;
-			if (returnAnnotationAvailable) {
-				this.returnLevel = annotations;
+			try {
+				this.returnLevel = getSecurityAnnotation()
+						.extractReturnSecurityLevel(sootMethod);
+				this.returnAnnotationAvailable = true;
+			} catch (ExtractionException e) {
+				this.returnLevel = null;
+				this.returnAnnotationAvailable = getSecurityAnnotation()
+						.hasReturnSecurityAnnotation(sootMethod);
 			}
 		}
 	}
@@ -749,32 +891,31 @@ public class MethodEnvironment extends Environment {
 	/**
 	 * Extracts the annotation of the type {@link Annotations.WriteEffect} which
 	 * should exist at the analyzed method. The extracted <em>write effects</em>
-	 * will be stored in {@link MethodEnvironment#expectedWriteEffects} and
-	 * based on whether the annotation at the method exists
+	 * will be stored in {@link MethodEnvironment#writeEffects} and based on
+	 * whether the annotation at the method exists
 	 * {@link MethodEnvironment#writeEffectAnnotationAvailable} will be set.
 	 * Note, that if the analyzed method is an id function or the static
 	 * initializer it doesn't require those <em>write effects</em>.
 	 * 
 	 * @see SootUtils#extractAnnotationStringArray(String, List)
 	 */
+	@Deprecated
 	private void extractWriteEffects() {
-		if (SootUtils.isClinitMethod(sootMethod)
-				|| getSecurityAnnotation().isIdFunction(this.sootMethod)) {
+		if (isClinit || isIdFunction) {
 			this.writeEffectAnnotationAvailable = true;
 		} else {
-			if (SootUtils.isInitMethod(sootMethod)
-					&& sootMethod.getParameterCount() == 0) {
+			try {
+				this.writeEffects = getSecurityAnnotation()
+						.extractMethodEffects(sootMethod);
 				this.writeEffectAnnotationAvailable = true;
-			}
-			List<String> annotations = SootUtils
-					.extractAnnotationStringArray(
-							SecurityAnnotation
-									.getSootAnnotationTag(Annotations.WriteEffect.class),
-							sootMethod.getTags());
-			boolean annotationAvailable = annotations != null;
-			if (annotationAvailable) {
-				this.writeEffectAnnotationAvailable = true;
-				this.expectedWriteEffects = annotations;
+			} catch (ExtractionException e) {
+				this.writeEffects = new ArrayList<String>();
+				if (isInit && sootMethod.getParameterCount() == 0) {
+					this.writeEffectAnnotationAvailable = true;
+				} else {
+					this.writeEffectAnnotationAvailable = getSecurityAnnotation()
+							.hasMethodWriteEffectAnnotation(sootMethod);
+				}
 			}
 		}
 	}
@@ -842,6 +983,79 @@ public class MethodEnvironment extends Environment {
 	 */
 	protected void logWarning(String msg) {
 		getLog().warning(SootUtils.generateFileName(sootMethod), 0, msg);
+	}
+
+	/**
+	 * DOC
+	 * 
+	 * @return
+	 */
+	public boolean isReasonable() {
+		String methodSignature = SootUtils.generateMethodSignature(sootMethod,
+				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
+				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
+				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
+		boolean reasonability = true;
+		if (!getSecurityAnnotation().checkValidityOfParameterLevels(
+				getListOfParameterLevels())) {
+			for (String level : getSecurityAnnotation()
+					.getInvalidParameterLevels(getListOfParameterLevels())) {
+				logError(SecurityMessages.invalidParameterLevel(
+						methodSignature, level));
+			}
+			reasonability = false;
+		}
+		if (isVoid) {
+			if (!returnLevel.equals(SecurityAnnotation.VOID_LEVEL)) {
+				// if (returnLevel != null)
+				// TODO: Logging (Void but has a return security level)
+				reasonability = false;
+			}
+		} else {
+			if (returnLevel == null) {
+				// TODO: Logging (Method has no return security level)
+				reasonability = false;
+			}
+			try {
+				LevelEquationValidityVistitor visitor = getSecurityAnnotation()
+						.checkValidityOfReturnLevel(returnLevel,
+								getListOfParameterLevels());
+				if (visitor.isValid()) {
+					if (visitor.isVoidInvalid()) {
+						logError(SecurityMessages.incompatibaleParameterLevels(
+								methodSignature, SecurityAnnotation.VOID_LEVEL));
+						reasonability = false;
+					} else {
+						this.returnLevelEquation = visitor.getLevelEquation();
+					}
+				} else {
+					List<String> invalidLevel = visitor.getValidLevels();
+					if (invalidLevel.size() != 0) {
+						for (String level : invalidLevel) {
+							logError(SecurityMessages.invalidReturnLevel(
+									methodSignature, level));
+						}
+					} else {
+						logError(SecurityMessages
+								.invalidReturnEquation(methodSignature));
+					}
+					reasonability = false;
+				}
+			} catch (InvalidLevelException | InvalidEquationException e) {
+				logException(
+						SecurityMessages.invalidReturnEquation(methodSignature),
+						e);
+				reasonability = false;
+			}
+		}
+		if (!getSecurityAnnotation().checkValidityOfLevels(writeEffects)) {
+			for (String invalidEffect : getSecurityAnnotation()
+					.getInvalidLevels(writeEffects)) {
+				logError(SecurityMessages.invalidWriteEffect(methodSignature,
+						invalidEffect));
+			}
+		}
+		return reasonability;
 	}
 
 }

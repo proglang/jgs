@@ -1,6 +1,8 @@
 package pattern;
 
+import preanalysis.AnnotationExtractor.UsedObjectStore;
 import analysis.TaintTracking;
+import main.Configuration;
 import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
 import model.LocalsMap;
@@ -61,6 +63,7 @@ import utils.SecurityMessages;
 import utils.SootUtils;
 import exception.SootException.InvalidSwitchException;
 import exception.SootException.UnimplementedSwitchException;
+import exception.SootException.UnpreparedEnvironmentException;
 
 /**
  * <h1>Update switch for the {@link TaintTracking} analysis</h1>
@@ -146,8 +149,8 @@ public class UpdateSwitch extends TaintTrackingSwitch implements
 	 *            value will be updated.
 	 */
 	public UpdateSwitch(AnalyzedMethodEnvironment analyzedMethodEnvironment,
-			LocalsMap in, LocalsMap out, String level) {
-		super(analyzedMethodEnvironment, in, out);
+			UsedObjectStore store, LocalsMap in, LocalsMap out, String level) {
+		super(analyzedMethodEnvironment, store, in, out);
 		this.level = level;
 	}
 
@@ -606,18 +609,14 @@ public class UpdateSwitch extends TaintTrackingSwitch implements
 		String localLevel = getWeakestSecurityLevel();
 		String valueLevel = level;
 		if (in.containsLocal(l)) {
+			
 			localLevel = in.getLevelOfLocal(l);
 		} else {
 			logError(SecurityMessages.localNotFoundUpdate(getMethodSignature(),
 					getSrcLn(), l.getName(), valueLevel));
 		}
 		if (parameterRef != null && methodParameter != null) {
-			if (!( // TODO: (Lu) this seems unnecessary, given that we compare with
-					// the parameter Ref
-			methodParameter.getPosition() >= 0
-			// TODO: find a clean solution for the name problems
-			// (Lu) the name does not seem to exist always (see CSF2013)
-			// && methodParameter.getName().equals(l.getName())
+			if (!(methodParameter.getPosition() >= 0
 					&& parameterRef.getIndex() == methodParameter.getPosition() && methodParameter
 					.getType().equals(parameterRef.getType()))) {
 				logError(SecurityMessages.noParameterMatch(
@@ -1163,51 +1162,76 @@ public class UpdateSwitch extends TaintTrackingSwitch implements
 		String leftLevel = getWeakestSecurityLevel();
 		String rightLevel = takePCintoAccount(level);
 		SootField sootField = fieldRef.getField();
-		FieldEnvironment field = new FieldEnvironment(sootField, getLog(),
-				getSecurityAnnotation());
 		String fieldSignature = SootUtils.generateFieldSignature(sootField,
-				false, true, true);
-		if (!field.isLibraryClass()) {
-			if (field.isFieldSecurityLevelValid()) {
+				Configuration.FIELD_SIGNATURE_PRINT_PACKAGE,
+				Configuration.FIELD_SIGNATURE_PRINT_TYPE,
+				Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY);
+		if (!Configuration.OLD_ANALYSIS) { // RENEW
+			try {
+				FieldEnvironment field = store.getFieldEnvironment(sootField);
 				leftLevel = field.getLevel();
 				// SIDE-EFFECTS: |----->
 				addWriteEffectCausedByAssign(leftLevel, sootField);
 				// SIDE-EFFECTS: Check class write effects for static field
 				if (field.isStatic()) {
-					SootClass sootClass = field.getSootClass();
-					String classSignature = SootUtils.generateClassSignature(
-							sootClass, false);
-					if (!field.isLibraryClass()) {
-						if (field.areClassWriteEffectsValid()) {
-							for (String effected : field
-									.getExpectedClassWriteEffects()) {
-								addWriteEffectCausedByClass(effected, sootClass);
-							}
-						} else {
-							logError(SecurityMessages
-									.invalidClassWriteEffectUsingClass(
-											getMethodSignature(), getSrcLn(),
-											classSignature));
-						}
-					} else {
-						logWarning(SecurityMessages
-								.usingLibraryClassNoClassWriteEffect(
-										getMethodSignature(), getSrcLn(),
-										classSignature));
+					SootClass sootClass = field.getDeclaringSootClass();
+					for (String effected : field.getClassWriteEffects()) {
+						addWriteEffectCausedByClass(effected, sootClass);
 					}
 				}
 				// <-----| SIDE-EFFECTS
-			} else {
-				logError(SecurityMessages.invalidFieldAnnotation(
-						getMethodSignature(), fieldSignature, getSrcLn()));
-				logError(SecurityMessages.invalidWriteEffect(
-						getMethodSignature(), getSrcLn(), field.getLevel()));
+
+			} catch (UnpreparedEnvironmentException e) {
+				// TODO: Logging
 			}
 		} else {
-			logWarning(SecurityMessages.assignmentToLibraryField(
-					getMethodSignature(), fieldSignature, getSrcLn()));
-			logWarning(SecurityMessages.usingLibraryFieldNoWriteEffect(
-					getMethodSignature(), getSrcLn(), fieldSignature));
+			FieldEnvironment field = new FieldEnvironment(sootField, getLog(),
+					getSecurityAnnotation());
+			if (!field.isLibraryClass()) {
+				if (field.isFieldSecurityLevelValid()) {
+					leftLevel = field.getLevel();
+					// SIDE-EFFECTS: |----->
+					addWriteEffectCausedByAssign(leftLevel, sootField);
+					// SIDE-EFFECTS: Check class write effects for static field
+					if (field.isStatic()) {
+						SootClass sootClass = field.getDeclaringSootClass();
+						String classSignature = SootUtils
+								.generateClassSignature(
+										sootClass,
+										Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
+						if (!field.isLibraryClass()) {
+							if (field.areClassWriteEffectsValid()) {
+								for (String effected : field
+										.getClassWriteEffects()) {
+									addWriteEffectCausedByClass(effected,
+											sootClass);
+								}
+							} else {
+								logError(SecurityMessages
+										.invalidClassWriteEffectUsingClass(
+												getMethodSignature(),
+												getSrcLn(), classSignature));
+							}
+						} else {
+							logWarning(SecurityMessages
+									.usingLibraryClassNoClassWriteEffect(
+											getMethodSignature(), getSrcLn(),
+											classSignature));
+						}
+					}
+					// <-----| SIDE-EFFECTS
+				} else {
+					logError(SecurityMessages.invalidFieldAnnotation(
+							getMethodSignature(), fieldSignature, getSrcLn()));
+					logError(SecurityMessages.invalidWriteEffect(
+							getMethodSignature(), getSrcLn(), field.getLevel()));
+				}
+			} else {
+				logWarning(SecurityMessages.assignmentToLibraryField(
+						getMethodSignature(), fieldSignature, getSrcLn()));
+				logWarning(SecurityMessages.usingLibraryFieldNoWriteEffect(
+						getMethodSignature(), getSrcLn(), fieldSignature));
+			}
 		}
 		if (!isWeakerOrEqualLevel(rightLevel, leftLevel)) {
 			logSecurity(SecurityMessages.assignmentToWeakerField(

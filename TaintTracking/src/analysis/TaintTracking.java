@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logging.SecurityLogger;
+import main.Configuration;
 import model.AnalyzedMethodEnvironment;
 import model.LocalsMap;
+import model.MethodEnvironment;
 import pattern.StatementSwitch;
+import preanalysis.AnnotationExtractor.UsedObjectStore;
 import security.SecurityAnnotation;
 import soot.SootMethod;
 import soot.Unit;
@@ -20,6 +23,7 @@ import utils.SecurityMessages;
 import utils.SootUtils;
 import exception.SootException.InvalidLevelException;
 import exception.SootException.SwitchException;
+import exception.SootException.UnpreparedEnvironmentException;
 
 /**
  * <h1>TaintTracking analysis</h1>
@@ -114,6 +118,8 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 	 * specific unit.
 	 */
 	private final Dominator container;
+	
+	private final UsedObjectStore store;
 
 	/**
 	 * Constructor of {@link TaintTracking} which checks automatically the given graph of the also
@@ -134,26 +140,47 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 	 *            <em>security levels</em>.
 	 * @param graph
 	 *            The generated graph for the given method.
+	 * @param store 
 	 */
 	public TaintTracking(SecurityLogger log, SootMethod sootMethod,
-			SecurityAnnotation securityAnnotations, DirectedGraph<Unit> graph) {
+			SecurityAnnotation securityAnnotations, DirectedGraph<Unit> graph, preanalysis.AnnotationExtractor.UsedObjectStore store) {
 		super(graph);
 		container = new Dominator(graph);
-		analyzedMethodEnvironment = new AnalyzedMethodEnvironment(sootMethod, log,
-				securityAnnotations);
+		this.store = store;
 		long srcLn = 0;
 		String fileName = SootUtils.generateFileName(sootMethod);
-		String methodSignature = SootUtils.generateMethodSignature(sootMethod, false, true, true);
-		if (analyzedMethodEnvironment.areMethodParameterSecuritiesValid()) {
-			if (analyzedMethodEnvironment.isReturnSecurityValid()) {
-				doAnalysis();
+		String methodSignature = SootUtils.generateMethodSignature(sootMethod, Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
+		AnalyzedMethodEnvironment ame = null;
+		boolean interrupt = false;
+		if (Configuration.OLD_ANALYSIS) { // RENEW 
+			ame = new AnalyzedMethodEnvironment(sootMethod, log,
+					securityAnnotations);
+			if (ame.areMethodParameterSecuritiesValid()) {
+				if (! ame.isReturnSecurityValid()) {
+					interrupt = true;
+					ame.getLog().error(fileName, srcLn,
+							SecurityMessages.interruptInvalidReturn(methodSignature));
+				}
 			} else {
-				analyzedMethodEnvironment.getLog().error(fileName, srcLn,
-						SecurityMessages.interruptInvalidReturn(methodSignature));
+				interrupt = true;
+				ame.getLog().error(fileName, srcLn,
+						SecurityMessages.interruptInvalidParameters(methodSignature));
 			}
 		} else {
-			analyzedMethodEnvironment.getLog().error(fileName, srcLn,
-					SecurityMessages.interruptInvalidParameters(methodSignature));
+			try {
+				MethodEnvironment me =  this.store.getMethodEnvironment(sootMethod.retrieveActiveBody().getMethod());
+				ame = new AnalyzedMethodEnvironment(me);
+			} catch (UnpreparedEnvironmentException e) {
+				interrupt = true;
+			}
+			
+		}
+		analyzedMethodEnvironment = ame;
+		if (analyzedMethodEnvironment != null || ! interrupt) {
+			doAnalysis();
+		} else {
+			// TODO: Logging
+			System.err.println("Can't create an analyzed method environment " + sootMethod.getSignature());
 		}
 	}
 
@@ -163,7 +190,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 	 * method should be called after the analysis of each method.
 	 */
 	public void checkAnalysis() {
-		analyzedMethodEnvironment.checkEffectAnnotations();
+		if (analyzedMethodEnvironment != null) analyzedMethodEnvironment.checkEffectAnnotations();
 	}
 
 	/**
@@ -191,13 +218,13 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 		Stmt stmt = (Stmt) d;
 		analyzedMethodEnvironment.setStmt(stmt);
 		checkEndOfImplicitFlow(stmt, in, out);
-		StatementSwitch stmtSwitch = new StatementSwitch(analyzedMethodEnvironment, in, out);
+		StatementSwitch stmtSwitch = new StatementSwitch(analyzedMethodEnvironment, store, in, out);
 		try {
 			stmt.apply(stmtSwitch);
 		} catch (SwitchException e) {
 			String fileName = SootUtils.generateFileName(analyzedMethodEnvironment.getSootMethod());
 			String methodSignature = SootUtils.generateMethodSignature(
-					analyzedMethodEnvironment.getSootMethod(), false, true, true);
+					analyzedMethodEnvironment.getSootMethod(), Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
 			long srcLn = analyzedMethodEnvironment.getSrcLn();
 			analyzedMethodEnvironment.getLog().exception(fileName, srcLn,
 					SecurityMessages.catchSwitchException(methodSignature, srcLn, stmt.toString()),
@@ -281,7 +308,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 		} catch (InvalidLevelException e) {
 			String fileName = SootUtils.generateFileName(analyzedMethodEnvironment.getSootMethod());
 			String methodSignature = SootUtils.generateMethodSignature(
-					analyzedMethodEnvironment.getSootMethod(), false, true, true);
+					analyzedMethodEnvironment.getSootMethod(), Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
 			long srcLn = analyzedMethodEnvironment.getSrcLn();
 			analyzedMethodEnvironment.getLog().exception(fileName, srcLn,
 					SecurityMessages.invalidLevelsComparisonInMap(methodSignature, srcLn), e);

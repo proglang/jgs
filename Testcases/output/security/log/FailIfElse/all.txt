@@ -1,0 +1,190 @@
+   |-- [ SECURITY(FailIfElse.java:18) ] --|
+   Method <FailIfElse.ifReturnExpr() : int [+]> returns value with 'high' security level at source line 18. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:27) ] --|
+   Method <FailIfElse.ifReturnExpr2() : int [+]> returns value with 'high' security level at source line 27. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:36) ] --|
+   Method <FailIfElse.ifReturnExpr3() : int [+]> returns value with 'high' security level at source line 36. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:45) ] --|
+   Method <FailIfElse.ifReturnExpr4() : int [+]> returns value with 'high' security level at source line 45. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:54) ] --|
+   Method <FailIfElse.ifReturnExpr5() : int [+]> returns value with 'high' security level at source line 54. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:63) ] --|
+   Method <FailIfElse.ifReturnExpr6() : int [+]> returns value with 'high' security level at source line 63. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:72) ] --|
+   Method <FailIfElse.ifReturnExpr7() : int [+]> returns value with 'high' security level at source line 72. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:82) ] --|
+   Method <FailIfElse.ifReturn() : int [+]> returns value with 'high' security level at source line 82. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:85) ] --|
+   Method <FailIfElse.ifReturn() : int [+]> returns value with 'high' security level at source line 85. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:95) ] --|
+   Method <FailIfElse.ifReturn2() : int [+]> returns value with 'high' security level at source line 95. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:98) ] --|
+   Method <FailIfElse.ifReturn2() : int [+]> returns value with 'high' security level at source line 98. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:108) ] --|
+   Method <FailIfElse.ifReturn3() : int [+]> returns value with 'high' security level at source line 108. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:111) ] --|
+   Method <FailIfElse.ifReturn3() : int [+]> returns value with 'high' security level at source line 111. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:121) ] --|
+   Method <FailIfElse.ifReturn4() : int [+]> returns value with 'high' security level at source line 121. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:133) ] --|
+   Method <FailIfElse.ifReturn5() : int [+]> returns value with 'high' security level at source line 133. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:136) ] --|
+   Method <FailIfElse.ifReturn5() : int [+]> returns value with 'high' security level at source line 136. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:148) ] --|
+   Method <FailIfElse.ifReturn6() : int [+]> returns value with 'high' security level at source line 148. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:158) ] --|
+   Method <FailIfElse.ifReturn7() : int [+]> returns value with 'high' security level at source line 158. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:161) ] --|
+   Method <FailIfElse.ifReturn7() : int [+]> returns value with 'high' security level at source line 161. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:171) ] --|
+   Method <FailIfElse.ifElseReturn() : int [+]> returns value with 'high' security level at source line 171. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:174) ] --|
+   Method <FailIfElse.ifElseReturn() : int [+]> returns value with 'high' security level at source line 174. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:185) ] --|
+   Method <FailIfElse.ifElseReturn2() : int [+]> returns value with 'high' security level at source line 185. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:188) ] --|
+   Method <FailIfElse.ifElseReturn2() : int [+]> returns value with 'high' security level at source line 188. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:199) ] --|
+   Method <FailIfElse.ifElseReturn3() : int [+]> returns value with 'high' security level at source line 199. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:202) ] --|
+   Method <FailIfElse.ifElseReturn3() : int [+]> returns value with 'high' security level at source line 202. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:213) ] --|
+   Method <FailIfElse.ifElseReturn4() : int [+]> returns value with 'high' security level at source line 213. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:226) ] --|
+   Method <FailIfElse.ifElseReturn5() : int [+]> returns value with 'high' security level at source line 226. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:229) ] --|
+   Method <FailIfElse.ifElseReturn5() : int [+]> returns value with 'high' security level at source line 229. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:242) ] --|
+   Method <FailIfElse.ifElseReturn6() : int [+]> returns value with 'high' security level at source line 242. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:253) ] --|
+   Method <FailIfElse.ifElseReturn7() : int [+]> returns value with 'high' security level at source line 253. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:256) ] --|
+   Method <FailIfElse.ifElseReturn7() : int [+]> returns value with 'high' security level at source line 256. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:272) ] --|
+   Method <FailIfElse.ifElseAssign() : int [+]> returns value with 'high' security level at source line 272. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:287) ] --|
+   Method <FailIfElse.ifElseAssign2() : int [+]> returns value with 'high' security level at source line 287. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:302) ] --|
+   Method <FailIfElse.ifElseAssign3() : int [+]> returns value with 'high' security level at source line 302. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:317) ] --|
+   Method <FailIfElse.ifElseAssign4() : int [+]> returns value with 'high' security level at source line 317. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:332) ] --|
+   Method <FailIfElse.ifElseAssign5() : int [+]> returns value with 'high' security level at source line 332. Expected was 'low' or weaker.
+   |-- [ WARNING(FailIfElse.java:344) ] --|
+   In method <FailIfElse.ifElseAssign6() : int [+]> at source line 344 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ SECURITY(FailIfElse.java:347) ] --|
+   Method <FailIfElse.ifElseAssign6() : int [+]> returns value with 'high' security level at source line 347. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:362) ] --|
+   Method <FailIfElse.ifElseAssign7() : int [+]> returns value with 'high' security level at source line 362. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:377) ] --|
+   Method <FailIfElse.ifElseAssign8() : int [+]> returns value with 'high' security level at source line 377. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:392) ] --|
+   Method <FailIfElse.ifElseAssign9() : int [+]> returns value with 'high' security level at source line 392. Expected was 'low' or weaker.
+   |-- [ WARNING(FailIfElse.java:402) ] --|
+   In method <FailIfElse.ifElseAssign10() : int [+]> at source line 402 the variable "result" was weakened from 'high' to 'low' security level.
+   |-- [ SECURITY(FailIfElse.java:407) ] --|
+   Method <FailIfElse.ifElseAssign10() : int [+]> returns value with 'high' security level at source line 407. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:422) ] --|
+   Method <FailIfElse.ifElseAssign11() : int [+]> returns value with 'high' security level at source line 422. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:437) ] --|
+   Method <FailIfElse.ifElseAssign12() : int [+]> returns value with 'high' security level at source line 437. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:452) ] --|
+   Method <FailIfElse.ifElseAssign13() : int [+]> returns value with 'high' security level at source line 452. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:467) ] --|
+   Method <FailIfElse.ifElseAssign14() : int [+]> returns value with 'high' security level at source line 467. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:479) ] --|
+   In method <FailIfElse.ifElseAssignField() : int [+]> at source line 479 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:479) ] --|
+   In method <FailIfElse.ifElseAssignField() : int [+]> at source line 479 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:483) ] --|
+   In method <FailIfElse.ifElseAssignField() : int [+]> at source line 483 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:483) ] --|
+   In method <FailIfElse.ifElseAssignField() : int [+]> at source line 483 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:496) ] --|
+   In method <FailIfElse.ifElseAssignField2() : int [+]> at source line 496 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:499) ] --|
+   In method <FailIfElse.ifElseAssignField2() : int [+]> at source line 499 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:513) ] --|
+   In method <FailIfElse.ifElseAssignField3() : int [+]> at source line 513 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:513) ] --|
+   In method <FailIfElse.ifElseAssignField3() : int [+]> at source line 513 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:517) ] --|
+   In method <FailIfElse.ifElseAssignField3() : int [+]> at source line 517 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:517) ] --|
+   In method <FailIfElse.ifElseAssignField3() : int [+]> at source line 517 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:530) ] --|
+   In method <FailIfElse.ifElseAssignField4() : int [+]> at source line 530 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:546) ] --|
+   In method <FailIfElse.ifElseAssignField5() : int [+]> at source line 546 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:546) ] --|
+   In method <FailIfElse.ifElseAssignField5() : int [+]> at source line 546 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:550) ] --|
+   In method <FailIfElse.ifElseAssignField5() : int [+]> at source line 550 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:550) ] --|
+   In method <FailIfElse.ifElseAssignField5() : int [+]> at source line 550 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:565) ] --|
+   In method <FailIfElse.ifElseAssignField6() : int [+]> at source line 565 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:579) ] --|
+   In method <FailIfElse.ifElseAssignField7() : int [+]> at source line 579 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:579) ] --|
+   In method <FailIfElse.ifElseAssignField7() : int [+]> at source line 579 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:583) ] --|
+   In method <FailIfElse.ifElseAssignField7() : int [+]> at source line 583 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:583) ] --|
+   In method <FailIfElse.ifElseAssignField7() : int [+]> at source line 583 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:600) ] --|
+   Method <FailIfElse.ifElseAssignField8() : int [+]> returns value with 'high' security level at source line 600. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:615) ] --|
+   Method <FailIfElse.ifElseAssignField9() : int [+]> returns value with 'high' security level at source line 615. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:627) ] --|
+   In method <FailIfElse.ifElseAssignField10() : int [+]> at source line 627 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:627) ] --|
+   In method <FailIfElse.ifElseAssignField10() : int [+]> at source line 627 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:631) ] --|
+   In method <FailIfElse.ifElseAssignField10() : int [+]> at source line 631 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:631) ] --|
+   In method <FailIfElse.ifElseAssignField10() : int [+]> at source line 631 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:644) ] --|
+   In method <FailIfElse.ifElseAssignField11() : int [+]> at source line 644 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:647) ] --|
+   In method <FailIfElse.ifElseAssignField11() : int [+]> at source line 647 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:664) ] --|
+   Method <FailIfElse.ifElseAssignField12() : int [+]> returns value with 'high' security level at source line 664. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:679) ] --|
+   Method <FailIfElse.ifElseAssignField13() : int [+]> returns value with 'high' security level at source line 679. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:691) ] --|
+   In method <FailIfElse.ifElseAssignField14() : int [+]> at source line 691 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:691) ] --|
+   In method <FailIfElse.ifElseAssignField14() : int [+]> at source line 691 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:695) ] --|
+   In method <FailIfElse.ifElseAssignField14() : int [+]> at source line 695 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:695) ] --|
+   In method <FailIfElse.ifElseAssignField14() : int [+]> at source line 695 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:708) ] --|
+   In method <FailIfElse.ifElseAssignField15() : int [+]> at source line 708 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:727) ] --|
+   Method <FailIfElse.ifElseAssignField16() : int [+]> returns value with 'high' security level at source line 727. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:742) ] --|
+   Method <FailIfElse.ifElseAssignField17() : int [+]> returns value with 'high' security level at source line 742. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:754) ] --|
+   In method <FailIfElse.ifElseAssignField18() : int [+]> at source line 754 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:754) ] --|
+   In method <FailIfElse.ifElseAssignField18() : int [+]> at source line 754 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:758) ] --|
+   In method <FailIfElse.ifElseAssignField18() : int [+]> at source line 758 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:758) ] --|
+   In method <FailIfElse.ifElseAssignField18() : int [+]> at source line 758 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:773) ] --|
+   In method <FailIfElse.ifElseAssignField19() : int [+]> at source line 773 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SECURITY(FailIfElse.java:790) ] --|
+   Method <FailIfElse.ifElseAssignField20() : int [+]> returns value with 'high' security level at source line 790. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:805) ] --|
+   Method <FailIfElse.ifElseAssignField21() : int [+]> returns value with 'high' security level at source line 805. Expected was 'low' or weaker.
+   |-- [ SECURITY(FailIfElse.java:817) ] --|
+   In method <FailIfElse.ifElseAssignField22() : int [+]> at source line 817 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:817) ] --|
+   In method <FailIfElse.ifElseAssignField22() : int [+]> at source line 817 a write effect to 'low' inside of a 'high' branch.
+   |-- [ SECURITY(FailIfElse.java:821) ] --|
+   In method <FailIfElse.ifElseAssignField22() : int [+]> at source line 821 a value with 'high' security level is assigned to the field <FailIfElse.lowField : int [+]> which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(FailIfElse.java:821) ] --|
+   In method <FailIfElse.ifElseAssignField22() : int [+]> at source line 821 a write effect to 'low' inside of a 'high' branch.

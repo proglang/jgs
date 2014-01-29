@@ -731,7 +731,7 @@
         </path>
         
        <target name="analysis.fail" depends="output">
-            <java classname="analysis.Main" fork="true" dir="${testcases.src.dir}" classpathref="classpath.analysis.fail">
+            <java classname="main.Main" fork="true" dir="${testcases.src.dir}" classpathref="classpath.analysis.fail">
                 <arg line="-pp -f n -no-bodies-for-excluded -log-levels no -export-file -keep-line-number ${testcases.class.failing}"/>
             </java>
         </target>
@@ -762,7 +762,7 @@
         </path>
         
        <target name="analysis.success" depends="output">
-            <java classname="analysis.Main" fork="true" dir="${testcases.src.dir}" classpathref="classpath.analysis.success">
+            <java classname="main.Main" fork="true" dir="${testcases.src.dir}" classpathref="classpath.analysis.success">
                 <arg line="-pp -f n -no-bodies-for-excluded -log-levels no -export-file -keep-line-number ${testcases.class.success}"/>
             </java>
         </target>

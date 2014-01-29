@@ -3,7 +3,7 @@ import security.Annotations;
 import security.SootSecurityLevel;
 
 
-
+@SuppressWarnings("unused")
 public class TaintTrackingGeneralTest {
 	
 	@Annotations.ReturnSecurity("void")
