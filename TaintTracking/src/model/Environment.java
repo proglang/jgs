@@ -3,7 +3,7 @@ package model;
 import analysis.TaintTracking;
 import logging.SecurityLogger;
 import logging.SootLoggerLevel;
-import security.SecurityAnnotation;
+import security.LevelMediator;
 import soot.SootField;
 import soot.SootMethod;
 
@@ -26,7 +26,7 @@ import soot.SootMethod;
  * @see FieldEnvironment
  * @see MethodEnvironment
  * @see AnalyzedMethodEnvironment
- * @see SecurityAnnotation
+ * @see LevelMediator
  * @see SecurityLogger
  */
 public abstract class Environment {
@@ -34,7 +34,7 @@ public abstract class Environment {
 	/** The logger that allows to log informations of different {@link SootLoggerLevel}. */
 	private final SecurityLogger log;
 	/** The security annotation object that provides the handling of <em>security level</em>. */
-	private final SecurityAnnotation securityAnnotation;
+	private final LevelMediator mediator;
 
 	/**
 	 * Constructor of a {@link Environment} object that requires a logger in order to allow logging
@@ -43,18 +43,18 @@ public abstract class Environment {
 	 * 
 	 * @param log
 	 *            A {@link SecurityLogger} in order to allow logging for this object.
-	 * @param securityAnnotations
-	 *            A {@link SecurityAnnotation} in order to provide the handling of
+	 * @param mediator
+	 *            A {@link LevelMediator} in order to provide the handling of
 	 *            <em>security levels</em>.
 	 */
-	public Environment(SecurityLogger log, SecurityAnnotation securityAnnotations) {
+	public Environment(SecurityLogger log, LevelMediator mediator) {
 		super();
-		this.securityAnnotation = securityAnnotations;
+		this.mediator = mediator;
 		this.log = log;
 	}
 
 	/**
-	 * Returns the {@link SecurityLogger} of the {@link Environment#securityAnnotation} object.
+	 * Returns the {@link SecurityLogger} of the {@link Environment#mediator} object.
 	 * 
 	 * @return The logger.
 	 */
@@ -63,22 +63,22 @@ public abstract class Environment {
 	}
 
 	/**
-	 * Returns the {@link SecurityAnnotation} that allows the handling of <em>security level</em>.
+	 * Returns the {@link LevelMediator} that allows the handling of <em>security level</em>.
 	 * 
-	 * @return The security annotation object.
+	 * @return The level mediator.
 	 */
-	public SecurityAnnotation getSecurityAnnotation() {
-		return securityAnnotation;
+	public LevelMediator getLevelMediator() {
+		return mediator;
 	}
 
 	/**
 	 * Method returns the weakest available <em>security level</em> given by the security annotation
-	 * object (see {@link Environment#securityAnnotation}).
+	 * object (see {@link Environment#mediator}).
 	 * 
 	 * @return The weakest available <em>security level</em>.
 	 */
 	public String getWeakestSecurityLevel() {
-		return securityAnnotation.getWeakestSecurityLevel();
+		return mediator.getWeakestSecurityLevel();
 	}
 
 }

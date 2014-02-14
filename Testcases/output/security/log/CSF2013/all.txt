@@ -1,0 +1,89 @@
+   |-- [ EXCEPTION(CSF2013.java:0) ] --|
+   During processing 'throw r7' in method <CSF2013$Report.append(arg0 : exgradual.CSF2013$Report) : exgradual.CSF2013$Report [+]> at source line 0 an exception was thrown.
+   Exception in thread "main" exception.SootException$UnimplementedSwitchException: Invoke of the 'throw stmt' case in the StatementSwitch by the statement 'throw r7' at line 0 [NOT IMPLEMENTED].
+      at analysis.StatementSwitch.caseThrowStmt(StatementSwitch.java:364)
+      at soot.jimple.internal.JThrowStmt.apply(JThrowStmt.java:97)
+      at analysis.TaintTracking.flowThrough(TaintTracking.java:217)
+      at analysis.TaintTracking.flowThrough(TaintTracking.java:1)
+      at soot.toolkits.scalar.ForwardFlowAnalysis.doAnalysis(ForwardFlowAnalysis.java:162)
+      at analysis.TaintTracking.<init>(TaintTracking.java:166)
+      at analysis.SecurityTransformer.doAnalysis(SecurityTransformer.java:84)
+      at analysis.SecurityTransformer.internalTransform(SecurityTransformer.java:128)
+      at soot.BodyTransformer.transform(BodyTransformer.java:51)
+      at soot.Transform.apply(Transform.java:104)
+      at soot.BodyPack.internalApply(BodyPack.java:49)
+      at soot.Pack.apply(Pack.java:124)
+      at soot.PackManager.runBodyPacks(PackManager.java:775)
+      at soot.PackManager.runBodyPacks(PackManager.java:463)
+      at soot.PackManager.runBodyPacks(PackManager.java:380)
+      ...
+   |-- [ EXCEPTION(CSF2013.java:0) ] --|
+   During processing 'throw r7' in method <CSF2013$Worker.send(arg0 : exgradual.CSF2013$Report) : void [+]> at source line 0 an exception was thrown.
+   Exception in thread "main" exception.SootException$UnimplementedSwitchException: Invoke of the 'throw stmt' case in the StatementSwitch by the statement 'throw r7' at line 0 [NOT IMPLEMENTED].
+      at analysis.StatementSwitch.caseThrowStmt(StatementSwitch.java:364)
+      at soot.jimple.internal.JThrowStmt.apply(JThrowStmt.java:97)
+      at analysis.TaintTracking.flowThrough(TaintTracking.java:217)
+      at analysis.TaintTracking.flowThrough(TaintTracking.java:1)
+      at soot.toolkits.scalar.ForwardFlowAnalysis.doAnalysis(ForwardFlowAnalysis.java:162)
+      at analysis.TaintTracking.<init>(TaintTracking.java:166)
+      at analysis.SecurityTransformer.doAnalysis(SecurityTransformer.java:84)
+      at analysis.SecurityTransformer.internalTransform(SecurityTransformer.java:128)
+      at soot.BodyTransformer.transform(BodyTransformer.java:51)
+      at soot.Transform.apply(Transform.java:104)
+      at soot.BodyPack.internalApply(BodyPack.java:49)
+      at soot.Pack.apply(Pack.java:124)
+      at soot.PackManager.runBodyPacks(PackManager.java:775)
+      at soot.PackManager.runBodyPacks(PackManager.java:463)
+      at soot.PackManager.runBodyPacks(PackManager.java:380)
+      ...
+   |-- [ EXCEPTION(CSF2013.java:0) ] --|
+   During processing 'throw r12' in method <CSF2013.standardProcessing() : void [+]> at source line 0 an exception was thrown.
+   Exception in thread "main" exception.SootException$UnimplementedSwitchException: Invoke of the 'throw stmt' case in the StatementSwitch by the statement 'throw r12' at line 0 [NOT IMPLEMENTED].
+      at analysis.StatementSwitch.caseThrowStmt(StatementSwitch.java:364)
+      at soot.jimple.internal.JThrowStmt.apply(JThrowStmt.java:97)
+      at analysis.TaintTracking.flowThrough(TaintTracking.java:217)
+      at analysis.TaintTracking.flowThrough(TaintTracking.java:1)
+      at soot.toolkits.scalar.ForwardFlowAnalysis.doAnalysis(ForwardFlowAnalysis.java:162)
+      at analysis.TaintTracking.<init>(TaintTracking.java:166)
+      at analysis.SecurityTransformer.doAnalysis(SecurityTransformer.java:84)
+      at analysis.SecurityTransformer.internalTransform(SecurityTransformer.java:128)
+      at soot.BodyTransformer.transform(BodyTransformer.java:51)
+      at soot.Transform.apply(Transform.java:104)
+      at soot.BodyPack.internalApply(BodyPack.java:49)
+      at soot.Pack.apply(Pack.java:124)
+      at soot.PackManager.runBodyPacks(PackManager.java:775)
+      at soot.PackManager.runBodyPacks(PackManager.java:463)
+      at soot.PackManager.runBodyPacks(PackManager.java:380)
+      ...
+   |-- [ SECURITY(CSF2013.java:0) ] --|
+   In method <CSF2013$Worker.send(arg0 : exgradual.CSF2013$Report) : void [+]> at source line 0 a value with 'high' security level is assigned to an array field. However, because of security restrictions only assignments of value with 'low' security level are valid.
+   |-- [ SECURITY(CSF2013.java:0) ] --|
+   In method <CSF2013$Worker.send(arg0 : exgradual.CSF2013$Report) : void [+]> at source line 0 a value with 'high' security level is assigned to an array which has the weaker security level 'low'.
+   |-- [ SECURITY(CSF2013.java:0) ] --|
+   In method <CSF2013.standardProcessing() : void [+]> at source line 0 a value with 'high' security level is assigned to an array field. However, because of security restrictions only assignments of value with 'low' security level are valid.
+   |-- [ SECURITY(CSF2013.java:0) ] --|
+   In method <CSF2013.standardProcessing() : void [+]> at source line 0 a value with 'high' security level is assigned to an array which has the weaker security level 'low'.
+   |-- [ SIDE-EFFECT(CSF2013.java:0) ] --|
+   In method <CSF2013$Worker.send(arg0 : exgradual.CSF2013$Report) : void [+]> at source line 0 a write effect to 'low' occurs caused by an assignment to an array 'r3'.
+   |-- [ SIDE-EFFECT(CSF2013.java:0) ] --|
+   In method <CSF2013.standardProcessing() : void [+]> at source line 0 a write effect to 'low' occurs caused by an assignment to an array 'r16'.
+   |-- [ SIDE-EFFECT(CSF2013.java:14) ] --|
+   In method <CSF2013$Report.<init>(arg0 : java.lang.String) : void [+]> at source line 14 a write effect to 'high' occurs caused by an assignment to the field <CSF2013$Report.content : java.lang.String [-]>.
+   |-- [ SECURITY(CSF2013.java:19) ] --|
+   Method <CSF2013$Report.getContent() : java.lang.String [+]> returns value with 'high' security level at source line 19. Expected was 'low' or weaker.
+   |-- [ SIDE-EFFECT(CSF2013.java:36) ] --|
+   In method <CSF2013$Worker.<init>(arg0 : java.lang.String) : void [+]> at source line 36 a write effect to 'low' occurs caused by an assignment to the field <CSF2013$Worker.dest : java.lang.String [-]>.
+   |-- [ SIDE-EFFECT(CSF2013.java:45) ] --|
+   In method <CSF2013.<clinit>() : void [?]> at source line 45 a write effect to 'low' occurs caused by an assignment to the field <CSF2013.highInfo : exgradual.CSF2013$Report [-]>.
+   |-- [ SIDE-EFFECT(CSF2013.java:47) ] --|
+   In method <CSF2013.<clinit>() : void [?]> at source line 47 a write effect to 'low' occurs caused by an assignment to the field <CSF2013.manager : exgradual.CSF2013$Worker [-]>.
+   |-- [ SIDE-EFFECT(CSF2013.java:49) ] --|
+   In method <CSF2013.<clinit>() : void [?]> at source line 49 a write effect to 'low' occurs caused by an assignment to the field <CSF2013.facebook : exgradual.CSF2013$Worker [-]>.
+   |-- [ SIDE-EFFECT(CSF2013.java:52) ] --|
+   In method <CSF2013.<clinit>() : void [?]> at source line 52 a write effect to 'high' occurs caused by an assignment to the field <CSF2013.r1 : exgradual.CSF2013$Report [-]>.
+   |-- [ SIDE-EFFECT(CSF2013.java:54) ] --|
+   In method <CSF2013.<clinit>() : void [?]> at source line 54 a write effect to 'low' occurs caused by an assignment to the field <CSF2013.r2 : exgradual.CSF2013$Report [-]>.
+   |-- [ SIDE-EFFECT(CSF2013.java:56) ] --|
+   In method <CSF2013.<clinit>() : void [?]> at source line 56 a write effect to 'low' occurs caused by an assignment to the field <CSF2013.r3 : exgradual.CSF2013$Report [-]>.
+   |-- [ SIDE-EFFECT(CSF2013.java:58) ] --|
+   In method <CSF2013.<clinit>() : void [?]> at source line 58 a write effect to 'low' occurs caused by an assignment to the field <CSF2013.r4 : exgradual.CSF2013$Report [-]>.

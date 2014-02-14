@@ -1,0 +1,21 @@
+public static class analysisSuccess.SuccessObject$FieldObject extends java.lang.Object
+{
+    public int low;
+    public int high;
+
+    public void <init>()
+    {
+        analysisSuccess.SuccessObject$FieldObject this;
+
+        this := @this: analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        this.<analysisSuccess.SuccessObject$FieldObject: int low> = 42;
+        this.<analysisSuccess.SuccessObject$FieldObject: int high> = 42;
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

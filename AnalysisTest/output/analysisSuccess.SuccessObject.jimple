@@ -1,0 +1,624 @@
+public class analysisSuccess.SuccessObject extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public int accessFieldLow()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$FieldObject temp$0;
+        int temp$1;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$1 = temp$0.<analysisSuccess.SuccessObject$FieldObject: int low>;
+        return temp$1;
+    }
+
+    public int accessFieldLow2()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$FieldObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$FieldObject) temp$1;
+        temp$3 = temp$2.<analysisSuccess.SuccessObject$FieldObject: int low>;
+        return temp$3;
+    }
+
+    public int accessFieldLow3()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$FieldObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$FieldObject) temp$1;
+        temp$3 = temp$2.<analysisSuccess.SuccessObject$FieldObject: int low>;
+        return temp$3;
+    }
+
+    public int accessFieldLow4()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$FieldObject temp$0;
+        int temp$1;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$1 = temp$0.<analysisSuccess.SuccessObject$FieldObject: int low>;
+        return temp$1;
+    }
+
+    public int accessFieldHigh()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$FieldObject temp$0;
+        int temp$1;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$1 = temp$0.<analysisSuccess.SuccessObject$FieldObject: int high>;
+        return temp$1;
+    }
+
+    public int accessFieldHigh2()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$FieldObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$FieldObject) temp$1;
+        temp$3 = temp$2.<analysisSuccess.SuccessObject$FieldObject: int high>;
+        return temp$3;
+    }
+
+    public int accessFieldHigh3()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$FieldObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$FieldObject) temp$1;
+        temp$3 = temp$2.<analysisSuccess.SuccessObject$FieldObject: int high>;
+        return temp$3;
+    }
+
+    public int accessStaticFieldLow()
+    {
+        analysisSuccess.SuccessObject this;
+        int temp$0;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = <analysisSuccess.SuccessObject$StaticFieldObject: int low>;
+        return temp$0;
+    }
+
+    public int accessStaticFieldLow2()
+    {
+        analysisSuccess.SuccessObject this;
+        int temp$0;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = <analysisSuccess.SuccessObject$StaticFieldObject: int low>;
+        return temp$0;
+    }
+
+    public int accessStaticFieldHigh()
+    {
+        analysisSuccess.SuccessObject this;
+        int temp$0;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = <analysisSuccess.SuccessObject$StaticFieldObject: int high>;
+        return temp$0;
+    }
+
+    public void assignFieldLow()
+    {
+        analysisSuccess.SuccessObject this;
+        int low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        analysisSuccess.SuccessObject$FieldObject temp$4;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$4.<analysisSuccess.SuccessObject$FieldObject: int low> = low;
+        return;
+    }
+
+    public void assignFieldLow2()
+    {
+        analysisSuccess.SuccessObject this;
+        int low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$FieldObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$FieldObject) temp$5;
+        temp$6.<analysisSuccess.SuccessObject$FieldObject: int low> = low;
+        return;
+    }
+
+    public void assignFieldHigh()
+    {
+        analysisSuccess.SuccessObject this;
+        int high;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        analysisSuccess.SuccessObject$FieldObject temp$4;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$4.<analysisSuccess.SuccessObject$FieldObject: int high> = high;
+        return;
+    }
+
+    public void assignFieldHigh2()
+    {
+        analysisSuccess.SuccessObject this;
+        int high;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$FieldObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$FieldObject) temp$5;
+        temp$6.<analysisSuccess.SuccessObject$FieldObject: int high> = high;
+        return;
+    }
+
+    public void assignFieldHigh3()
+    {
+        analysisSuccess.SuccessObject this;
+        int low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        analysisSuccess.SuccessObject$FieldObject temp$4;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$4.<analysisSuccess.SuccessObject$FieldObject: int high> = low;
+        return;
+    }
+
+    public void assignFieldHigh4()
+    {
+        analysisSuccess.SuccessObject this;
+        int low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$FieldObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$FieldObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$FieldObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$FieldObject) temp$5;
+        temp$6.<analysisSuccess.SuccessObject$FieldObject: int high> = low;
+        return;
+    }
+
+    public int invokeSimpleLowMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$MethodObject temp$0;
+        int temp$1;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$1 = virtualinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: int returnLowSecurity()>();
+        return temp$1;
+    }
+
+    public int invokeSimpleLowMethod2()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$MethodObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$MethodObject) temp$1;
+        temp$3 = virtualinvoke temp$2.<analysisSuccess.SuccessObject$MethodObject: int returnLowSecurity()>();
+        return temp$3;
+    }
+
+    public int invokeSimpleLowMethod3()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$MethodObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$MethodObject) temp$1;
+        temp$3 = virtualinvoke temp$2.<analysisSuccess.SuccessObject$MethodObject: int returnLowSecurity()>();
+        return temp$3;
+    }
+
+    public int invokeSimpleHighMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$MethodObject temp$0;
+        int temp$1;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$1 = virtualinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity()>();
+        return temp$1;
+    }
+
+    public int invokeSimpleHighMethod2()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$MethodObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$MethodObject) temp$1;
+        temp$3 = virtualinvoke temp$2.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity()>();
+        return temp$3;
+    }
+
+    public int invokeSimpleHighMethod3()
+    {
+        analysisSuccess.SuccessObject this;
+        analysisSuccess.SuccessObject$MethodObject temp$0, temp$2;
+        java.lang.Object temp$1;
+        int temp$3;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$0.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$1 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$0);
+        temp$2 = (analysisSuccess.SuccessObject$MethodObject) temp$1;
+        temp$3 = virtualinvoke temp$2.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity()>();
+        return temp$3;
+    }
+
+    public int invokeLowMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        analysisSuccess.SuccessObject$MethodObject temp$4;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = virtualinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: int returnLowSecurity(int)>(low);
+        return temp$5;
+    }
+
+    public int invokeLowMethod2()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$7;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$MethodObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$MethodObject) temp$5;
+        temp$7 = virtualinvoke temp$6.<analysisSuccess.SuccessObject$MethodObject: int returnLowSecurity(int)>(low);
+        return temp$7;
+    }
+
+    public int invokeLowMethod3()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$7;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$MethodObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$MethodObject) temp$5;
+        temp$7 = virtualinvoke temp$6.<analysisSuccess.SuccessObject$MethodObject: int returnLowSecurity(int)>(low);
+        return temp$7;
+    }
+
+    public int invokeHighMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        int high, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        analysisSuccess.SuccessObject$MethodObject temp$4;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = virtualinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity(int)>(high);
+        return temp$5;
+    }
+
+    public int invokeHighMethod2()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        analysisSuccess.SuccessObject$MethodObject temp$4;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = virtualinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity(int)>(low);
+        return temp$5;
+    }
+
+    public int invokeHighMethod3()
+    {
+        analysisSuccess.SuccessObject this;
+        int high, temp$7;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$MethodObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$MethodObject) temp$5;
+        temp$7 = virtualinvoke temp$6.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity(int)>(high);
+        return temp$7;
+    }
+
+    public int invokeHighMethod4()
+    {
+        analysisSuccess.SuccessObject this;
+        int high, temp$7;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$MethodObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$MethodObject) temp$5;
+        temp$7 = virtualinvoke temp$6.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity(int)>(high);
+        return temp$7;
+    }
+
+    public int invokeHighMethod5()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$7;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$5;
+        analysisSuccess.SuccessObject$MethodObject temp$4, temp$6;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = new analysisSuccess.SuccessObject$MethodObject;
+        specialinvoke temp$4.<analysisSuccess.SuccessObject$MethodObject: void <init>()>();
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (analysisSuccess.SuccessObject$MethodObject) temp$5;
+        temp$7 = virtualinvoke temp$6.<analysisSuccess.SuccessObject$MethodObject: int returnHighSecurity(int)>(low);
+        return temp$7;
+    }
+
+    public int invokeSimpleLowStaticMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        int temp$0;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = staticinvoke <analysisSuccess.SuccessObject$StaticMethodObject: int returnLowSecurity()>();
+        return temp$0;
+    }
+
+    public int invokeSimpleLowStaticMethod2()
+    {
+        analysisSuccess.SuccessObject this;
+        int temp$0;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = staticinvoke <analysisSuccess.SuccessObject$StaticMethodObject: int returnLowSecurity()>();
+        return temp$0;
+    }
+
+    public int invokeSimpleHighStaticMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        int temp$0;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$0 = staticinvoke <analysisSuccess.SuccessObject$StaticMethodObject: int returnHighSecurity()>();
+        return temp$0;
+    }
+
+    public int invokeLowStaticMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <analysisSuccess.SuccessObject$StaticMethodObject: int returnLowSecurity(int)>(low);
+        return temp$4;
+    }
+
+    public int invokeLowStaticMethod2()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <analysisSuccess.SuccessObject$StaticMethodObject: int returnLowSecurity(int)>(low);
+        return temp$4;
+    }
+
+    public int invokeHighStaticMethod()
+    {
+        analysisSuccess.SuccessObject this;
+        int high, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <analysisSuccess.SuccessObject$StaticMethodObject: int returnHighSecurity(int)>(high);
+        return temp$4;
+    }
+
+    public int invokeHighStaticMethod2()
+    {
+        analysisSuccess.SuccessObject this;
+        int low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessObject;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <analysisSuccess.SuccessObject$StaticMethodObject: int returnHighSecurity(int)>(low);
+        return temp$4;
+    }
+
+    public void <init>()
+    {
+        analysisSuccess.SuccessObject this;
+
+        this := @this: analysisSuccess.SuccessObject;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

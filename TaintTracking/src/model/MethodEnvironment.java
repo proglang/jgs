@@ -5,15 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import logging.SecurityLogger;
-import main.Configuration;
+import resource.Configuration;
+import resource.SecurityMessages;
 import security.Annotations;
 import security.LevelEquation;
 import security.LevelEquationVisitor.LevelEquationValidityVistitor;
-import security.SecurityAnnotation;
+import security.LevelMediator;
 import soot.SootMethod;
 import soot.Type;
-import utils.SecurityMessages;
 import utils.SootUtils;
 import exception.SootException.InvalidEquationException;
 import exception.SootException.InvalidLevelException;
@@ -185,7 +186,7 @@ public class MethodEnvironment extends Environment {
 	 * @param methodWriteEffects
 	 * @param classWriteEffects
 	 * @param log
-	 * @param securityAnnotation
+	 * @param mediator
 	 */
 	public MethodEnvironment(SootMethod sootMethod, boolean isIdFunction,
 			boolean isClinit, boolean isInit, boolean isVoid,
@@ -193,9 +194,9 @@ public class MethodEnvironment extends Environment {
 			List<MethodParameter> parameterSecurityLevel,
 			String returnSecurityLevel, List<String> methodWriteEffects,
 			List<String> classWriteEffects, SecurityLogger log,
-			SecurityAnnotation securityAnnotation) {
+			LevelMediator mediator) {
 
-		super(log, securityAnnotation);
+		super(log, mediator);
 		this.sootMethod = sootMethod;
 		this.isIdFunction = isIdFunction;
 		this.isClinit = isClinit;
@@ -441,9 +442,9 @@ public class MethodEnvironment extends Environment {
 				Configuration.METHOD_SIGNATURE_PRINT_TYPE,
 				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
 		boolean reasonability = true;
-		if (!getSecurityAnnotation().checkValidityOfParameterLevels(
+		if (!getLevelMediator().checkValidityOfParameterLevels(
 				getListOfParameterLevels())) {
-			for (String level : getSecurityAnnotation()
+			for (String level : getLevelMediator()
 					.getInvalidParameterLevels(getListOfParameterLevels())) {
 				logError(SecurityMessages.invalidParameterLevel(
 						methodSignature, level));
@@ -451,7 +452,7 @@ public class MethodEnvironment extends Environment {
 			reasonability = false;
 		}
 		if (isVoid) {
-			if (!returnLevel.equals(SecurityAnnotation.VOID_LEVEL)) {
+			if (!returnLevel.equals(LevelMediator.VOID_LEVEL)) {
 				// if (returnLevel != null)
 				// TODO: Logging (Void but has a return security level)
 				reasonability = false;
@@ -462,13 +463,13 @@ public class MethodEnvironment extends Environment {
 				reasonability = false;
 			}
 			try {
-				LevelEquationValidityVistitor visitor = getSecurityAnnotation()
+				LevelEquationValidityVistitor visitor = getLevelMediator()
 						.checkValidityOfReturnLevel(returnLevel,
 								getListOfParameterLevels());
 				if (visitor.isValid()) {
 					if (visitor.isVoidInvalid()) {
 						logError(SecurityMessages.incompatibaleParameterLevels(
-								methodSignature, SecurityAnnotation.VOID_LEVEL));
+								methodSignature, LevelMediator.VOID_LEVEL));
 						reasonability = false;
 					} else {
 						this.returnLevelEquation = visitor.getLevelEquation();
@@ -493,8 +494,8 @@ public class MethodEnvironment extends Environment {
 				reasonability = false;
 			}
 		}
-		if (!getSecurityAnnotation().checkValidityOfLevels(writeEffects)) {
-			for (String invalidEffect : getSecurityAnnotation()
+		if (!getLevelMediator().checkValidityOfLevels(writeEffects)) {
+			for (String invalidEffect : getLevelMediator()
 					.getInvalidLevels(writeEffects)) {
 				logError(SecurityMessages.invalidWriteEffect(methodSignature,
 						invalidEffect));

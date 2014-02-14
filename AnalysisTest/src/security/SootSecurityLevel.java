@@ -1,5 +1,6 @@
 package security;
 
+
 public class SootSecurityLevel extends SecurityLevel {
 
 	@Override

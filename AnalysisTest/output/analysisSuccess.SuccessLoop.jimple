@@ -1,0 +1,1194 @@
+public class analysisSuccess.SuccessLoop extends java.lang.Object
+{
+    int lowField;
+    int highField;
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public void forLoopField(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, i, temp$4, temp$6;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        i = 0;
+
+     label0:
+        if i < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void forLoopField5(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, i, temp$4, temp$6;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void forLoopField6(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, i, temp$4, temp$6;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void forLoopField8(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, i, temp$4, temp$6;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int lowField> = temp$4;
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public int forLoopLocal(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1High, i, temp$8, temp$10;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        i = 0;
+
+     label0:
+        if i < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        temp$8 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        var1High = temp$8;
+        temp$10 = i + 1;
+        i = temp$10;
+        goto label0;
+
+     label2:
+        return var1High;
+    }
+
+    public int forLoopLocal3(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1Low, i, temp$8, temp$10;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        i = 0;
+
+     label0:
+        if i < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        temp$8 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        var1Low = temp$8;
+        temp$10 = i + 1;
+        i = temp$10;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int forLoopLocal5(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1High, i, temp$8, temp$10;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        temp$8 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        var1High = temp$8;
+        temp$10 = i + 1;
+        i = temp$10;
+        goto label0;
+
+     label2:
+        return var1High;
+    }
+
+    public int forLoopLocal6(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1High, i, temp$8, temp$10;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        temp$8 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        var1High = temp$8;
+        temp$10 = i + 1;
+        i = temp$10;
+        goto label0;
+
+     label2:
+        return var1High;
+    }
+
+    public int forLoopLocal7(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, i, temp$8, temp$10;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        temp$8 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        var1Low = temp$8;
+        temp$10 = i + 1;
+        i = temp$10;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int forLoopLocal8(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, i, temp$8, temp$10;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        temp$8 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        var1Low = temp$8;
+        temp$10 = i + 1;
+        i = temp$10;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int forLoopLocal16(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, i, temp$8, temp$10;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        temp$8 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        var1Low = temp$8;
+        temp$10 = i + 1;
+        i = temp$10;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public void whileLoopField(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1High, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        temp$5 = var1High + 1;
+        var1High = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField2(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1Low, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        temp$5 = var1Low + 1;
+        var1Low = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField3(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1High, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        temp$5 = var1High + 1;
+        var1High = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField4(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1Low, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        temp$5 = var1Low + 1;
+        var1Low = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField9(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1High, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        temp$5 = var1High + 1;
+        var1High = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField10(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        temp$5 = var1Low + 1;
+        var1Low = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField11(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1High, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        temp$5 = var1High + 1;
+        var1High = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField12(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        temp$5 = var1Low + 1;
+        var1Low = temp$5;
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField14(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        temp$5 = var1Low + 1;
+        var1Low = temp$5;
+        this.<analysisSuccess.SuccessLoop: int lowField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public void whileLoopField16(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4, temp$5;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        temp$5 = var1Low + 1;
+        var1Low = temp$5;
+        this.<analysisSuccess.SuccessLoop: int lowField> = temp$4;
+        goto label0;
+
+     label2:
+        return;
+    }
+
+    public int whileLoopLocal(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1High, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        var1High = temp$4;
+        goto label0;
+
+     label2:
+        return var1High;
+    }
+
+    public int whileLoopLocal2(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1High, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        var1High = temp$4;
+        goto label0;
+
+     label2:
+        return var1High;
+    }
+
+    public int whileLoopLocal3(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1Low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        var1Low = temp$4;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int whileLoopLocal4(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, var1Low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1High goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        var1Low = temp$4;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int whileLoopLocal5(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1High, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        var1High = temp$4;
+        goto label0;
+
+     label2:
+        return var1High;
+    }
+
+    public int whileLoopLocal6(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1High, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1High = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1High < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1High;
+        var1High = temp$4;
+        goto label0;
+
+     label2:
+        return var1High;
+    }
+
+    public int whileLoopLocal7(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        var1Low = temp$4;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int whileLoopLocal8(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        var1Low = temp$4;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int whileLoopLocal15(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        var1Low = temp$4;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public int whileLoopLocal16(int)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, var1Low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var1Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+
+     label0:
+        if var1Low < arg1Low goto label1;
+
+        goto label2;
+
+     label1:
+        temp$4 = var1Low;
+        var1Low = temp$4;
+        goto label0;
+
+     label2:
+        return var1Low;
+    }
+
+    public void forLoopField(int, boolean)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, i, temp$4, temp$6;
+        boolean arg2High;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        arg2High := @parameter1: boolean;
+        i = 0;
+
+     label0:
+        if i < arg1High goto label1;
+
+        goto label3;
+
+     label1:
+        if arg2High == 0 goto label2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+
+     label2:
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label3:
+        return;
+    }
+
+    public void forLoopField5(int, boolean)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1High, i, temp$4, temp$6;
+        boolean arg2Low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1High := @parameter0: int;
+        arg2Low := @parameter1: boolean;
+        i = 0;
+
+     label0:
+        if i < arg1High goto label1;
+
+        goto label3;
+
+     label1:
+        if arg2Low == 0 goto label2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+
+     label2:
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label3:
+        return;
+    }
+
+    public void forLoopField9(int, boolean)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, i, temp$4, temp$6;
+        boolean arg2High;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        arg2High := @parameter1: boolean;
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label3;
+
+     label1:
+        if arg2High == 0 goto label2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+
+     label2:
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label3:
+        return;
+    }
+
+    public void forLoopField13(int, boolean)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, i, temp$4, temp$6;
+        boolean arg2Low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        arg2Low := @parameter1: boolean;
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label3;
+
+     label1:
+        if arg2Low == 0 goto label2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+
+     label2:
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label3:
+        return;
+    }
+
+    public void forLoopField14(int, boolean)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, i, temp$4, temp$6;
+        boolean arg2Low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        arg2Low := @parameter1: boolean;
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label3;
+
+     label1:
+        if arg2Low == 0 goto label2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$4;
+
+     label2:
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label3:
+        return;
+    }
+
+    public void forLoopField16(int, boolean)
+    {
+        analysisSuccess.SuccessLoop this;
+        int arg1Low, i, temp$4, temp$6;
+        boolean arg2Low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        arg1Low := @parameter0: int;
+        arg2Low := @parameter1: boolean;
+        i = 0;
+
+     label0:
+        if i < arg1Low goto label1;
+
+        goto label3;
+
+     label1:
+        if arg2Low == 0 goto label2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int lowField> = temp$4;
+
+     label2:
+        temp$6 = i + 1;
+        i = temp$6;
+        goto label0;
+
+     label3:
+        return;
+    }
+
+    public void <init>()
+    {
+        analysisSuccess.SuccessLoop this;
+        java.lang.Integer temp$1, temp$3, temp$6, temp$8;
+        java.lang.Object temp$2, temp$7;
+        int temp$4, temp$9;
+
+        this := @this: analysisSuccess.SuccessLoop;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int lowField> = temp$4;
+        temp$6 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$7 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$6);
+        temp$8 = (java.lang.Integer) temp$7;
+        temp$9 = virtualinvoke temp$8.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessLoop: int highField> = temp$9;
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

@@ -1,7 +1,7 @@
 package analysisSuccess;
 
-import security.SootSecurityLevel;
 import security.Annotations;
+import security.SootSecurityLevel;
 import security.Annotations.ParameterSecurity;
 
 public class SuccessLoop {

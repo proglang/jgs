@@ -1,0 +1,69 @@
+public class annotationValidity.Valid04 extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public static void voidMethod()
+    {
+        return;
+    }
+
+    public static void voidMethodInclusivParameter(int)
+    {
+        int arg;
+
+        arg := @parameter0: int;
+        return;
+    }
+
+    public static void voidMethodInclusivParameter(int, int)
+    {
+        int arg1, arg2;
+
+        arg1 := @parameter0: int;
+        arg2 := @parameter1: int;
+        return;
+    }
+
+    public static int method()
+    {
+        return 42;
+    }
+
+    public static int methodInclusivParameter(int)
+    {
+        int arg;
+
+        arg := @parameter0: int;
+        return arg;
+    }
+
+    public static int methodInclusivParameter(int, int)
+    {
+        int arg1, arg2;
+
+        arg1 := @parameter0: int;
+        arg2 := @parameter1: int;
+        return arg1;
+    }
+
+    public void <init>()
+    {
+        annotationValidity.Valid04 this;
+
+        this := @this: annotationValidity.Valid04;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

@@ -1,0 +1,3563 @@
+public class analysisSuccess.SuccessIfElse extends java.lang.Object
+{
+    int lowField;
+    int highField;
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public void <init>()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$6, temp$8;
+        java.lang.Object temp$2, temp$7;
+        int temp$4, temp$9;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessIfElse: int lowField> = temp$4;
+        temp$6 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$7 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$6);
+        temp$8 = (java.lang.Integer) temp$7;
+        temp$9 = virtualinvoke temp$8.<java.lang.Integer: int intValue()>();
+        this.<analysisSuccess.SuccessIfElse: int highField> = temp$9;
+        return;
+    }
+
+    public int ifReturnExpr()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$12 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$12 = elseHigh;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$12 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$12 = elseHigh;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$12 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$12 = elseLow;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$12 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$12 = elseLow;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$12 = thenLow;
+        goto label1;
+
+     label0:
+        temp$12 = elseHigh;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$12 = thenLow;
+        goto label1;
+
+     label0:
+        temp$12 = elseHigh;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr7()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$12 = thenLow;
+        goto label1;
+
+     label0:
+        temp$12 = elseLow;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr8()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$12 = thenLow;
+        goto label1;
+
+     label0:
+        temp$12 = elseLow;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturnExpr9()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$12 = thenLow;
+        goto label1;
+
+     label0:
+        temp$12 = elseLow;
+
+     label1:
+        return temp$12;
+    }
+
+    public int ifReturn()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifReturn2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifReturn3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifReturn4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifReturn5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifReturn6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifReturn7()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifReturn8()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifReturn9()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifElseReturn()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifElseReturn2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifElseReturn3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifElseReturn4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenHigh;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifElseReturn5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifElseReturn6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseHigh;
+    }
+
+    public int ifElseReturn7()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifElseReturn8()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifElseReturn9()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        return thenLow;
+
+     label0:
+        return elseLow;
+    }
+
+    public int ifElseAssign()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign7()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign8()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign9()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign10()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign11()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign12()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign13()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign14()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign15()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign16()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign17()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssign18()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        return result;
+    }
+
+    public int ifElseAssignField()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenHigh;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseHigh;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenHigh;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseHigh;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenHigh;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseLow;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenHigh;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseLow;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenLow;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseHigh;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseHigh, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenLow;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseHigh;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField7()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionHigh;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionHigh = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenLow;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseLow;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField8()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenLow;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = elseLow;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField9()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int lowField> = thenLow;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int lowField> = elseLow;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int lowField>;
+        return temp$12;
+    }
+
+    public int ifElseAssignField10()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, elseLow, temp$12;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6, temp$10;
+        boolean conditionLow;
+        java.lang.Boolean temp$9, temp$11;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        elseLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Boolean) temp$10;
+        conditionLow = virtualinvoke temp$11.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int lowField> = thenLow;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int lowField> = elseLow;
+
+     label1:
+        temp$12 = this.<analysisSuccess.SuccessIfElse: int lowField>;
+        return temp$12;
+    }
+
+    public int ifAssign()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, temp$8;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionHigh;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionHigh = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenHigh;
+
+     label0:
+        temp$8 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$8;
+    }
+
+    public int ifAssign2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenHigh, temp$8;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionLow;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenHigh = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionLow = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenHigh;
+
+     label0:
+        temp$8 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$8;
+    }
+
+    public int ifAssign3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, temp$8;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionHigh;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionHigh = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenLow;
+
+     label0:
+        temp$8 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$8;
+    }
+
+    public int ifAssign4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, temp$8;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionLow;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionLow = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = thenLow;
+
+     label0:
+        temp$8 = this.<analysisSuccess.SuccessIfElse: int highField>;
+        return temp$8;
+    }
+
+    public int ifAssign5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, temp$8;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionLow;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionLow = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int lowField> = thenLow;
+
+     label0:
+        temp$8 = this.<analysisSuccess.SuccessIfElse: int lowField>;
+        return temp$8;
+    }
+
+    public int ifAssign6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int thenLow, temp$8;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2, temp$6;
+        boolean conditionLow;
+        java.lang.Boolean temp$5, temp$7;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        thenLow = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Boolean) temp$6;
+        conditionLow = virtualinvoke temp$7.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int lowField> = thenLow;
+
+     label0:
+        temp$8 = this.<analysisSuccess.SuccessIfElse: int lowField>;
+        return temp$8;
+    }
+
+    public int ifExprAssign()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseHigh, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseHigh, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseHigh, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseHigh, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseLow, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseLow, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign7()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseLow, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign8()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenHigh, elseLow, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenHigh;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign9()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseHigh, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign10()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseHigh, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign11()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseHigh, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign12()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseHigh, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseHigh;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign13()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseLow, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign14()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseLow, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign15()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseLow, temp$16;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign16()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseLow, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign17()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseLow, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public int ifExprAssign18()
+    {
+        analysisSuccess.SuccessIfElse this;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        int thenLow, elseLow, temp$16;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        temp$16 = thenLow;
+        goto label1;
+
+     label0:
+        temp$16 = elseLow;
+
+     label1:
+        return temp$16;
+    }
+
+    public void ifElseAssignLocalField()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField2()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField3()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField4()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField5()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField6()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField7()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField8()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField9()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int lowField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField10()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField11()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField12()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField13()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenHigh, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenHigh = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenHigh;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField14()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField15()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseHigh;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseHigh = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseHigh;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField16()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionHigh;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionHigh = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionHigh == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField17()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = result;
+        return;
+    }
+
+    public void ifElseAssignLocalField18()
+    {
+        analysisSuccess.SuccessIfElse this;
+        int result, thenLow, elseLow;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7, temp$9, temp$11;
+        java.lang.Object temp$2, temp$6, temp$10, temp$14;
+        boolean conditionLow;
+        java.lang.Boolean temp$13, temp$15;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        thenLow = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$9 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$10 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$9);
+        temp$11 = (java.lang.Integer) temp$10;
+        elseLow = virtualinvoke temp$11.<java.lang.Integer: int intValue()>();
+        temp$13 = staticinvoke <java.lang.Boolean: java.lang.Boolean valueOf(boolean)>(0);
+        temp$14 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$13);
+        temp$15 = (java.lang.Boolean) temp$14;
+        conditionLow = virtualinvoke temp$15.<java.lang.Boolean: boolean booleanValue()>();
+        if conditionLow == 0 goto label0;
+
+        result = thenLow;
+        goto label1;
+
+     label0:
+        result = elseLow;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int lowField> = result;
+        return;
+    }
+
+    public void ifIf(boolean, boolean)
+    {
+        analysisSuccess.SuccessIfElse this;
+        boolean var1Low, var2Low;
+        int var3Low, var4Low;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        var1Low := @parameter0: boolean;
+        var2Low := @parameter1: boolean;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var3Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        var4Low = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        if var1Low == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = var3Low;
+        this.<analysisSuccess.SuccessIfElse: int lowField> = var3Low;
+
+     label0:
+        if var2Low == 0 goto label1;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = var4Low;
+        this.<analysisSuccess.SuccessIfElse: int lowField> = var4Low;
+
+     label1:
+        return;
+    }
+
+    public void ifDoubleCond(boolean, boolean)
+    {
+        analysisSuccess.SuccessIfElse this;
+        boolean var1Low, var2Low;
+        int var3Low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        var1Low := @parameter0: boolean;
+        var2Low := @parameter1: boolean;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var3Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        if var1Low == 0 goto label0;
+
+        if var2Low == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = var3Low;
+        this.<analysisSuccess.SuccessIfElse: int lowField> = var3Low;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = var3Low;
+        this.<analysisSuccess.SuccessIfElse: int lowField> = var3Low;
+        return;
+    }
+
+    public void ifElseDoubleCond(boolean, boolean)
+    {
+        analysisSuccess.SuccessIfElse this;
+        boolean var1Low, var2Low;
+        int var3Low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessIfElse;
+        var1Low := @parameter0: boolean;
+        var2Low := @parameter1: boolean;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        var3Low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        if var1Low == 0 goto label0;
+
+        if var2Low == 0 goto label0;
+
+        this.<analysisSuccess.SuccessIfElse: int highField> = var3Low;
+        this.<analysisSuccess.SuccessIfElse: int lowField> = var3Low;
+        goto label1;
+
+     label0:
+        this.<analysisSuccess.SuccessIfElse: int highField> = var3Low;
+        this.<analysisSuccess.SuccessIfElse: int lowField> = var3Low;
+
+     label1:
+        this.<analysisSuccess.SuccessIfElse: int highField> = var3Low;
+        this.<analysisSuccess.SuccessIfElse: int lowField> = var3Low;
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

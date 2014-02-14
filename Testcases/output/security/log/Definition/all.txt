@@ -1,0 +1,6 @@
+   |-- [ SECURITY-CHECKER ] --|
+   The implementation of the SootSecurityLevel class is invalid.
+   Exception in thread "main" exception.SootException$SecurityLevelException: Couldn't compile the file 'security/SootSecurityLevel.java'.
+      at security.ExtendedSecurityLevelImplChecker.getExtendedSecurityLevelImplChecker(ExtendedSecurityLevelImplChecker.java:89)
+      at main.Main.execute(Main.java:143)
+      at main.Main.main(Main.java:114)

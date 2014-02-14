@@ -1,0 +1,36 @@
+public class annotationValidity.Invalid06 extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public int methodInclusivParameter(int, int)
+    {
+        annotationValidity.Invalid06 this;
+        int arg1, arg2;
+
+        this := @this: annotationValidity.Invalid06;
+        arg1 := @parameter0: int;
+        arg2 := @parameter1: int;
+        return arg1;
+    }
+
+    public void <init>()
+    {
+        annotationValidity.Invalid06 this;
+
+        this := @this: annotationValidity.Invalid06;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

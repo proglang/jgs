@@ -1,0 +1,365 @@
+public class analysisFail.FailStaticMethod extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public static int failingSimpleLowSecurityMethod()
+    {
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        int temp$4;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return temp$4;
+    }
+
+    public static int simpleHighSecurityMethod()
+    {
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+        int temp$4;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return temp$4;
+    }
+
+    public static int failingInvokeSimpleHighSecurityMethod()
+    {
+        int temp$0;
+
+        temp$0 = staticinvoke <analysisFail.FailStaticMethod: int simpleHighSecurityMethod()>();
+        return temp$0;
+    }
+
+    public static void oneLowParameterVoidMethod(int)
+    {
+        int low;
+
+        low := @parameter0: int;
+        return;
+    }
+
+    public static void failingInvokeOneLowParameterVoidMethod()
+    {
+        int high;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        staticinvoke <analysisFail.FailStaticMethod: void oneLowParameterVoidMethod(int)>(high);
+        return;
+    }
+
+    public static int oneLowParameterLowMethod(int)
+    {
+        int low;
+
+        low := @parameter0: int;
+        return low;
+    }
+
+    public static int failingInvokeOneLowParameterLowMethod()
+    {
+        int high, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <analysisFail.FailStaticMethod: int oneLowParameterLowMethod(int)>(high);
+        return temp$4;
+    }
+
+    public static int oneLowParameterHighMethod(int)
+    {
+        int low, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        low := @parameter0: int;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        temp$4 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return temp$4;
+    }
+
+    public static int failingInvokeOneLowParameterHighMethod()
+    {
+        int high, temp$4;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <analysisFail.FailStaticMethod: int oneLowParameterHighMethod(int)>(high);
+        return temp$4;
+    }
+
+    public static int twoLowLowParameterLowMethod(int, int)
+    {
+        int low1, low2;
+
+        low1 := @parameter0: int;
+        low2 := @parameter1: int;
+        return low1;
+    }
+
+    public static int failingInvokeTwoLowLowParameterLowMethod()
+    {
+        int high, low, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoLowLowParameterLowMethod(int,int)>(high, low);
+        return temp$8;
+    }
+
+    public static int failingInvokeTwoLowLowParameterLowMethod2()
+    {
+        int high, low, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        low = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoLowLowParameterLowMethod(int,int)>(low, high);
+        return temp$8;
+    }
+
+    public static int failingInvokeTwoLowLowParameterLowMethod3()
+    {
+        int high1, high2, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoLowLowParameterLowMethod(int,int)>(high1, high2);
+        return temp$8;
+    }
+
+    public static int twoLowHighParameterLowMethod(int, int)
+    {
+        int low, high;
+
+        low := @parameter0: int;
+        high := @parameter1: int;
+        return low;
+    }
+
+    public static int failingInvokeTwoLowHighParameterLowMethod()
+    {
+        int low, high, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoLowHighParameterLowMethod(int,int)>(high, low);
+        return temp$8;
+    }
+
+    public static int failingInvokeTwoLowHighParameterLowMethod2()
+    {
+        int high1, high2, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoLowHighParameterLowMethod(int,int)>(high1, high2);
+        return temp$8;
+    }
+
+    public static int twoHighLowParameterHighMethod(int, int)
+    {
+        int high, low;
+
+        high := @parameter0: int;
+        low := @parameter1: int;
+        return high;
+    }
+
+    public static int failingInvokeTwoHighLowParameterLowMethod()
+    {
+        int low, high, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoHighLowParameterHighMethod(int,int)>(low, high);
+        return temp$8;
+    }
+
+    public static int failingInvokeTwoHighLowParameterLowMethod2()
+    {
+        int high1, high2, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoHighLowParameterHighMethod(int,int)>(high1, high2);
+        return temp$8;
+    }
+
+    public static int failingInvokeTwoHighLowParameterLowMethod3()
+    {
+        int low, high, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoHighLowParameterHighMethod(int,int)>(high, low);
+        return temp$8;
+    }
+
+    public static int failingInvokeTwoHighLowParameterLowMethod4()
+    {
+        int low, high, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoHighLowParameterHighMethod(int,int)>(low, high);
+        return temp$8;
+    }
+
+    public static int failingInvokeTwoHighLowParameterLowMethod5()
+    {
+        int high1, high2, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoHighLowParameterHighMethod(int,int)>(high1, high2);
+        return temp$8;
+    }
+
+    public static int twoHighHighParameterHighMethod(int, int)
+    {
+        int high1, high2;
+
+        high1 := @parameter0: int;
+        high2 := @parameter1: int;
+        return high1;
+    }
+
+    public static int failingInvokeTwoHighHighParameterLowMethod()
+    {
+        int high1, high2, temp$8;
+        java.lang.Integer temp$1, temp$3, temp$5, temp$7;
+        java.lang.Object temp$2, temp$6;
+
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high1 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$6 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$5);
+        temp$7 = (java.lang.Integer) temp$6;
+        high2 = virtualinvoke temp$7.<java.lang.Integer: int intValue()>();
+        temp$8 = staticinvoke <analysisFail.FailStaticMethod: int twoHighHighParameterHighMethod(int,int)>(high1, high2);
+        return temp$8;
+    }
+
+    public void <init>()
+    {
+        analysisFail.FailStaticMethod this;
+
+        this := @this: analysisFail.FailStaticMethod;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

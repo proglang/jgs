@@ -1,0 +1,65 @@
+public class analysisFail.FailField extends java.lang.Object
+{
+    public int low;
+    public int high;
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public int returnLowSecurity()
+    {
+        analysisFail.FailField this;
+        int temp$0;
+
+        this := @this: analysisFail.FailField;
+        temp$0 = this.<analysisFail.FailField: int high>;
+        return temp$0;
+    }
+
+    public int returnLowSecurity2()
+    {
+        analysisFail.FailField this;
+        int high2;
+
+        this := @this: analysisFail.FailField;
+        high2 = this.<analysisFail.FailField: int high>;
+        return high2;
+    }
+
+    public void assignHighSecurity()
+    {
+        analysisFail.FailField this;
+        int high2;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisFail.FailField;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high2 = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        this.<analysisFail.FailField: int low> = high2;
+        return;
+    }
+
+    public void <init>()
+    {
+        analysisFail.FailField this;
+
+        this := @this: analysisFail.FailField;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        this.<analysisFail.FailField: int low> = 42;
+        this.<analysisFail.FailField: int high> = 42;
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 import logging.SecurityLogger;
-import main.Configuration;
+import resource.Configuration;
+import resource.SecurityMessages;
 import security.Annotations;
-import security.SecurityAnnotation;
+import security.LevelMediator;
 import soot.SootClass;
 import soot.SootField;
-import utils.SecurityMessages;
 import utils.SootUtils;
 
 /**
@@ -49,8 +50,8 @@ public class FieldEnvironment extends Environment {
 
 	public FieldEnvironment(SootField sootField, String level,
 			List<String> classWriteEffect, SecurityLogger log,
-			SecurityAnnotation securityAnnotation) {
-		super(log, securityAnnotation);
+			LevelMediator mediator) {
+		super(log, mediator);
 		this.sootField = sootField;
 		this.level = level;
 		this.classWriteEffects.addAll(classWriteEffect);
@@ -138,7 +139,7 @@ public class FieldEnvironment extends Environment {
 	 */
 	public boolean isReasonable() {
 		if (level != null) { // some level given
-			if (!getSecurityAnnotation().checkValidityOfLevel(level)) {
+			if (!getLevelMediator().checkValidityOfLevel(level)) {
 				// level isn't a valid security level
 				logError(SecurityMessages
 						.invalidFieldLevel(

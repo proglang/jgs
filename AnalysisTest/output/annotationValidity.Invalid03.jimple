@@ -1,0 +1,27 @@
+public class annotationValidity.Invalid03 extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public void <init>(int)
+    {
+        annotationValidity.Invalid03 this;
+        int arg;
+
+        this := @this: annotationValidity.Invalid03;
+        arg := @parameter0: int;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

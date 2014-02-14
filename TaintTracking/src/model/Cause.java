@@ -1,6 +1,6 @@
 package model;
 
-import main.Configuration;
+import resource.Configuration;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;

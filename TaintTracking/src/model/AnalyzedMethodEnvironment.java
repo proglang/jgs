@@ -9,18 +9,18 @@ import exception.SootException.InvalidLevelException;
 
 import analysis.TaintTracking;
 import logging.SecurityLogger;
-import main.Configuration;
 import model.Cause.ArrayAssignCause;
 import model.Cause.AssignCause;
 import model.Cause.ClassCause;
 import model.Cause.MethodCause;
-import security.SecurityAnnotation;
+import resource.Configuration;
+import resource.SecurityMessages;
+import security.LevelMediator;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.jimple.ArrayRef;
 import soot.jimple.Stmt;
-import utils.SecurityMessages;
 import utils.SootUtils;
 
 /**
@@ -65,7 +65,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 				.isClinit(), me.isVoid(), me.isSootSecurityMethod(), me
 				.getMethodParameters(), me.getReturnLevel(), me
 				.getWriteEffects(), me.getClassWriteEffects(), me.getLog(), me
-				.getSecurityAnnotation());
+				.getLevelMediator());
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
 		if (SootUtils.isClinitMethod(getSootMethod())) {
 			List<String> currentEffects = getClassWriteEffects();
-			String currentWeakestEffect = getSecurityAnnotation().getMinLevel(
+			String currentWeakestEffect = getLevelMediator().getMinLevel(
 					currentEffects);
 			boolean currentEmptyEffect = currentEffects.isEmpty();
 			// If clinit => effects of class
@@ -100,7 +100,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 					ClassEnvironment ce = store.getClassEnvironment(superClass);
 					List<String> superEffects = ce.getWriteEffects();
 					if (superEffects != null) {
-						String superWeakestEffect = getSecurityAnnotation()
+						String superWeakestEffect = getLevelMediator()
 								.getMinLevel(superEffects);
 						boolean superEmptyEffect = superEffects.isEmpty();
 						// A :> B
@@ -114,7 +114,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 						if (superEmptyEffect && !currentEmptyEffect) {
 							// !, because {} requires H (lightweight)
 							if (!currentWeakestEffect
-									.equals(getSecurityAnnotation()
+									.equals(getLevelMediator()
 											.getStrongestSecurityLevel())) {
 								// the write effect of current class isn't
 								// stronger or equals
@@ -133,7 +133,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 							}
 						} else if (!superEmptyEffect && !currentEmptyEffect) {
 							// ! H requires H, L requires H, L
-							if (!getSecurityAnnotation().isWeakerOrEqualsThan(
+							if (!getLevelMediator().isWeakerOrEqualsThan(
 									superWeakestEffect, currentWeakestEffect)) {
 								// the write effect of current class isn't
 								// stronger or equals
@@ -174,7 +174,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 			SootMethod superMethod = superClass != null ? superClass
 					.getMethod(getSootMethod().getSubSignature()) : null;
 			List<String> currentEffects = getWriteEffects();
-			String currentWeakestEffect = getSecurityAnnotation().getMinLevel(
+			String currentWeakestEffect = getLevelMediator().getMinLevel(
 					currentEffects);
 			boolean currentEmptyEffect = currentEffects.isEmpty();
 			if (superClass != null && superMethod != null) {
@@ -187,13 +187,13 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 					MethodEnvironment superEnvironement = store.getMethodEnvironment(superMethod);
 					List<String> superEffects = superEnvironement
 							.getWriteEffects();
-					String superWeakestEffect = getSecurityAnnotation()
+					String superWeakestEffect = getLevelMediator()
 							.getMinLevel(superEffects);
 					boolean superEmptyEffect = superEffects.isEmpty();
 					if (superEmptyEffect && !currentEmptyEffect) {
 						// !, because {} requires H (lightweight)
 						if (!currentWeakestEffect
-								.equals(getSecurityAnnotation()
+								.equals(getLevelMediator()
 										.getStrongestSecurityLevel())) {
 							// the write effect of current class isn't stronger
 							// or equals
@@ -211,7 +211,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 						}
 					} else if (!superEmptyEffect && !currentEmptyEffect) {
 						// ! H requires H, L requires H, L
-						if (!getSecurityAnnotation().isWeakerOrEqualsThan(
+						if (!getLevelMediator().isWeakerOrEqualsThan(
 								superWeakestEffect, currentWeakestEffect)) {
 							// the write effect of current class isn't stronger
 							// or equals
@@ -233,10 +233,10 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 					String returnLevelSuper = superEnvironement
 							.getReturnLevel();
 					if (!(returnLevelCurrent
-							.equals(SecurityAnnotation.VOID_LEVEL) && returnLevelSuper
-							.equals(SecurityAnnotation.VOID_LEVEL))) {
+							.equals(LevelMediator.VOID_LEVEL) && returnLevelSuper
+							.equals(LevelMediator.VOID_LEVEL))) {
 						try {
-							if (!getSecurityAnnotation().isWeakerOrEqualsThan(
+							if (!getLevelMediator().isWeakerOrEqualsThan(
 									returnLevelCurrent, returnLevelSuper)) {
 								// the return security level of current method
 								// isn't stronger or
@@ -290,7 +290,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 								String parameterLevelSuper = parameterSuper
 										.getLevel();
 								try { // TODO: Handle variable security level
-									if (!getSecurityAnnotation()
+									if (!getLevelMediator()
 											.isWeakerOrEqualsThan(
 													parameterLevelSuper,
 													parameterLevelCurrent)) {

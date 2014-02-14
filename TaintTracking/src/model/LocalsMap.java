@@ -8,7 +8,7 @@ import java.util.Map;
 
 import analysis.TaintTracking;
 
-import security.SecurityAnnotation;
+import security.LevelMediator;
 import soot.Local;
 import soot.Unit;
 import soot.jimple.IfStmt;
@@ -36,7 +36,7 @@ import exception.SootException.InvalidLevelException;
  * @author Thomas Vogel
  * @version 0.2
  * @see TaintTracking
- * @see SecurityAnnotation
+ * @see LevelMediator
  */
 public class LocalsMap {
 
@@ -140,29 +140,29 @@ public class LocalsMap {
 	 */
 	private Map<IfStmt, String> programCounter = new HashMap<IfStmt, String>();
 	/**
-	 * {@link SecurityAnnotation} object that provides the possibility to handle
+	 * {@link LevelMediator} object that provides the possibility to handle
 	 * and to compare <em>security levels</em>.
 	 */
-	private final SecurityAnnotation securityAnnotation;
+	private final LevelMediator mediator;
 
 	/**
 	 * Constructor of a {@link LocalsMap} object that requires a {@link Chain}
 	 * of locals, which are all used {@link Local} of the analyzed method. Also
-	 * the constructor requires an {@link SecurityAnnotation} object that
+	 * the constructor requires an {@link LevelMediator} object that
 	 * provides the possibility to compare and to validate
 	 * <em>security levels</em>.
 	 * 
 	 * @param chain
 	 *            Chain of all used {@link Local} in the currently analyzed
 	 *            method.
-	 * @param securityAnnotation
+	 * @param mediator
 	 *            Object that provides the possibility to compare and to
 	 *            validate <em>security levels</em>.
 	 * @see LocalsMap#addAll(Collection, Map)
 	 */
-	public LocalsMap(Chain<Local> chain, SecurityAnnotation securityAnnotation) {
+	public LocalsMap(Chain<Local> chain, LevelMediator mediator) {
 		super();
-		this.securityAnnotation = securityAnnotation;
+		this.mediator = mediator;
 		addAll(convertLocals(chain), null);
 	}
 
@@ -186,7 +186,7 @@ public class LocalsMap {
 		for (ExtendedLocal extendedLocal : locals) {
 			if (extendedLocal.getLevel() == null) {
 				localMap.put(extendedLocal.getLocal(),
-						securityAnnotation.getDefaultVariableSecurityLevel());
+						mediator.getDefaultVariableSecurityLevel());
 			} else {
 				localMap.put(extendedLocal.getLocal(), extendedLocal.getLevel());
 			}
@@ -212,16 +212,16 @@ public class LocalsMap {
 			throws InvalidLevelException {
 		for (ExtendedLocal extendedLocal : locals) {
 			if (extendedLocal.getLevel() == null) {
-				extendedLocal.setLevel(securityAnnotation
+				extendedLocal.setLevel(mediator
 						.getWeakestSecurityLevel());
 			}
 			if (localMap.containsKey(extendedLocal.getLocal())) {
 				String existingLevel = localMap.get(extendedLocal.getLocal());
 				String possibleNewLevel = extendedLocal.getLevel();
 				if (existingLevel == null)
-					existingLevel = securityAnnotation
+					existingLevel = mediator
 							.getDefaultVariableSecurityLevel();
-				if (securityAnnotation.isWeakerOrEqualsThan(existingLevel,
+				if (mediator.isWeakerOrEqualsThan(existingLevel,
 						possibleNewLevel)) {
 					localMap.put(extendedLocal.getLocal(), possibleNewLevel);
 				}
@@ -345,7 +345,7 @@ public class LocalsMap {
 	public String getStrongestProgramCounterLevel()
 			throws InvalidLevelException {
 		List<String> levels = new ArrayList<String>(programCounter.values());
-		return securityAnnotation.getMaxLevel(levels);
+		return mediator.getMaxLevel(levels);
 	}
 
 	/**

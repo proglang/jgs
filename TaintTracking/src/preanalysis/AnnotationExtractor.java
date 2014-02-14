@@ -7,7 +7,7 @@ import java.util.Map;
 
 import exception.SootException.ExtractionException;
 import exception.SootException.UnimplementedSwitchException;
-import exception.SootException.UnpreparedEnvironmentException;
+import exception.SootException.NoSuchElementException;
 
 import logging.SecurityLogger;
 import model.AnalyzedMethodEnvironment;
@@ -16,7 +16,11 @@ import model.FieldEnvironment;
 import model.MethodEnvironment;
 import model.MethodEnvironment.MethodParameter;
 
-import security.SecurityAnnotation;
+import security.LevelMediator;
+import securityNewNew.DefinitionClassLoader;
+import securityNewNew.ILevelDefinition;
+import securityNewNew.ILevelMediator;
+import securityNewNew.Mediator;
 import soot.Body;
 import soot.Local;
 import soot.Scene;
@@ -76,16 +80,16 @@ public class AnnotationExtractor extends SceneTransformer {
 		 * 
 		 * @param sootMethod
 		 * @return
-		 * @throws UnpreparedEnvironmentException
+		 * @throws NoSuchElementException
 		 */
 		public MethodEnvironment getMethodEnvironment(SootMethod sootMethod)
-				throws UnpreparedEnvironmentException {
+				throws NoSuchElementException {
 			if (methods.containsKey(sootMethod)) {
 				MethodEnvironment me = methods.get(sootMethod);
 				return me;
 			}
 			// TODO: Exception message
-			throw new UnpreparedEnvironmentException(
+			throw new NoSuchElementException(
 					"Method wasn't prepared for the analysis, i.e. the method environment doesn't exist.");
 		}
 
@@ -94,16 +98,16 @@ public class AnnotationExtractor extends SceneTransformer {
 		 * 
 		 * @param sootClass
 		 * @return
-		 * @throws UnpreparedEnvironmentException
+		 * @throws NoSuchElementException
 		 */
 		public ClassEnvironment getClassEnvironment(SootClass sootClass)
-				throws UnpreparedEnvironmentException {
+				throws NoSuchElementException {
 			if (classes.containsKey(sootClass)) {
 				ClassEnvironment ce = classes.get(sootClass);
 				return ce;
 			}
 			// TODO: Exception message
-			throw new UnpreparedEnvironmentException(
+			throw new NoSuchElementException(
 					"Class wasn't prepared for the analysis, i.e. the class environment doesn't exist.");
 		}
 
@@ -112,16 +116,16 @@ public class AnnotationExtractor extends SceneTransformer {
 		 * 
 		 * @param sootField
 		 * @return
-		 * @throws UnpreparedEnvironmentException
+		 * @throws NoSuchElementException
 		 */
 		public FieldEnvironment getFieldEnvironment(SootField sootField)
-				throws UnpreparedEnvironmentException {
+				throws NoSuchElementException {
 			if (fields.containsKey(sootField)) {
 				FieldEnvironment fe = fields.get(sootField);
 				return fe;
 			}
 			// TODO: Exception message
-			throw new UnpreparedEnvironmentException(
+			throw new NoSuchElementException(
 					"Field wasn't prepared for the analysis, i.e. the field environment doesn't exist.");
 		}
 
@@ -860,19 +864,19 @@ public class AnnotationExtractor extends SceneTransformer {
 	/**
 	 * DOC
 	 */
-	final private SecurityAnnotation securityAnnotation;
+	final private LevelMediator mediator;
 
 	/**
 	 * DOC
 	 * 
 	 * @param log
-	 * @param securityAnnotation
+	 * @param mediator
 	 */
 	public AnnotationExtractor(SecurityLogger log,
-			SecurityAnnotation securityAnnotation) {
+			LevelMediator mediator) {
 		super();
 		this.log = log;
-		this.securityAnnotation = securityAnnotation;
+		this.mediator = mediator;
 	}
 
 	/**
@@ -945,15 +949,15 @@ public class AnnotationExtractor extends SceneTransformer {
 	 */
 	private ClassEnvironment checkAndBuildClassEnvironment(SootClass sootClass) {
 		boolean isLibrary = sootClass.isJavaLibraryClass();
-		boolean hasClassWriteEffectAnnotation = securityAnnotation
+		boolean hasClassWriteEffectAnnotation = mediator
 				.hasClassWriteEffectAnnotation(sootClass);
-		boolean hasClassWriteEffects = securityAnnotation
+		boolean hasClassWriteEffects = mediator
 				.hasClassWriteEffects(sootClass);
 		List<String> classWriteEffects = new ArrayList<String>();
 		if (!isLibrary) {
 			if (hasClassWriteEffectAnnotation && hasClassWriteEffects) {
 				try {
-					classWriteEffects.addAll(securityAnnotation
+					classWriteEffects.addAll(mediator
 							.extractClassEffects(sootClass));
 				} catch (Exception e) {
 					// TODO: Logging
@@ -964,7 +968,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			}
 		} else {
 			try {
-				classWriteEffects.addAll(securityAnnotation
+				classWriteEffects.addAll(mediator
 						.getLibraryClassWriteEffects(sootClass));
 			} catch (Exception e) {
 				// TODO: Logging
@@ -974,7 +978,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			}
 		}
 		ClassEnvironment ce = new ClassEnvironment(sootClass,
-				classWriteEffects, log, securityAnnotation);
+				classWriteEffects, log, mediator);
 		return ce;
 	}
 
@@ -988,14 +992,26 @@ public class AnnotationExtractor extends SceneTransformer {
 		SootClass declaringClass = sootField.getDeclaringClass();
 		boolean isLibrary = declaringClass.isJavaLibraryClass();
 		String fieldSecurityLevel = null;
-		boolean hasFieldSecurityAnnotation = securityAnnotation
+		boolean hasFieldSecurityAnnotation = mediator
 				.hasFieldSecurityAnnotation(sootField);
-		boolean hasFieldSecurityLevel = securityAnnotation
+		boolean hasFieldSecurityLevel = mediator
 				.hasFieldSecurityLevel(sootField);
 		if (!isLibrary) {
+			try {
+				
+				ILevelDefinition def = DefinitionClassLoader.getDefinitionClass();
+				ILevelMediator med = new Mediator(def);				
+				System.out.println(med.extractFieldSecurityLevel(sootField).getName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			
 			if (hasFieldSecurityAnnotation && hasFieldSecurityLevel) {
 				try {
-					fieldSecurityLevel = securityAnnotation
+					
+					
+					fieldSecurityLevel = mediator
 							.extractFieldSecurityLevel(sootField);
 				} catch (ExtractionException e) {
 					// TODO: Logging
@@ -1011,7 +1027,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			}
 		} else {
 			try {
-				fieldSecurityLevel = securityAnnotation
+				fieldSecurityLevel = mediator
 						.getLibraryFieldSecurityLevel(sootField);
 			} catch (Exception e) {
 				// TODO: Logging
@@ -1026,7 +1042,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			try {
 				ClassEnvironment ce = store.getClassEnvironment(declaringClass);
 				classWriteEffects.addAll(ce.getWriteEffects());
-			} catch (UnpreparedEnvironmentException e) {
+			} catch (NoSuchElementException e) {
 				// TODO: Logging
 				log.error(SootUtils.generateFileName(declaringClass), 0,
 						"Can't access the additional information of the class.");
@@ -1034,7 +1050,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			}
 		}
 		FieldEnvironment fe = new FieldEnvironment(sootField,
-				fieldSecurityLevel, classWriteEffects, log, securityAnnotation);
+				fieldSecurityLevel, classWriteEffects, log, mediator);
 		return fe;
 	}
 
@@ -1048,11 +1064,11 @@ public class AnnotationExtractor extends SceneTransformer {
 			SootMethod sootMethod) {
 		SootClass declaringClass = sootMethod.getDeclaringClass();
 		boolean isLibrary = sootMethod.isJavaLibraryMethod();
-		boolean isIdFunction = securityAnnotation.isIdFunction(sootMethod);
+		boolean isIdFunction = mediator.isIdFunction(sootMethod);
 		boolean isClinit = SootUtils.isClinitMethod(sootMethod);
 		boolean isInit = SootUtils.isInitMethod(sootMethod);
 		boolean isVoid = SootUtils.isVoidMethod(sootMethod);
-		boolean isSootSecurityMethod = securityAnnotation
+		boolean isSootSecurityMethod = mediator
 				.isMethodOfSootSecurityLevelClass(sootMethod);
 		String returnSecurityLevel = null;
 		int parameterCount = sootMethod.getParameterCount();
@@ -1060,22 +1076,22 @@ public class AnnotationExtractor extends SceneTransformer {
 		List<String> methodWriteEffects = new ArrayList<String>();
 		List<String> classWriteEffects = new ArrayList<String>();
 		if (!isLibrary) {
-			boolean hasReturnSecurityAnnotation = securityAnnotation
+			boolean hasReturnSecurityAnnotation = mediator
 					.hasReturnSecurityAnnotation(sootMethod);
-			boolean hasReturnSecurityLevel = securityAnnotation
+			boolean hasReturnSecurityLevel = mediator
 					.hasReturnSecurityLevel(sootMethod);
-			boolean hasParameterSecurityAnnotation = securityAnnotation
+			boolean hasParameterSecurityAnnotation = mediator
 					.hasParameterSecurityAnnotation(sootMethod);
-			boolean hasParameterSecurityLevels = securityAnnotation
+			boolean hasParameterSecurityLevels = mediator
 					.hasParameterSecurityLevels(sootMethod);
-			boolean hasMethodWriteEffectAnnotation = securityAnnotation
+			boolean hasMethodWriteEffectAnnotation = mediator
 					.hasMethodWriteEffectAnnotation(sootMethod);
-			boolean hasMethodWriteEffects = securityAnnotation
+			boolean hasMethodWriteEffects = mediator
 					.hasMethodWriteEffects(sootMethod);
 			if (!isVoid) {
 				if (hasReturnSecurityAnnotation && hasReturnSecurityLevel) {
 					try {
-						returnSecurityLevel = securityAnnotation
+						returnSecurityLevel = mediator
 								.extractReturnSecurityLevel(sootMethod);
 					} catch (ExtractionException e) {
 						// TODO: Logging
@@ -1092,7 +1108,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			} else {
 				if (!hasReturnSecurityLevel && !hasReturnSecurityAnnotation) {
 					// RENEW: change back to null
-					returnSecurityLevel = SecurityAnnotation.VOID_LEVEL;
+					returnSecurityLevel = LevelMediator.VOID_LEVEL;
 				} else {
 					// TODO: Logging
 					log.error(SootUtils.generateFileName(sootMethod), 0,
@@ -1102,7 +1118,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			}
 			if (hasMethodWriteEffectAnnotation && hasMethodWriteEffects) {
 				try {
-					methodWriteEffects.addAll(securityAnnotation
+					methodWriteEffects.addAll(mediator
 							.extractMethodEffects(sootMethod));
 				} catch (ExtractionException e) {
 					// TODO: Logging
@@ -1116,7 +1132,7 @@ public class AnnotationExtractor extends SceneTransformer {
 						&& hasParameterSecurityLevels) {
 					List<String> parameterLevels = new ArrayList<String>();
 					try {
-						parameterLevels.addAll(securityAnnotation
+						parameterLevels.addAll(mediator
 								.extractParameterSecurityLevels(sootMethod));
 					} catch (ExtractionException e) {
 						// TODO: Logging
@@ -1143,7 +1159,7 @@ public class AnnotationExtractor extends SceneTransformer {
 						annotationValidity = false;
 					}
 				} else if (isIdFunction && parameterCount == 1) {
-					String level = securityAnnotation
+					String level = mediator
 							.getReturnSecurityLevelOfIdFunction(sootMethod);
 					Type type = sootMethod.getParameterType(0);
 					String name = "arg0";
@@ -1161,7 +1177,7 @@ public class AnnotationExtractor extends SceneTransformer {
 
 			List<String> parameterLevels = new ArrayList<String>();
 			try {
-				parameterLevels.addAll(securityAnnotation
+				parameterLevels.addAll(mediator
 						.getLibraryParameterSecurityLevel(sootMethod));
 			} catch (Exception e) {
 				// TODO: Logging
@@ -1188,10 +1204,10 @@ public class AnnotationExtractor extends SceneTransformer {
 			}
 
 			if (isVoid) {
-				returnSecurityLevel = SecurityAnnotation.VOID_LEVEL;
+				returnSecurityLevel = LevelMediator.VOID_LEVEL;
 			} else {
 				try {
-					returnSecurityLevel = securityAnnotation
+					returnSecurityLevel = mediator
 							.getLibraryReturnSecurityLevel(sootMethod,
 									parameterLevels);
 				} catch (Exception e) {
@@ -1202,7 +1218,7 @@ public class AnnotationExtractor extends SceneTransformer {
 				}
 			}
 			try {
-				methodWriteEffects.addAll(securityAnnotation
+				methodWriteEffects.addAll(mediator
 						.getLibraryWriteEffects(sootMethod));
 			} catch (Exception e) {
 				// TODO: Logging
@@ -1217,7 +1233,7 @@ public class AnnotationExtractor extends SceneTransformer {
 			try {
 				ClassEnvironment ce = store.getClassEnvironment(declaringClass);
 				classWriteEffects.addAll(ce.getWriteEffects());
-			} catch (UnpreparedEnvironmentException e) {
+			} catch (NoSuchElementException e) {
 				// TODO: Logging
 				log.error(SootUtils.generateFileName(declaringClass), 0,
 						"Can't access the additional information of the class.");
@@ -1227,7 +1243,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		MethodEnvironment methodEnvironment = new MethodEnvironment(sootMethod,
 				isIdFunction, isClinit, isInit, isVoid, isSootSecurityMethod,
 				parameterSecurityLevel, returnSecurityLevel,
-				methodWriteEffects, classWriteEffects, log, securityAnnotation);
+				methodWriteEffects, classWriteEffects, log, mediator);
 		return methodEnvironment;
 	}
 
@@ -1292,9 +1308,9 @@ public class AnnotationExtractor extends SceneTransformer {
 			for (SootMethod sootMethod : sootClass.getMethods()) {
 				UnitGraph graph = new BriefUnitGraph(sootMethod.retrieveActiveBody());
                 sootMethod = graph.getBody().getMethod();
-				if ((!securityAnnotation
+				if ((!mediator
 						.isMethodOfSootSecurityLevelClass(sootMethod))
-						|| securityAnnotation.isIdFunction(sootMethod)) {
+						|| mediator.isIdFunction(sootMethod)) {
 					addMethodEnvironmentForMethod(sootMethod);
 					if (sootMethod.hasActiveBody()) {
 						for (Unit unit : sootMethod.getActiveBody().getUnits()) {

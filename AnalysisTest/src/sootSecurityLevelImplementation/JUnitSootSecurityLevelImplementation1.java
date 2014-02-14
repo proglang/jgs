@@ -1,7 +1,7 @@
 package sootSecurityLevelImplementation;
 
-import security.Annotations.ReturnSecurity;
 import security.SecurityLevel;
+import security.Annotations.ReturnSecurity;
 
 /**
  * <h1> Valid JUnit test class</h1>

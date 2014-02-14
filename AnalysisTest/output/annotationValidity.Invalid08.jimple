@@ -1,0 +1,33 @@
+public class annotationValidity.Invalid08 extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public int method()
+    {
+        annotationValidity.Invalid08 this;
+
+        this := @this: annotationValidity.Invalid08;
+        return 42;
+    }
+
+    public void <init>()
+    {
+        annotationValidity.Invalid08 this;
+
+        this := @this: annotationValidity.Invalid08;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

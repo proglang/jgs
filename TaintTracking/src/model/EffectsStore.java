@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
+import security.LevelMediator;
 import security.Annotations.WriteEffect;
-import security.SecurityAnnotation;
 
 /**
  * <h1>Store of calculate effects</h1>
@@ -109,7 +110,7 @@ public class EffectsStore {
 	 */
 	public EffectsStore() {
 		super();
-		effectsStore.put(SecurityAnnotation.getEffectIdentifier(WriteEffect.class),
+		effectsStore.put(LevelMediator.getEffectIdentifier(WriteEffect.class),
 				new EffectTypeStore());
 	}
 
@@ -120,7 +121,7 @@ public class EffectsStore {
 	 *            Write effect which should be stored.
 	 */
 	public void addWriteEffect(Effect effect) {
-		this.effectsStore.get(SecurityAnnotation.getEffectIdentifier(WriteEffect.class)).addEffect(
+		this.effectsStore.get(LevelMediator.getEffectIdentifier(WriteEffect.class)).addEffect(
 				effect);
 	}
 
@@ -133,7 +134,7 @@ public class EffectsStore {
 	 * @return List of write effects affecting the given <em>security level</em>.
 	 */
 	public List<Effect> getWriteEffects(String effected) {
-		return this.effectsStore.get(SecurityAnnotation.getEffectIdentifier(WriteEffect.class))
+		return this.effectsStore.get(LevelMediator.getEffectIdentifier(WriteEffect.class))
 				.getEffects(effected);
 	}
 
@@ -143,7 +144,7 @@ public class EffectsStore {
 	 * @return Set containing the write effected <em>security levels</em>.
 	 */
 	public Set<String> getWriteEffectSet() {
-		return this.effectsStore.get(SecurityAnnotation.getEffectIdentifier(WriteEffect.class))
+		return this.effectsStore.get(LevelMediator.getEffectIdentifier(WriteEffect.class))
 				.makeEffectsSet();
 	}
 

@@ -13,12 +13,12 @@ import logging.SootLoggerLevel;
 import logging.SootLoggerUtils;
 import model.MessageStore;
 import model.Settings;
-import security.SecurityAnnotation;
+import resource.SecurityMessages;
+import security.ExtendedSecurityLevelImplChecker;
+import security.LevelMediator;
 import soot.PackManager;
 import soot.Transform;
-import utils.ExtendedSecurityLevelImplChecker;
 import utils.GeneralUtils;
-import utils.SecurityMessages;
 import exception.SootException.SecurityLevelException;
 
 /**
@@ -55,10 +55,10 @@ public class Main {
 	/** The security transformer phase name. */
 	private static final String PHASE_NAME_SECURITY = "jtp.security";
 	/**
-	 * The security annotation object that provides the handling of
+	 * The level mediator that provides the handling of
 	 * <em>security level</em>.
 	 */
-	private static SecurityAnnotation securityAnnotation;
+	private static LevelMediator mediator;
 
 	/**
 	 * Adds the given level to the array which contains the levels that are
@@ -110,12 +110,8 @@ public class Main {
 	 *            Command line options for the transformation and the security
 	 *            analysis.
 	 */
-	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		execute(args);
-		if (log != null && Configuration.MESSAGE_STORE_PERSISTENT) {
-			log.storeSerializedMessageStore();
-		}
 	}
 
 	/**
@@ -147,17 +143,17 @@ public class Main {
 					.getExtendedSecurityLevelImplChecker(log, true, true);
 			String[] orderedLevels = extendedSecurityLevelImplChecker
 					.getOrderedLevels();
-			securityAnnotation = new SecurityAnnotation(new ArrayList<String>(
+			mediator = new LevelMediator(new ArrayList<String>(
 					Arrays.asList(orderedLevels)));
 			AnnotationExtractor extractor = new AnnotationExtractor(log,
-					securityAnnotation);
+					mediator);
 			PackManager.v().getPack("wjtp")
 					.add(new Transform(PHASE_NAME_ANNOTATION, extractor));
 			PackManager
 					.v()
 					.getPack("jtp")
 					.add(new Transform(PHASE_NAME_SECURITY,
-							new SecurityTransformer(securityAnnotation, log,
+							new SecurityTransformer(mediator, log,
 									extractor, instantLogging)));
 			soot.Main.main(args);
 		} catch (SecurityLevelException e) {

@@ -1,0 +1,27 @@
+public class annotationValidity.Valid06 extends java.lang.Object
+{
+    public int instanceField;
+    public static int staticField;
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public void <init>()
+    {
+        annotationValidity.Valid06 this;
+
+        this := @this: annotationValidity.Valid06;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

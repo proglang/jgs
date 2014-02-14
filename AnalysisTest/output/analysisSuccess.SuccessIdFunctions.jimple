@@ -1,0 +1,91 @@
+public class analysisSuccess.SuccessIdFunctions extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public int returnHighSecurity()
+    {
+        analysisSuccess.SuccessIdFunctions this;
+        int high;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessIdFunctions;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return high;
+    }
+
+    public int returnLowSecurity()
+    {
+        analysisSuccess.SuccessIdFunctions this;
+        int low;
+        java.lang.Integer temp$1, temp$3;
+        java.lang.Object temp$2;
+
+        this := @this: analysisSuccess.SuccessIdFunctions;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        return low;
+    }
+
+    public void changeSecurityLow2High()
+    {
+        analysisSuccess.SuccessIdFunctions this;
+        int low;
+        java.lang.Integer temp$1, temp$3, temp$4, temp$6;
+        java.lang.Object temp$2, temp$5;
+
+        this := @this: analysisSuccess.SuccessIdFunctions;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object lowId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        low = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(low);
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (java.lang.Integer) temp$5;
+        return;
+    }
+
+    public void changeSecurityHigh2High()
+    {
+        analysisSuccess.SuccessIdFunctions this;
+        int high;
+        java.lang.Integer temp$1, temp$3, temp$4, temp$6;
+        java.lang.Object temp$2, temp$5;
+
+        this := @this: analysisSuccess.SuccessIdFunctions;
+        temp$1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+        temp$2 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$1);
+        temp$3 = (java.lang.Integer) temp$2;
+        high = virtualinvoke temp$3.<java.lang.Integer: int intValue()>();
+        temp$4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(high);
+        temp$5 = staticinvoke <security.SootSecurityLevel: java.lang.Object highId(java.lang.Object)>(temp$4);
+        temp$6 = (java.lang.Integer) temp$5;
+        return;
+    }
+
+    public void <init>()
+    {
+        analysisSuccess.SuccessIdFunctions this;
+
+        this := @this: analysisSuccess.SuccessIdFunctions;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

@@ -5,11 +5,11 @@ import java.util.List;
 
 
 import logging.SecurityLogger;
-import main.Configuration;
-import security.SecurityAnnotation;
+import resource.Configuration;
+import resource.SecurityMessages;
+import security.LevelMediator;
 import soot.SootClass;
 import soot.SootField;
-import utils.SecurityMessages;
 import utils.SootUtils;
 
 public class ClassEnvironment extends Environment {
@@ -24,9 +24,9 @@ public class ClassEnvironment extends Environment {
 			SootClass sootClass,
 			List<String> classWriteEffects, 
 			SecurityLogger log,
-			SecurityAnnotation securityAnnotations
+			LevelMediator mediator
 			) {
-		super(log, securityAnnotations);
+		super(log, mediator);
 		this.sootClass = sootClass;
 		this.writeEffects.addAll(classWriteEffects);
 	}
@@ -67,9 +67,9 @@ public class ClassEnvironment extends Environment {
 	public boolean isReasonable() {
 		String classSignature = SootUtils.generateClassSignature(
 				sootClass, Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
-		if (!getSecurityAnnotation().checkValidityOfLevels(writeEffects)) {
+		if (!getLevelMediator().checkValidityOfLevels(writeEffects)) {
 			// one of the write effects isn't a valid security level
-			for (String invalidEffect : getSecurityAnnotation()
+			for (String invalidEffect : getLevelMediator()
 					.getInvalidLevels(writeEffects)) {
 				getLog().error(SootUtils.generateFileName(sootClass), 0, SecurityMessages.invalidClassWriteEffect(
 						classSignature, invalidEffect));

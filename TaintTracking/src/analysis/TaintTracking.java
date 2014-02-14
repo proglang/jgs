@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logging.SecurityLogger;
-import main.Configuration;
 import model.AnalyzedMethodEnvironment;
 import model.LocalsMap;
 import model.MethodEnvironment;
-import pattern.StatementSwitch;
 import preanalysis.AnnotationExtractor.UsedObjectStore;
-import security.SecurityAnnotation;
+import resource.Configuration;
+import resource.SecurityMessages;
+import security.LevelMediator;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IfStmt;
@@ -19,11 +19,10 @@ import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.MHGDominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
-import utils.SecurityMessages;
 import utils.SootUtils;
 import exception.SootException.InvalidLevelException;
 import exception.SootException.SwitchException;
-import exception.SootException.UnpreparedEnvironmentException;
+import exception.SootException.NoSuchElementException;
 
 /**
  * <h1>TaintTracking analysis</h1>
@@ -140,15 +139,15 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 	 *            exceptions, errors, violations, etc.
 	 * @param sootMethod
 	 *            The method which should be analyzed.
-	 * @param securityAnnotations
-	 *            A {@link SecurityAnnotation} in order to provide the handling
+	 * @param mediator
+	 *            A {@link LevelMediator} in order to provide the handling
 	 *            of <em>security levels</em>.
 	 * @param graph
 	 *            The generated graph for the given method.
 	 * @param store
 	 */
 	public TaintTracking(SecurityLogger log, SootMethod sootMethod,
-			SecurityAnnotation securityAnnotations, DirectedGraph<Unit> graph,
+			LevelMediator mediator, DirectedGraph<Unit> graph,
 			preanalysis.AnnotationExtractor.UsedObjectStore store) {
 		super(graph);
 		container = new Dominator(graph);
@@ -159,7 +158,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 			MethodEnvironment me = this.store.getMethodEnvironment(sootMethod
 					.retrieveActiveBody().getMethod());
 			ame = new AnalyzedMethodEnvironment(me);
-		} catch (UnpreparedEnvironmentException e) {
+		} catch (NoSuchElementException e) {
 			interrupt = true;
 		}
 		analyzedMethodEnvironment = ame;
@@ -288,7 +287,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 	protected LocalsMap entryInitialFlow() {
 		LocalsMap map = new LocalsMap(analyzedMethodEnvironment.getSootMethod()
 				.getActiveBody().getLocals(),
-				analyzedMethodEnvironment.getSecurityAnnotation());
+				analyzedMethodEnvironment.getLevelMediator());
 		return map;
 	}
 
@@ -345,7 +344,7 @@ public class TaintTracking extends ForwardFlowAnalysis<Unit, LocalsMap> {
 	protected LocalsMap newInitialFlow() {
 		LocalsMap map = new LocalsMap(analyzedMethodEnvironment.getSootMethod()
 				.getActiveBody().getLocals(),
-				analyzedMethodEnvironment.getSecurityAnnotation());
+				analyzedMethodEnvironment.getLevelMediator());
 		return map;
 	}
 

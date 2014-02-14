@@ -1,0 +1,30 @@
+public class annotationValidity.Invalid17 extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public static int method()
+    {
+        return 42;
+    }
+
+    public void <init>()
+    {
+        annotationValidity.Invalid17 this;
+
+        this := @this: annotationValidity.Invalid17;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

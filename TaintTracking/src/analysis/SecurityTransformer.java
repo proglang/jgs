@@ -8,9 +8,9 @@ import preanalysis.AnnotationExtractor;
 import preanalysis.AnnotationExtractor.UsedObjectStore;
 
 import logging.SecurityLogger;
-import main.Configuration;
 
-import security.SecurityAnnotation;
+import resource.Configuration;
+import security.LevelMediator;
 import soot.Body;
 import soot.BodyTransformer;
 import soot.SootClass;
@@ -37,7 +37,7 @@ public class SecurityTransformer extends BodyTransformer {
 	/** DOC */
 	private List<SootClass> visitedClasses = new ArrayList<SootClass>();
 	/** DOC */
-	private final SecurityAnnotation securityAnnotation;
+	private final LevelMediator mediator;
 	/** DOC */
 	private final SecurityLogger log;
 	/** DOC */
@@ -50,16 +50,16 @@ public class SecurityTransformer extends BodyTransformer {
 	/**
 	 * DOC
 	 * 
-	 * @param securityAnnotation
+	 * @param mediator
 	 * @param log
 	 * @param extractor
 	 * @param instantLogging
 	 */
-	public SecurityTransformer(SecurityAnnotation securityAnnotation,
+	public SecurityTransformer(LevelMediator mediator,
 			SecurityLogger log, AnnotationExtractor extractor,
 			boolean instantLogging) {
 		super();
-		this.securityAnnotation = securityAnnotation;
+		this.mediator = mediator;
 		this.log = log;
 		this.extractor  = extractor;
 		this.store = extractor.getUsedObjectStore();
@@ -73,7 +73,7 @@ public class SecurityTransformer extends BodyTransformer {
 	 * @param graph
 	 */
 	private void doAnalysis(SootMethod sootMethod, UnitGraph graph) {
-		if (!securityAnnotation.isMethodOfSootSecurityLevelClass(sootMethod)) {
+		if (!mediator.isMethodOfSootSecurityLevelClass(sootMethod)) {
 			if (instantLogging) {
 				log.structure(SootUtils.generateMethodSignature(sootMethod,
 						Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
@@ -81,7 +81,7 @@ public class SecurityTransformer extends BodyTransformer {
 						Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY));
 				log.addStandardFileHandlerForMethod(sootMethod);
 			}
-			TaintTracking tt = new TaintTracking(log, sootMethod, securityAnnotation, graph, store);
+			TaintTracking tt = new TaintTracking(log, sootMethod, mediator, graph, store);
 			tt.checkAnalysis();
 			if (instantLogging)
 				log.removeStandardFileHandler();
@@ -123,7 +123,7 @@ public class SecurityTransformer extends BodyTransformer {
 				}
 				visitedClasses.add(sootClass);
 			}
-			if (!securityAnnotation
+			if (!mediator
 					.isMethodOfSootSecurityLevelClass(sootMethod)) {
 				doAnalysis(sootMethod, graph);
 			}

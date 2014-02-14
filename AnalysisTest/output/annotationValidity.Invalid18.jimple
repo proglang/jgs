@@ -1,0 +1,30 @@
+public class annotationValidity.Invalid18 extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] args;
+
+        args := @parameter0: java.lang.String[];
+        return;
+    }
+
+    public static void voidMethod()
+    {
+        return;
+    }
+
+    public void <init>()
+    {
+        annotationValidity.Invalid18 this;
+
+        this := @this: annotationValidity.Invalid18;
+        specialinvoke this.<java.lang.Object: void <init>()>();
+        return;
+    }
+
+    static void <clinit>()
+    {
+        return;
+    }
+}

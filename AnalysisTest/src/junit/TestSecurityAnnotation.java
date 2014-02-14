@@ -12,8 +12,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+
 import security.Annotations;
-import security.SecurityAnnotation;
+import security.LevelMediator;
 import soot.Modifier;
 import soot.RefType;
 import soot.SootClass;
@@ -21,9 +22,9 @@ import soot.SootMethod;
 import soot.Type;
 
 /**
- * <h1>JUnit tests of class {@link SecurityAnnotation}</h1>
+ * <h1>JUnit tests of class {@link LevelMediator}</h1>
  * 
- * JUnit tests which verify the accuracy of the methods of the class {@link SecurityAnnotation}. 
+ * JUnit tests which verify the accuracy of the methods of the class {@link LevelMediator}. 
  * 
  * <hr />
  * 
@@ -32,7 +33,7 @@ import soot.Type;
  */
 public class TestSecurityAnnotation {
 	
-	private static SecurityAnnotation securityAnnotation;
+	private static LevelMediator securityAnnotation;
 
 	@BeforeClass
 	public static final void setUpBeforeClass() throws Exception {
@@ -40,7 +41,7 @@ public class TestSecurityAnnotation {
 		levels.add("high");
 		levels.add("normal");
 		levels.add("low");
-		securityAnnotation = new SecurityAnnotation(levels);
+		securityAnnotation = new LevelMediator(levels);
 	}
 	
 	@AfterClass
@@ -64,7 +65,7 @@ public class TestSecurityAnnotation {
 
 	@Test
 	public final void testGetEffectIdentifier() {
-		assertTrue("Correct effect identifier for the annotation class 'WriteEffect'.", SecurityAnnotation.getEffectIdentifier(Annotations.WriteEffect.class).equals("EFFECT_ID#WRITEEFFECT"));
+		assertTrue("Correct effect identifier for the annotation class 'WriteEffect'.", LevelMediator.getEffectIdentifier(Annotations.WriteEffect.class).equals("EFFECT_ID#WRITEEFFECT"));
 	}
 	
 	@Test 
@@ -130,10 +131,10 @@ public class TestSecurityAnnotation {
 	
 	@Test
 	public final void testGetSootAnnotationTag() {
-		assertTrue("Correct Soot annotation tag for the annotation class 'WriteEffect'.", SecurityAnnotation.getSootAnnotationTag(Annotations.WriteEffect.class).equals("Lsecurity/Annotations$WriteEffect;"));
-		assertTrue("Correct Soot annotation tag for the annotation class 'ReturnSecurity'.", SecurityAnnotation.getSootAnnotationTag(Annotations.ReturnSecurity.class).equals("Lsecurity/Annotations$ReturnSecurity;"));
-		assertTrue("Correct Soot annotation tag for the annotation class 'ParameterSecurity'.", SecurityAnnotation.getSootAnnotationTag(Annotations.ParameterSecurity.class).equals("Lsecurity/Annotations$ParameterSecurity;"));
-		assertTrue("Correct Soot annotation tag for the annotation class 'FieldSecurity'.", SecurityAnnotation.getSootAnnotationTag(Annotations.FieldSecurity.class).equals("Lsecurity/Annotations$FieldSecurity;"));
+		assertTrue("Correct Soot annotation tag for the annotation class 'WriteEffect'.", LevelMediator.getJNISignature(Annotations.WriteEffect.class).equals("Lsecurity/Annotations$WriteEffect;"));
+		assertTrue("Correct Soot annotation tag for the annotation class 'ReturnSecurity'.", LevelMediator.getJNISignature(Annotations.ReturnSecurity.class).equals("Lsecurity/Annotations$ReturnSecurity;"));
+		assertTrue("Correct Soot annotation tag for the annotation class 'ParameterSecurity'.", LevelMediator.getJNISignature(Annotations.ParameterSecurity.class).equals("Lsecurity/Annotations$ParameterSecurity;"));
+		assertTrue("Correct Soot annotation tag for the annotation class 'FieldSecurity'.", LevelMediator.getJNISignature(Annotations.FieldSecurity.class).equals("Lsecurity/Annotations$FieldSecurity;"));
 	}
 	
 	@Test
