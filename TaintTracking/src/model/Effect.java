@@ -1,11 +1,12 @@
 package model;
 
+import security.ILevel;
+
 /**
  * <h1>Side effect to a <em>security level</em></h1>
  * 
- * The {@link Effect} represents a calculated effect to a <em>security level</em> which occurs at a
- * specific source line number inside of a analyzed method. Each effect has also a cause that
- * indicates why this effect has occurred, or from where this effect was inherited.
+ * The {@link Effect} represents a calculated effect to a <em>security level</em> which occurs at a specific source line number inside of a
+ * analyzed method. Each effect has also a cause that indicates why this effect has occurred, or from where this effect was inherited.
  * 
  * <hr />
  * 
@@ -18,22 +19,22 @@ public class Effect {
 	/** The reason that indicates why this effect has occurred. */
 	private final Cause cause;
 	/** The effected <em>security level</em> of this effect. */
-	private final String effected;
+	private final ILevel effected;
 	/** The source line number at which this effect occurs. */
 	private final long srcLn;
 
 	/**
-	 * Constructor of an {@link Effect} that requires the effected <em>security level</em>, the
-	 * source line number at which the effect occurs and also a cause why this effect occurs.
+	 * Constructor of an {@link Effect} that requires the effected <em>security level</em>, the source line number at which the effect occurs
+	 * and also a cause why this effect occurs.
 	 * 
 	 * @param effected
-	 *            <em>Security level</em> that is effected.
+	 *          <em>Security level</em> that is effected.
 	 * @param srcLn
-	 *            Source line where the effect occurs.
+	 *          Source line where the effect occurs.
 	 * @param cause
-	 *            Subclass of {@link Cause} which specifies the reason of this effect.
+	 *          Subclass of {@link Cause} which specifies the reason of this effect.
 	 */
-	public Effect(String effected, long srcLn, Cause cause) {
+	protected Effect(ILevel effected, long srcLn, Cause cause) {
 		super();
 		this.effected = effected;
 		this.srcLn = srcLn;
@@ -54,7 +55,7 @@ public class Effect {
 	 * 
 	 * @return The effected <em>security level</em>.
 	 */
-	public String getEffected() {
+	public ILevel getEffected() {
 		return this.effected;
 	}
 

@@ -7,13 +7,14 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.IAnnotationDAO;
-import securityNewNew.ALevel;
-import securityNewNew.ILevel;
-import securityNewNew.ALevelDefinition;
+import annotation.IAnnotationDAO;
+
+import security.ALevel;
+import security.ALevelDefinition;
+import security.ILevel;
 
 public class Definition extends ALevelDefinition {
-
+	
 	@Target(ElementType.FIELD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface FieldSecurity {
@@ -21,7 +22,7 @@ public class Definition extends ALevelDefinition {
 		String value();
 
 	}
-
+	
 	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ParameterSecurity {
@@ -29,7 +30,7 @@ public class Definition extends ALevelDefinition {
 		String[] value();
 
 	}
-
+	
 	@Target({ ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ReturnSecurity {
@@ -37,7 +38,7 @@ public class Definition extends ALevelDefinition {
 		String value();
 
 	}
-
+	
 	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface WriteEffect {
@@ -45,7 +46,7 @@ public class Definition extends ALevelDefinition {
 		String[] value();
 
 	}
-	
+
 	public final class StringLevel extends ALevel {
 		
 		private final String level;
@@ -161,4 +162,5 @@ public class Definition extends ALevelDefinition {
 	public static <T> T lowId(T object) {
 		return object;
 	}
+	
 }

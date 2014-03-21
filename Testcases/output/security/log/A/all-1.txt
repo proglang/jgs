@@ -1,2 +1,0 @@
-   |-- [ ERROR(A.java:0) ] --|
-   Field without a field security level.

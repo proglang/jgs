@@ -3,54 +3,43 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-import logging.SecurityLogger;
+import logging.AnalysisLog;
 import resource.Configuration;
-import resource.SecurityMessages;
-import security.Annotations;
-import security.LevelMediator;
+import static resource.Messages.getMsg;
+import security.ILevel;
+import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootField;
-import utils.SootUtils;
+import utils.AnalysisUtils;
 
 /**
  * <h1>Analysis environment for fields</h1>
  * 
- * The {@link FieldEnvironment} provides a environment for analyzing a
- * {@link SootField}. Therefore it extends the base analysis environment
- * {@link Environment} in order to access a logger and the security annotation.
- * The environment provides methods for getting the required annotations at the
- * field as well as at the class which declares the field, and also methods
- * which checks the validity of the levels and effects that are given by those
- * annotations. In addition the environment gives direct access to some methods
- * of the analyzed {@link SootField}.
+ * The {@link FieldEnvironment} provides a environment for analyzing a {@link SootField}. Therefore it extends the base analysis environment
+ * {@link Environment} in order to access a logger and the security annotation. The environment provides methods for getting the required
+ * annotations at the field as well as at the class which declares the field, and also methods which checks the validity of the levels and
+ * effects that are given by those annotations. In addition the environment gives direct access to some methods of the analyzed
+ * {@link SootField}.
  * 
  * <hr />
  * 
  * @author Thomas Vogel
  * @version 0.2
  * @see Environment
- * @see Annotations.WriteEffect
- * @see Annotations.FieldSecurity
  */
 public class FieldEnvironment extends Environment {
 
 	/**
-	 * The <em>write effects</em> of the class which declares the
-	 * {@link SootField}.
+	 * The <em>write effects</em> of the class which declares the {@link SootField}.
 	 */
-	private List<String> classWriteEffects = new ArrayList<String>();
+	private List<ILevel> classWriteEffects = new ArrayList<ILevel>();
 	/** The <em>security level</em> of the {@link SootField}. */
-	private String level = null;
+	private ILevel level = null;
 
 	/** The {@link SootField} for which this is the environment. */
 	private SootField sootField;
 
-
-	public FieldEnvironment(SootField sootField, String level,
-			List<String> classWriteEffect, SecurityLogger log,
-			LevelMediator mediator) {
+	public FieldEnvironment(SootField sootField, ILevel level, List<ILevel> classWriteEffect, AnalysisLog log, ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootField = sootField;
 		this.level = level;
@@ -58,28 +47,16 @@ public class FieldEnvironment extends Environment {
 	}
 
 	/**
-	 * Returns the <em>write effects</em> of the class which declares the
-	 * analyzed field.
+	 * Returns the <em>write effects</em> of the class which declares the analyzed field.
 	 * 
 	 * @return The class <em>write effects</em>.
 	 */
-	public List<String> getClassWriteEffects() {
+	public List<ILevel> getClassWriteEffects() {
 		return classWriteEffects;
 	}
 
 	/**
-	 * Returns the <em>security level</em> of the field
-	 * {@link FieldEnvironment#sootField}.
-	 * 
-	 * @return The <em>security level</em> of the field.
-	 */
-	public String getLevel() {
-		return level;
-	}
-
-	/**
-	 * Method that returns the {@link SootClass} that declares the field for
-	 * which this is the environment.
+	 * Method that returns the {@link SootClass} that declares the field for which this is the environment.
 	 * 
 	 * @return The class which declares the analyzed field.
 	 */
@@ -88,8 +65,16 @@ public class FieldEnvironment extends Environment {
 	}
 
 	/**
-	 * Method that returns the {@link SootField} for which this is the
-	 * environment (see {@link FieldEnvironment#sootField}).
+	 * Returns the <em>security level</em> of the field {@link FieldEnvironment#sootField}.
+	 * 
+	 * @return The <em>security level</em> of the field.
+	 */
+	public ILevel getLevel() {
+		return level;
+	}
+
+	/**
+	 * Method that returns the {@link SootField} for which this is the environment (see {@link FieldEnvironment#sootField}).
 	 * 
 	 * @return The analyzed field.
 	 */
@@ -98,38 +83,12 @@ public class FieldEnvironment extends Environment {
 	}
 
 	/**
-	 * Indicates whether the {@link SootClass} which declares the analyzed field
-	 * is a library class.
+	 * Indicates whether the {@link SootClass} which declares the analyzed field is a library class.
 	 * 
-	 * @return {@code true} if the class is a library class, otherwise
-	 *         {@code false}.
+	 * @return {@code true} if the class is a library class, otherwise {@code false}.
 	 */
 	public boolean isLibraryClass() {
 		return sootField.getDeclaringClass().isJavaLibraryClass();
-	}
-
-	/**
-	 * Indicates whether the analyzed {@link SootField} is a static field (see
-	 * {@link FieldEnvironment#sootField}).
-	 * 
-	 * @return {@code true} if the field is a static field, otherwise
-	 *         {@code false}.
-	 */
-	public boolean isStatic() {
-		return sootField.isStatic();
-	}
-
-	/**
-	 * Logs the given message as an error. The file name is created by the
-	 * class, the source line number is specified as 0.
-	 * 
-	 * @param msg
-	 *            Message that should be printed as an error.
-	 * @see SecurityLogger#error(String, long, String)
-	 */
-	private void logError(String msg) {
-		getLog().error(SootUtils.generateFileName(getDeclaringSootClass()), 0,
-				msg);
 	}
 
 	/**
@@ -139,31 +98,43 @@ public class FieldEnvironment extends Environment {
 	 */
 	public boolean isReasonable() {
 		if (level != null) { // some level given
-			if (!getLevelMediator().checkValidityOfLevel(level)) {
+			if (!getLevelMediator().checkLevelValidity(level)) {
 				// level isn't a valid security level
-				logError(SecurityMessages
-						.invalidFieldLevel(
-								SootUtils
-										.generateFieldSignature(
-												sootField,
-												Configuration.FIELD_SIGNATURE_PRINT_PACKAGE,
-												Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-												Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY),
-								level));
+				logError(getMsg("field_level.invalid", level.getName(), AnalysisUtils.generateFieldSignature(sootField,
+						Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
+						Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
 				return false;
 			}
 			return true;
 		} else { // no level given
-			logError(SecurityMessages.noFieldLevel(SootUtils
-					.generateFieldSignature(sootField,
-							Configuration.FIELD_SIGNATURE_PRINT_PACKAGE,
-							Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-							Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
+			logError(getMsg("field_level.no_level", AnalysisUtils.generateFieldSignature(sootField,
+					Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
+					Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Indicates whether the analyzed {@link SootField} is a static field (see {@link FieldEnvironment#sootField}).
+	 * 
+	 * @return {@code true} if the field is a static field, otherwise {@code false}.
+	 */
+	public boolean isStatic() {
+		return sootField.isStatic();
+	}
+
 	public void updateSootField(SootField sootField) {
 		this.sootField = sootField;
+	}
+
+	/**
+	 * Logs the given message as an error. The file name is created by the class, the source line number is specified as 0.
+	 * 
+	 * @param msg
+	 *          Message that should be printed as an error.
+	 * @see AnalysisLog#error(String, long, String)
+	 */
+	private void logError(String msg) {
+		getLog().error(AnalysisUtils.generateFileName(getDeclaringSootClass()), 0, msg);
 	}
 }
