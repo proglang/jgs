@@ -1,4 +1,4 @@
-# Gradual Java
+# Security-Type for Java
 A research project with the goal to allow gradual integration of
 refined type systems in Java (e.g. type systems for physical
 dimensions, effects, security, ...)
@@ -27,7 +27,7 @@ The static analysis is based on the [Soot compiler framework][Soot]. Here are so
 - Install the [Soot Eclipse plugin][3]
 - Now you should be able to import the projects ([TaintTracking], [Annotations] and [SootUtils]) from this repository without soot-related compilation errors (see [next step](#output)).
   
-### Setup the Gradual Java projects
+### Setup the Security-Type projects
 - Import the projects [TaintTracking], [Annotations] and [SootUtils] from this repository into Eclipse.
 - The project [SootUtils] requires the following:
 	- Soot Eclipse project on the build path of the project [SootUtils]
