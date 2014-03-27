@@ -1,4 +1,7 @@
 # Security-Type for Java
+
+> Main branch with the latest stable version of the Security-Type for Java project.
+
 A research project with the goal to allow gradual integration of
 refined type systems in Java (e.g. type systems for physical
 dimensions, effects, security, ...)
@@ -350,7 +353,7 @@ Currently no bugs are known.
 
 ## Informations
 developer: [Thomas Vogel](mailto:vogelt@informatik.uni-freiburg.de)  
-last-modified: 23:20:00 10/20/2013
+last-modified: 13:00:00 03/27/2014
 
 
 [1]: http://www.eclipse.org/juno/ "Download Eclipse Juno"
