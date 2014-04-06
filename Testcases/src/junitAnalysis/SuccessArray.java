@@ -11,8 +11,8 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"high"})
 	public int[] arrayAssign() {
-		int[] arrayHigh = Definition.highId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayHigh = Definition.mkHigh(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayHigh[23] = varLow;
 		return arrayHigh;
 	}
@@ -20,8 +20,8 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"low"})
 	public int[] arrayAssign2() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayLow[23] = varLow;
 		return arrayLow;
 	}
@@ -29,8 +29,8 @@ public class SuccessArray {
 	@ReturnSecurity("low")
 	@WriteEffect({"low"})
 	public int[] arrayAssign3() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayLow[23] = varLow;
 		return arrayLow;
 	}
@@ -38,8 +38,8 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"high"})
 	public int arrayAccess() {
-		int[] arrayHigh = Definition.highId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayHigh = Definition.mkHigh(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayHigh[23] = varLow;
 		return arrayHigh[23];
 	}
@@ -47,8 +47,8 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"low"})
 	public int arrayAccess2() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayLow[23] = varLow;
 		return arrayLow[23];
 	}
@@ -56,8 +56,8 @@ public class SuccessArray {
 	@ReturnSecurity("low")
 	@WriteEffect({"low"})
 	public int arrayAccess3() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayLow[23] = varLow;
 		return arrayLow[23];
 	}
@@ -65,8 +65,8 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"high"})
 	public int arrayLength() {
-		int[] arrayHigh = Definition.highId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayHigh = Definition.mkHigh(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayHigh[23] = varLow;
 		return arrayHigh.length;
 	}
@@ -74,8 +74,8 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"low"})
 	public int arrayLength2() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayLow[23] = varLow;
 		return arrayLow.length;
 	}
@@ -83,8 +83,8 @@ public class SuccessArray {
 	@ReturnSecurity("low")
 	@WriteEffect({"low"})
 	public int arrayLength3() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
 		arrayLow[23] = varLow;
 		return arrayLow.length;
 	}
@@ -92,9 +92,9 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"high"})
 	public int arrayIndex() {
-		int[] arrayHigh = Definition.highId(new int[42]);
-		int varLow = Definition.lowId(42);
-		int indexHigh = Definition.highId(23);
+		int[] arrayHigh = Definition.mkHigh(new int[42]);
+		int varLow = Definition.mkLow(42);
+		int indexHigh = Definition.mkHigh(23);
 		arrayHigh[indexHigh] = varLow;
 		return arrayHigh[indexHigh];
 	}
@@ -102,9 +102,9 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"high"})
 	public int arrayIndex2() {
-		int[] arrayHigh = Definition.highId(new int[42]);
-		int varLow = Definition.lowId(42);
-		int indexLow = Definition.lowId(23);
+		int[] arrayHigh = Definition.mkHigh(new int[42]);
+		int varLow = Definition.mkLow(42);
+		int indexLow = Definition.mkLow(23);
 		arrayHigh[indexLow] = varLow;
 		return arrayHigh[indexLow];
 	}
@@ -112,9 +112,9 @@ public class SuccessArray {
 	@ReturnSecurity("high")
 	@WriteEffect({"low"})
 	public int arrayIndex3() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
-		int indexLow = Definition.lowId(23);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
+		int indexLow = Definition.mkLow(23);
 		arrayLow[indexLow] = varLow;
 		return arrayLow[indexLow];
 	}
@@ -122,9 +122,9 @@ public class SuccessArray {
 	@ReturnSecurity("low")
 	@WriteEffect({"low"})
 	public int arrayIndex4() {
-		int[] arrayLow = Definition.lowId(new int[42]);
-		int varLow = Definition.lowId(42);
-		int indexLow = Definition.lowId(23);
+		int[] arrayLow = Definition.mkLow(new int[42]);
+		int varLow = Definition.mkLow(42);
+		int indexLow = Definition.mkLow(23);
 		arrayLow[indexLow] = varLow;
 		return arrayLow[indexLow];
 	}

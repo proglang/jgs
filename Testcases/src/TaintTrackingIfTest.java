@@ -10,8 +10,8 @@ public class TaintTrackingIfTest {
 	@ReturnSecurity("low")
 	@WriteEffect({"low"})
 	public int forLoop() {
-		int var3Low = Definition.lowId(42);
-		for (int i = Definition.highId(0); i < 100; i++) {
+		int var3Low = Definition.mkLow(42);
+		for (int i = Definition.mkHigh(0); i < 100; i++) {
 //			if (i == 50) {
 //				var3Low = Definition.highId(42);
 //			} else {
@@ -39,10 +39,10 @@ public class TaintTrackingIfTest {
 	}
 
 	@FieldSecurity("low")
-	public int lowField = Definition.lowId(42);
+	public int lowField = Definition.mkLow(42);
 	
 	@FieldSecurity("high")
-	public int highField = Definition.highId(42);
+	public int highField = Definition.mkHigh(42);
 	
 	@ParameterSecurity({})
 	@WriteEffect({"high", "low"})

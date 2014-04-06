@@ -128,7 +128,7 @@ public class SecurityTypeTransformer extends BodyTransformer implements Cancelab
 					}
 					visitedClasses.add(sootClass);
 				}
-				if ((!AnalysisUtils.isMethodOfDefinitionClass(sootMethod)) || AnalysisUtils.isIdFunction(sootMethod, mediator.getAvailableLevels())) {
+				if ((!AnalysisUtils.isMethodOfDefinitionClass(sootMethod)) || AnalysisUtils.isLevelFunction(sootMethod, mediator.getAvailableLevels())) {
 					doAnalysis(sootMethod, graph);
 				}
 			}

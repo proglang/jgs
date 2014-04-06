@@ -10,15 +10,15 @@ public class FailIdFunctions {
 	
 	@ReturnSecurity("low")
 	public int returnLowSecurity() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		// @security("The returned value has a stronger security level than expected.")
 		return high;
 	}
 	
 	public void changeSecurityHigh2Low() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		// @security("The security level of the ID-function argument should be weaker or equal to the level of the function.")
-		Definition.lowId(high);
+		Definition.mkLow(high);
 		return;
 	}
 	

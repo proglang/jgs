@@ -19,7 +19,7 @@ public class SuccessObject {
 	@WriteEffect({"low", "high"})
 	public int accessFieldLow2() {
 		FieldObject fo = new FieldObject();
-		fo = Definition.lowId(fo);
+		fo = Definition.mkLow(fo);
 		return fo.low;
 	}
 
@@ -27,7 +27,7 @@ public class SuccessObject {
 	@WriteEffect({"low", "high"})
 	public int accessFieldLow3() {
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		return fo.low;
 	}
 	
@@ -49,7 +49,7 @@ public class SuccessObject {
 	@WriteEffect({"low", "high"})
 	public int accessFieldHigh2() {
 		FieldObject fo = new FieldObject();
-		fo = Definition.lowId(fo);
+		fo = Definition.mkLow(fo);
 		return fo.high;
 	}
 
@@ -57,7 +57,7 @@ public class SuccessObject {
 	@WriteEffect({"low", "high"})
 	public int accessFieldHigh3() {
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		return fo.high;
 	}
 	
@@ -78,7 +78,7 @@ public class SuccessObject {
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldLow() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		FieldObject fo = new FieldObject();
 		fo.low = low;
 		return;
@@ -86,16 +86,16 @@ public class SuccessObject {
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldLow2() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		fo.low = low;
 		return;
 	}
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldHigh() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		FieldObject fo = new FieldObject();
 		fo.high = high;
 		return;
@@ -103,16 +103,16 @@ public class SuccessObject {
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldHigh2() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		fo.high = high;
 		return;
 	}
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldHigh3() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		FieldObject fo = new FieldObject();
 		fo.high = low;
 		return;
@@ -120,9 +120,9 @@ public class SuccessObject {
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldHigh4() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		fo.high = low;
 		return;
 	}
@@ -136,14 +136,14 @@ public class SuccessObject {
 	@ReturnSecurity("low")
 	public int invokeSimpleLowMethod2() {
 		MethodObject mo = new MethodObject();
-		mo = Definition.lowId(mo);
+		mo = Definition.mkLow(mo);
 		return mo.returnLowSecurity();
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeSimpleLowMethod3() {
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		return mo.returnLowSecurity();
 	}
 	
@@ -156,75 +156,75 @@ public class SuccessObject {
 	@ReturnSecurity("high")
 	public int invokeSimpleHighMethod2() {
 		MethodObject mo = new MethodObject();
-		mo = Definition.lowId(mo);
+		mo = Definition.mkLow(mo);
 		return mo.returnHighSecurity();
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeSimpleHighMethod3() {
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		return mo.returnHighSecurity();
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeLowMethod() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
 		return mo.returnLowSecurity(low);
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeLowMethod2() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.lowId(mo);
+		mo = Definition.mkLow(mo);
 		return mo.returnLowSecurity(low);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeLowMethod3() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		return mo.returnLowSecurity(low);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeHighMethod() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
 		return mo.returnHighSecurity(high);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeHighMethod2() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
 		return mo.returnHighSecurity(low);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeHighMethod3() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.lowId(mo);
+		mo = Definition.mkLow(mo);
 		return mo.returnHighSecurity(high);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeHighMethod4() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		return mo.returnHighSecurity(high);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeHighMethod5() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		return mo.returnHighSecurity(low);
 	}
 	
@@ -245,25 +245,25 @@ public class SuccessObject {
 	
 	@ReturnSecurity("low")
 	public int invokeLowStaticMethod() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		return StaticMethodObject.returnLowSecurity(low);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeLowStaticMethod2() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		return StaticMethodObject.returnLowSecurity(low);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeHighStaticMethod() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		return StaticMethodObject.returnHighSecurity(high);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeHighStaticMethod2() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		return StaticMethodObject.returnHighSecurity(low);
 	}
 
@@ -297,12 +297,12 @@ public class SuccessObject {
 		
 		@ReturnSecurity("low")
 		public int returnLowSecurity() {
-			return Definition.lowId(42);
+			return Definition.mkLow(42);
 		}
 		
 		@ReturnSecurity("high")
 		public int returnHighSecurity() {
-			return Definition.highId(42);
+			return Definition.mkHigh(42);
 		}
 		
 		@ParameterSecurity({"low"})
@@ -323,12 +323,12 @@ public class SuccessObject {
 		
 		@ReturnSecurity("low")
 		public static int returnLowSecurity() {
-			return Definition.lowId(42);
+			return Definition.mkLow(42);
 		}
 		
 		@ReturnSecurity("high")
 		public static int returnHighSecurity() {
-			return Definition.highId(42);
+			return Definition.mkHigh(42);
 		}
 		
 		@ParameterSecurity({"low"})

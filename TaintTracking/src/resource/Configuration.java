@@ -64,6 +64,6 @@ public class Configuration {
 	/**
 	 * DOC
 	 */
-	public static final String SUFFIX_METHOD_ID = "Id";
+	public static final String PREFIX_LEVEL_FUNCTION = "mk";
 
 }

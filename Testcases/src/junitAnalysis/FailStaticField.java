@@ -24,7 +24,7 @@ public class FailStaticField {
 	
 	@WriteEffect({"low", "high"})
 	public void assignHighSecurity() {
-		int high2 = Definition.highId(42);
+		int high2 = Definition.mkHigh(42);
 		// @security("The security level of the assigned value is stronger than the security level of the field.")
 		low = high2;
 		return;

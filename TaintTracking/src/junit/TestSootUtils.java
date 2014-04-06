@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import security.ILevel;
 import soot.ArrayType;
 import soot.Modifier;
 import soot.RefType;
@@ -176,8 +177,10 @@ public class TestSootUtils {
 		Stmt statement2 = new JReturnVoidStmt();
 		Tag tag2 = new SourceLnPosTag(532, 532, 3, 4);
 		statement2.addTag(tag2);
+		Stmt statement3 = new JReturnVoidStmt();
 		assertTrue("Correct line number", AnalysisUtils.extractLineNumber(statement1) == 8);
 		assertTrue("Correct line number", AnalysisUtils.extractLineNumber(statement2) == 532);
+		assertTrue("No line number present", AnalysisUtils.extractLineNumber(statement3) == 0);
 	}
 
 	@Test
@@ -325,6 +328,24 @@ public class TestSootUtils {
 		sootClass2.addMethod(init);
 		init.setDeclaringClass(sootClass2);
 		assertTrue("init of class2 is a init.", AnalysisUtils.isInitMethod(init));
+	}
+	
+	@Test
+	public final void testGenerateLevelFunctionName() {
+		ILevel l1 = new ILevel() {
+			@Override
+			public String getName() {
+				return "high";
+			}
+		};
+		assertTrue("Correct level function name", AnalysisUtils.generateLevelFunctionName(l1).equals("mkHigh"));
+		ILevel l2 = new ILevel() {
+			@Override
+			public String getName() {
+				return "low";
+			}
+		};
+		assertTrue("Correct level function name", AnalysisUtils.generateLevelFunctionName(l2).equals("mkLow"));
 	}
 
 }

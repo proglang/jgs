@@ -153,13 +153,13 @@ public class Definition extends ALevelDefinition {
 
 	@ParameterSecurity({ "high" })
 	@ReturnSecurity("high")
-	public static <T> T highId(T object) {
+	public static <T> T mkHigh(T object) {
 		return object;
 	}
 
 	@ParameterSecurity({ "low" })
 	@ReturnSecurity("low")
-	public static <T> T lowId(T object) {
+	public static <T> T mkLow(T object) {
 		return object;
 	}
 	

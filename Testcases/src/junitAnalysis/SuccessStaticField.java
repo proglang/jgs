@@ -33,21 +33,21 @@ public class SuccessStaticField {
 	
 	@WriteEffect({"low", "high"})
 	public void assignLowSecurity() {
-		int low2 = Definition.lowId(42);
+		int low2 = Definition.mkLow(42);
 		low = low2;
 		return;
 	}
 	
 	@WriteEffect({"low", "high"})
 	public void assignHighSecurity() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		high = low;
 		return;
 	}
 	
 	@WriteEffect({"low", "high"})
 	public void assignHigh2Security() {
-		int high2 = Definition.highId(42);
+		int high2 = Definition.mkHigh(42);
 		high = high2;
 		return;
 	}

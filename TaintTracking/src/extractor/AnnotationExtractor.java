@@ -274,7 +274,7 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 	private MethodEnvironment checkAndBuildMethodEnvironment(SootMethod sootMethod) {
 		SootClass declaringClass = sootMethod.getDeclaringClass();
 		boolean isLibrary = sootMethod.isJavaLibraryMethod();
-		boolean isIdFunction = AnalysisUtils.isIdFunction(sootMethod, mediator.getAvailableLevels());
+		boolean isIdFunction = AnalysisUtils.isLevelFunction(sootMethod, mediator.getAvailableLevels());
 		boolean isClinit = AnalysisUtils.isClinitMethod(sootMethod);
 		boolean isInit = AnalysisUtils.isInitMethod(sootMethod);
 		boolean isVoid = AnalysisUtils.isVoidMethod(sootMethod);
@@ -440,7 +440,7 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 				AnalysisUtils.generatedEmptyStaticInitializer(sootClass);
 			}
 			for (SootMethod sootMethod : sootClass.getMethods()) {
-				if ((!AnalysisUtils.isMethodOfDefinitionClass(sootMethod)) || AnalysisUtils.isIdFunction(sootMethod, mediator.getAvailableLevels())) {
+				if ((!AnalysisUtils.isMethodOfDefinitionClass(sootMethod)) || AnalysisUtils.isLevelFunction(sootMethod, mediator.getAvailableLevels())) {
 					UnitGraph graph = new BriefUnitGraph(sootMethod.retrieveActiveBody());
 					sootMethod = graph.getBody().getMethod();
 					addMethodEnvironmentForMethod(sootMethod);

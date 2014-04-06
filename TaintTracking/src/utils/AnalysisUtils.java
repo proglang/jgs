@@ -408,15 +408,27 @@ public class AnalysisUtils {
 	 * @param levels
 	 * @return
 	 */
-	public static boolean isIdFunction(SootMethod sootMethod, List<ILevel> levels) {
+	public static boolean isLevelFunction(SootMethod sootMethod, List<ILevel> levels) {
 		if (isMethodOfDefinitionClass(sootMethod) && sootMethod.getParameterCount() == 1 && sootMethod.isStatic() && sootMethod.isPublic()) {
 			for (ILevel level : levels) {
-				if (sootMethod.getName().equals(level.getName() + Configuration.SUFFIX_METHOD_ID)) return true;
+				if (sootMethod.getName().equals(generateLevelFunctionName(level))) return true;
 			}
 		}
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param level
+	 * @return
+	 */
+	public static String generateLevelFunctionName(ILevel level) {
+		String levelName = level.getName();
+		String head = levelName.substring(0, 1).toUpperCase();
+		String tail = levelName.substring(1, levelName.length());
+		return Configuration.PREFIX_LEVEL_FUNCTION + head + tail;
+	}
+	
 	/**
 	 * Checks whether the given method is a constructor method. I.e. the corresponding flag of the method is {@code true} and the name of the
 	 * method is equals to {@link SootMethod#constructorName}.

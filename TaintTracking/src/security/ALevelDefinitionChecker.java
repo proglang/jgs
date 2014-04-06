@@ -28,6 +28,7 @@ import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.util.Chain;
+import utils.AnalysisUtils;
 import exception.SootException.SecurityLevelException;
 
 import logging.AnalysisLog;
@@ -154,7 +155,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 	}
 
 	private boolean checkCorrectnesOfConventions(ILevel level) {
-		return checkCorrectnessOfLevelName(level) & checkCorrectnessOfIdFunction(level);
+		return checkCorrectnessOfLevelName(level) & checkCorrectnessOfLevelFunction(level);
 	}
 
 	private boolean checkCorrectnessOfConventionsForAllLevels() {
@@ -180,19 +181,19 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		return validity;
 	}
 
-	private boolean checkCorrectnessOfIdFunction(ILevel level) {
-		String idFunctionName = level.getName() + Configuration.SUFFIX_METHOD_ID;
-		String signatureIdFunction = String.format(ID_SIGNATURE_PATTERN, idFunctionName);
-		if (!getImplementationMethodNames().contains(idFunctionName)) {
+	private boolean checkCorrectnessOfLevelFunction(ILevel level) {
+		String levelFunctionName = AnalysisUtils.generateLevelFunctionName(level);
+		String signatureIdFunction = String.format(ID_SIGNATURE_PATTERN, levelFunctionName);
+		if (!getImplementationMethodNames().contains(levelFunctionName)) {
 			printException(getMsg("checker.id_func.none", signatureIdFunction));
 			unavailableIdFunctions.add(level);
 			return false;
 		} else {
 			boolean valid = true;
 			try {
-				Method method = getImplementationClass().getMethod(idFunctionName, Object.class);
+				Method method = getImplementationClass().getMethod(levelFunctionName, Object.class);
 				if (!Modifier.isStatic(method.getModifiers())) {
-					printException(getMsg("checker.id_func.not_static", String.format(SIGNATURE_ID_INVALID, idFunctionName)));
+					printException(getMsg("checker.id_func.not_static", String.format(SIGNATURE_ID_INVALID, levelFunctionName)));
 					invalidIdFunctions.add(level);
 					valid = false;
 				}
@@ -245,12 +246,12 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 	private boolean checkCorrectnessOfLevelName(ILevel level) {
 		Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(level.getName());
-		boolean validity = m.find();
-		if (validity) {
+		boolean match = m.find();
+		if (match) {
 			printException(getMsg("checker.level.invalid_char", level.getName()));
 			illegalLevelNames.add(level);
 		}
-		return !validity;
+		return !match;
 	}
 
 	private boolean checkNormalValiditiyOfImplemenation() {
@@ -264,8 +265,8 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		List<String> levelNames = getLevelNames();
 		for (Method method : getImplementationMethods()) {
 			String methodName = method.getName();
-			if (methodName.endsWith(Configuration.SUFFIX_METHOD_ID)) {
-				String possibleLevelName = methodName.substring(0, methodName.length() - Configuration.SUFFIX_METHOD_ID.length());
+			if (methodName.startsWith(Configuration.PREFIX_LEVEL_FUNCTION)) {
+				String possibleLevelName = methodName.substring(Configuration.PREFIX_LEVEL_FUNCTION.length(), methodName.length());
 				if (!levelNames.contains(possibleLevelName)) {
 					Class<?>[] parameters = method.getParameterTypes();
 					Class<?> returnType = method.getReturnType();

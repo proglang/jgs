@@ -12,7 +12,7 @@ public class FailObject {
 	@WriteEffect({"low", "high"})
 	public int accessFieldLow() {
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		// @security("The returned value has a stronger security level than expected.")
 		return fo.low;
 	}
@@ -21,7 +21,7 @@ public class FailObject {
 	@WriteEffect({"low", "high"})
 	public int accessFieldHigh() {
 		FieldObject fo = new FieldObject();
-		fo = Definition.lowId(fo);
+		fo = Definition.mkLow(fo);
 		// @security("The returned value has a stronger security level than expected.")
 		return fo.high;
 	}
@@ -30,7 +30,7 @@ public class FailObject {
 	@WriteEffect({"low", "high"})
 	public int accessFieldHigh2() {
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		// @security("The returned value has a stronger security level than expected.")
 		return fo.high;
 	}
@@ -43,7 +43,7 @@ public class FailObject {
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldLow() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		FieldObject fo = new FieldObject();
 		// @security("The security level of the assigned value is stronger than the security level of the field.")
 		fo.low = high;
@@ -52,9 +52,9 @@ public class FailObject {
 	
 	@WriteEffect({"low", "high"})
 	public void assignFieldLow2() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		FieldObject fo = new FieldObject();
-		fo = Definition.highId(fo);
+		fo = Definition.mkHigh(fo);
 		// @security("The security level of the assigned value is stronger than the security level of the field.")
 		fo.low = high;
 		return;
@@ -62,7 +62,7 @@ public class FailObject {
 	
 	@WriteEffect({"low", "high"})
 	public void assignStaticFieldLow() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		// @security("The security level of the assigned value is stronger than the security level of the field.")
 		StaticFieldObject.low = high;
 		return;
@@ -71,7 +71,7 @@ public class FailObject {
 	@ReturnSecurity("low")
 	public int invokeSimpleLowMethod() {
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnLowSecurity();
 	}
@@ -86,7 +86,7 @@ public class FailObject {
 	@ReturnSecurity("low")
 	public int invokeSimpleHighMethod2() {
 		MethodObject mo = new MethodObject();
-		mo = Definition.lowId(mo);
+		mo = Definition.mkLow(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnHighSecurity();
 	}
@@ -94,23 +94,23 @@ public class FailObject {
 	@ReturnSecurity("low")
 	public int invokeSimpleHighMethod3() {
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnHighSecurity();
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeLowMethod() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnLowSecurity(low);
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeHighMethod() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnHighSecurity(high);
@@ -118,7 +118,7 @@ public class FailObject {
 	
 	@ReturnSecurity("low")
 	public int invokeHighMethod2() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnHighSecurity(low);
@@ -126,47 +126,47 @@ public class FailObject {
 	
 	@ReturnSecurity("low")
 	public int invokeHighMethod3() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.lowId(mo);
+		mo = Definition.mkLow(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnHighSecurity(high);
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeHighMethod4() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnHighSecurity(high);
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeHighMethod5() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		MethodObject mo = new MethodObject();
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnHighSecurity(low);
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeHighMethod6() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
 		// @security("Security level of argument is stronger than the expected level of the parameter.")
-		mo = Definition.highId(mo);
+		mo = Definition.mkHigh(mo);
 		// @security("The returned value has a stronger security level than expected.")
 		return mo.returnLowSecurity(high);
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeHighMethod7() {
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		MethodObject mo = new MethodObject();
 		// @security("Security level of argument is stronger than the expected level of the parameter.")
-		mo = Definition.lowId(mo);
+		mo = Definition.mkLow(mo);
 		return mo.returnLowSecurity(high);
 	}
 	
@@ -179,20 +179,20 @@ public class FailObject {
 	@ReturnSecurity("low")
 	public int invokeLowStaticMethod() {
 		// @security("Security level of argument is stronger than the expected level of the parameter.")
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		return StaticMethodObject.returnLowSecurity(high);
 	}
 	
 	@ReturnSecurity("high")
 	public int invokeLowStaticMethod2() {
 		// @security("Security level of argument is stronger than the expected level of the parameter.")
-		int high = Definition.highId(42);
+		int high = Definition.mkHigh(42);
 		return StaticMethodObject.returnLowSecurity(high);
 	}
 	
 	@ReturnSecurity("low")
 	public int invokeHighStaticMethod() {
-		int low = Definition.lowId(42);
+		int low = Definition.mkLow(42);
 		// @security("The returned value has a stronger security level than expected.")
 		return StaticMethodObject.returnHighSecurity(low);
 	}
@@ -227,12 +227,12 @@ public class FailObject {
 		
 		@ReturnSecurity("low")
 		public int returnLowSecurity() {
-			return Definition.lowId(42);
+			return Definition.mkLow(42);
 		}
 		
 		@ReturnSecurity("high")
 		public int returnHighSecurity() {
-			return Definition.highId(42);
+			return Definition.mkHigh(42);
 		}
 		
 		@ParameterSecurity({"low"})
@@ -253,12 +253,12 @@ public class FailObject {
 		
 		@ReturnSecurity("low")
 		public static int returnLowSecurity() {
-			return Definition.lowId(42);
+			return Definition.mkLow(42);
 		}
 		
 		@ReturnSecurity("high")
 		public static int returnHighSecurity() {
-			return Definition.highId(42);
+			return Definition.mkHigh(42);
 		}
 		
 		@ParameterSecurity({"low"})
