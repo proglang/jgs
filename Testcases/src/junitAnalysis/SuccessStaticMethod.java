@@ -1,7 +1,6 @@
 package junitAnalysis;
 
-import security.Definition;
-import security.Definition.*;
+import static security.Definition.*;
 
 public class SuccessStaticMethod {
 	
@@ -19,7 +18,7 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int simpleLowSecurityMethod() {
-		return Definition.mkLow(42);
+		return mkLow(42);
 	}
 	
 	@ReturnSecurity("low")
@@ -29,7 +28,7 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("high")
 	public static int simpleHighSecurityMethod() {
-		return Definition.mkHigh(42);
+		return mkHigh(42);
 	}
 	
 	@ReturnSecurity("high")
@@ -48,7 +47,7 @@ public class SuccessStaticMethod {
 	}
 	
 	public static void invokeOneLowParameterVoidMethod() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		oneLowParameterVoidMethod(low);
 		return;
 	}
@@ -61,7 +60,7 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int invokeOneLowParameterLowMethod() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		int result = oneLowParameterLowMethod(low);
 		return result;
 	}
@@ -69,19 +68,19 @@ public class SuccessStaticMethod {
 	@ParameterSecurity({"low"})
 	@ReturnSecurity("high")
 	public static int oneLowParameterHighMethod(int low) {
-		return Definition.mkHigh(42);
+		return mkHigh(42);
 	}
 
 	@ReturnSecurity("high")
 	public static int invokeOneLowParameterHighMethod() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		int result = oneLowParameterHighMethod(low);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeOneLowParameterHighMethod2() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		int result = oneLowParameterLowMethod(low);
 		return result;
 	}
@@ -92,13 +91,13 @@ public class SuccessStaticMethod {
 	}
 	
 	public static void invokeOneHighParameterVoidMethod() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		oneHighParameterVoidMethod(high);
 		return;
 	}
 	
 	public static void invokeOneHighParameterVoidMethod2() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		oneHighParameterVoidMethod(low);
 		return;
 	}
@@ -106,26 +105,26 @@ public class SuccessStaticMethod {
 	@ParameterSecurity({"high"})
 	@ReturnSecurity("low")
 	public static int oneHighParameterLowMethod(int high) {
-		return Definition.mkLow(42);
+		return mkLow(42);
 	}
 	
 	@ReturnSecurity("low")
 	public static int invokeOneHighParameterLowMethod() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		int result = oneHighParameterLowMethod(high);
 		return result;
 	}
 	
 	@ReturnSecurity("low")
 	public static int invokeOneHighParameterLowMethod2() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		int result = oneHighParameterLowMethod(low);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeOneHighParameterLowMethod3() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		int result = oneHighParameterLowMethod(high);
 		return result;
 	}
@@ -138,21 +137,21 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("high")
 	public static int invokeOneHighParameterHighMethod() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		int result = oneHighParameterHighMethod(high);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeOneHighParameterHighMethod2() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		int result = oneHighParameterHighMethod(low);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeOneHighParameterHighMethod3() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		int result = oneHighParameterLowMethod(high);
 		return result;
 	}
@@ -165,16 +164,16 @@ public class SuccessStaticMethod {
 
 	@ReturnSecurity("low")
 	public static int invokeTwoLowLowParameterLowMethod() {
-		int low1 = Definition.mkLow(42);
-		int low2 = Definition.mkLow(42);
+		int low1 = mkLow(42);
+		int low2 = mkLow(42);
 		int result = twoLowLowParameterLowMethod(low1, low2);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoLowLowParameterLowMethod2() {
-		int low1 = Definition.mkLow(42);
-		int low2 = Definition.mkLow(42);
+		int low1 = mkLow(42);
+		int low2 = mkLow(42);
 		int result = twoLowLowParameterLowMethod(low1, low2);
 		return result;
 	}
@@ -187,24 +186,24 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int invokeTwoLowHighParameterLowMethod() {
-		int low = Definition.mkLow(42);
-		int high = Definition.mkHigh(42);
+		int low = mkLow(42);
+		int high = mkHigh(42);
 		int result = twoLowHighParameterLowMethod(low, high);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoLowHighParameterLowMethod2() {
-		int low = Definition.mkLow(42);
-		int high = Definition.mkHigh(42);
+		int low = mkLow(42);
+		int high = mkHigh(42);
 		int result = twoLowHighParameterLowMethod(low, high);
 		return result;
 	}
 	
 	@ReturnSecurity("low")
 	public static int invokeTwoLowHighParameterLowMethod3() {
-		int low1 = Definition.mkLow(42);
-		int low2 = Definition.mkLow(42);
+		int low1 = mkLow(42);
+		int low2 = mkLow(42);
 		int result = twoLowHighParameterLowMethod(low1, low2);
 		return result;
 	}
@@ -217,24 +216,24 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoHighLowParameterLowMethod() {
-		int low = Definition.mkLow(42);
-		int high = Definition.mkHigh(42);
+		int low = mkLow(42);
+		int high = mkHigh(42);
 		int result = twoHighLowParameterHighMethod(high, low);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoHighLowParameterLowMethod2() {
-		int low1 = Definition.mkLow(42);
-		int low2 = Definition.mkLow(42);
+		int low1 = mkLow(42);
+		int low2 = mkLow(42);
 		int result = twoHighLowParameterHighMethod(low1, low2);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoHighLowParameterLowMethod3() {
-		int low1 = Definition.mkLow(42);
-		int low2 = Definition.mkLow(42);
+		int low1 = mkLow(42);
+		int low2 = mkLow(42);
 		int result = twoLowLowParameterLowMethod(low1, low2);
 		return result;
 	}
@@ -247,16 +246,16 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoHighHighParameterLowMethod() {
-		int high1 = Definition.mkHigh(42);
-		int high2 = Definition.mkHigh(42);
+		int high1 = mkHigh(42);
+		int high2 = mkHigh(42);
 		int result = twoHighHighParameterHighMethod(high1, high2);
 		return result;
 	}
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoHighHighParameterLowMethod2() {
-		int low1 = Definition.mkLow(42);
-		int low2 = Definition.mkLow(42);
+		int low1 = mkLow(42);
+		int low2 = mkLow(42);
 		int result = twoHighHighParameterHighMethod(low1, low2);
 		return result;
 	}
@@ -264,8 +263,8 @@ public class SuccessStaticMethod {
 	
 	@ReturnSecurity("high")
 	public static int invokeTwoHighHighParameterLowMethod3() {
-		int low1 = Definition.mkLow(42);
-		int low2 = Definition.mkLow(42);
+		int low1 = mkLow(42);
+		int low2 = mkLow(42);
 		int result = twoLowLowParameterLowMethod(low1, low2);
 		return result;
 	}

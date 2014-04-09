@@ -1,6 +1,6 @@
 package junitAnalysis;
 
-import security.Definition.*;
+import static security.Definition.*;
 
 public class Invalid17 {
 	

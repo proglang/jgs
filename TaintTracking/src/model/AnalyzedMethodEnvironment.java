@@ -55,7 +55,8 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 	 */
 	public AnalyzedMethodEnvironment(MethodEnvironment me) {
 		super(me.getSootMethod(), me.isIdFunction(), me.isClinit(), me.isClinit(), me.isVoid(), me.isSootSecurityMethod(), me
-				.getMethodParameters(), me.getReturnLevel(), me.getWriteEffects(), me.getClassWriteEffects(), me.getLog(), me.getLevelMediator());
+				.getMethodParameters(), me.getReturnLevel(), me.getWriteEffects(), me.getClassWriteEffects(), me.getContraints(), me.getLog(), me
+				.getLevelMediator());
 	}
 
 	/**

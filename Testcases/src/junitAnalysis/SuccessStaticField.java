@@ -1,7 +1,6 @@
 package junitAnalysis;
 
-import security.Definition;
-import security.Definition.*;
+import static security.Definition.*;
 
 @WriteEffect({"low", "high"})
 public class SuccessStaticField {
@@ -33,21 +32,21 @@ public class SuccessStaticField {
 	
 	@WriteEffect({"low", "high"})
 	public void assignLowSecurity() {
-		int low2 = Definition.mkLow(42);
+		int low2 = mkLow(42);
 		low = low2;
 		return;
 	}
 	
 	@WriteEffect({"low", "high"})
 	public void assignHighSecurity() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		high = low;
 		return;
 	}
 	
 	@WriteEffect({"low", "high"})
 	public void assignHigh2Security() {
-		int high2 = Definition.mkHigh(42);
+		int high2 = mkHigh(42);
 		high = high2;
 		return;
 	}

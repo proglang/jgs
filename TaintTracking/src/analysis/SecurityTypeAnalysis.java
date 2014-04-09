@@ -7,6 +7,9 @@ import interfaces.Cancelable;
 import java.util.ArrayList;
 import java.util.List;
 
+import constraints.Constraints;
+import constraints.IConstraint;
+
 import analysis.LocalsMap;
 
 import logging.AnalysisLog;
@@ -14,6 +17,7 @@ import model.AnalyzedMethodEnvironment;
 import model.MethodEnvironment;
 import resource.Configuration;
 import security.ILevelMediator;
+import soot.G;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IfStmt;
@@ -96,6 +100,10 @@ public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> i
 		}
 		analyzedMethodEnvironment = ame;
 		if (valid) {
+			Constraints cons = analyzedMethodEnvironment.getContraints();
+			for (IConstraint con : cons.getConstraints()) {
+				G.v().out.println(con.toString());
+			}			
 			doAnalysis();
 		} else {
 			error(getMsg("analysis.fail.creation_analyzed_method", AnalysisUtils.generateMethodSignature(sootMethod,

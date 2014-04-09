@@ -1,6 +1,4 @@
-import security.Definition.ParameterSecurity;
-import security.Definition.ReturnSecurity;
-import security.Definition.WriteEffect;
+import static security.Definition.*;
 
 @WriteEffect({})
 public class C2 extends B {

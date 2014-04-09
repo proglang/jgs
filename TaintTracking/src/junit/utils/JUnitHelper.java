@@ -48,6 +48,11 @@ public class JUnitHelper {
 	 * DOC
 	 */
 	private final static String[] WHOLE_PROGRAM = new String[] { "-w" };
+//	
+//	/**
+//	 * DOC
+//	 */
+//	private final static String[] VERBOSE = new String[] { "-v" };
 
 	/**
 	 * DOC

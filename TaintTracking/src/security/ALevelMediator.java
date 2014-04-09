@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import constraints.Constraints;
+
+
 import annotation.SootAnnotationDAO;
 
 import resource.Configuration;
@@ -26,6 +29,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 	private static final String EXCEPTION_EXTRACTION_METHOD = "Incorrect extraction of the write effects for method '%s'.";
 	private static final String EXCEPTION_EXTRACTION_PARAM = "Incorrect extraction of the parameter levels for method '%s'.";
 	private static final String EXCEPTION_EXTRACTION_RETURN = "Incorrect extraction of the return level for method '%s'.";
+	private static final String EXCEPTION_EXTRACTION_CONSTRAINTS = "Incorrect extraction of the contraints for method '%s'.";
 	private static final String EXCEPTION_GLB_EMPTY_LIST = "Invalid attempt to get the greatest lower bound of an empty level list.";
 	private static final String EXCEPTION_LUB_EMPTY_LIST = "Invalid attempt to get the least upper bound of an empty level list.";
 	protected final ILevelDefinition definition;
@@ -120,6 +124,20 @@ public abstract class ALevelMediator implements ILevelMediator {
 					Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
 		}
 	}
+	
+	public final Constraints extractConstraints(SootMethod sootMethod) throws ExtractionException {
+		try {
+			VisibilityAnnotationTag vt = AnalysisUtils.extractVisibilityAnnotationTag(sootMethod);
+			AnnotationTag at = AnalysisUtils.extractAnnotationTagWithType(vt,
+					AnalysisUtils.getJNISignature(definition.getAnnotationClassConstraints()));
+			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassConstraints(), at);
+			return definition.extractConstraints(dao);
+		} catch (Exception e) {
+			throw new ExtractionException(String.format(EXCEPTION_EXTRACTION_CONSTRAINTS, AnalysisUtils.generateMethodSignature(sootMethod,
+					Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
+					Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
+		}
+	}
 
 	public List<ILevel> getAvailableLevels() {
 		return Arrays.asList(this.definition.getLevels());
@@ -199,6 +217,10 @@ public abstract class ALevelMediator implements ILevelMediator {
 		return this.definition.getLibraryMethodWriteEffects(sootMethod);
 	}
 
+	public Constraints getLibraryConstraints(SootMethod sootMethod) {
+		return this.definition.getLibraryConstraints(sootMethod);
+	}
+	
 	public final boolean hasClassWriteEffectAnnotation(SootClass sootClass) {
 		return hasAnnotationWithType(sootClass, AnalysisUtils.getJNISignature(this.definition.getAnnotationClassEffects()));
 	}
@@ -217,6 +239,10 @@ public abstract class ALevelMediator implements ILevelMediator {
 
 	public final boolean hasReturnSecurityAnnotation(SootMethod sootMethod) {
 		return hasAnnotationWithType(sootMethod, AnalysisUtils.getJNISignature(this.definition.getAnnotationClassReturnLevel()));
+	}
+	
+	public final boolean hasConstraintsAnnotation(SootMethod sootMethod) {
+		return hasAnnotationWithType(sootMethod, AnalysisUtils.getJNISignature(this.definition.getAnnotationClassConstraints()));
 	}
 
 	public boolean isEquals(ILevel level1, ILevel level2) {

@@ -1,7 +1,6 @@
 package junitAnalysis;
 
-import security.Definition;
-import security.Definition.*;
+import static security.Definition.*;
 
 public class FailIdFunctions {
 	
@@ -10,15 +9,15 @@ public class FailIdFunctions {
 	
 	@ReturnSecurity("low")
 	public int returnLowSecurity() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		// @security("The returned value has a stronger security level than expected.")
 		return high;
 	}
 	
 	public void changeSecurityHigh2Low() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		// @security("The security level of the ID-function argument should be weaker or equal to the level of the function.")
-		Definition.mkLow(high);
+		mkLow(high);
 		return;
 	}
 	

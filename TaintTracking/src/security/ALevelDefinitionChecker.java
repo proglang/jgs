@@ -15,6 +15,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import constraints.ConstraintParameterRef;
+import constraints.ConstraintReturnRef;
+import constraints.Constraints;
+import constraints.EQConstraint;
+import constraints.LEQConstraint;
+
+
 import annotation.JavaAnnotationDAO;
 
 import resource.Configuration;
@@ -140,12 +147,17 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 			printException(getMsg("checker.annotation.no_annotation_class", getMsg("other.return_level")));
 			return false;
 		}
+		if (implementation.getAnnotationClassConstraints() == null) {
+			printException(getMsg("checker.annotation.no_annotation_class", getMsg("other.constraints")));
+			return false;
+		}
 		Map<Class<? extends Annotation>, ElementType[]> annotations = new HashMap<Class<? extends Annotation>, ElementType[]>();
 		annotations.put(implementation.getAnnotationClassFieldLevel(), new ElementType[] { ElementType.FIELD });
 		annotations.put(implementation.getAnnotationClassParameterLevel(), new ElementType[] { ElementType.METHOD, ElementType.CONSTRUCTOR });
 		annotations.put(implementation.getAnnotationClassReturnLevel(), new ElementType[] { ElementType.METHOD });
 		annotations.put(implementation.getAnnotationClassEffects(), new ElementType[] { ElementType.METHOD, ElementType.CONSTRUCTOR,
 				ElementType.TYPE });
+		annotations.put(implementation.getAnnotationClassConstraints(), new ElementType[] { ElementType.METHOD, ElementType.CONSTRUCTOR });
 		for (Class<? extends Annotation> annotation : annotations.keySet()) {
 			if (!checkConventionsOfAnnotationClass(annotation, annotations.get(annotation))) {
 				validity = false;
@@ -199,6 +211,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 				}
 				boolean existsReturnAnnotation = false;
 				boolean existsParameterAnnotation = false;
+				boolean existsConstraintsAnnotation = false;
 				for (Annotation annotation : method.getAnnotations()) {
 					if (annotation.annotationType().equals(implementation.getAnnotationClassReturnLevel())) {
 						try {
@@ -227,9 +240,23 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 							printException(getMsg("checker.annotation.error_conversion", getMsg("other.return_level")));
 							return false;
 						}
+					} else if (annotation.annotationType().equals(implementation.getAnnotationClassConstraints())) {
+						try {
+							existsConstraintsAnnotation = true;
+							Constraints constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation));
+							if (constraints.contains(new LEQConstraint(new ConstraintParameterRef(0), level))
+									&& constraints.contains(new EQConstraint(new ConstraintReturnRef(), level)) && constraints.size() == 2) {
+								printException(getMsg("checker.id_func.invalid_constraints", signatureIdFunction));
+								invalidIdFunctionAnnotation.add(level);
+								valid = false;
+							}
+						} catch (Exception e) {
+							printException(getMsg("checker.annotation.error_conversion", getMsg("other.constraints")));
+							return false;
+						}
 					}
 				}
-				if (!existsReturnAnnotation || !existsParameterAnnotation) {
+				if (!existsReturnAnnotation || !existsParameterAnnotation || !existsConstraintsAnnotation) {
 					printException(getMsg("checker.id_func.no_annotation", signatureIdFunction));
 					unavailableIdFunctionAnnotation.add(level);
 					valid = false;
@@ -266,7 +293,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		for (Method method : getImplementationMethods()) {
 			String methodName = method.getName();
 			if (methodName.startsWith(Configuration.PREFIX_LEVEL_FUNCTION)) {
-				String possibleLevelName = methodName.substring(Configuration.PREFIX_LEVEL_FUNCTION.length(), methodName.length());
+				String possibleLevelName = methodName.substring(Configuration.PREFIX_LEVEL_FUNCTION.length(), methodName.length()).toLowerCase();
 				if (!levelNames.contains(possibleLevelName)) {
 					Class<?>[] parameters = method.getParameterTypes();
 					Class<?> returnType = method.getReturnType();

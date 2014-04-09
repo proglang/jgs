@@ -7,6 +7,14 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
+import constraints.ConstraintParameterRef;
+import constraints.ConstraintReturnRef;
+import constraints.Constraints;
+import constraints.EQConstraint;
+import constraints.IConstraintComponent;
+import constraints.LEQConstraint;
+
+
 import annotation.IAnnotationDAO;
 
 import security.ALevel;
@@ -14,6 +22,14 @@ import security.ALevelDefinition;
 import security.ILevel;
 
 public class Definition extends ALevelDefinition {
+	
+	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface MethodConstraints {
+		
+		String[] value() default {};
+
+	}
 	
 	@Target(ElementType.FIELD)
 	@Retention(RetentionPolicy.RUNTIME)
@@ -87,7 +103,7 @@ public class Definition extends ALevelDefinition {
 	private final ILevel high = new StringLevel("high");
 	
 	public Definition() {
-		super(FieldSecurity.class, ParameterSecurity.class, ReturnSecurity.class, WriteEffect.class);
+		super(FieldSecurity.class, ParameterSecurity.class, ReturnSecurity.class, WriteEffect.class, MethodConstraints.class);
 	}
 
 	@Override
@@ -150,15 +166,60 @@ public class Definition extends ALevelDefinition {
 		}
 		return list;
 	}
+	
+	
+	@Override
+	public Constraints extractConstraints(IAnnotationDAO dao) {
+		Constraints container = new Constraints();
+		List<String> constraints = dao.getStringArrayFor("value");
+		for (String constraint : constraints) {
+			if (constraint.contains("<=")) {
+				String[] components = constraint.split("<=");
+				if (components.length == 2) {
+					String rhs = components[0].trim();
+					String lhs = components[1].trim();
+					container.add(new LEQConstraint(convertIntoConstraintComponent(lhs), convertIntoConstraintComponent(rhs)));
+				}
+				// Error
+			} else if (constraint.contains("=")) {
+				String[] components = constraint.split("=");
+				if (components.length == 2) {
+					String rhs = components[0].trim();
+					String lhs = components[1].trim();
+					container.add(new EQConstraint(convertIntoConstraintComponent(lhs), convertIntoConstraintComponent(rhs)));
+				}
+				// Error
+				
+			}
+			// Error
+			
+		}
+		return container;
+	}
+	
+	private IConstraintComponent convertIntoConstraintComponent(String component) {
+		if (component.startsWith("@")) {
+			String position = component.substring(1);
+			if (position.equals("return")) {
+				return new ConstraintReturnRef();
+			} else {
+				return new ConstraintParameterRef(Integer.valueOf(position));
+			}
+		} else {
+			return new StringLevel(component);
+		}
+	}
 
 	@ParameterSecurity({ "high" })
 	@ReturnSecurity("high")
+	@MethodConstraints({"@0 <= high", "@return = high"})
 	public static <T> T mkHigh(T object) {
 		return object;
 	}
 
 	@ParameterSecurity({ "low" })
 	@ReturnSecurity("low")
+	@MethodConstraints({"@0 <= low", "@return = low"})
 	public static <T> T mkLow(T object) {
 		return object;
 	}

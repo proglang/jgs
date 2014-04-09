@@ -1,7 +1,6 @@
 package junitAnalysis;
 
-import security.Definition;
-import security.Definition.*;
+import static security.Definition.*;
 
 public class SuccessIdFunctions {
 	
@@ -10,25 +9,25 @@ public class SuccessIdFunctions {
 	
 	@ReturnSecurity("high")
 	public int returnHighSecurity() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		return high;
 	}
 	
 	@ReturnSecurity("low")
 	public int returnLowSecurity() {
-		int low = Definition.mkLow(42);
+		int low = mkLow(42);
 		return low;
 	}
 	
 	public void changeSecurityLow2High() {
-		int low = Definition.mkLow(42);
-		Definition.mkHigh(low);
+		int low = mkLow(42);
+		mkHigh(low);
 		return;
 	}
 	
 	public void changeSecurityHigh2High() {
-		int high = Definition.mkHigh(42);
-		Definition.mkHigh(high);
+		int high = mkHigh(42);
+		mkHigh(high);
 		return;
 	}
 }

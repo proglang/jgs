@@ -1,7 +1,6 @@
 package junitAnalysis;
 
-import security.Definition;
-import security.Definition.*;
+import static security.Definition.*;
 
 @WriteEffect({})
 public class FailStaticMethod {
@@ -12,12 +11,12 @@ public class FailStaticMethod {
 	@ReturnSecurity("low")
 	public static int failingSimpleLowSecurityMethod() {
 		// @security("The returned value has a stronger security level than expected.")
-		return Definition.mkHigh(42);
+		return mkHigh(42);
 	}
 	
 	@ReturnSecurity("high")
 	public static int simpleHighSecurityMethod() {
-		return Definition.mkHigh(42);
+		return mkHigh(42);
 	}
 	
 	@ReturnSecurity("low")
@@ -32,7 +31,7 @@ public class FailStaticMethod {
 	}
 	
 	public static void failingInvokeOneLowParameterVoidMethod() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		// @security("Security level of argument is stronger than the expected level of the parameter.")
 		oneLowParameterVoidMethod(high);
 		return;
@@ -46,7 +45,7 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeOneLowParameterLowMethod() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		// @security("Security level of argument is stronger than the expected level of the parameter.")
 		int result = oneLowParameterLowMethod(high);
 		return result;
@@ -55,12 +54,12 @@ public class FailStaticMethod {
 	@ParameterSecurity({"low"})
 	@ReturnSecurity("high")
 	public static int oneLowParameterHighMethod(int low) {
-		return Definition.mkHigh(42);
+		return mkHigh(42);
 	}
 
 	@ReturnSecurity("high")
 	public static int failingInvokeOneLowParameterHighMethod() {
-		int high = Definition.mkHigh(42);
+		int high = mkHigh(42);
 		// @security("Security level of argument is stronger than the expected level of the parameter.")
 		int result = oneLowParameterHighMethod(high);
 		return result;
@@ -74,8 +73,8 @@ public class FailStaticMethod {
 
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoLowLowParameterLowMethod() {
-		int high = Definition.mkHigh(42);
-		int low = Definition.mkLow(42);
+		int high = mkHigh(42);
+		int low = mkLow(42);
 		// @security("Security level of argument 1 is stronger than the expected level of the parameter.")
 		int result = twoLowLowParameterLowMethod(high, low);
 		return result;
@@ -83,8 +82,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoLowLowParameterLowMethod2() {
-		int high = Definition.mkHigh(42);
-		int low = Definition.mkLow(42);
+		int high = mkHigh(42);
+		int low = mkLow(42);
 		// @security("Security level of argument 2 is stronger than the expected level of the parameter.")
 		int result = twoLowLowParameterLowMethod(low, high);
 		return result;
@@ -92,8 +91,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoLowLowParameterLowMethod3() {
-		int high1 = Definition.mkHigh(42);
-		int high2 = Definition.mkHigh(42);
+		int high1 = mkHigh(42);
+		int high2 = mkHigh(42);
 		// @security("Security level of argument 1 is stronger than the expected level of the parameter.")
 		// @security("Security level of argument 2 is stronger than the expected level of the parameter.")
 		int result = twoLowLowParameterLowMethod(high1, high2);
@@ -108,8 +107,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoLowHighParameterLowMethod() {
-		int low = Definition.mkLow(42);
-		int high = Definition.mkHigh(42);
+		int low = mkLow(42);
+		int high = mkHigh(42);
 		// @security("Security level of argument 1 is stronger than the expected level of the parameter.")
 		int result = twoLowHighParameterLowMethod(high, low);
 		return result;
@@ -117,8 +116,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoLowHighParameterLowMethod2() {
-		int high1 = Definition.mkHigh(42);
-		int high2 = Definition.mkHigh(42);
+		int high1 = mkHigh(42);
+		int high2 = mkHigh(42);
 		// @security("Security level of argument 1 is stronger than the expected level of the parameter.")
 		int result = twoLowHighParameterLowMethod(high1, high2);
 		return result;
@@ -132,8 +131,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("high")
 	public static int failingInvokeTwoHighLowParameterLowMethod() {
-		int low = Definition.mkLow(42);
-		int high = Definition.mkHigh(42);
+		int low = mkLow(42);
+		int high = mkHigh(42);
 		// @security("Security level of argument 2 is stronger than the expected level of the parameter.")
 		int result = twoHighLowParameterHighMethod(low, high);
 		return result;
@@ -141,8 +140,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("high")
 	public static int failingInvokeTwoHighLowParameterLowMethod2() {
-		int high1 = Definition.mkHigh(42);
-		int high2 = Definition.mkHigh(42);
+		int high1 = mkHigh(42);
+		int high2 = mkHigh(42);
 		// @security("Security level of argument 2 is stronger than the expected level of the parameter.")
 		int result = twoHighLowParameterHighMethod(high1, high2);
 		return result;
@@ -150,8 +149,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoHighLowParameterLowMethod3() {
-		int low = Definition.mkLow(42);
-		int high = Definition.mkHigh(42);
+		int low = mkLow(42);
+		int high = mkHigh(42);
 		int result = twoHighLowParameterHighMethod(high, low);
 		// @security("The returned value has a stronger security level than expected.")
 		return result;
@@ -159,8 +158,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoHighLowParameterLowMethod4() {
-		int low = Definition.mkLow(42);
-		int high = Definition.mkHigh(42);
+		int low = mkLow(42);
+		int high = mkHigh(42);
 		// @security("Security level of argument 2 is stronger than the expected level of the parameter.")
 		int result = twoHighLowParameterHighMethod(low, high);
 		// @security("The returned value has a stronger security level than expected.")
@@ -169,8 +168,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoHighLowParameterLowMethod5() {
-		int high1 = Definition.mkHigh(42);
-		int high2 = Definition.mkHigh(42);
+		int high1 = mkHigh(42);
+		int high2 = mkHigh(42);
 		// @security("Security level of argument 2 is stronger than the expected level of the parameter.")
 		int result = twoHighLowParameterHighMethod(high1, high2);
 		// @security("The returned value has a stronger security level than expected.")
@@ -185,8 +184,8 @@ public class FailStaticMethod {
 	
 	@ReturnSecurity("low")
 	public static int failingInvokeTwoHighHighParameterLowMethod() {
-		int high1 = Definition.mkHigh(42);
-		int high2 = Definition.mkHigh(42);
+		int high1 = mkHigh(42);
+		int high2 = mkHigh(42);
 		int result = twoHighHighParameterHighMethod(high1, high2);
 		// @security("The returned value has a stronger security level than expected.")
 		return result;

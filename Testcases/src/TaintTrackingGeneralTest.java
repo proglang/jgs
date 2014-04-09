@@ -1,7 +1,4 @@
-
-import security.Definition;
-import security.Definition.*;
-
+import static security.Definition.*;
 
 @SuppressWarnings("unused")
 public class TaintTrackingGeneralTest {
@@ -50,8 +47,8 @@ public class TaintTrackingGeneralTest {
 	@ReturnSecurity("void")
 	@ParameterSecurity({})
 	public void ifTest() {
-		boolean cond1 = Definition.mkHigh(false);
-		boolean cond2 = Definition.mkLow(true);
+		boolean cond1 = mkHigh(false);
+		boolean cond2 = mkLow(true);
 		if (cond1 || cond2) {
 			int i = 1;
 		}
@@ -116,8 +113,8 @@ public class TaintTrackingGeneralTest {
 	@ReturnSecurity("low")
 	@ParameterSecurity({ "low" })
 	public static int returnInteger(int i) {
-		boolean res = Definition.mkHigh(false);
-		int j = Definition.mkLow(3);
+		boolean res = mkHigh(false);
+		int j = mkLow(3);
 		return res ? i : j;
 	}
 
@@ -125,7 +122,7 @@ public class TaintTrackingGeneralTest {
 	@ReturnSecurity("void")
 	@ParameterSecurity({})
 	public void assignField2() {
-		TaintTrackingTest2 a = Definition.mkHigh(new TaintTrackingTest2());
+		TaintTrackingTest2 a = mkHigh(new TaintTrackingTest2());
 		statField = a.returnInteger(2);
 	}
 
@@ -133,7 +130,7 @@ public class TaintTrackingGeneralTest {
 	@ReturnSecurity("high")
 	@ParameterSecurity({})
 	public static String secretSource() {
-		String result = Definition.mkHigh("Secret!");
+		String result = mkHigh("Secret!");
 		return result;
 	}
 
@@ -148,7 +145,7 @@ public class TaintTrackingGeneralTest {
 	@ReturnSecurity("void")
 	@ParameterSecurity({"high"})
 	public static void confidentialSink(String s) {
-		//Definition.highId(true);
+		//highId(true);
 		System.out.println("XXXX");
 	}
 	

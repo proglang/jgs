@@ -3,6 +3,9 @@ package security;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import constraints.Constraints;
+
+
 import annotation.IAnnotationDAO;
 
 import security.ILevel;
@@ -21,6 +24,8 @@ public interface ILevelDefinition {
 	public List<ILevel> extractParameterLevels(IAnnotationDAO dao);
 
 	public ILevel extractReturnLevel(IAnnotationDAO dao);
+	
+	public Constraints extractConstraints(IAnnotationDAO dao);
 
 	public Class<? extends Annotation> getAnnotationClassEffects();
 
@@ -29,6 +34,8 @@ public interface ILevelDefinition {
 	public Class<? extends Annotation> getAnnotationClassParameterLevel();
 
 	public Class<? extends Annotation> getAnnotationClassReturnLevel();
+	
+	public Class<? extends Annotation> getAnnotationClassConstraints();
 
 	public ILevel getDefaultVariableLevel();
 
@@ -51,5 +58,7 @@ public interface ILevelDefinition {
 	public List<ILevel> getLibraryParameterLevel(SootMethod sootMethod);
 
 	public ILevel getLibraryReturnLevel(SootMethod sootMethod, List<ILevel> levels);
+
+	public Constraints getLibraryConstraints(SootMethod sootMethod);
 
 }

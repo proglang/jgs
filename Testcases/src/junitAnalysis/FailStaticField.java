@@ -1,7 +1,6 @@
 package junitAnalysis;
 
-import security.Definition;
-import security.Definition.*;
+import static security.Definition.*;
 
 @WriteEffect({"low", "high"})
 public class FailStaticField {
@@ -24,7 +23,7 @@ public class FailStaticField {
 	
 	@WriteEffect({"low", "high"})
 	public void assignHighSecurity() {
-		int high2 = Definition.mkHigh(42);
+		int high2 = mkHigh(42);
 		// @security("The security level of the assigned value is stronger than the security level of the field.")
 		low = high2;
 		return;

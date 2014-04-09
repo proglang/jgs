@@ -1,7 +1,4 @@
-
-
-import security.Definition;
-import security.Definition.*;
+import static security.Definition.*;
 
 @WriteEffect({})
 public class TaintTrackingIfTest {
@@ -10,10 +7,10 @@ public class TaintTrackingIfTest {
 	@ReturnSecurity("low")
 	@WriteEffect({"low"})
 	public int forLoop() {
-		int var3Low = Definition.mkLow(42);
-		for (int i = Definition.mkHigh(0); i < 100; i++) {
+		int var3Low = mkLow(42);
+		for (int i = mkHigh(0); i < 100; i++) {
 //			if (i == 50) {
-//				var3Low = Definition.highId(42);
+//				var3Low = highId(42);
 //			} else {
 				assignLow();
 //			}
@@ -25,7 +22,7 @@ public class TaintTrackingIfTest {
 //	@ReturnSecurity("void")
 //	@WriteEffect({"low"})
 //	public void invoke() {
-//		if (Definition.highId(23) == 5) {
+//		if (highId(23) == 5) {
 //			assignLow();
 //		}
 //	}
@@ -39,10 +36,10 @@ public class TaintTrackingIfTest {
 	}
 
 	@FieldSecurity("low")
-	public int lowField = Definition.mkLow(42);
+	public int lowField = mkLow(42);
 	
 	@FieldSecurity("high")
-	public int highField = Definition.mkHigh(42);
+	public int highField = mkHigh(42);
 	
 	@ParameterSecurity({})
 	@WriteEffect({"high", "low"})

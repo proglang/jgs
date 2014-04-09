@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import constraints.Constraints;
+
 import logging.AnalysisLog;
 import resource.Configuration;
 import static resource.Messages.getMsg;
@@ -149,6 +151,8 @@ public class MethodEnvironment extends Environment {
 	private SootMethod sootMethod;
 	/** The expected <em>write effects</em> of the analyzed {@link SootMethod}. */
 	private List<ILevel> writeEffects = new ArrayList<ILevel>();
+	
+	private final Constraints contraints;
 
 	/**
 	 * DOC
@@ -168,7 +172,7 @@ public class MethodEnvironment extends Environment {
 	 */
 	public MethodEnvironment(SootMethod sootMethod, boolean isIdFunction, boolean isClinit, boolean isInit, boolean isVoid,
 			boolean isSootSecurityMethod, List<MethodParameter> parameterSecurityLevel, ILevel returnSecurityLevel,
-			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, AnalysisLog log, ILevelMediator mediator) {
+			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, Constraints constraints, AnalysisLog log, ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootMethod = sootMethod;
 		this.isIdFunction = isIdFunction;
@@ -182,6 +186,7 @@ public class MethodEnvironment extends Environment {
 		this.returnLevel = returnSecurityLevel;
 		this.writeEffects.addAll(methodWriteEffects);
 		this.classWriteEffects.addAll(classWriteEffects);
+		this.contraints = constraints;
 	}
 
 	/**
@@ -318,6 +323,11 @@ public class MethodEnvironment extends Environment {
 				logError(getMsg("other.void_method", methodSignature));
 				reasonability = false;
 			}
+			// NEW
+			if (contraints.containsReturnRef()) {
+				logError(getMsg("other.void_method", methodSignature));
+				reasonability = false;
+			}
 		} else {
 			if (returnLevel == null) {
 				logError(getMsg("other.non_void_method", methodSignature));
@@ -326,19 +336,30 @@ public class MethodEnvironment extends Environment {
 				if (!getLevelMediator().checkLevelValidity(returnLevel)) {
 					logError(getMsg("other.invalid_return_level", returnLevel.getName(), methodSignature));
 					reasonability = false;
-
 				}
 			}
 		}
 		if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
 			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(writeEffects)) {
 				logError(getMsg("effects.method.invalid", invalidEffect.getName(), methodSignature));
+				reasonability = false;
 			}
 		}
 		if (!getLevelMediator().checkLevelsValidity(classWriteEffects)) {
 			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(classWriteEffects)) {
 				logError(getMsg("effects.method.invalid_class", invalidEffect.getName(), methodSignature));
+				reasonability = false;
 			}
+		}
+		if (!getLevelMediator().checkLevelsValidity(new ArrayList<ILevel>(contraints.getContainedLevels()))) {
+			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(new ArrayList<ILevel>(contraints.getContainedLevels()))) {
+				logError(getMsg("effects.method.invalid_class", invalidEffect.getName(), methodSignature));
+				reasonability = false;
+			}
+		}
+		if (sootMethod.getParameterCount() < contraints.highestParameterRefNumber() + 1) {
+			logError(getMsg("constraints.invalid_param_ref", methodSignature, sootMethod.getParameterCount()));
+			reasonability = false;
 		}
 		return reasonability;
 	}
@@ -415,6 +436,10 @@ public class MethodEnvironment extends Environment {
 	 */
 	protected void logWarning(String msg) {
 		getLog().warning(AnalysisUtils.generateFileName(sootMethod), 0, msg);
+	}
+
+	public Constraints getContraints() {
+		return contraints;
 	}
 
 }
