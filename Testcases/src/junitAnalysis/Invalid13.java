@@ -11,4 +11,3 @@ public class Invalid13 {
 	public int instanceField;
 
 }
-// @error("The security level of a field is mandatory.")

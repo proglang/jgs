@@ -11,5 +11,9 @@ public class ConstraintParameterRef implements IConstraintComponent {
 	protected int getParameterPos() {
 		return parameterPos;
 	}
+	
+	public String toString() {
+		return "ParameterReference[" + parameterPos + "]";
+	}
 
 }

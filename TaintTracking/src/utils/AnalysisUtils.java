@@ -6,23 +6,31 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import static soot.options.Options.*;
+import static logging.AnalysisLogLevel.*;
+import static soot.Modifier.*;
 import logging.AnalysisLogLevel;
 import main.Main;
 
+import exception.AnnotationExtractionException;
+import exception.ArgumentInvalidException;
 import exception.SootException.ExtractionException;
 
-import resource.Configuration;
+import static utils.ExtendedJNI.*;
+import static resource.Configuration.*;
+
 import static resource.Messages.getMsg;
 import security.ILevel;
-import soot.Modifier;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import static soot.SootMethod.*;
 import soot.Type;
 import soot.Unit;
 import soot.VoidType;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.options.Options;
 import soot.tagkit.AnnotationTag;
 import soot.tagkit.Host;
 import soot.tagkit.ParamNamesTag;
@@ -57,22 +65,7 @@ public class AnalysisUtils {
 	 * DOC
 	 */
 	private static final String SIGN_POINT = ".";
-	/** Command line option for enabling the instant logging. */
-	private static final String OPT_INSTANT_LOGGING = "-instant-logging";
-	/**
-	 * DOC
-	 */
-	private static final String OPT_LINE_NUMBER = "-keep-line-number";
-	/** Command line option for setting up the levels which should be logged. */
-	private static final String OPT_LOG_LEVELS = "-log-levels";
-	/**
-	 * DOC
-	 */
-	private static final String OPT_NO_BODIES = "-no-bodies-for-excluded";
-	/**
-	 * DOC
-	 */
-	private static final String OPT_PREPEND = "-pp";
+	
 
 	/**
 	 * Checks whether the specified list of methods contains a static initializer method.
@@ -101,13 +94,13 @@ public class AnalysisUtils {
 	 * @throws ExtractionException
 	 *           Only if the specified {@link VisibilityAnnotationTag} doesn't contain an annotation with the specified type.
 	 */
-	public static AnnotationTag extractAnnotationTagWithType(VisibilityAnnotationTag tag, String type) throws ExtractionException {
+	public static AnnotationTag extractAnnotationTagWithType(VisibilityAnnotationTag tag, String type) {
 		Iterator<AnnotationTag> iterator = tag.getAnnotations().iterator();
 		while (iterator.hasNext()) {
 			AnnotationTag next = iterator.next();
 			if (next.getType().equals(type)) return next;
 		}
-		throw new ExtractionException(getMsg("other.tag_not_contained", type));
+		throw new AnnotationExtractionException(getMsg("exception.annotation.tag_not_found", type));
 	}
 
 	/**
@@ -135,15 +128,13 @@ public class AnalysisUtils {
 	 *          The host for which this annotation should be returned.
 	 * @return {@code null} if the specified host doesn't contain a {@link VisibilityAnnotationTag}, otherwise the contained
 	 *         {@link VisibilityAnnotationTag}.
-	 * @throws ExtractionException
-	 *           Only if the specified host doesn't have a {@link VisibilityAnnotationTag}.
 	 */
-	public static VisibilityAnnotationTag extractVisibilityAnnotationTag(Host host) throws ExtractionException {
+	public static VisibilityAnnotationTag extractVisibilityAnnotationTag(Host host) {
 		VisibilityAnnotationTag tag = (VisibilityAnnotationTag) host.getTag(VisibilityAnnotationTag.class.getSimpleName());
 		if (tag != null) {
 			return tag;
 		}
-		throw new ExtractionException(getMsg("other.no_visibility_tag"));
+		throw new AnnotationExtractionException(getMsg("exception.annotation.no_visibility_tag"));
 	}
 
 	/**
@@ -168,7 +159,7 @@ public class AnalysisUtils {
 	 * @return Static initializer method with an empty method body for the specified class.
 	 */
 	public static SootMethod generatedEmptyStaticInitializer(SootClass sootClass) {
-		SootMethod sootMethod = new SootMethod(SootMethod.staticInitializerName, new ArrayList<Object>(), VoidType.v(), Modifier.STATIC);
+		SootMethod sootMethod = new SootMethod(staticInitializerName, new ArrayList<Object>(), VoidType.v(), STATIC);
 		sootMethod.setDeclaringClass(sootClass);
 		sootClass.addMethod(sootMethod);
 		JimpleBody body = Jimple.v().newBody(sootMethod);
@@ -273,28 +264,28 @@ public class AnalysisUtils {
 	public static String getJNISignature(Class<?> cl) {
 		if (cl.isPrimitive()) {
 			if (cl.equals(boolean.class)) {
-				return String.valueOf(ExtendedJNI.JNI_BOOLEAN);
+				return String.valueOf(JNI_BOOLEAN);
 			} else if (cl.equals(byte.class)) {
-				return String.valueOf(ExtendedJNI.JNI_BYTE);
+				return String.valueOf(JNI_BYTE);
 			} else if (cl.equals(char.class)) {
-				return String.valueOf(ExtendedJNI.JNI_CHAR);
+				return String.valueOf(JNI_CHAR);
 			} else if (cl.equals(short.class)) {
-				return String.valueOf(ExtendedJNI.JNI_SHORT);
+				return String.valueOf(JNI_SHORT);
 			} else if (cl.equals(int.class)) {
-				return String.valueOf(ExtendedJNI.JNI_INT);
+				return String.valueOf(JNI_INT);
 			} else if (cl.equals(long.class)) {
-				return String.valueOf(ExtendedJNI.JNI_LONG);
+				return String.valueOf(JNI_LONG);
 			} else if (cl.equals(float.class)) {
-				return String.valueOf(ExtendedJNI.JNI_FLOAT);
+				return String.valueOf(JNI_FLOAT);
 			} else if (cl.equals(double.class)) {
-				return String.valueOf(ExtendedJNI.JNI_DOUBLE);
+				return String.valueOf(JNI_DOUBLE);
 			} else if (cl.equals(void.class)) {
-				return String.valueOf(ExtendedJNI.JNI_VOID);
+				return String.valueOf(JNI_VOID);
 			}
 		} else if (cl.isArray()) {
-			return String.valueOf(ExtendedJNI.JNI_ARRAY) + getJNISignature(cl.getComponentType());
+			return String.valueOf(JNI_ARRAY) + getJNISignature(cl.getComponentType());
 		}
-		return String.valueOf(ExtendedJNI.JNI_CLASS) + cl.getName().replace(SIGN_POINT, SIGN_SLASH) + SIGN_SEMICOLON;
+		return String.valueOf(JNI_CLASS) + cl.getName().replace(SIGN_POINT, SIGN_SLASH) + SIGN_SEMICOLON;
 	}
 
 	/**
@@ -388,7 +379,7 @@ public class AnalysisUtils {
 	 * @return {@code true} if the given method is an static initializer, otherwise {@code false}.
 	 */
 	public static boolean isClinitMethod(SootMethod sootMethod) {
-		return sootMethod.isEntryMethod() && sootMethod.getName().equals(SootMethod.staticInitializerName);
+		return sootMethod.isEntryMethod() && sootMethod.getName().equals(staticInitializerName);
 	}
 
 	/**
@@ -398,7 +389,7 @@ public class AnalysisUtils {
 	 * @return
 	 */
 	public static boolean isDefinitionClass(SootClass sootClass) {
-		return sootClass.getName().equals(Configuration.DEF_PATH_JAVA);
+		return sootClass.getName().equals(DEF_PATH_JAVA);
 	}
 
 	/**
@@ -426,9 +417,9 @@ public class AnalysisUtils {
 		String levelName = level.getName();
 		String head = levelName.substring(0, 1).toUpperCase();
 		String tail = levelName.substring(1, levelName.length());
-		return Configuration.PREFIX_LEVEL_FUNCTION + head + tail;
+		return PREFIX_LEVEL_FUNCTION + head + tail;
 	}
-	
+
 	/**
 	 * Checks whether the given method is a constructor method. I.e. the corresponding flag of the method is {@code true} and the name of the
 	 * method is equals to {@link SootMethod#constructorName}.
@@ -438,7 +429,7 @@ public class AnalysisUtils {
 	 * @return {@code true} if the given method is an constructor, otherwise {@code false}.
 	 */
 	public static boolean isInitMethod(SootMethod sootMethod) {
-		return sootMethod.isConstructor() && sootMethod.getName().equals(SootMethod.constructorName);
+		return sootMethod.isConstructor() && sootMethod.getName().equals(constructorName);
 	}
 
 	/**
@@ -495,28 +486,28 @@ public class AnalysisUtils {
 	 * @return
 	 */
 	public static String jniSignatureToJavaPath(String jni) {
-		if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_ARRAY))) {
+		if (jni.startsWith(String.valueOf(JNI_ARRAY))) {
 			return jni.replace(SIGN_SLASH, SIGN_POINT);
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_BOOLEAN))) {
+		} else if (jni.startsWith(String.valueOf(JNI_BOOLEAN))) {
 			return boolean.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_BYTE))) {
+		} else if (jni.startsWith(String.valueOf(JNI_BYTE))) {
 			return byte.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_CHAR))) {
+		} else if (jni.startsWith(String.valueOf(JNI_CHAR))) {
 			return char.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_SHORT))) {
+		} else if (jni.startsWith(String.valueOf(JNI_SHORT))) {
 			return short.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_INT))) {
+		} else if (jni.startsWith(String.valueOf(JNI_INT))) {
 			return int.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_LONG))) {
+		} else if (jni.startsWith(String.valueOf(JNI_LONG))) {
 			return long.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_FLOAT))) {
+		} else if (jni.startsWith(String.valueOf(JNI_FLOAT))) {
 			return float.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_DOUBLE))) {
+		} else if (jni.startsWith(String.valueOf(JNI_DOUBLE))) {
 			return double.class.getSimpleName();
-		} else if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_VOID))) {
+		} else if (jni.startsWith(String.valueOf(JNI_VOID))) {
 			return void.class.getSimpleName();
 		} else {
-			if (jni.startsWith(String.valueOf(ExtendedJNI.JNI_CLASS))) {
+			if (jni.startsWith(String.valueOf(JNI_CLASS))) {
 				return jni.substring(1, jni.length() - 1).replace(SIGN_SLASH, SIGN_POINT);
 			} else {
 				return jni;
@@ -539,44 +530,6 @@ public class AnalysisUtils {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Method that handles customized arguments. Arguments such as "-log-levels", "-instant-logging" and "-export-file" lead to specific
-	 * method invocation.
-	 * 
-	 * @param args
-	 *          The original arguments array of the main method.
-	 * @return Argument array where the customized commands are removed.
-	 */
-	public static String[] precheckArguments(String[] args) {
-		List<String> arguments = new ArrayList<String>(Arrays.asList(args));
-		if (arguments.contains(OPT_LOG_LEVELS)) {
-			int argsPosition = arguments.indexOf(OPT_LOG_LEVELS) + 1;
-			if (argsPosition < arguments.size()) {
-				String[] levels = arguments.get(argsPosition).split(",");
-				setLogLevels(levels);
-				arguments.remove(argsPosition);
-			}
-			arguments.remove(OPT_LOG_LEVELS);
-		} else {
-			Main.addLevel(Level.ALL);
-		}
-		if (!arguments.contains(OPT_NO_BODIES)) {
-			arguments.add(0, OPT_NO_BODIES);
-		}
-		if (!arguments.contains(OPT_LINE_NUMBER)) {
-			arguments.add(0, OPT_LINE_NUMBER);
-		}
-		if (!arguments.contains(OPT_PREPEND)) {
-			arguments.add(0, OPT_PREPEND);
-		}
-		if (arguments.contains(OPT_INSTANT_LOGGING)) {
-			Main.instantLogging();
-			arguments.remove(OPT_INSTANT_LOGGING);
-		}
-		String[] result = new String[arguments.size()];
-		return arguments.toArray(result);
 	}
 
 	/**
@@ -608,66 +561,210 @@ public class AnalysisUtils {
 	private static String generateVisibility(boolean isPrivate, boolean isProtected, boolean isPublic) {
 		return (isPrivate ? "-" : (isProtected ? "#" : (isPublic ? "+" : "?")));
 	}
+	
+	public static ArgumentParser getArgumentParser(String[] args) {
+		return new ArgumentParser(args);
+	}
 
-	/**
-	 * Adds valid levels of the given array to the level array of the main class {@link Main}.
-	 * 
-	 * @param levels
-	 *          Array of String which should represent a level.
-	 */
-	private static void setLogLevels(String[] levels) {
-		for (String level : levels) {
-			switch (level.toLowerCase()) {
-				case "exception":
-					Main.addLevel(AnalysisLogLevel.EXCEPTION);
-					break;
-				case "error":
-					Main.addLevel(AnalysisLogLevel.ERROR);
-					break;
-				case "warning":
-					Main.addLevel(AnalysisLogLevel.WARNING);
-					break;
-				case "information":
-					Main.addLevel(AnalysisLogLevel.INFORMATION);
-					break;
-				case "configuration":
-					Main.addLevel(AnalysisLogLevel.CONFIGURATION);
-					break;
-				case "structure":
-					Main.addLevel(AnalysisLogLevel.STRUCTURE);
-					break;
-				case "debug":
-					Main.addLevel(AnalysisLogLevel.DEBUG);
-					break;
-				case "sideeffect":
-					Main.addLevel(AnalysisLogLevel.SIDEEFFECT);
-					break;
-				case "security":
-					Main.addLevel(AnalysisLogLevel.SECURITY);
-					break;
-				case "effect":
-					Main.addLevel(AnalysisLogLevel.SIDEEFFECT);
-					break;
-				case "securitychecker":
-					Main.addLevel(AnalysisLogLevel.SECURITYCHECKER);
-					break;
-				case "off":
-					Main.addLevel(Level.OFF);
-					break;
-				case "all":
-					Main.addLevel(Level.ALL);
-					break;
-				case "important":
-					Main.addLevel(AnalysisLogLevel.EXCEPTION);
-					Main.addLevel(AnalysisLogLevel.ERROR);
-					Main.addLevel(AnalysisLogLevel.CONFIGURATION);
-					Main.addLevel(AnalysisLogLevel.STRUCTURE);
-					Main.addLevel(AnalysisLogLevel.SECURITY);
-					Main.addLevel(AnalysisLogLevel.SIDEEFFECT);
-					Main.addLevel(AnalysisLogLevel.SECURITYCHECKER);
-					break;
+	public static class ArgumentParser {		
+
+		private static final String ARG_WHOLE_PROGRAM = "-w";
+		private static final String ARG_EXCLUDE = "-x";
+		private static final String ARG_OUTPUT = "-f";
+		/** Command line option for enabling the instant logging. */
+		private static final String OPT_INSTANT_LOGGING = "-instant-logging";
+		/** Command line option for setting up the levels which should be logged. */
+		private static final String ARG_LOG_LEVELS = "-log-levels";
+		private static final Object ARG_OUTPUT_PATH = "-d";
+		/**
+		 * DOC
+		 */
+		private static final String ARG_KEEP_LINE_NUMBER = "-keep-line-number";
+		
+		/**
+		 * DOC
+		 */
+		private static final String ARG_NO_BODIES_FOR_EXCLUDE = "-no-bodies-for-excluded";
+		/**
+		 * DOC
+		 */
+		private static final String ARG_PREPEND_CLASSPATH = "-pp";
+
+		private String[] arguments = {};
+
+		private List<String> sootArguments = new ArrayList<String>();
+		private List<Level> logLevels = new ArrayList<Level>();
+		private boolean instantLogging = false;
+
+		
+
+		private ArgumentParser(String[] args) {
+			this.arguments = args;
+			parse();
+		}
+
+		public final String[] getSootArguments() {
+			String[] result = new String[sootArguments.size()];
+			return sootArguments.toArray(result);
+		}
+
+		public final Level[] getLogLevels() {
+			Level[] result = new Level[logLevels.size()];
+			return logLevels.toArray(result);
+		}
+
+		public final boolean isInstantLogging() {
+			return instantLogging;
+		}		
+		
+		private String getArgumentsString() {
+			StringBuilder builder = new StringBuilder();
+			for (String string : arguments) {
+				builder.append(string + " ");
+			}
+			return builder.toString().trim();
+		}
+
+		private void parse() {
+			List<String> list = new ArrayList<String>(Arrays.asList(arguments));
+			parseLogLevels(list);
+			parseInstantLogging(list);
+			parseKeepLineNumbers(list);
+			parsePrependClasspath(list);
+			parseNoBodiesForExclude(list);
+			parseOutput(list);
+			parseWholeProgram(list);
+			parseExclude(list);
+			sootArguments.addAll(list);
+		}
+
+		private void parseExclude(List<String> list) {
+			while (list.contains(ARG_EXCLUDE)) {
+//				int optionsPosition = list.indexOf(ARG_LOG_LEVELS) + 1;
+				
 			}
 		}
+
+		private void parseWholeProgram(List<String> list) {
+			if (! list.contains(ARG_WHOLE_PROGRAM)) {
+				list.remove(ARG_WHOLE_PROGRAM);
+			}
+			Options.v().set_whole_program(true);
+		}
+
+		private void parseOutput(List<String> list) {
+			if (! list.contains(ARG_OUTPUT)) {
+				Options.v().set_output_format(output_format_jimple);
+			}
+			if (! list.contains(ARG_OUTPUT_PATH)) {
+				Options.v().set_output_dir("./../generatedJimple");
+			}
+		}
+
+		private void parseNoBodiesForExclude(List<String> list) {
+			if (list.contains(ARG_NO_BODIES_FOR_EXCLUDE)) {
+				list.remove(ARG_NO_BODIES_FOR_EXCLUDE);
+			}
+			Options.v().set_no_bodies_for_excluded(true);
+		}
+
+		private void parsePrependClasspath(List<String> list) {
+			if (list.contains(ARG_PREPEND_CLASSPATH)) {
+				list.remove(ARG_PREPEND_CLASSPATH);
+			}
+			Options.v().set_prepend_classpath(true);
+		}
+
+		private void parseKeepLineNumbers(List<String> list) {
+			if (list.contains(ARG_KEEP_LINE_NUMBER)) {
+				list.remove(ARG_KEEP_LINE_NUMBER);	
+				
+			}
+			Options.v().set_keep_line_number(true);
+		}
+
+		private void parseInstantLogging(List<String> list) {
+			if (list.contains(OPT_INSTANT_LOGGING)) {
+				instantLogging = true;
+				list.remove(OPT_INSTANT_LOGGING);
+			}
+		}
+
+		private void parseLogLevels(List<String> list) {
+			if (list.contains(ARG_LOG_LEVELS)) {
+				int optionsPosition = list.indexOf(ARG_LOG_LEVELS) + 1;
+				String[] levels = list.get(optionsPosition).split(",");
+				setLogLevels(levels); 
+				list.remove(optionsPosition);
+				list.remove(ARG_LOG_LEVELS);
+			} else {
+				logLevels.add(Level.ALL);
+			}
+		}
+		
+		/**
+		 * Adds valid levels of the given array to the level array of the main class {@link Main}.
+		 * 
+		 * @param levels
+		 *          Array of String which should represent a level.
+		 */
+		private void setLogLevels(String[] levels) {
+			for (String level : levels) {
+				switch (level.toLowerCase()) {
+					case "exception":
+						logLevels.add(EXCEPTION);
+						break;
+					case "error":
+						logLevels.add(ERROR);
+						break;
+					case "warning":
+						logLevels.add(WARNING);
+						break;
+					case "information":
+						logLevels.add(INFORMATION);
+						break;
+					case "configuration":
+						logLevels.add(CONFIGURATION);
+						break;
+					case "structure":
+						logLevels.add(STRUCTURE);
+						break;
+					case "debug":
+						logLevels.add(AnalysisLogLevel.DEBUG);
+						break;
+					case "sideeffect":
+						logLevels.add(SIDEEFFECT);
+						break;
+					case "security":
+						logLevels.add(SECURITY);
+						break;
+					case "effect":
+						logLevels.add(SIDEEFFECT);
+						break;
+					case "securitychecker":
+						logLevels.add(SECURITYCHECKER);
+						break;
+					case "off":
+						logLevels.add(OFF);
+						break;
+					case "all":
+						logLevels.add(ALL);
+						break;
+					case "important":
+						logLevels.add(EXCEPTION);
+						logLevels.add(ERROR);
+						logLevels.add(CONFIGURATION);
+						logLevels.add(STRUCTURE);
+						logLevels.add(SECURITY);
+						logLevels.add(SIDEEFFECT);
+						logLevels.add(SECURITYCHECKER);
+						break;
+					default:
+						throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+				}
+			}
+		}
+
 	}
 
 }

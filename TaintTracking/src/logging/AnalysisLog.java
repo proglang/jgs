@@ -1,12 +1,14 @@
 package logging;
 
 import java.util.List;
-import java.util.Locale;
+import static java.util.Locale.*;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import static java.util.logging.Logger.*;
 import java.util.logging.Logger;
-
-import resource.Configuration;
+import static resource.Configuration.*;
+import static logging.AnalysisLogLevel.*;
+import static logging.AnalysisLogUtils.*;
 
 import model.MessageStore;
 import model.MessageStore.Message;
@@ -35,7 +37,7 @@ public class AnalysisLog {
 	/**
 	 * The {@link Logger} instance which handles the logging and the handler and which is extended and encapsulated by the {@link SootLogger}.
 	 */
-	protected static final Logger LOG = Logger.getLogger(AnalysisLog.class.getName());
+	protected static final Logger LOG = getLogger(AnalysisLog.class.getName());
 	/** Indicates whether the logger should print the messages during the analysis. */
 	protected boolean instantLogging = false;
 	/**
@@ -95,11 +97,11 @@ public class AnalysisLog {
 			this.messageStore.addConfiguration(settings);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.CONFIGURATION)) {
+			if (isLevelEnabled(CONFIGURATION)) {
 				HeadingInformation info = new HeadingInformation(0);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.CONFIGURATION_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, CONFIGURATION_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.CONFIGURATION, AnalysisLogUtils.generateSettingsString(settings));
+			LOG.log(CONFIGURATION, generateSettingsString(settings));
 		}
 	}
 
@@ -119,14 +121,14 @@ public class AnalysisLog {
 	 */
 	public void debug(String fileName, long srcLn, String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, AnalysisLogLevel.DEBUG);
+			this.messageStore.addMessage(msg, fileName, srcLn, DEBUG);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.DEBUG)) {
+			if (isLevelEnabled(DEBUG)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.DEBUG_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, DEBUG_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.DEBUG, msg);
+			LOG.log(DEBUG, msg);
 		}
 	}
 
@@ -162,14 +164,14 @@ public class AnalysisLog {
 	 */
 	public void effect(String fileName, long srcLn, String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, AnalysisLogLevel.SIDEEFFECT);
+			this.messageStore.addMessage(msg, fileName, srcLn, SIDEEFFECT);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.SIDEEFFECT)) {
+			if (isLevelEnabled(SIDEEFFECT)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.SIDEEFFECT_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, SIDEEFFECT_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.SIDEEFFECT, msg);
+			LOG.log(SIDEEFFECT, msg);
 		}
 	}
 
@@ -205,14 +207,14 @@ public class AnalysisLog {
 	 */
 	public void error(String fileName, long srcLn, String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, AnalysisLogLevel.ERROR);
+			this.messageStore.addMessage(msg, fileName, srcLn, ERROR);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.ERROR)) {
+			if (isLevelEnabled(ERROR)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.ERROR_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, ERROR_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.ERROR, msg);
+			LOG.log(ERROR, msg);
 		}
 	}
 
@@ -236,14 +238,14 @@ public class AnalysisLog {
 	 */
 	public void exception(String fileName, long srcLn, String msg, Throwable e) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, AnalysisLogLevel.EXCEPTION, e);
+			this.messageStore.addMessage(msg, fileName, srcLn, EXCEPTION, e);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.EXCEPTION)) {
+			if (isLevelEnabled(EXCEPTION)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.EXCEPTION_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, EXCEPTION_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.EXCEPTION, msg, e);
+			LOG.log(EXCEPTION, msg, e);
 		}
 	}
 
@@ -272,14 +274,14 @@ public class AnalysisLog {
 	 */
 	public void information(String fileName, long srcLn, String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, AnalysisLogLevel.INFORMATION);
+			this.messageStore.addMessage(msg, fileName, srcLn, INFORMATION);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.INFORMATION)) {
+			if (isLevelEnabled(INFORMATION)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.INFORMATION_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, INFORMATION_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.INFORMATION, msg);
+			LOG.log(INFORMATION, msg);
 		}
 	}
 
@@ -306,22 +308,22 @@ public class AnalysisLog {
 			String fileName = message.getFileName();
 			Level level = message.getLevel();
 			if (!currentFile.equals(fileName)) {
-				structure(fileName + AnalysisLogUtils.FILE_SUFFIX_JAVA);
+				structure(fileName + FILE_SUFFIX_JAVA);
 				currentFile = fileName;
 			}
-			if (level.equals(AnalysisLogLevel.SIDEEFFECT)) {
+			if (level.equals(SIDEEFFECT)) {
 				effect(fileName, srcLn, msg);
-			} else if (level.equals(AnalysisLogLevel.SECURITY)) {
+			} else if (level.equals(SECURITY)) {
 				security(fileName, srcLn, msg);
-			} else if (level.equals(AnalysisLogLevel.DEBUG)) {
+			} else if (level.equals(DEBUG)) {
 				debug(fileName, srcLn, msg);
-			} else if (level.equals(AnalysisLogLevel.ERROR)) {
+			} else if (level.equals(ERROR)) {
 				error(fileName, srcLn, msg);
-			} else if (level.equals(AnalysisLogLevel.INFORMATION)) {
+			} else if (level.equals(INFORMATION)) {
 				information(fileName, srcLn, msg);
-			} else if (level.equals(AnalysisLogLevel.WARNING)) {
+			} else if (level.equals(WARNING)) {
 				warning(fileName, srcLn, msg);
-			} else if (level.equals(AnalysisLogLevel.SECURITYCHECKER)) {
+			} else if (level.equals(SECURITYCHECKER)) {
 				List<Throwable> exceptions = message.getExceptions();
 				if (exceptions.size() == 0) {
 					securitychecker(msg);
@@ -330,7 +332,7 @@ public class AnalysisLog {
 						securitychecker(msg, exception);
 					}
 				}
-			} else if (level.equals(AnalysisLogLevel.EXCEPTION)) {
+			} else if (level.equals(EXCEPTION)) {
 				List<Throwable> exceptions = message.getExceptions();
 				if (exceptions.size() == 0) {
 					error(fileName, srcLn, msg);
@@ -361,14 +363,14 @@ public class AnalysisLog {
 	 */
 	public void security(String fileName, long srcLn, String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, AnalysisLogLevel.SECURITY);
+			this.messageStore.addMessage(msg, fileName, srcLn, SECURITY);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.SECURITY)) {
+			if (isLevelEnabled(SECURITY)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.SECURITY_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, SECURITY_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.SECURITY, msg);
+			LOG.log(SECURITY, msg);
 		}
 	}
 
@@ -385,14 +387,14 @@ public class AnalysisLog {
 	 */
 	public void securitychecker(String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, Configuration.DEF_CLASS_NAME, 0, AnalysisLogLevel.SECURITYCHECKER, null);
+			this.messageStore.addMessage(msg, DEF_CLASS_NAME, 0, SECURITYCHECKER, null);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.SECURITYCHECKER)) {
+			if (isLevelEnabled(SECURITYCHECKER)) {
 				HeadingInformation info = new HeadingInformation(1);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.SECURITYCHECKER_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, SECURITYCHECKER_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.SECURITYCHECKER, msg);
+			LOG.log(SECURITYCHECKER, msg);
 		}
 	}
 
@@ -411,14 +413,14 @@ public class AnalysisLog {
 	 */
 	public void securitychecker(String msg, Throwable e) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, Configuration.DEF_CLASS_NAME, 0, AnalysisLogLevel.SECURITYCHECKER, e);
+			this.messageStore.addMessage(msg, DEF_CLASS_NAME, 0, SECURITYCHECKER, e);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.SECURITYCHECKER)) {
+			if (isLevelEnabled(SECURITYCHECKER)) {
 				HeadingInformation info = new HeadingInformation(1);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.SECURITYCHECKER_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, SECURITYCHECKER_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.SECURITYCHECKER, msg, e);
+			LOG.log(SECURITYCHECKER, msg, e);
 		}
 	}
 
@@ -433,7 +435,7 @@ public class AnalysisLog {
 	 */
 	public void structure(String msg) {
 		if (instantLogging) {
-			LOG.log(AnalysisLogLevel.STRUCTURE, msg);
+			LOG.log(STRUCTURE, msg);
 		}
 	}
 
@@ -455,14 +457,14 @@ public class AnalysisLog {
 	 */
 	public void warning(String fileName, long srcLn, String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, AnalysisLogLevel.WARNING);
+			this.messageStore.addMessage(msg, fileName, srcLn, WARNING);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(AnalysisLogLevel.WARNING)) {
+			if (isLevelEnabled(WARNING)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(AnalysisLogLevel.HEADING, AnalysisLogLevel.WARNING_NAME.toUpperCase(Locale.ENGLISH), new Object[] { info });
+				LOG.log(HEADING, WARNING_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(AnalysisLogLevel.WARNING, msg);
+			LOG.log(WARNING, msg);
 		}
 	}
 
@@ -475,8 +477,8 @@ public class AnalysisLog {
 	 */
 	private void setupStandardConfigurations() {
 		LOG.setUseParentHandlers(false);
-		LOG.setLevel(Level.ALL);
-		this.standardConsoleHandler = AnalysisLogUtils.getStandardConsoleHandler(levels);
+		LOG.setLevel(ALL);
+		this.standardConsoleHandler = getStandardConsoleHandler(levels);
 		LOG.addHandler(this.standardConsoleHandler);
 	}
 
@@ -490,7 +492,7 @@ public class AnalysisLog {
 	 * @return {@code true} if the given level is enabled, otherwise {@code false}.
 	 */
 	protected boolean isLevelEnabled(Level level) {
-		return AnalysisLogUtils.shouldLogLevel(level, levels);
+		return shouldLogLevel(level, levels);
 	}
 
 }

@@ -1,7 +1,5 @@
 package extractor;
 
-import interfaces.Cancelable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,7 @@ import model.ClassEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment;
 import model.MethodEnvironment.MethodParameter;
-import resource.Configuration;
+import static resource.Configuration.*;
 import static resource.Messages.getMsg;
 import security.ILevel;
 import security.ILevelMediator;
@@ -29,9 +27,10 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
-import utils.AnalysisUtils;
-import exception.SootException.ExtractionException;
-import exception.SootException.NoSuchElementException;
+import static utils.AnalysisUtils.*;
+import exception.AnnotationExtractionException;
+import exception.ExtractorException;
+import exception.SwitchException;
 
 /**
  * <h1>Annotation Transformer</h1>
@@ -46,17 +45,7 @@ import exception.SootException.NoSuchElementException;
  * @author Thomas Vogel
  * @version 0.2
  */
-public class AnnotationExtractor extends SceneTransformer implements Cancelable {
-
-	/**
-	 * DOC
-	 */
-	private boolean annotationValidity = true;
-
-	/**
-	 * DOC
-	 */
-	private final List<Cancelable> listeners = new ArrayList<Cancelable>();
+public class AnnotationExtractor extends SceneTransformer {
 
 	/**
 	 * DOC
@@ -88,51 +77,30 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 		this.stmtSwitch = new AnnotationStmtSwitch(this);
 	}
 
-	@Override
-	public void addCancelListener(Cancelable cancelable) {
-		this.listeners.add(cancelable);
-
-	}
-
-	@Override
-	public void cancel() {
-		for (Cancelable cancelable : listeners) {
-			cancelable.cancel();
-		}
-		this.annotationValidity = false;
-	}
-
 	/**
 	 * DOC
 	 * 
 	 * @return
 	 */
-	public boolean checkReasonability() {
-		if (annotationValidity) {
-			for (SootClass sootClass : store.getClasses()) {
-				ClassEnvironment ce = store.getClassEnvironment(sootClass);
-				if (!ce.isLibrary()) {
-					annotationValidity = annotationValidity && ce.isReasonable();
-				}
+	public void checkReasonability() {
+		for (SootClass sootClass : store.getClasses()) {
+			ClassEnvironment ce = store.getClassEnvironment(sootClass);
+			if (!ce.isLibrary()) {
+				ce.isReasonable();
 			}
 		}
-		if (annotationValidity) {
-			for (SootField sootField : store.getFields()) {
-				FieldEnvironment fe = store.getFieldEnvironment(sootField);
-				if (!fe.isLibraryClass()) {
-					annotationValidity = annotationValidity && fe.isReasonable();
-				}
+		for (SootField sootField : store.getFields()) {
+			FieldEnvironment fe = store.getFieldEnvironment(sootField);
+			if (!fe.isLibraryClass()) {
+				fe.isReasonable();
 			}
 		}
-		if (annotationValidity) {
-			for (SootMethod sootMethod : store.getMethods()) {
-				MethodEnvironment me = store.getMethodEnvironment(sootMethod);
-				if (!me.isLibraryMethod()) {
-					annotationValidity = annotationValidity && me.isReasonable();
-				}
+		for (SootMethod sootMethod : store.getMethods()) {
+			MethodEnvironment me = store.getMethodEnvironment(sootMethod);
+			if (!me.isLibraryMethod()) {
+				me.isReasonable();
 			}
 		}
-		return annotationValidity;
 	}
 
 	/**
@@ -144,12 +112,6 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 		return store;
 	}
 
-	@Override
-	public void removeCancelListener(Cancelable cancelable) {
-		this.listeners.remove(cancelable);
-
-	}
-
 	/**
 	 * DOC
 	 * 
@@ -157,16 +119,14 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 	 * @param overriden
 	 */
 	private void addMethodEnvironmentForMethod(SootMethod sootMethod, boolean overriden) {
-		if (annotationValidity) {
-			if (!store.containsMethod(sootMethod)) {
-				MethodEnvironment me = checkAndBuildMethodEnvironment(sootMethod);
-				store.addMethodEnvironment(me);
-			}
-			if (overriden && AnalysisUtils.overridesMethod(sootMethod)) {
-				List<SootMethod> methods = AnalysisUtils.getOverridenMethods(sootMethod);
-				if (methods.size() >= 1) {
-					addMethodEnvironmentForMethod(methods.get(0), false);
-				}
+		if (!store.containsMethod(sootMethod)) {
+			MethodEnvironment me = checkAndBuildMethodEnvironment(sootMethod);
+			store.addMethodEnvironment(me);
+		}
+		if (overriden && overridesMethod(sootMethod)) {
+			List<SootMethod> methods = getOverridenMethods(sootMethod);
+			if (methods.size() >= 1) {
+				addMethodEnvironmentForMethod(methods.get(0), false);
 			}
 		}
 	}
@@ -185,27 +145,13 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 			if (hasClassWriteEffectAnnotation) {
 				try {
 					classWriteEffects.addAll(mediator.extractClassEffects(sootClass));
-				} catch (Exception e) {
-					log.error(
-							AnalysisUtils.generateFileName(sootClass),
-							0,
-							getMsg("extractor.effects.error_class_extraction",
-									AnalysisUtils.generateClassSignature(sootClass, Configuration.CLASS_SIGNATURE_PRINT_PACKAGE)));
-					annotationValidity = false;
+				} catch (AnnotationExtractionException e) {
+					throw new ExtractorException(getMsg("exception.extractor.effects.error_class",
+							generateClassSignature(sootClass, CLASS_SIGNATURE_PRINT_PACKAGE)), e);
 				}
 			}
 		} else {
-			try {
-				classWriteEffects.addAll(mediator.getLibraryClassWriteEffects(sootClass));
-			} catch (Exception e) {
-
-				log.error(
-						AnalysisUtils.generateFileName(sootClass),
-						0,
-						getMsg("extractor.effects.error_lib_class_lookup",
-								AnalysisUtils.generateClassSignature(sootClass, Configuration.CLASS_SIGNATURE_PRINT_PACKAGE)));
-				annotationValidity = false;
-			}
+			classWriteEffects.addAll(mediator.getLibraryClassWriteEffects(sootClass));
 		}
 		ClassEnvironment ce = new ClassEnvironment(sootClass, classWriteEffects, log, mediator);
 		return ce;
@@ -226,52 +172,24 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 			if (hasFieldSecurityAnnotation) {
 				try {
 					fieldSecurityLevel = mediator.extractFieldSecurityLevel(sootField);
-				} catch (ExtractionException e) {
-					log.error(
-							AnalysisUtils.generateFileName(declaringClass),
-							0,
-							getMsg("extractor.field_level.error_extraction", AnalysisUtils.generateFieldSignature(sootField,
-									Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-									Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
-					annotationValidity = false;
+				} catch (AnnotationExtractionException e) {
+					throw new ExtractorException(
+							getMsg(
+									"exception.extractor.level.field.error",
+									generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE,
+											FIELD_SIGNATURE_PRINT_VISIBILITY)), e);
 				}
 			} else {
-				log.error(
-						AnalysisUtils.generateFileName(declaringClass),
-						0,
-						getMsg("extractor.field_level.error_no_level", AnalysisUtils.generateFieldSignature(sootField,
-								Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-								Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
-				annotationValidity = false;
+				throw new ExtractorException(getMsg("exception.extractor.level.field.no_level",
+						generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
 			}
 		} else {
-			try {
-				fieldSecurityLevel = mediator.getLibraryFieldSecurityLevel(sootField);
-			} catch (Exception e) {
-				log.error(
-						AnalysisUtils.generateFileName(declaringClass),
-						0,
-						getMsg("extractor.field_level.error_lib_lookup", AnalysisUtils.generateFieldSignature(sootField,
-								Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-								Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
-				annotationValidity = false;
-			}
+			fieldSecurityLevel = mediator.getLibraryFieldSecurityLevel(sootField);
 		}
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
 		addClassEnvironmentForClass(declaringClass);
-		if (annotationValidity) {
-			try {
-				ClassEnvironment ce = store.getClassEnvironment(declaringClass);
-				classWriteEffects.addAll(ce.getWriteEffects());
-			} catch (NoSuchElementException e) {
-				log.exception(
-						AnalysisUtils.generateFileName(declaringClass),
-						0,
-						getMsg("env_store.not_found_class",
-								AnalysisUtils.generateClassSignature(declaringClass, Configuration.CLASS_SIGNATURE_PRINT_PACKAGE)), e);
-				annotationValidity = false;
-			}
-		}
+		ClassEnvironment ce = store.getClassEnvironment(declaringClass);
+		classWriteEffects.addAll(ce.getWriteEffects());
 		FieldEnvironment fe = new FieldEnvironment(sootField, fieldSecurityLevel, classWriteEffects, log, mediator);
 		return fe;
 	}
@@ -285,11 +203,11 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 	private MethodEnvironment checkAndBuildMethodEnvironment(SootMethod sootMethod) {
 		SootClass declaringClass = sootMethod.getDeclaringClass();
 		boolean isLibrary = sootMethod.isJavaLibraryMethod();
-		boolean isIdFunction = AnalysisUtils.isLevelFunction(sootMethod, mediator.getAvailableLevels());
-		boolean isClinit = AnalysisUtils.isClinitMethod(sootMethod);
-		boolean isInit = AnalysisUtils.isInitMethod(sootMethod);
-		boolean isVoid = AnalysisUtils.isVoidMethod(sootMethod);
-		boolean isSootSecurityMethod = AnalysisUtils.isMethodOfDefinitionClass(sootMethod);
+		boolean isIdFunction = isLevelFunction(sootMethod, mediator.getAvailableLevels());
+		boolean isClinit = isClinitMethod(sootMethod);
+		boolean isInit = isInitMethod(sootMethod);
+		boolean isVoid = isVoidMethod(sootMethod);
+		boolean isSootSecurityMethod = isMethodOfDefinitionClass(sootMethod);
 		ILevel returnSecurityLevel = null;
 		int parameterCount = sootMethod.getParameterCount();
 		List<MethodParameter> parameterSecurityLevel = new ArrayList<MethodParameter>();
@@ -305,46 +223,34 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 				if (hasReturnSecurityAnnotation) {
 					try {
 						returnSecurityLevel = mediator.extractReturnSecurityLevel(sootMethod);
-					} catch (ExtractionException e) {
-						log.error(
-								AnalysisUtils.generateFileName(sootMethod),
-								0,
-								getMsg("extractor.return_level.error_extraction", AnalysisUtils.generateMethodSignature(sootMethod,
-										Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-										Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-						annotationValidity = false;
+					} catch (AnnotationExtractionException e) {
+						throw new ExtractorException(getMsg(
+								"exception.extractor.level.return.error",
+								generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+										METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
 					}
 				} else {
-					log.error(
-							AnalysisUtils.generateFileName(sootMethod),
-							0,
-							getMsg("extractor.return_level.error_no_level", AnalysisUtils.generateMethodSignature(sootMethod,
-									Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-									Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-					annotationValidity = false;
+					throw new ExtractorException(getMsg(
+							"exception.extractor.level.return.no_level",
+							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+									METHOD_SIGNATURE_PRINT_VISIBILITY)));
 				}
 			} else {
 				if (hasReturnSecurityAnnotation) {
-					log.error(
-							AnalysisUtils.generateFileName(sootMethod),
-							0,
-							getMsg("extractor.return_level.error_void_level", AnalysisUtils.generateMethodSignature(sootMethod,
-									Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-									Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-					annotationValidity = false;
+					throw new ExtractorException(getMsg(
+							"exception.extractor.level.return.void",
+							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+									METHOD_SIGNATURE_PRINT_VISIBILITY)));
 				}
 			}
 			if (hasMethodWriteEffectAnnotation) {
 				try {
 					methodWriteEffects.addAll(mediator.extractMethodEffects(sootMethod));
-				} catch (ExtractionException e) {
-					log.error(
-							AnalysisUtils.generateFileName(sootMethod),
-							0,
-							getMsg("extractor.effects.error_method_extraction", AnalysisUtils.generateMethodSignature(sootMethod,
-									Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-									Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-					annotationValidity = false;
+				} catch (AnnotationExtractionException e) {
+					throw new ExtractorException(getMsg(
+							"exception.extractor.effects.error_method",
+							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+									METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
 				}
 			}
 			if (parameterCount != 0) {
@@ -352,17 +258,14 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 					List<ILevel> parameterLevels = new ArrayList<ILevel>();
 					try {
 						parameterLevels.addAll(mediator.extractParameterSecurityLevels(sootMethod));
-					} catch (ExtractionException e) {
-						log.error(
-								AnalysisUtils.generateFileName(sootMethod),
-								0,
-								getMsg("extractor.parameter_levels.error_extraction", AnalysisUtils.generateMethodSignature(sootMethod,
-										Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-										Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-						annotationValidity = false;
+					} catch (AnnotationExtractionException e) {
+						throw new ExtractorException(getMsg(
+								"exception.extractor.level.parameter.error",
+								generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+										METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
 					}
 					if (parameterLevels.size() == parameterCount) {
-						List<String> names = AnalysisUtils.getParameterNames(sootMethod);
+						List<String> names = getParameterNames(sootMethod);
 						for (int i = 0; i < parameterLevels.size(); i++) {
 							Type type = sootMethod.getParameterType(i);
 							ILevel level = parameterLevels.get(i);
@@ -371,121 +274,50 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 							parameterSecurityLevel.add(mp);
 						}
 					} else {
-						log.error(
-								AnalysisUtils.generateFileName(sootMethod),
-								0,
-								getMsg("extractor.parameter_levels.error_unequal_count", AnalysisUtils.generateMethodSignature(sootMethod,
-										Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-										Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-						annotationValidity = false;
+						throw new ExtractorException(getMsg(
+								"exception.extractor.level.parameter.invalid",
+								generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+										METHOD_SIGNATURE_PRINT_VISIBILITY)));
 					}
 				} else {
-					log.error(
-							AnalysisUtils.generateFileName(sootMethod),
-							0,
-							getMsg("extractor.parameter_levels.error_no_level", AnalysisUtils.generateMethodSignature(sootMethod,
-									Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-									Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-					annotationValidity = false;
+					throw new ExtractorException(getMsg(
+							"exception.extractor.level.parameter.no_level",
+							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+									METHOD_SIGNATURE_PRINT_VISIBILITY)));
 				}
 			}
 			if (hasConstraintsAnnotation) {
 				try {
 					constraints = mediator.extractConstraints(sootMethod);
-				} catch (ExtractionException e) {
-					log.error(
-							AnalysisUtils.generateFileName(sootMethod),
-							0,
-							getMsg("extractor.constraints.error_method_extraction", AnalysisUtils.generateMethodSignature(sootMethod,
-									Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-									Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-					annotationValidity = false;
+				} catch (AnnotationExtractionException e) {
+					throw new ExtractorException(getMsg(
+							"exception.extractor.constraints.error",
+							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+									METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
 				}
-			} else{
+			} else {
 				// FIXME: Is the constraints annotation mandatory???
 			}
 		} else {
 			List<ILevel> parameterLevels = new ArrayList<ILevel>();
-			try {
-				parameterLevels.addAll(mediator.getLibraryParameterSecurityLevel(sootMethod));
-			} catch (Exception e) {
-				log.error(
-						AnalysisUtils.generateFileName(sootMethod),
-						0,
-						getMsg("extractor.parameter_levels.error_lib_lookup", AnalysisUtils.generateMethodSignature(sootMethod,
-								Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-								Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-				annotationValidity = false;
+			parameterLevels.addAll(mediator.getLibraryParameterSecurityLevel(sootMethod));
+			List<String> names = getParameterNames(sootMethod);
+			for (int i = 0; i < parameterLevels.size(); i++) {
+				Type type = sootMethod.getParameterType(i);
+				ILevel level = parameterLevels.get(i);
+				String name = (parameterCount == names.size()) ? names.get(i) : "arg" + (i + 1);
+				MethodParameter mp = new MethodParameter(i, name, type, level);
+				parameterSecurityLevel.add(mp);
 			}
-			if (parameterLevels.size() == parameterCount) {
-				List<String> names = AnalysisUtils.getParameterNames(sootMethod);
-				for (int i = 0; i < parameterLevels.size(); i++) {
-					Type type = sootMethod.getParameterType(i);
-					ILevel level = parameterLevels.get(i);
-					String name = (parameterCount == names.size()) ? names.get(i) : "arg" + (i + 1);
-					MethodParameter mp = new MethodParameter(i, name, type, level);
-					parameterSecurityLevel.add(mp);
-				}
-			} else {
-				log.error(
-						AnalysisUtils.generateFileName(sootMethod),
-						0,
-						getMsg("extractor.parameter_levels.error_unequal_count", AnalysisUtils.generateMethodSignature(sootMethod,
-								Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-								Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-				annotationValidity = false;
-			}
-
 			if (!isVoid) {
-				try {
-					returnSecurityLevel = mediator.getLibraryReturnSecurityLevel(sootMethod, parameterLevels);
-				} catch (Exception e) {
-					log.error(
-							AnalysisUtils.generateFileName(sootMethod),
-							0,
-							getMsg("extractor.return_level.error_lib_lookup", AnalysisUtils.generateMethodSignature(sootMethod,
-									Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-									Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-					annotationValidity = false;
-				}
+				returnSecurityLevel = mediator.getLibraryReturnSecurityLevel(sootMethod, parameterLevels);
 			}
-			try {
-				methodWriteEffects.addAll(mediator.getLibraryWriteEffects(sootMethod));
-			} catch (Exception e) {
-				log.error(
-						AnalysisUtils.generateFileName(sootMethod),
-						0,
-						getMsg("extractor.effects.error_lib_method_lookup", AnalysisUtils.generateMethodSignature(sootMethod,
-								Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-								Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-				annotationValidity = false;
-			}
-			try {
-				constraints = mediator.getLibraryConstraints(sootMethod);
-			} catch (Exception e) {
-				log.error(
-						AnalysisUtils.generateFileName(sootMethod),
-						0,
-						getMsg("extractor.constraints.error_lib_method_lookup", AnalysisUtils.generateMethodSignature(sootMethod,
-								Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-								Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
-				annotationValidity = false;
-			}
+			methodWriteEffects.addAll(mediator.getLibraryWriteEffects(sootMethod));
+			constraints = mediator.getLibraryConstraints(sootMethod);
 		}
 		addClassEnvironmentForClass(declaringClass);
-		if (annotationValidity) {
-			try {
-				ClassEnvironment ce = store.getClassEnvironment(declaringClass);
-				classWriteEffects.addAll(ce.getWriteEffects());
-			} catch (NoSuchElementException e) {
-				log.exception(
-						AnalysisUtils.generateFileName(declaringClass),
-						0,
-						getMsg("env_store.not_found_class",
-								AnalysisUtils.generateClassSignature(declaringClass, Configuration.CLASS_SIGNATURE_PRINT_PACKAGE)), e);
-				annotationValidity = false;
-			}
-		}
+		ClassEnvironment ce = store.getClassEnvironment(declaringClass);
+		classWriteEffects.addAll(ce.getWriteEffects());
 		for (SootClass exceptions : sootMethod.getExceptions()) {
 			addClassEnvironmentForClass(exceptions);
 		}
@@ -500,25 +332,32 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 	 * @param sootClass
 	 */
 	private void doExtraction(SootClass sootClass) {
-		if (!AnalysisUtils.isInnerClassOfDefinitionClass(sootClass)) {
+		if (!isInnerClassOfDefinitionClass(sootClass)) {
 			addClassEnvironmentForClass(sootClass);
-			if (!AnalysisUtils.isDefinitionClass(sootClass)) {
+			if (!isDefinitionClass(sootClass)) {
 				for (SootField sootField : sootClass.getFields()) {
 					addFieldEvironmentForField(sootField);
 				}
 			}
-			if (!AnalysisUtils.containsStaticInitializer(sootClass.getMethods())) {
-				AnalysisUtils.generatedEmptyStaticInitializer(sootClass);
+			if (!containsStaticInitializer(sootClass.getMethods())) {
+				generatedEmptyStaticInitializer(sootClass);
 			}
 			for (SootMethod sootMethod : sootClass.getMethods()) {
-				if ((!AnalysisUtils.isMethodOfDefinitionClass(sootMethod))
-						|| AnalysisUtils.isLevelFunction(sootMethod, mediator.getAvailableLevels())) {
+				if ((!isMethodOfDefinitionClass(sootMethod)) || isLevelFunction(sootMethod, mediator.getAvailableLevels())) {
 					UnitGraph graph = new BriefUnitGraph(sootMethod.retrieveActiveBody());
 					sootMethod = graph.getBody().getMethod();
 					addMethodEnvironmentForMethod(sootMethod);
 					if (sootMethod.hasActiveBody()) {
 						for (Unit unit : sootMethod.getActiveBody().getUnits()) {
-							unit.apply(stmtSwitch);
+							try {
+								unit.apply(stmtSwitch);
+							} catch (SwitchException e) {
+								throw new ExtractorException(getMsg(
+										"exception.extractor.other.error_switch",
+										unit.toString(),
+										generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+												METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+							}
 						}
 					}
 				}
@@ -532,11 +371,9 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 	 * @param sootClass
 	 */
 	protected void addClassEnvironmentForClass(SootClass sootClass) {
-		if (annotationValidity) {
-			if (!store.containsClass(sootClass)) {
-				ClassEnvironment ce = checkAndBuildClassEnvironment(sootClass);
-				store.addClassEnvironment(ce);
-			}
+		if (!store.containsClass(sootClass)) {
+			ClassEnvironment ce = checkAndBuildClassEnvironment(sootClass);
+			store.addClassEnvironment(ce);
 		}
 	}
 
@@ -546,11 +383,9 @@ public class AnnotationExtractor extends SceneTransformer implements Cancelable 
 	 * @param sootField
 	 */
 	protected void addFieldEvironmentForField(SootField sootField) {
-		if (annotationValidity) {
-			if (!store.containsField(sootField)) {
-				FieldEnvironment fe = checkAndBuildFieldEnvironment(sootField);
-				store.addFieldEnvironment(fe);
-			}
+		if (!store.containsField(sootField)) {
+			FieldEnvironment fe = checkAndBuildFieldEnvironment(sootField);
+			store.addFieldEnvironment(fe);
 		}
 	}
 

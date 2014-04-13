@@ -1,18 +1,9 @@
 package main;
 
-import java.io.IOException;
-import java.util.logging.Level;
-
-import analysis.SecurityTypeTransformer;
-import analysis.SecurityTypeAnalysis;
-
-import extractor.AnnotationExtractor;
-
-import resource.Configuration;
-import static resource.Messages.getMsg;
-
+import static logging.AnalysisLogUtils.makeInstantLoggingSetting;
+import static logging.AnalysisLogUtils.makeLoggerLevelSetting;
+import static logging.AnalysisLogUtils.makeTimeSetting;
 import logging.AnalysisLog;
-import logging.AnalysisLogUtils;
 import logging.Settings;
 import model.MessageStore;
 import security.ILevelDefinition;
@@ -21,7 +12,11 @@ import security.ILevelMediator;
 import soot.PackManager;
 import soot.Transform;
 import utils.AnalysisUtils;
+import utils.AnalysisUtils.ArgumentParser;
 import utils.DefinitionClassHandler;
+import analysis.SecurityTypeAnalysis;
+import analysis.SecurityTypeTransformer;
+import extractor.AnnotationExtractor;
 
 /**
  * <h1>Main class of the security analysis</h1>
@@ -36,32 +31,10 @@ import utils.DefinitionClassHandler;
  */
 public class Main {
 
-	/**
-	 * Indicates whether the messages should be exported exactly in the moment the logger receives the message.
-	 */
-	private static boolean instantLogging = false;
-	/**
-	 * The logger that allows to log informations of different {@link SootLoggerLevel}.
-	 */
-	/** Array of levels which are enabled for the logging. */
-	private static Level[] logLevels = {};
 	/** The annotation transformer phase name. */
 	private static final String PHASE_NAME_ANNOTATION = "wjtp.annotation";
 	/** The security transformer phase name. */
 	private static final String PHASE_NAME_SECURITY = "jtp.security";
-
-	/**
-	 * Adds the given level to the array which contains the levels that are printed.
-	 * 
-	 * @param level
-	 *          Level which should be printed.
-	 */
-	public static void addLevel(Level level) {
-		Level[] levels = new Level[logLevels.length + 1];
-		System.arraycopy(logLevels, 0, levels, 0, logLevels.length);
-		levels[logLevels.length] = level;
-		logLevels = levels;
-	}
 
 	/**
 	 * DOC
@@ -72,13 +45,6 @@ public class Main {
 	public static MessageStore executeAndReturnMessageStore(String[] args) {
 		AnalysisLog log = execute(args);
 		return (log != null) ? log.getMessageStore() : new MessageStore();
-	}
-
-	/**
-	 * Enables the instant logging.
-	 */
-	public static void instantLogging() {
-		instantLogging = true;
 	}
 
 	/**
@@ -107,28 +73,21 @@ public class Main {
 	 * @param args
 	 */
 	private static AnalysisLog execute(String[] args) {
-		args = AnalysisUtils.precheckArguments(args);
-		AnalysisLog log = new AnalysisLog(instantLogging, logLevels);
-		log.configuration(new Settings(AnalysisLogUtils.makeLoggerLevelSetting(logLevels), AnalysisLogUtils
-				.makeInstantLoggingSetting(instantLogging), AnalysisLogUtils.makeTimeSetting()));
-		try {
-			ILevelDefinition definition = DefinitionClassHandler.getDefinitionClass();
-			DefinitionClassHandler.removeDefinitionClassFiles();
-			ILevelDefinitionChecker checker = new DefinitionChecker(definition, log, true, false);
-			if (checker.isValid()) {
-				ILevelMediator mediator = new Mediator(definition);
-				AnnotationExtractor extractor = new AnnotationExtractor(log, mediator);
-				PackManager.v().getPack("wjtp").add(new Transform(PHASE_NAME_ANNOTATION, extractor));
-				PackManager.v().getPack("jtp")
-						.add(new Transform(PHASE_NAME_SECURITY, new SecurityTypeTransformer(mediator, log, extractor, instantLogging)));
-				soot.Main.main(args);
-			} else {
-				log.error(Configuration.DEF_CLASS_NAME, 0, getMsg("analysis.fail.invalid_definition", Configuration.DEF_CLASS_NAME));
-			}
-		} catch (IOException | NullPointerException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			log.error(Configuration.DEF_CLASS_NAME, 0, getMsg("analysis.fail.load_definition", Configuration.DEF_CLASS_NAME));
-		}
-		if (!instantLogging) {
+		ArgumentParser parser = AnalysisUtils.getArgumentParser(args);
+		args = parser.getSootArguments();
+		AnalysisLog log = new AnalysisLog(parser.isInstantLogging(), parser.getLogLevels());
+		log.configuration(new Settings(makeLoggerLevelSetting(parser.getLogLevels()), makeInstantLoggingSetting(parser.isInstantLogging()),
+				makeTimeSetting()));
+		ILevelDefinition definition = DefinitionClassHandler.getDefinitionClass();
+		@SuppressWarnings("unused")
+		ILevelDefinitionChecker checker = new DefinitionChecker(definition, log, true);
+		ILevelMediator mediator = new Mediator(definition);
+		AnnotationExtractor extractor = new AnnotationExtractor(log, mediator);
+		PackManager.v().getPack("wjtp").add(new Transform(PHASE_NAME_ANNOTATION, extractor));
+		PackManager.v().getPack("jtp")
+				.add(new Transform(PHASE_NAME_SECURITY, new SecurityTypeTransformer(mediator, log, extractor, parser.isInstantLogging())));
+		soot.Main.main(args);
+		if (!parser.isInstantLogging()) {
 			log.printAllMessages();
 		}
 		return log;

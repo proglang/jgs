@@ -1,10 +1,6 @@
 package extractor;
 
-import interfaces.Cancelable;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import static resource.Messages.getMsg;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
 import soot.jimple.EnterMonitorStmt;
@@ -21,7 +17,7 @@ import soot.jimple.ReturnVoidStmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
-import exception.SootException.InvalidSwitchException;
+import exception.SwitchException;
 
 /**
  * DOC
@@ -29,16 +25,7 @@ import exception.SootException.InvalidSwitchException;
  * @author Thomas Vogel
  * @version 0.1
  */
-public class AnnotationStmtSwitch implements StmtSwitch, Cancelable {
-
-	/**
-	 * DOC
-	 */
-	private static final String EXCEPTION_UNKNOWN_STMT_OBJ = "Unknown object for the statement switch in the environment extractor.";
-	/**
-	 * DOC
-	 */
-	private final List<Cancelable> listeners = new ArrayList<Cancelable>();
+public class AnnotationStmtSwitch implements StmtSwitch {
 
 	/**
 	 * DOC
@@ -50,20 +37,6 @@ public class AnnotationStmtSwitch implements StmtSwitch, Cancelable {
 	 */
 	protected AnnotationStmtSwitch(AnnotationExtractor extractor) {
 		this.valueSwitch = new AnnotationValueSwitch(extractor);
-		addCancelListener(extractor);
-	}
-
-	@Override
-	public void addCancelListener(Cancelable cancelable) {
-		this.listeners.add(cancelable);
-
-	}
-
-	@Override
-	public void cancel() {
-		for (Cancelable cancelable : listeners) {
-			cancelable.cancel();
-		}
 	}
 
 	/**
@@ -220,14 +193,8 @@ public class AnnotationStmtSwitch implements StmtSwitch, Cancelable {
 	 * @see soot.jimple.StmtSwitch#defaultCase(java.lang.Object)
 	 */
 	@Override
-	public void defaultCase(Object obj) {
-		throw new InvalidSwitchException(EXCEPTION_UNKNOWN_STMT_OBJ);
-
+	public void defaultCase(Object object) {
+		throw new SwitchException(getMsg("exception.extractor.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
 	}
-
-	@Override
-	public void removeCancelListener(Cancelable cancelable) {
-		this.listeners.remove(cancelable);
-
-	}
+	
 }

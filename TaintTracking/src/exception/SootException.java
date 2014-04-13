@@ -224,58 +224,6 @@ public abstract class SootException extends RuntimeException {
 
 	}
 
-	public static class NoSuchElementException extends SootException {
-
-		/**
-		 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded
-		 * classes for that object that are compatible with respect to serialization (see {@link Serializable}).
-		 */
-		private static final long serialVersionUID = -8829437176470548524L;
-
-		/**
-		 * 
-		 * 
-		 * @param msg
-		 *          A detailed description of the exception.
-		 */
-		public NoSuchElementException(String msg) {
-			super(msg);
-		}
-
-	}
-
-	/**
-	 * <h1><em>Security level</em> implementation exception</h1>
-	 * 
-	 * The {@link SecurityLevelException} indicates that the implementation of the {@code SecurityLevel} class can't be checked correctly.
-	 * E.g. the implementation can't be found or there are issues with the compilation.
-	 * 
-	 * <hr />
-	 * 
-	 * @author Thomas Vogel
-	 * @version 0.1
-	 */
-	public static class SecurityLevelException extends SootException {
-
-		/**
-		 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded
-		 * classes for that object that are compatible with respect to serialization (see {@link Serializable}).
-		 */
-		private static final long serialVersionUID = 6923594123071071122L;
-
-		/**
-		 * Constructor of an exception which indicates that the implementation of the {@code SecurityLevel} class can't be checked correctly and
-		 * which is described by the given message.
-		 * 
-		 * @param msg
-		 *          A detailed description of the exception.
-		 */
-		public SecurityLevelException(String msg) {
-			super(msg);
-		}
-
-	}
-
 	/**
 	 * <h1>Switch Exception</h1>
 	 * 
@@ -347,7 +295,7 @@ public abstract class SootException extends RuntimeException {
 	/**
 	 * <h1>Environment not prepared exception</h1>
 	 * 
-	 * The {@link NoSuchElementException} is a {@link SootException} and indicates that for a required soot object (i.e. SootMethod, SootField
+	 * The {@link AnnotationElementNotFoundException} is a {@link SootException} and indicates that for a required soot object (i.e. SootMethod, SootField
 	 * or SootClass) no corresponding Environment exists.
 	 * 
 	 * <hr />

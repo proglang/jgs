@@ -13,4 +13,3 @@ public class Invalid02 {
 	}
 
 }
-// @error("For each constructor parameter should exist exactly one security level.")

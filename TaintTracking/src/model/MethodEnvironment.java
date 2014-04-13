@@ -6,15 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import constraints.Constraints;
+import exception.AnnotationInvalidException;
+import exception.LevelInvalidException;
+import exception.MethodParameterNotFoundException;
 
 import logging.AnalysisLog;
-import resource.Configuration;
-import static resource.Messages.getMsg;
+import static resource.Configuration.*;
+import static resource.Messages.*;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootMethod;
 import soot.Type;
-import utils.AnalysisUtils;
+import static utils.AnalysisUtils.*;
 
 /**
  * <h1>Analysis environment for methods</h1>
@@ -151,8 +154,8 @@ public class MethodEnvironment extends Environment {
 	private SootMethod sootMethod;
 	/** The expected <em>write effects</em> of the analyzed {@link SootMethod}. */
 	private List<ILevel> writeEffects = new ArrayList<ILevel>();
-	
-	private final Constraints contraints;
+
+	private final Constraints constraints;
 
 	/**
 	 * DOC
@@ -186,7 +189,7 @@ public class MethodEnvironment extends Environment {
 		this.returnLevel = returnSecurityLevel;
 		this.writeEffects.addAll(methodWriteEffects);
 		this.classWriteEffects.addAll(classWriteEffects);
-		this.contraints = constraints;
+		this.constraints = constraints;
 	}
 
 	/**
@@ -206,15 +209,17 @@ public class MethodEnvironment extends Environment {
 	 * @param i
 	 *          The index of the parameter which should be returned.
 	 * @return The method parameter which represent the parameter at the given index.
-	 * @throws Exception
 	 * @see MethodParameter
 	 */
-	public MethodParameter getMethodParameterAt(int i) throws Exception {
+	public MethodParameter getMethodParameterAt(int i){
 		if (i < this.methodParameters.size()) {
 			return this.methodParameters.get(new Integer(i));
 		}
-		// TODO: Exception Handling
-		throw new Exception();
+		throw new MethodParameterNotFoundException(
+				getMsg(
+						"exception.environment.method_parameter_not_found",
+						generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+								METHOD_SIGNATURE_PRINT_VISIBILITY), i));
 	}
 
 	/**
@@ -253,10 +258,6 @@ public class MethodEnvironment extends Environment {
 	public SootMethod getSootMethod() {
 		return sootMethod;
 	}
-
-	/*
-	 * ----------------------------------------------------
-	 */
 
 	/**
 	 * Returns the <em>write effects</em> of the analyzed method.
@@ -308,60 +309,54 @@ public class MethodEnvironment extends Environment {
 	 * 
 	 * @return
 	 */
-	public boolean isReasonable() {
-		String methodSignature = AnalysisUtils.generateMethodSignature(sootMethod, Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-				Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-		boolean reasonability = true;
+	public void isReasonable() {
+		String methodSignature = generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+				METHOD_SIGNATURE_PRINT_VISIBILITY);
 		if (!getLevelMediator().checkParameterLevelsValidity(getListOfParameterLevels())) {
 			for (ILevel level : getLevelMediator().getInvalidParameterLevels(getListOfParameterLevels())) {
-				logError(getMsg("parameter_levels.invalid", level.getName(), methodSignature));
+				throw new LevelInvalidException(getMsg("exception.level.parameter.invalid", level.getName(), methodSignature));
 			}
-			reasonability = false;
 		}
 		if (isVoid) {
 			if (returnLevel != null) {
-				logError(getMsg("other.void_method", methodSignature));
-				reasonability = false;
+				throw new AnnotationInvalidException(getMsg("exception.level.return.void_method", methodSignature));
 			}
 			// NEW
-			if (contraints.containsReturnRef()) {
-				logError(getMsg("other.void_method", methodSignature));
-				reasonability = false;
+			if (constraints.containsReturnRef()) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.void_method", methodSignature));
 			}
 		} else {
 			if (returnLevel == null) {
-				logError(getMsg("other.non_void_method", methodSignature));
-				reasonability = false;
+				throw new AnnotationInvalidException(getMsg("exception.level.return.no_level", methodSignature));
 			} else {
 				if (!getLevelMediator().checkLevelValidity(returnLevel)) {
-					logError(getMsg("other.invalid_return_level", returnLevel.getName(), methodSignature));
-					reasonability = false;
+					throw new LevelInvalidException(getMsg("exception.level.return.invalid", returnLevel.getName(), methodSignature));
 				}
+			}
+			// NEW
+			if (! constraints.containsReturnRef()) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.no_return_ref", methodSignature));
 			}
 		}
 		if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
 			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(writeEffects)) {
-				logError(getMsg("effects.method.invalid", invalidEffect.getName(), methodSignature));
-				reasonability = false;
+				throw new AnnotationInvalidException(getMsg("exception.effects.method_invalid", invalidEffect.getName(), methodSignature));
 			}
 		}
 		if (!getLevelMediator().checkLevelsValidity(classWriteEffects)) {
 			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(classWriteEffects)) {
-				logError(getMsg("effects.method.invalid_class", invalidEffect.getName(), methodSignature));
-				reasonability = false;
+				throw new AnnotationInvalidException(getMsg("exception.effects.method_class_invalid", invalidEffect.getName(), methodSignature));
 			}
 		}
-		if (!getLevelMediator().checkLevelsValidity(new ArrayList<ILevel>(contraints.getContainedLevels()))) {
-			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(new ArrayList<ILevel>(contraints.getContainedLevels()))) {
-				logError(getMsg("effects.method.invalid_class", invalidEffect.getName(), methodSignature));
-				reasonability = false;
+		// NEW
+		if (!getLevelMediator().checkLevelsValidity(new ArrayList<ILevel>(constraints.getContainedLevels()))) {
+			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(new ArrayList<ILevel>(constraints.getContainedLevels()))) {
+				throw new LevelInvalidException(getMsg("exception.constraints.invalid_level", invalidEffect.getName(), methodSignature));
 			}
 		}
-		if (sootMethod.getParameterCount() < contraints.highestParameterRefNumber() + 1) {
-			logError(getMsg("constraints.invalid_param_ref", methodSignature, sootMethod.getParameterCount()));
-			reasonability = false;
+		if (sootMethod.getParameterCount() < constraints.highestParameterRefNumber() + 1) {
+			throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_param_ref", methodSignature, sootMethod.getParameterCount()));
 		}
-		return reasonability;
 	}
 
 	/**
@@ -401,32 +396,6 @@ public class MethodEnvironment extends Environment {
 	}
 
 	/**
-	 * Logs the given message as an error. The file name is created by the analyzed {@link SootMethod}, which this environment stores (see
-	 * {@link MethodEnvironment#sootMethod}), the source line number is specified as 0.
-	 * 
-	 * @param msg
-	 *          Message that should be printed as an error.
-	 * @see AnalysisLog#error(String, long, String)
-	 */
-	protected void logError(String msg) {
-		getLog().error(AnalysisUtils.generateFileName(sootMethod), 0, msg);
-	}
-
-	/**
-	 * Logs the given message as well as the Exception as an exception. The file name is created by the analyzed {@link SootMethod}, which
-	 * this environment stores (see {@link MethodEnvironment#sootMethod}), the source line number is specified as 0.
-	 * 
-	 * @param msg
-	 *          Message that should be printed as an exception.
-	 * @param e
-	 *          The exception which is the reason for the given exception message.
-	 * @see AnalysisLog#exception(String, long, String, Throwable)
-	 */
-	protected void logException(String msg, Exception e) {
-		getLog().exception(AnalysisUtils.generateFileName(sootMethod), 0, msg, e);
-	}
-
-	/**
 	 * Logs the given message as a warning. The file name is created by the analyzed {@link SootMethod}, which this environment stores (see
 	 * {@link MethodEnvironment#sootMethod}), the source line number is specified as 0.
 	 * 
@@ -435,11 +404,11 @@ public class MethodEnvironment extends Environment {
 	 * @see AnalysisLog#warning(String, long, String)
 	 */
 	protected void logWarning(String msg) {
-		getLog().warning(AnalysisUtils.generateFileName(sootMethod), 0, msg);
+		getLog().warning(generateFileName(sootMethod), 0, msg);
 	}
 
 	public Constraints getContraints() {
-		return contraints;
+		return constraints;
 	}
 
 }

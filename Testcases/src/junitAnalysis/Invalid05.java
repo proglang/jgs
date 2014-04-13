@@ -14,4 +14,3 @@ public class Invalid05 {
 	}
 
 }
-// @error("The definition of a return security level for a void method is not allowed")

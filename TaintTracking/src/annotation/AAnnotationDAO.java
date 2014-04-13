@@ -7,8 +7,6 @@ import java.util.Map;
 
 import utils.AnalysisUtils;
 
-import exception.SootException.NoSuchElementException;
-
 public abstract class AAnnotationDAO implements IAnnotationDAO {
 	
 	protected static final Map<String, Class<?>> PRIM_CLASSES = new HashMap<String, Class<?>>();
@@ -19,54 +17,53 @@ public abstract class AAnnotationDAO implements IAnnotationDAO {
 			PRIM_CLASSES.put(AnalysisUtils.getJNISignature(c), c);
 	}
 
-	public abstract List<IAnnotationDAO> getAnnotationArrayFor(String name, Class<? extends Annotation> annotationClass)
-			throws NoSuchElementException;
+	public abstract List<IAnnotationDAO> getAnnotationArrayFor(String name, Class<? extends Annotation> annotationClass);
 
-	public abstract IAnnotationDAO getAnnotationFor(String name, Class<? extends Annotation> annotationClass) throws NoSuchElementException;
+	public abstract IAnnotationDAO getAnnotationFor(String name, Class<? extends Annotation> annotationClass);
 
-	public abstract List<Boolean> getBooleanArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Boolean> getBooleanArrayFor(String name);
 
-	public abstract boolean getBooleanFor(String name) throws NoSuchElementException;
+	public abstract boolean getBooleanFor(String name);
 
-	public abstract List<Byte> getByteArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Byte> getByteArrayFor(String name);
 
-	public abstract byte getByteFor(String name) throws NoSuchElementException;
+	public abstract byte getByteFor(String name);
 
-	public abstract List<Character> getCharArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Character> getCharArrayFor(String name);
 
-	public abstract char getCharFor(String name) throws NoSuchElementException;
+	public abstract char getCharFor(String name);
 
-	public abstract List<Class<?>> getClassArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Class<?>> getClassArrayFor(String name);
 
-	public abstract Class<?> getClassFor(String name) throws NoSuchElementException;
+	public abstract Class<?> getClassFor(String name);
 
-	public abstract List<Double> getDoubleArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Double> getDoubleArrayFor(String name);
 
-	public abstract double getDoubleFor(String name) throws NoSuchElementException;
+	public abstract double getDoubleFor(String name);
 
-	public abstract <V extends Enum<V>> List<V> getEnumArrayFor(String name, Class<V> enumClass) throws NoSuchElementException;
+	public abstract <V extends Enum<V>> List<V> getEnumArrayFor(String name, Class<V> enumClass);
 
-	public abstract <V extends Enum<V>> V getEnumFor(String name, Class<V> enumClass) throws NoSuchElementException;
+	public abstract <V extends Enum<V>> V getEnumFor(String name, Class<V> enumClass);
 
-	public abstract List<Float> getFloatArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Float> getFloatArrayFor(String name);
 
-	public abstract float getFloatFor(String name) throws NoSuchElementException;
+	public abstract float getFloatFor(String name);
 
-	public abstract List<Integer> getIntArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Integer> getIntArrayFor(String name);
 
-	public abstract int getIntFor(String name) throws NoSuchElementException;
+	public abstract int getIntFor(String name);
 
-	public abstract List<Long> getLongArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Long> getLongArrayFor(String name);
 
-	public abstract long getLongFor(String name) throws NoSuchElementException;
+	public abstract long getLongFor(String name);
 
-	public abstract List<Short> getShortArrayFor(String name) throws NoSuchElementException;
+	public abstract List<Short> getShortArrayFor(String name);
 
-	public abstract short getShortFor(String name) throws NoSuchElementException;
+	public abstract short getShortFor(String name);
 
-	public abstract List<String> getStringArrayFor(String name) throws NoSuchElementException;
+	public abstract List<String> getStringArrayFor(String name);
 
-	public abstract String getStringFor(String name) throws NoSuchElementException;
+	public abstract String getStringFor(String name);
 
 	public abstract boolean hasAnnotation(String name);
 

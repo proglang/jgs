@@ -13,6 +13,8 @@ import logging.AnalysisLogLevel;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
+import exception.ExtractorException;
+
 import soot.G;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -66,107 +68,108 @@ public class TestAnalysisFailing {
 		G.reset();
 	}
 
-	@Test
+	
+	@Test(expected = ExtractorException.class)
 	public final void test01Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID01, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test02Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID02, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test03Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID03, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test05Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID05, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test06Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID06, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test07Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID07, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test08Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID08, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test09Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID09, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test10Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID10, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test11Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID11, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test12Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID12, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test13Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID13, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test14Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID14, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test15Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID15, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test16Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID16, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test17Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID17, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test18Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID18, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test19Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID19, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test20Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID20, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test21Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID21, CHECK_LEVELS);
 	}
 
-	@Test
+	@Test(expected = ExtractorException.class)
 	public final void test22Invalid() {
 		JUnitMessageStoreHelper.checkMethodStoreEquality(INVALID22, CHECK_LEVELS);
 	}

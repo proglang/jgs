@@ -1,6 +1,5 @@
 package logging;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ import java.util.Map;
  * @version 0.1
  * @see SootLogger#configuration(Settings)
  */
-public class Settings implements Serializable {
+public class Settings {
 
 	/**
 	 * <h1>Setting tuple</h1>
@@ -30,13 +29,8 @@ public class Settings implements Serializable {
 	 * @version 0.1
 	 * @see SootLogger#configuration(Settings)
 	 */
-	public static class Setting implements Serializable {
+	public static class Setting {
 
-		/**
-		 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded
-		 * classes for that object that are compatible with respect to serialization (see {@link Serializable}).
-		 */
-		private static final long serialVersionUID = -3643182787167392103L;
 		/** Name of the setting. */
 		protected String name;
 		/** Value of the setting as String. */
@@ -58,11 +52,6 @@ public class Settings implements Serializable {
 
 	}
 
-	/**
-	 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded classes
-	 * for that object that are compatible with respect to serialization (see {@link Serializable}).
-	 */
-	private static final long serialVersionUID = -5055956354005763224L;
 	/** Map which stores the setting tuples. */
 	private Map<String, String> settings = new HashMap<String, String>();
 

@@ -1,5 +1,16 @@
 package security;
 
+import static resource.Messages.getMsg;
+import static security.ALevelDefinition.SIGNATURE_DEFAULT_VAR;
+import static security.ALevelDefinition.SIGNATURE_GLB;
+import static security.ALevelDefinition.SIGNATURE_LEVELS;
+import static security.ALevelDefinition.SIGNATURE_LIB_CLASS;
+import static security.ALevelDefinition.SIGNATURE_LIB_FIELD;
+import static security.ALevelDefinition.SIGNATURE_LIB_METHOD;
+import static security.ALevelDefinition.SIGNATURE_LIB_PARAM;
+import static security.ALevelDefinition.SIGNATURE_LIB_RETURN;
+import static security.ALevelDefinition.SIGNATURE_LUB;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,17 +26,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintReturnRef;
-import constraints.Constraints;
-import constraints.EQConstraint;
-import constraints.LEQConstraint;
-
-
-import annotation.JavaAnnotationDAO;
-
+import logging.AnalysisLog;
 import resource.Configuration;
-import static resource.Messages.getMsg;
 import soot.RefType;
 import soot.SootClass;
 import soot.SootField;
@@ -36,58 +38,49 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.util.Chain;
 import utils.AnalysisUtils;
-import exception.SootException.SecurityLevelException;
-
-import logging.AnalysisLog;
+import annotation.JavaAnnotationDAO;
+import constraints.ConstraintParameterRef;
+import constraints.ConstraintReturnRef;
+import constraints.Constraints;
+import constraints.LEQConstraint;
+import exception.AnnotationElementNotFoundException;
+import exception.AnnotationInvalidConstraintsException;
+import exception.DefinitionInvalidException;
 
 public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker {
 
 	public static final String ID_SIGNATURE_PATTERN = "public static <T> T %s(T)";
-	private final static String EXCEPTION_INVALID_IMPLEMENTATION = String.format("The implementation of the class '%s' is invalid.",
-			Configuration.DEF_PATH_JAVA);
 	private static final String SIGNATURE_ID_INVALID = "public <T> T %s(T)";
-	private final List<ILevel> illegalLevelNames = new ArrayList<ILevel>();
 	private final ILevelDefinition implementation;
-	private boolean invalid;
-	private final List<ILevel> invalidIdFunctionAnnotation = new ArrayList<ILevel>();
-	private final List<ILevel> invalidIdFunctions = new ArrayList<ILevel>();
 	private final List<ILevel> levels = new ArrayList<ILevel>();
 	private final AnalysisLog logger;
 	private final boolean logging;
-	private final List<ILevel> unavailableIdFunctionAnnotation = new ArrayList<ILevel>();
-	private final List<ILevel> unavailableIdFunctions = new ArrayList<ILevel>();
 
-	public ALevelDefinitionChecker(ILevelDefinition implementation) throws SecurityLevelException {
-		this(implementation, null, true, true);
+	public ALevelDefinitionChecker(ILevelDefinition implementation) {
+		this(implementation, null, true);
 	}
 
-	protected ALevelDefinitionChecker(ILevelDefinition implementation, AnalysisLog logger, boolean logging, boolean throwException)
-			throws SecurityLevelException {
+	protected ALevelDefinitionChecker(ILevelDefinition implementation, AnalysisLog logger, boolean logging) {
 		this.logging = logging;
 		this.logger = logging ? logger : null;
 		this.implementation = implementation;
-		checkValidity(throwException);
+		checkValidity();
 	}
 
 	public final List<ILevel> getLevels() {
 		return levels;
 	}
 
-	public boolean isValid() {
-		return !invalid;
-	}
-
-	private boolean checkAnnotationsOfAnnotationClass(Class<? extends Annotation> annotationClass, ElementType[] elementTypes) {
-		boolean validity = true;
+	private void checkAnnotationsOfAnnotationClass(Class<? extends Annotation> annotationClass, ElementType[] elementTypes) {
 		if (annotationClass.isAnnotationPresent(Retention.class)) {
 			Retention annotation = annotationClass.getAnnotation(Retention.class);
 			if (!annotation.value().equals(RetentionPolicy.RUNTIME)) {
-				printException(getMsg("checker.annotation.invalid_visibility", annotationClass.getName(), RetentionPolicy.RUNTIME.name()));
-				validity = false;
+				throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.visibility_invalid", annotationClass.getName(),
+						RetentionPolicy.RUNTIME.name()));
 			}
 		} else {
-			printException(getMsg("checker.annotation.missing_annotation", annotationClass.getName(), Retention.class.getName()));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.missing_annotation", annotationClass.getName(),
+					Retention.class.getName()));
 		}
 		if (annotationClass.isAnnotationPresent(Target.class)) {
 			Target annotation = annotationClass.getAnnotation(Target.class);
@@ -95,61 +88,51 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 			List<ElementType> required = Arrays.asList(elementTypes);
 			for (ElementType elementType : required) {
 				if (!present.contains(elementType)) {
-					printException(getMsg("checker.annotation.missing_element_type", annotationClass.getName(), elementType.name()));
-					validity = false;
+					throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.missing_element_type", annotationClass.getName(),
+							elementType.name()));
 				}
 			}
 			for (ElementType elementType : present) {
 				if (!required.contains(elementType)) {
-					printException(getMsg("checker.annotation.invalid_element_type", annotationClass.getName(), elementType.name()));
-					validity = false;
+					throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.invalid_element_type", annotationClass.getName(),
+							elementType.name()));
 				}
 			}
 		} else {
-			printException(getMsg("checker.annotation.missing_annotation", annotationClass.getName(), Target.class.getName()));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.missing_annotation", annotationClass.getName(),
+					Target.class.getName()));
 		}
-		return validity;
 	}
 
-	private boolean checkConventionsOfAnnotationClass(Class<? extends Annotation> annotationClass, ElementType[] elementTypes) {
-		boolean validity = true;
+	private void checkConventionsOfAnnotationClass(Class<? extends Annotation> annotationClass, ElementType[] elementTypes) {
 		if (annotationClass.getDeclaringClass() == null) {
-			printException(getMsg("checker.annotation.invalid_declaration", annotationClass.getName()));
-			validity = false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.invalid_declaration", annotationClass.getName()));
 		}
 		if (!annotationClass.getPackage().getName().equals(Configuration.DEF_PACKAGE_NAME)) {
-			printException(getMsg("checker.annotation.invalid_package", annotationClass.getName(), Configuration.DEF_PACKAGE_NAME));
-			validity = false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.invalid_package", annotationClass.getName(),
+					Configuration.DEF_PACKAGE_NAME));
 		}
 		if (!annotationClass.isAnnotation()) {
-			printException(getMsg("checker.annotation.invalid_annotation_class", annotationClass.getName()));
-			validity = false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.invalid_class", annotationClass.getName()));
 		}
-		return validity & checkAnnotationsOfAnnotationClass(annotationClass, elementTypes);
+		checkAnnotationsOfAnnotationClass(annotationClass, elementTypes);
 	}
 
-	private boolean checkConventionsOfAnnotationClasses() {
-		boolean validity = true;
+	private void checkConventionsOfAnnotationClasses() {
 		if (implementation.getAnnotationClassFieldLevel() == null) {
-			printException(getMsg("checker.annotation.no_annotation_class", getMsg("other.field_level")));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.no_class", getMsg("other.field_level")));
 		}
 		if (implementation.getAnnotationClassParameterLevel() == null) {
-			printException(getMsg("checker.annotation.no_annotation_class", getMsg("other.parameter_levels")));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.no_class", getMsg("other.parameter_levels")));
 		}
 		if (implementation.getAnnotationClassReturnLevel() == null) {
-			printException(getMsg("checker.annotation.no_annotation_class", getMsg("other.write_effects")));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.no_class", getMsg("other.return_level")));
 		}
 		if (implementation.getAnnotationClassEffects() == null) {
-			printException(getMsg("checker.annotation.no_annotation_class", getMsg("other.return_level")));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.no_class", getMsg("other.write_effects")));
 		}
 		if (implementation.getAnnotationClassConstraints() == null) {
-			printException(getMsg("checker.annotation.no_annotation_class", getMsg("other.constraints")));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.no_class", getMsg("other.constraints")));
 		}
 		Map<Class<? extends Annotation>, ElementType[]> annotations = new HashMap<Class<? extends Annotation>, ElementType[]>();
 		annotations.put(implementation.getAnnotationClassFieldLevel(), new ElementType[] { ElementType.FIELD });
@@ -159,55 +142,43 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 				ElementType.TYPE });
 		annotations.put(implementation.getAnnotationClassConstraints(), new ElementType[] { ElementType.METHOD, ElementType.CONSTRUCTOR });
 		for (Class<? extends Annotation> annotation : annotations.keySet()) {
-			if (!checkConventionsOfAnnotationClass(annotation, annotations.get(annotation))) {
-				validity = false;
-			}
+			checkConventionsOfAnnotationClass(annotation, annotations.get(annotation));
 		}
-		return validity;
 	}
 
-	private boolean checkCorrectnesOfConventions(ILevel level) {
-		return checkCorrectnessOfLevelName(level) & checkCorrectnessOfLevelFunction(level);
+	private void checkCorrectnesOfConventions(ILevel level) {
+		checkCorrectnessOfLevelName(level);
+		checkCorrectnessOfLevelFunction(level);
 	}
 
-	private boolean checkCorrectnessOfConventionsForAllLevels() {
-		boolean correctness = true;
+	private void checkCorrectnessOfConventionsForAllLevels() {
 		for (ILevel level : getLevels()) {
-			correctness &= checkCorrectnesOfConventions(level);
+			checkCorrectnesOfConventions(level);
 		}
-		return correctness;
 	}
 
-	private boolean checkCorrectnessOfConventionsForClass() {
-		boolean validity = true;
+	private void checkCorrectnessOfConventionsForClass() {
 		String packageName = getImplementationClass().getPackage().getName();
 		String className = getImplementationClass().getSimpleName();
 		if (!packageName.equals(Configuration.DEF_PACKAGE_NAME)) {
-			printException(getMsg("checker.package.invalid_name", Configuration.DEF_PACKAGE_NAME));
-			validity = false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.package.invalid_name", Configuration.DEF_PACKAGE_NAME));
 		}
 		if (!className.equals(Configuration.DEF_CLASS_NAME)) {
-			printException(getMsg("checker.class.invalid_name", Configuration.DEF_CLASS_NAME));
-			validity = false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.class.invalid_name", Configuration.DEF_PACKAGE_NAME));
 		}
-		return validity;
 	}
 
-	private boolean checkCorrectnessOfLevelFunction(ILevel level) {
+	private void checkCorrectnessOfLevelFunction(ILevel level) {
 		String levelFunctionName = AnalysisUtils.generateLevelFunctionName(level);
-		String signatureIdFunction = String.format(ID_SIGNATURE_PATTERN, levelFunctionName);
+		String signatureLevelFunction = String.format(ID_SIGNATURE_PATTERN, levelFunctionName);
 		if (!getImplementationMethodNames().contains(levelFunctionName)) {
-			printException(getMsg("checker.id_func.none", signatureIdFunction));
-			unavailableIdFunctions.add(level);
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.none", signatureLevelFunction));
 		} else {
-			boolean valid = true;
 			try {
 				Method method = getImplementationClass().getMethod(levelFunctionName, Object.class);
 				if (!Modifier.isStatic(method.getModifiers())) {
-					printException(getMsg("checker.id_func.not_static", String.format(SIGNATURE_ID_INVALID, levelFunctionName)));
-					invalidIdFunctions.add(level);
-					valid = false;
+					throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.not_static",
+							String.format(SIGNATURE_ID_INVALID, levelFunctionName)));
 				}
 				boolean existsReturnAnnotation = false;
 				boolean existsParameterAnnotation = false;
@@ -218,77 +189,67 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 							ILevel returnLevel = implementation.extractReturnLevel(new JavaAnnotationDAO(annotation));
 							existsReturnAnnotation = true;
 							if (!returnLevel.equals(level)) {
-								printException(getMsg("checker.id_func.invalid_return_level", signatureIdFunction));
-								invalidIdFunctionAnnotation.add(level);
-								valid = false;
+								throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.invalid_return_level", signatureLevelFunction));
 							}
-						} catch (Exception e) {
-							printException(getMsg("checker.annotation.error_conversion", getMsg("other.return_level")));
-							return false;
+						} catch (AnnotationElementNotFoundException e) {
+							throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.error_level_conversion",
+									getMsg("other.return_level"), signatureLevelFunction), e);
 						}
-
 					} else if (annotation.annotationType().equals(implementation.getAnnotationClassParameterLevel())) {
 						try {
 							existsParameterAnnotation = true;
 							List<ILevel> parameterLevels = implementation.extractParameterLevels(new JavaAnnotationDAO(annotation));
 							if (parameterLevels == null || parameterLevels.size() != 1 || !parameterLevels.get(0).equals(level)) {
-								printException(getMsg("checker.id_func.invalid_parameter_levels", signatureIdFunction));
-								invalidIdFunctionAnnotation.add(level);
-								valid = false;
+								throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.invalid_parameter_levels",
+										signatureLevelFunction));
 							}
-						} catch (Exception e) {
-							printException(getMsg("checker.annotation.error_conversion", getMsg("other.return_level")));
-							return false;
+						} catch (AnnotationElementNotFoundException e) {
+							throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.error_level_conversion",
+									getMsg("other.parameter_levels"), signatureLevelFunction), e);
 						}
 					} else if (annotation.annotationType().equals(implementation.getAnnotationClassConstraints())) {
 						try {
 							existsConstraintsAnnotation = true;
 							Constraints constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation));
 							if (constraints.contains(new LEQConstraint(new ConstraintParameterRef(0), level))
-									&& constraints.contains(new EQConstraint(new ConstraintReturnRef(), level)) && constraints.size() == 2) {
-								printException(getMsg("checker.id_func.invalid_constraints", signatureIdFunction));
-								invalidIdFunctionAnnotation.add(level);
-								valid = false;
+									&& constraints.contains(new LEQConstraint(new ConstraintReturnRef(), level))
+									&& constraints.contains(new LEQConstraint(level, new ConstraintReturnRef())) && constraints.size() == 3) {
+								throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.invalid_constraints", signatureLevelFunction));
 							}
-						} catch (Exception e) {
-							printException(getMsg("checker.annotation.error_conversion", getMsg("other.constraints")));
-							return false;
+						} catch (AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {
+							throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.error_constraint_conversion",
+									signatureLevelFunction), e);
 						}
 					}
 				}
 				if (!existsReturnAnnotation || !existsParameterAnnotation || !existsConstraintsAnnotation) {
-					printException(getMsg("checker.id_func.no_annotation", signatureIdFunction));
-					unavailableIdFunctionAnnotation.add(level);
-					valid = false;
+					throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.missing_annotation", signatureLevelFunction));
 				}
-			} catch (Exception e) {
-				printException(getMsg("checker.id_func.no_access", signatureIdFunction));
-				unavailableIdFunctions.add(level);
-				valid = false;
+			} catch (NoSuchMethodException | SecurityException e) {
+				throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.no_access", signatureLevelFunction), e);
 			}
-			return valid;
 		}
 	}
 
-	private boolean checkCorrectnessOfLevelName(ILevel level) {
+	private void checkCorrectnessOfLevelName(ILevel level) {
 		Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
 		Matcher m = p.matcher(level.getName());
 		boolean match = m.find();
 		if (match) {
-			printException(getMsg("checker.level.invalid_char", level.getName()));
-			illegalLevelNames.add(level);
+			throw new DefinitionInvalidException(getMsg("exception.def_class.level.invalid_char", level.getName()));
 		}
-		return !match;
 	}
 
-	private boolean checkNormalValiditiyOfImplemenation() {
-		return checkValidityOfImportantInstanceMethods()
-				&& checkConventionsOfAnnotationClasses()
-				&& (checkValidityOfAdditionalInstanceMethods() & checkCorrectnessOfConventionsForAllLevels()
-						& checkCorrectnessOfConventionsForClass() & checkPossibleMistakes());
+	private void checkNormalValiditiyOfImplemenation() {
+		checkCorrectnessOfConventionsForClass();
+		checkConventionsOfAnnotationClasses();
+		checkValidityOfImportantInstanceMethods();
+		checkCorrectnessOfConventionsForAllLevels();
+		checkValidityOfAdditionalInstanceMethods();
+		checkPossibleMistakes();
 	}
 
-	private boolean checkPossibleMistakes() {
+	private void checkPossibleMistakes() {
 		List<String> levelNames = getLevelNames();
 		for (Method method : getImplementationMethods()) {
 			String methodName = method.getName();
@@ -300,81 +261,65 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 					boolean isStatic = Modifier.isStatic(method.getModifiers());
 					boolean isPublic = Modifier.isPublic(method.getModifiers());
 					if (parameters.length == 1 && parameters[0].equals(Object.class) && returnType.equals(Object.class) && isStatic && isPublic) {
-						printWarning(getMsg("checker.level.no_method", String.format(ID_SIGNATURE_PATTERN, methodName)));
+						printWarning(getMsg("warning.def_class.level.no_level", String.format(ID_SIGNATURE_PATTERN, methodName)));
 					}
 				}
 			}
 		}
-		return true;
 	}
 
-	private void checkValidity(boolean throwException) throws SecurityLevelException {
-		invalid = !checkNormalValiditiyOfImplemenation() || !checkAdditionalValidityOfImplementation();
-		if (invalid) {
-			if (throwException) {
-				throw new SecurityLevelException(EXCEPTION_INVALID_IMPLEMENTATION);
-			}
-		}
+	private void checkValidity() {
+		checkNormalValiditiyOfImplemenation();
+		checkAdditionalValidityOfImplementation();
 	}
 
-	private boolean checkValidityOfAdditionalInstanceMethods() {
-		boolean validity = true;
+	private void checkValidityOfAdditionalInstanceMethods() {
 		if (implementation.getDefaultVariableLevel() == null) {
-			validity = false;
-			printException(getMsg("checker.level.no_default_variable", ALevelDefinition.SIGNATURE_DEFAULT_VAR));
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_default_variable", SIGNATURE_DEFAULT_VAR));
 		}
-		if (implementation.getLibraryClassWriteEffects(generateTestClass()) == null) {
-			validity = false;
-			printException(getMsg("checker.level.no_lib_class_effects", ALevelDefinition.SIGNATURE_LIB_CLASS));
+		SootClass sootClass = generateTestClass();
+		SootMethod sootMethod = generatedTestMethod(sootClass);
+		List<ILevel> testLevels = Arrays.asList(new ILevel[] { getLevels().get(0), getLevels().get(0) });
+		SootField sootField = generateTestField(sootClass);
+		if (implementation.getLibraryClassWriteEffects(sootClass) == null) {
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_class_effects", SIGNATURE_LIB_CLASS));
 		}
-		if (implementation.getLibraryMethodWriteEffects(generatedTestMethod(0)) == null) {
-			validity = false;
-			printException(getMsg("checker.level.no_lib_method_effects", ALevelDefinition.SIGNATURE_LIB_METHOD));
+		if (implementation.getLibraryMethodWriteEffects(sootMethod) == null) {
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_method_effects", SIGNATURE_LIB_METHOD));
 		}
-		if (implementation.getLibraryFieldLevel(generateTestField()) == null) {
-			validity = false;
-			printException(getMsg("checker.level.no_lib_field", ALevelDefinition.SIGNATURE_LIB_FIELD));
+		if (implementation.getLibraryFieldLevel(sootField) == null) {
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_field", SIGNATURE_LIB_FIELD));
 		}
-		if (implementation.getLibraryParameterLevel(generatedTestMethod(0)) == null
-				|| implementation.getLibraryParameterLevel(generatedTestMethod(1)) == null
-				|| implementation.getLibraryParameterLevel(generatedTestMethod(1)).size() != 1) {
-			validity = false;
-			printException(getMsg("checker.level.no_lib_parameter", ALevelDefinition.SIGNATURE_LIB_PARAM));
+		if (implementation.getLibraryParameterLevel(sootMethod) == null || implementation.getLibraryParameterLevel(sootMethod).size() != 2) {
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_parameter", SIGNATURE_LIB_PARAM));
 		}
-		if (implementation.getLibraryReturnLevel(generatedTestMethod(levels.size()), levels) == null) {
-			validity = false;
-			printException(getMsg("checker.level.no_lib_return", ALevelDefinition.SIGNATURE_LIB_RETURN));
+		if (implementation.getLibraryReturnLevel(sootMethod, testLevels) == null) {
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_return", SIGNATURE_LIB_RETURN));
 		}
-		return validity;
 	}
 
-	private boolean checkValidityOfImportantInstanceMethods() {
+	private void checkValidityOfImportantInstanceMethods() {
 		if (implementation.getLevels() == null || implementation.getLevels().length < 1) {
-			printException(getMsg("checker.level.no_levels", ALevelDefinition.SIGNATURE_LEVELS));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_levels", SIGNATURE_LEVELS));
 		} else {
 			levels.addAll(Arrays.asList(implementation.getLevels()));
 		}
 		ILevel glb = implementation.getGreatesLowerBoundLevel();
 		if (glb == null || !levels.contains(glb)) {
-			printException(getMsg("checker.level.no_glb", ALevelDefinition.SIGNATURE_GLB));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_glb", SIGNATURE_GLB));
 		}
 		ILevel lub = implementation.getLeastUpperBoundLevel();
 		if (lub == null || !levels.contains(lub)) {
-			printException(getMsg("checker.level.no_lub", ALevelDefinition.SIGNATURE_LUB));
-			return false;
+			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lub", SIGNATURE_LUB));
 		}
-		return true;
 	}
 
-	private SootMethod generatedTestMethod(int parameterCount) {
+	private SootMethod generatedTestMethod(SootClass sootClass) {
 		List<RefType> parameterTypes = new ArrayList<RefType>();
-		for (int i = 0; i < parameterCount; i++) {
+		for (int i = 0; i < 2; i++) {
 			parameterTypes.add(RefType.v("int"));
 		}
-		SootClass sootClass = generateTestClass();
-		SootMethod sootMethod = new SootMethod("testMethod", parameterTypes, RefType.v("int"));
+		SootMethod sootMethod = new SootMethod("compare", parameterTypes, RefType.v("int"));
 		sootMethod.setDeclaringClass(sootClass);
 		sootClass.addMethod(sootMethod);
 		JimpleBody body = Jimple.v().newBody(sootMethod);
@@ -385,12 +330,11 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 	}
 
 	private SootClass generateTestClass() {
-		return new SootClass("checker.TestClass");
+		return new SootClass("java.lang.Integer");
 	}
 
-	private SootField generateTestField() {
-		SootClass sootClass = generateTestClass();
-		SootField sootField = new SootField("test", RefType.v("int"));
+	private SootField generateTestField(SootClass sootClass) {
+		SootField sootField = new SootField("MAX_VALUE", RefType.v("int"));
 		sootClass.addField(sootField);
 		return sootField;
 	}
@@ -419,67 +363,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		return names;
 	}
 
-	protected final void addIllegalLevelNames(ILevel illegalLevelName) {
-		this.illegalLevelNames.add(illegalLevelName);
-	}
-
-	protected final void addInvalidIdFunction(ILevel invalidIdFunction) {
-		this.invalidIdFunctions.add(invalidIdFunction);
-	}
-
-	protected final void addInvalidIdFunctionAnnotation(ILevel invalidIdFunctionAnnotation) {
-		this.invalidIdFunctionAnnotation.add(invalidIdFunctionAnnotation);
-	}
-
-	protected final void addUnavailableIdFunction(ILevel unavailableIdFunction) {
-		this.unavailableIdFunctions.add(unavailableIdFunction);
-	}
-
-	protected final void addUnavailableIdFunctionAnnotation(ILevel unavailableIdFunctionAnnotation) {
-		this.unavailableIdFunctionAnnotation.add(unavailableIdFunctionAnnotation);
-	}
-
-	protected abstract boolean checkAdditionalValidityOfImplementation();
-
-	protected final List<ILevel> getIllegalLevelNames() {
-		return this.illegalLevelNames;
-	}
-
-	protected final List<ILevel> getInvalidIdFunctionAnnotation() {
-		return this.invalidIdFunctionAnnotation;
-	}
-
-	protected final List<ILevel> getInvalidIdFunctions() {
-		return this.invalidIdFunctions;
-	}
-
-	protected final List<ILevel> getUnavailableIdFunctionAnnotations() {
-		return this.unavailableIdFunctionAnnotation;
-	}
-
-	protected final List<ILevel> getUnavailableIdFunctions() {
-		return this.unavailableIdFunctions;
-	}
-
-	protected final void printException(Exception e, String msg) {
-		if (logging) {
-			if (this.logger != null) {
-				logger.securitychecker(msg, e);
-			} else {
-				System.err.println(msg);
-			}
-		}
-	}
-
-	protected final void printException(String msg) {
-		if (logging) {
-			if (this.logger != null) {
-				logger.securitychecker(msg);
-			} else {
-				System.err.println(msg);
-			}
-		}
-	}
+	protected abstract void checkAdditionalValidityOfImplementation();
 
 	protected final void printWarning(String msg) {
 		if (logging) {

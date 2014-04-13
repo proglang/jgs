@@ -8,8 +8,6 @@ import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
 
 import analysis.LocalsMap;
-
-import resource.Configuration;
 import security.ILevel;
 import soot.Local;
 import soot.SootField;
@@ -65,9 +63,8 @@ import soot.jimple.UnopExpr;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
-import utils.AnalysisUtils;
-import exception.SootException.NoSecurityLevelException;
-import exception.SootException.UnimplementedSwitchException;
+import exception.LevelNotFoundException;
+import exception.SwitchException;
 import extractor.UsedObjectStore;
 
 /**
@@ -188,8 +185,8 @@ public class SecurityTypeReadValueSwitch extends SecurityTypeSwitch implements J
 	 */
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", v.toString(), getSrcLn(),
-				CaughtExceptionRef.class.getSimpleName(), SecurityTypeReadValueSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+				this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -603,8 +600,8 @@ public class SecurityTypeReadValueSwitch extends SecurityTypeSwitch implements J
 	 */
 	@Override
 	public void caseParameterRef(ParameterRef v) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", v.toString(), getSrcLn(),
-				ParameterRef.class.getSimpleName(), SecurityTypeReadValueSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+				this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -737,8 +734,8 @@ public class SecurityTypeReadValueSwitch extends SecurityTypeSwitch implements J
 	 */
 	@Override
 	public void caseThisRef(ThisRef v) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", v.toString(), getSrcLn(), ThisRef.class.getSimpleName(),
-				SecurityTypeReadValueSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+				this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -801,8 +798,7 @@ public class SecurityTypeReadValueSwitch extends SecurityTypeSwitch implements J
 	 */
 	@Override
 	public void defaultCase(Object object) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", object.toString(), getSrcLn(),
-				Object.class.getSimpleName(), SecurityTypeReadValueSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -848,14 +844,8 @@ public class SecurityTypeReadValueSwitch extends SecurityTypeSwitch implements J
 	 */
 	private void handleFieldAccess(FieldRef fieldRef) {
 		SootField sootField = fieldRef.getField();
-		try {
-			FieldEnvironment field = store.getFieldEnvironment(sootField);
-			this.level = field.getLevel();
-		} catch (Exception e) {
-			logException(getMsg("env_store.not_found_field_inline", getSrcLn(), AnalysisUtils.generateFieldSignature(sootField,
-					Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-					Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)), e);
-		}
+		FieldEnvironment field = store.getFieldEnvironment(sootField);
+		this.level = field.getLevel();
 	}
 
 	/**
@@ -906,9 +896,9 @@ public class SecurityTypeReadValueSwitch extends SecurityTypeSwitch implements J
 	 * @throws NoSecurityLevelException
 	 *           If no <em>security level</em> could be determined, or if until now no level was looked up.
 	 */
-	protected ILevel getLevel() throws NoSecurityLevelException {
+	protected ILevel getLevel() {
 		if (this.level == null) {
-			throw new NoSecurityLevelException(getMsg("switch.no_level_for_value", getSrcLn(), getMethodSignature()));
+			throw new LevelNotFoundException(getMsg("exception.analysis.level.not_found", getSrcLn(), getMethodSignature()));
 		}
 		return level;
 	}

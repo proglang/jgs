@@ -3,57 +3,55 @@ package annotation;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import exception.SootException.NoSuchElementException;
-
 public interface IAnnotationDAO {
 
-	public List<IAnnotationDAO> getAnnotationArrayFor(String name, Class<? extends Annotation> annotationClass) throws NoSuchElementException;
+	public List<IAnnotationDAO> getAnnotationArrayFor(String name, Class<? extends Annotation> annotationClass);
 
-	public IAnnotationDAO getAnnotationFor(String name, Class<? extends Annotation> annotationClass) throws NoSuchElementException;
+	public IAnnotationDAO getAnnotationFor(String name, Class<? extends Annotation> annotationClass);
 
-	public List<Boolean> getBooleanArrayFor(String name) throws NoSuchElementException;
+	public List<Boolean> getBooleanArrayFor(String name);
 
-	public boolean getBooleanFor(String name) throws NoSuchElementException;
+	public boolean getBooleanFor(String name);
 
-	public List<Byte> getByteArrayFor(String name) throws NoSuchElementException;
+	public List<Byte> getByteArrayFor(String name);
 
-	public byte getByteFor(String name) throws NoSuchElementException;
+	public byte getByteFor(String name);
 
-	public List<Character> getCharArrayFor(String name) throws NoSuchElementException;
+	public List<Character> getCharArrayFor(String name);
 
-	public char getCharFor(String name) throws NoSuchElementException;
+	public char getCharFor(String name);
 
-	public List<Class<?>> getClassArrayFor(String name) throws NoSuchElementException;
+	public List<Class<?>> getClassArrayFor(String name);
 
-	public Class<?> getClassFor(String name) throws NoSuchElementException;
+	public Class<?> getClassFor(String name);
 
-	public List<Double> getDoubleArrayFor(String name) throws NoSuchElementException;
+	public List<Double> getDoubleArrayFor(String name);
 
-	public double getDoubleFor(String name) throws NoSuchElementException;
+	public double getDoubleFor(String name);
 
-	public <V extends Enum<V>> List<V> getEnumArrayFor(String name, Class<V> enumClass) throws NoSuchElementException;
+	public <V extends Enum<V>> List<V> getEnumArrayFor(String name, Class<V> enumClass);
 
-	public <V extends Enum<V>> V getEnumFor(String name, Class<V> enumClass) throws NoSuchElementException;
+	public <V extends Enum<V>> V getEnumFor(String name, Class<V> enumClass);
 
-	public List<Float> getFloatArrayFor(String name) throws NoSuchElementException;
+	public List<Float> getFloatArrayFor(String name);
 
-	public float getFloatFor(String name) throws NoSuchElementException;
+	public float getFloatFor(String name);
 
-	public List<Integer> getIntArrayFor(String name) throws NoSuchElementException;
+	public List<Integer> getIntArrayFor(String name);
 
-	public int getIntFor(String name) throws NoSuchElementException;
+	public int getIntFor(String name);
 
-	public List<Long> getLongArrayFor(String name) throws NoSuchElementException;
+	public List<Long> getLongArrayFor(String name);
 
-	public long getLongFor(String name) throws NoSuchElementException;
+	public long getLongFor(String name);
 
-	public List<Short> getShortArrayFor(String name) throws NoSuchElementException;
+	public List<Short> getShortArrayFor(String name);
 
-	public short getShortFor(String name) throws NoSuchElementException;
+	public short getShortFor(String name);
 
-	public List<String> getStringArrayFor(String name) throws NoSuchElementException;
+	public List<String> getStringArrayFor(String name);
 
-	public String getStringFor(String name) throws NoSuchElementException;
+	public String getStringFor(String name);
 
 	public boolean hasAnnotation(String name);
 

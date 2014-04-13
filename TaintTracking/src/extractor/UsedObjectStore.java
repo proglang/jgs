@@ -8,12 +8,13 @@ import model.ClassEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment;
 
-import resource.Configuration;
+import static resource.Configuration.*;
+import static resource.Messages.*;
+import static utils.AnalysisUtils.*;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
-import utils.AnalysisUtils;
-import exception.SootException.NoSuchElementException;
+import exception.EnvironmentNotFoundException;
 
 /**
  * DOC
@@ -23,18 +24,6 @@ import exception.SootException.NoSuchElementException;
  */
 public class UsedObjectStore {
 
-	/**
-	 * DOC
-	 */
-	private static final String EXCEPTION_NONEXISTENT_CLASS_ENV = "Class '%s' wasn't prepared for the analysis, i.e. the class environment doesn't exist.";
-	/**
-	 * DOC
-	 */
-	private static final String EXCEPTION_NONEXISTENT_FIELD_ENV = "Field '%s' wasn't prepared for the analysis, i.e. the field environment doesn't exist.";
-	/**
-	 * DOC
-	 */
-	private static final String EXCEPTION_NONEXISTENT_METHOD_ENV = "Method '%s' wasn't prepared for the analysis, i.e. the method environment doesn't exist.";
 	/**
 	 * DOC
 	 */
@@ -53,15 +42,14 @@ public class UsedObjectStore {
 	 * 
 	 * @param sootClass
 	 * @return
-	 * @throws NoSuchElementException
 	 */
-	public ClassEnvironment getClassEnvironment(SootClass sootClass) throws NoSuchElementException {
+	public ClassEnvironment getClassEnvironment(SootClass sootClass) {
 		if (classes.containsKey(sootClass)) {
 			ClassEnvironment ce = classes.get(sootClass);
 			return ce;
 		}
-		throw new NoSuchElementException(String.format(EXCEPTION_NONEXISTENT_CLASS_ENV,
-				AnalysisUtils.generateClassSignature(sootClass, Configuration.CLASS_SIGNATURE_PRINT_PACKAGE)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.class_env_not_found",
+				generateClassSignature(sootClass, CLASS_SIGNATURE_PRINT_PACKAGE)));
 	}
 
 	/**
@@ -69,16 +57,14 @@ public class UsedObjectStore {
 	 * 
 	 * @param sootField
 	 * @return
-	 * @throws NoSuchElementException
 	 */
-	public FieldEnvironment getFieldEnvironment(SootField sootField) throws NoSuchElementException {
+	public FieldEnvironment getFieldEnvironment(SootField sootField) {
 		if (fields.containsKey(sootField)) {
 			FieldEnvironment fe = fields.get(sootField);
 			return fe;
 		}
-		throw new NoSuchElementException(String.format(EXCEPTION_NONEXISTENT_FIELD_ENV, AnalysisUtils.generateFieldSignature(sootField,
-				Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-				Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.field_env_not_found",
+				generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
 	}
 
 	/**
@@ -86,16 +72,18 @@ public class UsedObjectStore {
 	 * 
 	 * @param sootMethod
 	 * @return
-	 * @throws NoSuchElementException
 	 */
-	public MethodEnvironment getMethodEnvironment(SootMethod sootMethod) throws NoSuchElementException {
+	public MethodEnvironment getMethodEnvironment(SootMethod sootMethod) {
 		if (methods.containsKey(sootMethod)) {
 			MethodEnvironment me = methods.get(sootMethod);
 			return me;
 		}
-		throw new NoSuchElementException(String.format(EXCEPTION_NONEXISTENT_METHOD_ENV, AnalysisUtils.generateMethodSignature(sootMethod,
-				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
+
+		throw new EnvironmentNotFoundException(
+				getMsg(
+						"exception.environment.method_env_not_found",
+						generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+								METHOD_SIGNATURE_PRINT_VISIBILITY)));
 	}
 
 	/**

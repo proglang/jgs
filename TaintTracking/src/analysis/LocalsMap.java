@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import exception.SootException.InvalidLevelException;
-
 import security.ILevel;
 import security.ILevelMediator;
 import soot.Local;
@@ -281,7 +279,7 @@ public class LocalsMap {
 	 * 
 	 * @return The strongest <em>program counter</em> level.
 	 */
-	public ILevel getStrongestProgramCounterLevel() throws InvalidLevelException {
+	public ILevel getStrongestProgramCounterLevel() {
 		List<ILevel> levels = new ArrayList<ILevel>(programCounter.values());
 		return mediator.getLeastUpperBoundLevelOf(levels);
 	}

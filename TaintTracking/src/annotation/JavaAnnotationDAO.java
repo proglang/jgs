@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import utils.ExtendedJNI;
+import static utils.ExtendedJNI.*;
 
-import exception.SootException.NoSuchElementException;
+import exception.AnnotationElementNotFoundException;
 
 public class JavaAnnotationDAO extends AAnnotationDAO {
 
@@ -28,7 +28,7 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 	}
 
 	@Override
-	public List<IAnnotationDAO> getAnnotationArrayFor(String name, Class<? extends Annotation> annotationClass) throws NoSuchElementException {
+	public List<IAnnotationDAO> getAnnotationArrayFor(String name, Class<? extends Annotation> annotationClass) {
 		if (hasAnnotationArray(name)) {
 			try {
 				List<IAnnotationDAO> list = new ArrayList<IAnnotationDAO>();
@@ -37,28 +37,28 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.EXT_JNI_ANNOTATION));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, EXT_JNI_ANNOTATION));
 			}
 		} else {
-			throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.EXT_JNI_ANNOTATION));
+			throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, EXT_JNI_ANNOTATION));
 		}
 	}
 
 	@Override
-	public IAnnotationDAO getAnnotationFor(String name, Class<? extends Annotation> annotationClass) throws NoSuchElementException {
+	public IAnnotationDAO getAnnotationFor(String name, Class<? extends Annotation> annotationClass) {
 		if (hasAnnotation(name)) {
 			try {
 				return new JavaAnnotationDAO(getValue(name, annotationClass));
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.EXT_JNI_ANNOTATION));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, EXT_JNI_ANNOTATION));
 			}
 		} else {
-			throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.EXT_JNI_ANNOTATION));
+			throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, EXT_JNI_ANNOTATION));
 		}
 	}
 
 	@Override
-	public List<Boolean> getBooleanArrayFor(String name) throws NoSuchElementException {
+	public List<Boolean> getBooleanArrayFor(String name) {
 		if (hasBooleanArray(name)) {
 			try {
 				List<Boolean> list = new ArrayList<Boolean>();
@@ -67,26 +67,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_BOOLEAN));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_BOOLEAN));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_BOOLEAN));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_BOOLEAN));
 	}
 
 	@Override
-	public boolean getBooleanFor(String name) throws NoSuchElementException {
+	public boolean getBooleanFor(String name) {
 		if (hasBoolean(name)) {
 			try {
 				return getValue(name, Boolean.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_BOOLEAN));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_BOOLEAN));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_BOOLEAN));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_BOOLEAN));
 	}
 
 	@Override
-	public List<Byte> getByteArrayFor(String name) throws NoSuchElementException {
+	public List<Byte> getByteArrayFor(String name) {
 		if (hasByteArray(name)) {
 			try {
 				List<Byte> list = new ArrayList<Byte>();
@@ -95,26 +95,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_BYTE));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_BYTE));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_BYTE));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_BYTE));
 	}
 
 	@Override
-	public byte getByteFor(String name) throws NoSuchElementException {
+	public byte getByteFor(String name) {
 		if (hasByte(name)) {
 			try {
 				return getValue(name, Byte.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_BYTE));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_BYTE));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_BYTE));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_BYTE));
 	}
 
 	@Override
-	public List<Character> getCharArrayFor(String name) throws NoSuchElementException {
+	public List<Character> getCharArrayFor(String name) {
 		if (hasCharArray(name)) {
 			try {
 				List<Character> list = new ArrayList<Character>();
@@ -123,26 +123,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_CHAR));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_CHAR));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_CHAR));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_CHAR));
 	}
 
 	@Override
-	public char getCharFor(String name) throws NoSuchElementException {
+	public char getCharFor(String name) {
 		if (hasChar(name)) {
 			try {
 				return getValue(name, Character.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_CHAR));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_CHAR));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_CHAR));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_CHAR));
 	}
 
 	@Override
-	public List<Class<?>> getClassArrayFor(String name) throws NoSuchElementException {
+	public List<Class<?>> getClassArrayFor(String name) {
 		if (hasClassArray(name)) {
 			try {
 				List<Class<?>> list = new ArrayList<Class<?>>();
@@ -151,26 +151,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.EXT_JNI_CLASS));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, EXT_JNI_CLASS));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.EXT_JNI_CLASS));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, EXT_JNI_CLASS));
 	}
 
 	@Override
-	public Class<?> getClassFor(String name) throws NoSuchElementException {
+	public Class<?> getClassFor(String name) {
 		if (hasClass(name)) {
 			try {
 				return getValue(name, Class.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.EXT_JNI_CLASS));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, EXT_JNI_CLASS));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.EXT_JNI_CLASS));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, EXT_JNI_CLASS));
 	}
 
 	@Override
-	public List<Double> getDoubleArrayFor(String name) throws NoSuchElementException {
+	public List<Double> getDoubleArrayFor(String name) {
 		if (hasDoubleArray(name)) {
 			try {
 				List<Double> list = new ArrayList<Double>();
@@ -179,26 +179,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_DOUBLE));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_DOUBLE));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_DOUBLE));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_DOUBLE));
 	}
 
 	@Override
-	public double getDoubleFor(String name) throws NoSuchElementException {
+	public double getDoubleFor(String name) {
 		if (hasDouble(name)) {
 			try {
 				return getValue(name, Double.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_DOUBLE));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_DOUBLE));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_DOUBLE));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_DOUBLE));
 	}
 
 	@Override
-	public <V extends Enum<V>> List<V> getEnumArrayFor(String name, Class<V> enumClass) throws NoSuchElementException {
+	public <V extends Enum<V>> List<V> getEnumArrayFor(String name, Class<V> enumClass) {
 		if (hasEnumArray(name)) {
 			try {
 				List<V> list = new ArrayList<V>();
@@ -207,26 +207,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_ENUM));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_ENUM));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_ENUM));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_ENUM));
 	}
 
 	@Override
-	public <V extends Enum<V>> V getEnumFor(String name, Class<V> enumClass) throws NoSuchElementException {
+	public <V extends Enum<V>> V getEnumFor(String name, Class<V> enumClass) {
 		if (hasEnum(name)) {
 			try {
 				return Enum.valueOf(enumClass, getValue(name, Enum.class).name());
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_FLOAT));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_FLOAT));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_ENUM));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_ENUM));
 	}
 
 	@Override
-	public List<Float> getFloatArrayFor(String name) throws NoSuchElementException {
+	public List<Float> getFloatArrayFor(String name) {
 		if (hasFloatArray(name)) {
 			try {
 				List<Float> list = new ArrayList<Float>();
@@ -235,26 +235,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_FLOAT));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_FLOAT));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_FLOAT));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_FLOAT));
 	}
 
 	@Override
-	public float getFloatFor(String name) throws NoSuchElementException {
+	public float getFloatFor(String name) {
 		if (hasFloat(name)) {
 			try {
 				return getValue(name, Float.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_FLOAT));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_FLOAT));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_FLOAT));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_FLOAT));
 	}
 
 	@Override
-	public List<Integer> getIntArrayFor(String name) throws NoSuchElementException {
+	public List<Integer> getIntArrayFor(String name) {
 		if (hasIntArray(name)) {
 			try {
 				List<Integer> list = new ArrayList<Integer>();
@@ -263,26 +263,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_INT));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_INT));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_INT));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_INT));
 	}
 
 	@Override
-	public int getIntFor(String name) throws NoSuchElementException {
+	public int getIntFor(String name) {
 		if (hasInt(name)) {
 			try {
 				return getValue(name, Integer.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_INT));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_INT));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_INT));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_INT));
 	}
 
 	@Override
-	public List<Long> getLongArrayFor(String name) throws NoSuchElementException {
+	public List<Long> getLongArrayFor(String name) {
 		if (hasLongArray(name)) {
 			try {
 				List<Long> list = new ArrayList<Long>();
@@ -291,26 +291,26 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_LONG));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_LONG));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_LONG));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_LONG));
 	}
 
 	@Override
-	public long getLongFor(String name) throws NoSuchElementException {
+	public long getLongFor(String name) {
 		if (hasLong(name)) {
 			try {
 				return getValue(name, Long.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_LONG));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_LONG));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_LONG));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_LONG));
 	}
 
 	@Override
-	public List<Short> getShortArrayFor(String name) throws NoSuchElementException {
+	public List<Short> getShortArrayFor(String name) {
 		if (hasShortArray(name)) {
 			try {
 				List<Short> list = new ArrayList<Short>();
@@ -319,46 +319,46 @@ public class JavaAnnotationDAO extends AAnnotationDAO {
 				}
 				return list;
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_SHORT));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_SHORT));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_SHORT));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_SHORT));
 	}
 
 	@Override
-	public short getShortFor(String name) throws NoSuchElementException {
+	public short getShortFor(String name) {
 		if (hasShort(name)) {
 			try {
 				return getValue(name, Short.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_SHORT));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_SHORT));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_SHORT));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_SHORT));
 	}
 
 	@Override
-	public List<String> getStringArrayFor(String name) throws NoSuchElementException {
+	public List<String> getStringArrayFor(String name) {
 		if (hasStringArray(name)) {
 			try {
 				return Arrays.asList(getValue(name, String[].class));
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_STRING));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_STRING));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_array", name, ExtendedJNI.JNI_ARRAY, ExtendedJNI.JNI_STRING));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_array", name, JNI_ARRAY, JNI_STRING));
 	}
 
 	@Override
-	public String getStringFor(String name) throws NoSuchElementException {
+	public String getStringFor(String name) {
 		if (hasString(name)) {
 			try {
 				return getValue(name, String.class);
 			} catch (Exception e) {
-				throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_STRING));
+				throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_STRING));
 			}
 		}
-		throw new NoSuchElementException(getMsg("annotation.no_such_element", name, ExtendedJNI.JNI_STRING));
+		throw new AnnotationElementNotFoundException(getMsg("exception.annotation.no_such_element", name, JNI_STRING));
 	}
 
 	@Override

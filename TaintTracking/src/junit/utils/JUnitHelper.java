@@ -22,37 +22,7 @@ public class JUnitHelper {
 	/**
 	 * DOC
 	 */
-	private final static String[] LINE_NUMBERS = new String[] { "-keep-line-number" };
-
-	/**
-	 * DOC
-	 */
 	private final static String[] LOG_LEVELS = new String[] { "-log-levels", "off" };
-
-	/**
-	 * DOC
-	 */
-	private final static String[] NO_BODIES = new String[] { "-no-bodies-for-excluded" };
-
-	/**
-	 * DOC
-	 */
-	private final static String[] OUTPUT = new String[] { "-f", "jimple", "-d", "./../sootOutput" };
-
-	/**
-	 * DOC
-	 */
-	private final static String[] PREPEND = new String[] { "-pp" };
-
-	/**
-	 * DOC
-	 */
-	private final static String[] WHOLE_PROGRAM = new String[] { "-w" };
-//	
-//	/**
-//	 * DOC
-//	 */
-//	private final static String[] VERBOSE = new String[] { "-v" };
 
 	/**
 	 * DOC
@@ -61,7 +31,7 @@ public class JUnitHelper {
 	 * @return
 	 */
 	public static String[] generateAnalysisArgumentsForAnalyzedFile(String className) {
-		return concat(CLASSPATH, PREPEND, INPUT, OUTPUT, NO_BODIES, LOG_LEVELS, LINE_NUMBERS, WHOLE_PROGRAM, new String[] { "-main-class",
+		return concat(CLASSPATH, INPUT, LOG_LEVELS, new String[] { "-main-class",
 				className }, new String[] { className });
 	}
 

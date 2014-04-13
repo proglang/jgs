@@ -6,6 +6,4 @@ public interface ILevelDefinitionChecker {
 
 	public List<ILevel> getLevels();
 
-	public boolean isValid();
-
 }

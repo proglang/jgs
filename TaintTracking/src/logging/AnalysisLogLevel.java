@@ -22,11 +22,11 @@ final public class AnalysisLogLevel extends Level {
 	/**
 	 * Level, to be used for printing configuration information such as what levels should be logged.
 	 */
-	public static final Level CONFIGURATION = new AnalysisLogLevel("Configuration", Level.FINE.intValue());
+	public static final Level CONFIGURATION = new AnalysisLogLevel("Configuration", FINE.intValue());
 	/** Name of the logger level {@link AnalysisLogLevel#CONFIGURATION}. */
 	public static final String CONFIGURATION_NAME = CONFIGURATION.getLocalizedName();
 	/** Level, to be used for printing debug information. */
-	public static final Level DEBUG = new AnalysisLogLevel("Debug", Level.FINER.intValue());
+	public static final Level DEBUG = new AnalysisLogLevel("Debug", FINER.intValue());
 	/** Name of the logger level {@link AnalysisLogLevel#DEBUG}. */
 	public static final String DEBUG_NAME = DEBUG.getLocalizedName();
 	/**

@@ -1,7 +1,5 @@
 package analysis;
 
-import interfaces.Cancelable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +8,7 @@ import extractor.AnnotationExtractor;
 
 import logging.AnalysisLog;
 
-import resource.Configuration;
+import static resource.Configuration.*;
 import security.ILevelMediator;
 import soot.Body;
 import soot.BodyTransformer;
@@ -18,7 +16,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
-import utils.AnalysisUtils;
+import static utils.AnalysisUtils.*;
 
 /**
  * <h1>Security Transformer</h1>
@@ -31,19 +29,16 @@ import utils.AnalysisUtils;
  * @author Thomas Vogel
  * @version 0.3
  */
-public class SecurityTypeTransformer extends BodyTransformer implements Cancelable {
+public class SecurityTypeTransformer extends BodyTransformer {
 
 	/** DOC */
 	private final AnnotationExtractor extractor;
 	/** DOC */
 	private final boolean instantLogging;
-	private final List<Cancelable> listeners = new ArrayList<Cancelable>();
 	/** DOC */
 	private final AnalysisLog log;
 	/** DOC */
 	private final ILevelMediator mediator;
-	/** DOC */
-	private boolean valid = true;
 	/** DOC */
 	private List<SootClass> visitedClasses = new ArrayList<SootClass>();
 
@@ -57,30 +52,11 @@ public class SecurityTypeTransformer extends BodyTransformer implements Cancelab
 	 */
 	public SecurityTypeTransformer(ILevelMediator mediator, AnalysisLog log, AnnotationExtractor extractor, boolean instantLogging) {
 		super();
+		extractor.checkReasonability();
 		this.mediator = mediator;
 		this.log = log;
 		this.extractor = extractor;
 		this.instantLogging = instantLogging;
-	}
-
-	@Override
-	public void addCancelListener(Cancelable cancelable) {
-		this.listeners.add(cancelable);
-
-	}
-
-	@Override
-	public void cancel() {
-		for (Cancelable cancelable : listeners) {
-			cancelable.cancel();
-		}
-		this.valid = false;
-	}
-
-	@Override
-	public void removeCancelListener(Cancelable cancelable) {
-		this.listeners.remove(cancelable);
-
 	}
 
 	/**
@@ -90,12 +66,12 @@ public class SecurityTypeTransformer extends BodyTransformer implements Cancelab
 	 * @param graph
 	 */
 	private void doAnalysis(SootMethod sootMethod, UnitGraph graph) {
-		if (!AnalysisUtils.isMethodOfDefinition(sootMethod)) {
+		if (!isMethodOfDefinition(sootMethod)) {
 			if (instantLogging) {
-				log.structure(AnalysisUtils.generateMethodSignature(sootMethod, Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-						Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY));
+				log.structure(generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+						METHOD_SIGNATURE_PRINT_VISIBILITY));
 			}
-			SecurityTypeAnalysis tt = new SecurityTypeAnalysis(log, sootMethod, mediator, graph, extractor.getUsedObjectStore(), this);
+			SecurityTypeAnalysis tt = new SecurityTypeAnalysis(log, sootMethod, mediator, graph, extractor.getUsedObjectStore());
 			tt.checkAnalysis();
 		}
 	}
@@ -115,24 +91,21 @@ public class SecurityTypeTransformer extends BodyTransformer implements Cancelab
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void internalTransform(Body body, String phaseName, Map options) {
-		if (valid && extractor.checkReasonability()) {
-			UnitGraph graph = new BriefUnitGraph(body);
-			SootMethod sootMethod = graph.getBody().getMethod();
-			SootClass sootClass = sootMethod.getDeclaringClass();
-			if (!AnalysisUtils.isInnerClassOfDefinitionClass(sootClass)) {
-				if (!visitedClasses.contains(sootClass)) {
-					if (!AnalysisUtils.containsStaticInitializer(sootClass.getMethods())) {
-						SootMethod clinit = AnalysisUtils.generatedEmptyStaticInitializer(sootClass);
-						UnitGraph clinitGraph = new BriefUnitGraph(clinit.getActiveBody());
-						doAnalysis(clinit, clinitGraph);
-					}
-					visitedClasses.add(sootClass);
+		UnitGraph graph = new BriefUnitGraph(body);
+		SootMethod sootMethod = graph.getBody().getMethod();
+		SootClass sootClass = sootMethod.getDeclaringClass();
+		if (!isInnerClassOfDefinitionClass(sootClass)) {
+			if (!visitedClasses.contains(sootClass)) {
+				if (!containsStaticInitializer(sootClass.getMethods())) {
+					SootMethod clinit = generatedEmptyStaticInitializer(sootClass);
+					UnitGraph clinitGraph = new BriefUnitGraph(clinit.getActiveBody());
+					doAnalysis(clinit, clinitGraph);
 				}
-				if ((!AnalysisUtils.isMethodOfDefinitionClass(sootMethod)) || AnalysisUtils.isLevelFunction(sootMethod, mediator.getAvailableLevels())) {
-					doAnalysis(sootMethod, graph);
-				}
+				visitedClasses.add(sootClass);
 			}
-
+			if ((!isMethodOfDefinitionClass(sootMethod)) || isLevelFunction(sootMethod, mediator.getAvailableLevels())) {
+				doAnalysis(sootMethod, graph);
+			}
 		}
 	}
 

@@ -22,7 +22,7 @@ import soot.jimple.ReturnVoidStmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
-import exception.SootException.UnimplementedSwitchException;
+import exception.SwitchException;
 import extractor.UsedObjectStore;
 
 /**
@@ -89,8 +89,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", stmt.toString(), getSrcLn(),
-				BreakpointStmt.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -105,8 +105,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", stmt.toString(), getSrcLn(),
-				EnterMonitorStmt.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -121,8 +121,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", stmt.toString(), getSrcLn(),
-				ExitMonitorStmt.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -198,8 +198,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", stmt.toString(), getSrcLn(),
-				LookupSwitchStmt.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -227,8 +227,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", stmt.toString(), getSrcLn(),
-				RetStmt.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -247,12 +247,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 		ILevel expectedLevel = analyzedMethodEnvironment.getReturnLevel();
 		Value value = stmt.getOp();
 		ILevel level = takePCintoAccount(calculateLevel(value, stmt.toString()));
-		if (expectedLevel == null) {
-			logSecurity(getMsg("analysis.fail.void_expected", getMethodSignature(), getSrcLn(), level.getName()));
-		} else {
-			if (!isWeakerOrEqualLevel(level, expectedLevel)) {
-				logSecurity(getMsg("security.stonger_return", getMethodSignature(), level.getName(), getSrcLn(), expectedLevel.getName()));
-			}
+		if (!isWeakerOrEqualLevel(level, expectedLevel)) {
+			logSecurity(getMsg("security.return.stronger", getMethodSignature(), level.getName(), getSrcLn(), expectedLevel.getName()));
 		}
 	}
 
@@ -266,9 +262,7 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		if (!analyzedMethodEnvironment.isVoid()) {
-			logSecurity(getMsg("analysis.fail.non_void_expected", getMethodSignature(), getSrcLn()));
-		}
+		// Nothing to do in case of a void return
 	}
 
 	/**
@@ -283,8 +277,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", stmt.toString(), getSrcLn(),
-				TableSwitchStmt.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -299,8 +293,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 */
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", stmt.toString(), getSrcLn(),
-				ThrowStmt.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
 	/**
@@ -314,9 +308,8 @@ public class SecurityTypeStmtSwitch extends SecurityTypeSwitch implements StmtSw
 	 *           Method throws always this exception, because this method may not be invoked.
 	 */
 	@Override
-	public void defaultCase(Object obj) {
-		throw new UnimplementedSwitchException(getMsg("switch.not_implemented", obj.toString(), getSrcLn(),
-				Object.class.getSimpleName(), SecurityTypeStmtSwitch.class.getSimpleName()));
+	public void defaultCase(Object object) {
+		throw new SwitchException(getMsg("exception.analysis.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
 	}
 
 }

@@ -10,8 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
+import soot.G;
+
 import logging.Settings.Setting;
 
+import static logging.AnalysisLogLevel.*;
 /**
  * <h1>Utilities for the {@link SootLogger}</h1>
  * 
@@ -66,7 +69,7 @@ public class AnalysisLogUtils {
 		String result = "";
 		Map<String, String> settingsMap = settings.getSettingsMap();
 		for (String name : settingsMap.keySet()) {
-			result += (result.equals("") ? "" : AnalysisLogUtils.TXT_LINE_SEPARATOR) + name + ": " + settingsMap.get(name);
+			result += (result.equals("") ? "" : TXT_LINE_SEPARATOR) + name + ": " + settingsMap.get(name);
 		}
 		return result;
 	}
@@ -82,8 +85,8 @@ public class AnalysisLogUtils {
 	 *         {@link AnalysisLogConsoleFormatter}.
 	 */
 	public static StreamHandler getStandardConsoleHandler(final Level[] levels) {
-		StreamHandler handler = new StreamHandler(System.out, FORMATTER_CONSOLE);
-		handler.setLevel(AnalysisLogLevel.ALL);
+		StreamHandler handler = new StreamHandler(G.v().out, FORMATTER_CONSOLE);
+		handler.setLevel(ALL);
 		Filter filter = new Filter() {
 
 			/**
@@ -99,8 +102,8 @@ public class AnalysisLogUtils {
 			 */
 			@Override
 			public boolean isLoggable(LogRecord record) {
-				if (containsArraySpecificLevel(levels, AnalysisLogLevel.ALL) || record.getLevel().equals(AnalysisLogLevel.HEADING)) return true;
-				if (containsArraySpecificLevel(levels, AnalysisLogLevel.OFF)) return false;
+				if (containsArraySpecificLevel(levels, ALL) || record.getLevel().equals(HEADING)) return true;
+				if (containsArraySpecificLevel(levels, OFF)) return false;
 				boolean result = false;
 				for (Level level : levels) {
 					result = result || record.getLevel().equals(level);
@@ -175,9 +178,9 @@ public class AnalysisLogUtils {
 	 *         array, {@code false} otherwise.s
 	 */
 	public static boolean shouldLogLevel(Level level, Level[] levels) {
-		if (containsArraySpecificLevel(levels, AnalysisLogLevel.ALL)) {
+		if (containsArraySpecificLevel(levels, ALL)) {
 			return true;
-		} else if (containsArraySpecificLevel(levels, AnalysisLogLevel.OFF)) {
+		} else if (containsArraySpecificLevel(levels, OFF)) {
 			return false;
 		} else {
 			return containsArraySpecificLevel(levels, level);
@@ -282,7 +285,7 @@ public class AnalysisLogUtils {
 	 * @see AnalysisLogConsoleFormatter
 	 */
 	protected static String generateStructureMessage(String msg) {
-		return AnalysisLogUtils.TXT_OPEN_TAG + msg + AnalysisLogUtils.TXT_CLOSE_TAG + AnalysisLogUtils.TXT_LINE_SEPARATOR;
+		return TXT_OPEN_TAG + msg + TXT_CLOSE_TAG + TXT_LINE_SEPARATOR;
 	}
 
 	/**
@@ -345,10 +348,10 @@ public class AnalysisLogUtils {
 	 * @see SootLoggerFileFormatter
 	 */
 	protected static boolean isStandardLoggableMessage(Level level) {
-		return level.equals(AnalysisLogLevel.EXCEPTION) || level.equals(AnalysisLogLevel.ERROR) || level.equals(AnalysisLogLevel.WARNING)
-				|| level.equals(AnalysisLogLevel.INFORMATION) || level.equals(AnalysisLogLevel.DEBUG) || level.equals(AnalysisLogLevel.SIDEEFFECT)
-				|| level.equals(AnalysisLogLevel.SECURITY) || level.equals(AnalysisLogLevel.SECURITYCHECKER)
-				|| level.equals(AnalysisLogLevel.CONFIGURATION);
+		return level.equals(EXCEPTION) || level.equals(ERROR) || level.equals(WARNING)
+				|| level.equals(INFORMATION) || level.equals(DEBUG) || level.equals(SIDEEFFECT)
+				|| level.equals(SECURITY) || level.equals(SECURITYCHECKER)
+				|| level.equals(CONFIGURATION);
 
 	}
 

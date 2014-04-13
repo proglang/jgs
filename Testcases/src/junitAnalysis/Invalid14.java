@@ -11,4 +11,3 @@ public class Invalid14 {
 	public static int staticField = 42;
 
 }
-// @error("The security level of a field is mandatory.")

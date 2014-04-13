@@ -1,13 +1,13 @@
 package model;
 
-import resource.Configuration;
+import static resource.Configuration.*;
 import static resource.Messages.getMsg;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.jimple.ArrayRef;
-import utils.AnalysisUtils;
+import static utils.AnalysisUtils.*;
 
 /**
  * <h1>Cause of an effect</h1>
@@ -68,7 +68,7 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effect.cause.array_assign", arrayRef.getBase().toString());
+			return getMsg("effects.cause.array_assign", arrayRef.getBase().toString());
 		}
 
 	}
@@ -105,9 +105,9 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effect.cause.field_assign", AnalysisUtils.generateFieldSignature(getSootField(),
-					Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-					Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY));
+			return getMsg("effects.cause.field_assign", generateFieldSignature(getSootField(),
+					FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE,
+					FIELD_SIGNATURE_PRINT_VISIBILITY));
 		}
 
 	}
@@ -149,8 +149,8 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effect.cause.inherit_class",
-					AnalysisUtils.generateClassSignature(getSootClass(), Configuration.CLASS_SIGNATURE_PRINT_PACKAGE));
+			return getMsg("effects.cause.inherit_class",
+					generateClassSignature(getSootClass(), CLASS_SIGNATURE_PRINT_PACKAGE));
 		}
 
 		/**
@@ -240,9 +240,9 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effect.cause.inherit_method", AnalysisUtils.generateMethodSignature(sootMethod,
-					Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-					Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY));
+			return getMsg("effects.cause.inherit_method", generateMethodSignature(sootMethod,
+					METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+					METHOD_SIGNATURE_PRINT_VISIBILITY));
 		}
 
 		/**
@@ -292,7 +292,7 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effect.cause.instantiation", type.toString());
+			return getMsg("effects.cause.instantiation", type.toString());
 		}
 
 		/**
@@ -338,9 +338,9 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effect.cause.field_reference", AnalysisUtils.generateFieldSignature(getSootField(),
-					Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-					Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY));
+			return getMsg("effects.cause.field_reference", generateFieldSignature(getSootField(),
+					FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE,
+					FIELD_SIGNATURE_PRINT_VISIBILITY));
 		}
 
 	}

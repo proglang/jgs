@@ -2,32 +2,29 @@ package analysis;
 
 import static resource.Messages.getMsg;
 
-import interfaces.Cancelable;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import constraints.Constraints;
-import constraints.IConstraint;
 
 import analysis.LocalsMap;
 
 import logging.AnalysisLog;
 import model.AnalyzedMethodEnvironment;
 import model.MethodEnvironment;
-import resource.Configuration;
+import static resource.Configuration.*;
 import security.ILevelMediator;
-import soot.G;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
-import utils.AnalysisUtils;
-import exception.SootException.InvalidLevelException;
-import exception.SootException.SwitchException;
-import exception.SootException.NoSuchElementException;
+import static utils.AnalysisUtils.*;
+import exception.AnalysisException;
+import exception.EnvironmentNotFoundException;
+import exception.LevelNotFoundException;
+import exception.MethodParameterNotFoundException;
+import exception.ProgramCounterException;
+import exception.SwitchException;
 import extractor.UsedObjectStore;
 
 /**
@@ -44,18 +41,14 @@ import extractor.UsedObjectStore;
  * @version 0.1
  * @see SecurityTypeStmtSwitch
  */
-public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> implements Cancelable {
+public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> {
 
 	/** The environment of the current analyzed method. */
-	private final AnalyzedMethodEnvironment analyzedMethodEnvironment;
+	private AnalyzedMethodEnvironment analyzedMethodEnvironment;
 	/**
 	 * The dominator container, which provides the post dominator and the dominator set for a specific unit.
 	 */
 	private final Dominator container;
-	/**
-	 * DOC
-	 */
-	private final List<Cancelable> listeners = new ArrayList<Cancelable>();
 	/**
 	 * DOC
 	 */
@@ -83,68 +76,20 @@ public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> i
 	 * @param store
 	 */
 	protected SecurityTypeAnalysis(AnalysisLog log, SootMethod sootMethod, ILevelMediator mediator, DirectedGraph<Unit> graph,
-			UsedObjectStore store, Cancelable cancelable) {
+			UsedObjectStore store) {
 		super(graph);
-		addCancelListener(cancelable);
 		this.container = new Dominator(graph);
 		this.store = store;
-		AnalyzedMethodEnvironment ame = null;
 		try {
 			MethodEnvironment me = this.store.getMethodEnvironment(sootMethod.retrieveActiveBody().getMethod());
-			ame = new AnalyzedMethodEnvironment(me);
-		} catch (NoSuchElementException e) {
-			exception(getMsg("env_store.not_found_method", AnalysisUtils.generateMethodSignature(sootMethod,
-					Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-					Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
-			cancel();
-		}
-		analyzedMethodEnvironment = ame;
-		if (valid) {
-			Constraints cons = analyzedMethodEnvironment.getContraints();
-			for (IConstraint con : cons.getConstraints()) {
-				G.v().out.println(con.toString());
-			}			
+			analyzedMethodEnvironment = new AnalyzedMethodEnvironment(me);
 			doAnalysis();
-		} else {
-			error(getMsg("analysis.fail.creation_analyzed_method", AnalysisUtils.generateMethodSignature(sootMethod,
-					Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-					Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)));
+		} catch (EnvironmentNotFoundException e) {
+			throw new AnalysisException(getMsg(
+					"exception.analysis.other.error_env",
+					generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+							METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
 		}
-	}
-
-	/**
-	 * DOC
-	 * 
-	 * @param cancelable
-	 * @see interfaces.Cancelable#addCancelListener(interfaces.Cancelable)
-	 */
-	@Override
-	public void addCancelListener(Cancelable cancelable) {
-		this.listeners.add(cancelable);
-
-	}
-
-	/**
-	 * DOC
-	 */
-	@Override
-	public void cancel() {
-		for (Cancelable cancelable : listeners) {
-			cancelable.cancel();
-		}
-		this.valid = false;
-	}
-
-	/**
-	 * DOC
-	 * 
-	 * @param cancelable
-	 * @see interfaces.Cancelable#removeCancelListener(Cancelable)
-	 */
-	@Override
-	public void removeCancelListener(Cancelable cancelable) {
-		this.listeners.remove(cancelable);
-
 	}
 
 	/**
@@ -166,29 +111,6 @@ public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> i
 				out.removeProgramCounterLevel(ifStmt);
 			}
 		}
-	}
-
-	/**
-	 * DOC
-	 * 
-	 * @param msg
-	 */
-	private void error(String msg) {
-		String fileName = AnalysisUtils.generateFileName(analyzedMethodEnvironment.getSootMethod());
-		long srcLn = analyzedMethodEnvironment.getSrcLn();
-		analyzedMethodEnvironment.getLog().error(fileName, srcLn, msg);
-	}
-
-	/**
-	 * DOC
-	 * 
-	 * @param msg
-	 * @param e
-	 */
-	private void exception(String msg, Throwable e) {
-		String fileName = AnalysisUtils.generateFileName(analyzedMethodEnvironment.getSootMethod());
-		long srcLn = analyzedMethodEnvironment.getSrcLn();
-		analyzedMethodEnvironment.getLog().exception(fileName, srcLn, msg, e);
 	}
 
 	/**
@@ -253,10 +175,13 @@ public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> i
 			SecurityTypeStmtSwitch stmtSwitch = new SecurityTypeStmtSwitch(analyzedMethodEnvironment, store, in, out);
 			try {
 				stmt.apply(stmtSwitch);
-			} catch (SwitchException e) {
-				exception(getMsg("analysis.fail.invalid_switch_argument", stmt.toString(), AnalysisUtils.generateMethodSignature(
-						analyzedMethodEnvironment.getSootMethod(), Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-						Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+			} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
+					| LevelNotFoundException e) {
+				throw new AnalysisException(getMsg(
+						"exception.analysis.other.error_switch",
+						stmt.toString(),
+						generateMethodSignature(analyzedMethodEnvironment.getSootMethod(), METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+								METHOD_SIGNATURE_PRINT_VISIBILITY), analyzedMethodEnvironment.getSrcLn()), e);
 			}
 		}
 	}
@@ -277,13 +202,7 @@ public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> i
 	@Override
 	protected void merge(LocalsMap in1, LocalsMap in2, LocalsMap out) {
 		copy(in1, out);
-		try {
-			out.addAllStronger(in2.getExtendedLocals());
-		} catch (InvalidLevelException e) {
-			exception(getMsg("pc.invalid_comparison", AnalysisUtils.generateMethodSignature(analyzedMethodEnvironment.getSootMethod(),
-					Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-					Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
-		}
+		out.addAllStronger(in2.getExtendedLocals());
 	}
 
 	/**

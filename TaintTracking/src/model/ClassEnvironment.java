@@ -3,14 +3,16 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import exception.AnnotationInvalidException;
+
 import logging.AnalysisLog;
-import resource.Configuration;
+import static resource.Configuration.*;
 import static resource.Messages.getMsg;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootField;
-import utils.AnalysisUtils;
+import static utils.AnalysisUtils.*;
 
 /**
  * DOC
@@ -86,17 +88,14 @@ public class ClassEnvironment extends Environment {
 	 * 
 	 * @return
 	 */
-	public boolean isReasonable() {
-		String classSignature = AnalysisUtils.generateClassSignature(sootClass, Configuration.CLASS_SIGNATURE_PRINT_PACKAGE);
+	public void isReasonable() {
+		String classSignature = generateClassSignature(sootClass, CLASS_SIGNATURE_PRINT_PACKAGE);
 		if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
 			// one of the write effects isn't a valid security level
 			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(writeEffects)) {
-				getLog().error(AnalysisUtils.generateFileName(sootClass), 0,
-						getMsg("effects.class.invalid", invalidEffect.getName(), classSignature));
+				throw new AnnotationInvalidException(getMsg("exception.effects.class_invalid", invalidEffect.getName(), classSignature));
 			}
-			return false;
 		}
-		return true;
 	}
 
 }

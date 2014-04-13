@@ -1,7 +1,6 @@
 package main;
 
 import logging.AnalysisLog;
-import exception.SootException.SecurityLevelException;
 import security.ALevelDefinitionChecker;
 import security.ILevelDefinition;
 
@@ -28,13 +27,9 @@ public class DefinitionChecker extends ALevelDefinitionChecker {
 	 * @param implementation
 	 * @param logger
 	 * @param logging
-	 * @param throwException
-	 * @throws SecurityLevelException
 	 */
-	protected DefinitionChecker(ILevelDefinition implementation, AnalysisLog logger, boolean logging, boolean throwException)
-			throws SecurityLevelException {
-		super(implementation, logger, logging, throwException);
-
+	protected DefinitionChecker(ILevelDefinition implementation, AnalysisLog logger, boolean logging) {
+		super(implementation, logger, logging);
 	}
 
 	/**
@@ -45,8 +40,8 @@ public class DefinitionChecker extends ALevelDefinitionChecker {
 	 * @see ALevelDefinitionChecker#checkAdditionalValidityOfImplementation()
 	 */
 	@Override
-	protected boolean checkAdditionalValidityOfImplementation() {
-		return true;
+	protected void checkAdditionalValidityOfImplementation() {
+		return;
 	}
 
 }

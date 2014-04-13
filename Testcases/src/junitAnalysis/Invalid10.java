@@ -15,4 +15,3 @@ public class Invalid10 {
 	}
 
 }
-// @error("For each method parameter should exist exactly one security level.")

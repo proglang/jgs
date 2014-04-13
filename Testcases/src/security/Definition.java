@@ -10,10 +10,9 @@ import java.util.List;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintReturnRef;
 import constraints.Constraints;
-import constraints.EQConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
-
+import exception.AnnotationInvalidConstraintsException;
 
 import annotation.IAnnotationDAO;
 
@@ -22,15 +21,15 @@ import security.ALevelDefinition;
 import security.ILevel;
 
 public class Definition extends ALevelDefinition {
-	
+
 	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface MethodConstraints {
-		
+
 		String[] value() default {};
 
 	}
-	
+
 	@Target(ElementType.FIELD)
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface FieldSecurity {
@@ -38,7 +37,7 @@ public class Definition extends ALevelDefinition {
 		String value();
 
 	}
-	
+
 	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ParameterSecurity {
@@ -46,7 +45,7 @@ public class Definition extends ALevelDefinition {
 		String[] value();
 
 	}
-	
+
 	@Target({ ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ReturnSecurity {
@@ -54,7 +53,7 @@ public class Definition extends ALevelDefinition {
 		String value();
 
 	}
-	
+
 	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface WriteEffect {
@@ -64,9 +63,9 @@ public class Definition extends ALevelDefinition {
 	}
 
 	public final class StringLevel extends ALevel {
-		
+
 		private final String level;
-		
+
 		public StringLevel(String level) {
 			this.level = level;
 		}
@@ -95,13 +94,12 @@ public class Definition extends ALevelDefinition {
 			}
 			return false;
 		}
-		
+
 	}
-	
-	
+
 	private final ILevel low = new StringLevel("low");
 	private final ILevel high = new StringLevel("high");
-	
+
 	public Definition() {
 		super(FieldSecurity.class, ParameterSecurity.class, ReturnSecurity.class, WriteEffect.class, MethodConstraints.class);
 	}
@@ -113,7 +111,7 @@ public class Definition extends ALevelDefinition {
 		} else {
 			if (level1.equals(high)) {
 				return 1;
-			} else { 
+			} else {
 				if (level1.equals(low) || level2.equals(high)) {
 					return -1;
 				} else {
@@ -135,7 +133,7 @@ public class Definition extends ALevelDefinition {
 
 	@Override
 	public ILevel[] getLevels() {
-		return new ILevel[] {low, high};
+		return new ILevel[] { low, high };
 	}
 
 	@Override
@@ -157,7 +155,6 @@ public class Definition extends ALevelDefinition {
 		return new StringLevel(dao.getStringFor("value"));
 	}
 
-
 	@Override
 	public List<ILevel> extractEffects(IAnnotationDAO dao) {
 		List<ILevel> list = new ArrayList<ILevel>();
@@ -166,37 +163,54 @@ public class Definition extends ALevelDefinition {
 		}
 		return list;
 	}
-	
-	
+
 	@Override
 	public Constraints extractConstraints(IAnnotationDAO dao) {
 		Constraints container = new Constraints();
 		List<String> constraints = dao.getStringArrayFor("value");
 		for (String constraint : constraints) {
+			String errMsg = String.format("The specified constraint '%s' is invalid.", constraint);
 			if (constraint.contains("<=")) {
 				String[] components = constraint.split("<=");
 				if (components.length == 2) {
-					String rhs = components[0].trim();
-					String lhs = components[1].trim();
-					container.add(new LEQConstraint(convertIntoConstraintComponent(lhs), convertIntoConstraintComponent(rhs)));
+					String lhs = components[0].trim();
+					String rhs = components[1].trim();
+					IConstraintComponent l = convertIntoConstraintComponent(lhs);
+					IConstraintComponent r = convertIntoConstraintComponent(rhs);
+					container.add(new LEQConstraint(l, r));
+				} else {
+					throw new AnnotationInvalidConstraintsException(errMsg);
 				}
-				// Error
 			} else if (constraint.contains("=")) {
 				String[] components = constraint.split("=");
 				if (components.length == 2) {
-					String rhs = components[0].trim();
-					String lhs = components[1].trim();
-					container.add(new EQConstraint(convertIntoConstraintComponent(lhs), convertIntoConstraintComponent(rhs)));
+					String lhs = components[0].trim();
+					String rhs = components[1].trim();
+					IConstraintComponent l = convertIntoConstraintComponent(lhs);
+					IConstraintComponent r = convertIntoConstraintComponent(rhs);
+					container.add(new LEQConstraint(l, r));
+					container.add(new LEQConstraint(r, l));
+				} else {
+					throw new AnnotationInvalidConstraintsException(errMsg);
 				}
-				// Error
-				
+			} else if (constraint.contains(">=")) {
+				String[] components = constraint.split(">=");
+				if (components.length == 2) {
+					String lhs = components[0].trim();
+					String rhs = components[1].trim();
+					IConstraintComponent l = convertIntoConstraintComponent(lhs);
+					IConstraintComponent r = convertIntoConstraintComponent(rhs);
+					container.add(new LEQConstraint(r, l));
+				} else {
+					throw new AnnotationInvalidConstraintsException(errMsg);
+				}
+			} else {
+				throw new AnnotationInvalidConstraintsException(errMsg);
 			}
-			// Error
-			
 		}
 		return container;
 	}
-	
+
 	private IConstraintComponent convertIntoConstraintComponent(String component) {
 		if (component.startsWith("@")) {
 			String position = component.substring(1);
@@ -212,16 +226,16 @@ public class Definition extends ALevelDefinition {
 
 	@ParameterSecurity({ "high" })
 	@ReturnSecurity("high")
-	@MethodConstraints({"@0 <= high", "@return = high"})
+	@MethodConstraints({ "@0 <= high", "@return = high" })
 	public static <T> T mkHigh(T object) {
 		return object;
 	}
 
 	@ParameterSecurity({ "low" })
 	@ReturnSecurity("low")
-	@MethodConstraints({"@0 <= low", "@return = low"})
+	@MethodConstraints({ "@0 <= low", "@return = low" })
 	public static <T> T mkLow(T object) {
 		return object;
 	}
-	
+
 }

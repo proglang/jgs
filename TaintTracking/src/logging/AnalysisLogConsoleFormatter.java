@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
+import static logging.AnalysisLogUtils.*;
+import static logging.AnalysisLogLevel.*;
 
 /**
  * <h1>Console formatter for the SootLogger</h1>
@@ -43,14 +45,14 @@ public class AnalysisLogConsoleFormatter extends Formatter {
 	private static void buildMsgBox(StringBuilder result, String msg, String prefix) {
 		List<String> list = reduceToSuitableLineWidth(msg, prefix.length());
 		int maxWidth = maxString(list);
-		result.append(prefix + "+" + AnalysisLogUtils.repeat("-", maxWidth + 2) + "+" + AnalysisLogUtils.TXT_LINE_SEPARATOR);
+		result.append(prefix + "+" + repeat("-", maxWidth + 2) + "+" + TXT_LINE_SEPARATOR);
 		for (String string : list) {
 			result.append(prefix);
-			string = "| " + string + AnalysisLogUtils.repeat(" ", maxWidth - string.length()) + " |";
+			string = "| " + string + repeat(" ", maxWidth - string.length()) + " |";
 			result.append(string);
-			result.append(AnalysisLogUtils.TXT_LINE_SEPARATOR);
+			result.append(TXT_LINE_SEPARATOR);
 		}
-		result.append(prefix + "+" + AnalysisLogUtils.repeat("-", maxWidth + 2) + "+" + AnalysisLogUtils.TXT_LINE_SEPARATOR);
+		result.append(prefix + "+" + repeat("-", maxWidth + 2) + "+" + TXT_LINE_SEPARATOR);
 	}
 
 	/**
@@ -81,7 +83,7 @@ public class AnalysisLogConsoleFormatter extends Formatter {
 	 *         characters.
 	 */
 	private static List<String> reduceToSuitableLineWidth(String msg, int prefix) {
-		String[] preResult = msg.split(AnalysisLogUtils.TXT_LINE_SEPARATOR);
+		String[] preResult = msg.split(TXT_LINE_SEPARATOR);
 		List<String> result = new ArrayList<String>();
 		for (String subMsg : preResult) {
 			subMsg = subMsg.trim();
@@ -115,16 +117,16 @@ public class AnalysisLogConsoleFormatter extends Formatter {
 	@Override
 	public String format(LogRecord record) {
 		StringBuilder result = new StringBuilder();
-		if (record.getLevel().equals(AnalysisLogLevel.HEADING)) {
-			result.append(AnalysisLogUtils.generateLogHeading(formatMessage(record), record.getParameters()));
-		} else if (AnalysisLogUtils.isStandardLoggableMessage(record.getLevel())) {
-			buildMsgBox(result, formatMessage(record), AnalysisLogUtils.TXT_TAB);
-		} else if (record.getLevel().equals(AnalysisLogLevel.STRUCTURE)) {
-			result.append(AnalysisLogUtils.generateStructureMessage(formatMessage(record)));
+		if (record.getLevel().equals(HEADING)) {
+			result.append(generateLogHeading(formatMessage(record), record.getParameters()));
+		} else if (isStandardLoggableMessage(record.getLevel())) {
+			buildMsgBox(result, formatMessage(record), TXT_TAB);
+		} else if (record.getLevel().equals(STRUCTURE)) {
+			result.append(generateStructureMessage(formatMessage(record)));
 		} else {
-			result.append(AnalysisLogUtils.generateDefaultMessage(record.getLevel().getLocalizedName(), formatMessage(record)));
+			result.append(generateDefaultMessage(record.getLevel().getLocalizedName(), formatMessage(record)));
 		}
-		result.append(AnalysisLogUtils.handleThrownException(record.getThrown(), record.getThreadID()));
+		result.append(handleThrownException(record.getThrown(), record.getThreadID()));
 		return result.toString();
 	}
 

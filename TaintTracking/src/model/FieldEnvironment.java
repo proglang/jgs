@@ -3,14 +3,17 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import exception.AnnotationInvalidException;
+import exception.LevelInvalidException;
+
 import logging.AnalysisLog;
-import resource.Configuration;
+import static resource.Configuration.*;
 import static resource.Messages.getMsg;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootField;
-import utils.AnalysisUtils;
+import static utils.AnalysisUtils.*;
 
 /**
  * <h1>Analysis environment for fields</h1>
@@ -96,21 +99,16 @@ public class FieldEnvironment extends Environment {
 	 * 
 	 * @return
 	 */
-	public boolean isReasonable() {
+	public void isReasonable() {
 		if (level != null) { // some level given
 			if (!getLevelMediator().checkLevelValidity(level)) {
 				// level isn't a valid security level
-				logError(getMsg("field_level.invalid", level.getName(), AnalysisUtils.generateFieldSignature(sootField,
-						Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-						Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
-				return false;
+				throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(),
+						generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
 			}
-			return true;
 		} else { // no level given
-			logError(getMsg("field_level.no_level", AnalysisUtils.generateFieldSignature(sootField,
-					Configuration.FIELD_SIGNATURE_PRINT_PACKAGE, Configuration.FIELD_SIGNATURE_PRINT_TYPE,
-					Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY)));
-			return false;
+			throw new AnnotationInvalidException(getMsg("exception.level.field.no_level",
+					generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
 		}
 	}
 
@@ -127,14 +125,4 @@ public class FieldEnvironment extends Environment {
 		this.sootField = sootField;
 	}
 
-	/**
-	 * Logs the given message as an error. The file name is created by the class, the source line number is specified as 0.
-	 * 
-	 * @param msg
-	 *          Message that should be printed as an error.
-	 * @see AnalysisLog#error(String, long, String)
-	 */
-	private void logError(String msg) {
-		getLog().error(AnalysisUtils.generateFileName(getDeclaringSootClass()), 0, msg);
-	}
 }

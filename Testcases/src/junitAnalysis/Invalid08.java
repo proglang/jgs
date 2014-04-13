@@ -13,4 +13,3 @@ public class Invalid08 {
 	}
 
 }
-// @error("The return security level definition of a method which returns a value is mandatory.")

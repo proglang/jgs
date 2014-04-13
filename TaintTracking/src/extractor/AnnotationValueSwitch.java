@@ -1,10 +1,5 @@
 package extractor;
 
-import interfaces.Cancelable;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import soot.Local;
 import soot.jimple.AddExpr;
 import soot.jimple.AndExpr;
@@ -52,11 +47,11 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
-import exception.SootException.InvalidSwitchException;
+import static resource.Messages.*;
+import exception.SwitchException;
 
-public class AnnotationValueSwitch implements JimpleValueSwitch, Cancelable {
-
-	private static final String EXCEPTION_UNKNOWN_VALUE_OBJ = "Unknown object for the value switch in the environment extractor.";
+public class AnnotationValueSwitch implements JimpleValueSwitch {
+	
 	/**
 	 * 
 	 */
@@ -67,7 +62,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch, Cancelable {
 	 */
 	protected AnnotationValueSwitch(AnnotationExtractor extractor) {
 		this.extractor = extractor;
-		addCancelListener(extractor);
 	}
 
 	/**
@@ -536,28 +530,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch, Cancelable {
 	 */
 	@Override
 	public void defaultCase(Object object) {
-		throw new InvalidSwitchException(EXCEPTION_UNKNOWN_VALUE_OBJ);
-
+		throw new SwitchException(getMsg("exception.extractor.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
 	}
-
-	private final List<Cancelable> listeners = new ArrayList<Cancelable>();
-
-	@Override
-	public void addCancelListener(Cancelable cancelable) {
-		this.listeners.add(cancelable);
-
-	}
-
-	@Override
-	public void removeCancelListener(Cancelable cancelable) {
-		this.listeners.remove(cancelable);
-
-	}
-
-	@Override
-	public void cancel() {
-		for (Cancelable cancelable : listeners) {
-			cancelable.cancel();
-		}
-	}
+	
 }

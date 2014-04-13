@@ -1,8 +1,6 @@
 package analysis;
 
-
 import static resource.Messages.getMsg;
-import interfaces.Cancelable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +11,7 @@ import logging.AnalysisLog;
 import model.AnalyzedMethodEnvironment;
 import model.MethodEnvironment;
 import model.MethodEnvironment.MethodParameter;
-import resource.Configuration;
-import resource.Messages;
+import static resource.Configuration.*;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.Local;
@@ -25,10 +22,9 @@ import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.ParameterRef;
-import utils.AnalysisUtils;
-import exception.SootException.InvalidLevelException;
-import exception.SootException.NoSecurityLevelException;
-import exception.SootException.SwitchException;
+import static utils.AnalysisUtils.*;
+import exception.OperationInvalidException;
+import exception.ProgramCounterException;
 import extractor.UsedObjectStore;
 
 /**
@@ -61,9 +57,8 @@ import extractor.UsedObjectStore;
  * @see SecurityTypeAnalysis
  * @see AnalyzedMethodEnvironment
  */
-abstract public class SecurityTypeSwitch implements Cancelable {
+abstract public class SecurityTypeSwitch {
 
-	private final List<Cancelable> listeners = new ArrayList<Cancelable>();
 	/** Current analyzed method environment. */
 	protected final AnalyzedMethodEnvironment analyzedMethodEnvironment;
 	/** Current incoming map of the local variables. */
@@ -93,25 +88,6 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 		this.in = in;
 	}
 
-	@Override
-	public void addCancelListener(Cancelable cancelable) {
-		this.listeners.add(cancelable);
-
-	}
-
-	@Override
-	public void cancel() {
-		for (Cancelable cancelable : listeners) {
-			cancelable.cancel();
-		}
-	}
-
-	@Override
-	public void removeCancelListener(Cancelable cancelable) {
-		this.listeners.remove(cancelable);
-
-	}
-
 	/**
 	 * Checks if the given <em>write effect</em> is allowed in the current implicit flow. Occurring exceptions are logged.
 	 * 
@@ -123,12 +99,12 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 			ILevel pcLevel = getWeakestSecurityLevel();
 			try {
 				pcLevel = out.getStrongestProgramCounterLevel();
-			} catch (InvalidLevelException e) {
-				logException(getMsg("pc.invalid_comparison", getMethodSignature()), e);
+			} catch (OperationInvalidException e) {
+				throw new ProgramCounterException(getMsg("exception.program_counter.error", getMethodSignature()), e);
 			}
 			if (isWeakerLevel(effect, pcLevel)) {
 				analyzedMethodEnvironment.logEffect(getSrcLn(),
-						getMsg("effect.stronger_pc", getMethodSignature(), getSrcLn(), effect.getName(), pcLevel.getName()));
+						getMsg("effects.program_counter.stronger", getMethodSignature(), getSrcLn(), effect.getName(), pcLevel.getName()));
 			}
 		}
 	}
@@ -148,11 +124,7 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 * @see SecurityTypeWriteValueSwitch
 	 */
 	private void executeUpdateLevel(Value value, SecurityTypeWriteValueSwitch updateSwitch, String containing) {
-		try {
-			value.apply(updateSwitch);
-		} catch (SwitchException e) {
-			logException(getMsg("switch.exception", getMethodSignature(), getSrcLn(), containing), e);
-		}
+		value.apply(updateSwitch);
 	}
 
 	/**
@@ -238,50 +210,40 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 *         returns the strongest argument level.
 	 */
 	protected ILevel calculateInvokeExprLevel(InvokeExpr invokeExpr, boolean assignment) {
-		String invokedMethodSignature = AnalysisUtils.generateMethodSignature(invokeExpr.getMethod(),
-				Configuration.METHOD_SIGNATURE_PRINT_PACKAGE, Configuration.METHOD_SIGNATURE_PRINT_TYPE,
-				Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
-		try {
-			MethodEnvironment invokedMethod = store.getMethodEnvironment(invokeExpr.getMethod());
-			List<MethodParameter> invokedMethodParameter = invokedMethod.getMethodParameters();
-			ILevel level = getWeakestSecurityLevel();
-			if (invokeExpr.getArgCount() == invokedMethodParameter.size()) {
-				List<ILevel> parameterLevels = new ArrayList<ILevel>();
-				List<ILevel> argumentLevels = new ArrayList<ILevel>();
-				for (int j = 0; j < invokeExpr.getArgCount(); j++) {
-					Value value = invokeExpr.getArg(j);
-					ILevel parameterLevel = invokedMethodParameter.get(j).getLevel();
-					String parameterName = invokedMethodParameter.get(j).getName();
-					ILevel argumentLevel = calculateLevel(value, invokeExpr.toString());
-					if (!isWeakerOrEqualLevel(argumentLevel, parameterLevel)) {
-						logSecurity(getMsg("security.stronger_param", getMethodSignature(), getSrcLn(), invokedMethodSignature, parameterName,
-								parameterLevel.getName(), argumentLevel.getName()));
-					}
-					argumentLevels.add(argumentLevel);
-					parameterLevels.add(parameterLevel);
-				}
-				if (assignment) {
-					if (invokedMethod.isLibraryMethod()) {
-						if (argumentLevels.size() > 0) {
-							level = getMaxLevel(argumentLevels);
-						}
-					} else {
-						level = invokedMethod.getReturnLevel();
-					}
-				} else {
-					level = null;
+		MethodEnvironment invokedMethod = store.getMethodEnvironment(invokeExpr.getMethod());
+		List<MethodParameter> invokedMethodParameter = invokedMethod.getMethodParameters();
+		ILevel level = getWeakestSecurityLevel();
+		List<ILevel> parameterLevels = new ArrayList<ILevel>();
+		List<ILevel> argumentLevels = new ArrayList<ILevel>();
+		for (int j = 0; j < invokeExpr.getArgCount(); j++) {
+			Value value = invokeExpr.getArg(j);
+			ILevel parameterLevel = invokedMethodParameter.get(j).getLevel();
+			String parameterName = invokedMethodParameter.get(j).getName();
+			ILevel argumentLevel = calculateLevel(value, invokeExpr.toString());
+			if (!isWeakerOrEqualLevel(argumentLevel, parameterLevel)) {
+				logSecurity(getMsg(
+						"security.param.stronger",
+						getMethodSignature(),
+						getSrcLn(),
+						generateMethodSignature(invokeExpr.getMethod(), METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+								METHOD_SIGNATURE_PRINT_VISIBILITY), parameterName, parameterLevel.getName(), argumentLevel.getName()));
+			}
+			argumentLevels.add(argumentLevel);
+			parameterLevels.add(parameterLevel);
+		}
+		if (assignment) {
+			if (invokedMethod.isLibraryMethod()) {
+				if (argumentLevels.size() > 0) {
+					level = getMaxLevel(argumentLevels);
 				}
 			} else {
-				logError(getMsg("analysis.fail.unequal_parameter_amount", getMethodSignature(), invokedMethodSignature, getSrcLn()));
+				level = invokedMethod.getReturnLevel();
 			}
-			checkSideEffectsOfInvokedMethod(invokedMethod);
-			return level;
-		} catch (Exception e) {
-			logException(getMsg("env_store.not_found_method_inline", getMethodSignature(), getSrcLn(), invokedMethodSignature), e);
-			// cancel();
-			return null;
+		} else {
+			level = null;
 		}
-
+		checkSideEffectsOfInvokedMethod(invokedMethod);
+		return level;
 	}
 
 	/**
@@ -299,18 +261,8 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 */
 	protected ILevel calculateLevel(Value value, String containing) {
 		SecurityTypeReadValueSwitch lookupSwitch = new SecurityTypeReadValueSwitch(analyzedMethodEnvironment, store, in, out);
-		ILevel level = getWeakestSecurityLevel();
-		try {
-			value.apply(lookupSwitch);
-		} catch (SwitchException e) {
-			logException(getMsg("switch.exception", getMethodSignature(), getSrcLn(), containing), e);
-		}
-		try {
-			level = lookupSwitch.getLevel();
-		} catch (NoSecurityLevelException e) {
-			logException(getMsg("analysis.fail.no_level", getMethodSignature(), getSrcLn(), value.toString()), e);
-		}
-		return level;
+		value.apply(lookupSwitch);
+		return lookupSwitch.getLevel();
 	}
 
 	/**
@@ -326,7 +278,7 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 		for (ILevel effected : invokedMethod.getWriteEffects()) {
 			addWriteEffectCausedByMethodInvocation(effected, invokedMethod.getSootMethod());
 		}
-		if (AnalysisUtils.isInitMethod(invokedMethod.getSootMethod()) || invokedMethod.getSootMethod().isStatic()) {
+		if (isInitMethod(invokedMethod.getSootMethod()) || invokedMethod.getSootMethod().isStatic()) {
 			for (ILevel effected : invokedMethod.getClassWriteEffects()) {
 				addWriteEffectCausedByClass(effected, invokedMethod.getSootMethod().getDeclaringClass());
 			}
@@ -341,7 +293,7 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 * @return The file name of the class which declares the analyzed method.
 	 */
 	protected String getFileName() {
-		return AnalysisUtils.generateFileName(analyzedMethodEnvironment.getSootMethod());
+		return generateFileName(analyzedMethodEnvironment.getSootMethod());
 	}
 
 	/**
@@ -376,15 +328,7 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 *         returned, if one of the given levels is 'void' ( {@link LevelMediator#VOID_LEVEL}).
 	 */
 	protected ILevel getMaxLevel(ILevel level1, ILevel level2) {
-		ILevel level = getWeakestSecurityLevel();
-		try {
-			level = getLevelMediator().getLeastUpperBoundLevelOf(level1, level2);
-		} catch (InvalidLevelException e) {
-			logException(
-					getMsg("analysis.fail.invalid_level_comparison", getMethodSignature(), getSrcLn(),
-							Messages.commaList(level1.getName(), level2.getName())), e);
-		}
-		return level;
+		return getLevelMediator().getLeastUpperBoundLevelOf(level1, level2);
 	}
 
 	/**
@@ -398,17 +342,7 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 *         Otherwise the the weakest available <em>security level</em> will be returned.
 	 */
 	protected ILevel getMaxLevel(List<ILevel> levels) {
-		ILevel level = getWeakestSecurityLevel();
-		try {
-			level = getLevelMediator().getLeastUpperBoundLevelOf(levels);
-		} catch (InvalidLevelException e) {
-			List<String> list = new ArrayList<String>();
-			for (ILevel lev : levels) {
-				list.add(lev.getName());
-			}
-			logException(getMsg("analysis.fail.invalid_level_comparison", getMethodSignature(), getSrcLn(), Messages.commaList(list)), e);
-		}
-		return level;
+		return getLevelMediator().getLeastUpperBoundLevelOf(levels);
 	}
 
 	/**
@@ -418,8 +352,8 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 * @return The readable method signature of the analyzed method.
 	 */
 	protected String getMethodSignature() {
-		return AnalysisUtils.generateMethodSignature(analyzedMethodEnvironment.getSootMethod(), Configuration.METHOD_SIGNATURE_PRINT_PACKAGE,
-				Configuration.METHOD_SIGNATURE_PRINT_TYPE, Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY);
+		return generateMethodSignature(getSootMethod(), METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
+				METHOD_SIGNATURE_PRINT_VISIBILITY);
 	}
 
 	/**
@@ -436,15 +370,7 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 *         returned, if one of the given levels is 'void' ( {@link LevelMediator#VOID_LEVEL}).
 	 */
 	protected ILevel getMinLevel(ILevel level1, ILevel level2) {
-		ILevel level = getWeakestSecurityLevel();
-		try {
-			level = getLevelMediator().getGreatestLowerBoundLevelOf(level1, level2);
-		} catch (InvalidLevelException e) {
-			logException(
-					getMsg("analysis.fail.invalid_level_comparison", getMethodSignature(), getSrcLn(),
-							Messages.commaList(level1.getName(), level2.getName())), e);
-		}
-		return level;
+		return getLevelMediator().getGreatestLowerBoundLevelOf(level1, level2);
 	}
 
 	/**
@@ -514,41 +440,7 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 * @return {@code true} if the first given level is weaker or equals than the second <em>security level</em>, {@code false} otherwise.
 	 */
 	protected boolean isWeakerOrEqualLevel(ILevel level1, ILevel level2) {
-		boolean is1WeakerEquals2 = false;
-		try {
-			is1WeakerEquals2 = getLevelMediator().isWeakerOrEquals(level1, level2);
-		} catch (InvalidLevelException e) {
-			logException(
-					getMsg("analysis.fail.invalid_level_comparison", getMethodSignature(), getSrcLn(),
-							Messages.commaList(level1.getName(), level2.getName())), e);
-		}
-		return is1WeakerEquals2;
-	}
-
-	/**
-	 * Logs the given message as an error. The file name is created by the analyzed {@link SootMethod}, which the environment stores, the
-	 * source line number is the line number of current handled statement.
-	 * 
-	 * @param msg
-	 *          Message that should be printed as an error.
-	 * @see AnalysisLog#error(String, long, String)
-	 */
-	protected void logError(String msg) {
-		getLog().error(getFileName(), getSrcLn(), msg);
-	}
-
-	/**
-	 * Logs the given message as well as the {@link Exception} as an exception. The file name is created by the analyzed {@link SootMethod},
-	 * which the environment stores, the source line number is the line number of current handled statement.
-	 * 
-	 * @param msg
-	 *          Message that should be printed as an exception.
-	 * @param e
-	 *          The exception which is the reason for the given exception message.
-	 * @see AnalysisLog#exception(String, long, String, Throwable)
-	 */
-	protected void logException(String msg, Exception e) {
-		getLog().exception(getFileName(), getSrcLn(), msg, e);
+		return getLevelMediator().isWeakerOrEquals(level1, level2);
 	}
 
 	/**
@@ -588,8 +480,8 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 			ILevel pcLevel = getWeakestSecurityLevel();
 			try {
 				pcLevel = out.getStrongestProgramCounterLevel();
-			} catch (InvalidLevelException e) {
-				logException(getMsg("pc.invalid_comparison", getMethodSignature()), e);
+			} catch (OperationInvalidException e) {
+				throw new ProgramCounterException(getMsg("exception.program_counter.error", getMethodSignature()), e);
 			}
 			if (isWeakerOrEqualLevel(level, pcLevel)) {
 				level = pcLevel;
@@ -644,17 +536,10 @@ abstract public class SecurityTypeSwitch implements Cancelable {
 	 *          {@link SecurityTypeSwitch#analyzedMethodEnvironment}.
 	 */
 	protected void updateParameterLevel(Value value, ParameterRef parameterRef) {
-		try {
-			MethodParameter methodParameter = analyzedMethodEnvironment.getMethodParameterAt(parameterRef.getIndex());
-			SecurityTypeWriteValueSwitch updateSwitch = new SecurityTypeWriteValueSwitch(analyzedMethodEnvironment, store, in, out,
-					methodParameter.getLevel());
-			updateSwitch.setParameterInformation(parameterRef, methodParameter);
-			executeUpdateLevel(value, updateSwitch, parameterRef.toString());
-		} catch (Exception e) {
-			// TODO Logging
-			e.printStackTrace();
-		}
-
+		MethodParameter methodParameter = analyzedMethodEnvironment.getMethodParameterAt(parameterRef.getIndex());
+		SecurityTypeWriteValueSwitch updateSwitch = new SecurityTypeWriteValueSwitch(analyzedMethodEnvironment, store, in, out,
+				methodParameter.getLevel());
+		executeUpdateLevel(value, updateSwitch, parameterRef.toString());
 	}
 
 }

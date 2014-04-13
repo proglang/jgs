@@ -36,7 +36,7 @@ import logging.Settings;
  * @see FileMessageStore
  * @see SrcLnMessageStore
  */
-public class MessageStore implements Serializable {
+public class MessageStore {
 
 	/**
 	 * <h1>Logged message</h1>
@@ -58,13 +58,8 @@ public class MessageStore implements Serializable {
 	 * @see FileMessageStore
 	 * @see SrcLnMessageStore
 	 */
-	public static class Message implements Serializable, Comparable<Message> {
+	public static class Message implements Comparable<Message> {
 
-		/**
-		 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded
-		 * classes for that object that are compatible with respect to serialization (see {@link Serializable}).
-		 */
-		private static final long serialVersionUID = -1456520028819624896L;
 		/**
 		 * List of {@link Throwable} which contains throwables that were thrown in the file at the source line with the level and message of
 		 * this logged message.
@@ -217,13 +212,8 @@ public class MessageStore implements Serializable {
 	 * @see MessageStore
 	 * @see SrcLnMessageStore
 	 */
-	private static class FileMessageStore implements Serializable {
+	private static class FileMessageStore {
 
-		/**
-		 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded
-		 * classes for that object that are compatible with respect to serialization (see {@link Serializable}).
-		 */
-		private static final long serialVersionUID = 2030550093872726376L;
 		/** Map that stores a {@link SrcLnMessageStore} for each source line number. */
 		private Map<Long, SrcLnMessageStore> srcLnMessageStore = new HashMap<Long, SrcLnMessageStore>();
 
@@ -333,13 +323,8 @@ public class MessageStore implements Serializable {
 	 * @see MessageStore
 	 * @see FileMessageStore
 	 */
-	private static class SrcLnMessageStore implements Serializable {
+	private static class SrcLnMessageStore {
 
-		/**
-		 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded
-		 * classes for that object that are compatible with respect to serialization (see {@link Serializable}).
-		 */
-		private static final long serialVersionUID = -7954741135188457L;
 		/** Map that stores a list of messages for each {@link AnalysisLogLevel}. */
 		private Map<Level, List<Message>> levelMessageStore = new HashMap<Level, List<Message>>();
 
@@ -392,11 +377,6 @@ public class MessageStore implements Serializable {
 		}
 	}
 
-	/**
-	 * Version number, which is used during deserialization to verify that the sender and receiver of a serialized object have loaded classes
-	 * for that object that are compatible with respect to serialization (see {@link Serializable}).
-	 */
-	private static final long serialVersionUID = -849378849011530590L;
 	/** List of {@link Settings} which stores the logged setting information. */
 	private final List<Settings> configurations = new ArrayList<Settings>();
 	/** Map that stores a {@link FileMessageStore} for each file name String. */
