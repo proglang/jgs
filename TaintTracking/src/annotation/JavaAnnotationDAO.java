@@ -1,6 +1,19 @@
 package annotation;
 
 import static resource.Messages.getMsg;
+import static utils.ExtendedJNI.EXT_JNI_ANNOTATION;
+import static utils.ExtendedJNI.EXT_JNI_CLASS;
+import static utils.ExtendedJNI.JNI_ARRAY;
+import static utils.ExtendedJNI.JNI_BOOLEAN;
+import static utils.ExtendedJNI.JNI_BYTE;
+import static utils.ExtendedJNI.JNI_CHAR;
+import static utils.ExtendedJNI.JNI_DOUBLE;
+import static utils.ExtendedJNI.JNI_ENUM;
+import static utils.ExtendedJNI.JNI_FLOAT;
+import static utils.ExtendedJNI.JNI_INT;
+import static utils.ExtendedJNI.JNI_LONG;
+import static utils.ExtendedJNI.JNI_SHORT;
+import static utils.ExtendedJNI.JNI_STRING;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -10,8 +23,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static utils.ExtendedJNI.*;
 
 import exception.AnnotationElementNotFoundException;
 

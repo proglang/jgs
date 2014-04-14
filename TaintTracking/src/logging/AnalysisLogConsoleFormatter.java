@@ -1,11 +1,20 @@
 package logging;
 
+import static logging.AnalysisLogLevel.HEADING;
+import static logging.AnalysisLogLevel.STRUCTURE;
+import static logging.AnalysisLogUtils.TXT_LINE_SEPARATOR;
+import static logging.AnalysisLogUtils.TXT_TAB;
+import static logging.AnalysisLogUtils.generateDefaultMessage;
+import static logging.AnalysisLogUtils.generateLogHeading;
+import static logging.AnalysisLogUtils.generateStructureMessage;
+import static logging.AnalysisLogUtils.handleThrownException;
+import static logging.AnalysisLogUtils.isStandardLoggableMessage;
+import static logging.AnalysisLogUtils.repeat;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
-import static logging.AnalysisLogUtils.*;
-import static logging.AnalysisLogLevel.*;
 
 /**
  * <h1>Console formatter for the SootLogger</h1>

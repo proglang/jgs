@@ -8,7 +8,7 @@ import java.util.Map;
 import utils.AnalysisUtils;
 
 public abstract class AAnnotationDAO implements IAnnotationDAO {
-	
+
 	protected static final Map<String, Class<?>> PRIM_CLASSES = new HashMap<String, Class<?>>();
 
 	static {

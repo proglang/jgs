@@ -10,5 +10,5 @@ public class LEQConstraint extends AConstraint {
 	public String toString() {
 		return lhs.toString() + " <= " + rhs.toString();
 	}
-	
+
 }

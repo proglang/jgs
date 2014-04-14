@@ -1,24 +1,27 @@
 package security;
 
+import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.extractAnnotationTagWithType;
+import static utils.AnalysisUtils.extractVisibilityAnnotationTag;
+import static utils.AnalysisUtils.generateClassSignature;
+import static utils.AnalysisUtils.generateFieldSignature;
+import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getJNISignature;
+import static utils.AnalysisUtils.hasAnnotationOfType;
+import static utils.AnalysisUtils.hasVisibilityAnnnotationTag;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import constraints.Constraints;
-
-import static utils.AnalysisUtils.*;
-import static resource.Configuration.*;
-import static resource.Messages.*;
-import annotation.SootAnnotationDAO;
-
-import security.ILevel;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.tagkit.AnnotationTag;
 import soot.tagkit.Host;
 import soot.tagkit.VisibilityAnnotationTag;
-
+import annotation.SootAnnotationDAO;
+import constraints.Constraints;
 import exception.AnnotationElementNotFoundException;
 import exception.AnnotationExtractionException;
 import exception.AnnotationInvalidConstraintsException;
@@ -55,10 +58,22 @@ public abstract class ALevelMediator implements ILevelMediator {
 			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassEffects(), at);
 			return definition.extractEffects(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
-			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_class_effects_error",
-					generateClassSignature(sootClass, CLASS_SIGNATURE_PRINT_PACKAGE)), e);
+			throw new AnnotationExtractionException(
+					getMsg("exception.annotation.extract_class_effects_error", generateClassSignature(sootClass)), e);
 		}
 
+	}
+
+	public final Constraints extractConstraints(SootMethod sootMethod) {
+		try {
+			VisibilityAnnotationTag vt = extractVisibilityAnnotationTag(sootMethod);
+			AnnotationTag at = extractAnnotationTagWithType(vt, getJNISignature(definition.getAnnotationClassConstraints()));
+			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassConstraints(), at);
+			return definition.extractConstraints(dao);
+		} catch (AnnotationExtractionException | AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {
+			throw new AnnotationExtractionException(
+					getMsg("exception.annotation.extract_constraints_error", generateMethodSignature(sootMethod)), e);
+		}
 	}
 
 	public final ILevel extractFieldSecurityLevel(SootField sootField) {
@@ -68,8 +83,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassFieldLevel(), at);
 			return definition.extractFieldLevel(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
-			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_field_level_error",
-					generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)),
+			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_field_level_error", generateFieldSignature(sootField)),
 					e);
 		}
 	}
@@ -81,10 +95,8 @@ public abstract class ALevelMediator implements ILevelMediator {
 			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassEffects(), at);
 			return definition.extractEffects(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
-			throw new AnnotationExtractionException(getMsg(
-					"exception.annotation.extract_method_effects_error",
-					generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-							METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_method_effects_error",
+					generateMethodSignature(sootMethod)), e);
 		}
 	}
 
@@ -95,10 +107,8 @@ public abstract class ALevelMediator implements ILevelMediator {
 			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassParameterLevel(), at);
 			return definition.extractParameterLevels(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
-			throw new AnnotationExtractionException(getMsg(
-					"exception.annotation.extract_method_parameter_error",
-					generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-							METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_method_parameter_error",
+					generateMethodSignature(sootMethod)), e);
 		}
 	}
 
@@ -109,24 +119,8 @@ public abstract class ALevelMediator implements ILevelMediator {
 			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassReturnLevel(), at);
 			return definition.extractReturnLevel(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
-			throw new AnnotationExtractionException(getMsg(
-					"exception.annotation.extract_method_return_error",
-					generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-							METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
-		}
-	}
-
-	public final Constraints extractConstraints(SootMethod sootMethod) {
-		try {
-			VisibilityAnnotationTag vt = extractVisibilityAnnotationTag(sootMethod);
-			AnnotationTag at = extractAnnotationTagWithType(vt, getJNISignature(definition.getAnnotationClassConstraints()));
-			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassConstraints(), at);
-			return definition.extractConstraints(dao);
-		} catch (AnnotationExtractionException | AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {
-			throw new AnnotationExtractionException(getMsg(
-					"exception.annotation.extract_constraints_error",
-					generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-							METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_method_return_error",
+					generateMethodSignature(sootMethod)), e);
 		}
 	}
 
@@ -190,6 +184,10 @@ public abstract class ALevelMediator implements ILevelMediator {
 		return this.definition.getLibraryClassWriteEffects(sootClass);
 	}
 
+	public Constraints getLibraryConstraints(SootMethod sootMethod) {
+		return this.definition.getLibraryConstraints(sootMethod);
+	}
+
 	public ILevel getLibraryFieldSecurityLevel(SootField sootField) {
 		return this.definition.getLibraryFieldLevel(sootField);
 	}
@@ -206,12 +204,12 @@ public abstract class ALevelMediator implements ILevelMediator {
 		return this.definition.getLibraryMethodWriteEffects(sootMethod);
 	}
 
-	public Constraints getLibraryConstraints(SootMethod sootMethod) {
-		return this.definition.getLibraryConstraints(sootMethod);
-	}
-
 	public final boolean hasClassWriteEffectAnnotation(SootClass sootClass) {
 		return hasAnnotationWithType(sootClass, getJNISignature(this.definition.getAnnotationClassEffects()));
+	}
+
+	public final boolean hasConstraintsAnnotation(SootMethod sootMethod) {
+		return hasAnnotationWithType(sootMethod, getJNISignature(this.definition.getAnnotationClassConstraints()));
 	}
 
 	public final boolean hasFieldSecurityAnnotation(SootField sootField) {
@@ -228,10 +226,6 @@ public abstract class ALevelMediator implements ILevelMediator {
 
 	public final boolean hasReturnSecurityAnnotation(SootMethod sootMethod) {
 		return hasAnnotationWithType(sootMethod, getJNISignature(this.definition.getAnnotationClassReturnLevel()));
-	}
-
-	public final boolean hasConstraintsAnnotation(SootMethod sootMethod) {
-		return hasAnnotationWithType(sootMethod, getJNISignature(this.definition.getAnnotationClassConstraints()));
 	}
 
 	public boolean isEquals(ILevel level1, ILevel level2) {

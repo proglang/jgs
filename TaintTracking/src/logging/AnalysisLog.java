@@ -1,14 +1,29 @@
 package logging;
 
+import static java.util.Locale.ENGLISH;
+import static java.util.logging.Level.ALL;
+import static java.util.logging.Logger.getLogger;
+import static logging.AnalysisLogLevel.CONFIGURATION;
+import static logging.AnalysisLogLevel.CONFIGURATION_NAME;
+import static logging.AnalysisLogLevel.DEBUGGING;
+import static logging.AnalysisLogLevel.DEBUGGING_NAME;
+import static logging.AnalysisLogLevel.HEADING;
+import static logging.AnalysisLogLevel.SECURITY;
+import static logging.AnalysisLogLevel.SECURITY_NAME;
+import static logging.AnalysisLogLevel.SIDEEFFECT;
+import static logging.AnalysisLogLevel.SIDEEFFECT_NAME;
+import static logging.AnalysisLogLevel.STRUCTURE;
+import static logging.AnalysisLogLevel.WARNING;
+import static logging.AnalysisLogLevel.WARNING_NAME;
+import static logging.AnalysisLogUtils.FILE_SUFFIX_JAVA;
+import static logging.AnalysisLogUtils.generateSettingsString;
+import static logging.AnalysisLogUtils.getStandardConsoleHandler;
+import static logging.AnalysisLogUtils.shouldLogLevel;
+
 import java.util.List;
-import static java.util.Locale.*;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import static java.util.logging.Logger.*;
 import java.util.logging.Logger;
-import static resource.Configuration.*;
-import static logging.AnalysisLogLevel.*;
-import static logging.AnalysisLogUtils.*;
 
 import model.MessageStore;
 import model.MessageStore.Message;
@@ -47,7 +62,7 @@ public class AnalysisLog {
 	 */
 	protected final Level[] levels;
 	/**
-	 * {@link MessageStore} that stores all messages of the Level {@link AnalysisLogLevel#CONFIGURATION}, {@link AnalysisLogLevel#DEBUG},
+	 * {@link MessageStore} that stores all messages of the Level {@link AnalysisLogLevel#CONFIGURATION}, {@link AnalysisLogLevel#DEBUGGING},
 	 * {@link AnalysisLogLevel#ERROR}, {@link AnalysisLogLevel#EXCEPTION}, {@link AnalysisLogLevel#INFORMATION},
 	 * {@link AnalysisLogLevel#SECURITY}, {@link AnalysisLogLevel#SECURITYCHECKER}, {@link AnalysisLogLevel#SIDEEFFECT} and
 	 * {@link AnalysisLogLevel#WARNING} persistently, so that these messages are available after the analysis.
@@ -106,10 +121,10 @@ public class AnalysisLog {
 	}
 
 	/**
-	 * Writes the given message to the available handlers of the logger {@link SootLogger#LOG} with the level {@link AnalysisLogLevel#DEBUG}
-	 * depending on the fact whether the logger should log instantaneously. Right before the logged message a heading will be created that
-	 * illustrates the level, the given file name and the given source line number where the message was generated. Also, the given message
-	 * will be stored in the {@link SootLogger#messageStore} persistently.<br />
+	 * Writes the given message to the available handlers of the logger {@link SootLogger#LOG} with the level
+	 * {@link AnalysisLogLevel#DEBUGGING} depending on the fact whether the logger should log instantaneously. Right before the logged message
+	 * a heading will be created that illustrates the level, the given file name and the given source line number where the message was
+	 * generated. Also, the given message will be stored in the {@link SootLogger#messageStore} persistently.<br />
 	 * <b>This logger level method should be used for printing debug information.</b>
 	 * 
 	 * @param fileName
@@ -121,14 +136,14 @@ public class AnalysisLog {
 	 */
 	public void debug(String fileName, long srcLn, String msg) {
 		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, DEBUG);
+			this.messageStore.addMessage(msg, fileName, srcLn, DEBUGGING);
 		}
 		if (instantLogging) {
-			if (isLevelEnabled(DEBUG)) {
+			if (isLevelEnabled(DEBUGGING)) {
 				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(HEADING, DEBUG_NAME.toUpperCase(ENGLISH), new Object[] { info });
+				LOG.log(HEADING, DEBUGGING_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
-			LOG.log(DEBUG, msg);
+			LOG.log(DEBUGGING, msg);
 		}
 	}
 
@@ -190,99 +205,12 @@ public class AnalysisLog {
 	}
 
 	/**
-	 * Writes the given message to the available handlers of the logger {@link SootLogger#LOG} with the level {@link AnalysisLogLevel#ERROR}
-	 * depending on the fact whether the logger should log instantaneously. Right before the logged message a heading will be created that
-	 * illustrates the level, the given file name and the given source line number where the message was generated. Also, the given message
-	 * will be stored in the {@link SootLogger#messageStore} persistently.<br />
-	 * <b>An error occurs during the analysis and is caused by erroneous annotations, incorrect levels and other incorrect conditions. But
-	 * errors are not caused by a caught exception or by internal Java exceptions. Note: this logger level method shouldn't be used to print
-	 * side effects, <em>security level</em> violations or the implementation checking of the {@code SecurityLevel} subclass.</b>
-	 * 
-	 * @param fileName
-	 *          File name in which the given message is generated.
-	 * @param srcLn
-	 *          Source line number of the given file name at which the given message is generated.
-	 * @param msg
-	 *          Message that should be exported by the logger {@link SootLogger#LOG}.
-	 */
-	public void error(String fileName, long srcLn, String msg) {
-		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, ERROR);
-		}
-		if (instantLogging) {
-			if (isLevelEnabled(ERROR)) {
-				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(HEADING, ERROR_NAME.toUpperCase(ENGLISH), new Object[] { info });
-			}
-			LOG.log(ERROR, msg);
-		}
-	}
-
-	/**
-	 * Writes the given message as well as the given {@link Throwable} to the available handlers of the logger {@link SootLogger#LOG} with the
-	 * level {@link AnalysisLogLevel#EXCEPTION} depending on the fact whether the logger should log instantaneously. Right before the logged
-	 * message a heading will be created that illustrates the level, the given file name and the given source line number where the message
-	 * was generated. Also, the given message will be stored in the {@link SootLogger#messageStore} persistently.<br />
-	 * <b>Exception messages are errors which occur during the analysis and were caused by erroneous annotations, incorrect levels, switch
-	 * exceptions or by internal Java exceptions. Note: this logger level method shouldn't be used to print side effects,
-	 * <em>security level</em> violations or the implementation checking of the {@code SecurityLevel} subclass.</b>
-	 * 
-	 * @param fileName
-	 *          File name in which the given message is generated.
-	 * @param srcLn
-	 *          Source line number of the given file name at which the given message is generated.
-	 * @param msg
-	 *          Message that should be exported by the logger {@link SootLogger#LOG}.
-	 * @param e
-	 *          The corresponding {@link Throwable} to the given message.
-	 */
-	public void exception(String fileName, long srcLn, String msg, Throwable e) {
-		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, EXCEPTION, e);
-		}
-		if (instantLogging) {
-			if (isLevelEnabled(EXCEPTION)) {
-				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(HEADING, EXCEPTION_NAME.toUpperCase(ENGLISH), new Object[] { info });
-			}
-			LOG.log(EXCEPTION, msg, e);
-		}
-	}
-
-	/**
 	 * Returns the message store ({@link SootLogger#messageStore}) which will contain all important messages after the analysis.
 	 * 
 	 * @return The message store of this logger containing all important logged messages.
 	 */
 	public MessageStore getMessageStore() {
 		return this.messageStore;
-	}
-
-	/**
-	 * Writes the given message to the available handlers of the logger {@link SootLogger#LOG} with the level
-	 * {@link AnalysisLogLevel#INFORMATION} depending on the fact whether the logger should log instantaneously. Right before the logged
-	 * message a heading will be created that illustrates the level, the given file name and the given source line number where the message
-	 * was generated. Also, the given message will be stored in the {@link SootLogger#messageStore} persistently.<br />
-	 * <b>An information message has no importance and is only of informational nature.</b>
-	 * 
-	 * @param fileName
-	 *          File name in which the given message is generated.
-	 * @param srcLn
-	 *          Source line number of the given file name at which the given message is generated.
-	 * @param msg
-	 *          Message that should be exported by the logger {@link SootLogger#LOG}.
-	 */
-	public void information(String fileName, long srcLn, String msg) {
-		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, INFORMATION);
-		}
-		if (instantLogging) {
-			if (isLevelEnabled(INFORMATION)) {
-				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(HEADING, INFORMATION_NAME.toUpperCase(ENGLISH), new Object[] { info });
-			}
-			LOG.log(INFORMATION, msg);
-		}
 	}
 
 	/**
@@ -315,32 +243,10 @@ public class AnalysisLog {
 				effect(fileName, srcLn, msg);
 			} else if (level.equals(SECURITY)) {
 				security(fileName, srcLn, msg);
-			} else if (level.equals(DEBUG)) {
+			} else if (level.equals(DEBUGGING)) {
 				debug(fileName, srcLn, msg);
-			} else if (level.equals(ERROR)) {
-				error(fileName, srcLn, msg);
-			} else if (level.equals(INFORMATION)) {
-				information(fileName, srcLn, msg);
 			} else if (level.equals(WARNING)) {
 				warning(fileName, srcLn, msg);
-			} else if (level.equals(SECURITYCHECKER)) {
-				List<Throwable> exceptions = message.getExceptions();
-				if (exceptions.size() == 0) {
-					securitychecker(msg);
-				} else {
-					for (Throwable exception : exceptions) {
-						securitychecker(msg, exception);
-					}
-				}
-			} else if (level.equals(EXCEPTION)) {
-				List<Throwable> exceptions = message.getExceptions();
-				if (exceptions.size() == 0) {
-					error(fileName, srcLn, msg);
-				} else {
-					for (Throwable exception : exceptions) {
-						exception(fileName, srcLn, msg, exception);
-					}
-				}
 			}
 		}
 		enableStoring(instantLoggingOld);
@@ -371,56 +277,6 @@ public class AnalysisLog {
 				LOG.log(HEADING, SECURITY_NAME.toUpperCase(ENGLISH), new Object[] { info });
 			}
 			LOG.log(SECURITY, msg);
-		}
-	}
-
-	/**
-	 * Writes the given message to the available handlers of the logger {@link SootLogger#LOG} with the level
-	 * {@link AnalysisLogLevel#SECURITYCHECKER} depending on the fact whether the logger should log instantaneously. Right before the logged
-	 * message a heading will be created that illustrates the level, the expected file name where the message was generated. Also, the given
-	 * message will be stored in the {@link SootLogger#messageStore} persistently.<br />
-	 * <b>This logger level method should be used for printing violations during the check of the {@code SecurityLevel} implementation, e.g.
-	 * if an id function for a specific <em>security level</em> does not exist.</b>
-	 * 
-	 * @param msg
-	 *          Message that should be exported by the logger {@link SootLogger#LOG}.
-	 */
-	public void securitychecker(String msg) {
-		if (storeMessages) {
-			this.messageStore.addMessage(msg, DEF_CLASS_NAME, 0, SECURITYCHECKER, null);
-		}
-		if (instantLogging) {
-			if (isLevelEnabled(SECURITYCHECKER)) {
-				HeadingInformation info = new HeadingInformation(1);
-				LOG.log(HEADING, SECURITYCHECKER_NAME.toUpperCase(ENGLISH), new Object[] { info });
-			}
-			LOG.log(SECURITYCHECKER, msg);
-		}
-	}
-
-	/**
-	 * Writes the given message as well as the given {@link Throwable} to the available handlers of the logger {@link SootLogger#LOG} with the
-	 * level {@link AnalysisLogLevel#SECURITYCHECKER} depending on the fact whether the logger should log instantaneously. Right before the
-	 * logged message a heading will be created that illustrates the level, the expected file name where the message was generated. Also, the
-	 * given message will be stored in the {@link SootLogger#messageStore} persistently.<br />
-	 * <b>This logger level method should be used for printing violations during the check of the {@code SecurityLevel} implementation, e.g.
-	 * if an id function for a specific <em>security level</em> does not exist.</b>
-	 * 
-	 * @param msg
-	 *          Message that should be exported by the logger {@link SootLogger#LOG}.
-	 * @param e
-	 *          The corresponding {@link Throwable} to the given message.
-	 */
-	public void securitychecker(String msg, Throwable e) {
-		if (storeMessages) {
-			this.messageStore.addMessage(msg, DEF_CLASS_NAME, 0, SECURITYCHECKER, e);
-		}
-		if (instantLogging) {
-			if (isLevelEnabled(SECURITYCHECKER)) {
-				HeadingInformation info = new HeadingInformation(1);
-				LOG.log(HEADING, SECURITYCHECKER_NAME.toUpperCase(ENGLISH), new Object[] { info });
-			}
-			LOG.log(SECURITYCHECKER, msg, e);
 		}
 	}
 

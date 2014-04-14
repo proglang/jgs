@@ -1,10 +1,25 @@
 package extractor;
 
+import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.containsStaticInitializer;
+import static utils.AnalysisUtils.generateClassSignature;
+import static utils.AnalysisUtils.generateFieldSignature;
+import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.generatedEmptyStaticInitializer;
+import static utils.AnalysisUtils.getOverridenMethods;
+import static utils.AnalysisUtils.getParameterNames;
+import static utils.AnalysisUtils.isClinitMethod;
+import static utils.AnalysisUtils.isDefinitionClass;
+import static utils.AnalysisUtils.isInitMethod;
+import static utils.AnalysisUtils.isInnerClassOfDefinitionClass;
+import static utils.AnalysisUtils.isLevelFunction;
+import static utils.AnalysisUtils.isMethodOfDefinitionClass;
+import static utils.AnalysisUtils.isVoidMethod;
+import static utils.AnalysisUtils.overridesMethod;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import constraints.Constraints;
 
 import logging.AnalysisLog;
 import model.AnalyzedMethodEnvironment;
@@ -12,8 +27,6 @@ import model.ClassEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment;
 import model.MethodEnvironment.MethodParameter;
-import static resource.Configuration.*;
-import static resource.Messages.getMsg;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.Body;
@@ -27,7 +40,7 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
-import static utils.AnalysisUtils.*;
+import constraints.Constraints;
 import exception.AnnotationExtractionException;
 import exception.ExtractorException;
 import exception.SwitchException;
@@ -146,8 +159,7 @@ public class AnnotationExtractor extends SceneTransformer {
 				try {
 					classWriteEffects.addAll(mediator.extractClassEffects(sootClass));
 				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(getMsg("exception.extractor.effects.error_class",
-							generateClassSignature(sootClass, CLASS_SIGNATURE_PRINT_PACKAGE)), e);
+					throw new ExtractorException(getMsg("exception.extractor.effects.error_class", generateClassSignature(sootClass)), e);
 				}
 			}
 		} else {
@@ -173,15 +185,10 @@ public class AnnotationExtractor extends SceneTransformer {
 				try {
 					fieldSecurityLevel = mediator.extractFieldSecurityLevel(sootField);
 				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(
-							getMsg(
-									"exception.extractor.level.field.error",
-									generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE,
-											FIELD_SIGNATURE_PRINT_VISIBILITY)), e);
+					throw new ExtractorException(getMsg("exception.extractor.level.field.error", generateFieldSignature(sootField)), e);
 				}
 			} else {
-				throw new ExtractorException(getMsg("exception.extractor.level.field.no_level",
-						generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
+				throw new ExtractorException(getMsg("exception.extractor.level.field.no_level", generateFieldSignature(sootField)));
 			}
 		} else {
 			fieldSecurityLevel = mediator.getLibraryFieldSecurityLevel(sootField);
@@ -224,33 +231,21 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						returnSecurityLevel = mediator.extractReturnSecurityLevel(sootMethod);
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg(
-								"exception.extractor.level.return.error",
-								generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-										METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+						throw new ExtractorException(getMsg("exception.extractor.level.return.error", generateMethodSignature(sootMethod)), e);
 					}
 				} else {
-					throw new ExtractorException(getMsg(
-							"exception.extractor.level.return.no_level",
-							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-									METHOD_SIGNATURE_PRINT_VISIBILITY)));
+					throw new ExtractorException(getMsg("exception.extractor.level.return.no_level", generateMethodSignature(sootMethod)));
 				}
 			} else {
 				if (hasReturnSecurityAnnotation) {
-					throw new ExtractorException(getMsg(
-							"exception.extractor.level.return.void",
-							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-									METHOD_SIGNATURE_PRINT_VISIBILITY)));
+					throw new ExtractorException(getMsg("exception.extractor.level.return.void", generateMethodSignature(sootMethod)));
 				}
 			}
 			if (hasMethodWriteEffectAnnotation) {
 				try {
 					methodWriteEffects.addAll(mediator.extractMethodEffects(sootMethod));
 				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(getMsg(
-							"exception.extractor.effects.error_method",
-							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-									METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+					throw new ExtractorException(getMsg("exception.extractor.effects.error_method", generateMethodSignature(sootMethod)), e);
 				}
 			}
 			if (parameterCount != 0) {
@@ -259,10 +254,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						parameterLevels.addAll(mediator.extractParameterSecurityLevels(sootMethod));
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg(
-								"exception.extractor.level.parameter.error",
-								generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-										METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+						throw new ExtractorException(getMsg("exception.extractor.level.parameter.error", generateMethodSignature(sootMethod)), e);
 					}
 					if (parameterLevels.size() == parameterCount) {
 						List<String> names = getParameterNames(sootMethod);
@@ -274,26 +266,17 @@ public class AnnotationExtractor extends SceneTransformer {
 							parameterSecurityLevel.add(mp);
 						}
 					} else {
-						throw new ExtractorException(getMsg(
-								"exception.extractor.level.parameter.invalid",
-								generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-										METHOD_SIGNATURE_PRINT_VISIBILITY)));
+						throw new ExtractorException(getMsg("exception.extractor.level.parameter.invalid", generateMethodSignature(sootMethod)));
 					}
 				} else {
-					throw new ExtractorException(getMsg(
-							"exception.extractor.level.parameter.no_level",
-							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-									METHOD_SIGNATURE_PRINT_VISIBILITY)));
+					throw new ExtractorException(getMsg("exception.extractor.level.parameter.no_level", generateMethodSignature(sootMethod)));
 				}
 			}
 			if (hasConstraintsAnnotation) {
 				try {
 					constraints = mediator.extractConstraints(sootMethod);
 				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(getMsg(
-							"exception.extractor.constraints.error",
-							generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-									METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+					throw new ExtractorException(getMsg("exception.extractor.constraints.error", generateMethodSignature(sootMethod)), e);
 				}
 			} else {
 				// FIXME: Is the constraints annotation mandatory???
@@ -352,11 +335,8 @@ public class AnnotationExtractor extends SceneTransformer {
 							try {
 								unit.apply(stmtSwitch);
 							} catch (SwitchException e) {
-								throw new ExtractorException(getMsg(
-										"exception.extractor.other.error_switch",
-										unit.toString(),
-										generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-												METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+								throw new ExtractorException(getMsg("exception.extractor.other.error_switch", unit.toString(),
+										generateMethodSignature(sootMethod)), e);
 							}
 						}
 					}

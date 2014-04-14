@@ -27,7 +27,7 @@ public class Mediator extends ALevelMediator {
 	 * DOC
 	 * 
 	 * @param levels
-	 * @return 
+	 * @return
 	 * 
 	 * @see ALevelMediator#checkParameterLevelsValidity(List)
 	 */
@@ -40,8 +40,8 @@ public class Mediator extends ALevelMediator {
 	 * DOC
 	 * 
 	 * @param levels
-	 * @return 
-	 *  
+	 * @return
+	 * 
 	 * @see ALevelMediator#getInvalidParameterLevels(List)
 	 */
 	@Override

@@ -4,15 +4,11 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import constraints.Constraints;
-
-
-import annotation.IAnnotationDAO;
-
-import security.ILevel;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import annotation.IAnnotationDAO;
+import constraints.Constraints;
 
 public abstract class ALevelDefinition implements ILevelDefinition {
 
@@ -26,11 +22,11 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 	public final static String SIGNATURE_LIB_RETURN = "public ILevel getLibraryReturnLevel(SootMethod sootMethod, List<ILevel> levels)";
 	public final static String SIGNATURE_LUB = "public ILevel getLeastUpperBoundLevel()";
 
+	private final Class<? extends Annotation> annotationClassConstraints;
 	private final Class<? extends Annotation> annotationClassEffects;
 	private final Class<? extends Annotation> annotationClassFieldLevel;
 	private final Class<? extends Annotation> annotationClassParameterLevel;
 	private final Class<? extends Annotation> annotationClassReturnLevel;
-	private final Class<? extends Annotation> annotationClassConstraints;
 
 	public ALevelDefinition(Class<? extends Annotation> annotationClassFieldLevel, Class<? extends Annotation> annotationClassParameterLevel,
 			Class<? extends Annotation> annotationClassReturnLevel, Class<? extends Annotation> annotationClassEffects,
@@ -44,6 +40,8 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public abstract int compare(ILevel level1, ILevel level2);
 
+	public abstract Constraints extractConstraints(IAnnotationDAO dao);
+
 	public abstract List<ILevel> extractEffects(IAnnotationDAO dao);
 
 	public abstract ILevel extractFieldLevel(IAnnotationDAO dao);
@@ -52,7 +50,9 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public abstract ILevel extractReturnLevel(IAnnotationDAO dao);
 
-	public abstract Constraints extractConstraints(IAnnotationDAO dao);
+	public final Class<? extends Annotation> getAnnotationClassConstraints() {
+		return annotationClassConstraints;
+	}
 
 	public final Class<? extends Annotation> getAnnotationClassEffects() {
 		return annotationClassEffects;
@@ -68,10 +68,6 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public final Class<? extends Annotation> getAnnotationClassReturnLevel() {
 		return annotationClassReturnLevel;
-	}
-	
-	public final Class<? extends Annotation> getAnnotationClassConstraints(){
-		return annotationClassConstraints;
 	}
 
 	public ILevel getDefaultVariableLevel() {
@@ -94,6 +90,10 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public List<ILevel> getLibraryClassWriteEffects(SootClass sootClass) {
 		return new ArrayList<ILevel>();
+	}
+
+	public Constraints getLibraryConstraints(SootMethod sootMethod) {
+		return new Constraints();
 	}
 
 	public ILevel getLibraryFieldLevel(SootField sootField) {
@@ -122,10 +122,6 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 			}
 			return result;
 		}
-	}
-	
-	public Constraints getLibraryConstraints(SootMethod sootMethod) {		
-		return new Constraints();
 	}
 
 }

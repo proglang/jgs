@@ -2,8 +2,6 @@ package analysis;
 
 import static resource.Messages.getMsg;
 import model.AnalyzedMethodEnvironment;
-import analysis.LocalsMap;
-
 import security.ILevel;
 import soot.Value;
 import soot.jimple.AssignStmt;

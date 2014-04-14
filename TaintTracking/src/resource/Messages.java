@@ -39,7 +39,7 @@ public class Messages {
 		}
 		return String.format("%s %s", (isVocal ? "an" : "a"), noun);
 	}
-	
+
 	/**
 	 * DOC
 	 * 
@@ -54,7 +54,7 @@ public class Messages {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * DOC
 	 * 

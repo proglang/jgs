@@ -1,5 +1,10 @@
 package utils;
 
+import static resource.Configuration.DEF_CLASS_NAME;
+import static resource.Configuration.DEF_PATH_FILE_EXT;
+import static resource.Configuration.DEF_PATH_JAVA;
+import static resource.Messages.getMsg;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -7,17 +12,14 @@ import java.net.URLClassLoader;
 
 import javax.tools.ToolProvider;
 
-import exception.DefinitionNotFoundException;
-
-import static resource.Configuration.*;
-import static resource.Messages.*;
 import security.ILevelDefinition;
+import exception.DefinitionNotFoundException;
 
 /**
  * DOC
  * 
  * @author Thomas Vogel
- *
+ * 
  */
 public class DefinitionClassHandler {
 
@@ -35,10 +37,10 @@ public class DefinitionClassHandler {
 				return impl;
 			} else {
 				throw new IOException(getMsg("exception.utils.error_compiling_class", DEF_PATH_FILE_EXT));
-			}			
+			}
 		} catch (IOException | NullPointerException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			throw new DefinitionNotFoundException(getMsg("exception.utils.error_loading_class", DEF_CLASS_NAME), e);
-		}		
+		}
 	}
 
 	/**

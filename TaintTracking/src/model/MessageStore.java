@@ -1,8 +1,9 @@
 package model;
 
+import static java.util.Collections.sort;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,11 +61,6 @@ public class MessageStore {
 	 */
 	public static class Message implements Comparable<Message> {
 
-		/**
-		 * List of {@link Throwable} which contains throwables that were thrown in the file at the source line with the level and message of
-		 * this logged message.
-		 */
-		private final List<Throwable> exceptions = new ArrayList<Throwable>();
 		/** Name of the file in which the logged message was generated. */
 		private final String fileName;
 		/** The {@link AnalysisLogLevel} of the logged message. */
@@ -92,16 +88,6 @@ public class MessageStore {
 			this.srcLn = srcLn;
 			this.level = level;
 			this.message = message;
-		}
-
-		/**
-		 * Allows to add a Throwable to this message.
-		 * 
-		 * @param e
-		 *          Throwable that will be added to this message.
-		 */
-		public void addException(Throwable e) {
-			this.exceptions.add(e);
 		}
 
 		/**
@@ -146,17 +132,6 @@ public class MessageStore {
 			if (obj == null || obj.getClass() != this.getClass()) return false;
 			Message other = (Message) obj;
 			return message.equals(other.message) && fileName.equals(other.fileName) && level.equals(other.level) && srcLn == other.srcLn;
-		}
-
-		/**
-		 * Method returns all {@link Throwable} objects which occurred for this message. I.e. if in the same file at the same source line two
-		 * messages are generated with the same text and both are cause by an exception, thus those two exceptions will be stored in the
-		 * {@link Throwable} list of one single message.
-		 * 
-		 * @return The throwables of this logged message.
-		 */
-		public List<Throwable> getExceptions() {
-			return exceptions;
 		}
 
 		/**
@@ -242,7 +217,7 @@ public class MessageStore {
 			for (Long key : srcLnMessageStore.keySet()) {
 				result.addAll(srcLnMessageStore.get(key).getAllMessages());
 			}
-			Collections.sort(result);
+			sort(result);
 			return result;
 		}
 
@@ -260,7 +235,7 @@ public class MessageStore {
 			for (Long key : srcLnMessageStore.keySet()) {
 				result.addAll(srcLnMessageStore.get(key).getAllMessages(level));
 			}
-			Collections.sort(result);
+			sort(result);
 			return result;
 		}
 
@@ -280,7 +255,7 @@ public class MessageStore {
 					result.addAll(srcLnMessageStore.get(key).getAllMessages());
 				}
 			}
-			Collections.sort(result);
+			sort(result);
 			return result;
 		}
 
@@ -302,7 +277,7 @@ public class MessageStore {
 					result.addAll(srcLnMessageStore.get(key).getAllMessages(level));
 				}
 			}
-			Collections.sort(result);
+			sort(result);
 			return result;
 		}
 	}
@@ -353,7 +328,7 @@ public class MessageStore {
 			for (Level key : levelMessageStore.keySet()) {
 				result.addAll(levelMessageStore.get(key));
 			}
-			Collections.sort(result);
+			sort(result);
 			return result;
 		}
 
@@ -419,47 +394,6 @@ public class MessageStore {
 	}
 
 	/**
-	 * Creates a logged message with the given file name, the given source line number, the given level and the given message and adds this
-	 * created message to the message store, if this message is not already stored in the message store. If the message already exists, the
-	 * given Throwable will be added to the existing message, otherwise the Throwable will be added to the create message before adding it to
-	 * the message store.
-	 * 
-	 * @param msg
-	 *          The content of the logged message.
-	 * @param fileName
-	 *          The file name of the file in which the logged message was generated.
-	 * @param srcLn
-	 *          The source line number at which the logged message was generated.
-	 * @param level
-	 *          The level of the logged message.
-	 * @param e
-	 *          Throwable which is the reason of this logged message
-	 * @see Message
-	 */
-	public void addMessage(String msg, String fileName, long srcLn, Level level, Throwable e) {
-		if (e != null) {
-			if (!fileMessageStore.containsKey(fileName)) {
-
-				fileMessageStore.put(fileName, new FileMessageStore());
-			}
-			List<Message> existing = getAllMessages(fileName, srcLn, level);
-			Message temp = new Message(msg, fileName, srcLn, level);
-			if (!existing.contains(temp)) {
-				temp.addException(e);
-				fileMessageStore.get(fileName).add(temp);
-			} else {
-				for (Message message : existing) {
-					if (temp.equals(message)) {
-						message.addException(e);
-					}
-				}
-			}
-		} else {
-			addMessage(msg, fileName, srcLn, level);
-		}
-	}
-
-	/**
 	 * Returns all logged configurations in a list of {@link Settings}.
 	 * 
 	 * @return All logged configurations.
@@ -493,7 +427,7 @@ public class MessageStore {
 		for (String key : fileMessageStore.keySet()) {
 			result.addAll(fileMessageStore.get(key).getAllMessages());
 		}
-		Collections.sort(result);
+		sort(result);
 		return result;
 	}
 
@@ -511,7 +445,7 @@ public class MessageStore {
 		for (String key : fileMessageStore.keySet()) {
 			result.addAll(fileMessageStore.get(key).getAllMessages(level));
 		}
-		Collections.sort(result);
+		sort(result);
 		return result;
 	}
 
@@ -531,7 +465,7 @@ public class MessageStore {
 				result.addAll(fileMessageStore.get(key).getAllMessages());
 			}
 		}
-		Collections.sort(result);
+		sort(result);
 		return result;
 	}
 
@@ -554,7 +488,7 @@ public class MessageStore {
 				result.addAll(fileMessageStore.get(key).getAllMessages(level));
 			}
 		}
-		Collections.sort(result);
+		sort(result);
 		return result;
 	}
 
@@ -577,7 +511,7 @@ public class MessageStore {
 				result.addAll(fileMessageStore.get(key).getAllMessages(srcLn));
 			}
 		}
-		Collections.sort(result);
+		sort(result);
 		return result;
 	}
 
@@ -602,7 +536,7 @@ public class MessageStore {
 				result.addAll(fileMessageStore.get(key).getAllMessages(srcLn, level));
 			}
 		}
-		Collections.sort(result);
+		sort(result);
 		return result;
 	}
 

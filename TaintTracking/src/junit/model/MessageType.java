@@ -11,9 +11,7 @@ import logging.AnalysisLogLevel;
  * 
  */
 public enum MessageType {
-	EXCEPTION(AnalysisLogLevel.EXCEPTION), ERROR(AnalysisLogLevel.ERROR), SECURITY(AnalysisLogLevel.SECURITY), SIDEEFFECT(
-			AnalysisLogLevel.SIDEEFFECT), SECURITYCHECKER(AnalysisLogLevel.SECURITYCHECKER), WARNING(AnalysisLogLevel.WARNING), INFORMATION(
-			AnalysisLogLevel.INFORMATION);
+	SECURITY(AnalysisLogLevel.SECURITY), SIDEEFFECT(AnalysisLogLevel.SIDEEFFECT), WARNING(AnalysisLogLevel.WARNING);
 
 	/**
 	 * TODO: documentation

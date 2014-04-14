@@ -1,13 +1,28 @@
 package annotation;
 
+import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.getJNISignature;
+import static utils.AnalysisUtils.jniSignatureToJavaPath;
+import static utils.ExtendedJNI.EXT_JNI_ANNOTATION;
+import static utils.ExtendedJNI.EXT_JNI_CLASS;
+import static utils.ExtendedJNI.JNI_ARRAY;
+import static utils.ExtendedJNI.JNI_BOOLEAN;
+import static utils.ExtendedJNI.JNI_BYTE;
+import static utils.ExtendedJNI.JNI_CHAR;
+import static utils.ExtendedJNI.JNI_DOUBLE;
+import static utils.ExtendedJNI.JNI_ENUM;
+import static utils.ExtendedJNI.JNI_FLOAT;
+import static utils.ExtendedJNI.JNI_INT;
+import static utils.ExtendedJNI.JNI_LONG;
+import static utils.ExtendedJNI.JNI_SHORT;
+import static utils.ExtendedJNI.JNI_STRING;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import exception.AnnotationElementNotFoundException;
-import static resource.Messages.getMsg;
 import soot.tagkit.AnnotationAnnotationElem;
 import soot.tagkit.AnnotationArrayElem;
 import soot.tagkit.AnnotationClassElem;
@@ -19,8 +34,7 @@ import soot.tagkit.AnnotationIntElem;
 import soot.tagkit.AnnotationLongElem;
 import soot.tagkit.AnnotationStringElem;
 import soot.tagkit.AnnotationTag;
-import static utils.AnalysisUtils.*;
-import static utils.ExtendedJNI.*;
+import exception.AnnotationElementNotFoundException;
 
 public class SootAnnotationDAO extends AAnnotationDAO {
 

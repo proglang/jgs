@@ -1,5 +1,10 @@
 package extractor;
 
+import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.generateClassSignature;
+import static utils.AnalysisUtils.generateFieldSignature;
+import static utils.AnalysisUtils.generateMethodSignature;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -7,10 +12,6 @@ import java.util.Set;
 import model.ClassEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment;
-
-import static resource.Configuration.*;
-import static resource.Messages.*;
-import static utils.AnalysisUtils.*;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -48,8 +49,7 @@ public class UsedObjectStore {
 			ClassEnvironment ce = classes.get(sootClass);
 			return ce;
 		}
-		throw new EnvironmentNotFoundException(getMsg("exception.environment.class_env_not_found",
-				generateClassSignature(sootClass, CLASS_SIGNATURE_PRINT_PACKAGE)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.class_env_not_found", generateClassSignature(sootClass)));
 	}
 
 	/**
@@ -63,8 +63,7 @@ public class UsedObjectStore {
 			FieldEnvironment fe = fields.get(sootField);
 			return fe;
 		}
-		throw new EnvironmentNotFoundException(getMsg("exception.environment.field_env_not_found",
-				generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.field_env_not_found", generateFieldSignature(sootField)));
 	}
 
 	/**
@@ -79,11 +78,7 @@ public class UsedObjectStore {
 			return me;
 		}
 
-		throw new EnvironmentNotFoundException(
-				getMsg(
-						"exception.environment.method_env_not_found",
-						generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-								METHOD_SIGNATURE_PRINT_VISIBILITY)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.method_env_not_found", generateMethodSignature(sootMethod)));
 	}
 
 	/**

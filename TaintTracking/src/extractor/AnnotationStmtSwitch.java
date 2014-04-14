@@ -196,5 +196,5 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void defaultCase(Object object) {
 		throw new SwitchException(getMsg("exception.extractor.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
 	}
-	
+
 }

@@ -2,13 +2,10 @@ package security;
 
 import java.util.List;
 
-import constraints.Constraints;
-
-
-import security.ILevel;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import constraints.Constraints;
 
 public interface ILevelMediator {
 
@@ -20,6 +17,8 @@ public interface ILevelMediator {
 
 	public List<ILevel> extractClassEffects(SootClass sootClass);
 
+	public Constraints extractConstraints(SootMethod sootMethod);
+
 	public ILevel extractFieldSecurityLevel(SootField sootField);
 
 	public List<ILevel> extractMethodEffects(SootMethod sootMethod);
@@ -27,8 +26,6 @@ public interface ILevelMediator {
 	public List<ILevel> extractParameterSecurityLevels(SootMethod sootMethod);
 
 	public ILevel extractReturnSecurityLevel(SootMethod sootMethod);
-	
-	public Constraints extractConstraints(SootMethod sootMethod);
 
 	public List<ILevel> getAvailableLevels();
 
@@ -52,6 +49,8 @@ public interface ILevelMediator {
 
 	public List<ILevel> getLibraryClassWriteEffects(SootClass sootClass);
 
+	public Constraints getLibraryConstraints(SootMethod sootMethod);
+
 	public ILevel getLibraryFieldSecurityLevel(SootField sootField);
 
 	public List<ILevel> getLibraryParameterSecurityLevel(SootMethod sootMethod);
@@ -59,10 +58,10 @@ public interface ILevelMediator {
 	public ILevel getLibraryReturnSecurityLevel(SootMethod sootMethod, List<ILevel> levels);
 
 	public List<ILevel> getLibraryWriteEffects(SootMethod sootMethod);
-	
-	public Constraints getLibraryConstraints(SootMethod sootMethod);
 
 	public boolean hasClassWriteEffectAnnotation(SootClass sootClass);
+
+	public boolean hasConstraintsAnnotation(SootMethod sootMethod);
 
 	public boolean hasFieldSecurityAnnotation(SootField sootField);
 
@@ -71,8 +70,6 @@ public interface ILevelMediator {
 	public boolean hasParameterSecurityAnnotation(SootMethod sootMethod);
 
 	public boolean hasReturnSecurityAnnotation(SootMethod sootMethod);
-	
-	public boolean hasConstraintsAnnotation(SootMethod sootMethod);
 
 	public boolean isEquals(ILevel level1, ILevel level2);
 

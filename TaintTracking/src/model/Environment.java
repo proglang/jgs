@@ -1,12 +1,12 @@
 package model;
 
-import analysis.SecurityTypeAnalysis;
 import logging.AnalysisLog;
 import logging.AnalysisLogLevel;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootField;
 import soot.SootMethod;
+import analysis.SecurityTypeAnalysis;
 
 /**
  * <h1>Base analysis environment</h1>

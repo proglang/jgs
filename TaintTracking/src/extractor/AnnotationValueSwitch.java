@@ -1,5 +1,6 @@
 package extractor;
 
+import static resource.Messages.getMsg;
 import soot.Local;
 import soot.jimple.AddExpr;
 import soot.jimple.AndExpr;
@@ -47,11 +48,10 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
-import static resource.Messages.*;
 import exception.SwitchException;
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
-	
+
 	/**
 	 * 
 	 */
@@ -532,5 +532,5 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void defaultCase(Object object) {
 		throw new SwitchException(getMsg("exception.extractor.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
 	}
-	
+
 }

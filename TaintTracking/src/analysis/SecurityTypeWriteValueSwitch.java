@@ -1,11 +1,10 @@
 package analysis;
 
 import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.generateFieldSignature;
 import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment.MethodParameter;
-import analysis.LocalsMap;
-import static resource.Configuration.*;
 import security.ILevel;
 import soot.Local;
 import soot.SootClass;
@@ -59,7 +58,6 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
-import static utils.AnalysisUtils.*;
 import exception.LevelNotFoundException;
 import exception.SwitchException;
 import extractor.UsedObjectStore;
@@ -933,8 +931,7 @@ public class SecurityTypeWriteValueSwitch extends SecurityTypeSwitch implements 
 		ILevel leftLevel = getWeakestSecurityLevel();
 		ILevel rightLevel = takePCintoAccount(level);
 		SootField sootField = fieldRef.getField();
-		String fieldSignature = generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE,
-				FIELD_SIGNATURE_PRINT_VISIBILITY);
+		String fieldSignature = generateFieldSignature(sootField);
 		FieldEnvironment field = store.getFieldEnvironment(sootField);
 		leftLevel = field.getLevel();
 		// SIDE-EFFECTS: |----->

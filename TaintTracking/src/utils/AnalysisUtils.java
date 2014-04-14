@@ -1,30 +1,48 @@
 package utils;
 
+import static java.util.logging.Level.ALL;
+import static java.util.logging.Level.OFF;
+import static logging.AnalysisLogLevel.CONFIGURATION;
+import static logging.AnalysisLogLevel.DEBUGGING;
+import static logging.AnalysisLogLevel.SECURITY;
+import static logging.AnalysisLogLevel.SIDEEFFECT;
+import static logging.AnalysisLogLevel.STRUCTURE;
+import static logging.AnalysisLogLevel.WARNING;
+import static resource.Configuration.CLASS_SIGNATURE_PRINT_PACKAGE;
+import static resource.Configuration.DEF_PATH_JAVA;
+import static resource.Configuration.FIELD_SIGNATURE_PRINT_TYPE;
+import static resource.Configuration.FIELD_SIGNATURE_PRINT_VISIBILITY;
+import static resource.Configuration.METHOD_SIGNATURE_PRINT_TYPE;
+import static resource.Configuration.METHOD_SIGNATURE_PRINT_VISIBILITY;
+import static resource.Configuration.PREFIX_LEVEL_FUNCTION;
+import static resource.Messages.getMsg;
+import static soot.Modifier.STATIC;
+import static soot.SootMethod.constructorName;
+import static soot.SootMethod.staticInitializerName;
+import static soot.options.Options.output_format_jimple;
+import static utils.ExtendedJNI.JNI_ARRAY;
+import static utils.ExtendedJNI.JNI_BOOLEAN;
+import static utils.ExtendedJNI.JNI_BYTE;
+import static utils.ExtendedJNI.JNI_CHAR;
+import static utils.ExtendedJNI.JNI_CLASS;
+import static utils.ExtendedJNI.JNI_DOUBLE;
+import static utils.ExtendedJNI.JNI_FLOAT;
+import static utils.ExtendedJNI.JNI_INT;
+import static utils.ExtendedJNI.JNI_LONG;
+import static utils.ExtendedJNI.JNI_SHORT;
+import static utils.ExtendedJNI.JNI_VOID;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import static soot.options.Options.*;
-import static logging.AnalysisLogLevel.*;
-import static soot.Modifier.*;
-import logging.AnalysisLogLevel;
 import main.Main;
-
-import exception.AnnotationExtractionException;
-import exception.ArgumentInvalidException;
-import exception.SootException.ExtractionException;
-
-import static utils.ExtendedJNI.*;
-import static resource.Configuration.*;
-
-import static resource.Messages.getMsg;
 import security.ILevel;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
-import static soot.SootMethod.*;
 import soot.Type;
 import soot.Unit;
 import soot.VoidType;
@@ -37,6 +55,8 @@ import soot.tagkit.ParamNamesTag;
 import soot.tagkit.SourceLnPosTag;
 import soot.tagkit.VisibilityAnnotationTag;
 import soot.util.Chain;
+import exception.AnnotationExtractionException;
+import exception.ArgumentInvalidException;
 
 /**
  * <h1>Utilities for the Soot framework</h1>
@@ -53,19 +73,203 @@ import soot.util.Chain;
  */
 public class AnalysisUtils {
 
-	/**
-	 * DOC
-	 */
-	private static final String SIGN_SEMICOLON = ";";
-	/**
-	 * DOC
-	 */
-	private static final String SIGN_SLASH = "/";
+	public static class ArgumentParser {
+
+		private static final String ARG_EXCLUDE = "-x";
+		/**
+		 * DOC
+		 */
+		private static final String ARG_KEEP_LINE_NUMBER = "-keep-line-number";
+		/** Command line option for setting up the levels which should be logged. */
+		private static final String ARG_LOG_LEVELS = "-log-levels";
+		/**
+		 * DOC
+		 */
+		private static final String ARG_NO_BODIES_FOR_EXCLUDE = "-no-bodies-for-excluded";
+		private static final String ARG_OUTPUT = "-f";
+		private static final Object ARG_OUTPUT_PATH = "-d";
+		/**
+		 * DOC
+		 */
+		private static final String ARG_PREPEND_CLASSPATH = "-pp";
+
+		private static final String ARG_WHOLE_PROGRAM = "-w";
+		/** Command line option for enabling the instant logging. */
+		private static final String OPT_INSTANT_LOGGING = "-instant-logging";
+
+		private String[] arguments = {};
+
+		private boolean instantLogging = false;
+		private List<Level> logLevels = new ArrayList<Level>();
+		private List<String> sootArguments = new ArrayList<String>();
+
+		private ArgumentParser(String[] args) {
+			this.arguments = args;
+			parse();
+		}
+
+		public final Level[] getLogLevels() {
+			Level[] result = new Level[logLevels.size()];
+			return logLevels.toArray(result);
+		}
+
+		public final String[] getSootArguments() {
+			String[] result = new String[sootArguments.size()];
+			return sootArguments.toArray(result);
+		}
+
+		public final boolean isInstantLogging() {
+			return instantLogging;
+		}
+
+		private String getArgumentsString() {
+			StringBuilder builder = new StringBuilder();
+			for (String string : arguments) {
+				builder.append(string + " ");
+			}
+			return builder.toString().trim();
+		}
+
+		private void parse() {
+			List<String> list = new ArrayList<String>(Arrays.asList(arguments));
+			parseLogLevels(list);
+			parseInstantLogging(list);
+			parseKeepLineNumbers(list);
+			parsePrependClasspath(list);
+			parseNoBodiesForExclude(list);
+			parseOutput(list);
+			parseWholeProgram(list);
+			parseExclude(list);
+			sootArguments.addAll(list);
+		}
+
+		private void parseExclude(List<String> list) {
+			while (list.contains(ARG_EXCLUDE)) {
+				// int optionsPosition = list.indexOf(ARG_LOG_LEVELS) + 1;
+
+			}
+		}
+
+		private void parseInstantLogging(List<String> list) {
+			if (list.contains(OPT_INSTANT_LOGGING)) {
+				instantLogging = true;
+				list.remove(OPT_INSTANT_LOGGING);
+			}
+		}
+
+		private void parseKeepLineNumbers(List<String> list) {
+			if (list.contains(ARG_KEEP_LINE_NUMBER)) {
+				list.remove(ARG_KEEP_LINE_NUMBER);
+
+			}
+			Options.v().set_keep_line_number(true);
+		}
+
+		private void parseLogLevels(List<String> list) {
+			if (list.contains(ARG_LOG_LEVELS)) {
+				int optionsPosition = list.indexOf(ARG_LOG_LEVELS) + 1;
+				String[] levels = list.get(optionsPosition).split(",");
+				setLogLevels(levels);
+				list.remove(optionsPosition);
+				list.remove(ARG_LOG_LEVELS);
+			} else {
+				logLevels.add(Level.ALL);
+			}
+		}
+
+		private void parseNoBodiesForExclude(List<String> list) {
+			if (list.contains(ARG_NO_BODIES_FOR_EXCLUDE)) {
+				list.remove(ARG_NO_BODIES_FOR_EXCLUDE);
+			}
+			Options.v().set_no_bodies_for_excluded(true);
+		}
+
+		private void parseOutput(List<String> list) {
+			if (!list.contains(ARG_OUTPUT)) {
+				Options.v().set_output_format(output_format_jimple);
+			}
+			if (!list.contains(ARG_OUTPUT_PATH)) {
+				Options.v().set_output_dir("./../generatedJimple");
+			}
+		}
+
+		private void parsePrependClasspath(List<String> list) {
+			if (list.contains(ARG_PREPEND_CLASSPATH)) {
+				list.remove(ARG_PREPEND_CLASSPATH);
+			}
+			Options.v().set_prepend_classpath(true);
+		}
+
+		private void parseWholeProgram(List<String> list) {
+			if (!list.contains(ARG_WHOLE_PROGRAM)) {
+				list.remove(ARG_WHOLE_PROGRAM);
+			}
+			Options.v().set_whole_program(true);
+		}
+
+		/**
+		 * Adds valid levels of the given array to the level array of the main class {@link Main}.
+		 * 
+		 * @param levels
+		 *          Array of String which should represent a level.
+		 */
+		private void setLogLevels(String[] levels) {
+			for (String level : levels) {
+				switch (level.toLowerCase()) {
+					case "warning":
+						logLevels.add(WARNING);
+						break;
+					case "configuration":
+						logLevels.add(CONFIGURATION);
+						break;
+					case "structure":
+						logLevels.add(STRUCTURE);
+						break;
+					case "debug":
+						logLevels.add(DEBUGGING);
+						break;
+					case "sideeffect":
+						logLevels.add(SIDEEFFECT);
+						break;
+					case "security":
+						logLevels.add(SECURITY);
+						break;
+					case "effect":
+						logLevels.add(SIDEEFFECT);
+						break;
+					case "off":
+						logLevels.add(OFF);
+						break;
+					case "all":
+						logLevels.add(ALL);
+						break;
+					case "important":
+						logLevels.add(CONFIGURATION);
+						logLevels.add(STRUCTURE);
+						logLevels.add(SECURITY);
+						logLevels.add(SIDEEFFECT);
+						break;
+					default:
+						throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+				}
+			}
+		}
+
+	}
+
 	/**
 	 * DOC
 	 */
 	private static final String SIGN_POINT = ".";
-	
+	/**
+	 * DOC
+	 */
+	private static final String SIGN_SEMICOLON = ";";
+
+	/**
+	 * DOC
+	 */
+	private static final String SIGN_SLASH = "/";
 
 	/**
 	 * Checks whether the specified list of methods contains a static initializer method.
@@ -147,8 +351,8 @@ public class AnalysisUtils {
 	 *          Flag, that indicates whether the package name should be included in the signature.
 	 * @return Readable class signature of the given SootClass, depending on the given flag, the signature includes the package name.
 	 */
-	public static String generateClassSignature(SootClass sootClass, boolean printPackage) {
-		return printPackage ? sootClass.getName() : sootClass.getShortName();
+	public static String generateClassSignature(SootClass sootClass) {
+		return CLASS_SIGNATURE_PRINT_PACKAGE ? sootClass.getName() : sootClass.getShortName();
 	}
 
 	/**
@@ -184,13 +388,13 @@ public class AnalysisUtils {
 	 * @return Readable field signature of the given SootField, depending on the given flags, the signature includes the package name, the
 	 *         type of the field and the visibility.
 	 */
-	public static String generateFieldSignature(SootField sootField, boolean printPackage, boolean printType, boolean printVisibility) {
+	public static String generateFieldSignature(SootField sootField) {
 		String fieldName = sootField.getName();
-		String classOfField = generateClassSignature(sootField.getDeclaringClass(), printPackage);
+		String classOfField = generateClassSignature(sootField.getDeclaringClass());
 		String fieldTypeName = generateTypeName(sootField.getType());
 		String fieldVisibility = generateVisibility(sootField.isPrivate(), sootField.isProtected(), sootField.isPublic());
-		return classOfField + "." + fieldName + (printType ? " : " + fieldTypeName : "")
-				+ (printVisibility ? " [" + fieldVisibility + "]" : "");
+		return classOfField + "." + fieldName + (FIELD_SIGNATURE_PRINT_TYPE ? " : " + fieldTypeName : "")
+				+ (FIELD_SIGNATURE_PRINT_VISIBILITY ? " [" + fieldVisibility + "]" : "");
 	}
 
 	/**
@@ -226,6 +430,18 @@ public class AnalysisUtils {
 	}
 
 	/**
+	 * 
+	 * @param level
+	 * @return
+	 */
+	public static String generateLevelFunctionName(ILevel level) {
+		String levelName = level.getName();
+		String head = levelName.substring(0, 1).toUpperCase();
+		String tail = levelName.substring(1, levelName.length());
+		return PREFIX_LEVEL_FUNCTION + head + tail;
+	}
+
+	/**
 	 * Generates a readable method signature for a {@link SootMethod}. Depending on the given flags, the resulting signature can contain the
 	 * visibility of the method, the package name and also the types of the parameters and the return type.
 	 * 
@@ -240,19 +456,23 @@ public class AnalysisUtils {
 	 * @return Readable method signature of the given SootMethod, depending on the given flags, the signature includes the package name, the
 	 *         return and the parameter types and the visibility.
 	 */
-	public static String generateMethodSignature(SootMethod sootMethod, boolean printPackage, boolean printType, boolean printVisibility) {
+	public static String generateMethodSignature(SootMethod sootMethod) {
 		String methodName = sootMethod.getName();
-		String classOfMethod = generateClassSignature(sootMethod.getDeclaringClass(), printPackage);
+		String classOfMethod = generateClassSignature(sootMethod.getDeclaringClass());
 		String parameters = "";
 		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
 			Type type = sootMethod.getParameterType(i);
 			if (!parameters.equals("")) parameters += ", ";
-			parameters += ("arg" + i + (printType ? (" : " + generateTypeName(type)) : ""));
+			parameters += ("arg" + i + (METHOD_SIGNATURE_PRINT_TYPE ? (" : " + generateTypeName(type)) : ""));
 		}
 		String methodTypeName = generateTypeName(sootMethod.getReturnType());
 		String methodVisibility = generateVisibility(sootMethod.isPrivate(), sootMethod.isProtected(), sootMethod.isPublic());
-		return classOfMethod + "." + methodName + "(" + parameters + ")" + (printType ? " : " + methodTypeName : "")
-				+ (printVisibility ? " [" + methodVisibility + "]" : "");
+		return classOfMethod + "." + methodName + "(" + parameters + ")" + (METHOD_SIGNATURE_PRINT_TYPE ? " : " + methodTypeName : "")
+				+ (METHOD_SIGNATURE_PRINT_VISIBILITY ? " [" + methodVisibility + "]" : "");
+	}
+
+	public static ArgumentParser getArgumentParser(String[] args) {
+		return new ArgumentParser(args);
 	}
 
 	/**
@@ -393,34 +613,6 @@ public class AnalysisUtils {
 	}
 
 	/**
-	 * DOC
-	 * 
-	 * @param sootMethod
-	 * @param levels
-	 * @return
-	 */
-	public static boolean isLevelFunction(SootMethod sootMethod, List<ILevel> levels) {
-		if (isMethodOfDefinitionClass(sootMethod) && sootMethod.getParameterCount() == 1 && sootMethod.isStatic() && sootMethod.isPublic()) {
-			for (ILevel level : levels) {
-				if (sootMethod.getName().equals(generateLevelFunctionName(level))) return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 
-	 * @param level
-	 * @return
-	 */
-	public static String generateLevelFunctionName(ILevel level) {
-		String levelName = level.getName();
-		String head = levelName.substring(0, 1).toUpperCase();
-		String tail = levelName.substring(1, levelName.length());
-		return PREFIX_LEVEL_FUNCTION + head + tail;
-	}
-
-	/**
 	 * Checks whether the given method is a constructor method. I.e. the corresponding flag of the method is {@code true} and the name of the
 	 * method is equals to {@link SootMethod#constructorName}.
 	 * 
@@ -444,6 +636,22 @@ public class AnalysisUtils {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * DOC
+	 * 
+	 * @param sootMethod
+	 * @param levels
+	 * @return
+	 */
+	public static boolean isLevelFunction(SootMethod sootMethod, List<ILevel> levels) {
+		if (isMethodOfDefinitionClass(sootMethod) && sootMethod.getParameterCount() == 1 && sootMethod.isStatic() && sootMethod.isPublic()) {
+			for (ILevel level : levels) {
+				if (sootMethod.getName().equals(generateLevelFunctionName(level))) return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -560,211 +768,6 @@ public class AnalysisUtils {
 	 */
 	private static String generateVisibility(boolean isPrivate, boolean isProtected, boolean isPublic) {
 		return (isPrivate ? "-" : (isProtected ? "#" : (isPublic ? "+" : "?")));
-	}
-	
-	public static ArgumentParser getArgumentParser(String[] args) {
-		return new ArgumentParser(args);
-	}
-
-	public static class ArgumentParser {		
-
-		private static final String ARG_WHOLE_PROGRAM = "-w";
-		private static final String ARG_EXCLUDE = "-x";
-		private static final String ARG_OUTPUT = "-f";
-		/** Command line option for enabling the instant logging. */
-		private static final String OPT_INSTANT_LOGGING = "-instant-logging";
-		/** Command line option for setting up the levels which should be logged. */
-		private static final String ARG_LOG_LEVELS = "-log-levels";
-		private static final Object ARG_OUTPUT_PATH = "-d";
-		/**
-		 * DOC
-		 */
-		private static final String ARG_KEEP_LINE_NUMBER = "-keep-line-number";
-		
-		/**
-		 * DOC
-		 */
-		private static final String ARG_NO_BODIES_FOR_EXCLUDE = "-no-bodies-for-excluded";
-		/**
-		 * DOC
-		 */
-		private static final String ARG_PREPEND_CLASSPATH = "-pp";
-
-		private String[] arguments = {};
-
-		private List<String> sootArguments = new ArrayList<String>();
-		private List<Level> logLevels = new ArrayList<Level>();
-		private boolean instantLogging = false;
-
-		
-
-		private ArgumentParser(String[] args) {
-			this.arguments = args;
-			parse();
-		}
-
-		public final String[] getSootArguments() {
-			String[] result = new String[sootArguments.size()];
-			return sootArguments.toArray(result);
-		}
-
-		public final Level[] getLogLevels() {
-			Level[] result = new Level[logLevels.size()];
-			return logLevels.toArray(result);
-		}
-
-		public final boolean isInstantLogging() {
-			return instantLogging;
-		}		
-		
-		private String getArgumentsString() {
-			StringBuilder builder = new StringBuilder();
-			for (String string : arguments) {
-				builder.append(string + " ");
-			}
-			return builder.toString().trim();
-		}
-
-		private void parse() {
-			List<String> list = new ArrayList<String>(Arrays.asList(arguments));
-			parseLogLevels(list);
-			parseInstantLogging(list);
-			parseKeepLineNumbers(list);
-			parsePrependClasspath(list);
-			parseNoBodiesForExclude(list);
-			parseOutput(list);
-			parseWholeProgram(list);
-			parseExclude(list);
-			sootArguments.addAll(list);
-		}
-
-		private void parseExclude(List<String> list) {
-			while (list.contains(ARG_EXCLUDE)) {
-//				int optionsPosition = list.indexOf(ARG_LOG_LEVELS) + 1;
-				
-			}
-		}
-
-		private void parseWholeProgram(List<String> list) {
-			if (! list.contains(ARG_WHOLE_PROGRAM)) {
-				list.remove(ARG_WHOLE_PROGRAM);
-			}
-			Options.v().set_whole_program(true);
-		}
-
-		private void parseOutput(List<String> list) {
-			if (! list.contains(ARG_OUTPUT)) {
-				Options.v().set_output_format(output_format_jimple);
-			}
-			if (! list.contains(ARG_OUTPUT_PATH)) {
-				Options.v().set_output_dir("./../generatedJimple");
-			}
-		}
-
-		private void parseNoBodiesForExclude(List<String> list) {
-			if (list.contains(ARG_NO_BODIES_FOR_EXCLUDE)) {
-				list.remove(ARG_NO_BODIES_FOR_EXCLUDE);
-			}
-			Options.v().set_no_bodies_for_excluded(true);
-		}
-
-		private void parsePrependClasspath(List<String> list) {
-			if (list.contains(ARG_PREPEND_CLASSPATH)) {
-				list.remove(ARG_PREPEND_CLASSPATH);
-			}
-			Options.v().set_prepend_classpath(true);
-		}
-
-		private void parseKeepLineNumbers(List<String> list) {
-			if (list.contains(ARG_KEEP_LINE_NUMBER)) {
-				list.remove(ARG_KEEP_LINE_NUMBER);	
-				
-			}
-			Options.v().set_keep_line_number(true);
-		}
-
-		private void parseInstantLogging(List<String> list) {
-			if (list.contains(OPT_INSTANT_LOGGING)) {
-				instantLogging = true;
-				list.remove(OPT_INSTANT_LOGGING);
-			}
-		}
-
-		private void parseLogLevels(List<String> list) {
-			if (list.contains(ARG_LOG_LEVELS)) {
-				int optionsPosition = list.indexOf(ARG_LOG_LEVELS) + 1;
-				String[] levels = list.get(optionsPosition).split(",");
-				setLogLevels(levels); 
-				list.remove(optionsPosition);
-				list.remove(ARG_LOG_LEVELS);
-			} else {
-				logLevels.add(Level.ALL);
-			}
-		}
-		
-		/**
-		 * Adds valid levels of the given array to the level array of the main class {@link Main}.
-		 * 
-		 * @param levels
-		 *          Array of String which should represent a level.
-		 */
-		private void setLogLevels(String[] levels) {
-			for (String level : levels) {
-				switch (level.toLowerCase()) {
-					case "exception":
-						logLevels.add(EXCEPTION);
-						break;
-					case "error":
-						logLevels.add(ERROR);
-						break;
-					case "warning":
-						logLevels.add(WARNING);
-						break;
-					case "information":
-						logLevels.add(INFORMATION);
-						break;
-					case "configuration":
-						logLevels.add(CONFIGURATION);
-						break;
-					case "structure":
-						logLevels.add(STRUCTURE);
-						break;
-					case "debug":
-						logLevels.add(AnalysisLogLevel.DEBUG);
-						break;
-					case "sideeffect":
-						logLevels.add(SIDEEFFECT);
-						break;
-					case "security":
-						logLevels.add(SECURITY);
-						break;
-					case "effect":
-						logLevels.add(SIDEEFFECT);
-						break;
-					case "securitychecker":
-						logLevels.add(SECURITYCHECKER);
-						break;
-					case "off":
-						logLevels.add(OFF);
-						break;
-					case "all":
-						logLevels.add(ALL);
-						break;
-					case "important":
-						logLevels.add(EXCEPTION);
-						logLevels.add(ERROR);
-						logLevels.add(CONFIGURATION);
-						logLevels.add(STRUCTURE);
-						logLevels.add(SECURITY);
-						logLevels.add(SIDEEFFECT);
-						logLevels.add(SECURITYCHECKER);
-						break;
-					default:
-						throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
-				}
-			}
-		}
-
 	}
 
 }

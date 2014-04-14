@@ -35,7 +35,7 @@ public class DefinitionChecker extends ALevelDefinitionChecker {
 	/**
 	 * DOC
 	 * 
-	 * @return 
+	 * @return
 	 * 
 	 * @see ALevelDefinitionChecker#checkAdditionalValidityOfImplementation()
 	 */

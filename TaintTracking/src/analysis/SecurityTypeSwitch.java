@@ -1,17 +1,17 @@
 package analysis;
 
 import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.generateFileName;
+import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.isInitMethod;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import analysis.LocalsMap;
 
 import logging.AnalysisLog;
 import model.AnalyzedMethodEnvironment;
 import model.MethodEnvironment;
 import model.MethodEnvironment.MethodParameter;
-import static resource.Configuration.*;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.Local;
@@ -22,7 +22,7 @@ import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.ParameterRef;
-import static utils.AnalysisUtils.*;
+import utils.AnalysisUtils;
 import exception.OperationInvalidException;
 import exception.ProgramCounterException;
 import extractor.UsedObjectStore;
@@ -221,12 +221,8 @@ abstract public class SecurityTypeSwitch {
 			String parameterName = invokedMethodParameter.get(j).getName();
 			ILevel argumentLevel = calculateLevel(value, invokeExpr.toString());
 			if (!isWeakerOrEqualLevel(argumentLevel, parameterLevel)) {
-				logSecurity(getMsg(
-						"security.param.stronger",
-						getMethodSignature(),
-						getSrcLn(),
-						generateMethodSignature(invokeExpr.getMethod(), METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-								METHOD_SIGNATURE_PRINT_VISIBILITY), parameterName, parameterLevel.getName(), argumentLevel.getName()));
+				logSecurity(getMsg("security.param.stronger", getMethodSignature(), getSrcLn(), generateMethodSignature(invokeExpr.getMethod()),
+						parameterName, parameterLevel.getName(), argumentLevel.getName()));
 			}
 			argumentLevels.add(argumentLevel);
 			parameterLevels.add(parameterLevel);
@@ -352,8 +348,7 @@ abstract public class SecurityTypeSwitch {
 	 * @return The readable method signature of the analyzed method.
 	 */
 	protected String getMethodSignature() {
-		return generateMethodSignature(getSootMethod(), METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-				METHOD_SIGNATURE_PRINT_VISIBILITY);
+		return generateMethodSignature(getSootMethod());
 	}
 
 	/**

@@ -1,13 +1,12 @@
 package analysis;
 
 import static resource.Messages.getMsg;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
-
-import analysis.LocalsMap;
 import security.ILevel;
 import soot.Local;
 import soot.SootField;

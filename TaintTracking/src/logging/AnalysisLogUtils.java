@@ -1,5 +1,14 @@
 package logging;
 
+import static java.util.logging.Level.ALL;
+import static java.util.logging.Level.OFF;
+import static logging.AnalysisLogLevel.CONFIGURATION;
+import static logging.AnalysisLogLevel.DEBUGGING;
+import static logging.AnalysisLogLevel.HEADING;
+import static logging.AnalysisLogLevel.SECURITY;
+import static logging.AnalysisLogLevel.SIDEEFFECT;
+import static logging.AnalysisLogLevel.WARNING;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -10,11 +19,9 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
+import logging.Settings.Setting;
 import soot.G;
 
-import logging.Settings.Setting;
-
-import static logging.AnalysisLogLevel.*;
 /**
  * <h1>Utilities for the {@link SootLogger}</h1>
  * 
@@ -331,11 +338,9 @@ public class AnalysisLogUtils {
 	 * Checks whether the given level is a {@link AnalysisLogLevel} that can be handled as a standard level by the formatter. These standard
 	 * levels include the following:
 	 * <ul>
-	 * <li>{@link AnalysisLogLevel#EXCEPTION}</li>
-	 * <li>{@link AnalysisLogLevel#ERROR}</li>
 	 * <li>{@link AnalysisLogLevel#WARNING}</li>
 	 * <li>{@link AnalysisLogLevel#INFORMATION}</li>
-	 * <li>{@link AnalysisLogLevel#DEBUG}</li>
+	 * <li>{@link AnalysisLogLevel#DEBUGGING}</li>
 	 * <li>{@link AnalysisLogLevel#SIDEEFFECT}</li>
 	 * <li>{@link AnalysisLogLevel#SECURITY}</li>
 	 * <li>{@link AnalysisLogLevel#SECURITYCHECKER}</li>
@@ -348,9 +353,7 @@ public class AnalysisLogUtils {
 	 * @see SootLoggerFileFormatter
 	 */
 	protected static boolean isStandardLoggableMessage(Level level) {
-		return level.equals(EXCEPTION) || level.equals(ERROR) || level.equals(WARNING)
-				|| level.equals(INFORMATION) || level.equals(DEBUG) || level.equals(SIDEEFFECT)
-				|| level.equals(SECURITY) || level.equals(SECURITYCHECKER)
+		return level.equals(WARNING) || level.equals(DEBUGGING) || level.equals(SIDEEFFECT) || level.equals(SECURITY)
 				|| level.equals(CONFIGURATION);
 
 	}

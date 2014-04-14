@@ -3,6 +3,8 @@ package main;
 import static logging.AnalysisLogUtils.makeInstantLoggingSetting;
 import static logging.AnalysisLogUtils.makeLoggerLevelSetting;
 import static logging.AnalysisLogUtils.makeTimeSetting;
+import static utils.AnalysisUtils.getArgumentParser;
+import static utils.DefinitionClassHandler.getDefinitionClass;
 import logging.AnalysisLog;
 import logging.Settings;
 import model.MessageStore;
@@ -11,9 +13,7 @@ import security.ILevelDefinitionChecker;
 import security.ILevelMediator;
 import soot.PackManager;
 import soot.Transform;
-import utils.AnalysisUtils;
 import utils.AnalysisUtils.ArgumentParser;
-import utils.DefinitionClassHandler;
 import analysis.SecurityTypeAnalysis;
 import analysis.SecurityTypeTransformer;
 import extractor.AnnotationExtractor;
@@ -73,12 +73,12 @@ public class Main {
 	 * @param args
 	 */
 	private static AnalysisLog execute(String[] args) {
-		ArgumentParser parser = AnalysisUtils.getArgumentParser(args);
+		ArgumentParser parser = getArgumentParser(args);
 		args = parser.getSootArguments();
 		AnalysisLog log = new AnalysisLog(parser.isInstantLogging(), parser.getLogLevels());
 		log.configuration(new Settings(makeLoggerLevelSetting(parser.getLogLevels()), makeInstantLoggingSetting(parser.isInstantLogging()),
 				makeTimeSetting()));
-		ILevelDefinition definition = DefinitionClassHandler.getDefinitionClass();
+		ILevelDefinition definition = getDefinitionClass();
 		@SuppressWarnings("unused")
 		ILevelDefinitionChecker checker = new DefinitionChecker(definition, log, true);
 		ILevelMediator mediator = new Mediator(definition);

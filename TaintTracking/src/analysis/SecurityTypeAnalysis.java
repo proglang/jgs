@@ -1,16 +1,14 @@
 package analysis;
 
 import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.generateMethodSignature;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import analysis.LocalsMap;
-
 import logging.AnalysisLog;
 import model.AnalyzedMethodEnvironment;
 import model.MethodEnvironment;
-import static resource.Configuration.*;
 import security.ILevelMediator;
 import soot.SootMethod;
 import soot.Unit;
@@ -18,7 +16,6 @@ import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
-import static utils.AnalysisUtils.*;
 import exception.AnalysisException;
 import exception.EnvironmentNotFoundException;
 import exception.LevelNotFoundException;
@@ -85,10 +82,7 @@ public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> {
 			analyzedMethodEnvironment = new AnalyzedMethodEnvironment(me);
 			doAnalysis();
 		} catch (EnvironmentNotFoundException e) {
-			throw new AnalysisException(getMsg(
-					"exception.analysis.other.error_env",
-					generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-							METHOD_SIGNATURE_PRINT_VISIBILITY)), e);
+			throw new AnalysisException(getMsg("exception.analysis.other.error_env", generateMethodSignature(sootMethod)), e);
 		}
 	}
 
@@ -177,11 +171,8 @@ public class SecurityTypeAnalysis extends ForwardFlowAnalysis<Unit, LocalsMap> {
 				stmt.apply(stmtSwitch);
 			} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
 					| LevelNotFoundException e) {
-				throw new AnalysisException(getMsg(
-						"exception.analysis.other.error_switch",
-						stmt.toString(),
-						generateMethodSignature(analyzedMethodEnvironment.getSootMethod(), METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-								METHOD_SIGNATURE_PRINT_VISIBILITY), analyzedMethodEnvironment.getSrcLn()), e);
+				throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(),
+						generateMethodSignature(analyzedMethodEnvironment.getSootMethod()), analyzedMethodEnvironment.getSrcLn()), e);
 			}
 		}
 	}

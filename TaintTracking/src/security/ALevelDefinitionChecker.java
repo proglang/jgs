@@ -1,5 +1,14 @@
 package security;
 
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.reflect.Modifier.isPublic;
+import static java.lang.reflect.Modifier.isStatic;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static resource.Configuration.DEF_CLASS_NAME;
+import static resource.Configuration.DEF_PACKAGE_NAME;
+import static resource.Configuration.PREFIX_LEVEL_FUNCTION;
 import static resource.Messages.getMsg;
 import static security.ALevelDefinition.SIGNATURE_DEFAULT_VAR;
 import static security.ALevelDefinition.SIGNATURE_GLB;
@@ -17,7 +26,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,7 +35,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import logging.AnalysisLog;
-import resource.Configuration;
 import soot.RefType;
 import soot.SootClass;
 import soot.SootField;
@@ -108,9 +115,9 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		if (annotationClass.getDeclaringClass() == null) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.invalid_declaration", annotationClass.getName()));
 		}
-		if (!annotationClass.getPackage().getName().equals(Configuration.DEF_PACKAGE_NAME)) {
+		if (!annotationClass.getPackage().getName().equals(DEF_PACKAGE_NAME)) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.invalid_package", annotationClass.getName(),
-					Configuration.DEF_PACKAGE_NAME));
+					DEF_PACKAGE_NAME));
 		}
 		if (!annotationClass.isAnnotation()) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.invalid_class", annotationClass.getName()));
@@ -135,12 +142,11 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 			throw new DefinitionInvalidException(getMsg("exception.def_class.annotation.no_class", getMsg("other.constraints")));
 		}
 		Map<Class<? extends Annotation>, ElementType[]> annotations = new HashMap<Class<? extends Annotation>, ElementType[]>();
-		annotations.put(implementation.getAnnotationClassFieldLevel(), new ElementType[] { ElementType.FIELD });
-		annotations.put(implementation.getAnnotationClassParameterLevel(), new ElementType[] { ElementType.METHOD, ElementType.CONSTRUCTOR });
-		annotations.put(implementation.getAnnotationClassReturnLevel(), new ElementType[] { ElementType.METHOD });
-		annotations.put(implementation.getAnnotationClassEffects(), new ElementType[] { ElementType.METHOD, ElementType.CONSTRUCTOR,
-				ElementType.TYPE });
-		annotations.put(implementation.getAnnotationClassConstraints(), new ElementType[] { ElementType.METHOD, ElementType.CONSTRUCTOR });
+		annotations.put(implementation.getAnnotationClassFieldLevel(), new ElementType[] { FIELD });
+		annotations.put(implementation.getAnnotationClassParameterLevel(), new ElementType[] { METHOD, CONSTRUCTOR });
+		annotations.put(implementation.getAnnotationClassReturnLevel(), new ElementType[] { METHOD });
+		annotations.put(implementation.getAnnotationClassEffects(), new ElementType[] { METHOD, CONSTRUCTOR, ElementType.TYPE });
+		annotations.put(implementation.getAnnotationClassConstraints(), new ElementType[] { METHOD, CONSTRUCTOR });
 		for (Class<? extends Annotation> annotation : annotations.keySet()) {
 			checkConventionsOfAnnotationClass(annotation, annotations.get(annotation));
 		}
@@ -160,11 +166,11 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 	private void checkCorrectnessOfConventionsForClass() {
 		String packageName = getImplementationClass().getPackage().getName();
 		String className = getImplementationClass().getSimpleName();
-		if (!packageName.equals(Configuration.DEF_PACKAGE_NAME)) {
-			throw new DefinitionInvalidException(getMsg("exception.def_class.package.invalid_name", Configuration.DEF_PACKAGE_NAME));
+		if (!packageName.equals(DEF_PACKAGE_NAME)) {
+			throw new DefinitionInvalidException(getMsg("exception.def_class.package.invalid_name", DEF_PACKAGE_NAME));
 		}
-		if (!className.equals(Configuration.DEF_CLASS_NAME)) {
-			throw new DefinitionInvalidException(getMsg("exception.def_class.class.invalid_name", Configuration.DEF_PACKAGE_NAME));
+		if (!className.equals(DEF_CLASS_NAME)) {
+			throw new DefinitionInvalidException(getMsg("exception.def_class.class.invalid_name", DEF_PACKAGE_NAME));
 		}
 	}
 
@@ -176,7 +182,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		} else {
 			try {
 				Method method = getImplementationClass().getMethod(levelFunctionName, Object.class);
-				if (!Modifier.isStatic(method.getModifiers())) {
+				if (!isStatic(method.getModifiers())) {
 					throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.not_static",
 							String.format(SIGNATURE_ID_INVALID, levelFunctionName)));
 				}
@@ -232,7 +238,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 	}
 
 	private void checkCorrectnessOfLevelName(ILevel level) {
-		Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+		Pattern p = Pattern.compile("[^a-z0-9 ]", CASE_INSENSITIVE);
 		Matcher m = p.matcher(level.getName());
 		boolean match = m.find();
 		if (match) {
@@ -253,13 +259,13 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		List<String> levelNames = getLevelNames();
 		for (Method method : getImplementationMethods()) {
 			String methodName = method.getName();
-			if (methodName.startsWith(Configuration.PREFIX_LEVEL_FUNCTION)) {
-				String possibleLevelName = methodName.substring(Configuration.PREFIX_LEVEL_FUNCTION.length(), methodName.length()).toLowerCase();
+			if (methodName.startsWith(PREFIX_LEVEL_FUNCTION)) {
+				String possibleLevelName = methodName.substring(PREFIX_LEVEL_FUNCTION.length(), methodName.length()).toLowerCase();
 				if (!levelNames.contains(possibleLevelName)) {
 					Class<?>[] parameters = method.getParameterTypes();
 					Class<?> returnType = method.getReturnType();
-					boolean isStatic = Modifier.isStatic(method.getModifiers());
-					boolean isPublic = Modifier.isPublic(method.getModifiers());
+					boolean isStatic = isStatic(method.getModifiers());
+					boolean isPublic = isPublic(method.getModifiers());
 					if (parameters.length == 1 && parameters[0].equals(Object.class) && returnType.equals(Object.class) && isStatic && isPublic) {
 						printWarning(getMsg("warning.def_class.level.no_level", String.format(ID_SIGNATURE_PATTERN, methodName)));
 					}
@@ -368,7 +374,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 	protected final void printWarning(String msg) {
 		if (logging) {
 			if (this.logger != null) {
-				logger.warning(Configuration.DEF_CLASS_NAME, 0, msg);
+				logger.warning(DEF_CLASS_NAME, 0, msg);
 			} else {
 				System.out.println(msg);
 			}

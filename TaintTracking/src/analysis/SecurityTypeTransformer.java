@@ -1,14 +1,18 @@
 package analysis;
 
+import static utils.AnalysisUtils.containsStaticInitializer;
+import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.generatedEmptyStaticInitializer;
+import static utils.AnalysisUtils.isInnerClassOfDefinitionClass;
+import static utils.AnalysisUtils.isLevelFunction;
+import static utils.AnalysisUtils.isMethodOfDefinition;
+import static utils.AnalysisUtils.isMethodOfDefinitionClass;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import extractor.AnnotationExtractor;
-
 import logging.AnalysisLog;
-
-import static resource.Configuration.*;
 import security.ILevelMediator;
 import soot.Body;
 import soot.BodyTransformer;
@@ -16,7 +20,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
-import static utils.AnalysisUtils.*;
+import extractor.AnnotationExtractor;
 
 /**
  * <h1>Security Transformer</h1>
@@ -68,8 +72,7 @@ public class SecurityTypeTransformer extends BodyTransformer {
 	private void doAnalysis(SootMethod sootMethod, UnitGraph graph) {
 		if (!isMethodOfDefinition(sootMethod)) {
 			if (instantLogging) {
-				log.structure(generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-						METHOD_SIGNATURE_PRINT_VISIBILITY));
+				log.structure(generateMethodSignature(sootMethod));
 			}
 			SecurityTypeAnalysis tt = new SecurityTypeAnalysis(log, sootMethod, mediator, graph, extractor.getUsedObjectStore());
 			tt.checkAnalysis();

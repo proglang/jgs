@@ -1,19 +1,18 @@
 package model;
 
+import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.generateFieldSignature;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import exception.AnnotationInvalidException;
-import exception.LevelInvalidException;
-
 import logging.AnalysisLog;
-import static resource.Configuration.*;
-import static resource.Messages.getMsg;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootField;
-import static utils.AnalysisUtils.*;
+import exception.AnnotationInvalidException;
+import exception.LevelInvalidException;
 
 /**
  * <h1>Analysis environment for fields</h1>
@@ -103,12 +102,10 @@ public class FieldEnvironment extends Environment {
 		if (level != null) { // some level given
 			if (!getLevelMediator().checkLevelValidity(level)) {
 				// level isn't a valid security level
-				throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(),
-						generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
+				throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), generateFieldSignature(sootField)));
 			}
 		} else { // no level given
-			throw new AnnotationInvalidException(getMsg("exception.level.field.no_level",
-					generateFieldSignature(sootField, FIELD_SIGNATURE_PRINT_PACKAGE, FIELD_SIGNATURE_PRINT_TYPE, FIELD_SIGNATURE_PRINT_VISIBILITY)));
+			throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", generateFieldSignature(sootField)));
 		}
 	}
 

@@ -1,23 +1,23 @@
 package model;
 
+import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.generateFileName;
+import static utils.AnalysisUtils.generateMethodSignature;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import constraints.Constraints;
-import exception.AnnotationInvalidException;
-import exception.LevelInvalidException;
-import exception.MethodParameterNotFoundException;
-
 import logging.AnalysisLog;
-import static resource.Configuration.*;
-import static resource.Messages.*;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootMethod;
 import soot.Type;
-import static utils.AnalysisUtils.*;
+import constraints.Constraints;
+import exception.AnnotationInvalidException;
+import exception.LevelInvalidException;
+import exception.MethodParameterNotFoundException;
 
 /**
  * <h1>Analysis environment for methods</h1>
@@ -121,6 +121,7 @@ public class MethodEnvironment extends Environment {
 	 * The <em>write effects</em> of the class which declares the {@link SootMethod}.
 	 */
 	private List<ILevel> classWriteEffects = new ArrayList<ILevel>();
+	private final Constraints constraints;
 	/**
 	 * DOC
 	 */
@@ -152,10 +153,9 @@ public class MethodEnvironment extends Environment {
 	private ILevel returnLevel = null;
 	/** The analyzed method, for which this is the environment. */
 	private SootMethod sootMethod;
+
 	/** The expected <em>write effects</em> of the analyzed {@link SootMethod}. */
 	private List<ILevel> writeEffects = new ArrayList<ILevel>();
-
-	private final Constraints constraints;
 
 	/**
 	 * DOC
@@ -201,6 +201,10 @@ public class MethodEnvironment extends Environment {
 		return classWriteEffects;
 	}
 
+	public Constraints getContraints() {
+		return constraints;
+	}
+
 	/**
 	 * Returns the {@link MethodParameter} that represent the parameter of the analyzed method at the given position. Note, that the method
 	 * will return a invalid {@link MethodParameter} object (position will be {@code -1}, the level, the name and the {@link Type} will be
@@ -211,15 +215,12 @@ public class MethodEnvironment extends Environment {
 	 * @return The method parameter which represent the parameter at the given index.
 	 * @see MethodParameter
 	 */
-	public MethodParameter getMethodParameterAt(int i){
+	public MethodParameter getMethodParameterAt(int i) {
 		if (i < this.methodParameters.size()) {
 			return this.methodParameters.get(new Integer(i));
 		}
-		throw new MethodParameterNotFoundException(
-				getMsg(
-						"exception.environment.method_parameter_not_found",
-						generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-								METHOD_SIGNATURE_PRINT_VISIBILITY), i));
+		throw new MethodParameterNotFoundException(getMsg("exception.environment.method_parameter_not_found",
+				generateMethodSignature(sootMethod), i));
 	}
 
 	/**
@@ -310,8 +311,7 @@ public class MethodEnvironment extends Environment {
 	 * @return
 	 */
 	public void isReasonable() {
-		String methodSignature = generateMethodSignature(sootMethod, METHOD_SIGNATURE_PRINT_PACKAGE, METHOD_SIGNATURE_PRINT_TYPE,
-				METHOD_SIGNATURE_PRINT_VISIBILITY);
+		String methodSignature = generateMethodSignature(sootMethod);
 		if (!getLevelMediator().checkParameterLevelsValidity(getListOfParameterLevels())) {
 			for (ILevel level : getLevelMediator().getInvalidParameterLevels(getListOfParameterLevels())) {
 				throw new LevelInvalidException(getMsg("exception.level.parameter.invalid", level.getName(), methodSignature));
@@ -334,7 +334,7 @@ public class MethodEnvironment extends Environment {
 				}
 			}
 			// NEW
-			if (! constraints.containsReturnRef()) {
+			if (!constraints.containsReturnRef()) {
 				throw new AnnotationInvalidException(getMsg("exception.constraints.no_return_ref", methodSignature));
 			}
 		}
@@ -355,7 +355,8 @@ public class MethodEnvironment extends Environment {
 			}
 		}
 		if (sootMethod.getParameterCount() < constraints.highestParameterRefNumber() + 1) {
-			throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_param_ref", methodSignature, sootMethod.getParameterCount()));
+			throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_param_ref", methodSignature,
+					sootMethod.getParameterCount()));
 		}
 	}
 
@@ -405,10 +406,6 @@ public class MethodEnvironment extends Environment {
 	 */
 	protected void logWarning(String msg) {
 		getLog().warning(generateFileName(sootMethod), 0, msg);
-	}
-
-	public Constraints getContraints() {
-		return constraints;
 	}
 
 }

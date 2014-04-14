@@ -38,10 +38,6 @@ public class Configuration {
 	 */
 	public static final String DEF_PATH_JAVA = String.format("%s.%s", DEF_PACKAGE_NAME, DEF_CLASS_NAME);
 	/**
-	 * Indicates, whether the package of the field should be printed in the signature.
-	 */
-	public static final boolean FIELD_SIGNATURE_PRINT_PACKAGE = false;
-	/**
 	 * Indicates, whether the type of the field should be printed in the signature.
 	 */
 	public static final boolean FIELD_SIGNATURE_PRINT_TYPE = true;
@@ -49,10 +45,6 @@ public class Configuration {
 	 * Indicates, whether the visibility of the field should be printed in the signature.
 	 */
 	public static final boolean FIELD_SIGNATURE_PRINT_VISIBILITY = true;
-	/**
-	 * Indicates, whether the package of the method should be printed in the signature.
-	 */
-	public static final boolean METHOD_SIGNATURE_PRINT_PACKAGE = false;
 	/**
 	 * Indicates, whether the type of the method should be printed in the signature.
 	 */
