@@ -4,9 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
 import annotation.IAnnotationDAO;
 import constraints.Constraints;
 
@@ -88,31 +85,32 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public abstract ILevel[] getLevels();
 
-	public List<ILevel> getLibraryClassWriteEffects(SootClass sootClass) {
+	public List<ILevel> getLibraryClassWriteEffects(String className) {
 		return new ArrayList<ILevel>();
 	}
 
-	public Constraints getLibraryConstraints(SootMethod sootMethod) {
+	public Constraints getLibraryConstraints(String methodName, List<String> parameterTypes, String declaringClassName, String signature) {
+		
 		return new Constraints();
 	}
 
-	public ILevel getLibraryFieldLevel(SootField sootField) {
+	public ILevel getLibraryFieldLevel(String fieldName, String declaringClassName, String signature) {
 		return this.getGreatesLowerBoundLevel();
 	}
 
-	public List<ILevel> getLibraryMethodWriteEffects(SootMethod sootMethod) {
+	public List<ILevel> getLibraryMethodWriteEffects(String methodName, List<String> parameterTypes, String declaringClassName, String signature) {
 		return new ArrayList<ILevel>();
 	}
 
-	public List<ILevel> getLibraryParameterLevel(SootMethod sootMethod) {
+	public List<ILevel> getLibraryParameterLevel(String methodName, List<String> parameterTypes, String declaringClassName, String signature) {
 		List<ILevel> param = new ArrayList<ILevel>();
-		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+		for (int i = 0; i < parameterTypes.size(); i++) {
 			param.add(getLeastUpperBoundLevel());
 		}
 		return param;
 	}
 
-	public ILevel getLibraryReturnLevel(SootMethod sootMethod, List<ILevel> levels) {
+	public ILevel getLibraryReturnLevel(String methodName, List<String> parameterTypes, String declaringClassName, String signature, List<ILevel> levels) {
 		if (levels.size() == 0) {
 			return getGreatesLowerBoundLevel();
 		} else {

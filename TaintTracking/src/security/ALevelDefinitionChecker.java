@@ -284,22 +284,32 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_default_variable", SIGNATURE_DEFAULT_VAR));
 		}
 		SootClass sootClass = generateTestClass();
+		String className = sootClass.getName();
 		SootMethod sootMethod = generatedTestMethod(sootClass);
+		String methodName = sootMethod.getName();
+		List<String> paramTypeList = new ArrayList<String>();
+		for (Object type : sootMethod.getParameterTypes()) {
+			paramTypeList.add(type.toString());
+		}
+		String methodSignature = sootMethod.getSignature();
 		List<ILevel> testLevels = Arrays.asList(new ILevel[] { getLevels().get(0), getLevels().get(0) });
 		SootField sootField = generateTestField(sootClass);
-		if (implementation.getLibraryClassWriteEffects(sootClass) == null) {
+		String fieldName = sootField.getName();
+		String fieldSignature = sootField.getSignature();
+		if (implementation.getLibraryClassWriteEffects(className) == null) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_class_effects", SIGNATURE_LIB_CLASS));
 		}
-		if (implementation.getLibraryMethodWriteEffects(sootMethod) == null) {
+		if (implementation.getLibraryMethodWriteEffects(methodName, paramTypeList, className, methodSignature) == null) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_method_effects", SIGNATURE_LIB_METHOD));
 		}
-		if (implementation.getLibraryFieldLevel(sootField) == null) {
+		if (implementation.getLibraryFieldLevel(fieldName, className, fieldSignature) == null) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_field", SIGNATURE_LIB_FIELD));
 		}
-		if (implementation.getLibraryParameterLevel(sootMethod) == null || implementation.getLibraryParameterLevel(sootMethod).size() != 2) {
+		if (implementation.getLibraryParameterLevel(methodName, paramTypeList, className, methodSignature) == null
+				|| implementation.getLibraryParameterLevel(methodName, paramTypeList, className, methodSignature).size() != 2) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_parameter", SIGNATURE_LIB_PARAM));
 		}
-		if (implementation.getLibraryReturnLevel(sootMethod, testLevels) == null) {
+		if (implementation.getLibraryReturnLevel(methodName, paramTypeList, className, methodSignature, testLevels) == null) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_return", SIGNATURE_LIB_RETURN));
 		}
 	}

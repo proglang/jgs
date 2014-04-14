@@ -181,27 +181,47 @@ public abstract class ALevelMediator implements ILevelMediator {
 	}
 
 	public List<ILevel> getLibraryClassWriteEffects(SootClass sootClass) {
-		return this.definition.getLibraryClassWriteEffects(sootClass);
+		return this.definition.getLibraryClassWriteEffects(sootClass.getName());
 	}
 
 	public Constraints getLibraryConstraints(SootMethod sootMethod) {
-		return this.definition.getLibraryConstraints(sootMethod);
+		List<String> paramType = new ArrayList<String>();
+		for (Object type : sootMethod.getParameterTypes()) {
+			paramType.add(type.toString());
+		}
+		return this.definition.getLibraryConstraints(sootMethod.getName(), paramType, sootMethod.getDeclaringClass().getName(),
+				sootMethod.getSignature());
 	}
 
 	public ILevel getLibraryFieldSecurityLevel(SootField sootField) {
-		return this.definition.getLibraryFieldLevel(sootField);
+		return this.definition.getLibraryFieldLevel(sootField.getName(), sootField.getDeclaringClass().getName(), sootField.getSignature());
 	}
 
 	public List<ILevel> getLibraryParameterSecurityLevel(SootMethod sootMethod) {
-		return this.definition.getLibraryParameterLevel(sootMethod);
+		List<String> paramType = new ArrayList<String>();
+		for (Object type : sootMethod.getParameterTypes()) {
+			paramType.add(type.toString());
+		}
+		return this.definition.getLibraryParameterLevel(sootMethod.getName(), paramType, sootMethod.getDeclaringClass().getName(),
+				sootMethod.getSignature());
 	}
 
 	public ILevel getLibraryReturnSecurityLevel(SootMethod sootMethod, List<ILevel> levels) {
-		return this.definition.getLibraryReturnLevel(sootMethod, levels);
+		List<String> paramType = new ArrayList<String>();
+		for (Object type : sootMethod.getParameterTypes()) {
+			paramType.add(type.toString());
+		}
+		return this.definition.getLibraryReturnLevel(sootMethod.getName(), paramType, sootMethod.getDeclaringClass().getName(),
+				sootMethod.getSignature(), levels);
 	}
 
 	public List<ILevel> getLibraryWriteEffects(SootMethod sootMethod) {
-		return this.definition.getLibraryMethodWriteEffects(sootMethod);
+		List<String> paramType = new ArrayList<String>();
+		for (Object type : sootMethod.getParameterTypes()) {
+			paramType.add(type.toString());
+		}
+		return this.definition.getLibraryMethodWriteEffects(sootMethod.getName(), paramType, sootMethod.getDeclaringClass().getName(),
+				sootMethod.getSignature());
 	}
 
 	public final boolean hasClassWriteEffectAnnotation(SootClass sootClass) {

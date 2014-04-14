@@ -3,9 +3,6 @@ package security;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
 import annotation.IAnnotationDAO;
 import constraints.Constraints;
 
@@ -45,16 +42,16 @@ public interface ILevelDefinition {
 
 	public ILevel[] getLevels();
 
-	public List<ILevel> getLibraryClassWriteEffects(SootClass sootClass);
+	public List<ILevel> getLibraryClassWriteEffects(String className);
 
-	public Constraints getLibraryConstraints(SootMethod sootMethod);
+	public Constraints getLibraryConstraints(String methodName, List<String> parameterTypes, String declaringClassName, String signature);
 
-	public ILevel getLibraryFieldLevel(SootField sootField);
+	public ILevel getLibraryFieldLevel(String fieldName, String declaringClassName, String signature);
 
-	public List<ILevel> getLibraryMethodWriteEffects(SootMethod sootMethod);
+	public List<ILevel> getLibraryMethodWriteEffects(String methodName, List<String> parameterTypes, String declaringClassName, String signature);
 
-	public List<ILevel> getLibraryParameterLevel(SootMethod sootMethod);
+	public List<ILevel> getLibraryParameterLevel(String methodName, List<String> parameterTypes, String declaringClassName, String signature);
 
-	public ILevel getLibraryReturnLevel(SootMethod sootMethod, List<ILevel> levels);
+	public ILevel getLibraryReturnLevel(String methodName, List<String> parameterTypes, String declaringClassName, String signature, List<ILevel> levels);
 
 }
