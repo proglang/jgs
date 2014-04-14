@@ -1,5 +1,8 @@
 package junit.utils;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
 /**
  * DOC
  * 
@@ -8,21 +11,33 @@ package junit.utils;
  */
 public class JUnitHelper {
 
-	/**
-	 * DOC
-	 */
-	private final static String[] CLASSPATH = new String[] { "-cp",
-			".:/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar" };
+	private final static String PATH = "./../Testcases/src";
 
 	/**
 	 * DOC
 	 */
-	private final static String[] INPUT = new String[] { "-src-prec", "c" };
+	private final static String[] ARG_CLASSPATH = new String[] { "-cp",
+			"/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar" };
 
 	/**
 	 * DOC
 	 */
-	private final static String[] LOG_LEVELS = new String[] { "-log-levels", "off" };
+	private final static String[] ARG_DEF_CLASSPATH = new String[] { "-def-classpath", "./../Testcases/bin" };
+
+	/**
+	 * DOC
+	 */
+	private final static String[] ARG_PROGRAM_CLASSPATH = new String[] { "-program-classpath", "./bin" };
+
+	/**
+	 * DOC
+	 */
+	private final static String[] ARG_SOURCE_PATH = new String[] { "-source-path", PATH };
+
+	/**
+	 * DOC
+	 */
+	private final static String[] ARG_LOG_LEVELS = new String[] { "-log-levels", "off" };
 
 	/**
 	 * DOC
@@ -31,7 +46,7 @@ public class JUnitHelper {
 	 * @return
 	 */
 	public static String[] generateAnalysisArgumentsForAnalyzedFile(String className) {
-		return concat(CLASSPATH, INPUT, LOG_LEVELS, new String[] { "-main-class",
+		return concat(ARG_CLASSPATH, ARG_DEF_CLASSPATH, ARG_PROGRAM_CLASSPATH, ARG_SOURCE_PATH, ARG_LOG_LEVELS, new String[] { "-main-class",
 				className }, new String[] { className });
 	}
 
@@ -55,6 +70,12 @@ public class JUnitHelper {
 			}
 		}
 		return result;
+	}
+
+	public static String getSourcePath() {
+		Path basePath = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
+		Path absolutePath = basePath.resolve(PATH).normalize();
+		return absolutePath.toString();
 	}
 
 }

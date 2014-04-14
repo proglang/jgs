@@ -1,21 +1,22 @@
 package junit;
 
-import static org.junit.Assert.*;
+import static junit.utils.JUnitMessageStoreHelper.checkMethodStoreEquality;
+import static logging.AnalysisLogLevel.SECURITY;
+import static logging.AnalysisLogLevel.SIDEEFFECT;
+import static org.junit.Assert.fail;
 
 import java.util.logging.Level;
 
 import junit.model.TestFile;
-import static junit.utils.JUnitMessageStoreHelper.*;
 
-
-import static logging.AnalysisLogLevel.*;
-
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import exception.ExtractorException;
-
 import soot.G;
+import exception.ExtractorException;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestAnalysisFailing {
@@ -58,8 +59,8 @@ public class TestAnalysisFailing {
 
 	@BeforeClass
 	public static final void init() {
-		if (!System.getProperty("user.dir").endsWith("Testcases/src")) {
-			fail("Working director is not the source folder of the 'Testcases' project.");
+		if (!System.getProperty("user.dir").endsWith("TaintTracking")) {
+			fail("Working director is not the folder of the 'TaintTracking' project.");
 		}
 	}
 

@@ -78,7 +78,7 @@ public class Main {
 		AnalysisLog log = new AnalysisLog(parser.isInstantLogging(), parser.getLogLevels());
 		log.configuration(new Settings(makeLoggerLevelSetting(parser.getLogLevels()), makeInstantLoggingSetting(parser.isInstantLogging()),
 				makeTimeSetting()));
-		ILevelDefinition definition = getDefinitionClass();
+		ILevelDefinition definition = getDefinitionClass(parser.getDefinitionClassPath());
 		@SuppressWarnings("unused")
 		ILevelDefinitionChecker checker = new DefinitionChecker(definition, log, true);
 		ILevelMediator mediator = new Mediator(definition);

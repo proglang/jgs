@@ -2,6 +2,8 @@ package junit.model;
 
 import java.io.File;
 
+import junit.utils.JUnitHelper;
+
 /**
  * TODO: documentation
  * 
@@ -10,7 +12,7 @@ public class TestFile {
 
 	private static final String EXT_JAVA = ".java";
 	private static final String SEP = File.separator;
-	private static final String WORKING_DIR = System.getProperty("user.dir");
+	private static final String WORKING_DIR = JUnitHelper.getSourcePath();
 	private final String className;
 	private final String packageName;
 

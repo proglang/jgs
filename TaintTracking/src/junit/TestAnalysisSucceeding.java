@@ -41,8 +41,8 @@ public class TestAnalysisSucceeding {
 
 	@BeforeClass
 	public static final void init() {
-		if (!System.getProperty("user.dir").endsWith("Testcases/src")) {
-			fail("Working director is not the source folder of the 'Testcases' project.");
+		if (!System.getProperty("user.dir").endsWith("TaintTracking")) {
+			fail("Working director is not the folder of the 'TaintTracking' project.");
 		}
 	}
 

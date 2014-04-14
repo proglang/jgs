@@ -20,6 +20,7 @@ import static soot.Modifier.STATIC;
 import static soot.SootMethod.constructorName;
 import static soot.SootMethod.staticInitializerName;
 import static soot.options.Options.output_format_jimple;
+import static soot.options.Options.src_prec_java;
 import static utils.ExtendedJNI.JNI_ARRAY;
 import static utils.ExtendedJNI.JNI_BOOLEAN;
 import static utils.ExtendedJNI.JNI_BYTE;
@@ -32,6 +33,8 @@ import static utils.ExtendedJNI.JNI_LONG;
 import static utils.ExtendedJNI.JNI_SHORT;
 import static utils.ExtendedJNI.JNI_VOID;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -75,7 +78,17 @@ public class AnalysisUtils {
 
 	public static class ArgumentParser {
 
-		private static final String ARG_EXCLUDE = "-x";
+		private static final String ARG_SRC_PREC = "-src-prec";
+		private static final String ARG_PROGRAM_CLASSPATH = "-program-classpath";
+		private static final String OUTPUT_PATH = "./generatedJimple";
+		private static final String ARG_DEF_CLASSPATH = "-def-classpath";
+		private static final String ARG_SOURCE_PATH = "-source-path";
+		private static final String RT_JAR = "rt.jar";
+		private static final String ARG_CLASSPATH_1 = "-cp";
+		private static final String ARG_CLASSPATH_2 = "-soot-class-path";
+		private static final String ARG_CLASSPATH_3 = "-soot-classpath";
+		private static final String ARG_EXCLUDE_1 = "-x";
+		private static final String ARG_EXCLUDE_2 = "-exclude";
 		/**
 		 * DOC
 		 */
@@ -86,21 +99,42 @@ public class AnalysisUtils {
 		 * DOC
 		 */
 		private static final String ARG_NO_BODIES_FOR_EXCLUDE = "-no-bodies-for-excluded";
-		private static final String ARG_OUTPUT = "-f";
-		private static final Object ARG_OUTPUT_PATH = "-d";
+		private static final String ARG_OUTPUT_1 = "-f";
+		private static final String ARG_OUTPUT_2 = "-output-format";
+		private static final String ARG_OUTPUT_PATH_1 = "-d";
+		private static final String ARG_OUTPUT_PATH_2 = "-output-dir";
 		/**
 		 * DOC
 		 */
-		private static final String ARG_PREPEND_CLASSPATH = "-pp";
+		private static final String ARG_PREPEND_CLASSPATH_1 = "-pp";
+		private static final String ARG_PREPEND_CLASSPATH_2 = "-prepend-classpath";
+		private static final String ARG_WHOLE_PROGRAM_1 = "-w";
+		private static final String ARG_WHOLE_PROGRAM_2 = "-whole-program";
+		private static final String EXCL_ANNOTATION = "annotation.";
+		private static final String EXCL_CONSTRAINTS = "constraints.";
+		private static final String EXCL_SECURITY = "security.";
+		private static final String LEV_ALL = "all";
+		private static final String LEV_CONFIGURATION = "configuration";
+		private static final String LEV_DEBUG = "debug";
+		private static final String LEV_EFFECT = "effect";
+		private static final String LEV_IMPORTANT = "important";
+		private static final String LEV_OFF = "off";
+		private static final String LEV_SECURITY = "security";
+		private static final String LEV_SIDEEFFECT = "sideeffect";
 
-		private static final String ARG_WHOLE_PROGRAM = "-w";
+		private static final String LEV_STRUCTURE = "structure";
+		private static final String LEV_WARNING = "warning";
 		/** Command line option for enabling the instant logging. */
 		private static final String OPT_INSTANT_LOGGING = "-instant-logging";
 
-		private String[] arguments = {};
+		private String analyzedSourcePath = ".";
 
+		private String[] arguments = {};
+		private String definitionClassPath = ".";
 		private boolean instantLogging = false;
 		private List<Level> logLevels = new ArrayList<Level>();
+		private String programClassPath = ".";
+
 		private List<String> sootArguments = new ArrayList<String>();
 
 		private ArgumentParser(String[] args) {
@@ -108,9 +142,21 @@ public class AnalysisUtils {
 			parse();
 		}
 
+		public final String getAnalyzedSourcePath() {
+			return analyzedSourcePath;
+		}
+
+		public final String getDefinitionClassPath() {
+			return definitionClassPath;
+		}
+
 		public final Level[] getLogLevels() {
 			Level[] result = new Level[logLevels.size()];
 			return logLevels.toArray(result);
+		}
+
+		public final String getProgramClassPath() {
+			return programClassPath;
 		}
 
 		public final String[] getSootArguments() {
@@ -120,6 +166,20 @@ public class AnalysisUtils {
 
 		public final boolean isInstantLogging() {
 			return instantLogging;
+		}
+
+		private void prepareClassPath(List<String> list) {
+			parseDefinitionClassPath(list);
+			parseAnalyzedSourcePath(list);
+			parseProgramClassPath(list);
+			parseClassPath(list, getDefinitionClassPath(), getProgramClassPath(), getAnalyzedSourcePath());
+		}
+
+		private boolean containsRT(List<String> paths) {
+			for (String string : paths) {
+				if (string.endsWith(RT_JAR)) return true;
+			}
+			return false;
 		}
 
 		private String getArgumentsString() {
@@ -140,14 +200,117 @@ public class AnalysisUtils {
 			parseOutput(list);
 			parseWholeProgram(list);
 			parseExclude(list);
+			prepareClassPath(list);
+			parseInput(list);
 			sootArguments.addAll(list);
 		}
 
-		private void parseExclude(List<String> list) {
-			while (list.contains(ARG_EXCLUDE)) {
-				// int optionsPosition = list.indexOf(ARG_LOG_LEVELS) + 1;
-
+		private void parseInput(List<String> list) {
+			if (list.contains(ARG_SRC_PREC)) {
+				int optionsPosition = list.indexOf(ARG_SRC_PREC) + 1;
+				list.remove(optionsPosition);
+				list.remove(ARG_SRC_PREC);
 			}
+			Options.v().set_src_prec(src_prec_java);
+		}
+
+		private void parseAnalyzedSourcePath(List<String> list) {
+			if (list.contains(ARG_SOURCE_PATH)) {
+				int optionsPosition = list.indexOf(ARG_SOURCE_PATH) + 1;
+				if (optionsPosition < list.size()) {
+					String options = list.get(optionsPosition);
+					Path basePath = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
+					Path absolutePath = basePath.resolve(options).normalize();
+					this.analyzedSourcePath = absolutePath.toString();
+					list.remove(optionsPosition);
+					list.remove(ARG_SOURCE_PATH);
+				} else {
+					throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+				}
+			} else {
+				throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+			}
+		}
+
+		private void parseClassPath(List<String> list, String dcp, String pcp, String asp) {
+			if (list.contains(ARG_CLASSPATH_1) || list.contains(ARG_CLASSPATH_2) || list.contains(ARG_CLASSPATH_3)) {
+				int argPos1 = list.indexOf(ARG_CLASSPATH_1);
+				int argPos2 = list.indexOf(ARG_CLASSPATH_2);
+				int argPos3 = list.indexOf(ARG_CLASSPATH_3);
+				if ((argPos1 != -1 && argPos2 == -1 && argPos3 == -1) || (argPos1 == -1 && argPos2 != -1 && argPos3 == -1)
+						|| (argPos1 == -1 && argPos2 == -1 && argPos3 != -1)) {
+					int argPos = (argPos1 != -1) ? argPos1 : ((argPos2 != -1) ? argPos2 : argPos3);
+					int optionsPosition = argPos + 1;
+					if (optionsPosition < list.size()) {
+						String options = list.get(optionsPosition);
+						List<String> paths = new ArrayList<String>(Arrays.asList(options.split(":")));
+						if (!containsRT(paths)) {
+							throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+						}
+						if (!paths.contains(dcp)) paths.add(dcp);
+						if (!paths.contains(pcp)) paths.add(pcp);
+						if (!paths.contains(asp)) paths.add(asp);
+						String pathString = "";
+						for (String path : paths) {
+							Path basePath = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
+							Path absolutePath = basePath.resolve(path).normalize();
+							if (!pathString.equals("")) pathString += ":";
+							pathString += absolutePath.toString();
+						}
+						Options.v().set_soot_classpath(pathString);
+						list.remove(optionsPosition);
+						list.remove(argPos);
+					} else {
+						throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+					}
+				} else {
+					throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+				}
+			} else {
+				throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+			}
+		}
+
+		private void parseDefinitionClassPath(List<String> list) {
+			if (list.contains(ARG_DEF_CLASSPATH)) {
+				int optionsPosition = list.indexOf(ARG_DEF_CLASSPATH) + 1;
+				if (optionsPosition < list.size()) {
+					String options = list.get(optionsPosition);
+					Path basePath = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
+					Path absolutePath = basePath.resolve(options).normalize();
+					this.definitionClassPath = absolutePath.toString();
+					list.remove(optionsPosition);
+					list.remove(ARG_DEF_CLASSPATH);
+				} else {
+					throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+				}
+			} else {
+				throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+			}
+		}
+
+		private void parseExclude(List<String> list) {
+			List<String> excludes = new ArrayList<String>();
+			List<Integer> remove = new ArrayList<Integer>();
+			for (int i = 0; i < list.size(); i++) {
+				String argument = list.get(i);
+				if (argument.equals(ARG_EXCLUDE_1) || argument.equals(ARG_EXCLUDE_2)) {
+					int optionsPosition = i + 1;
+					if (optionsPosition < list.size()) {
+						excludes.add(list.get(optionsPosition));
+						remove.addAll(Arrays.asList(new Integer[] { i, optionsPosition }));
+					} else {
+						throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+					}
+				}
+			}
+			for (int i = remove.size() - 1; i >= 0; i--) {
+				list.remove(remove.get(i).intValue());
+			}
+			if (!excludes.contains(EXCL_SECURITY)) excludes.add(EXCL_SECURITY);
+			if (!excludes.contains(EXCL_ANNOTATION)) excludes.add(EXCL_ANNOTATION);
+			if (!excludes.contains(EXCL_CONSTRAINTS)) excludes.add(EXCL_CONSTRAINTS);
+			Options.v().set_exclude(excludes);
 		}
 
 		private void parseInstantLogging(List<String> list) {
@@ -173,7 +336,7 @@ public class AnalysisUtils {
 				list.remove(optionsPosition);
 				list.remove(ARG_LOG_LEVELS);
 			} else {
-				logLevels.add(Level.ALL);
+				setLogLevels(new String[] { LEV_IMPORTANT });
 			}
 		}
 
@@ -185,24 +348,44 @@ public class AnalysisUtils {
 		}
 
 		private void parseOutput(List<String> list) {
-			if (!list.contains(ARG_OUTPUT)) {
+			if (!list.contains(ARG_OUTPUT_1) || !list.contains(ARG_OUTPUT_2)) {
 				Options.v().set_output_format(output_format_jimple);
 			}
-			if (!list.contains(ARG_OUTPUT_PATH)) {
-				Options.v().set_output_dir("./../generatedJimple");
+			if (!list.contains(ARG_OUTPUT_PATH_1) || !list.contains(ARG_OUTPUT_PATH_2)) {
+				Options.v().set_output_dir(OUTPUT_PATH);
 			}
 		}
 
 		private void parsePrependClasspath(List<String> list) {
-			if (list.contains(ARG_PREPEND_CLASSPATH)) {
-				list.remove(ARG_PREPEND_CLASSPATH);
+			if (list.contains(ARG_PREPEND_CLASSPATH_1) || list.contains(ARG_PREPEND_CLASSPATH_2)) {
+				list.remove(ARG_PREPEND_CLASSPATH_1);
+				list.remove(ARG_PREPEND_CLASSPATH_2);
 			}
 			Options.v().set_prepend_classpath(true);
 		}
 
+		private void parseProgramClassPath(List<String> list) {
+			if (list.contains(ARG_PROGRAM_CLASSPATH)) {
+				int optionsPosition = list.indexOf(ARG_PROGRAM_CLASSPATH) + 1;
+				if (optionsPosition < list.size()) {
+					String options = list.get(optionsPosition);
+					Path basePath = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
+					Path absolutePath = basePath.resolve(options).normalize();
+					this.programClassPath = absolutePath.toString();
+					list.remove(optionsPosition);
+					list.remove(ARG_PROGRAM_CLASSPATH);
+				} else {
+					throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+				}
+			} else {
+				throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
+			}
+		}
+
 		private void parseWholeProgram(List<String> list) {
-			if (!list.contains(ARG_WHOLE_PROGRAM)) {
-				list.remove(ARG_WHOLE_PROGRAM);
+			if (!list.contains(ARG_WHOLE_PROGRAM_1) || !list.contains(ARG_WHOLE_PROGRAM_2)) {
+				list.remove(ARG_WHOLE_PROGRAM_1);
+				list.remove(ARG_WHOLE_PROGRAM_2);
 			}
 			Options.v().set_whole_program(true);
 		}
@@ -216,34 +399,34 @@ public class AnalysisUtils {
 		private void setLogLevels(String[] levels) {
 			for (String level : levels) {
 				switch (level.toLowerCase()) {
-					case "warning":
+					case LEV_WARNING:
 						logLevels.add(WARNING);
 						break;
-					case "configuration":
+					case LEV_CONFIGURATION:
 						logLevels.add(CONFIGURATION);
 						break;
-					case "structure":
+					case LEV_STRUCTURE:
 						logLevels.add(STRUCTURE);
 						break;
-					case "debug":
+					case LEV_DEBUG:
 						logLevels.add(DEBUGGING);
 						break;
-					case "sideeffect":
+					case LEV_SIDEEFFECT:
 						logLevels.add(SIDEEFFECT);
 						break;
-					case "security":
+					case LEV_SECURITY:
 						logLevels.add(SECURITY);
 						break;
-					case "effect":
+					case LEV_EFFECT:
 						logLevels.add(SIDEEFFECT);
 						break;
-					case "off":
+					case LEV_OFF:
 						logLevels.add(OFF);
 						break;
-					case "all":
+					case LEV_ALL:
 						logLevels.add(ALL);
 						break;
-					case "important":
+					case LEV_IMPORTANT:
 						logLevels.add(CONFIGURATION);
 						logLevels.add(STRUCTURE);
 						logLevels.add(SECURITY);
