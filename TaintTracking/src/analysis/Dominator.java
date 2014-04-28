@@ -1,6 +1,5 @@
 package analysis;
 
-import soot.Unit;
 import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
@@ -19,10 +18,10 @@ import soot.toolkits.graph.MHGPostDominatorsFinder;
  * @author Thomas Vogel
  * @version 0.1
  */
-class Dominator {
+class Dominator<N> {
 
 	/** Dominator finder object. */
-	private final MHGDominatorsFinder<Unit> dominatorFinder;
+	private final MHGDominatorsFinder<N> dominatorFinder;
 	/** Post dominator finder object. */
 	private final MHGPostDominatorsFinder postDominatorFinder;
 
@@ -32,8 +31,8 @@ class Dominator {
 	 * @param graph
 	 *          The <code>DirectedGraph</code> of the analyzed method.
 	 */
-	protected Dominator(DirectedGraph<Unit> graph) {
-		this.dominatorFinder = new MHGDominatorsFinder<Unit>(graph);
+	protected Dominator(DirectedGraph<N> graph) {
+		this.dominatorFinder = new MHGDominatorsFinder<N>(graph);
 		this.postDominatorFinder = new MHGPostDominatorsFinder(graph);
 	}
 
@@ -42,7 +41,7 @@ class Dominator {
 	 * 
 	 * @return The dominator finder.
 	 */
-	public MHGDominatorsFinder<Unit> getDominatorFinder() {
+	public MHGDominatorsFinder<N> getDominatorFinder() {
 		return dominatorFinder;
 	}
 

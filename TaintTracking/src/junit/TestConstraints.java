@@ -1,293 +1,109 @@
 package junit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
+import java.util.logging.Level;
+
+import junit.Fed1.VelS;
+
+import logging.AnalysisLog;
+import main.Mediator;
 
 import org.junit.Test;
 
-import security.ILevel;
+import security.ILevelDefinition;
+
 import constraints.ConstraintParameterRef;
+import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.Constraints;
 import constraints.IConstraint;
+import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
 
 public class TestConstraints {
+	
+	private AnalysisLog log = new AnalysisLog(false, new Level[] {});
+	private ILevelDefinition def = new Fed1();
+	private Mediator mediator = new Mediator(def);
+	
+	private VelS low = new VelS("low");
+	private VelS high = new VelS("high");
+	
 
-	private ILevel level1 = new ILevel() {
-
-		@Override
-		public String getName() {
-			return "high";
+	@Test
+	public final void testCalculateTransitiveClosure() {
+		Constraints c1 = new Constraints(mediator, log);
+		IConstraintComponent par0 = new ConstraintParameterRef(0, "a");
+		IConstraintComponent par1 =  new ConstraintParameterRef(1, "a");
+		IConstraintComponent ret1 =  new ConstraintReturnRef("a");
+		IConstraintComponent pc =  new ConstraintProgramCounterRef();
+		IConstraint cons1 = new LEQConstraint(par0,par1);
+		IConstraint cons2 = new LEQConstraint(low, par0);
+		IConstraint cons3 = new LEQConstraint(ret1, high);
+		IConstraint cons4 = new LEQConstraint(ret1, pc);
+		IConstraint cons5 = new LEQConstraint(par1, ret1);
+		assertTrue(equalContentOfLists(c1.getConstraints(), mkList(new IConstraint[] {})));
+		c1.addSmart(cons1);
+		Constraints c1R = c1.calculateTransitiveClosure();
+		assertTrue(equalContentOfLists(c1R.getConstraints(), mkList(new IConstraint[] {cons1})));
+		c1.addSmart(cons2);
+		Constraints c2R = c1.calculateTransitiveClosure();
+		IConstraint aCons1 = new LEQConstraint(low, par1);
+		assertTrue(equalContentOfLists(c2R.getConstraints(), mkList(new IConstraint[] {cons1, cons2, aCons1})));
+		c1.addSmart(cons3);
+		Constraints c3R = c1.calculateTransitiveClosure();
+		assertTrue(equalContentOfLists(c3R.getConstraints(), mkList(new IConstraint[] {cons1, cons2, aCons1, cons3})));
+		c1.addSmart(cons4);
+		Constraints c4R = c1.calculateTransitiveClosure();
+		assertTrue(equalContentOfLists(c4R.getConstraints(), mkList(new IConstraint[] {cons1, cons2, aCons1, cons3, cons4})));
+		c1.addSmart(cons5);
+		Constraints c5R = c1.calculateTransitiveClosure();
+		IConstraint aCons2 = new LEQConstraint(low, pc);
+		IConstraint aCons3 = new LEQConstraint(par0, pc);
+		IConstraint aCons4 = new LEQConstraint(low, high);
+		IConstraint aCons5 = new LEQConstraint(low, ret1);
+		IConstraint aCons6 = new LEQConstraint(par0, ret1);
+		IConstraint aCons7 = new LEQConstraint(par0, high);
+		IConstraint aCons8 = new LEQConstraint(par1, high);
+		IConstraint aCons9 = new LEQConstraint(par1, pc);
+		assertTrue(equalContentOfLists(c5R.getConstraints(), mkList(new IConstraint[] {cons1, cons2, aCons1, cons3, cons4, cons5, aCons2, aCons3, aCons4, aCons5, aCons6, aCons7, aCons8, aCons9})));
+	
+		Constraints c2 = new Constraints(mediator, log);
+		IConstraint cons6 = new LEQConstraint(par0,low);
+		IConstraint cons7 = new LEQConstraint(low, par0);
+		IConstraint cons8 = new LEQConstraint(par0, par1);
+		IConstraint cons9 = new LEQConstraint(par1, high);
+		c2.addSmart(cons6);
+		Constraints c6R = c2.calculateTransitiveClosure();
+		assertTrue(equalContentOfLists(c6R.getConstraints(), mkList(new IConstraint[] {cons6, cons7})));
+		c2.addSmart(cons8);
+		Constraints c7R = c2.calculateTransitiveClosure();
+		IConstraint aCons10 = new LEQConstraint(low, par1);
+		assertTrue(equalContentOfLists(c7R.getConstraints(), mkList(new IConstraint[] {cons6, cons7, cons8, aCons10})));
+		c2.addSmart(cons9);
+		Constraints c8R = c2.calculateTransitiveClosure();
+		IConstraint aCons11 = new LEQConstraint(par0, high);
+		IConstraint aCons12 = new LEQConstraint(low, high);
+		assertTrue(equalContentOfLists(c8R.getConstraints(), mkList(new IConstraint[] {cons6, cons7, cons8, cons9, aCons10, aCons11, aCons12})));
+	}
+	
+	public static <U>  boolean equalContentOfLists(List<U> list1, List<U> list2) {
+		if (list1.size() != list2.size()) return false;
+		for (U e : list1) {
+			if (! list2.contains(e)) return false;
 		}
-	};
-	private ILevel level2 = new ILevel() {
-
-		@Override
-		public String getName() {
-			return "low";
+		for (U e : list2) {
+			if (! list1.contains(e)) return false;
 		}
-	};
-	private ConstraintReturnRef returnRef = new ConstraintReturnRef();
-	private ConstraintParameterRef paramRef1 = new ConstraintParameterRef(0);
-	private ConstraintParameterRef paramRef2 = new ConstraintParameterRef(1);
-	private ConstraintParameterRef paramRef3 = new ConstraintParameterRef(7);
-	private LEQConstraint l1l2 = new LEQConstraint(level1, level2);
-	private LEQConstraint l1r = new LEQConstraint(level1, returnRef);
-	private LEQConstraint rr = new LEQConstraint(returnRef, returnRef);
-	private LEQConstraint l1p1 = new LEQConstraint(level1, paramRef1);
-	private LEQConstraint p2p1 = new LEQConstraint(paramRef2, paramRef1);
-	private LEQConstraint rp2 = new LEQConstraint(returnRef, paramRef2);
-	private LEQConstraint p3l1 = new LEQConstraint(paramRef3, level1);
-
-	@Test
-	public final void testContains() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints does not contain anything", !cons1.contains(p2p1));
-		assertTrue("Empty constraints does not contain anything", !cons1.contains(rr));
-		assertTrue("Empty constraints does not contain anything", !cons1.contains(l1p1));
-		Constraints cons2 = new Constraints();
-		cons2.add(p2p1);
-		assertTrue("Constraints does contain constraint [p2p1]", cons2.contains(p2p1));
-		assertTrue("Constraints does not contain constraint [p2p1]", !cons2.contains(rr));
-		assertTrue("Constraints does not contain constraint [p2p1]", !cons2.contains(l1p1));
-		assertTrue("Constraints does not contain constraint [p2p1]", !cons2.contains(l1r));
-		Constraints cons3 = new Constraints();
-		cons3.add(p2p1);
-		cons3.add(rr);
-		cons3.add(l1r);
-		assertTrue("Constraints does contain constraint [p2p1,rr,l1r]", cons3.contains(p2p1));
-		assertTrue("Constraints does not contain constraint [p2p1,rr,l1r]", cons3.contains(rr));
-		assertTrue("Constraints does not contain constraint [p2p1,rr,l1r]", !cons3.contains(l1p1));
-		assertTrue("Constraints does not contain constraint [p2p1,rr,l1r]", cons3.contains(l1r));
+		return true;
 	}
-
-	@Test
-	public final void testContainsParameterRef() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints object does not contain a constraint which contains parameter references", !cons1.containsParameterRef());
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		assertTrue("Constraints object without constraints which contains parameter references", !cons2.containsParameterRef());
-		Constraints cons3 = new Constraints();
-		cons3.add(l1l2);
-		cons3.add(rr);
-		assertTrue("Constraints object without constraints which contains parameter references", !cons3.containsParameterRef());
-		Constraints cons4 = new Constraints();
-		cons4.add(l1l2);
-		cons4.add(rp2);
-		cons4.add(rr);
-		assertTrue("Constraints object with 1 constraint containing parameter references", cons4.containsParameterRef());
-		Constraints cons5 = new Constraints();
-		cons5.add(p3l1);
-		cons5.add(l1l2);
-		cons5.add(rr);
-		cons5.add(rp2);
-		assertTrue("Constraints object with 2 constraint containing parameter references", cons5.containsParameterRef());
-	}
-
-	@Test
-	public final void testContainsReturnRef() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints object does not contain a constraint which contains return references", !cons1.containsReturnRef());
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		assertTrue("Constraints object without constraints which contains return references", !cons2.containsReturnRef());
-		Constraints cons3 = new Constraints();
-		cons3.add(l1l2);
-		cons3.add(l1p1);
-		assertTrue("Constraints object without constraints which contains return references", !cons3.containsReturnRef());
-		Constraints cons4 = new Constraints();
-		cons4.add(l1l2);
-		cons4.add(rp2);
-		cons4.add(l1p1);
-		assertTrue("Constraints object with 1 constraint containing return references", cons4.containsReturnRef());
-		Constraints cons5 = new Constraints();
-		cons5.add(p3l1);
-		cons5.add(l1l2);
-		cons5.add(l1r);
-		cons5.add(rp2);
-		assertTrue("Constraints object with 2 constraint containing return references", cons5.containsReturnRef());
-	}
-
-	@Test
-	public final void testGetConstraints() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints set for the empty constraints object", cons1.getConstraints().equals(new HashSet<IConstraint>()));
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		assertTrue("Constraints object with 1 constarint",
-				cons2.getConstraints().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { l1l2 }))));
-		cons2.add(l1l2);
-		assertTrue("Constraints object with 1 constarint (2 times added)",
-				cons2.getConstraints().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { l1l2 }))));
-		Constraints cons3 = new Constraints();
-		cons3.add(l1l2);
-		cons3.add(rp2);
-		cons3.add(p3l1);
-		assertTrue("Constraints object with 3 constarint",
-				cons3.getConstraints().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { l1l2, rp2, p3l1 }))));
-	}
-
-	@Test
-	public final void testGetConstraintsIncludingParameter() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints object without constraints which contains parameter references", cons1.getConstraintsIncludingParameter()
-				.equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] {}))));
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		assertTrue("Constraints object without constraints which contains parameter references", cons2.getConstraintsIncludingParameter()
-				.equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] {}))));
-		Constraints cons3 = new Constraints();
-		cons3.add(l1l2);
-		cons3.add(l1p1);
-		assertTrue("Constraints object with 1 constraint containing parameter references",
-				cons3.getConstraintsIncludingParameter().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { l1p1 }))));
-		Constraints cons4 = new Constraints();
-		cons4.add(l1l2);
-		cons4.add(l1p1);
-		cons4.add(l1p1);
-		assertTrue("Constraints object with 1 constraint containing parameter references",
-				cons4.getConstraintsIncludingParameter().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { l1p1 }))));
-		Constraints cons5 = new Constraints();
-		cons5.add(p3l1);
-		cons5.add(l1l2);
-		cons5.add(l1p1);
-		cons5.add(p2p1);
-		assertTrue("Constraints object with 3 constraint containing parameter references",
-				cons5.getConstraintsIncludingParameter().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { p3l1, l1p1, p2p1 }))));
-	}
-
-	@Test
-	public final void testGetConstraintsIncludingReturn() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints object without constraints which contains return references", cons1.getConstraintsIncludingReturn()
-				.equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] {}))));
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		assertTrue("Constraints object without constraints which contains return references",
-				cons2.getConstraintsIncludingReturn().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] {}))));
-		Constraints cons3 = new Constraints();
-		cons3.add(l1l2);
-		cons3.add(rp2);
-		assertTrue("Constraints object with 1 constraint containing return references",
-				cons3.getConstraintsIncludingReturn().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { rp2 }))));
-		Constraints cons4 = new Constraints();
-		cons4.add(rp2);
-		cons4.add(rp2);
-		cons4.add(l1p1);
-		assertTrue("Constraints object with 1 constraint containing return references",
-				cons4.getConstraintsIncludingReturn().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { rp2 }))));
-		Constraints cons5 = new Constraints();
-		cons5.add(rp2);
-		cons5.add(l1l2);
-		cons5.add(l1r);
-		cons5.add(p2p1);
-		assertTrue("Constraints object with 2 constraint containing return references",
-				cons5.getConstraintsIncludingReturn().equals(new HashSet<IConstraint>(Arrays.asList(new IConstraint[] { rp2, l1r }))));
-	}
-
-	@Test
-	public final void testGetContainedLevels() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints object without constraints which contains levels",
-				cons1.getContainedLevels().equals(new HashSet<ILevel>(Arrays.asList(new ILevel[] {}))));
-		Constraints cons2 = new Constraints();
-		cons2.add(rr);
-		assertTrue("Constraints object without constraints which contains levels",
-				cons2.getContainedLevels().equals(new HashSet<ILevel>(Arrays.asList(new ILevel[] {}))));
-		Constraints cons3 = new Constraints();
-		cons3.add(l1l2);
-		cons3.add(rp2);
-		assertTrue("Constraints object with 1 constraint containing levels",
-				cons3.getContainedLevels().equals(new HashSet<ILevel>(Arrays.asList(new ILevel[] { level1, level2 }))));
-		Constraints cons4 = new Constraints();
-		cons4.add(rp2);
-		cons4.add(l1p1);
-		assertTrue("Constraints object with 1 constraint containing levels",
-				cons4.getContainedLevels().equals(new HashSet<ILevel>(Arrays.asList(new ILevel[] { level1 }))));
-		Constraints cons5 = new Constraints();
-		cons5.add(rp2);
-		cons5.add(l1l2);
-		cons5.add(l1r);
-		cons5.add(p2p1);
-		assertTrue("Constraints object with 2 constraint containing levels",
-				cons5.getContainedLevels().equals(new HashSet<ILevel>(Arrays.asList(new ILevel[] { level1, level2 }))));
-	}
-
-	@Test
-	public final void testGetContainedParameterRefs() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints object without constraints which contains parameter references", cons1.getContainedParameterRefs()
-				.equals(new HashSet<ConstraintParameterRef>(Arrays.asList(new ConstraintParameterRef[] {}))));
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		assertTrue("Constraints object without constraints which contains parameter references",
-				cons2.getContainedParameterRefs().equals(new HashSet<ConstraintParameterRef>(Arrays.asList(new ConstraintParameterRef[] {}))));
-		Constraints cons3 = new Constraints();
-		cons3.add(l1l2);
-		cons3.add(rp2);
-		assertTrue(
-				"Constraints object with 1 constraint containing parameter references",
-				cons3.getContainedParameterRefs().equals(
-						new HashSet<ConstraintParameterRef>(Arrays.asList(new ConstraintParameterRef[] { paramRef2 }))));
-		Constraints cons4 = new Constraints();
-		cons4.add(rp2);
-		cons4.add(l1p1);
-		assertTrue(
-				"Constraints object with 2 constraint containing parameter references",
-				cons4.getContainedParameterRefs().equals(
-						new HashSet<ConstraintParameterRef>(Arrays.asList(new ConstraintParameterRef[] { paramRef1, paramRef2 }))));
-		Constraints cons5 = new Constraints();
-		cons5.add(rp2);
-		cons5.add(l1l2);
-		cons5.add(l1r);
-		cons5.add(p2p1);
-		assertTrue(
-				"Constraints object with 2 constraint containing parameter references",
-				cons5.getContainedParameterRefs().equals(
-						new HashSet<ConstraintParameterRef>(Arrays.asList(new ConstraintParameterRef[] { paramRef1, paramRef2 }))));
-	}
-
-	@Test
-	public final void testHighestParameterRefNumber() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Highest reference for the empty constraints object is -1", cons1.highestParameterRefNumber() == -1);
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		assertTrue("Highest reference for the constraints object without reference is -1", cons2.highestParameterRefNumber() == -1);
-		Constraints cons3 = new Constraints();
-		cons3.add(rp2);
-		cons3.add(p2p1);
-		assertTrue("Highest reference for the constraints object is 1", cons3.highestParameterRefNumber() == 1);
-		Constraints cons4 = new Constraints();
-		cons4.add(rp2);
-		cons4.add(p3l1);
-		cons4.add(p2p1);
-		assertTrue("Highest reference for the constraints object is 1", cons4.highestParameterRefNumber() == 7);
-		Constraints cons5 = new Constraints();
-		cons5.add(l1p1);
-		cons5.add(rr);
-		assertTrue("Highest reference for the constraints object is 1", cons5.highestParameterRefNumber() == 0);
-	}
-
-	@Test
-	public final void testSize() {
-		Constraints cons1 = new Constraints();
-		assertTrue("Empty constraints object with 0 constraints", cons1.size() == 0);
-		cons1.add(l1l2);
-		assertTrue("Constraints object with 1 constraints", cons1.size() == 1);
-		cons1.add(l1l2);
-		assertTrue("Constraints object with 1 constraints (2 times added)", cons1.size() == 1);
-		Constraints cons2 = new Constraints();
-		cons2.add(l1l2);
-		cons2.add(rp2);
-		cons2.add(l1r);
-		assertTrue("Constraints object with 3 constraints", cons2.size() == 3);
-		cons2.add(l1r);
-		assertTrue("Constraints object with 3 constraints (2 times added)", cons2.size() == 3);
+	
+	public static <U> List<U> mkList(U[] array) {
+		return new ArrayList<U>(Arrays.asList(array));
 	}
 
 }

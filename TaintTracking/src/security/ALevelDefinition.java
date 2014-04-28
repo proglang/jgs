@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import annotation.IAnnotationDAO;
-import constraints.Constraints;
+import constraints.ConstraintParameterRef;
+import constraints.ConstraintReturnRef;
+import constraints.IConstraint;
+import constraints.LEQConstraint;
 
 public abstract class ALevelDefinition implements ILevelDefinition {
 
@@ -37,7 +40,7 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public abstract int compare(ILevel level1, ILevel level2);
 
-	public abstract Constraints extractConstraints(IAnnotationDAO dao);
+	public abstract List<IConstraint> extractConstraints(IAnnotationDAO dao, String signature);
 
 	public abstract List<ILevel> extractEffects(IAnnotationDAO dao);
 
@@ -89,16 +92,31 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 		return new ArrayList<ILevel>();
 	}
 
-	public Constraints getLibraryConstraints(String methodName, List<String> parameterTypes, String declaringClassName, String signature) {
-		
-		return new Constraints();
+	public List<IConstraint> getLibraryConstraints(String methodName, List<String> parameterTypes, String returnType,
+			String declaringClassName, String signature) {
+		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		ConstraintReturnRef returnRef = new ConstraintReturnRef(signature);
+		if (!returnType.equals("void")) {
+			for (int i = 0; i < parameterTypes.size(); i++) {
+				ConstraintParameterRef paramRef = new ConstraintParameterRef(i, signature);
+				constraints.add(new LEQConstraint(paramRef, returnRef));
+			}
+			if (parameterTypes.size() == 0) constraints.add(new LEQConstraint(getGreatesLowerBoundLevel(), returnRef));
+		}
+		return constraints;
+	}
+
+	public List<IConstraint> getLibraryConstraints(String className) {
+		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		return constraints;
 	}
 
 	public ILevel getLibraryFieldLevel(String fieldName, String declaringClassName, String signature) {
 		return this.getGreatesLowerBoundLevel();
 	}
 
-	public List<ILevel> getLibraryMethodWriteEffects(String methodName, List<String> parameterTypes, String declaringClassName, String signature) {
+	public List<ILevel> getLibraryMethodWriteEffects(String methodName, List<String> parameterTypes, String declaringClassName,
+			String signature) {
 		return new ArrayList<ILevel>();
 	}
 
@@ -110,7 +128,8 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 		return param;
 	}
 
-	public ILevel getLibraryReturnLevel(String methodName, List<String> parameterTypes, String declaringClassName, String signature, List<ILevel> levels) {
+	public ILevel getLibraryReturnLevel(String methodName, List<String> parameterTypes, String declaringClassName, String signature,
+			List<ILevel> levels) {
 		if (levels.size() == 0) {
 			return getGreatesLowerBoundLevel();
 		} else {

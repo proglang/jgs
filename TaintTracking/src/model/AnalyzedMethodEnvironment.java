@@ -6,6 +6,9 @@ import static utils.AnalysisUtils.extractLineNumber;
 import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.generateMethodSignature;
 import static utils.AnalysisUtils.isClinitMethod;
+import constraints.IConstraint;
+import constraints.LEQConstraint;
+import exception.ConstraintUnsupportedException;
 import logging.AnalysisLog;
 import model.Cause.ArrayAssignCause;
 import model.Cause.AssignCause;
@@ -18,7 +21,7 @@ import soot.SootMethod;
 import soot.jimple.ArrayRef;
 import soot.jimple.Stmt;
 import utils.AnalysisUtils;
-import analysis.SecurityTypeAnalysis;
+import analysis.SecurityLevelAnalysis;
 
 /**
  * <h1>Directly analysis environment for methods</h1>
@@ -27,7 +30,7 @@ import analysis.SecurityTypeAnalysis;
  * environment {@link MethodEnvironment} in order to access a logger and the security annotation as well as methods for getting the required
  * annotations at the method and at the class which declares the method, and also the methods which checks the validity of the levels and
  * effects that are given by those annotations. This environment handles {@link SootMethod} which will be analyzed directly, i.e. the method
- * is the main suspect of the {@link SecurityTypeAnalysis} analysis. Means that also the <em>side effects</em> of the method should be
+ * is the main suspect of the {@link SecurityLevelAnalysis} analysis. Means that also the <em>side effects</em> of the method should be
  * check, therefore the environment provides methods which allows the checking of the <em>side effects</em>.
  * 
  * <hr />
@@ -211,6 +214,22 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 		this.srcLn = extractLineNumber(stmt);
 	}
 
+	public void addConstraint(IConstraint constraint) {
+		if (constraint instanceof LEQConstraint) {
+			// add x ~ y iff x != y
+			if (!constraint.getLhs().equals(constraint.getRhs())) {
+				LEQConstraint leqConstraint = (LEQConstraint) constraint;
+				// x <= bottom implies x == bottom and high <= x implies x == high
+				if (leqConstraint.getRhs().equals(getLevelMediator().getGreatestLowerBoundLevel())
+						|| leqConstraint.getLhs().equals(getLevelMediator().getLeastUpperBoundLevel())) {
+					addConstraint(new LEQConstraint(leqConstraint.getRhs(), leqConstraint.getLhs()));
+				}
+				addConstraint(leqConstraint);
+			}
+		} else {
+			throw new ConstraintUnsupportedException(getMsg("exception.constraints.unknown_type", constraint.toString()));
+		}
+	}
 	// /**
 	// * DOC
 	// *

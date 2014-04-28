@@ -3,6 +3,8 @@ package junit.utils;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
+import main.AnalysisType;
+
 /**
  * DOC
  * 
@@ -39,14 +41,18 @@ public class JUnitHelper {
 	 */
 	private final static String[] ARG_LOG_LEVELS = new String[] { "-log-levels", "off" };
 
+	private static final String[] ARG_CONSTRAINTS = new String[] {"-constraints"};
+
 	/**
 	 * DOC
 	 * 
 	 * @param className
+	 * @param type
 	 * @return
 	 */
-	public static String[] generateAnalysisArgumentsForAnalyzedFile(String className) {
-		return concat(ARG_CLASSPATH, ARG_DEF_CLASSPATH, ARG_PROGRAM_CLASSPATH, ARG_SOURCE_PATH, ARG_LOG_LEVELS, new String[] { "-main-class",
+	public static String[] generateAnalysisArgumentsForAnalyzedFile(String className, AnalysisType type) {
+		
+		return concat(ARG_CLASSPATH, ARG_DEF_CLASSPATH, ARG_PROGRAM_CLASSPATH, ARG_SOURCE_PATH, ARG_LOG_LEVELS, (type.equals(AnalysisType.CONSTRAINTS)) ? ARG_CONSTRAINTS : new String[] {} ,new String[] { "-main-class",
 				className }, new String[] { className });
 	}
 

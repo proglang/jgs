@@ -1,5 +1,7 @@
 package extractor;
 
+import static main.AnalysisType.CONSTRAINTS;
+import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.containsStaticInitializer;
 import static utils.AnalysisUtils.generateClassSignature;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import logging.AnalysisLog;
+import main.AnalysisType;
 import model.AnalyzedMethodEnvironment;
 import model.ClassEnvironment;
 import model.FieldEnvironment;
@@ -40,9 +43,12 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
-import constraints.Constraints;
+import constraints.IConstraint;
+import exception.AnalysisTypeException;
 import exception.AnnotationExtractionException;
+import exception.AnnotationInvalidException;
 import exception.ExtractorException;
+import exception.LevelInvalidException;
 import exception.SwitchException;
 
 /**
@@ -76,17 +82,23 @@ public class AnnotationExtractor extends SceneTransformer {
 	 * DOC
 	 */
 	private final UsedObjectStore store = new UsedObjectStore();
+	/**
+	 * DOC
+	 */
+	private final AnalysisType type;
 
 	/**
 	 * DOC
 	 * 
 	 * @param log
 	 * @param mediator
+	 * @param type
 	 */
-	public AnnotationExtractor(AnalysisLog log, ILevelMediator mediator) {
+	public AnnotationExtractor(AnalysisLog log, ILevelMediator mediator, AnalysisType type) {
 		super();
 		this.log = log;
 		this.mediator = mediator;
+		this.type = type;
 		this.stmtSwitch = new AnnotationStmtSwitch(this);
 	}
 
@@ -96,24 +108,43 @@ public class AnnotationExtractor extends SceneTransformer {
 	 * @return
 	 */
 	public void checkReasonability() {
-		for (SootClass sootClass : store.getClasses()) {
-			ClassEnvironment ce = store.getClassEnvironment(sootClass);
-			if (!ce.isLibrary()) {
-				ce.isReasonable();
+			for (SootClass sootClass : store.getClasses()) {
+				ClassEnvironment ce = store.getClassEnvironment(sootClass);
+				if (!ce.isLibrary()) {
+					try {
+						ce.isReasonable(type);
+					} catch (AnnotationInvalidException | LevelInvalidException e) {
+						String signature = generateClassSignature(sootClass);
+						throw new ExtractorException(getMsg("exception.extractor.other.class_not_reasonable", signature), e);
+					}
+					
+				}
 			}
-		}
-		for (SootField sootField : store.getFields()) {
-			FieldEnvironment fe = store.getFieldEnvironment(sootField);
-			if (!fe.isLibraryClass()) {
-				fe.isReasonable();
+			for (SootField sootField : store.getFields()) {
+				FieldEnvironment fe = store.getFieldEnvironment(sootField);
+				if (!fe.isLibraryClass()) {
+					try {
+						fe.isReasonable(type);
+					} catch (AnnotationInvalidException | LevelInvalidException e) {
+						String signature = generateFieldSignature(sootField);
+						throw new ExtractorException(getMsg("exception.extractor.other.field_not_reasonable", signature), e);
+					}
+					
+				}
 			}
-		}
-		for (SootMethod sootMethod : store.getMethods()) {
-			MethodEnvironment me = store.getMethodEnvironment(sootMethod);
-			if (!me.isLibraryMethod()) {
-				me.isReasonable();
+			for (SootMethod sootMethod : store.getMethods()) {
+				MethodEnvironment me = store.getMethodEnvironment(sootMethod);
+				if (!me.isLibraryMethod()) {
+					try {
+						me.isReasonable(type);
+					} catch (AnnotationInvalidException | LevelInvalidException e) {
+						String signature = generateMethodSignature(sootMethod);
+						throw new ExtractorException(getMsg("exception.extractor.other.method_not_reasonable", signature), e);
+					}	
+					
+				}
 			}
-		}
+ 	
 	}
 
 	/**
@@ -153,19 +184,39 @@ public class AnnotationExtractor extends SceneTransformer {
 	private ClassEnvironment checkAndBuildClassEnvironment(SootClass sootClass) {
 		boolean isLibrary = sootClass.isJavaLibraryClass();
 		boolean hasClassWriteEffectAnnotation = mediator.hasClassWriteEffectAnnotation(sootClass);
+		boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootClass);
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
-		if (!isLibrary) {
-			if (hasClassWriteEffectAnnotation) {
-				try {
-					classWriteEffects.addAll(mediator.extractClassEffects(sootClass));
-				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(getMsg("exception.extractor.effects.error_class", generateClassSignature(sootClass)), e);
+		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		if (type.equals(CONSTRAINTS)) {
+			if (! isLibrary) {
+				if (hasConstraintsAnnotation) {
+					try {
+						constraints.addAll(mediator.extractConstraints(sootClass));
+					} catch (AnnotationExtractionException e) {
+						throw new ExtractorException(getMsg("exception.extractor.class_constraints.error", generateClassSignature(sootClass)), e);
+					}
+				} else {
+					throw new ExtractorException(getMsg("exception.extractor.class_constraints.no_constraints", generateClassSignature(sootClass)));
 				}
+			} else {
+				constraints.addAll(mediator.getLibraryConstraints(sootClass));
+			}
+		} else if (type.equals(LEVELS)) {
+			if (!isLibrary) {
+				if (hasClassWriteEffectAnnotation) {
+					try {
+						classWriteEffects.addAll(mediator.extractClassEffects(sootClass));
+					} catch (AnnotationExtractionException e) {
+						throw new ExtractorException(getMsg("exception.extractor.effects.error_class", generateClassSignature(sootClass)), e);
+					}
+				}
+			} else {
+				classWriteEffects.addAll(mediator.getLibraryClassWriteEffects(sootClass));
 			}
 		} else {
-			classWriteEffects.addAll(mediator.getLibraryClassWriteEffects(sootClass));
+			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}
-		ClassEnvironment ce = new ClassEnvironment(sootClass, classWriteEffects, log, mediator);
+		ClassEnvironment ce = new ClassEnvironment(sootClass, classWriteEffects, constraints, log, mediator);
 		return ce;
 	}
 
@@ -179,19 +230,23 @@ public class AnnotationExtractor extends SceneTransformer {
 		SootClass declaringClass = sootField.getDeclaringClass();
 		boolean isLibrary = declaringClass.isJavaLibraryClass();
 		ILevel fieldSecurityLevel = null;
-		boolean hasFieldSecurityAnnotation = mediator.hasFieldSecurityAnnotation(sootField);
-		if (!isLibrary) {
-			if (hasFieldSecurityAnnotation) {
-				try {
-					fieldSecurityLevel = mediator.extractFieldSecurityLevel(sootField);
-				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(getMsg("exception.extractor.level.field.error", generateFieldSignature(sootField)), e);
+		if (type.equals(LEVELS) || type.equals(CONSTRAINTS)) {
+			boolean hasFieldSecurityAnnotation = mediator.hasFieldSecurityAnnotation(sootField);
+			if (!isLibrary) {
+				if (hasFieldSecurityAnnotation) {
+					try {
+						fieldSecurityLevel = mediator.extractFieldSecurityLevel(sootField);
+					} catch (AnnotationExtractionException e) {
+						throw new ExtractorException(getMsg("exception.extractor.level.field.error", generateFieldSignature(sootField)), e);
+					}
+				} else {
+					throw new ExtractorException(getMsg("exception.extractor.level.field.no_level", generateFieldSignature(sootField)));
 				}
 			} else {
-				throw new ExtractorException(getMsg("exception.extractor.level.field.no_level", generateFieldSignature(sootField)));
+				fieldSecurityLevel = mediator.getLibraryFieldSecurityLevel(sootField);
 			}
 		} else {
-			fieldSecurityLevel = mediator.getLibraryFieldSecurityLevel(sootField);
+			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
 		addClassEnvironmentForClass(declaringClass);
@@ -220,83 +275,91 @@ public class AnnotationExtractor extends SceneTransformer {
 		List<MethodParameter> parameterSecurityLevel = new ArrayList<MethodParameter>();
 		List<ILevel> methodWriteEffects = new ArrayList<ILevel>();
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
-		Constraints constraints = new Constraints();
-		if (!isLibrary) {
-			boolean hasReturnSecurityAnnotation = mediator.hasReturnSecurityAnnotation(sootMethod);
-			boolean hasParameterSecurityAnnotation = mediator.hasParameterSecurityAnnotation(sootMethod);
-			boolean hasMethodWriteEffectAnnotation = mediator.hasMethodWriteEffectAnnotation(sootMethod);
-			boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootMethod);
-			if (!isVoid) {
-				if (hasReturnSecurityAnnotation) {
+		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		if (type.equals(CONSTRAINTS)) {
+			if (!isLibrary) {
+				boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootMethod);
+				if (hasConstraintsAnnotation) {
 					try {
-						returnSecurityLevel = mediator.extractReturnSecurityLevel(sootMethod);
+						constraints.addAll(mediator.extractConstraints(sootMethod));
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.level.return.error", generateMethodSignature(sootMethod)), e);
+						throw new ExtractorException(getMsg("exception.extractor.method_constraints.error", generateMethodSignature(sootMethod)), e);
 					}
-				} else {
-					throw new ExtractorException(getMsg("exception.extractor.level.return.no_level", generateMethodSignature(sootMethod)));
+				} else if (!(isClinit || (isInit && parameterCount == 0) || (isVoid && parameterCount == 0))) {
+					throw new ExtractorException(getMsg("exception.extractor.method_constraints.no_constraints", generateMethodSignature(sootMethod)));
 				}
 			} else {
-				if (hasReturnSecurityAnnotation) {
-					throw new ExtractorException(getMsg("exception.extractor.level.return.void", generateMethodSignature(sootMethod)));
-				}
+				constraints.addAll(mediator.getLibraryConstraints(sootMethod));
 			}
-			if (hasMethodWriteEffectAnnotation) {
-				try {
-					methodWriteEffects.addAll(mediator.extractMethodEffects(sootMethod));
-				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(getMsg("exception.extractor.effects.error_method", generateMethodSignature(sootMethod)), e);
-				}
-			}
-			if (parameterCount != 0) {
-				if (hasParameterSecurityAnnotation) {
-					List<ILevel> parameterLevels = new ArrayList<ILevel>();
-					try {
-						parameterLevels.addAll(mediator.extractParameterSecurityLevels(sootMethod));
-					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.level.parameter.error", generateMethodSignature(sootMethod)), e);
-					}
-					if (parameterLevels.size() == parameterCount) {
-						List<String> names = getParameterNames(sootMethod);
-						for (int i = 0; i < parameterLevels.size(); i++) {
-							Type type = sootMethod.getParameterType(i);
-							ILevel level = parameterLevels.get(i);
-							String name = (parameterCount == names.size()) ? names.get(i) : "arg" + (i + 1);
-							MethodParameter mp = new MethodParameter(i, name, type, level);
-							parameterSecurityLevel.add(mp);
+		} else if (type.equals(LEVELS)) {
+			if (!isLibrary) {
+				boolean hasReturnSecurityAnnotation = mediator.hasReturnSecurityAnnotation(sootMethod);
+				boolean hasParameterSecurityAnnotation = mediator.hasParameterSecurityAnnotation(sootMethod);
+				boolean hasMethodWriteEffectAnnotation = mediator.hasMethodWriteEffectAnnotation(sootMethod);
+				if (!isVoid) {
+					if (hasReturnSecurityAnnotation) {
+						try {
+							returnSecurityLevel = mediator.extractReturnSecurityLevel(sootMethod);
+						} catch (AnnotationExtractionException e) {
+							throw new ExtractorException(getMsg("exception.extractor.level.return.error", generateMethodSignature(sootMethod)), e);
 						}
 					} else {
-						throw new ExtractorException(getMsg("exception.extractor.level.parameter.invalid", generateMethodSignature(sootMethod)));
+						throw new ExtractorException(getMsg("exception.extractor.level.return.no_level", generateMethodSignature(sootMethod)));
 					}
 				} else {
-					throw new ExtractorException(getMsg("exception.extractor.level.parameter.no_level", generateMethodSignature(sootMethod)));
+					if (hasReturnSecurityAnnotation) {
+						throw new ExtractorException(getMsg("exception.extractor.level.return.void", generateMethodSignature(sootMethod)));
+					}
 				}
-			}
-			if (hasConstraintsAnnotation) {
-				try {
-					constraints = mediator.extractConstraints(sootMethod);
-				} catch (AnnotationExtractionException e) {
-					throw new ExtractorException(getMsg("exception.extractor.constraints.error", generateMethodSignature(sootMethod)), e);
+				if (parameterCount != 0) {
+					if (hasParameterSecurityAnnotation) {
+						List<ILevel> parameterLevels = new ArrayList<ILevel>();
+						try {
+							parameterLevels.addAll(mediator.extractParameterSecurityLevels(sootMethod));
+						} catch (AnnotationExtractionException e) {
+							throw new ExtractorException(getMsg("exception.extractor.level.parameter.error", generateMethodSignature(sootMethod)), e);
+						}
+						if (parameterLevels.size() == parameterCount) {
+							List<String> names = getParameterNames(sootMethod);
+							for (int i = 0; i < parameterLevels.size(); i++) {
+								Type type = sootMethod.getParameterType(i);
+								ILevel level = parameterLevels.get(i);
+								String name = (parameterCount == names.size()) ? names.get(i) : "arg" + (i + 1);
+								MethodParameter mp = new MethodParameter(i, name, type, level);
+								parameterSecurityLevel.add(mp);
+							}
+						} else {
+							throw new ExtractorException(getMsg("exception.extractor.level.parameter.invalid", generateMethodSignature(sootMethod)));
+						}
+					} else {
+						throw new ExtractorException(getMsg("exception.extractor.level.parameter.no_level", generateMethodSignature(sootMethod)));
+					}
+				}
+				if (hasMethodWriteEffectAnnotation) {
+					try {
+						methodWriteEffects.addAll(mediator.extractMethodEffects(sootMethod));
+					} catch (AnnotationExtractionException e) {
+						throw new ExtractorException(getMsg("exception.extractor.effects.error_method", generateMethodSignature(sootMethod)), e);
+					}
 				}
 			} else {
-				// FIXME: Is the constraints annotation mandatory???
+				List<ILevel> parameterLevels = new ArrayList<ILevel>();
+				parameterLevels.addAll(mediator.getLibraryParameterSecurityLevel(sootMethod));
+				List<String> names = getParameterNames(sootMethod);
+				for (int i = 0; i < parameterLevels.size(); i++) {
+					Type type = sootMethod.getParameterType(i);
+					ILevel level = parameterLevels.get(i);
+					String name = (parameterCount == names.size()) ? names.get(i) : "arg" + (i + 1);
+					MethodParameter mp = new MethodParameter(i, name, type, level);
+					parameterSecurityLevel.add(mp);
+				}
+				if (!isVoid) {
+					returnSecurityLevel = mediator.getLibraryReturnSecurityLevel(sootMethod, parameterLevels);
+				}
+				methodWriteEffects.addAll(mediator.getLibraryWriteEffects(sootMethod));
 			}
 		} else {
-			List<ILevel> parameterLevels = new ArrayList<ILevel>();
-			parameterLevels.addAll(mediator.getLibraryParameterSecurityLevel(sootMethod));
-			List<String> names = getParameterNames(sootMethod);
-			for (int i = 0; i < parameterLevels.size(); i++) {
-				Type type = sootMethod.getParameterType(i);
-				ILevel level = parameterLevels.get(i);
-				String name = (parameterCount == names.size()) ? names.get(i) : "arg" + (i + 1);
-				MethodParameter mp = new MethodParameter(i, name, type, level);
-				parameterSecurityLevel.add(mp);
-			}
-			if (!isVoid) {
-				returnSecurityLevel = mediator.getLibraryReturnSecurityLevel(sootMethod, parameterLevels);
-			}
-			methodWriteEffects.addAll(mediator.getLibraryWriteEffects(sootMethod));
-			constraints = mediator.getLibraryConstraints(sootMethod);
+			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}
 		addClassEnvironmentForClass(declaringClass);
 		ClassEnvironment ce = store.getClassEnvironment(declaringClass);

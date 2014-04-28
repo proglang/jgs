@@ -6,7 +6,7 @@ import security.ILevel;
 import security.ILevelMediator;
 import soot.SootField;
 import soot.SootMethod;
-import analysis.SecurityTypeAnalysis;
+import analysis.SecurityLevelAnalysis;
 
 /**
  * <h1>Base analysis environment</h1>
@@ -14,7 +14,7 @@ import analysis.SecurityTypeAnalysis;
  * The {@link Environment} is the abstract base class for environments of different types. E.g. the environment for {@link SootField} or for
  * {@link SootMethod} which will be analyzed only indirectly (e.g. reference to a {@link SootField} or the invoke of a {@link SootMethod}
  * inside of a method body, see {@link FieldEnvironment} and {@link MethodEnvironment}), or the environment for a {@link SootMethod} which
- * will be analyzed directly (the method which is main suspect of the {@link SecurityTypeAnalysis} analysis, see
+ * will be analyzed directly (the method which is main suspect of the {@link SecurityLevelAnalysis} analysis, see
  * {@link AnalyzedMethodEnvironment}). Each environment type requires the a logger that allows to log informations of different
  * {@link AnalysisLogLevel} as well as a security annotation object that provides the handling of <em>security level</em>.
  * 

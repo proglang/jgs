@@ -1,5 +1,7 @@
 package model;
 
+import static main.AnalysisType.CONSTRAINTS;
+import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateFieldSignature;
 
@@ -7,10 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logging.AnalysisLog;
+import main.AnalysisType;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootField;
+import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
 import exception.LevelInvalidException;
 
@@ -96,16 +100,22 @@ public class FieldEnvironment extends Environment {
 	/**
 	 * TODO: documentation
 	 * 
+	 * @param type
+	 * 
 	 * @return
 	 */
-	public void isReasonable() {
-		if (level != null) { // some level given
-			if (!getLevelMediator().checkLevelValidity(level)) {
-				// level isn't a valid security level
-				throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), generateFieldSignature(sootField)));
+	public void isReasonable(AnalysisType type) {
+		if (type.equals(CONSTRAINTS) || type.equals(LEVELS)) {
+			if (level != null) { // some level given
+				if (!getLevelMediator().checkLevelValidity(level)) {
+					// level isn't a valid security level
+					throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), generateFieldSignature(sootField)));
+				}
+			} else { // no level given
+				throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", generateFieldSignature(sootField)));
 			}
-		} else { // no level given
-			throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", generateFieldSignature(sootField)));
+		} else {
+			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}
 	}
 

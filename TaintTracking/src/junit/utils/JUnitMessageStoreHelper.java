@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import junit.model.MessageType;
 import junit.model.TestFile;
+import main.AnalysisType;
 import main.Main;
 import model.MessageStore;
 import model.MessageStore.Message;
@@ -34,9 +35,9 @@ public class JUnitMessageStoreHelper {
 	 * @param testFile
 	 * @param levels
 	 */
-	public static void checkMethodStoreEquality(TestFile testFile, Level[] levels) {
+	public static void checkMethodStoreEquality(TestFile testFile, Level[] levels, AnalysisType type) {
 		try {
-			String[] args = JUnitHelper.generateAnalysisArgumentsForAnalyzedFile(testFile.getClassClasspath());
+			String[] args = JUnitHelper.generateAnalysisArgumentsForAnalyzedFile(testFile.getClassClasspath(), type);
 			MessageStore calculatedMessages = Main.executeAndReturnMessageStore(args);
 			MessageStore expectedMessages = extractMessagesFromFile(testFile.getSourceFile());
 			printDifferences(levels, calculatedMessages, expectedMessages);

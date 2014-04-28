@@ -1,5 +1,13 @@
 package model;
 
+import static constraints.ConstraintsUtils.containsSetReturnReferenceFor;
+import static constraints.ConstraintsUtils.getContainedLevelsOfSet;
+import static constraints.ConstraintsUtils.containsSetParameterReferenceFor;
+import static constraints.ConstraintsUtils.getInvalidParameterReferencesOfSet;
+import static constraints.ConstraintsUtils.getInvalidReturnReferencesOfSet;
+import static constraints.ConstraintsUtils.containsSetProgramCounterReference;
+import static main.AnalysisType.CONSTRAINTS;
+import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.generateMethodSignature;
@@ -10,11 +18,15 @@ import java.util.List;
 import java.util.Map;
 
 import logging.AnalysisLog;
+import main.AnalysisType;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootMethod;
 import soot.Type;
-import constraints.Constraints;
+import constraints.ConstraintParameterRef;
+import constraints.ConstraintReturnRef;
+import constraints.IConstraint;
+import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
 import exception.LevelInvalidException;
 import exception.MethodParameterNotFoundException;
@@ -121,7 +133,10 @@ public class MethodEnvironment extends Environment {
 	 * The <em>write effects</em> of the class which declares the {@link SootMethod}.
 	 */
 	private List<ILevel> classWriteEffects = new ArrayList<ILevel>();
-	private final Constraints constraints;
+	/**
+	 * DOC
+	 */
+	private final List<IConstraint> constraints = new ArrayList<IConstraint>();
 	/**
 	 * DOC
 	 */
@@ -175,7 +190,8 @@ public class MethodEnvironment extends Environment {
 	 */
 	public MethodEnvironment(SootMethod sootMethod, boolean isIdFunction, boolean isClinit, boolean isInit, boolean isVoid,
 			boolean isSootSecurityMethod, List<MethodParameter> parameterSecurityLevel, ILevel returnSecurityLevel,
-			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, Constraints constraints, AnalysisLog log, ILevelMediator mediator) {
+			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, List<IConstraint> constraints, AnalysisLog log,
+			ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootMethod = sootMethod;
 		this.isIdFunction = isIdFunction;
@@ -189,7 +205,7 @@ public class MethodEnvironment extends Environment {
 		this.returnLevel = returnSecurityLevel;
 		this.writeEffects.addAll(methodWriteEffects);
 		this.classWriteEffects.addAll(classWriteEffects);
-		this.constraints = constraints;
+		this.constraints.addAll(constraints);
 	}
 
 	/**
@@ -201,8 +217,8 @@ public class MethodEnvironment extends Environment {
 		return classWriteEffects;
 	}
 
-	public Constraints getContraints() {
-		return constraints;
+	public List<IConstraint> getContraints() {
+		return new ArrayList<IConstraint>(constraints);
 	}
 
 	/**
@@ -308,55 +324,75 @@ public class MethodEnvironment extends Environment {
 	/**
 	 * DOC
 	 * 
+	 * @param type
+	 * 
 	 * @return
 	 */
-	public void isReasonable() {
+	public void isReasonable(AnalysisType type) {
 		String methodSignature = generateMethodSignature(sootMethod);
-		if (!getLevelMediator().checkParameterLevelsValidity(getListOfParameterLevels())) {
-			for (ILevel level : getLevelMediator().getInvalidParameterLevels(getListOfParameterLevels())) {
-				throw new LevelInvalidException(getMsg("exception.level.parameter.invalid", level.getName(), methodSignature));
+		if (type.equals(CONSTRAINTS)) {
+			String signature = sootMethod.getSignature();
+			for (ConstraintReturnRef returnRef : getInvalidReturnReferencesOfSet(constraints, signature)) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_return_ref", methodSignature, returnRef.toString()));
 			}
-		}
-		if (isVoid) {
-			if (returnLevel != null) {
-				throw new AnnotationInvalidException(getMsg("exception.level.return.void_method", methodSignature));
-			}
-			// NEW
-			if (constraints.containsReturnRef()) {
-				throw new AnnotationInvalidException(getMsg("exception.constraints.void_method", methodSignature));
-			}
-		} else {
-			if (returnLevel == null) {
-				throw new AnnotationInvalidException(getMsg("exception.level.return.no_level", methodSignature));
+			if (isVoid) {
+				if (containsSetReturnReferenceFor(constraints, signature)) {
+					throw new AnnotationInvalidException(getMsg("exception.constraints.void_method", methodSignature));
+				}
 			} else {
-				if (!getLevelMediator().checkLevelValidity(returnLevel)) {
-					throw new LevelInvalidException(getMsg("exception.level.return.invalid", returnLevel.getName(), methodSignature));
+				if (!containsSetReturnReferenceFor(constraints, signature)) {
+					throw new AnnotationInvalidException(getMsg("exception.constraints.no_return_ref", methodSignature));
 				}
 			}
-			// NEW
-			if (!constraints.containsReturnRef()) {
-				throw new AnnotationInvalidException(getMsg("exception.constraints.no_return_ref", methodSignature));
+			List<ILevel> containedLevels = getContainedLevelsOfSet(constraints);
+			if (!getLevelMediator().checkLevelsValidity(containedLevels)) {
+				for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(containedLevels)) {
+					throw new LevelInvalidException(getMsg("exception.constraints.method_invalid_level", invalidEffect.getName(), methodSignature));
+				}
 			}
-		}
-		if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
-			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(writeEffects)) {
-				throw new AnnotationInvalidException(getMsg("exception.effects.method_invalid", invalidEffect.getName(), methodSignature));
+			for (ConstraintParameterRef paramRef : getInvalidParameterReferencesOfSet(constraints, signature, sootMethod.getParameterCount())) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_param_ref", methodSignature, paramRef.toString()));
 			}
+			for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+				if (!containsSetParameterReferenceFor(constraints, signature, i)) {
+					throw new AnnotationInvalidException(getMsg("exception.constraints.no_param_ref", methodSignature, i));
+				}
+			}
+			if (! containsSetProgramCounterReference(constraints) && ! isClinit) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.method_no_pc_ref", methodSignature));
+			}
+		} else if (type.equals(LEVELS)) {
+			if (!getLevelMediator().checkParameterLevelsValidity(getListOfParameterLevels())) {
+				for (ILevel level : getLevelMediator().getInvalidParameterLevels(getListOfParameterLevels())) {
+					throw new LevelInvalidException(getMsg("exception.level.parameter.invalid", level.getName(), methodSignature));
+				}
+			}
+			if (isVoid) {
+				if (returnLevel != null) {
+					throw new AnnotationInvalidException(getMsg("exception.level.return.void_method", methodSignature));
+				}
+			} else {
+				if (returnLevel == null) {
+					throw new AnnotationInvalidException(getMsg("exception.level.return.no_level", methodSignature));
+				} else {
+					if (!getLevelMediator().checkLevelValidity(returnLevel)) {
+						throw new LevelInvalidException(getMsg("exception.level.return.invalid", returnLevel.getName(), methodSignature));
+					}
+				}
+			}
+			if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
+				for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(writeEffects)) {
+					throw new AnnotationInvalidException(getMsg("exception.effects.method_invalid", invalidEffect.getName(), methodSignature));
+				}
+			}
+		} else {
+			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}
+		// FIXME: depends on the analysis type in future...
 		if (!getLevelMediator().checkLevelsValidity(classWriteEffects)) {
 			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(classWriteEffects)) {
 				throw new AnnotationInvalidException(getMsg("exception.effects.method_class_invalid", invalidEffect.getName(), methodSignature));
 			}
-		}
-		// NEW
-		if (!getLevelMediator().checkLevelsValidity(new ArrayList<ILevel>(constraints.getContainedLevels()))) {
-			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(new ArrayList<ILevel>(constraints.getContainedLevels()))) {
-				throw new LevelInvalidException(getMsg("exception.constraints.invalid_level", invalidEffect.getName(), methodSignature));
-			}
-		}
-		if (sootMethod.getParameterCount() < constraints.highestParameterRefNumber() + 1) {
-			throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_param_ref", methodSignature,
-					sootMethod.getParameterCount()));
 		}
 	}
 

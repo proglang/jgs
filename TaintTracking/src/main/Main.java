@@ -14,15 +14,15 @@ import security.ILevelMediator;
 import soot.PackManager;
 import soot.Transform;
 import utils.AnalysisUtils.ArgumentParser;
-import analysis.SecurityTypeAnalysis;
-import analysis.SecurityTypeTransformer;
+import analysis.SecurityLevelAnalysis;
+import analysis.SecurityTransformer;
 import extractor.AnnotationExtractor;
 
 /**
  * <h1>Main class of the security analysis</h1>
  * 
- * Main class of the security analysis which uses the {@link SecurityTypeTransformer} to transform the body of the methods, as well as the
- * {@link SecurityTypeAnalysis} analysis to check for violations against the <em>security level</em> and <em>write effect</em> policy.
+ * Main class of the security analysis which uses the {@link SecurityTransformer} to transform the body of the methods, as well as the
+ * {@link SecurityLevelAnalysis} analysis to check for violations against the <em>security level</em> and <em>write effect</em> policy.
  * 
  * <hr />
  * 
@@ -82,10 +82,11 @@ public class Main {
 		@SuppressWarnings("unused")
 		ILevelDefinitionChecker checker = new DefinitionChecker(definition, log, true);
 		ILevelMediator mediator = new Mediator(definition);
-		AnnotationExtractor extractor = new AnnotationExtractor(log, mediator);
+		AnalysisType type = parser.getAnalysisType();
+		AnnotationExtractor extractor = new AnnotationExtractor(log, mediator, type);
 		PackManager.v().getPack("wjtp").add(new Transform(PHASE_NAME_ANNOTATION, extractor));
 		PackManager.v().getPack("jtp")
-				.add(new Transform(PHASE_NAME_SECURITY, new SecurityTypeTransformer(mediator, log, extractor, parser.isInstantLogging())));
+				.add(new Transform(PHASE_NAME_SECURITY, new SecurityTransformer(mediator, log, extractor, parser.isInstantLogging(), type)));
 		soot.Main.main(args);
 		if (!parser.isInstantLogging()) {
 			log.printAllMessages();

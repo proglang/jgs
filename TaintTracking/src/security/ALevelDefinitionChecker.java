@@ -3,6 +3,7 @@ package security;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
@@ -48,8 +49,9 @@ import utils.AnalysisUtils;
 import annotation.JavaAnnotationDAO;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintReturnRef;
-import constraints.Constraints;
+import constraints.IConstraint;
 import constraints.LEQConstraint;
+import static constraints.ConstraintsUtils.containsSetProgramCounterReference;
 import exception.AnnotationElementNotFoundException;
 import exception.AnnotationInvalidConstraintsException;
 import exception.DefinitionInvalidException;
@@ -145,8 +147,8 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		annotations.put(implementation.getAnnotationClassFieldLevel(), new ElementType[] { FIELD });
 		annotations.put(implementation.getAnnotationClassParameterLevel(), new ElementType[] { METHOD, CONSTRUCTOR });
 		annotations.put(implementation.getAnnotationClassReturnLevel(), new ElementType[] { METHOD });
-		annotations.put(implementation.getAnnotationClassEffects(), new ElementType[] { METHOD, CONSTRUCTOR, ElementType.TYPE });
-		annotations.put(implementation.getAnnotationClassConstraints(), new ElementType[] { METHOD, CONSTRUCTOR });
+		annotations.put(implementation.getAnnotationClassEffects(), new ElementType[] { METHOD, CONSTRUCTOR, TYPE });
+		annotations.put(implementation.getAnnotationClassConstraints(), new ElementType[] { METHOD, CONSTRUCTOR, TYPE });
 		for (Class<? extends Annotation> annotation : annotations.keySet()) {
 			checkConventionsOfAnnotationClass(annotation, annotations.get(annotation));
 		}
@@ -216,10 +218,12 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 					} else if (annotation.annotationType().equals(implementation.getAnnotationClassConstraints())) {
 						try {
 							existsConstraintsAnnotation = true;
-							Constraints constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation));
-							if (constraints.contains(new LEQConstraint(new ConstraintParameterRef(0), level))
-									&& constraints.contains(new LEQConstraint(new ConstraintReturnRef(), level))
-									&& constraints.contains(new LEQConstraint(level, new ConstraintReturnRef())) && constraints.size() == 3) {
+							String signature = AnalysisUtils.generateSignature(method);
+							List<IConstraint> constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation), signature);
+							if (! constraints.contains(new LEQConstraint(new ConstraintParameterRef(0, signature), level))
+									|| ! constraints.contains(new LEQConstraint(new ConstraintReturnRef(signature), level))
+									|| ! constraints.contains(new LEQConstraint(level, new ConstraintReturnRef(signature))) 
+									|| ! containsSetProgramCounterReference(constraints) || constraints.size() != 4) {
 								throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.invalid_constraints", signatureLevelFunction));
 							}
 						} catch (AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {

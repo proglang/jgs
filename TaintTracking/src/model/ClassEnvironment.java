@@ -1,17 +1,26 @@
 package model;
 
+import static main.AnalysisType.CONSTRAINTS;
+import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateClassSignature;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static constraints.ConstraintsUtils.*;
+
+import constraints.IConstraint;
+
 import logging.AnalysisLog;
+import main.AnalysisType;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootField;
+import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
+import exception.LevelInvalidException;
 
 /**
  * DOC
@@ -29,6 +38,10 @@ public class ClassEnvironment extends Environment {
 	 * The <em>write effects</em> of the class.
 	 */
 	private List<ILevel> writeEffects = new ArrayList<ILevel>();
+	/**
+	 * DOC
+	 */
+	private final List<IConstraint> constraints = new ArrayList<IConstraint>();
 
 	/**
 	 * DOC
@@ -38,10 +51,12 @@ public class ClassEnvironment extends Environment {
 	 * @param log
 	 * @param mediator
 	 */
-	public ClassEnvironment(SootClass sootClass, List<ILevel> classWriteEffects, AnalysisLog log, ILevelMediator mediator) {
+	public ClassEnvironment(SootClass sootClass, List<ILevel> classWriteEffects, List<IConstraint> constraints, AnalysisLog log,
+			ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootClass = sootClass;
 		this.writeEffects.addAll(classWriteEffects);
+		this.constraints.addAll(constraints);
 	}
 
 	/**
@@ -85,16 +100,47 @@ public class ClassEnvironment extends Environment {
 	/**
 	 * DOC
 	 * 
+	 * @param type
+	 * 
 	 * @return
 	 */
-	public void isReasonable() {
+	public void isReasonable(AnalysisType type) {
 		String classSignature = generateClassSignature(sootClass);
-		if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
-			// one of the write effects isn't a valid security level
-			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(writeEffects)) {
-				throw new AnnotationInvalidException(getMsg("exception.effects.class_invalid", invalidEffect.getName(), classSignature));
+		if (type.equals(LEVELS)) {
+			if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
+				// one of the write effects isn't a valid security level
+				for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(writeEffects)) {
+					throw new AnnotationInvalidException(getMsg("exception.effects.class_invalid", invalidEffect.getName(), classSignature));
+				}
 			}
+		} else if (type.equals(CONSTRAINTS)) {
+			if (!containsSetProgramCounterReference(constraints)) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.class_no_pc_ref", classSignature));
+			}
+			if (containsSetParameterReference(constraints)) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.param_ref", classSignature));
+			}
+			if (containsSetReturnReference(constraints)) {
+				throw new AnnotationInvalidException(getMsg("exception.constraints.return_ref", classSignature));
+			}
+			List<ILevel> containedLevels = getContainedLevelsOfSet(constraints);
+			if (!getLevelMediator().checkLevelsValidity(containedLevels)) {
+				for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(containedLevels)) {
+					throw new LevelInvalidException(getMsg("exception.constraints.class_invalid_level", invalidEffect.getName(), classSignature));
+				}
+			}
+		} else {
+			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}
+	}
+
+	/**
+	 * DOC
+	 * 
+	 * @return
+	 */
+	public List<IConstraint> getContraints() {
+		return new ArrayList<IConstraint>(constraints);
 	}
 
 }

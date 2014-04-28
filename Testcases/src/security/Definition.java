@@ -7,24 +7,22 @@ import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 
+import annotation.IAnnotationDAO;
+import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintReturnRef;
-import constraints.Constraints;
+import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
 import exception.AnnotationInvalidConstraintsException;
+import security.Definition.Constraints;
 
-import annotation.IAnnotationDAO;
-
-import security.ALevel;
-import security.ALevelDefinition;
-import security.ILevel;
-
+@Constraints({ "@pc <= low" })
 public class Definition extends ALevelDefinition {
 
-	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
+	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface MethodConstraints {
+	public @interface Constraints {
 
 		String[] value() default {};
 
@@ -77,22 +75,17 @@ public class Definition extends ALevelDefinition {
 
 		@Override
 		public String toString() {
-			return "StringLevel: " + level;
+			return level;
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-			if (obj == this) {
-				return true;
-			}
-			if (obj.getClass() == this.getClass()) {
-				StringLevel other = (StringLevel) obj;
-				return other.level.equals(level);
-			}
-			return false;
+			if (obj == this) return true; 
+			if (obj == null) return false;
+			if (obj.getClass() != getClass()) return false;
+			StringLevel lev = (StringLevel) obj;
+			return lev.level.equals(level);
+			
 		}
 
 	}
@@ -101,7 +94,7 @@ public class Definition extends ALevelDefinition {
 	private final ILevel high = new StringLevel("high");
 
 	public Definition() {
-		super(FieldSecurity.class, ParameterSecurity.class, ReturnSecurity.class, WriteEffect.class, MethodConstraints.class);
+		super(FieldSecurity.class, ParameterSecurity.class, ReturnSecurity.class, WriteEffect.class, Constraints.class);
 	}
 
 	@Override
@@ -165,19 +158,19 @@ public class Definition extends ALevelDefinition {
 	}
 
 	@Override
-	public Constraints extractConstraints(IAnnotationDAO dao) {
-		Constraints container = new Constraints();
-		List<String> constraints = dao.getStringArrayFor("value");
-		for (String constraint : constraints) {
+	public List<IConstraint> extractConstraints(IAnnotationDAO dao, String signature) {
+		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		List<String> rawConstraints = dao.getStringArrayFor("value");
+		for (String constraint : rawConstraints) {
 			String errMsg = String.format("The specified constraint '%s' is invalid.", constraint);
 			if (constraint.contains("<=")) {
 				String[] components = constraint.split("<=");
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs);
-					container.add(new LEQConstraint(l, r));
+					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
+					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					constraints.add(new LEQConstraint(l, r));
 				} else {
 					throw new AnnotationInvalidConstraintsException(errMsg);
 				}
@@ -186,10 +179,10 @@ public class Definition extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs);
-					container.add(new LEQConstraint(l, r));
-					container.add(new LEQConstraint(r, l));
+					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
+					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					constraints.add(new LEQConstraint(l, r));
+					constraints.add(new LEQConstraint(r, l));
 				} else {
 					throw new AnnotationInvalidConstraintsException(errMsg);
 				}
@@ -198,9 +191,9 @@ public class Definition extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs);
-					container.add(new LEQConstraint(r, l));
+					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
+					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					constraints.add(new LEQConstraint(r, l));
 				} else {
 					throw new AnnotationInvalidConstraintsException(errMsg);
 				}
@@ -208,16 +201,18 @@ public class Definition extends ALevelDefinition {
 				throw new AnnotationInvalidConstraintsException(errMsg);
 			}
 		}
-		return container;
+		return constraints;
 	}
 
-	private IConstraintComponent convertIntoConstraintComponent(String component) {
+	private IConstraintComponent convertIntoConstraintComponent(String component, String signature) {
 		if (component.startsWith("@")) {
 			String position = component.substring(1);
 			if (position.equals("return")) {
-				return new ConstraintReturnRef();
+				return new ConstraintReturnRef(signature);
+			} else if (position.equals("pc")) {
+				return new ConstraintProgramCounterRef();
 			} else {
-				return new ConstraintParameterRef(Integer.valueOf(position));
+				return new ConstraintParameterRef(Integer.valueOf(position), signature);
 			}
 		} else {
 			return new StringLevel(component);
@@ -226,14 +221,14 @@ public class Definition extends ALevelDefinition {
 
 	@ParameterSecurity({ "high" })
 	@ReturnSecurity("high")
-	@MethodConstraints({ "@0 <= high", "@return = high" })
+	@Constraints({ "@pc <= low", "@0 <= high", "@return = high" })
 	public static <T> T mkHigh(T object) {
 		return object;
 	}
 
 	@ParameterSecurity({ "low" })
 	@ReturnSecurity("low")
-	@MethodConstraints({ "@0 <= low", "@return = low" })
+	@Constraints({ "@pc <= low", "@0 <= low", "@return = low" })
 	public static <T> T mkLow(T object) {
 		return object;
 	}

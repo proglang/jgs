@@ -1,19 +1,13 @@
 package constraints;
 
+import static constraints.ConstraintsUtils.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import security.ILevel;
 
 public abstract class AConstraint implements IConstraint {
-
-	public static boolean isLevel(IConstraintComponent component) {
-		return component instanceof ILevel;
-	}
-	public static boolean isParameterRef(IConstraintComponent component) {
-		return component instanceof ConstraintParameterRef;
-	}
-
-	public static boolean isReturnRef(IConstraintComponent component) {
-		return component instanceof ConstraintReturnRef;
-	}
 
 	protected final IConstraintComponent lhs;
 
@@ -24,17 +18,72 @@ public abstract class AConstraint implements IConstraint {
 		this.rhs = rhs;
 	}
 
-	public final boolean containsLevel() {
-		return isLevel(lhs) || isLevel(rhs);
+	public final boolean containsComponent(IConstraintComponent component) {
+		return lhs.equals(component) || rhs.equals(component);
 	}
 
-	public final boolean containsParameterRef() {
-		return isParameterRef(lhs) || isParameterRef(rhs);
+	public final boolean containsReturnReferenceFor(String signature) {
+		return isReturnReference(lhs, signature) || isReturnReference(rhs, signature);
+	}
+	
+	public final boolean containsReturnReference() {
+		return isReturnReference(lhs) || isReturnReference(rhs);
 	}
 
-	public final boolean containsReturnRef() {
-		return isReturnRef(lhs) || isReturnRef(rhs);
+	public final List<ILevel> getContainedLevel() {
+		List<ILevel> levels = new ArrayList<ILevel>();
+		if (isLevel(lhs)) levels.add((ILevel) lhs);
+		if (isLevel(rhs)) levels.add((ILevel) rhs);
+		return levels;
 	}
+
+	public final boolean containsParameterReferenceFor(String signature, int position) {
+		return isParameterReference(lhs, signature, position) || isParameterReference(rhs, signature, position);
+	}
+	
+	public final boolean containsParameterReference() {
+		return isParameterReference(lhs) || isParameterReference(rhs);
+	}
+
+	public final List<ConstraintParameterRef> getInvalidParameterReferencesFor(String signature, int count) {
+		List<ConstraintParameterRef> invalid = new ArrayList<ConstraintParameterRef>();
+		if (isParameterReference(lhs)) {
+			ConstraintParameterRef paramRef = (ConstraintParameterRef) lhs;
+			if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
+				invalid.add(paramRef);
+			}
+		}
+		if (isParameterReference(rhs)) {
+			ConstraintParameterRef paramRef = (ConstraintParameterRef) rhs;
+			if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
+				invalid.add(paramRef);
+			}
+		}
+		return invalid;
+	}
+
+	public final List<ConstraintReturnRef> getInvalidReturnReferencesFor(String signature) {
+		List<ConstraintReturnRef> invalid = new ArrayList<ConstraintReturnRef>();
+		if (isReturnReference(lhs)) {
+			ConstraintReturnRef returnRef = (ConstraintReturnRef) lhs;
+			if (!returnRef.getSignature().equals(signature)) {
+				invalid.add(returnRef);
+			}
+		}
+		if (isReturnReference(rhs)) {
+			ConstraintReturnRef returnRef = (ConstraintReturnRef) rhs;
+			if (!returnRef.getSignature().equals(signature)) {
+				invalid.add(returnRef);
+			}
+		}
+		return invalid;
+	}
+	
+	public final boolean containsProgramCounterReference() {
+		return isProgramCounterReference(lhs) || isProgramCounterReference(rhs);
+	}
+
+	public abstract boolean equals(Object object);
 
 	public final IConstraintComponent getLhs() {
 		return lhs;

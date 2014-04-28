@@ -5,7 +5,7 @@ import java.util.List;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
-import constraints.Constraints;
+import constraints.IConstraint;
 
 public interface ILevelMediator {
 
@@ -17,7 +17,9 @@ public interface ILevelMediator {
 
 	public List<ILevel> extractClassEffects(SootClass sootClass);
 
-	public Constraints extractConstraints(SootMethod sootMethod);
+	public List<IConstraint> extractConstraints(SootMethod sootMethod);
+
+	public List<IConstraint> extractConstraints(SootClass sootClass);
 
 	public ILevel extractFieldSecurityLevel(SootField sootField);
 
@@ -49,7 +51,9 @@ public interface ILevelMediator {
 
 	public List<ILevel> getLibraryClassWriteEffects(SootClass sootClass);
 
-	public Constraints getLibraryConstraints(SootMethod sootMethod);
+	public List<IConstraint> getLibraryConstraints(SootMethod sootMethod);
+
+	public List<IConstraint> getLibraryConstraints(SootClass sootClass);
 
 	public ILevel getLibraryFieldSecurityLevel(SootField sootField);
 
@@ -62,6 +66,8 @@ public interface ILevelMediator {
 	public boolean hasClassWriteEffectAnnotation(SootClass sootClass);
 
 	public boolean hasConstraintsAnnotation(SootMethod sootMethod);
+
+	public boolean hasConstraintsAnnotation(SootClass sootClass);
 
 	public boolean hasFieldSecurityAnnotation(SootField sootField);
 

@@ -3,5 +3,7 @@ package constraints;
 public interface IConstraintComponent {
 
 	public String toString();
+	
+	public boolean equals(Object object);
 
 }

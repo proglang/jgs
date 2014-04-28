@@ -33,6 +33,7 @@ import static utils.ExtendedJNI.JNI_LONG;
 import static utils.ExtendedJNI.JNI_SHORT;
 import static utils.ExtendedJNI.JNI_VOID;
 
+import java.lang.reflect.Method;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import main.AnalysisType;
 import main.Main;
 import security.ILevel;
 import soot.SootClass;
@@ -78,6 +80,7 @@ public class AnalysisUtils {
 
 	public static class ArgumentParser {
 
+		private static final String ARG_CONSTRAINTS = "-constraints";
 		private static final String ARG_SRC_PREC = "-src-prec";
 		private static final String ARG_PROGRAM_CLASSPATH = "-program-classpath";
 		private static final String OUTPUT_PATH = "./generatedJimple";
@@ -113,6 +116,7 @@ public class AnalysisUtils {
 		private static final String EXCL_ANNOTATION = "annotation.";
 		private static final String EXCL_CONSTRAINTS = "constraints.";
 		private static final String EXCL_SECURITY = "security.";
+		private static final String EXCL_EXCEPTION = "exception.";
 		private static final String LEV_ALL = "all";
 		private static final String LEV_CONFIGURATION = "configuration";
 		private static final String LEV_DEBUG = "debug";
@@ -136,6 +140,7 @@ public class AnalysisUtils {
 		private String programClassPath = ".";
 
 		private List<String> sootArguments = new ArrayList<String>();
+		private AnalysisType analysisType = AnalysisType.LEVELS;
 
 		private ArgumentParser(String[] args) {
 			this.arguments = args;
@@ -202,7 +207,15 @@ public class AnalysisUtils {
 			parseExclude(list);
 			prepareClassPath(list);
 			parseInput(list);
+			parseAnalysisType(list);
 			sootArguments.addAll(list);
+		}
+
+		private void parseAnalysisType(List<String> list) {
+			if (list.contains(ARG_CONSTRAINTS)) {
+				this.analysisType = AnalysisType.CONSTRAINTS;
+			}
+			list.remove(ARG_CONSTRAINTS);
 		}
 
 		private void parseInput(List<String> list) {
@@ -310,6 +323,7 @@ public class AnalysisUtils {
 			if (!excludes.contains(EXCL_SECURITY)) excludes.add(EXCL_SECURITY);
 			if (!excludes.contains(EXCL_ANNOTATION)) excludes.add(EXCL_ANNOTATION);
 			if (!excludes.contains(EXCL_CONSTRAINTS)) excludes.add(EXCL_CONSTRAINTS);
+			if (!excludes.contains(EXCL_EXCEPTION)) excludes.add(EXCL_EXCEPTION);
 			Options.v().set_exclude(excludes);
 		}
 
@@ -436,6 +450,10 @@ public class AnalysisUtils {
 						throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
 				}
 			}
+		}
+
+		public AnalysisType getAnalysisType() {
+			return analysisType;
 		}
 
 	}
@@ -951,6 +969,51 @@ public class AnalysisUtils {
 	 */
 	private static String generateVisibility(boolean isPrivate, boolean isProtected, boolean isPublic) {
 		return (isPrivate ? "-" : (isProtected ? "#" : (isPublic ? "+" : "?")));
+	}
+
+	/**
+	 * 
+	 * @param method
+	 * @return
+	 */
+	public static String generateSignature(Method method) {
+		StringBuffer buffer = new StringBuffer();
+		Class<?> cl = method.getDeclaringClass();
+		buffer.append("<" + cl.getName() + ": ");
+		buffer.append(getSubSignatureImpl(method.getName(), method.getParameterTypes(), method.getReturnType()));
+		buffer.append(">");
+		return buffer.toString().intern();
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @param parameters
+	 * @param returnType
+	 * @return
+	 */
+	private static String getSubSignatureImpl(String name, Class<?>[] parameters, Class<?> returnType) {
+		StringBuffer buffer = new StringBuffer();
+		Class<?> cl = returnType;
+
+		buffer.append(cl.getName() + " " + name + "(");
+		List<Class<?>> params = Arrays.asList(parameters);
+		Iterator<Class<?>> typeIt = params.iterator();
+
+		if (typeIt.hasNext()) {
+			cl = typeIt.next();
+
+			buffer.append(cl.getName());
+
+			while (typeIt.hasNext()) {
+				buffer.append(",");
+
+				cl = typeIt.next();
+				buffer.append(cl.getName());
+			}
+		}
+		buffer.append(")");
+		return buffer.toString().intern();
 	}
 
 }

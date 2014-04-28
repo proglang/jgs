@@ -22,13 +22,13 @@ import soot.util.Chain;
  * {@link LocalsMap} provides the possibility to record the start of an implicit flow, i.e. there is a method to add an {@link IfStmt}
  * together with the corresponding condition level. Additional there a methods for getting the strongest stored <em>program counter</em>
  * <em>security level</em> as well as for finishing an implicit flow for a given {@link IfStmt}.<br />
- * The {@link LocalsMap} will be used in the {@link SecurityTypeAnalysis} analysis as flow object.
+ * The {@link LocalsMap} will be used in the {@link SecurityLevelAnalysis} analysis as flow object.
  * 
  * <hr />
  * 
  * @author Thomas Vogel
  * @version 0.2
- * @see SecurityTypeAnalysis
+ * @see SecurityLevelAnalysis
  * @see LevelMediator
  */
 public class LocalsMap {
@@ -36,7 +36,7 @@ public class LocalsMap {
 	/**
 	 * <h1>Extended local</h1>
 	 * 
-	 * The {@link ExtendedLocal} encapsulates a {@link Local} object and extends this object with a <em>security level</em>. This
+	 * The {@link LevelLocal} encapsulates a {@link Local} object and extends this object with a <em>security level</em>. This
 	 * <em>security level</em> represents the level of the encapsulated {@link Local}.
 	 * 
 	 * <hr />
@@ -44,7 +44,7 @@ public class LocalsMap {
 	 * @author Thomas Vogel
 	 * @version 0.1
 	 */
-	protected static class ExtendedLocal {
+	protected static class LevelLocal {
 
 		/**
 		 * The <em>security level</em> that the encapsulated {@link Local} object has.
@@ -54,25 +54,25 @@ public class LocalsMap {
 		private final Local local;
 
 		/**
-		 * Constructor of an {@link ExtendedLocal} for a given {@link Local}, that should be encapsulated.
+		 * Constructor of an {@link LevelLocal} for a given {@link Local}, that should be encapsulated.
 		 * 
 		 * @param local
-		 *          The {@link Local} which should be {@link EncapsulatedMethodAnalysis} by created {@link ExtendedLocal}.
+		 *          The {@link Local} which should be {@link EncapsulatedMethodAnalysis} by created {@link LevelLocal}.
 		 */
-		protected ExtendedLocal(Local local) {
+		protected LevelLocal(Local local) {
 			this.local = local;
 		}
 
 		/**
-		 * Constructor of an {@link ExtendedLocal} for a given {@link Local}, that should be encapsulated and it corresponding
+		 * Constructor of an {@link LevelLocal} for a given {@link Local}, that should be encapsulated and it corresponding
 		 * <em>security level</em>. I.e. given <em>security level</em> is the level of the given {@link Local}.
 		 * 
 		 * @param local
-		 *          The {@link Local} which should be {@link EncapsulatedMethodAnalysis} by created {@link ExtendedLocal}.
+		 *          The {@link Local} which should be {@link EncapsulatedMethodAnalysis} by created {@link LevelLocal}.
 		 * @param level
 		 *          The <em>security level</em> of the given {@link Local}.
 		 */
-		protected ExtendedLocal(Local local, ILevel level) {
+		protected LevelLocal(Local local, ILevel level) {
 			this.local = local;
 			this.level = level;
 		}
@@ -99,7 +99,7 @@ public class LocalsMap {
 		 * Sets the given <em>security level</em> to the <em>security level</em> of the encapsulated {@link Local}.
 		 * 
 		 * @param level
-		 *          The <em>security level</em> to which the level of this {@link ExtendedLocal} should be set.
+		 *          The <em>security level</em> to which the level of this {@link LevelLocal} should be set.
 		 */
 		protected void setLevel(ILevel level) {
 			this.level = level;
@@ -139,19 +139,19 @@ public class LocalsMap {
 	}
 
 	/**
-	 * Adds the given collection of {@link ExtendedLocal}s as well as the given <em>program counter</em> map to the {@link LocalsMap}. If an
-	 * {@link ExtendedLocal} of the given collection doesn't has an <em>security level</em> the default <em>security level</em> for local
+	 * Adds the given collection of {@link LevelLocal}s as well as the given <em>program counter</em> map to the {@link LocalsMap}. If an
+	 * {@link LevelLocal} of the given collection doesn't has an <em>security level</em> the default <em>security level</em> for local
 	 * variables will be taken for this local variable.
 	 * 
 	 * @param locals
-	 *          The collection of {@link ExtendedLocal} which should be added.
+	 *          The collection of {@link LevelLocal} which should be added.
 	 * @param programCounter
 	 *          The <em>program counter</em> map which should be added.
-	 * @see ExtendedLocal
+	 * @see LevelLocal
 	 */
-	public void addAll(Collection<ExtendedLocal> locals, Map<IfStmt, ILevel> programCounter) {
+	public void addAll(Collection<LevelLocal> locals, Map<IfStmt, ILevel> programCounter) {
 		if (programCounter != null) this.programCounter = programCounter;
-		for (ExtendedLocal extendedLocal : locals) {
+		for (LevelLocal extendedLocal : locals) {
 			if (extendedLocal.getLevel() == null) {
 				localMap.put(extendedLocal.getLocal(), mediator.getDefaultVariableSecurityLevel());
 			} else {
@@ -161,18 +161,18 @@ public class LocalsMap {
 	}
 
 	/**
-	 * Method which takes a list of {@link ExtendedLocal} and updates every <em>security level</em> in the {@link LocalsMap#localMap} of those
+	 * Method which takes a list of {@link LevelLocal} and updates every <em>security level</em> in the {@link LocalsMap#localMap} of those
 	 * locals which are in the list and also in the {@link LocalsMap} store. The update will be done only if the <em>security level</em> given
-	 * by an {@link ExtendedLocal} is stronger than the <em>security level</em> of the stored {@link Local}. Note, if the
+	 * by an {@link LevelLocal} is stronger than the <em>security level</em> of the stored {@link Local}. Note, if the
 	 * <em>security level</em> of an extended local is {@code null}, the default <em>security level</em> for local variables will be taken
 	 * instead.
 	 * 
 	 * @param locals
-	 *          List of {@link ExtendedLocal} whose <em>security levels</em> should be updated in the {@link LocalsMap}, if they are stronger
+	 *          List of {@link LevelLocal} whose <em>security levels</em> should be updated in the {@link LocalsMap}, if they are stronger
 	 *          than the existing <em>security level</em>.
 	 */
-	public void addAllStronger(List<ExtendedLocal> locals) {
-		for (ExtendedLocal extendedLocal : locals) {
+	public void addAllStronger(List<LevelLocal> locals) {
+		for (LevelLocal extendedLocal : locals) {
 			if (extendedLocal.getLevel() == null) {
 				extendedLocal.setLevel(mediator.getDefaultVariableSecurityLevel());
 			}
@@ -240,15 +240,15 @@ public class LocalsMap {
 	}
 
 	/**
-	 * Creates a list of {@link ExtendedLocal} that contains all contained locals of {@link LocalsMap#localMap} together with their
+	 * Creates a list of {@link LevelLocal} that contains all contained locals of {@link LocalsMap#localMap} together with their
 	 * corresponding <em>security level</em>.
 	 * 
-	 * @return List of all contained {@link Local}s of this map as {@link ExtendedLocal} including the corresponding <em>security level</em>.
+	 * @return List of all contained {@link Local}s of this map as {@link LevelLocal} including the corresponding <em>security level</em>.
 	 */
-	public List<ExtendedLocal> getExtendedLocals() {
-		List<ExtendedLocal> extendedLocals = new ArrayList<ExtendedLocal>();
+	public List<LevelLocal> getExtendedLocals() {
+		List<LevelLocal> extendedLocals = new ArrayList<LevelLocal>();
 		for (Local key : localMap.keySet()) {
-			extendedLocals.add(new ExtendedLocal(key, localMap.get(key)));
+			extendedLocals.add(new LevelLocal(key, localMap.get(key)));
 		}
 		return extendedLocals;
 	}
@@ -321,17 +321,17 @@ public class LocalsMap {
 	}
 
 	/**
-	 * Converts the given collection of {@link Local} to a list of {@link ExtendedLocal}. Note, that none {@link ExtendedLocal} has a
+	 * Converts the given collection of {@link Local} to a list of {@link LevelLocal}. Note, that none {@link LevelLocal} has a
 	 * <em>security level</em> after this conversion.
 	 * 
 	 * @param locals
 	 *          List of {@link Local} which should be converted.
-	 * @return A list of {@link ExtendedLocal} that contains those {@link Local} objects of the given list.
+	 * @return A list of {@link LevelLocal} that contains those {@link Local} objects of the given list.
 	 */
-	private List<ExtendedLocal> convertLocals(Collection<Local> locals) {
-		List<ExtendedLocal> extendedLocals = new ArrayList<ExtendedLocal>();
+	private List<LevelLocal> convertLocals(Collection<Local> locals) {
+		List<LevelLocal> extendedLocals = new ArrayList<LevelLocal>();
 		for (Local local : locals) {
-			extendedLocals.add(new ExtendedLocal(local));
+			extendedLocals.add(new LevelLocal(local));
 		}
 		return extendedLocals;
 	}
