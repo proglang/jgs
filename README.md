@@ -1,6 +1,18 @@
 # Security-Type for Java
 > **Working branch of the project which includes the latest (unstable) version. This version may contain also not documented properties.**
 
+## How to run (currently)
+The run configurations AllJUnitTests.launch and AnalysisRun.launch should work out of the box. They run the unit tests and the main application, respectively.
+- Command line arguments for the main application are:
+  - `-def-classpath` the classpath of the "Definitions"-file, e.g. `./../Testcases/bin`. The "Definitions"-file is the new way to specify the security lattice, etc.
+  - `-source-path` path to the source files to be analyzed, e.g. `./../Testcases/src`
+  - `-program-classpath` classpath to the code implementing the analysis, e.g. `./bin`
+  - `-cp` Soot's classpath parameter. It should be set to the jdk/jre, e.g. `/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar`
+  - `-main-class` class that contains the main method, e.g. `junitAnalysis.FailArray`
+  - `<class>`, e.g. `junitAnalysis.FailArray`. Is this (also) the class to be analyzed, like `-main-class`?
+
+## Summary
+
 A research project with the goal to allow gradual integration of refined type systems in Java (e.g. type systems for physical dimensions, effects, security, ...)
 
 ## Setup
