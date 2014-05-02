@@ -19,5 +19,7 @@ public class LEQConstraint extends AConstraint {
 		LEQConstraint cons = (LEQConstraint) object;
 		return getLhs().equals(cons.getLhs()) && getRhs().equals(cons.getRhs());
 	}
+	
+	
 
 }
