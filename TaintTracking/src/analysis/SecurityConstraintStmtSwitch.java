@@ -1,6 +1,9 @@
 package analysis;
 
-import static resource.Messages.getMsg;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import model.AnalyzedMethodEnvironment;
 import soot.SootMethod;
 import soot.Value;
@@ -18,6 +21,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
+import soot.jimple.Stmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
@@ -26,10 +30,11 @@ import constraints.Constraints;
 import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
-import exception.SwitchException;
 import extractor.UsedObjectStore;
 
 public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch implements StmtSwitch {
+
+	private Stmt returnStmt = null;
 
 	protected SecurityConstraintStmtSwitch(AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, Constraints in, Constraints out) {
 		super(methodEnvironment, store, in, out);
@@ -37,8 +42,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
-				.getSimpleName(), this.getClass().getSimpleName()));
+		throwNotImplementedException(stmt.getClass(), stmt.toString());
 	}
 
 	@Override
@@ -46,12 +50,15 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		InvokeExpr invokeExpr = stmt.getInvokeExpr();
 		SootMethod invokedMethod = invokeExpr.getMethod();
 		String signature = invokedMethod.getSignature();
-		SecurityConstraintValueSwitch invokeExprSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+		SecurityConstraintValueSwitch invokeExprSwitch = getNewValueSwitch();
 		invokeExpr.apply(invokeExprSwitch);
-		for (IConstraint constraint : invokeExprSwitch.getInnerConstraints()) {
-			if (!constraint.containsReturnReferenceFor(signature)) {
-				out.addSmart(constraint);
-			}
+		addNonReturnReferenceConstraintsToOut(invokeExprSwitch.getInnerConstraints(), signature);
+		removeInvokedMethodArtifacts(invokeExprSwitch);
+	}
+
+	private void removeInvokedMethodArtifacts(SecurityConstraintValueSwitch valueSwitch) {
+		if (valueSwitch.isInvokeExpr()) {
+			out.removeConstraintsContainingReferencesFor(valueSwitch.getInvokeMethod().getSignature());
 		}
 	}
 
@@ -59,46 +66,61 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	public void caseAssignStmt(AssignStmt stmt) {
 		Value lhs = stmt.getLeftOp();
 		Value rhs = stmt.getRightOp();
-		SecurityConstraintValueSwitch lhsValueSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
-		SecurityConstraintValueSwitch rhsValueSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+		SecurityConstraintValueSwitch lhsValueSwitch = getNewValueSwitch();
+		SecurityConstraintValueSwitch rhsValueSwitch = getNewValueSwitch();
 		lhs.apply(lhsValueSwitch);
 		rhs.apply(rhsValueSwitch);
-		for (IConstraintComponent right : rhsValueSwitch.getConstraintComponents()) {
-			for (IConstraintComponent left : lhsValueSwitch.getConstraintComponents()) {
-				out.addSmart(new LEQConstraint(right, left));
+		removeAssignArtifacts(lhsValueSwitch);
+		generateConstraintsAndAddToOut(rhsValueSwitch.getConstraintComponents(), lhsValueSwitch.getConstraintComponents());
+		addConstraintsToOut(rhsValueSwitch.getInnerConstraints());
+		removeInvokedMethodArtifacts(rhsValueSwitch);
+	}
+
+	private void addConstraintsToOut(List<IConstraint> constraints) {
+		out.addAllSmart(constraints);
+	}
+
+	private void addNonReturnReferenceConstraintsToOut(List<IConstraint> constraints, String signature) {
+		for (IConstraint constraint : constraints) {
+			if (!constraint.containsReturnReferenceFor(signature)) {
+				out.addSmart(constraint);
 			}
 		}
-		for (IConstraint constraint : rhsValueSwitch.getInnerConstraints()) {
-			out.addSmart(constraint);
-		}
+	}
 
+	private void removeAssignArtifacts(SecurityConstraintValueSwitch valueSwitch) {
+		if (valueSwitch.isLocal()) {
+			out.removeConstraintsContaining(valueSwitch.getLocal());
+		}
 	}
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
 		Value lhs = stmt.getLeftOp();
 		Value rhs = stmt.getRightOp();
-		SecurityConstraintValueSwitch lhsValueSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
-		SecurityConstraintValueSwitch rhsValueSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+		SecurityConstraintValueSwitch lhsValueSwitch = getNewValueSwitch();
+		SecurityConstraintValueSwitch rhsValueSwitch = getNewValueSwitch();
 		lhs.apply(lhsValueSwitch);
 		rhs.apply(rhsValueSwitch);
-		for (IConstraintComponent right : rhsValueSwitch.getConstraintComponents()) {
-			for (IConstraintComponent left : lhsValueSwitch.getConstraintComponents()) {
-				out.addSmart(new LEQConstraint(right, left));
+		generateConstraintsAndAddToOut(rhsValueSwitch.getConstraintComponents(), lhsValueSwitch.getConstraintComponents());
+	}
+
+	private void generateConstraintsAndAddToOut(List<IConstraintComponent> lComponents, List<IConstraintComponent> rComponents) {
+		for (IConstraintComponent left : lComponents) {
+			for (IConstraintComponent right : rComponents) {
+				out.addSmart(new LEQConstraint(left, right));
 			}
 		}
 	}
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
-				.getSimpleName(), this.getClass().getSimpleName()));
+		throwNotImplementedException(stmt.getClass(), stmt.toString());
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
-				.getSimpleName(), this.getClass().getSimpleName()));
+		throwNotImplementedException(stmt.getClass(), stmt.toString());
 	}
 
 	@Override
@@ -112,8 +134,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
-				.getSimpleName(), this.getClass().getSimpleName()));
+		throwNotImplementedException(stmt.getClass(), stmt.toString());
 	}
 
 	@Override
@@ -121,40 +142,44 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
-				.getSimpleName(), this.getClass().getSimpleName()));
+		throwNotImplementedException(stmt.getClass(), stmt.toString());
 	}
 
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
+		returnStmt = stmt;
 		Value value = stmt.getOp();
 		String signature = getSootMethod().getSignature();
-		IConstraintComponent returnRef = new ConstraintReturnRef(signature);
-		SecurityConstraintValueSwitch valueSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+
+		SecurityConstraintValueSwitch valueSwitch = getNewValueSwitch();
 		value.apply(valueSwitch);
-		for (IConstraintComponent val : valueSwitch.getConstraintComponents()) {
-			out.addSmart(new LEQConstraint(val, returnRef));
-		}
+		List<IConstraintComponent> rComponents = new ArrayList<IConstraintComponent>(
+				Arrays.asList(new IConstraintComponent[] { new ConstraintReturnRef(signature) }));
+		generateConstraintsAndAddToOut(valueSwitch.getConstraintComponents(), rComponents);
 	}
 
 	@Override
-	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {}
+	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
+		returnStmt = stmt;
+	}
 
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
-				.getSimpleName(), this.getClass().getSimpleName()));
+		throwNotImplementedException(stmt.getClass(), stmt.toString());
 	}
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
-				.getSimpleName(), this.getClass().getSimpleName()));
+		throwNotImplementedException(stmt.getClass(), stmt.toString());
 	}
 
 	@Override
 	public void defaultCase(Object object) {
-		throw new SwitchException(getMsg("exception.analysis.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
+		throwUnknownObjectException(object);
+	}
+
+	public boolean isReturnStmt() {
+		return returnStmt != null;
 	}
 
 }

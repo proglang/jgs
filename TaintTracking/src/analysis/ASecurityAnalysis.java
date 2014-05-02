@@ -42,11 +42,6 @@ public abstract class ASecurityAnalysis<N, A> extends ForwardFlowAnalysis<N, A> 
 	private final UsedObjectStore store;
 
 	/**
-	 * DOC
-	 */
-	private boolean valid = true;
-
-	/**
 	 * Constructor of {@link ASecurityAnalysis} which checks automatically the given graph of the also given method for security
 	 * violations, i.e. violations of <em>security levels</em> or violations of <em>write effects</em>. The constructor requires in addition a
 	 * logger that allows the logging of exceptions and violations, and a security annotation instance that allows the handling of

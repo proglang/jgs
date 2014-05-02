@@ -23,6 +23,7 @@ public class TestConstraintsSucceeding {
 	private static final String TEST_PACKAGE = "junitConstraints";
 	private static Level[] CHECK_LEVELS = { SECURITY, SIDEEFFECT };	
 	private static final TestFile VALID01 = new TestFile(TEST_PACKAGE, "Valid01");
+	private static final TestFile SUCCESS_SPECIAL_01 = new TestFile(TEST_PACKAGE, "SuccessSpecial01");
 
 	@BeforeClass
 	public static final void init() {
@@ -39,5 +40,10 @@ public class TestConstraintsSucceeding {
 	@Test
 	public final void test01Valid() {
 		checkMethodStoreEquality(VALID01, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test02SuccessSpecial() {
+		checkMethodStoreEquality(SUCCESS_SPECIAL_01, CHECK_LEVELS, CONSTRAINTS);
 	}
 }

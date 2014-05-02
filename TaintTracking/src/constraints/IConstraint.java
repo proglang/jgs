@@ -21,6 +21,8 @@ public interface IConstraint {
 	public List<ILevel> getContainedLevel();
 
 	public boolean containsParameterReferenceFor(String signature, int position);
+	
+	public boolean containsParameterReferenceFor(String signature);
 
 	public boolean containsParameterReference();
 
@@ -31,5 +33,7 @@ public interface IConstraint {
 	public boolean containsProgramCounterReference();
 
 	public boolean containsReturnReference();
+
+	public boolean containsLocal();
 
 }

@@ -8,6 +8,7 @@ import exception.ConstraintUnsupportedException;
 import logging.AnalysisLog;
 import security.ILevel;
 import security.ILevelMediator;
+import soot.Local;
 import static constraints.ConstraintsUtils.*;
 import static resource.Messages.getMsg;
 
@@ -35,11 +36,11 @@ public class Constraints {
 			// add x ~ y iff x != y
 			if (!constraint.getLhs().equals(constraint.getRhs())) {
 				LEQConstraint leqConstraint = (LEQConstraint) constraint;
-				// x <= bottom implies x == bottom and high <= x implies x == high
-				if (leqConstraint.getRhs().equals(mediator.getGreatestLowerBoundLevel())
-						|| leqConstraint.getLhs().equals(mediator.getLeastUpperBoundLevel())) {
-					addConstraint(new LEQConstraint(leqConstraint.getRhs(), leqConstraint.getLhs()));
-				}
+				// x <= bottom implies x == bottom and top <= x implies x == top
+//				if (leqConstraint.getRhs().equals(mediator.getGreatestLowerBoundLevel())
+//						|| leqConstraint.getLhs().equals(mediator.getLeastUpperBoundLevel())) {
+//					addConstraint(new LEQConstraint(leqConstraint.getRhs(), leqConstraint.getLhs()));
+//				}
 				addConstraint(leqConstraint);
 			}
 		} else {
@@ -65,22 +66,21 @@ public class Constraints {
 		if (!constraintsSet.contains(constraint)) constraintsSet.add(constraint);
 	}
 
-	public List<IConstraint> getConstraints() {
+	public List<IConstraint> getConstraintsList() {
 		List<IConstraint> constraints = new ArrayList<IConstraint>();
 		constraints.addAll(constraintsSet);
 		return constraints;
 	}
 
-	public Constraints calculateTransitiveClosure() {
-		Constraints constraints = new Constraints(getConstraints(), mediator, log);
+	private void calculateTransitiveClosure() {
 		int size = -1;
-		while (size != constraints.size()) {
-			size = constraints.size();
+		while (size != constraintsSet.size()) {
+			size = constraintsSet.size();
 			List<IConstraint> closur = new ArrayList<IConstraint>();
-			for (IConstraint constraintL : constraints.constraintsSet) {
+			for (IConstraint constraintL : constraintsSet) {
 				if (isLEQConstraint(constraintL)) {
 					IConstraintComponent rhs = constraintL.getRhs();
-					for (IConstraint constraintR : constraints.constraintsSet) {
+					for (IConstraint constraintR : constraintsSet) {
 						if (isLEQConstraint(constraintR)) {
 							IConstraintComponent lhs = constraintR.getLhs();
 							if (rhs.equals(lhs)) closur.add(new LEQConstraint(constraintL.getLhs(), constraintR.getRhs()));
@@ -88,17 +88,23 @@ public class Constraints {
 					}
 				}
 			}
-			constraints.addAllSmart(closur);
+			addAllSmart(closur);
 		}
+	}
+
+	public Constraints getTransitiveClosure() {
+		Constraints constraints = new Constraints(getConstraintsList(), mediator, log);
+		constraints.calculateTransitiveClosure();
 		return constraints;
 	}
 
-	public void removeConstraintsContaining(IConstraintComponent component) {
-		for (IConstraint constraint : getConstraints()) {
+	private void removeConstraintsContaining(IConstraintComponent component) {
+		calculateTransitiveClosure();
+		for (IConstraint constraint : getConstraintsList()) {
 			if (constraint.containsComponent(component)) constraintsSet.remove(constraint);
 		}
 	}
-	
+
 	public boolean containsReturnReferenceFor(String signature) {
 		return containsSetReturnReferenceFor(constraintsSet, signature);
 	}
@@ -114,12 +120,12 @@ public class Constraints {
 	public boolean containsProgramCounterReferenceFor() {
 		return containsSetProgramCounterReference(constraintsSet);
 	}
-	
+
 	public void clear() {
 		constraintsSet.clear();
 	}
 
-	public List<IConstraint> getInconsistentConstraints() {
+	public List<IConstraint> getInequality() {
 		List<IConstraint> inconsistent = new ArrayList<IConstraint>();
 		for (IConstraint constraint : constraintsSet) {
 			if (isLEQConstraint(constraint)) {
@@ -128,15 +134,15 @@ public class Constraints {
 				if (isLevel(left) && isLevel(right)) {
 					ILevel l1 = (ILevel) left;
 					ILevel l2 = (ILevel) right;
-					if (! mediator.isWeaker(l1, l2)) {
-						inconsistent.add(constraint);						
+					if (!mediator.isWeaker(l1, l2)) {
+						inconsistent.add(constraint);
 					}
 				}
 			}
 		}
 		return inconsistent;
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder("Constraints: {\n");
 		for (int i = 0; i < constraintsSet.size(); i++) {
@@ -145,5 +151,36 @@ public class Constraints {
 		}
 		sb.append("}");
 		return sb.toString();
+	}
+
+	public void removeConstraintsContainingReferencesFor(String signature) {
+		calculateTransitiveClosure();
+		for (IConstraint constraint : getConstraintsList()) {
+			if (constraint.containsReturnReferenceFor(signature) || constraint.containsParameterReferenceFor(signature)) {
+				constraintsSet.remove(constraint);
+			}
+		}
+	}
+	
+	public void removeConstraintsContainingLocal() {
+		for (IConstraint constraint : getConstraintsList()) {
+			if (constraint.containsLocal()) constraintsSet.remove(constraint);
+		}
+	}
+
+	public void removeConstraintsContaining(Local local) {
+		removeConstraintsContaining(new ConstraintLocal(local));
+	}
+	
+	public List<IConstraint> checkForConsistency(List<IConstraint> sConstraints) {
+		List<IConstraint> missing = new ArrayList<IConstraint>();
+		for (IConstraint constraint : getConstraintsList()) {
+			if (! sConstraints.contains(constraint)) {
+				if (!(isLevel(constraint.getLhs()) && isLevel(constraint.getRhs()))) {
+					missing.add(constraint);
+				}				
+			}
+		}
+		return missing;
 	}
 }

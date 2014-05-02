@@ -41,8 +41,16 @@ public abstract class AConstraint implements IConstraint {
 		return isParameterReference(lhs, signature, position) || isParameterReference(rhs, signature, position);
 	}
 	
+	public final boolean containsParameterReferenceFor(String signature) {
+		return isParameterReference(lhs, signature) || isParameterReference(rhs, signature);
+	}
+	
 	public final boolean containsParameterReference() {
 		return isParameterReference(lhs) || isParameterReference(rhs);
+	}
+	
+	public final boolean containsLocal() {
+		return isLocal(lhs) || isLocal(rhs);
 	}
 
 	public final List<ConstraintParameterRef> getInvalidParameterReferencesFor(String signature, int count) {

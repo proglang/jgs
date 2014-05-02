@@ -1,7 +1,5 @@
 package analysis;
 
-import static resource.Messages.getMsg;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,13 +65,14 @@ import constraints.Constraints;
 import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
-import exception.SwitchException;
 import extractor.UsedObjectStore;
 
 public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch implements JimpleValueSwitch {
 
-	private List<IConstraintComponent> constraintComponents = new ArrayList<IConstraintComponent>();
-	private List<IConstraint> constraints = new ArrayList<IConstraint>();
+	private final List<IConstraintComponent> constraintComponents = new ArrayList<IConstraintComponent>();
+	private final List<IConstraint> constraints = new ArrayList<IConstraint>();
+	private Local local = null;
+	private SootMethod invokedMethod = null;
 
 	protected SecurityConstraintValueSwitch(AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, Constraints in,
 			Constraints out) {
@@ -117,7 +116,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void defaultCase(Object object) {
-		throw new SwitchException(getMsg("exception.analysis.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
+		throwUnknownObjectException(object);
 	}
 
 	@Override
@@ -126,8 +125,8 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	private void handleBinaryExpr(Value op1, Value op2) {
-		SecurityConstraintValueSwitch op1Switch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
-		SecurityConstraintValueSwitch op2Switch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+		SecurityConstraintValueSwitch op1Switch = getNewValueSwitch();
+		SecurityConstraintValueSwitch op2Switch = getNewValueSwitch();
 		op1.apply(op1Switch);
 		op2.apply(op2Switch);
 		addAllComponents(op1Switch.getConstraintComponents());
@@ -245,7 +244,6 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-		// FIXME: what about constraints of "C" in "C.m()"? => PC of class?
 		handleStatic(v.getMethod().getDeclaringClass());
 		handleInvoke(v);
 	}
@@ -258,13 +256,12 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		// FIXME: what about constraints of "C" in "C.m()"? => PC of class?
 		handleStatic(v.getMethod().getDeclaringClass());
 		handleInvoke(v);
 	}
 
 	private void handleBase(Value base) {
-		SecurityConstraintValueSwitch baseSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+		SecurityConstraintValueSwitch baseSwitch = getNewValueSwitch();
 		base.apply(baseSwitch);
 		addAllComponents(baseSwitch.getConstraintComponents());
 		addAllConstraints(baseSwitch.getInnerConstraints());
@@ -272,18 +269,19 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	private void handleStatic(SootClass sootClass) {
 		ClassEnvironment ce = store.getClassEnvironment(sootClass);
+		addAllConstraints(ce.getSignatureContraints());
 
 	}
 
 	private void handleInvoke(InvokeExpr invokeExpr) {
-		SootMethod invokedMethod = invokeExpr.getMethod();
+		invokedMethod = invokeExpr.getMethod();
 		String signature = invokedMethod.getSignature();
 		MethodEnvironment me = store.getMethodEnvironment(invokedMethod);
 		// FIXME: Recursive call?
-		addAllConstraints(me.getContraints());
+		addAllConstraints(me.getSignatureContraints());
 		for (int i = 0; i < invokeExpr.getArgCount(); i++) {
 			Value arg = invokeExpr.getArg(i);
-			SecurityConstraintValueSwitch argSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+			SecurityConstraintValueSwitch argSwitch = getNewValueSwitch();
 			arg.apply(argSwitch);
 			for (IConstraintComponent comp : argSwitch.getConstraintComponents()) {
 				addConstraint(new LEQConstraint(comp, new ConstraintParameterRef(i, signature)));
@@ -296,7 +294,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	@Override
 	public void caseCastExpr(CastExpr v) {
 		Value arg = v.getOp();
-		SecurityConstraintValueSwitch argSwitch = new SecurityConstraintValueSwitch(analyzedMethodEnvironment, store, in, out);
+		SecurityConstraintValueSwitch argSwitch = getNewValueSwitch();
 		arg.apply(argSwitch);
 		addAllComponents(argSwitch.constraintComponents);
 		addAllConstraints(argSwitch.getInnerConstraints());
@@ -347,7 +345,6 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
 		handleStatic(v.getField().getDeclaringClass());
-		// FIXME: what about constraints of "C" in "C.field"? => PC of Class?
 		FieldEnvironment fe = store.getFieldEnvironment(v.getField());
 		addComponent(fe.getLevel());
 	}
@@ -368,8 +365,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
-				this.getClass().getSimpleName()));
+		throwNotImplementedException(v.getClass(), v.toString());
 	}
 
 	@Override
@@ -379,6 +375,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void caseLocal(Local l) {
+		this.local = l;
 		addComponent(new ConstraintLocal(l));
 	}
 
@@ -404,6 +401,24 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	private void addAllConstraints(List<IConstraint> list) {
 		constraints.addAll(list);
+	}
+
+	public boolean isLocal() {
+		return local != null;
+	}
+	
+	public Local getLocal() {
+		if (!isLocal()) throw new NullPointerException("Boooo"); // FIXME: Error
+		return local;
+	}
+
+	public boolean isInvokeExpr() {
+		return invokedMethod != null;
+	}
+	
+	public SootMethod getInvokeMethod() {
+		if (!isInvokeExpr()) throw new NullPointerException("Boooo"); // FIXME: Error
+		return invokedMethod ;
 	}
 
 }

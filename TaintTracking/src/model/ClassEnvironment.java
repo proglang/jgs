@@ -139,7 +139,7 @@ public class ClassEnvironment extends Environment {
 	 * 
 	 * @return
 	 */
-	public List<IConstraint> getContraints() {
+	public List<IConstraint> getSignatureContraints() {
 		return new ArrayList<IConstraint>(constraints);
 	}
 

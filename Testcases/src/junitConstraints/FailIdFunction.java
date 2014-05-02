@@ -11,12 +11,13 @@ public class FailIdFunction {
 	@Constraints({ "@pc <= low" })
 	public FailIdFunction() {}
 
-	@Constraints({ "@pc <= low", "high <= @0" })
+	@Constraints({ "@pc <= low",  "high <= @0" })
 	public void failIdFunction1(int i) {
 		// @security("Argument has stronger constraints")
 		mkLow(i);
+		return;
 	}
-	
+
 	@Constraints({ "@pc <= low", "@return <= low" })
 	public int failIdFunction2() {
 		int high = mkHigh(42);

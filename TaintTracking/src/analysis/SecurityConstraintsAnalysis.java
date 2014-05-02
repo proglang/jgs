@@ -5,7 +5,6 @@ import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.generateMethodSignature;
 import logging.AnalysisLog;
 import security.ILevelMediator;
-import soot.G;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
@@ -36,6 +35,8 @@ import extractor.UsedObjectStore;
  * @see SecurityLevelStmtSwitch
  */
 public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constraints> {
+
+	private boolean inequality = false;
 
 	/**
 	 * Constructor of {@link SecurityConstraintsAnalysis} which checks automatically the given graph of the also given method for security
@@ -79,7 +80,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	@Override
 	protected void copy(Constraints source, Constraints dest) {
 		dest.clear();
-		dest.addAllSmart(source.getConstraints());
+		dest.addAllSmart(source.getConstraintsList());
 	}
 
 	/**
@@ -118,7 +119,8 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		try {
 			SecurityConstraintStmtSwitch stmtSwitch = new SecurityConstraintStmtSwitch(getEnvironment(), getStore(), in, out);
 			stmt.apply(stmtSwitch);
-			checkConsistency(out);
+			checkForInequality(out);
+			if (stmtSwitch.isReturnStmt()) checkForConsistency(out);
 		} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
 				| LevelNotFoundException e) {
 			throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(), generateMethodSignature(getEnvironment()
@@ -126,14 +128,33 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		}
 	}
 
-	private void checkConsistency(Constraints out) {
-		Constraints constraints = new Constraints(out.getConstraints(), getMediator(), getLog());
-		constraints.addAllSmart(getEnvironment().getContraints());
-		Constraints transitiveClosur = constraints.calculateTransitiveClosure();
-		G.v().out.println(transitiveClosur.toString());
-		for (IConstraint cons : transitiveClosur.getInconsistentConstraints()) {
-			G.v().out.println("## " + cons.toString());
-			getLog().security(generateFileName(getEnvironment().getSootMethod()), getEnvironment().getSrcLn(), "Inconsistent: " + cons.toString());
+	private void checkForConsistency(Constraints out) {
+		Constraints closure = out.getTransitiveClosure();
+		closure.removeConstraintsContainingLocal();
+		// G.v().out.println(closure.toString());
+		for (IConstraint constraint : closure.checkForConsistency(getEnvironment().getSignatureContraints())) {
+			getLog().security(generateFileName(getEnvironment().getSootMethod()), getEnvironment().getSrcLn(),
+					getMsg("security.constraints.missing", generateMethodSignature(getEnvironment().getSootMethod()), constraint.toString()));
+		}
+
+	}
+
+	private void checkForInequality(Constraints out) {
+		if (!inequality) {
+			// G.v().out.println(out.toString());
+			Constraints constraints = new Constraints(out.getConstraintsList(), getMediator(), getLog());
+			constraints.addAllSmart(getEnvironment().getSignatureContraints());
+			Constraints transitiveClosur = constraints.getTransitiveClosure();
+			// G.v().out.println(transitiveClosur.toString());
+			for (IConstraint constraint : transitiveClosur.getInequality()) {
+				// G.v().out.println("## " + cons.toString());
+				inequality = true;
+				getLog().security(
+						generateFileName(getEnvironment().getSootMethod()),
+						getEnvironment().getSrcLn(),
+						getMsg("security.constraints.inequality", getEnvironment().getSrcLn(),
+								generateMethodSignature(getEnvironment().getSootMethod()), constraint.toString()));
+			}
 		}
 	}
 
@@ -153,7 +174,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	@Override
 	protected void merge(Constraints in1, Constraints in2, Constraints out) {
 		copy(in1, out);
-		out.addAllSmart(in2.getConstraints());
+		out.addAllSmart(in2.getConstraintsList());
 	}
 
 	/**

@@ -217,7 +217,7 @@ public class MethodEnvironment extends Environment {
 		return classWriteEffects;
 	}
 
-	public List<IConstraint> getContraints() {
+	public List<IConstraint> getSignatureContraints() {
 		return new ArrayList<IConstraint>(constraints);
 	}
 
