@@ -6,4 +6,6 @@ public interface IConstraintComponentVar extends IConstraintComponent {
 
 	public boolean equals(Object object);
 
+	public int hashCode();
+
 }

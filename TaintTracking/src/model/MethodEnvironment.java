@@ -14,8 +14,10 @@ import static utils.AnalysisUtils.generateMethodSignature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import logging.AnalysisLog;
 import main.AnalysisType;
@@ -136,7 +138,7 @@ public class MethodEnvironment extends Environment {
 	/**
 	 * DOC
 	 */
-	private final List<IConstraint> constraints = new ArrayList<IConstraint>();
+	private final Set<IConstraint> constraints = new HashSet<IConstraint>();
 	/**
 	 * DOC
 	 */
@@ -190,7 +192,7 @@ public class MethodEnvironment extends Environment {
 	 */
 	public MethodEnvironment(SootMethod sootMethod, boolean isIdFunction, boolean isClinit, boolean isInit, boolean isVoid,
 			boolean isSootSecurityMethod, List<MethodParameter> parameterSecurityLevel, ILevel returnSecurityLevel,
-			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, List<IConstraint> constraints, AnalysisLog log,
+			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, Set<IConstraint> constraints, AnalysisLog log,
 			ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootMethod = sootMethod;
@@ -217,8 +219,8 @@ public class MethodEnvironment extends Environment {
 		return classWriteEffects;
 	}
 
-	public List<IConstraint> getSignatureContraints() {
-		return new ArrayList<IConstraint>(constraints);
+	public Set<IConstraint> getSignatureContraints() {
+		return new HashSet<IConstraint>(constraints);
 	}
 
 	/**

@@ -5,7 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import security.*;
 
@@ -79,13 +81,23 @@ public class Fed1 extends ALevelDefinition {
 		}
 
 		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((level == null) ? 0 : level.hashCode());
+			return result;
+		}
+
+		@Override
 		public boolean equals(Object obj) {
-			if (obj == this) return true; 
+			if (this == obj) return true;
 			if (obj == null) return false;
-			if (obj.getClass() != getClass()) return false;
-			VelS lev = (VelS) obj;
-			return lev.level.equals(level);
-			
+			if (getClass() != obj.getClass()) return false;
+			VelS other = (VelS) obj;
+			if (level == null) {
+				if (other.level != null) return false;
+			} else if (!level.equals(other.level)) return false;
+			return true;
 		}
 
 	}
@@ -158,8 +170,8 @@ public class Fed1 extends ALevelDefinition {
 	}
 
 	@Override
-	public List<IConstraint> extractConstraints(IAnnotationDAO dao, String signature) {
-		List<IConstraint> constraints = new ArrayList<IConstraint>();
+	public Set<IConstraint> extractConstraints(IAnnotationDAO dao, String signature) {
+		Set<IConstraint> constraints = new HashSet<IConstraint>();
 		List<String> rawConstraints = dao.getStringArrayFor("value");
 		for (String constraint : rawConstraints) {
 			String errMsg = String.format("The specified constraint '%s' is invalid.", constraint);
@@ -210,7 +222,7 @@ public class Fed1 extends ALevelDefinition {
 			if (position.equals("return")) {
 				return new ConstraintReturnRef(signature);
 			} else if (position.equals("pc")) {
-				return new ConstraintProgramCounterRef();
+				return new ConstraintProgramCounterRef(signature);
 			} else {
 				return new ConstraintParameterRef(Integer.valueOf(position), signature);
 			}

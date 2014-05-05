@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="main.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-def-classpath ./../Testcases/bin -source-path ./../Testcases/src -program-classpath ./bin -cp ${system_property:java.home}/lib/rt.jar -main-class junitAnalysis.FailArray junitAnalysis.FailArray"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-def-classpath ./../Testcases/bin -source-path ./../Testcases/src -program-classpath ./bin -cp ${system_property:java.home}/lib/rt.jar -main-class -constraints junitConstraints.FailMethod junitConstraints.FailMethod"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="TaintTracking"/>
 </launchConfiguration>

@@ -13,6 +13,7 @@ import static utils.AnalysisUtils.hasVisibilityAnnnotationTag;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import soot.SootClass;
 import soot.SootField;
@@ -64,7 +65,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 
 	}
 
-	public final List<IConstraint> extractConstraints(SootMethod sootMethod) {
+	public final Set<IConstraint> extractConstraints(SootMethod sootMethod) {
 		try {
 			VisibilityAnnotationTag vt = extractVisibilityAnnotationTag(sootMethod);
 			AnnotationTag at = extractAnnotationTagWithType(vt, getJNISignature(definition.getAnnotationClassConstraints()));
@@ -76,7 +77,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 		}
 	}
 	
-	public final List<IConstraint> extractConstraints(SootClass sootClass) {
+	public final Set<IConstraint> extractConstraints(SootClass sootClass) {
 		try {
 			VisibilityAnnotationTag vt = extractVisibilityAnnotationTag(sootClass);
 			AnnotationTag at = extractAnnotationTagWithType(vt, getJNISignature(definition.getAnnotationClassConstraints()));
@@ -196,7 +197,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 		return this.definition.getLibraryClassWriteEffects(sootClass.getName());
 	}
 
-	public List<IConstraint> getLibraryConstraints(SootMethod sootMethod) {
+	public Set<IConstraint> getLibraryConstraints(SootMethod sootMethod) {
 		List<String> paramType = new ArrayList<String>();
 		for (Object type : sootMethod.getParameterTypes()) {
 			paramType.add(type.toString());
@@ -206,7 +207,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 				sootMethod.getSignature());
 	}
 	
-	public List<IConstraint> getLibraryConstraints(SootClass sootClass) {
+	public Set<IConstraint> getLibraryConstraints(SootClass sootClass) {
 		return this.definition.getLibraryConstraints(sootClass.getName());
 	}
 

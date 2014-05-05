@@ -2,7 +2,9 @@ package security;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import annotation.IAnnotationDAO;
 import constraints.ConstraintParameterRef;
@@ -40,7 +42,7 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public abstract int compare(ILevel level1, ILevel level2);
 
-	public abstract List<IConstraint> extractConstraints(IAnnotationDAO dao, String signature);
+	public abstract Set<IConstraint> extractConstraints(IAnnotationDAO dao, String signature);
 
 	public abstract List<ILevel> extractEffects(IAnnotationDAO dao);
 
@@ -89,12 +91,13 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 	public abstract ILevel[] getLevels();
 
 	public List<ILevel> getLibraryClassWriteEffects(String className) {
+		
 		return new ArrayList<ILevel>();
 	}
 
-	public List<IConstraint> getLibraryConstraints(String methodName, List<String> parameterTypes, String returnType,
+	public Set<IConstraint> getLibraryConstraints(String methodName, List<String> parameterTypes, String returnType,
 			String declaringClassName, String signature) {
-		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		Set<IConstraint> constraints = new HashSet<IConstraint>();
 		ConstraintReturnRef returnRef = new ConstraintReturnRef(signature);
 		if (!returnType.equals("void")) {
 			for (int i = 0; i < parameterTypes.size(); i++) {
@@ -106,8 +109,8 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 		return constraints;
 	}
 
-	public List<IConstraint> getLibraryConstraints(String className) {
-		List<IConstraint> constraints = new ArrayList<IConstraint>();
+	public Set<IConstraint> getLibraryConstraints(String className) {
+		Set<IConstraint> constraints = new HashSet<IConstraint>();
 		return constraints;
 	}
 

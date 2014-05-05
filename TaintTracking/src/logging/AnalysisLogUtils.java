@@ -265,13 +265,13 @@ public class AnalysisLogUtils {
 	protected static String generateLogHeading(String levelName, Object[] parameters) {
 		StringBuilder result = new StringBuilder();
 		String prefix = "";
-		String additionalInfo = "";
+		String additionalInfo = " ";
 		if (parameters != null && parameters.length == 1) {
 			Object obj = parameters[0];
 			if (obj instanceof ExtendedHeadingInformation) {
 				ExtendedHeadingInformation info = (ExtendedHeadingInformation) obj;
 				prefix = repeat(TXT_TAB, info.getTabs());
-				additionalInfo = "(" + info.getFileName() + FILE_SUFFIX_JAVA + ":" + info.getSrcLn() + ")";
+				additionalInfo = " (" + info.getFileName() + FILE_SUFFIX_JAVA + ":" + info.getSrcLn() + ")";
 			} else if (obj instanceof HeadingInformation) {
 				HeadingInformation info = (HeadingInformation) obj;
 				prefix = repeat(TXT_TAB, info.getTabs());

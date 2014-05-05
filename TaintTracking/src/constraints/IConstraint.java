@@ -35,5 +35,9 @@ public interface IConstraint {
 	public boolean containsReturnReference();
 
 	public boolean containsLocal();
+	
+	public int hashCode();
+
+	public boolean containsProgramCounterReferenceFor(String signature);
 
 }

@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +52,6 @@ import constraints.ConstraintParameterRef;
 import constraints.ConstraintReturnRef;
 import constraints.IConstraint;
 import constraints.LEQConstraint;
-import static constraints.ConstraintsUtils.containsSetProgramCounterReference;
 import exception.AnnotationElementNotFoundException;
 import exception.AnnotationInvalidConstraintsException;
 import exception.DefinitionInvalidException;
@@ -219,11 +219,11 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 						try {
 							existsConstraintsAnnotation = true;
 							String signature = AnalysisUtils.generateSignature(method);
-							List<IConstraint> constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation), signature);
+							Set<IConstraint> constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation), signature);
 							if (! constraints.contains(new LEQConstraint(new ConstraintParameterRef(0, signature), level))
 									|| ! constraints.contains(new LEQConstraint(new ConstraintReturnRef(signature), level))
 									|| ! constraints.contains(new LEQConstraint(level, new ConstraintReturnRef(signature))) 
-									|| ! containsSetProgramCounterReference(constraints) || constraints.size() != 4) {
+									|| constraints.size() != 3) {
 								throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.invalid_constraints", signatureLevelFunction));
 							}
 						} catch (AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {

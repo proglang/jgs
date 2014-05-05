@@ -1,6 +1,7 @@
 package constraints;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import security.ILevel;
@@ -15,7 +16,7 @@ public class ConstraintsUtils {
 		return component instanceof ConstraintLocal;
 	}
 
-	protected static boolean containsConstraint(List<IConstraint> constraints, IConstraint constraint) {
+	protected static boolean containsConstraint(Collection<IConstraint> constraints, IConstraint constraint) {
 		return constraints.contains(constraint);
 	}
 
@@ -27,7 +28,7 @@ public class ConstraintsUtils {
 		return false;
 	}
 
-	public static boolean containsSetReturnReferenceFor(List<IConstraint> constraints, String signature) {
+	public static boolean containsSetReturnReferenceFor(Collection<IConstraint> constraints, String signature) {
 		for (IConstraint constraint : constraints) {
 			if (constraint.containsReturnReferenceFor(signature)) return true;
 		}
@@ -38,7 +39,7 @@ public class ConstraintsUtils {
 		return component instanceof ILevel;
 	}
 
-	public static List<ILevel> getContainedLevelsOfSet(List<IConstraint> constraints) {
+	public static List<ILevel> getContainedLevelsOfSet(Collection<IConstraint> constraints) {
 		List<ILevel> levels = new ArrayList<ILevel>();
 		for (IConstraint constraint : constraints) {
 			levels.addAll(constraint.getContainedLevel());
@@ -46,7 +47,7 @@ public class ConstraintsUtils {
 		return levels;
 	}
 
-	public static boolean containsSetParameterReferenceFor(List<IConstraint> constraints, String signature, int position) {
+	public static boolean containsSetParameterReferenceFor(Collection<IConstraint> constraints, String signature, int position) {
 		for (IConstraint constraint : constraints) {
 			if (constraint.containsParameterReferenceFor(signature, position)) return true;
 		}
@@ -65,6 +66,14 @@ public class ConstraintsUtils {
 		return false;
 	}
 
+	public static boolean isProgramCounterReference(IConstraintComponent component, String signature) {
+		if (component instanceof ConstraintProgramCounterRef) {
+			ConstraintProgramCounterRef pc = (ConstraintProgramCounterRef) component;
+			return pc.getSignature().equals(signature);
+		}
+		return false;
+	}
+	
 	public static boolean isProgramCounterReference(IConstraintComponent component) {
 		return component instanceof ConstraintProgramCounterRef;
 	}
@@ -81,7 +90,7 @@ public class ConstraintsUtils {
 		return false;
 	}
 
-	public static List<ConstraintParameterRef> getInvalidParameterReferencesOfSet(List<IConstraint> constraints, String signature, int count) {
+	public static List<ConstraintParameterRef> getInvalidParameterReferencesOfSet(Collection<IConstraint> constraints, String signature, int count) {
 		List<ConstraintParameterRef> invalid = new ArrayList<ConstraintParameterRef>();
 		for (IConstraint constraint : constraints) {
 			invalid.addAll(constraint.getInvalidParameterReferencesFor(signature, count));
@@ -89,7 +98,7 @@ public class ConstraintsUtils {
 		return invalid;
 	}
 
-	public static List<ConstraintReturnRef> getInvalidReturnReferencesOfSet(List<IConstraint> constraints, String signature) {
+	public static List<ConstraintReturnRef> getInvalidReturnReferencesOfSet(Collection<IConstraint> constraints, String signature) {
 		List<ConstraintReturnRef> invalid = new ArrayList<ConstraintReturnRef>();
 		for (IConstraint constraint : constraints) {
 			invalid.addAll(constraint.getInvalidReturnReferencesFor(signature));
@@ -97,21 +106,21 @@ public class ConstraintsUtils {
 		return invalid;
 	}
 
-	public static boolean containsSetProgramCounterReference(List<IConstraint> constraints) {
+	public static boolean containsSetProgramCounterReference(Collection<IConstraint> constraints) {
 		for (IConstraint constraint : constraints) {
 			if (constraint.containsProgramCounterReference()) return true;
 		}
 		return false;
 	}
 
-	public static boolean containsSetParameterReference(List<IConstraint> constraints) {
+	public static boolean containsSetParameterReference(Collection<IConstraint> constraints) {
 		for (IConstraint constraint : constraints) {
 			if (constraint.containsParameterReference()) return true;
 		}
 		return false;
 	}
 
-	public static boolean containsSetReturnReference(List<IConstraint> constraints) {
+	public static boolean containsSetReturnReference(Collection<IConstraint> constraints) {
 		for (IConstraint constraint : constraints) {
 			if (constraint.containsReturnReference()) return true;
 		}

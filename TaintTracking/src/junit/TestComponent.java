@@ -27,12 +27,23 @@ public class TestComponent {
 		}
 
 		@Override
-		public boolean equals(Object object) {
-			if (object == this) return true;
-	    if (object == null) return false;
-	    if (getClass() != object.getClass()) return false;
-	    SLevel lev = (SLevel) object;
-	    return level.equals(lev.level);
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((level == null) ? 0 : level.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			SLevel other = (SLevel) obj;
+			if (level == null) {
+				if (other.level != null) return false;
+			} else if (!level.equals(other.level)) return false;
+			return true;
 		}
 
 		@Override
@@ -125,11 +136,11 @@ public class TestComponent {
 	
 	@Test
 	public final void testEqualsPCRef() {
-		ConstraintProgramCounterRef pc1 = new ConstraintProgramCounterRef();
-		IConstraintComponent c1 = new ConstraintProgramCounterRef();
+		ConstraintProgramCounterRef pc1 = new ConstraintProgramCounterRef("a");
+		IConstraintComponent c1 = new ConstraintProgramCounterRef("a");
 		assertTrue("Same pc refs", pc1.equals(pc1));
-		assertTrue("Equal pc refs", pc1.equals(new ConstraintProgramCounterRef()));
-		assertTrue("Equal pc refs", new ConstraintProgramCounterRef().equals(pc1));
+		assertTrue("Equal pc refs", pc1.equals(new ConstraintProgramCounterRef("a")));
+		assertTrue("Equal pc refs", new ConstraintProgramCounterRef("a").equals(pc1));
 		assertTrue("Same pc refs", pc1.equals(c1));
 	}
 	

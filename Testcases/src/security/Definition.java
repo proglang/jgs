@@ -5,19 +5,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import annotation.IAnnotationDAO;
-import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintParameterRef;
+import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
 import exception.AnnotationInvalidConstraintsException;
-import security.Definition.Constraints;
 
-@Constraints({ "@pc <= low" })
 public class Definition extends ALevelDefinition {
 
 	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
@@ -79,14 +79,31 @@ public class Definition extends ALevelDefinition {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (obj == this) return true; 
-			if (obj == null) return false;
-			if (obj.getClass() != getClass()) return false;
-			StringLevel lev = (StringLevel) obj;
-			return lev.level.equals(level);
-			
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((level == null) ? 0 : level.hashCode());
+			return result;
 		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			StringLevel other = (StringLevel) obj;
+			if (!getOuterType().equals(other.getOuterType())) return false;
+			if (level == null) {
+				if (other.level != null) return false;
+			} else if (!level.equals(other.level)) return false;
+			return true;
+		}
+
+		private Definition getOuterType() {
+			return Definition.this;
+		}
+		
 
 	}
 
@@ -158,8 +175,8 @@ public class Definition extends ALevelDefinition {
 	}
 
 	@Override
-	public List<IConstraint> extractConstraints(IAnnotationDAO dao, String signature) {
-		List<IConstraint> constraints = new ArrayList<IConstraint>();
+	public Set<IConstraint> extractConstraints(IAnnotationDAO dao, String signature) {
+		Set<IConstraint> constraints = new HashSet<IConstraint>();
 		List<String> rawConstraints = dao.getStringArrayFor("value");
 		for (String constraint : rawConstraints) {
 			String errMsg = String.format("The specified constraint '%s' is invalid.", constraint);
@@ -210,7 +227,7 @@ public class Definition extends ALevelDefinition {
 			if (position.equals("return")) {
 				return new ConstraintReturnRef(signature);
 			} else if (position.equals("pc")) {
-				return new ConstraintProgramCounterRef();
+				return new ConstraintProgramCounterRef(signature);
 			} else {
 				return new ConstraintParameterRef(Integer.valueOf(position), signature);
 			}
@@ -221,14 +238,14 @@ public class Definition extends ALevelDefinition {
 
 	@ParameterSecurity({ "high" })
 	@ReturnSecurity("high")
-	@Constraints({ "@pc <= low", "@0 <= high", "@return = high" })
+	@Constraints({"@0 <= high", "@return = high" })
 	public static <T> T mkHigh(T object) {
 		return object;
 	}
 
 	@ParameterSecurity({ "low" })
 	@ReturnSecurity("low")
-	@Constraints({ "@pc <= low", "@0 <= low", "@return = low" })
+	@Constraints({"@0 <= low", "@return = low" })
 	public static <T> T mkLow(T object) {
 		return object;
 	}

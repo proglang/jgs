@@ -3,10 +3,16 @@ package analysis;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.generateMethodSignature;
+
+import java.util.HashMap;
+import java.util.Set;
+
 import logging.AnalysisLog;
 import security.ILevelMediator;
+import soot.G;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
@@ -80,7 +86,8 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	@Override
 	protected void copy(Constraints source, Constraints dest) {
 		dest.clear();
-		dest.addAllSmart(source.getConstraintsList());
+		dest.addAllSmart(source.getConstraintsSet());
+		dest.addAllProgramCounterConstraints(source.getProgramCounterStack());
 	}
 
 	/**
@@ -91,8 +98,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	 */
 	@Override
 	protected Constraints entryInitialFlow() {
-		Constraints constraints = new Constraints(getMediator(), getLog());
-		return constraints;
+		return new Constraints(getMediator(), getLog());
 	}
 
 	/**
@@ -116,6 +122,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		copy(in, out);
 		Stmt stmt = (Stmt) d;
 		getEnvironment().setStmt(stmt);
+		checkEndOfImplicitFlow(stmt, in, out);
 		try {
 			SecurityConstraintStmtSwitch stmtSwitch = new SecurityConstraintStmtSwitch(getEnvironment(), getStore(), in, out);
 			stmt.apply(stmtSwitch);
@@ -129,10 +136,14 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	}
 
 	private void checkForConsistency(Constraints out) {
-		Constraints closure = out.getTransitiveClosure();
-		closure.removeConstraintsContainingLocal();
-		// G.v().out.println(closure.toString());
-		for (IConstraint constraint : closure.checkForConsistency(getEnvironment().getSignatureContraints())) {
+		Constraints constraints = new Constraints(out.getConstraintsSet(), out.getProgramCounterStack(), getMediator(), getLog());
+		constraints.addAllSmart(out.getAllPCConstraints());
+		Constraints methodClosure = constraints.getTransitiveClosure();
+		methodClosure.removeConstraintsContainingLocal();
+		Constraints signature = new Constraints(getEnvironment().getSignatureContraints(), new HashMap<IfStmt, Set<IConstraint>>(), getMediator(), getLog());
+		Constraints signatureClosure = signature.getTransitiveClosure();
+		G.v().out.println(signatureClosure.toString());
+		for (IConstraint constraint : methodClosure.checkForConsistency(signatureClosure.getConstraintsSet())) {
 			getLog().security(generateFileName(getEnvironment().getSootMethod()), getEnvironment().getSrcLn(),
 					getMsg("security.constraints.missing", generateMethodSignature(getEnvironment().getSootMethod()), constraint.toString()));
 		}
@@ -140,10 +151,11 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	}
 
 	private void checkForInequality(Constraints out) {
-		if (!inequality) {
-			// G.v().out.println(out.toString());
-			Constraints constraints = new Constraints(out.getConstraintsList(), getMediator(), getLog());
+//		G.v().out.println(getEnvironment().getSootMethod().getName() + ": " + out.toString());
+		if (!inequality) {			
+			Constraints constraints = new Constraints(out.getConstraintsSet(), out.getProgramCounterStack(), getMediator(), getLog());
 			constraints.addAllSmart(getEnvironment().getSignatureContraints());
+			constraints.addAllSmart(out.getAllPCConstraints());
 			Constraints transitiveClosur = constraints.getTransitiveClosure();
 			// G.v().out.println(transitiveClosur.toString());
 			for (IConstraint constraint : transitiveClosur.getInequality()) {
@@ -153,7 +165,15 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 						generateFileName(getEnvironment().getSootMethod()),
 						getEnvironment().getSrcLn(),
 						getMsg("security.constraints.inequality", getEnvironment().getSrcLn(),
-								generateMethodSignature(getEnvironment().getSootMethod()), constraint.toString()));
+								generateMethodSignature(getEnvironment().getSootMethod()), constraint.toString(), out.toString()));
+			}
+		}
+	}
+	
+	private void checkEndOfImplicitFlow(Stmt statement, Constraints in, Constraints out) {
+		for (IfStmt ifStmt : in.getProgramCounterStmt()) {
+			if (getContainer().postDomSetOfIfContainsS(ifStmt, statement)) {
+				out.removeProgramCounterConstraintsFor(ifStmt);
 			}
 		}
 	}
@@ -174,7 +194,8 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	@Override
 	protected void merge(Constraints in1, Constraints in2, Constraints out) {
 		copy(in1, out);
-		out.addAllSmart(in2.getConstraintsList());
+		out.addAllSmart(in2.getConstraintsSet());
+		out.addAllProgramCounterConstraints(in2.getProgramCounterStack());
 	}
 
 	/**
@@ -185,8 +206,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	 */
 	@Override
 	protected Constraints newInitialFlow() {
-		Constraints constraints = new Constraints(getMediator(), getLog());
-		return constraints;
+		return new Constraints(getMediator(), getLog());
 	}
 
 	private ILevelMediator getMediator() {

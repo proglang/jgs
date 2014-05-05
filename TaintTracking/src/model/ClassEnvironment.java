@@ -6,7 +6,9 @@ import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateClassSignature;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static constraints.ConstraintsUtils.*;
 
@@ -41,7 +43,7 @@ public class ClassEnvironment extends Environment {
 	/**
 	 * DOC
 	 */
-	private final List<IConstraint> constraints = new ArrayList<IConstraint>();
+	private final Set<IConstraint> constraints = new HashSet<IConstraint>();
 
 	/**
 	 * DOC
@@ -51,7 +53,7 @@ public class ClassEnvironment extends Environment {
 	 * @param log
 	 * @param mediator
 	 */
-	public ClassEnvironment(SootClass sootClass, List<ILevel> classWriteEffects, List<IConstraint> constraints, AnalysisLog log,
+	public ClassEnvironment(SootClass sootClass, List<ILevel> classWriteEffects, Set<IConstraint> constraints, AnalysisLog log,
 			ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootClass = sootClass;
@@ -139,8 +141,8 @@ public class ClassEnvironment extends Environment {
 	 * 
 	 * @return
 	 */
-	public List<IConstraint> getSignatureContraints() {
-		return new ArrayList<IConstraint>(constraints);
+	public Set<IConstraint> getSignatureContraints() {
+		return new HashSet<IConstraint>(constraints);
 	}
 
 }

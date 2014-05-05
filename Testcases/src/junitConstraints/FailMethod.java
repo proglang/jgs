@@ -2,25 +2,34 @@ package junitConstraints;
 
 import static security.Definition.*;
 
-@Constraints({ "@pc <= low" })
+@Constraints({})
 public class FailMethod {
-	
-	@Constraints({ "@pc <= low", "@0 <= low" })
+
+	@FieldSecurity("low")
+	int low;
+
+	@Constraints({ "low <= @pc", "low <= @0" })
 	public static void main(String[] args) {}
 
-	@Constraints({ "@pc <= low" })
-	public FailMethod() {}
-	
-	@Constraints({ "@pc <= low", "high <= @0", "@return <= low" })
-	public int failMethod1(int i) {
-		// @security("Return has stronger constraints than expected")
-		return i;
+	// @Constraints({ "low <= @pc" })
+	// public FailMethod() {}
+	//
+	// @Constraints({ "@0 <= @return", "high <= @return" })
+	// public int failMethod1(int i) {
+	// int j = mkHigh(42);
+	// // @security("Return has stronger constraints than expected")
+	// return i + j;
+	// }
+	//
+	// @Constraints({ "@0 <= high", "@0 <= @return" })
+	// public int failMethod2(int i) {
+	// // @security("Return has stronger constraints than expected")
+	// return i;
+	// }
+
+	@Constraints({})
+	public void failMethod3() {
+		low = mkHigh(42);
 	}
-	
-//	@Constraints({ "@pc <= low", "@0 <= high", "@return <= low" })
-//	public int failMethod2(int i) {
-//		// @security("Return has stronger constraints than expected")
-//		return i;
-//	}
 
 }

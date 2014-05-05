@@ -1,19 +1,13 @@
 package constraints;
 
-public class ConstraintReturnRef implements IConstraintComponentVar {
-
-	private final String signature;
+public class ConstraintReturnRef extends AConstraintReference {
 	
 	public ConstraintReturnRef(String signature) {
-		this.signature = signature;
-	}
-
-	protected final String getSignature() {
-		return signature;
+		super(signature);
 	}
 
 	public String toString() {
-		return "RR@" + signature;
+		return "RR@" + reduceInternalSignature();
 	}
 
 	@Override

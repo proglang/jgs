@@ -20,8 +20,10 @@ import static utils.AnalysisUtils.isVoidMethod;
 import static utils.AnalysisUtils.overridesMethod;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import logging.AnalysisLog;
 import main.AnalysisType;
@@ -43,7 +45,12 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
+import constraints.ConstraintParameterRef;
+import constraints.ConstraintProgramCounterRef;
+import constraints.ConstraintReturnRef;
 import constraints.IConstraint;
+import constraints.IConstraintComponent;
+import constraints.LEQConstraint;
 import exception.AnalysisTypeException;
 import exception.AnnotationExtractionException;
 import exception.AnnotationInvalidException;
@@ -186,18 +193,19 @@ public class AnnotationExtractor extends SceneTransformer {
 		boolean hasClassWriteEffectAnnotation = mediator.hasClassWriteEffectAnnotation(sootClass);
 		boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootClass);
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
-		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		Set<IConstraint> constraints = generateInitalClassConstraintsSignature(sootClass);
 		if (type.equals(CONSTRAINTS)) {
 			if (! isLibrary) {
-				if (hasConstraintsAnnotation) {
+				if (hasConstraintsAnnotation) {					
 					try {
 						constraints.addAll(mediator.extractConstraints(sootClass));
 					} catch (AnnotationExtractionException e) {
 						throw new ExtractorException(getMsg("exception.extractor.class_constraints.error", generateClassSignature(sootClass)), e);
 					}
-				} else {
-					throw new ExtractorException(getMsg("exception.extractor.class_constraints.no_constraints", generateClassSignature(sootClass)));
-				}
+				} 
+//				else {
+//					throw new ExtractorException(getMsg("exception.extractor.class_constraints.no_constraints", generateClassSignature(sootClass)));
+//				}
 			} else {
 				constraints.addAll(mediator.getLibraryConstraints(sootClass));
 			}
@@ -219,6 +227,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		ClassEnvironment ce = new ClassEnvironment(sootClass, classWriteEffects, constraints, log, mediator);
 		return ce;
 	}
+
 
 	/**
 	 * DOC
@@ -275,7 +284,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		List<MethodParameter> parameterSecurityLevel = new ArrayList<MethodParameter>();
 		List<ILevel> methodWriteEffects = new ArrayList<ILevel>();
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
-		List<IConstraint> constraints = new ArrayList<IConstraint>();
+		Set<IConstraint> constraints = generateInitialMethodConstraintsSignature(sootMethod, isVoid);
 		if (type.equals(CONSTRAINTS)) {
 			if (!isLibrary) {
 				boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootMethod);
@@ -285,9 +294,10 @@ public class AnnotationExtractor extends SceneTransformer {
 					} catch (AnnotationExtractionException e) {
 						throw new ExtractorException(getMsg("exception.extractor.method_constraints.error", generateMethodSignature(sootMethod)), e);
 					}
-				} else if (!(isClinit || (isInit && parameterCount == 0) || (isVoid && parameterCount == 0))) {
-					throw new ExtractorException(getMsg("exception.extractor.method_constraints.no_constraints", generateMethodSignature(sootMethod)));
-				}
+				} 
+//				else if (!(isClinit || (isInit && parameterCount == 0) || (isVoid && parameterCount == 0))) {
+//					throw new ExtractorException(getMsg("exception.extractor.method_constraints.no_constraints", generateMethodSignature(sootMethod)));
+//				}
 			} else {
 				constraints.addAll(mediator.getLibraryConstraints(sootMethod));
 			}
@@ -372,6 +382,29 @@ public class AnnotationExtractor extends SceneTransformer {
 		return methodEnvironment;
 	}
 
+	private Set<IConstraint> generateInitialMethodConstraintsSignature(SootMethod sootMethod, boolean isVoid) {
+		Set<IConstraint> constraints = new HashSet<IConstraint>();
+		addBoundsFor(constraints, new ConstraintProgramCounterRef(sootMethod.getSignature()));
+		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+			addBoundsFor(constraints, new ConstraintParameterRef(i, sootMethod.getSignature()));
+		}
+		if (!isVoid) {
+			addBoundsFor(constraints, new ConstraintReturnRef(sootMethod.getSignature()));
+		}
+		return constraints;
+	}
+
+	private void addBoundsFor(Set<IConstraint> constraints, IConstraintComponent component) {
+		constraints.add(new LEQConstraint(component, mediator.getLeastUpperBoundLevel()));
+		constraints.add(new LEQConstraint(mediator.getGreatestLowerBoundLevel(), component));
+	}
+
+	private Set<IConstraint> generateInitalClassConstraintsSignature(SootClass sootClass) {
+		Set<IConstraint> constraints = new HashSet<IConstraint>();
+		addBoundsFor(constraints, new ConstraintProgramCounterRef(sootClass.getName()));
+		return constraints;
+	}
+	
 	/**
 	 * DOC
 	 * 

@@ -90,8 +90,12 @@ public abstract class AConstraint implements IConstraint {
 	public final boolean containsProgramCounterReference() {
 		return isProgramCounterReference(lhs) || isProgramCounterReference(rhs);
 	}
+	
 
-	public abstract boolean equals(Object object);
+	
+	public final boolean containsProgramCounterReferenceFor(String signature) {
+		return isProgramCounterReference(lhs, signature) || isProgramCounterReference(rhs, signature);
+	}
 
 	public final IConstraintComponent getLhs() {
 		return lhs;
@@ -102,5 +106,7 @@ public abstract class AConstraint implements IConstraint {
 	}
 
 	public abstract String toString();
+	
+	public abstract int hashCode();
 
 }

@@ -1,10 +1,11 @@
 package analysis;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import model.AnalyzedMethodEnvironment;
+import soot.G;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.AssignStmt;
@@ -25,6 +26,7 @@ import soot.jimple.Stmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
+import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.Constraints;
 import constraints.IConstraint;
@@ -54,6 +56,13 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		invokeExpr.apply(invokeExprSwitch);
 		addNonReturnReferenceConstraintsToOut(invokeExprSwitch.getInnerConstraints(), signature);
 		removeInvokedMethodArtifacts(invokeExprSwitch);
+		removeStaticAccessArticfacts(invokeExprSwitch);
+	}
+
+	private void removeStaticAccessArticfacts(SecurityConstraintValueSwitch valueSwitch) {
+		if (valueSwitch.hasStaticAccess()) {
+			out.removeConstraintsContainingReferencesFor(valueSwitch.getStaticAccessSignature());
+		}
 	}
 
 	private void removeInvokedMethodArtifacts(SecurityConstraintValueSwitch valueSwitch) {
@@ -71,16 +80,22 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		lhs.apply(lhsValueSwitch);
 		rhs.apply(rhsValueSwitch);
 		removeAssignArtifacts(lhsValueSwitch);
-		generateConstraintsAndAddToOut(rhsValueSwitch.getConstraintComponents(), lhsValueSwitch.getConstraintComponents());
+		Set<IConstraintComponent> lComponents = rhsValueSwitch.getConstraintComponents();
+		if (lhsValueSwitch.isField()) {
+			G.v().out.println("Add");
+			lComponents.add(new ConstraintProgramCounterRef(analyzedMethodEnvironment.getSootMethod().getSignature()));
+		}
+		generateConstraintsAndAddToOut(lComponents, lhsValueSwitch.getConstraintComponents());
 		addConstraintsToOut(rhsValueSwitch.getInnerConstraints());
 		removeInvokedMethodArtifacts(rhsValueSwitch);
+		removeStaticAccessArticfacts(rhsValueSwitch);
 	}
 
-	private void addConstraintsToOut(List<IConstraint> constraints) {
+	private void addConstraintsToOut(Set<IConstraint> constraints) {
 		out.addAllSmart(constraints);
 	}
 
-	private void addNonReturnReferenceConstraintsToOut(List<IConstraint> constraints, String signature) {
+	private void addNonReturnReferenceConstraintsToOut(Set<IConstraint> constraints, String signature) {
 		for (IConstraint constraint : constraints) {
 			if (!constraint.containsReturnReferenceFor(signature)) {
 				out.addSmart(constraint);
@@ -105,7 +120,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		generateConstraintsAndAddToOut(rhsValueSwitch.getConstraintComponents(), lhsValueSwitch.getConstraintComponents());
 	}
 
-	private void generateConstraintsAndAddToOut(List<IConstraintComponent> lComponents, List<IConstraintComponent> rComponents) {
+	private void generateConstraintsAndAddToOut(Set<IConstraintComponent> lComponents, Set<IConstraintComponent> rComponents) {
 		for (IConstraintComponent left : lComponents) {
 			for (IConstraintComponent right : rComponents) {
 				out.addSmart(new LEQConstraint(left, right));
@@ -128,8 +143,14 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
-		// TODO Auto-generated method stub
-
+		Value condition = stmt.getCondition();
+		SecurityConstraintValueSwitch valueSwitch = getNewValueSwitch();
+		condition.apply(valueSwitch);
+		Constraints tempConstraints = new Constraints(in.getConstraintsSet(), in.getProgramCounterStack(), getLevelMediator(), getLog());
+		for (IConstraintComponent component : valueSwitch.getConstraintComponents()) {
+			tempConstraints.addSmart(new LEQConstraint(component, new ConstraintProgramCounterRef(analyzedMethodEnvironment.getSootMethod().getSignature())));
+		}
+		out.addProgramCounterConstraints(stmt, tempConstraints.getTransitiveClosure().getConstraintsSet());
 	}
 
 	@Override
@@ -153,7 +174,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 		SecurityConstraintValueSwitch valueSwitch = getNewValueSwitch();
 		value.apply(valueSwitch);
-		List<IConstraintComponent> rComponents = new ArrayList<IConstraintComponent>(
+		Set<IConstraintComponent> rComponents = new HashSet<IConstraintComponent>(
 				Arrays.asList(new IConstraintComponent[] { new ConstraintReturnRef(signature) }));
 		generateConstraintsAndAddToOut(valueSwitch.getConstraintComponents(), rComponents);
 	}

@@ -1,7 +1,7 @@
 package analysis;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import model.AnalyzedMethodEnvironment;
 import model.ClassEnvironment;
@@ -60,6 +60,7 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
 import constraints.ConstraintLocal;
 import constraints.ConstraintParameterRef;
+import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.Constraints;
 import constraints.IConstraint;
@@ -69,10 +70,12 @@ import extractor.UsedObjectStore;
 
 public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch implements JimpleValueSwitch {
 
-	private final List<IConstraintComponent> constraintComponents = new ArrayList<IConstraintComponent>();
-	private final List<IConstraint> constraints = new ArrayList<IConstraint>();
+	private final Set<IConstraintComponent> constraintComponents = new HashSet<IConstraintComponent>();
+	private final Set<IConstraint> constraints = new HashSet<IConstraint>();
 	private Local local = null;
 	private SootMethod invokedMethod = null;
+	private String staticAccessSignature = null;
+	private boolean isField = false;
 
 	protected SecurityConstraintValueSwitch(AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, Constraints in,
 			Constraints out) {
@@ -246,6 +249,8 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
 		handleStatic(v.getMethod().getDeclaringClass());
 		handleInvoke(v);
+		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(
+				v.getMethod().getDeclaringClass().getName())));
 	}
 
 	@Override
@@ -256,8 +261,10 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		handleStatic(v.getMethod().getDeclaringClass());
+		handleStatic(v.getMethod().getDeclaringClass());		
 		handleInvoke(v);
+		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(
+				v.getMethod().getDeclaringClass().getName())));
 	}
 
 	private void handleBase(Value base) {
@@ -270,12 +277,13 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	private void handleStatic(SootClass sootClass) {
 		ClassEnvironment ce = store.getClassEnvironment(sootClass);
 		addAllConstraints(ce.getSignatureContraints());
-
+		
+		staticAccessSignature = sootClass.getName();
 	}
 
 	private void handleInvoke(InvokeExpr invokeExpr) {
 		invokedMethod = invokeExpr.getMethod();
-		String signature = invokedMethod.getSignature();
+		String invokedSignature = invokedMethod.getSignature();
 		MethodEnvironment me = store.getMethodEnvironment(invokedMethod);
 		// FIXME: Recursive call?
 		addAllConstraints(me.getSignatureContraints());
@@ -284,11 +292,14 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 			SecurityConstraintValueSwitch argSwitch = getNewValueSwitch();
 			arg.apply(argSwitch);
 			for (IConstraintComponent comp : argSwitch.getConstraintComponents()) {
-				addConstraint(new LEQConstraint(comp, new ConstraintParameterRef(i, signature)));
+				addConstraint(new LEQConstraint(comp, new ConstraintParameterRef(i, invokedSignature)));
 			}
 			addAllConstraints(argSwitch.getInnerConstraints());
 		}
-		addComponent(new ConstraintReturnRef(signature));
+		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(
+				invokedSignature)));
+		
+		addComponent(new ConstraintReturnRef(invokedSignature));
 	}
 
 	@Override
@@ -345,12 +356,16 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
 		handleStatic(v.getField().getDeclaringClass());
+		isField = true;
 		FieldEnvironment fe = store.getFieldEnvironment(v.getField());
 		addComponent(fe.getLevel());
+		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(v
+				.getField().getDeclaringClass().getName())));
 	}
 
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {
+		isField = true;
 		handleBase(v.getBase());
 		FieldEnvironment fe = store.getFieldEnvironment(v.getField());
 		addComponent(fe.getLevel());
@@ -379,34 +394,34 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 		addComponent(new ConstraintLocal(l));
 	}
 
-	public List<IConstraintComponent> getConstraintComponents() {
+	public Set<IConstraintComponent> getConstraintComponents() {
 		return constraintComponents;
 	}
 
-	public List<IConstraint> getInnerConstraints() {
+	public Set<IConstraint> getInnerConstraints() {
 		return constraints;
 	}
 
 	private void addComponent(IConstraintComponent component) {
 		constraintComponents.add(component);
 	}
-	
-	private void addAllComponents(List<IConstraintComponent> list) {
-		constraintComponents.addAll(list);
+
+	private void addAllComponents(Set<IConstraintComponent> set) {
+		constraintComponents.addAll(set);
 	}
-	
+
 	private void addConstraint(IConstraint constraint) {
 		constraints.add(constraint);
 	}
 
-	private void addAllConstraints(List<IConstraint> list) {
-		constraints.addAll(list);
+	private void addAllConstraints(Set<IConstraint> set) {
+		constraints.addAll(set);
 	}
 
 	public boolean isLocal() {
 		return local != null;
 	}
-	
+
 	public Local getLocal() {
 		if (!isLocal()) throw new NullPointerException("Boooo"); // FIXME: Error
 		return local;
@@ -415,10 +430,23 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	public boolean isInvokeExpr() {
 		return invokedMethod != null;
 	}
-	
+
 	public SootMethod getInvokeMethod() {
 		if (!isInvokeExpr()) throw new NullPointerException("Boooo"); // FIXME: Error
-		return invokedMethod ;
+		return invokedMethod;
+	}
+
+	public boolean hasStaticAccess() {
+		return staticAccessSignature != null;
+	}
+
+	public String getStaticAccessSignature() {
+		if (!hasStaticAccess()) throw new NullPointerException("Boooo"); // FIXME: Error
+		return staticAccessSignature;
+	}
+	
+	public boolean isField() {
+		return isField;
 	}
 
 }
