@@ -2,12 +2,12 @@ package junitConstraints;
 
 import static security.Definition.*;
 
-@Constraints({ "@pc <= low" })
 public class Invalid10 {
 
-	@Constraints({ "@pc <= low", "@0 <= low" })
 	public static void main(String[] args) {}
 
-	// constraints of constructor does not contain a program counter reference
+	// constraints contain an invalid parameter reference for the second parameter
+	@Constraints({ "@1 <= confidential" })
+	public Invalid10(int arg1, int arg2) {}
 
 }

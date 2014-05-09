@@ -73,7 +73,7 @@ public class LocalsMap {
 		 *          The <em>security level</em> of the given {@link Local}.
 		 */
 		protected LevelLocal(Local local, ILevel level) {
-			this.local = local;
+			this(local);
 			this.level = level;
 		}
 

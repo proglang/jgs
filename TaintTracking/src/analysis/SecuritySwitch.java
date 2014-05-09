@@ -1,7 +1,7 @@
 package analysis;
 
 import static utils.AnalysisUtils.generateFileName;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 
 import java.util.List;
 
@@ -47,15 +47,15 @@ import extractor.UsedObjectStore;
 abstract public class SecuritySwitch<U> {
 
 	/** Current analyzed method environment. */
-	protected final AnalyzedMethodEnvironment analyzedMethodEnvironment;
+	private final AnalyzedMethodEnvironment analyzedMethodEnvironment;
 	/** Current incoming map of the local variables. */
-	protected final U in;
+	private final U in;
 	/** Current outgoing map of the local variables. */
-	protected final U out;
+	private final U out;
 	/**
 	 * DOC
 	 */
-	protected final UsedObjectStore store;
+	private final UsedObjectStore store;
 
 	/**
 	 * Constructor of a {@link SecuritySwitch} that requires the current incoming and outgoing map of local variables as well as the
@@ -90,7 +90,7 @@ abstract public class SecuritySwitch<U> {
 	 * 
 	 * @return The security annotation object.
 	 */
-	protected ILevelMediator getLevelMediator() {
+	protected ILevelMediator getMediator() {
 		return analyzedMethodEnvironment.getLevelMediator();
 	}
 
@@ -101,6 +101,10 @@ abstract public class SecuritySwitch<U> {
 	 */
 	protected AnalysisLog getLog() {
 		return analyzedMethodEnvironment.getLog();
+	}
+	
+	protected final AnalyzedMethodEnvironment getAnalyzedEnvironment() {
+		return analyzedMethodEnvironment;
 	}
 
 	/**
@@ -117,7 +121,7 @@ abstract public class SecuritySwitch<U> {
 	 *         returned, if one of the given levels is 'void' ( {@link LevelMediator#VOID_LEVEL}).
 	 */
 	protected ILevel getMaxLevel(ILevel level1, ILevel level2) {
-		return getLevelMediator().getLeastUpperBoundLevelOf(level1, level2);
+		return getMediator().getLeastUpperBoundLevelOf(level1, level2);
 	}
 
 	/**
@@ -131,7 +135,7 @@ abstract public class SecuritySwitch<U> {
 	 *         Otherwise the the weakest available <em>security level</em> will be returned.
 	 */
 	protected ILevel getMaxLevel(List<ILevel> levels) {
-		return getLevelMediator().getLeastUpperBoundLevelOf(levels);
+		return getMediator().getLeastUpperBoundLevelOf(levels);
 	}
 
 	/**
@@ -140,8 +144,8 @@ abstract public class SecuritySwitch<U> {
 	 * 
 	 * @return The readable method signature of the analyzed method.
 	 */
-	protected String getMethodSignature() {
-		return generateMethodSignature(getSootMethod());
+	protected String getSignatureOfAnalyzedMethod() {
+		return getSignatureOfMethod(getAnalyzedMethod());
 	}
 
 	/**
@@ -158,7 +162,7 @@ abstract public class SecuritySwitch<U> {
 	 *         returned, if one of the given levels is 'void' ( {@link LevelMediator#VOID_LEVEL}).
 	 */
 	protected ILevel getMinLevel(ILevel level1, ILevel level2) {
-		return getLevelMediator().getGreatestLowerBoundLevelOf(level1, level2);
+		return getMediator().getGreatestLowerBoundLevelOf(level1, level2);
 	}
 
 	/**
@@ -166,7 +170,7 @@ abstract public class SecuritySwitch<U> {
 	 * 
 	 * @return The analyzed method.
 	 */
-	protected SootMethod getSootMethod() {
+	protected SootMethod getAnalyzedMethod() {
 		return analyzedMethodEnvironment.getSootMethod();
 	}
 
@@ -176,7 +180,7 @@ abstract public class SecuritySwitch<U> {
 	 * 
 	 * @return The source line number of the current handled statement of the analyzed method or if this wasn't set {@code 0}.
 	 */
-	protected long getSrcLn() {
+	protected long getSourceLine() {
 		return analyzedMethodEnvironment.getSrcLn();
 	}
 
@@ -187,6 +191,18 @@ abstract public class SecuritySwitch<U> {
 	 */
 	protected ILevel getWeakestSecurityLevel() {
 		return analyzedMethodEnvironment.getWeakestSecurityLevel();
+	}
+
+	protected UsedObjectStore getStore() {
+		return store;
+	}
+
+	protected final U getIn() {
+		return in;
+	}
+
+	protected final U getOut() {
+		return out;
 	}
 
 	/**
@@ -228,7 +244,7 @@ abstract public class SecuritySwitch<U> {
 	 * @return {@code true} if the first given level is weaker or equals than the second <em>security level</em>, {@code false} otherwise.
 	 */
 	protected boolean isWeakerOrEqualLevel(ILevel level1, ILevel level2) {
-		return getLevelMediator().isWeakerOrEquals(level1, level2);
+		return getMediator().isWeakerOrEquals(level1, level2);
 	}
 
 	/**
@@ -240,7 +256,7 @@ abstract public class SecuritySwitch<U> {
 	 * @see AnalysisLog#security(String, long, String)
 	 */
 	protected void logSecurity(String msg) {
-		getLog().security(getFileName(), getSrcLn(), msg);
+		getLog().security(getFileName(), getSourceLine(), msg);
 	}
 
 	/**
@@ -252,7 +268,7 @@ abstract public class SecuritySwitch<U> {
 	 * @see AnalysisLog#warning(String, long, String)
 	 */
 	protected void logWarning(String msg) {
-		getLog().warning(getFileName(), getSrcLn(), msg);
+		getLog().warning(getFileName(), getSourceLine(), msg);
 	}
 	
 	/**
@@ -261,7 +277,7 @@ abstract public class SecuritySwitch<U> {
 	 * @param msg
 	 */
 	protected void logEffect(String msg) {
-		getLog().effect(getFileName(), getSrcLn(), msg);
+		getLog().effect(getFileName(), getSourceLine(), msg);
 	}
 
 }

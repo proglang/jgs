@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateFieldSignature;
+import static utils.AnalysisUtils.getSignatureOfField;
 import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment.MethodParameter;
@@ -133,7 +133,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseAddExpr(AddExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseAndExpr(AndExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -173,14 +173,14 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 		ILevel indexLevel = calculateLevel(index, v.toString());
 		if (!isEqualLevel(rightLevel, getWeakestSecurityLevel())) {
 			// Only weakest security level array elements
-			logSecurity(getMsg("security.array.restrictions", getMethodSignature(), getSrcLn(), rightLevel.getName(), getWeakestSecurityLevel()
+			logSecurity(getMsg("security.array.restrictions", getSignatureOfAnalyzedMethod(), getSourceLine(), rightLevel.getName(), getWeakestSecurityLevel()
 					.getName()));
 		}
 		if (!isWeakerOrEqualLevel(indexLevel, arrayLevel)) {
-			logSecurity(getMsg("security.array.stronger_index", getMethodSignature(), getSrcLn(), arrayLevel.getName(), indexLevel.getName()));
+			logSecurity(getMsg("security.array.stronger_index", getSignatureOfAnalyzedMethod(), getSourceLine(), arrayLevel.getName(), indexLevel.getName()));
 		}
 		if (!isWeakerOrEqualLevel(rightLevel, arrayLevel)) {
-			logSecurity(getMsg("security.array.stronger_assign", getMethodSignature(), getSrcLn(), rightLevel.getName(), arrayLevel.getName()));
+			logSecurity(getMsg("security.array.stronger_assign", getSignatureOfAnalyzedMethod(), getSourceLine(), rightLevel.getName(), arrayLevel.getName()));
 		}
 	}
 
@@ -197,7 +197,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseCastExpr(CastExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	 */
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSourceLine(), v.getClass().getSimpleName(),
 				this.getClass().getSimpleName()));
 	}
 
@@ -229,7 +229,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseClassConstant(ClassConstant v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -245,7 +245,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseDivExpr(DivExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -309,7 +309,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseEqExpr(EqExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -371,7 +371,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseGeExpr(GeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -386,7 +386,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseGtExpr(GtExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -418,7 +418,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -434,7 +434,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseIntConstant(IntConstant v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -450,7 +450,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -465,7 +465,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseLeExpr(LeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -481,7 +481,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseLengthExpr(LengthExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -501,19 +501,19 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	public void caseLocal(Local l) {
 		ILevel localLevel = getWeakestSecurityLevel();
 		ILevel valueLevel = level;
-		if (in.containsLocal(l)) {
-			localLevel = in.getLevelOfLocal(l);
+		if (getIn().containsLocal(l)) {
+			localLevel = getIn().getLevelOfLocal(l);
 		} else {
-			throw new LevelNotFoundException(getMsg("exception.analysis.level.no_update", l.getName(), getMethodSignature(), getSrcLn(),
+			throw new LevelNotFoundException(getMsg("exception.analysis.level.no_update", l.getName(), getSignatureOfAnalyzedMethod(), getSourceLine(),
 					valueLevel.getName()));
 		}
 		valueLevel = takePCintoAccount(valueLevel);
 		if (isWeakerLevel(valueLevel, localLevel)) {
-			logWarning(getMsg("warning.analysis.level.weaken_local", getMethodSignature(), getSrcLn(), l.getName(), localLevel.getName(),
+			logWarning(getMsg("warning.analysis.level.weaken_local", getSignatureOfAnalyzedMethod(), getSourceLine(), l.getName(), localLevel.getName(),
 					valueLevel.getName()));
 		}
-		if (!out.update(l, valueLevel)) {
-			throw new LevelNotFoundException(getMsg("exception.analysis.level.no_update", l.getName(), getMethodSignature(), getSrcLn(),
+		if (!getOut().update(l, valueLevel)) {
+			throw new LevelNotFoundException(getMsg("exception.analysis.level.no_update", l.getName(), getSignatureOfAnalyzedMethod(), getSourceLine(),
 					valueLevel.getName()));
 		}
 	}
@@ -531,7 +531,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseLongConstant(LongConstant v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -546,7 +546,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseLtExpr(LtExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -562,7 +562,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseMulExpr(MulExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -577,7 +577,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseNeExpr(NeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -593,7 +593,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseNegExpr(NegExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -609,7 +609,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -625,7 +625,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseNewExpr(NewExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -641,7 +641,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -657,7 +657,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseNullConstant(NullConstant v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -672,7 +672,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseOrExpr(OrExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -695,7 +695,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 		if (level == null && value != null) {
 			updateParameterLevel(value, v);
 		} else {
-			throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+			throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSourceLine(), v.getClass().getSimpleName(),
 					this.getClass().getSimpleName()));
 		}
 	}
@@ -713,7 +713,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseRemExpr(RemExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -729,7 +729,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseShlExpr(ShlExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -745,7 +745,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseShrExpr(ShrExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -761,7 +761,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -793,7 +793,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -809,7 +809,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseStringConstant(StringConstant v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -825,7 +825,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseSubExpr(SubExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -848,7 +848,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 			ILevel level = getWeakestSecurityLevel();
 			updateLevel(value, level, v.toString());
 		} else {
-			throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+			throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSourceLine(), v.getClass().getSimpleName(),
 					this.getClass().getSimpleName()));
 		}
 	}
@@ -866,7 +866,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -882,7 +882,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -898,7 +898,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	@Override
 	public void caseXorExpr(XorExpr v) {
 		throw new SwitchException(getMsg("exception.analysis.switch.update_error", this.getClass().getSimpleName(), v.getClass()
-				.getSimpleName(), v.toString(), getSrcLn()));
+				.getSimpleName(), v.toString(), getSourceLine()));
 	}
 
 	/**
@@ -931,8 +931,8 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 		ILevel leftLevel = getWeakestSecurityLevel();
 		ILevel rightLevel = takePCintoAccount(level);
 		SootField sootField = fieldRef.getField();
-		String fieldSignature = generateFieldSignature(sootField);
-		FieldEnvironment field = store.getFieldEnvironment(sootField);
+		String fieldSignature = getSignatureOfField(sootField);
+		FieldEnvironment field = getStore().getFieldEnvironment(sootField);
 		leftLevel = field.getLevel();
 		// SIDE-EFFECTS: |----->
 		addWriteEffectCausedByAssign(leftLevel, sootField);
@@ -945,7 +945,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 		}
 		// <-----| SIDE-EFFECTS
 		if (!isWeakerOrEqualLevel(rightLevel, leftLevel)) {
-			logSecurity(getMsg("security.field.stronger_assign", getMethodSignature(), getSrcLn(), rightLevel.getName(), fieldSignature,
+			logSecurity(getMsg("security.field.stronger_assign", getSignatureOfAnalyzedMethod(), getSourceLine(), rightLevel.getName(), fieldSignature,
 					leftLevel.getName()));
 		}
 	}

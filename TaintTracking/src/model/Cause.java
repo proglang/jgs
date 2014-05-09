@@ -1,9 +1,9 @@
 package model;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateClassSignature;
-import static utils.AnalysisUtils.generateFieldSignature;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfClass;
+import static utils.AnalysisUtils.getSignatureOfField;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -106,7 +106,7 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effects.cause.field_assign", generateFieldSignature(getSootField()));
+			return getMsg("effects.cause.field_assign", getSignatureOfField(getSootField()));
 		}
 
 	}
@@ -148,7 +148,7 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effects.cause.inherit_class", generateClassSignature(getSootClass()));
+			return getMsg("effects.cause.inherit_class", getSignatureOfClass(getSootClass()));
 		}
 
 		/**
@@ -238,7 +238,7 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effects.cause.inherit_method", generateMethodSignature(sootMethod));
+			return getMsg("effects.cause.inherit_method", getSignatureOfMethod(sootMethod));
 		}
 
 		/**
@@ -334,7 +334,7 @@ public abstract class Cause {
 		 */
 		@Override
 		public String getCauseString() {
-			return getMsg("effects.cause.field_reference", generateFieldSignature(getSootField()));
+			return getMsg("effects.cause.field_reference", getSignatureOfField(getSootField()));
 		}
 
 	}

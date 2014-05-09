@@ -3,7 +3,7 @@ package model;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateFieldSignature;
+import static utils.AnalysisUtils.getSignatureOfField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,10 +109,10 @@ public class FieldEnvironment extends Environment {
 			if (level != null) { // some level given
 				if (!getLevelMediator().checkLevelValidity(level)) {
 					// level isn't a valid security level
-					throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), generateFieldSignature(sootField)));
+					throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), getSignatureOfField(sootField)));
 				}
 			} else { // no level given
-				throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", generateFieldSignature(sootField)));
+				throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", getSignatureOfField(sootField)));
 			}
 		} else {
 			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));

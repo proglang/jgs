@@ -2,14 +2,10 @@ package junitConstraints;
 
 import static security.Definition.*;
 
-@Constraints({ "@pc <= low" })
+// constraints of class contains a invalid parameter reference
+@Constraints({ "@0 <= low" })
 public class Invalid09 {
 
-	@Constraints({ "@pc <= low", "@0 <= low" })
 	public static void main(String[] args) {}
-
-	// constraints contain an invalid parameter reference
-	@Constraints({"@pc <= low", "@0 <= low"})
-	public Invalid09() {}
 
 }

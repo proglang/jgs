@@ -2,6 +2,10 @@ package junit.utils;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import main.AnalysisType;
 
@@ -82,6 +86,21 @@ public class JUnitHelper {
 		Path basePath = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
 		Path absolutePath = basePath.resolve(PATH).normalize();
 		return absolutePath.toString();
+	}
+
+	public static <U> boolean equalContentOfLists(Collection<U> list1, Collection<U> list2) {
+		if (list1.size() != list2.size()) return false;
+		for (U e : list1) {
+			if (!list2.contains(e)) return false;
+		}
+		for (U e : list2) {
+			if (!list1.contains(e)) return false;
+		}
+		return true;
+	}
+
+	public static <U> Set<U> mkList(U[] array) {
+		return new HashSet<U>(Arrays.asList(array));
 	}
 
 }

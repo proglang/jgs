@@ -9,6 +9,7 @@ import model.FieldEnvironment;
 import model.MethodEnvironment;
 import soot.Local;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.AddExpr;
@@ -62,7 +63,7 @@ import constraints.ConstraintLocal;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
-import constraints.Constraints;
+import constraints.ConstraintsSet;
 import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
@@ -72,54 +73,15 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	private final Set<IConstraintComponent> constraintComponents = new HashSet<IConstraintComponent>();
 	private final Set<IConstraint> constraints = new HashSet<IConstraint>();
+
+	private SootField field = null;
 	private Local local = null;
-	private SootMethod invokedMethod = null;
-	private String staticAccessSignature = null;
-	private boolean isField = false;
+	private SootMethod method = null;
+	private SootClass staticClass = null;
 
-	protected SecurityConstraintValueSwitch(AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, Constraints in,
-			Constraints out) {
+	protected SecurityConstraintValueSwitch(AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, ConstraintsSet in,
+			ConstraintsSet out) {
 		super(methodEnvironment, store, in, out);
-	}
-
-	@Override
-	public void caseDoubleConstant(DoubleConstant v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void caseFloatConstant(FloatConstant v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void caseIntConstant(IntConstant v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void caseLongConstant(LongConstant v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void caseNullConstant(NullConstant v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void caseStringConstant(StringConstant v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void caseClassConstant(ClassConstant v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void defaultCase(Object object) {
-		throwUnknownObjectException(object);
 	}
 
 	@Override
@@ -127,20 +89,29 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 		handleBinaryExpr(v.getOp1(), v.getOp2());
 	}
 
-	private void handleBinaryExpr(Value op1, Value op2) {
-		SecurityConstraintValueSwitch op1Switch = getNewValueSwitch();
-		SecurityConstraintValueSwitch op2Switch = getNewValueSwitch();
-		op1.apply(op1Switch);
-		op2.apply(op2Switch);
-		addAllComponents(op1Switch.getConstraintComponents());
-		addAllComponents(op2Switch.getConstraintComponents());
-		addAllConstraints(op1Switch.getInnerConstraints());
-		addAllConstraints(op2Switch.getInnerConstraints());
-	}
-
 	@Override
 	public void caseAndExpr(AndExpr v) {
 		handleBinaryExpr(v.getOp1(), v.getOp2());
+	}
+
+	@Override
+	public void caseArrayRef(ArrayRef v) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void caseCastExpr(CastExpr v) {
+		handleUnaryExpr(v.getOp());
+	}
+
+	@Override
+	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
+		throwNotImplementedException(v.getClass(), v.toString());
+	}
+
+	@Override
+	public void caseClassConstant(ClassConstant v) {
+		addComponent(getWeakestSecurityLevel());
 	}
 
 	@Override
@@ -164,13 +135,26 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	@Override
+	public void caseDoubleConstant(DoubleConstant v) {
+		addComponent(getWeakestSecurityLevel());
+	}
+
+	@Override
+	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
+		SootClass sootClass = v.getMethod().getDeclaringClass();
+		handleStatic(sootClass);
+		handleInvoke(v);
+		addProgramCounterConstraint(sootClass.getName());
+	}
+
+	@Override
 	public void caseEqExpr(EqExpr v) {
 		handleBinaryExpr(v.getOp1(), v.getOp2());
 	}
 
 	@Override
-	public void caseNeExpr(NeExpr v) {
-		handleBinaryExpr(v.getOp1(), v.getOp2());
+	public void caseFloatConstant(FloatConstant v) {
+		addComponent(getWeakestSecurityLevel());
 	}
 
 	@Override
@@ -184,8 +168,45 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	@Override
+	public void caseInstanceFieldRef(InstanceFieldRef v) {
+		handleBase(v.getBase());
+		handleField(v.getField());
+	}
+
+	@Override
+	public void caseInstanceOfExpr(InstanceOfExpr v) {
+		handleUnaryExpr(v.getOp());
+	}
+
+	@Override
+	public void caseIntConstant(IntConstant v) {
+		addComponent(getWeakestSecurityLevel());
+	}
+
+	@Override
+	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
+		handleBase(v.getBase());
+		handleInvoke(v);
+	}
+
+	@Override
 	public void caseLeExpr(LeExpr v) {
 		handleBinaryExpr(v.getOp1(), v.getOp2());
+	}
+
+	@Override
+	public void caseLengthExpr(LengthExpr v) {
+		handleUnaryExpr(v.getOp());
+	}
+
+	@Override
+	public void caseLocal(Local l) {
+		addComponent(new ConstraintLocal(local = l));
+	}
+
+	@Override
+	public void caseLongConstant(LongConstant v) {
+		addComponent(getWeakestSecurityLevel());
 	}
 
 	@Override
@@ -199,8 +220,43 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	@Override
+	public void caseNeExpr(NeExpr v) {
+		handleBinaryExpr(v.getOp1(), v.getOp2());
+	}
+
+	@Override
+	public void caseNegExpr(NegExpr v) {
+		handleUnaryExpr(v.getOp());
+	}
+
+	@Override
+	public void caseNewArrayExpr(NewArrayExpr v) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void caseNewExpr(NewExpr v) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void caseNullConstant(NullConstant v) {
+		addComponent(getWeakestSecurityLevel());
+	}
+
+	@Override
 	public void caseOrExpr(OrExpr v) {
 		handleBinaryExpr(v.getOp1(), v.getOp2());
+	}
+
+	@Override
+	public void caseParameterRef(ParameterRef v) {
+		addComponent(new ConstraintParameterRef(v.getIndex(), getAnalyzedSignature()));
 	}
 
 	@Override
@@ -219,8 +275,30 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	@Override
-	public void caseUshrExpr(UshrExpr v) {
-		handleBinaryExpr(v.getOp1(), v.getOp2());
+	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
+		handleBase(v.getBase());
+		handleInvoke(v);
+	}
+
+	@Override
+	public void caseStaticFieldRef(StaticFieldRef v) {
+		SootClass sootClass = v.getField().getDeclaringClass();
+		handleStatic(sootClass);
+		handleField(v.getField());
+		addProgramCounterConstraint(sootClass.getName());
+	}
+
+	@Override
+	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
+		SootClass sootClass = v.getMethod().getDeclaringClass();
+		handleStatic(sootClass);
+		handleInvoke(v);
+		addProgramCounterConstraint(sootClass.getName());
+	}
+
+	@Override
+	public void caseStringConstant(StringConstant v) {
+		addComponent(getWeakestSecurityLevel());
 	}
 
 	@Override
@@ -229,28 +307,13 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	@Override
-	public void caseXorExpr(XorExpr v) {
+	public void caseThisRef(ThisRef v) {
+		addComponent(getWeakestSecurityLevel());
+	}
+
+	@Override
+	public void caseUshrExpr(UshrExpr v) {
 		handleBinaryExpr(v.getOp1(), v.getOp2());
-	}
-
-	@Override
-	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-		handleBase(v.getBase());
-		handleInvoke(v);
-	}
-
-	@Override
-	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
-		handleBase(v.getBase());
-		handleInvoke(v);
-	}
-
-	@Override
-	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-		handleStatic(v.getMethod().getDeclaringClass());
-		handleInvoke(v);
-		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(
-				v.getMethod().getDeclaringClass().getName())));
 	}
 
 	@Override
@@ -260,193 +323,125 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	@Override
-	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		handleStatic(v.getMethod().getDeclaringClass());		
-		handleInvoke(v);
-		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(
-				v.getMethod().getDeclaringClass().getName())));
-	}
-
-	private void handleBase(Value base) {
-		SecurityConstraintValueSwitch baseSwitch = getNewValueSwitch();
-		base.apply(baseSwitch);
-		addAllComponents(baseSwitch.getConstraintComponents());
-		addAllConstraints(baseSwitch.getInnerConstraints());
-	}
-
-	private void handleStatic(SootClass sootClass) {
-		ClassEnvironment ce = store.getClassEnvironment(sootClass);
-		addAllConstraints(ce.getSignatureContraints());
-		
-		staticAccessSignature = sootClass.getName();
-	}
-
-	private void handleInvoke(InvokeExpr invokeExpr) {
-		invokedMethod = invokeExpr.getMethod();
-		String invokedSignature = invokedMethod.getSignature();
-		MethodEnvironment me = store.getMethodEnvironment(invokedMethod);
-		// FIXME: Recursive call?
-		addAllConstraints(me.getSignatureContraints());
-		for (int i = 0; i < invokeExpr.getArgCount(); i++) {
-			Value arg = invokeExpr.getArg(i);
-			SecurityConstraintValueSwitch argSwitch = getNewValueSwitch();
-			arg.apply(argSwitch);
-			for (IConstraintComponent comp : argSwitch.getConstraintComponents()) {
-				addConstraint(new LEQConstraint(comp, new ConstraintParameterRef(i, invokedSignature)));
-			}
-			addAllConstraints(argSwitch.getInnerConstraints());
-		}
-		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(
-				invokedSignature)));
-		
-		addComponent(new ConstraintReturnRef(invokedSignature));
+	public void caseXorExpr(XorExpr v) {
+		handleBinaryExpr(v.getOp1(), v.getOp2());
 	}
 
 	@Override
-	public void caseCastExpr(CastExpr v) {
-		Value arg = v.getOp();
-		SecurityConstraintValueSwitch argSwitch = getNewValueSwitch();
-		arg.apply(argSwitch);
-		addAllComponents(argSwitch.constraintComponents);
-		addAllConstraints(argSwitch.getInnerConstraints());
+	public void defaultCase(Object object) {
+		throwUnknownObjectException(object);
 	}
 
-	@Override
-	public void caseInstanceOfExpr(InstanceOfExpr v) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void caseNewArrayExpr(NewArrayExpr v) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void caseNewExpr(NewExpr v) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void caseLengthExpr(LengthExpr v) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void caseNegExpr(NegExpr v) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void caseArrayRef(ArrayRef v) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void caseStaticFieldRef(StaticFieldRef v) {
-		handleStatic(v.getField().getDeclaringClass());
-		isField = true;
-		FieldEnvironment fe = store.getFieldEnvironment(v.getField());
-		addComponent(fe.getLevel());
-		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getSootMethod().getSignature()), new ConstraintProgramCounterRef(v
-				.getField().getDeclaringClass().getName())));
-	}
-
-	@Override
-	public void caseInstanceFieldRef(InstanceFieldRef v) {
-		isField = true;
-		handleBase(v.getBase());
-		FieldEnvironment fe = store.getFieldEnvironment(v.getField());
-		addComponent(fe.getLevel());
-	}
-
-	@Override
-	public void caseParameterRef(ParameterRef v) {
-		int position = v.getIndex();
-		String signature = getSootMethod().getSignature();
-		addComponent(new ConstraintParameterRef(position, signature));
-	}
-
-	@Override
-	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		throwNotImplementedException(v.getClass(), v.toString());
-	}
-
-	@Override
-	public void caseThisRef(ThisRef v) {
-		addComponent(getWeakestSecurityLevel());
-	}
-
-	@Override
-	public void caseLocal(Local l) {
-		this.local = l;
-		addComponent(new ConstraintLocal(l));
-	}
-
-	public Set<IConstraintComponent> getConstraintComponents() {
+	public Set<IConstraintComponent> getComponents() {
 		return constraintComponents;
 	}
 
-	public Set<IConstraint> getInnerConstraints() {
+	public Set<IConstraint> getConstraints() {
 		return constraints;
 	}
 
-	private void addComponent(IConstraintComponent component) {
-		constraintComponents.add(component);
+	public boolean hasStaticAccess() {
+		return staticClass != null;
 	}
 
-	private void addAllComponents(Set<IConstraintComponent> set) {
-		constraintComponents.addAll(set);
-	}
-
-	private void addConstraint(IConstraint constraint) {
-		constraints.add(constraint);
-	}
-
-	private void addAllConstraints(Set<IConstraint> set) {
-		constraints.addAll(set);
+	public boolean isField() {
+		return field != null;
 	}
 
 	public boolean isLocal() {
 		return local != null;
 	}
 
-	public Local getLocal() {
-		if (!isLocal()) throw new NullPointerException("Boooo"); // FIXME: Error
+	public boolean isMethod() {
+		return method != null;
+	}
+
+	private void addAllComponents(Set<IConstraintComponent> set) {
+		constraintComponents.addAll(set);
+	}
+
+	private void addAllConstraints(Set<IConstraint> set) {
+		constraints.addAll(set);
+	}
+
+	private void addComponent(IConstraintComponent component) {
+		constraintComponents.add(component);
+	}
+
+	private void addConstraint(IConstraint constraint) {
+		constraints.add(constraint);
+	}
+
+	private void addParameterConstraints(Set<IConstraintComponent> leftComponents, String signature, int position) {
+		IConstraintComponent right = new ConstraintParameterRef(position, signature);
+		for (IConstraintComponent left : leftComponents) {
+			addConstraint(new LEQConstraint(left, right));
+		}
+	}
+
+	private void addProgramCounterConstraint(String signature) {
+		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getAnalyzedSignature()), new ConstraintProgramCounterRef(signature)));
+	}
+
+	private void handleBase(Value base) {
+		SecurityConstraintValueSwitch baseSwitch = getValueSwitch(base);
+		addAllComponents(baseSwitch.getComponents());
+		addAllConstraints(baseSwitch.getConstraints());
+	}
+
+	private void handleBinaryExpr(Value op1, Value op2) {
+		SecurityConstraintValueSwitch switchOp1 = getValueSwitch(op1);
+		SecurityConstraintValueSwitch switchOp2 = getValueSwitch(op2);
+		addAllComponents(switchOp1.getComponents());
+		addAllComponents(switchOp2.getComponents());
+		addAllConstraints(switchOp1.getConstraints());
+		addAllConstraints(switchOp2.getConstraints());
+	}
+
+	private void handleField(SootField sootField) {
+		FieldEnvironment fe = getStore().getFieldEnvironment(field = sootField);
+		addComponent(fe.getLevel());
+	}
+
+	private void handleInvoke(InvokeExpr invokeExpr) {
+		method = invokeExpr.getMethod();
+		String signature = method.getSignature();
+		MethodEnvironment me = getStore().getMethodEnvironment(method);
+		addAllConstraints(me.getSignatureContraints());
+		for (int i = 0; i < invokeExpr.getArgCount(); i++) {
+			SecurityConstraintValueSwitch argSwitch = getValueSwitch(invokeExpr.getArg(i));
+			addParameterConstraints(argSwitch.getComponents(), signature, i);
+			addAllConstraints(argSwitch.getConstraints());
+		}
+		addProgramCounterConstraint(signature);
+		addComponent(new ConstraintReturnRef(signature));
+	}
+
+	private void handleStatic(SootClass sootClass) {
+		ClassEnvironment ce = getStore().getClassEnvironment(staticClass = sootClass);
+		addAllConstraints(ce.getSignatureContraints());
+	}
+
+	private void handleUnaryExpr(Value op) {
+		SecurityConstraintValueSwitch switchOp = getValueSwitch(op);
+		addAllComponents(switchOp.getComponents());
+		addAllConstraints(switchOp.getConstraints());
+	}
+
+	protected SootField getField() {
+		return field;
+	}
+
+	protected Local getLocal() {
 		return local;
 	}
 
-	public boolean isInvokeExpr() {
-		return invokedMethod != null;
+	protected SootMethod getMethod() {
+		return method;
 	}
 
-	public SootMethod getInvokeMethod() {
-		if (!isInvokeExpr()) throw new NullPointerException("Boooo"); // FIXME: Error
-		return invokedMethod;
-	}
-
-	public boolean hasStaticAccess() {
-		return staticAccessSignature != null;
-	}
-
-	public String getStaticAccessSignature() {
-		if (!hasStaticAccess()) throw new NullPointerException("Boooo"); // FIXME: Error
-		return staticAccessSignature;
-	}
-	
-	public boolean isField() {
-		return isField;
+	protected SootClass getStaticAccess() {
+		return staticClass;
 	}
 
 }

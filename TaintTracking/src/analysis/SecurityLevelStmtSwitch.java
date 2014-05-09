@@ -87,7 +87,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSourceLine(), stmt.getClass()
 				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
@@ -103,7 +103,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSourceLine(), stmt.getClass()
 				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
@@ -119,7 +119,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSourceLine(), stmt.getClass()
 				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
@@ -166,7 +166,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	public void caseIfStmt(IfStmt stmt) {
 		Value condition = stmt.getCondition();
 		ILevel level = calculateLevel(condition, stmt.toString());
-		out.addProgramCounterLevel(stmt, level);
+		getOut().addProgramCounterLevel(stmt, level);
 	}
 
 	/**
@@ -196,7 +196,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSourceLine(), stmt.getClass()
 				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
@@ -225,7 +225,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSourceLine(), stmt.getClass()
 				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
@@ -242,11 +242,11 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
-		ILevel expectedLevel = analyzedMethodEnvironment.getReturnLevel();
+		ILevel expectedLevel = getAnalyzedEnvironment().getReturnLevel();
 		Value value = stmt.getOp();
 		ILevel level = takePCintoAccount(calculateLevel(value, stmt.toString()));
 		if (!isWeakerOrEqualLevel(level, expectedLevel)) {
-			logSecurity(getMsg("security.return.stronger", getMethodSignature(), level.getName(), getSrcLn(), expectedLevel.getName()));
+			logSecurity(getMsg("security.return.stronger", getSignatureOfAnalyzedMethod(), level.getName(), getSourceLine(), expectedLevel.getName()));
 		}
 	}
 
@@ -275,7 +275,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSourceLine(), stmt.getClass()
 				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 
@@ -291,7 +291,7 @@ public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements Stmt
 	 */
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSrcLn(), stmt.getClass()
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", stmt.toString(), getSourceLine(), stmt.getClass()
 				.getSimpleName(), this.getClass().getSimpleName()));
 	}
 

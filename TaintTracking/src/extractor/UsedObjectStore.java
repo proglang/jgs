@@ -1,9 +1,9 @@
 package extractor;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateClassSignature;
-import static utils.AnalysisUtils.generateFieldSignature;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfClass;
+import static utils.AnalysisUtils.getSignatureOfField;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class UsedObjectStore {
 			ClassEnvironment ce = classes.get(sootClass);
 			return ce;
 		}
-		throw new EnvironmentNotFoundException(getMsg("exception.environment.class_env_not_found", generateClassSignature(sootClass)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.class_env_not_found", getSignatureOfClass(sootClass)));
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class UsedObjectStore {
 			FieldEnvironment fe = fields.get(sootField);
 			return fe;
 		}
-		throw new EnvironmentNotFoundException(getMsg("exception.environment.field_env_not_found", generateFieldSignature(sootField)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.field_env_not_found", getSignatureOfField(sootField)));
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class UsedObjectStore {
 			return me;
 		}
 
-		throw new EnvironmentNotFoundException(getMsg("exception.environment.method_env_not_found", generateMethodSignature(sootMethod)));
+		throw new EnvironmentNotFoundException(getMsg("exception.environment.method_env_not_found", getSignatureOfMethod(sootMethod)));
 	}
 
 	/**

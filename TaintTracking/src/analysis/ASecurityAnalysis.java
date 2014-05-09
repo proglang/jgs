@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import logging.AnalysisLog;
 import model.AnalyzedMethodEnvironment;
 import model.MethodEnvironment;
@@ -68,11 +68,11 @@ public abstract class ASecurityAnalysis<N, A> extends ForwardFlowAnalysis<N, A> 
 			analyzedMethodEnvironment = new AnalyzedMethodEnvironment(me);
 			doAnalysis();
 		} catch (EnvironmentNotFoundException e) {
-			throw new AnalysisException(getMsg("exception.analysis.other.error_env", generateMethodSignature(sootMethod)), e);
+			throw new AnalysisException(getMsg("exception.analysis.other.error_env", getSignatureOfMethod(sootMethod)), e);
 		}
 	}
 
-	protected final AnalyzedMethodEnvironment getEnvironment() {
+	protected final AnalyzedMethodEnvironment getAnalyzedEnvironment() {
 		return analyzedMethodEnvironment;
 	}
 

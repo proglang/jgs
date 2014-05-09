@@ -184,7 +184,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	 */
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSourceLine(), v.getClass().getSimpleName(),
 				this.getClass().getSimpleName()));
 	}
 
@@ -447,8 +447,8 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	 */
 	@Override
 	public void caseLocal(Local l) {
-		if (in.containsLocal(l)) {
-			this.level = in.getLevelOfLocal(l);
+		if (getIn().containsLocal(l)) {
+			this.level = getIn().getLevelOfLocal(l);
 		}
 	}
 
@@ -599,7 +599,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	 */
 	@Override
 	public void caseParameterRef(ParameterRef v) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSourceLine(), v.getClass().getSimpleName(),
 				this.getClass().getSimpleName()));
 	}
 
@@ -733,7 +733,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	 */
 	@Override
 	public void caseThisRef(ThisRef v) {
-		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSrcLn(), v.getClass().getSimpleName(),
+		throw new SwitchException(getMsg("exception.analysis.switch.not_implemented", v.toString(), getSourceLine(), v.getClass().getSimpleName(),
 				this.getClass().getSimpleName()));
 	}
 
@@ -843,7 +843,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	 */
 	private void handleFieldAccess(FieldRef fieldRef) {
 		SootField sootField = fieldRef.getField();
-		FieldEnvironment field = store.getFieldEnvironment(sootField);
+		FieldEnvironment field = getStore().getFieldEnvironment(sootField);
 		this.level = field.getLevel();
 	}
 
@@ -897,7 +897,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	 */
 	protected ILevel getLevel() {
 		if (this.level == null) {
-			throw new LevelNotFoundException(getMsg("exception.analysis.level.not_found", getSrcLn(), getMethodSignature()));
+			throw new LevelNotFoundException(getMsg("exception.analysis.level.not_found", getSourceLine(), getSignatureOfAnalyzedMethod()));
 		}
 		return level;
 	}

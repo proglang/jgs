@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +86,7 @@ public class SecurityLevelAnalysis extends ASecurityAnalysis<Unit, LocalsMap> {
 	 * <em>write effect</em> annotation. Note, that this method should be called after the analysis of each method.
 	 */
 	protected void checkAnalysis() {
-		if (getEnvironment() != null) getEnvironment().checkEffectAnnotations();
+		if (getAnalyzedEnvironment() != null) getAnalyzedEnvironment().checkEffectAnnotations();
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class SecurityLevelAnalysis extends ASecurityAnalysis<Unit, LocalsMap> {
 	 */
 	@Override
 	protected LocalsMap entryInitialFlow() {
-		LocalsMap map = new LocalsMap(getEnvironment().getSootMethod().getActiveBody().getLocals(), getEnvironment().getLevelMediator());
+		LocalsMap map = new LocalsMap(getAnalyzedEnvironment().getSootMethod().getActiveBody().getLocals(), getAnalyzedEnvironment().getLevelMediator());
 		return map;
 	}
 
@@ -136,15 +136,15 @@ public class SecurityLevelAnalysis extends ASecurityAnalysis<Unit, LocalsMap> {
 	protected void flowThrough(LocalsMap in, Unit d, LocalsMap out) {
 		copy(in, out);
 		Stmt stmt = (Stmt) d;
-		getEnvironment().setStmt(stmt);
+		getAnalyzedEnvironment().setStmt(stmt);
 		checkEndOfImplicitFlow(stmt, in, out);
 		try {
-			SecurityLevelStmtSwitch stmtSwitch = new SecurityLevelStmtSwitch(getEnvironment(), getStore(), in, out);
+			SecurityLevelStmtSwitch stmtSwitch = new SecurityLevelStmtSwitch(getAnalyzedEnvironment(), getStore(), in, out);
 			stmt.apply(stmtSwitch);
 		} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
 				| LevelNotFoundException e) {
-			throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(), generateMethodSignature(getEnvironment()
-					.getSootMethod()), getEnvironment().getSrcLn()), e);
+			throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(), getSignatureOfMethod(getAnalyzedEnvironment()
+					.getSootMethod()), getAnalyzedEnvironment().getSrcLn()), e);
 		}
 	}
 
@@ -175,7 +175,7 @@ public class SecurityLevelAnalysis extends ASecurityAnalysis<Unit, LocalsMap> {
 	 */
 	@Override
 	protected LocalsMap newInitialFlow() {
-		LocalsMap map = new LocalsMap(getEnvironment().getSootMethod().getActiveBody().getLocals(), getEnvironment().getLevelMediator());
+		LocalsMap map = new LocalsMap(getAnalyzedEnvironment().getSootMethod().getActiveBody().getLocals(), getAnalyzedEnvironment().getLevelMediator());
 		return map;
 	}
 

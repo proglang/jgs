@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import static utils.AnalysisUtils.isInitMethod;
 
 import java.util.ArrayList;
@@ -77,16 +77,16 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 *          <em>Write effect</em> for which should be checked whether it is allowed in the current implicit flow.
 	 */
 	private void checkEffect(ILevel effect) {
-		if (out.hasProgramCounterLevel()) {
+		if (getOut().hasProgramCounterLevel()) {
 			ILevel pcLevel = getWeakestSecurityLevel();
 			try {
-				pcLevel = out.getStrongestProgramCounterLevel();
+				pcLevel = getOut().getStrongestProgramCounterLevel();
 			} catch (OperationInvalidException e) {
-				throw new ProgramCounterException(getMsg("exception.program_counter.error", getMethodSignature()), e);
+				throw new ProgramCounterException(getMsg("exception.program_counter.error", getSignatureOfAnalyzedMethod()), e);
 			}
 			if (isWeakerLevel(effect, pcLevel)) {
-				analyzedMethodEnvironment.logEffect(getSrcLn(),
-						getMsg("effects.program_counter.stronger", getMethodSignature(), getSrcLn(), effect.getName(), pcLevel.getName()));
+				getAnalyzedEnvironment().logEffect(getSourceLine(),
+						getMsg("effects.program_counter.stronger", getSignatureOfAnalyzedMethod(), getSourceLine(), effect.getName(), pcLevel.getName()));
 			}
 		}
 	}
@@ -121,7 +121,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 * @see AnalyzedMethodEnvironment#addWriteEffectCausedByArrayAssign(String, long, ArrayRef)
 	 */
 	protected void addWriteEffectCausedByArrayAssign(ILevel effect, ArrayRef arrayRef) {
-		analyzedMethodEnvironment.addWriteEffectCausedByArrayAssign(effect, getSrcLn(), arrayRef);
+		getAnalyzedEnvironment().addWriteEffectCausedByArrayAssign(effect, getSourceLine(), arrayRef);
 		checkEffect(effect);
 	}
 
@@ -137,7 +137,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 * @see AnalyzedMethodEnvironment#addWriteEffectCausedByAssign(String, long, SootField)
 	 */
 	protected void addWriteEffectCausedByAssign(ILevel effect, SootField sootField) {
-		analyzedMethodEnvironment.addWriteEffectCausedByAssign(effect, getSrcLn(), sootField);
+		getAnalyzedEnvironment().addWriteEffectCausedByAssign(effect, getSourceLine(), sootField);
 		checkEffect(effect);
 	}
 
@@ -154,7 +154,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 * @see AnalyzedMethodEnvironment#addWriteEffectCausedByClass(String, long, SootClass)
 	 */
 	protected void addWriteEffectCausedByClass(ILevel effect, SootClass sootClass) {
-		analyzedMethodEnvironment.addWriteEffectCausedByClass(effect, getSrcLn(), sootClass);
+		getAnalyzedEnvironment().addWriteEffectCausedByClass(effect, getSourceLine(), sootClass);
 		checkEffect(effect);
 	}
 
@@ -171,7 +171,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 * @see AnalyzedMethodEnvironment#addWriteEffectCausedByMethodInvocation(String, long, SootMethod)
 	 */
 	protected void addWriteEffectCausedByMethodInvocation(ILevel effect, SootMethod sootMethod) {
-		analyzedMethodEnvironment.addWriteEffectCausedByMethodInvocation(effect, getSrcLn(), sootMethod);
+		getAnalyzedEnvironment().addWriteEffectCausedByMethodInvocation(effect, getSourceLine(), sootMethod);
 		checkEffect(effect);
 	}
 
@@ -192,7 +192,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 *         returns the strongest argument level.
 	 */
 	protected ILevel calculateInvokeExprLevel(InvokeExpr invokeExpr, boolean assignment) {
-		MethodEnvironment invokedMethod = store.getMethodEnvironment(invokeExpr.getMethod());
+		MethodEnvironment invokedMethod = getStore().getMethodEnvironment(invokeExpr.getMethod());
 		List<MethodParameter> invokedMethodParameter = invokedMethod.getMethodParameters();
 		ILevel level = getWeakestSecurityLevel();
 		List<ILevel> parameterLevels = new ArrayList<ILevel>();
@@ -203,7 +203,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 			String parameterName = invokedMethodParameter.get(j).getName();
 			ILevel argumentLevel = calculateLevel(value, invokeExpr.toString());
 			if (!isWeakerOrEqualLevel(argumentLevel, parameterLevel)) {
-				logSecurity(getMsg("security.param.stronger", getMethodSignature(), getSrcLn(), generateMethodSignature(invokeExpr.getMethod()),
+				logSecurity(getMsg("security.param.stronger", getSignatureOfAnalyzedMethod(), getSourceLine(), getSignatureOfMethod(invokeExpr.getMethod()),
 						parameterName, parameterLevel.getName(), argumentLevel.getName()));
 			}
 			argumentLevels.add(argumentLevel);
@@ -238,7 +238,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 * @see SecurityLevelReadValueSwitch
 	 */
 	protected ILevel calculateLevel(Value value, String containing) {
-		SecurityLevelReadValueSwitch lookupSwitch = new SecurityLevelReadValueSwitch(analyzedMethodEnvironment, store, in, out);
+		SecurityLevelReadValueSwitch lookupSwitch = new SecurityLevelReadValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut());
 		value.apply(lookupSwitch);
 		return lookupSwitch.getLevel();
 	}
@@ -273,12 +273,12 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 * @return The strongest program counter level if it is stronger than the given level, otherwise the given <em>security level</em>.
 	 */
 	protected ILevel takePCintoAccount(ILevel level) {
-		if (out.hasProgramCounterLevel()) {
+		if (getOut().hasProgramCounterLevel()) {
 			ILevel pcLevel = getWeakestSecurityLevel();
 			try {
-				pcLevel = out.getStrongestProgramCounterLevel();
+				pcLevel = getOut().getStrongestProgramCounterLevel();
 			} catch (OperationInvalidException e) {
-				throw new ProgramCounterException(getMsg("exception.program_counter.error", getMethodSignature()), e);
+				throw new ProgramCounterException(getMsg("exception.program_counter.error", getSignatureOfAnalyzedMethod()), e);
 			}
 			if (isWeakerOrEqualLevel(level, pcLevel)) {
 				level = pcLevel;
@@ -299,7 +299,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 *          Unit that contains the given value as String.
 	 */
 	protected void updateIdentityLevel(Value rightSide, Value leftSide, String containing) {
-		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(analyzedMethodEnvironment, store, in, out, null);
+		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(), null);
 		updateSwitch.setIdentityInformation(leftSide);
 		executeUpdateLevel(rightSide, updateSwitch, containing);
 	}
@@ -318,7 +318,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 * @see SecurityLevelSwitch#executeUpdateLevel(Value, SecurityLevelWriteValueSwitch, String)
 	 */
 	protected void updateLevel(Value value, ILevel level, String containing) {
-		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(analyzedMethodEnvironment, store, in, out, level);
+		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(), level);
 		executeUpdateLevel(value, updateSwitch, containing);
 	}
 
@@ -333,8 +333,8 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 *          {@link SecurityLevelSwitch#analyzedMethodEnvironment}.
 	 */
 	protected void updateParameterLevel(Value value, ParameterRef parameterRef) {
-		MethodParameter methodParameter = analyzedMethodEnvironment.getMethodParameterAt(parameterRef.getIndex());
-		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(analyzedMethodEnvironment, store, in, out,
+		MethodParameter methodParameter = getAnalyzedEnvironment().getMethodParameterAt(parameterRef.getIndex());
+		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(),
 				methodParameter.getLevel());
 		executeUpdateLevel(value, updateSwitch, parameterRef.toString());
 	}

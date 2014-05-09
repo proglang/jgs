@@ -4,7 +4,7 @@ import static resource.Messages.addArticle;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.extractLineNumber;
 import static utils.AnalysisUtils.generateFileName;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import static utils.AnalysisUtils.isClinitMethod;
 import constraints.IConstraint;
 import constraints.LEQConstraint;
@@ -140,7 +140,7 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 	 * method will be used as expected <em>write effects</em>.
 	 */
 	public void checkEffectAnnotations() {
-		String methodSignature = generateMethodSignature(getSootMethod());
+		String methodSignature = getSignatureOfMethod(getSootMethod());
 		for (ILevel effected : effectsStore.getWriteEffectSet()) {
 			if (isClinitMethod(getSootMethod())) {
 				if (!getClassWriteEffects().contains(effected)) {

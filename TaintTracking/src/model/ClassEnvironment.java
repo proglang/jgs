@@ -3,7 +3,7 @@ package model;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.generateClassSignature;
+import static utils.AnalysisUtils.getSignatureOfClass;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -107,7 +107,7 @@ public class ClassEnvironment extends Environment {
 	 * @return
 	 */
 	public void isReasonable(AnalysisType type) {
-		String classSignature = generateClassSignature(sootClass);
+		String classSignature = getSignatureOfClass(sootClass);
 		if (type.equals(LEVELS)) {
 			if (!getLevelMediator().checkLevelsValidity(writeEffects)) {
 				// one of the write effects isn't a valid security level
@@ -125,7 +125,7 @@ public class ClassEnvironment extends Environment {
 			if (containsSetReturnReference(constraints)) {
 				throw new AnnotationInvalidException(getMsg("exception.constraints.return_ref", classSignature));
 			}
-			List<ILevel> containedLevels = getContainedLevelsOfSet(constraints);
+			List<ILevel> containedLevels = new ArrayList<ILevel>(getContainedLevelsOfSet(constraints));
 			if (!getLevelMediator().checkLevelsValidity(containedLevels)) {
 				for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(containedLevels)) {
 					throw new LevelInvalidException(getMsg("exception.constraints.class_invalid_level", invalidEffect.getName(), classSignature));

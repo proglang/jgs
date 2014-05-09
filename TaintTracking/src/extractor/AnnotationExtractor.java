@@ -4,9 +4,9 @@ import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.containsStaticInitializer;
-import static utils.AnalysisUtils.generateClassSignature;
-import static utils.AnalysisUtils.generateFieldSignature;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfClass;
+import static utils.AnalysisUtils.getSignatureOfField;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import static utils.AnalysisUtils.generatedEmptyStaticInitializer;
 import static utils.AnalysisUtils.getOverridenMethods;
 import static utils.AnalysisUtils.getParameterNames;
@@ -121,7 +121,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						ce.isReasonable(type);
 					} catch (AnnotationInvalidException | LevelInvalidException e) {
-						String signature = generateClassSignature(sootClass);
+						String signature = getSignatureOfClass(sootClass);
 						throw new ExtractorException(getMsg("exception.extractor.other.class_not_reasonable", signature), e);
 					}
 					
@@ -133,7 +133,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						fe.isReasonable(type);
 					} catch (AnnotationInvalidException | LevelInvalidException e) {
-						String signature = generateFieldSignature(sootField);
+						String signature = getSignatureOfField(sootField);
 						throw new ExtractorException(getMsg("exception.extractor.other.field_not_reasonable", signature), e);
 					}
 					
@@ -145,7 +145,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						me.isReasonable(type);
 					} catch (AnnotationInvalidException | LevelInvalidException e) {
-						String signature = generateMethodSignature(sootMethod);
+						String signature = getSignatureOfMethod(sootMethod);
 						throw new ExtractorException(getMsg("exception.extractor.other.method_not_reasonable", signature), e);
 					}	
 					
@@ -200,7 +200,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						constraints.addAll(mediator.extractConstraints(sootClass));
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.class_constraints.error", generateClassSignature(sootClass)), e);
+						throw new ExtractorException(getMsg("exception.extractor.class_constraints.error", getSignatureOfClass(sootClass)), e);
 					}
 				} 
 //				else {
@@ -215,7 +215,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						classWriteEffects.addAll(mediator.extractClassEffects(sootClass));
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.effects.error_class", generateClassSignature(sootClass)), e);
+						throw new ExtractorException(getMsg("exception.extractor.effects.error_class", getSignatureOfClass(sootClass)), e);
 					}
 				}
 			} else {
@@ -246,10 +246,10 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						fieldSecurityLevel = mediator.extractFieldSecurityLevel(sootField);
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.level.field.error", generateFieldSignature(sootField)), e);
+						throw new ExtractorException(getMsg("exception.extractor.level.field.error", getSignatureOfField(sootField)), e);
 					}
 				} else {
-					throw new ExtractorException(getMsg("exception.extractor.level.field.no_level", generateFieldSignature(sootField)));
+					throw new ExtractorException(getMsg("exception.extractor.level.field.no_level", getSignatureOfField(sootField)));
 				}
 			} else {
 				fieldSecurityLevel = mediator.getLibraryFieldSecurityLevel(sootField);
@@ -292,7 +292,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					try {
 						constraints.addAll(mediator.extractConstraints(sootMethod));
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.method_constraints.error", generateMethodSignature(sootMethod)), e);
+						throw new ExtractorException(getMsg("exception.extractor.method_constraints.error", getSignatureOfMethod(sootMethod)), e);
 					}
 				} 
 //				else if (!(isClinit || (isInit && parameterCount == 0) || (isVoid && parameterCount == 0))) {
@@ -311,14 +311,14 @@ public class AnnotationExtractor extends SceneTransformer {
 						try {
 							returnSecurityLevel = mediator.extractReturnSecurityLevel(sootMethod);
 						} catch (AnnotationExtractionException e) {
-							throw new ExtractorException(getMsg("exception.extractor.level.return.error", generateMethodSignature(sootMethod)), e);
+							throw new ExtractorException(getMsg("exception.extractor.level.return.error", getSignatureOfMethod(sootMethod)), e);
 						}
 					} else {
-						throw new ExtractorException(getMsg("exception.extractor.level.return.no_level", generateMethodSignature(sootMethod)));
+						throw new ExtractorException(getMsg("exception.extractor.level.return.no_level", getSignatureOfMethod(sootMethod)));
 					}
 				} else {
 					if (hasReturnSecurityAnnotation) {
-						throw new ExtractorException(getMsg("exception.extractor.level.return.void", generateMethodSignature(sootMethod)));
+						throw new ExtractorException(getMsg("exception.extractor.level.return.void", getSignatureOfMethod(sootMethod)));
 					}
 				}
 				if (parameterCount != 0) {
@@ -327,7 +327,7 @@ public class AnnotationExtractor extends SceneTransformer {
 						try {
 							parameterLevels.addAll(mediator.extractParameterSecurityLevels(sootMethod));
 						} catch (AnnotationExtractionException e) {
-							throw new ExtractorException(getMsg("exception.extractor.level.parameter.error", generateMethodSignature(sootMethod)), e);
+							throw new ExtractorException(getMsg("exception.extractor.level.parameter.error", getSignatureOfMethod(sootMethod)), e);
 						}
 						if (parameterLevels.size() == parameterCount) {
 							List<String> names = getParameterNames(sootMethod);
@@ -339,17 +339,17 @@ public class AnnotationExtractor extends SceneTransformer {
 								parameterSecurityLevel.add(mp);
 							}
 						} else {
-							throw new ExtractorException(getMsg("exception.extractor.level.parameter.invalid", generateMethodSignature(sootMethod)));
+							throw new ExtractorException(getMsg("exception.extractor.level.parameter.invalid", getSignatureOfMethod(sootMethod)));
 						}
 					} else {
-						throw new ExtractorException(getMsg("exception.extractor.level.parameter.no_level", generateMethodSignature(sootMethod)));
+						throw new ExtractorException(getMsg("exception.extractor.level.parameter.no_level", getSignatureOfMethod(sootMethod)));
 					}
 				}
 				if (hasMethodWriteEffectAnnotation) {
 					try {
 						methodWriteEffects.addAll(mediator.extractMethodEffects(sootMethod));
 					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.effects.error_method", generateMethodSignature(sootMethod)), e);
+						throw new ExtractorException(getMsg("exception.extractor.effects.error_method", getSignatureOfMethod(sootMethod)), e);
 					}
 				}
 			} else {
@@ -432,7 +432,7 @@ public class AnnotationExtractor extends SceneTransformer {
 								unit.apply(stmtSwitch);
 							} catch (SwitchException e) {
 								throw new ExtractorException(getMsg("exception.extractor.other.error_switch", unit.toString(),
-										generateMethodSignature(sootMethod)), e);
+										getSignatureOfMethod(sootMethod)), e);
 							}
 						}
 					}

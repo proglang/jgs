@@ -4,7 +4,7 @@ import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.containsStaticInitializer;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import static utils.AnalysisUtils.generatedEmptyStaticInitializer;
 import static utils.AnalysisUtils.isInnerClassOfDefinitionClass;
 import static utils.AnalysisUtils.isLevelFunction;
@@ -81,7 +81,7 @@ public class SecurityTransformer extends BodyTransformer {
 	private void doAnalysis(SootMethod sootMethod, UnitGraph graph) {
 		if (!isMethodOfDefinition(sootMethod)) {
 			if (instantLogging) {
-				log.structure(generateMethodSignature(sootMethod));
+				log.structure(getSignatureOfMethod(sootMethod));
 			}
 			if (type.equals(CONSTRAINTS)) {
 				SecurityConstraintsAnalysis sca = new SecurityConstraintsAnalysis(log, sootMethod, mediator, graph, extractor.getUsedObjectStore());

@@ -26,10 +26,10 @@ public class TestConstraintsFailing {
 
 	private static final Level[] CHECK_LEVELS = { SECURITY, SIDEEFFECT};
 	private static final String TEST_PACKAGE = "junitConstraints";
-	private static final TestFile INVALID01 = new TestFile(TEST_PACKAGE, "Invalid01");
+	private static final TestFile INVALID01 = new TestFile(TEST_PACKAGE, "Invalid01");	
 	private static final TestFile INVALID02 = new TestFile(TEST_PACKAGE, "Invalid02");
-	private static final TestFile INVALID03 = new TestFile(TEST_PACKAGE, "Invalid03");	
-	private static final TestFile INVALID04 = new TestFile(TEST_PACKAGE, "Invalid04");	
+	private static final TestFile INVALID03 = new TestFile(TEST_PACKAGE, "Invalid03");
+	private static final TestFile INVALID04 = new TestFile(TEST_PACKAGE, "Invalid04");
 	private static final TestFile INVALID05 = new TestFile(TEST_PACKAGE, "Invalid05");
 	private static final TestFile INVALID06 = new TestFile(TEST_PACKAGE, "Invalid06");
 	private static final TestFile INVALID07 = new TestFile(TEST_PACKAGE, "Invalid07");
@@ -40,12 +40,6 @@ public class TestConstraintsFailing {
 	private static final TestFile INVALID12 = new TestFile(TEST_PACKAGE, "Invalid12");
 	private static final TestFile INVALID13 = new TestFile(TEST_PACKAGE, "Invalid13");
 	private static final TestFile INVALID14 = new TestFile(TEST_PACKAGE, "Invalid14");
-	private static final TestFile INVALID15 = new TestFile(TEST_PACKAGE, "Invalid15");
-	private static final TestFile INVALID16 = new TestFile(TEST_PACKAGE, "Invalid16");
-	private static final TestFile INVALID17 = new TestFile(TEST_PACKAGE, "Invalid17");
-	private static final TestFile INVALID18 = new TestFile(TEST_PACKAGE, "Invalid18");
-	private static final TestFile INVALID19 = new TestFile(TEST_PACKAGE, "Invalid19");
-	private static final TestFile INVALID20 = new TestFile(TEST_PACKAGE, "Invalid20");
 	private static final TestFile ID_FUNCTION = new TestFile(TEST_PACKAGE, "FailIdFunction");
 	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "FailMethod");
 	
@@ -60,13 +54,12 @@ public class TestConstraintsFailing {
 	public final void reset() {
 		G.reset();
 	}
-
 	
 	@Test(expected = ExtractorException.class)
 	public final void test01Invalid() {
 		checkMethodStoreEquality(INVALID01, CHECK_LEVELS, CONSTRAINTS);
 	}
-
+	
 	@Test(expected = ExtractorException.class)
 	public final void test02Invalid() {
 		checkMethodStoreEquality(INVALID02, CHECK_LEVELS, CONSTRAINTS);
@@ -76,12 +69,12 @@ public class TestConstraintsFailing {
 	public final void test03Invalid() {
 		checkMethodStoreEquality(INVALID03, CHECK_LEVELS, CONSTRAINTS);
 	}
-	
+
 	@Test(expected = ExtractorException.class)
 	public final void test04Invalid() {
 		checkMethodStoreEquality(INVALID04, CHECK_LEVELS, CONSTRAINTS);
 	}
-	
+
 	@Test(expected = ExtractorException.class)
 	public final void test05Invalid() {
 		checkMethodStoreEquality(INVALID05, CHECK_LEVELS, CONSTRAINTS);
@@ -91,17 +84,17 @@ public class TestConstraintsFailing {
 	public final void test06Invalid() {
 		checkMethodStoreEquality(INVALID06, CHECK_LEVELS, CONSTRAINTS);
 	}
-
+	
 	@Test(expected = ExtractorException.class)
 	public final void test07Invalid() {
 		checkMethodStoreEquality(INVALID07, CHECK_LEVELS, CONSTRAINTS);
 	}
-
+	
 	@Test(expected = ExtractorException.class)
 	public final void test08Invalid() {
 		checkMethodStoreEquality(INVALID08, CHECK_LEVELS, CONSTRAINTS);
 	}
-
+	
 	@Test(expected = ExtractorException.class)
 	public final void test09Invalid() {
 		checkMethodStoreEquality(INVALID09, CHECK_LEVELS, CONSTRAINTS);
@@ -132,43 +125,13 @@ public class TestConstraintsFailing {
 		checkMethodStoreEquality(INVALID14, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
-	@Test(expected = ExtractorException.class)
-	public final void test15Invalid() {
-		checkMethodStoreEquality(INVALID15, CHECK_LEVELS, CONSTRAINTS);
-	}
-	
-	@Test(expected = ExtractorException.class)
-	public final void test16Invalid() {
-		checkMethodStoreEquality(INVALID16, CHECK_LEVELS, CONSTRAINTS);
-	}
-	
-	@Test(expected = ExtractorException.class)
-	public final void test17Invalid() {
-		checkMethodStoreEquality(INVALID17, CHECK_LEVELS, CONSTRAINTS);
-	}
-	
-	@Test(expected = ExtractorException.class)
-	public final void test18Invalid() {
-		checkMethodStoreEquality(INVALID18, CHECK_LEVELS, CONSTRAINTS);
-	}
-	
-	@Test(expected = ExtractorException.class)
-	public final void test19Invalid() {
-		checkMethodStoreEquality(INVALID19, CHECK_LEVELS, CONSTRAINTS);
-	}
-	
-	@Test(expected = ExtractorException.class)
-	public final void test20Invalid() {
-		checkMethodStoreEquality(INVALID20, CHECK_LEVELS, CONSTRAINTS);
-	}
-	
 	@Test()
-	public final void test21IdFunction() {
+	public final void test30IdFunction() {
 		checkMethodStoreEquality(ID_FUNCTION, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test()
-	public final void test22Method() {
+	public final void test31Method() {
 		checkMethodStoreEquality(METHOD, CHECK_LEVELS, CONSTRAINTS);
 	}
 }

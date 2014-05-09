@@ -1,4 +1,4 @@
-package junit;
+package junit.example;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -62,11 +62,11 @@ public class Fed1 extends ALevelDefinition {
 
 	}
 
-	protected static final class VelS extends ALevel {
+	public static final class VelS extends ALevel {
 
 		private final String level;
 
-		protected VelS(String level) {
+		public VelS(String level) {
 			this.level = level;
 		}
 
@@ -105,7 +105,7 @@ public class Fed1 extends ALevelDefinition {
 	private final ILevel low = new VelS("low");
 	private final ILevel high = new VelS("high");
 
-	protected Fed1() {
+	public Fed1() {
 		super(FieldSecurity.class, ParameterSecurity.class, ReturnSecurity.class, WriteEffect.class, MethodConstraints.class);
 	}
 

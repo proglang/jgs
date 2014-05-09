@@ -10,7 +10,7 @@ import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateFileName;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +87,6 @@ public class MethodEnvironment extends Environment {
 		 *          The <em>security level</em> of the parameter.
 		 */
 		public MethodParameter(int position, String name, Type type, ILevel level) {
-			super();
 			this.position = position;
 			this.name = (name != null) ? name : "arg" + position;
 			this.type = type;
@@ -238,7 +237,7 @@ public class MethodEnvironment extends Environment {
 			return this.methodParameters.get(new Integer(i));
 		}
 		throw new MethodParameterNotFoundException(getMsg("exception.environment.method_parameter_not_found",
-				generateMethodSignature(sootMethod), i));
+				getSignatureOfMethod(sootMethod), i));
 	}
 
 	/**
@@ -331,7 +330,7 @@ public class MethodEnvironment extends Environment {
 	 * @return
 	 */
 	public void isReasonable(AnalysisType type) {
-		String methodSignature = generateMethodSignature(sootMethod);
+		String methodSignature = getSignatureOfMethod(sootMethod);
 		if (type.equals(CONSTRAINTS)) {
 			String signature = sootMethod.getSignature();
 			for (ConstraintReturnRef returnRef : getInvalidReturnReferencesOfSet(constraints, signature)) {
@@ -346,7 +345,7 @@ public class MethodEnvironment extends Environment {
 					throw new AnnotationInvalidException(getMsg("exception.constraints.no_return_ref", methodSignature));
 				}
 			}
-			List<ILevel> containedLevels = getContainedLevelsOfSet(constraints);
+			List<ILevel> containedLevels = new ArrayList<ILevel>(getContainedLevelsOfSet(constraints));
 			if (!getLevelMediator().checkLevelsValidity(containedLevels)) {
 				for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(containedLevels)) {
 					throw new LevelInvalidException(getMsg("exception.constraints.method_invalid_level", invalidEffect.getName(), methodSignature));
@@ -387,15 +386,14 @@ public class MethodEnvironment extends Environment {
 					throw new AnnotationInvalidException(getMsg("exception.effects.method_invalid", invalidEffect.getName(), methodSignature));
 				}
 			}
+			if (!getLevelMediator().checkLevelsValidity(classWriteEffects)) {
+				for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(classWriteEffects)) {
+					throw new AnnotationInvalidException(getMsg("exception.effects.method_class_invalid", invalidEffect.getName(), methodSignature));
+				}
+			}
 		} else {
 			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
-		}
-		// FIXME: depends on the analysis type in future...
-		if (!getLevelMediator().checkLevelsValidity(classWriteEffects)) {
-			for (ILevel invalidEffect : getLevelMediator().getInvalidLevels(classWriteEffects)) {
-				throw new AnnotationInvalidException(getMsg("exception.effects.method_class_invalid", invalidEffect.getName(), methodSignature));
-			}
-		}
+		}		
 	}
 
 	/**

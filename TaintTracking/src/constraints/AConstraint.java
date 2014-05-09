@@ -1,9 +1,13 @@
 package constraints;
 
-import static constraints.ConstraintsUtils.*;
+import static constraints.ConstraintsUtils.isLevel;
+import static constraints.ConstraintsUtils.isLocal;
+import static constraints.ConstraintsUtils.isParameterReference;
+import static constraints.ConstraintsUtils.isProgramCounterReference;
+import static constraints.ConstraintsUtils.isReturnReference;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import security.ILevel;
 
@@ -30,8 +34,8 @@ public abstract class AConstraint implements IConstraint {
 		return isReturnReference(lhs) || isReturnReference(rhs);
 	}
 
-	public final List<ILevel> getContainedLevel() {
-		List<ILevel> levels = new ArrayList<ILevel>();
+	public final Set<ILevel> getContainedLevel() {
+		Set<ILevel> levels = new HashSet<ILevel>();
 		if (isLevel(lhs)) levels.add((ILevel) lhs);
 		if (isLevel(rhs)) levels.add((ILevel) rhs);
 		return levels;
@@ -53,8 +57,8 @@ public abstract class AConstraint implements IConstraint {
 		return isLocal(lhs) || isLocal(rhs);
 	}
 
-	public final List<ConstraintParameterRef> getInvalidParameterReferencesFor(String signature, int count) {
-		List<ConstraintParameterRef> invalid = new ArrayList<ConstraintParameterRef>();
+	public final Set<ConstraintParameterRef> getInvalidParameterReferencesFor(String signature, int count) {
+		Set<ConstraintParameterRef> invalid = new HashSet<ConstraintParameterRef>();
 		if (isParameterReference(lhs)) {
 			ConstraintParameterRef paramRef = (ConstraintParameterRef) lhs;
 			if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
@@ -70,8 +74,8 @@ public abstract class AConstraint implements IConstraint {
 		return invalid;
 	}
 
-	public final List<ConstraintReturnRef> getInvalidReturnReferencesFor(String signature) {
-		List<ConstraintReturnRef> invalid = new ArrayList<ConstraintReturnRef>();
+	public final Set<ConstraintReturnRef> getInvalidReturnReferencesFor(String signature) {
+		Set<ConstraintReturnRef> invalid = new HashSet<ConstraintReturnRef>();
 		if (isReturnReference(lhs)) {
 			ConstraintReturnRef returnRef = (ConstraintReturnRef) lhs;
 			if (!returnRef.getSignature().equals(signature)) {

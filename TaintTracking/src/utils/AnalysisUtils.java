@@ -80,16 +80,11 @@ public class AnalysisUtils {
 
 	public static class ArgumentParser {
 
-		private static final String ARG_CONSTRAINTS = "-constraints";
-		private static final String ARG_SRC_PREC = "-src-prec";
-		private static final String ARG_PROGRAM_CLASSPATH = "-program-classpath";
-		private static final String OUTPUT_PATH = "./generatedJimple";
-		private static final String ARG_DEF_CLASSPATH = "-def-classpath";
-		private static final String ARG_SOURCE_PATH = "-source-path";
-		private static final String RT_JAR = "rt.jar";
 		private static final String ARG_CLASSPATH_1 = "-cp";
 		private static final String ARG_CLASSPATH_2 = "-soot-class-path";
 		private static final String ARG_CLASSPATH_3 = "-soot-classpath";
+		private static final String ARG_CONSTRAINTS = "-constraints";
+		private static final String ARG_DEF_CLASSPATH = "-def-classpath";
 		private static final String ARG_EXCLUDE_1 = "-x";
 		private static final String ARG_EXCLUDE_2 = "-exclude";
 		/**
@@ -111,12 +106,15 @@ public class AnalysisUtils {
 		 */
 		private static final String ARG_PREPEND_CLASSPATH_1 = "-pp";
 		private static final String ARG_PREPEND_CLASSPATH_2 = "-prepend-classpath";
+		private static final String ARG_PROGRAM_CLASSPATH = "-program-classpath";
+		private static final String ARG_SOURCE_PATH = "-source-path";
+		private static final String ARG_SRC_PREC = "-src-prec";
 		private static final String ARG_WHOLE_PROGRAM_1 = "-w";
 		private static final String ARG_WHOLE_PROGRAM_2 = "-whole-program";
 		private static final String EXCL_ANNOTATION = "annotation.";
 		private static final String EXCL_CONSTRAINTS = "constraints.";
-		private static final String EXCL_SECURITY = "security.";
 		private static final String EXCL_EXCEPTION = "exception.";
+		private static final String EXCL_SECURITY = "security.";
 		private static final String LEV_ALL = "all";
 		private static final String LEV_CONFIGURATION = "configuration";
 		private static final String LEV_DEBUG = "debug";
@@ -125,26 +123,32 @@ public class AnalysisUtils {
 		private static final String LEV_OFF = "off";
 		private static final String LEV_SECURITY = "security";
 		private static final String LEV_SIDEEFFECT = "sideeffect";
-
 		private static final String LEV_STRUCTURE = "structure";
 		private static final String LEV_WARNING = "warning";
+
 		/** Command line option for enabling the instant logging. */
 		private static final String OPT_INSTANT_LOGGING = "-instant-logging";
+		private static final String OUTPUT_PATH = "./generatedJimple";
+		private static final String RT_JAR = "rt.jar";
+
+		private AnalysisType analysisType = AnalysisType.LEVELS;
 
 		private String analyzedSourcePath = ".";
-
 		private String[] arguments = {};
 		private String definitionClassPath = ".";
 		private boolean instantLogging = false;
 		private List<Level> logLevels = new ArrayList<Level>();
-		private String programClassPath = ".";
 
+		private String programClassPath = ".";
 		private List<String> sootArguments = new ArrayList<String>();
-		private AnalysisType analysisType = AnalysisType.LEVELS;
 
 		private ArgumentParser(String[] args) {
 			this.arguments = args;
 			parse();
+		}
+
+		public AnalysisType getAnalysisType() {
+			return analysisType;
 		}
 
 		public final String getAnalyzedSourcePath() {
@@ -171,13 +175,6 @@ public class AnalysisUtils {
 
 		public final boolean isInstantLogging() {
 			return instantLogging;
-		}
-
-		private void prepareClassPath(List<String> list) {
-			parseDefinitionClassPath(list);
-			parseAnalyzedSourcePath(list);
-			parseProgramClassPath(list);
-			parseClassPath(list, getDefinitionClassPath(), getProgramClassPath(), getAnalyzedSourcePath());
 		}
 
 		private boolean containsRT(List<String> paths) {
@@ -216,15 +213,6 @@ public class AnalysisUtils {
 				this.analysisType = AnalysisType.CONSTRAINTS;
 			}
 			list.remove(ARG_CONSTRAINTS);
-		}
-
-		private void parseInput(List<String> list) {
-			if (list.contains(ARG_SRC_PREC)) {
-				int optionsPosition = list.indexOf(ARG_SRC_PREC) + 1;
-				list.remove(optionsPosition);
-				list.remove(ARG_SRC_PREC);
-			}
-			Options.v().set_src_prec(src_prec_java);
 		}
 
 		private void parseAnalyzedSourcePath(List<String> list) {
@@ -327,6 +315,15 @@ public class AnalysisUtils {
 			Options.v().set_exclude(excludes);
 		}
 
+		private void parseInput(List<String> list) {
+			if (list.contains(ARG_SRC_PREC)) {
+				int optionsPosition = list.indexOf(ARG_SRC_PREC) + 1;
+				list.remove(optionsPosition);
+				list.remove(ARG_SRC_PREC);
+			}
+			Options.v().set_src_prec(src_prec_java);
+		}
+
 		private void parseInstantLogging(List<String> list) {
 			if (list.contains(OPT_INSTANT_LOGGING)) {
 				instantLogging = true;
@@ -404,6 +401,13 @@ public class AnalysisUtils {
 			Options.v().set_whole_program(true);
 		}
 
+		private void prepareClassPath(List<String> list) {
+			parseDefinitionClassPath(list);
+			parseAnalyzedSourcePath(list);
+			parseProgramClassPath(list);
+			parseClassPath(list, getDefinitionClassPath(), getProgramClassPath(), getAnalyzedSourcePath());
+		}
+
 		/**
 		 * Adds valid levels of the given array to the level array of the main class {@link Main}.
 		 * 
@@ -450,10 +454,6 @@ public class AnalysisUtils {
 						throw new ArgumentInvalidException(getMsg("exception.arguments.invalid", getArgumentsString()));
 				}
 			}
-		}
-
-		public AnalysisType getAnalysisType() {
-			return analysisType;
 		}
 
 	}
@@ -543,20 +543,6 @@ public class AnalysisUtils {
 	}
 
 	/**
-	 * Generates a readable class signature for the given {@link SootClass}. Depending on the given flags, the resulting signature can contain
-	 * the package name.
-	 * 
-	 * @param sootClass
-	 *          The SootClass for which a class signature should be created.
-	 * @param printPackage
-	 *          Flag, that indicates whether the package name should be included in the signature.
-	 * @return Readable class signature of the given SootClass, depending on the given flag, the signature includes the package name.
-	 */
-	public static String generateClassSignature(SootClass sootClass) {
-		return CLASS_SIGNATURE_PRINT_PACKAGE ? sootClass.getName() : sootClass.getShortName();
-	}
-
-	/**
 	 * Method creates a static initializer with an empty body for the specified class and returns this method.
 	 * 
 	 * @param sootClass
@@ -572,30 +558,6 @@ public class AnalysisUtils {
 		Chain<Unit> units = body.getUnits();
 		units.add(Jimple.v().newReturnVoidStmt());
 		return sootMethod;
-	}
-
-	/**
-	 * Generates a readable field signature for a {@link SootField}. Depending on the given flags, the resulting signature can contain the
-	 * visibility of the field, the package name and also the type of the field.
-	 * 
-	 * @param sootField
-	 *          The SootField for which a field signature should be created.
-	 * @param printPackage
-	 *          Flag, that indicates whether the package name should be included in the signature.
-	 * @param printType
-	 *          Flag, that indicates whether the type of the field should be included in the signature.
-	 * @param printVisibility
-	 *          Flag, that indicates whether the visibility of the field should be included in the signature.
-	 * @return Readable field signature of the given SootField, depending on the given flags, the signature includes the package name, the
-	 *         type of the field and the visibility.
-	 */
-	public static String generateFieldSignature(SootField sootField) {
-		String fieldName = sootField.getName();
-		String classOfField = generateClassSignature(sootField.getDeclaringClass());
-		String fieldTypeName = generateTypeName(sootField.getType());
-		String fieldVisibility = generateVisibility(sootField.isPrivate(), sootField.isProtected(), sootField.isPublic());
-		return classOfField + "." + fieldName + (FIELD_SIGNATURE_PRINT_TYPE ? " : " + fieldTypeName : "")
-				+ (FIELD_SIGNATURE_PRINT_VISIBILITY ? " [" + fieldVisibility + "]" : "");
 	}
 
 	/**
@@ -643,33 +605,17 @@ public class AnalysisUtils {
 	}
 
 	/**
-	 * Generates a readable method signature for a {@link SootMethod}. Depending on the given flags, the resulting signature can contain the
-	 * visibility of the method, the package name and also the types of the parameters and the return type.
 	 * 
-	 * @param sootMethod
-	 *          The SootMethod for which a method signature should be created.
-	 * @param printPackage
-	 *          Flag, that indicates whether the package name should be included in the signature.
-	 * @param printType
-	 *          Flag, that indicates whether the types of the parameters and the return type should be included in the signature.
-	 * @param printVisibility
-	 *          Flag, that indicates whether the visibility of the method should be included in the signature.
-	 * @return Readable method signature of the given SootMethod, depending on the given flags, the signature includes the package name, the
-	 *         return and the parameter types and the visibility.
+	 * @param method
+	 * @return
 	 */
-	public static String generateMethodSignature(SootMethod sootMethod) {
-		String methodName = sootMethod.getName();
-		String classOfMethod = generateClassSignature(sootMethod.getDeclaringClass());
-		String parameters = "";
-		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
-			Type type = sootMethod.getParameterType(i);
-			if (!parameters.equals("")) parameters += ", ";
-			parameters += ("arg" + i + (METHOD_SIGNATURE_PRINT_TYPE ? (" : " + generateTypeName(type)) : ""));
-		}
-		String methodTypeName = generateTypeName(sootMethod.getReturnType());
-		String methodVisibility = generateVisibility(sootMethod.isPrivate(), sootMethod.isProtected(), sootMethod.isPublic());
-		return classOfMethod + "." + methodName + "(" + parameters + ")" + (METHOD_SIGNATURE_PRINT_TYPE ? " : " + methodTypeName : "")
-				+ (METHOD_SIGNATURE_PRINT_VISIBILITY ? " [" + methodVisibility + "]" : "");
+	public static String generateSignature(Method method) {
+		StringBuffer buffer = new StringBuffer();
+		Class<?> cl = method.getDeclaringClass();
+		buffer.append("<" + cl.getName() + ": ");
+		buffer.append(getSubSignatureImpl(method.getName(), method.getParameterTypes(), method.getReturnType()));
+		buffer.append(">");
+		return buffer.toString().intern();
 	}
 
 	public static ArgumentParser getArgumentParser(String[] args) {
@@ -942,6 +888,74 @@ public class AnalysisUtils {
 	}
 
 	/**
+	 * Generates a readable class signature for the given {@link SootClass}. Depending on the given flags, the resulting signature can contain
+	 * the package name.
+	 * 
+	 * @param sootClass
+	 *          The SootClass for which a class signature should be created.
+	 * @param printPackage
+	 *          Flag, that indicates whether the package name should be included in the signature.
+	 * @return Readable class signature of the given SootClass, depending on the given flag, the signature includes the package name.
+	 */
+	public static String getSignatureOfClass(SootClass sootClass) {
+		return CLASS_SIGNATURE_PRINT_PACKAGE ? sootClass.getName() : sootClass.getShortName();
+	}
+
+	/**
+	 * Generates a readable method signature for a {@link SootMethod}. Depending on the given flags, the resulting signature can contain the
+	 * visibility of the method, the package name and also the types of the parameters and the return type.
+	 * 
+	 * @param sootMethod
+	 *          The SootMethod for which a method signature should be created.
+	 * @param printPackage
+	 *          Flag, that indicates whether the package name should be included in the signature.
+	 * @param printType
+	 *          Flag, that indicates whether the types of the parameters and the return type should be included in the signature.
+	 * @param printVisibility
+	 *          Flag, that indicates whether the visibility of the method should be included in the signature.
+	 * @return Readable method signature of the given SootMethod, depending on the given flags, the signature includes the package name, the
+	 *         return and the parameter types and the visibility.
+	 */
+	public static String getSignatureOfMethod(SootMethod sootMethod) {
+		String methodName = sootMethod.getName();
+		String classOfMethod = getSignatureOfClass(sootMethod.getDeclaringClass());
+		String parameters = "";
+		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+			Type type = sootMethod.getParameterType(i);
+			if (!parameters.equals("")) parameters += ", ";
+			parameters += ("arg" + i + (METHOD_SIGNATURE_PRINT_TYPE ? (" : " + generateTypeName(type)) : ""));
+		}
+		String methodTypeName = generateTypeName(sootMethod.getReturnType());
+		String methodVisibility = generateVisibility(sootMethod.isPrivate(), sootMethod.isProtected(), sootMethod.isPublic());
+		return classOfMethod + "." + methodName + "(" + parameters + ")" + (METHOD_SIGNATURE_PRINT_TYPE ? " : " + methodTypeName : "")
+				+ (METHOD_SIGNATURE_PRINT_VISIBILITY ? " [" + methodVisibility + "]" : "");
+	}
+
+	/**
+	 * Generates a readable field signature for a {@link SootField}. Depending on the given flags, the resulting signature can contain the
+	 * visibility of the field, the package name and also the type of the field.
+	 * 
+	 * @param sootField
+	 *          The SootField for which a field signature should be created.
+	 * @param printPackage
+	 *          Flag, that indicates whether the package name should be included in the signature.
+	 * @param printType
+	 *          Flag, that indicates whether the type of the field should be included in the signature.
+	 * @param printVisibility
+	 *          Flag, that indicates whether the visibility of the field should be included in the signature.
+	 * @return Readable field signature of the given SootField, depending on the given flags, the signature includes the package name, the
+	 *         type of the field and the visibility.
+	 */
+	public static String getSignatureOfField(SootField sootField) {
+		String fieldName = sootField.getName();
+		String classOfField = getSignatureOfClass(sootField.getDeclaringClass());
+		String fieldTypeName = generateTypeName(sootField.getType());
+		String fieldVisibility = generateVisibility(sootField.isPrivate(), sootField.isProtected(), sootField.isPublic());
+		return classOfField + "." + fieldName + (FIELD_SIGNATURE_PRINT_TYPE ? " : " + fieldTypeName : "")
+				+ (FIELD_SIGNATURE_PRINT_VISIBILITY ? " [" + fieldVisibility + "]" : "");
+	}
+
+	/**
 	 * Returns the given type as String.
 	 * 
 	 * @param type
@@ -969,20 +983,6 @@ public class AnalysisUtils {
 	 */
 	private static String generateVisibility(boolean isPrivate, boolean isProtected, boolean isPublic) {
 		return (isPrivate ? "-" : (isProtected ? "#" : (isPublic ? "+" : "?")));
-	}
-
-	/**
-	 * 
-	 * @param method
-	 * @return
-	 */
-	public static String generateSignature(Method method) {
-		StringBuffer buffer = new StringBuffer();
-		Class<?> cl = method.getDeclaringClass();
-		buffer.append("<" + cl.getName() + ": ");
-		buffer.append(getSubSignatureImpl(method.getName(), method.getParameterTypes(), method.getReturnType()));
-		buffer.append(">");
-		return buffer.toString().intern();
 	}
 
 	/**

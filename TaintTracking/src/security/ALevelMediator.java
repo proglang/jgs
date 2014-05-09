@@ -3,9 +3,9 @@ package security;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.extractAnnotationTagWithType;
 import static utils.AnalysisUtils.extractVisibilityAnnotationTag;
-import static utils.AnalysisUtils.generateClassSignature;
-import static utils.AnalysisUtils.generateFieldSignature;
-import static utils.AnalysisUtils.generateMethodSignature;
+import static utils.AnalysisUtils.getSignatureOfClass;
+import static utils.AnalysisUtils.getSignatureOfField;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import static utils.AnalysisUtils.getJNISignature;
 import static utils.AnalysisUtils.hasAnnotationOfType;
 import static utils.AnalysisUtils.hasVisibilityAnnnotationTag;
@@ -60,7 +60,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			return definition.extractEffects(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
 			throw new AnnotationExtractionException(
-					getMsg("exception.annotation.extract_class_effects_error", generateClassSignature(sootClass)), e);
+					getMsg("exception.annotation.extract_class_effects_error", getSignatureOfClass(sootClass)), e);
 		}
 
 	}
@@ -73,7 +73,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			return definition.extractConstraints(dao, sootMethod.getSignature());
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {
 			throw new AnnotationExtractionException(
-					getMsg("exception.annotation.extract_method_constraints_error", generateMethodSignature(sootMethod)), e);
+					getMsg("exception.annotation.extract_method_constraints_error", getSignatureOfMethod(sootMethod)), e);
 		}
 	}
 	
@@ -85,7 +85,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			return definition.extractConstraints(dao, sootClass.getName());
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {
 			throw new AnnotationExtractionException(
-					getMsg("exception.annotation.extract_class_constraints_error", generateClassSignature(sootClass)), e);
+					getMsg("exception.annotation.extract_class_constraints_error", getSignatureOfClass(sootClass)), e);
 		}
 	}
 
@@ -96,7 +96,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			SootAnnotationDAO dao = new SootAnnotationDAO(definition.getAnnotationClassFieldLevel(), at);
 			return definition.extractFieldLevel(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
-			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_field_level_error", generateFieldSignature(sootField)),
+			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_field_level_error", getSignatureOfField(sootField)),
 					e);
 		}
 	}
@@ -109,7 +109,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			return definition.extractEffects(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
 			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_method_effects_error",
-					generateMethodSignature(sootMethod)), e);
+					getSignatureOfMethod(sootMethod)), e);
 		}
 	}
 
@@ -121,7 +121,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			return definition.extractParameterLevels(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
 			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_method_parameter_error",
-					generateMethodSignature(sootMethod)), e);
+					getSignatureOfMethod(sootMethod)), e);
 		}
 	}
 
@@ -133,7 +133,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 			return definition.extractReturnLevel(dao);
 		} catch (AnnotationExtractionException | AnnotationElementNotFoundException e) {
 			throw new AnnotationExtractionException(getMsg("exception.annotation.extract_method_return_error",
-					generateMethodSignature(sootMethod)), e);
+					getSignatureOfMethod(sootMethod)), e);
 		}
 	}
 
