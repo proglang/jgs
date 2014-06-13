@@ -125,7 +125,15 @@ public class ConstraintsUtils {
 	public static boolean isLocal(IConstraintComponent component) {
 		return component instanceof ConstraintLocal;
 	}
-
+	
+	public static Set<IConstraint> changeAllComponentsSignature(String newSignature, Set<IConstraint> constraints) {
+		Set<IConstraint> result = new HashSet<IConstraint>();
+		for (IConstraint constraint : constraints) {
+			result.add(constraint.changeAllComponentsSignature(newSignature));
+		}
+		return result;
+	}
+	
 	public static String constraintsAsString(Set<IConstraint> constraints) {
 		StringBuilder sb = new StringBuilder("{ ");
 		int count = 0;
@@ -136,5 +144,92 @@ public class ConstraintsUtils {
 		sb.append(" }");
 		return sb.toString();
 	}
+	
+	public static String levelsAsString(Set<ILevel> levels) {
+		StringBuilder sb = new StringBuilder("{ ");
+		int count = 0;
+		for (ILevel level : levels) {
+			if (0 != count++) sb.append(", ");
+			sb.append(level.toString());
+		}
+		sb.append(" }");
+		return sb.toString();
+	}
 
+	public static Set<IConstraint> getConstraintsContaining(Set<IConstraint> constraints,	IConstraintComponent component) {
+		Set<IConstraint> result = new HashSet<IConstraint>();
+		for (IConstraint constraint : constraints) {
+			if (constraint.containsComponent(component)) {
+				result.add(constraint);
+			}
+		}
+		return result;
+	}
+	
+	public static Set<ILevel> getLevelsOfRightSideWithLeftSideReturn(Set<IConstraint> constraints, String signature) {
+		Set<ILevel> result = new HashSet<ILevel>();
+		for (IConstraint constraint : constraints) {
+			if (isReturnReference(constraint.getLhs(), signature) && isLevel(constraint.getRhs())) {
+				ILevel level = (ILevel) constraint.getRhs();
+				result.add(level);
+			}
+		}
+		return result;
+	}
+	
+	public static Set<ILevel> getLevelsOfLeftSideWithRightSideReturn(Set<IConstraint> constraints, String signature) {
+		Set<ILevel> result = new HashSet<ILevel>();
+		for (IConstraint constraint : constraints) {
+			if (isReturnReference(constraint.getRhs(), signature) && isLevel(constraint.getLhs())) {
+				ILevel level = (ILevel) constraint.getLhs();
+				result.add(level);
+			}
+		}
+		return result;
+	}
+	
+	public static Set<ILevel> getLevelsOfRightSideWithLeftSideParameter(Set<IConstraint> constraints, String signature, int position) {
+		Set<ILevel> result = new HashSet<ILevel>();
+		for (IConstraint constraint : constraints) {
+			if (isParameterReference(constraint.getLhs(), signature, position) && isLevel(constraint.getRhs())) {
+				ILevel level = (ILevel) constraint.getRhs();
+				result.add(level);
+			}
+		}
+		return result;
+	}
+	
+	public static Set<ILevel> getLevelsOfLeftSideWithRightSideParameter(Set<IConstraint> constraints, String signature, int position) {
+		Set<ILevel> result = new HashSet<ILevel>();
+		for (IConstraint constraint : constraints) {
+			if (isParameterReference(constraint.getRhs(), signature, position) && isLevel(constraint.getLhs())) {
+				ILevel level = (ILevel) constraint.getLhs();
+				result.add(level);
+			}
+		}
+		return result;
+	}
+	
+	public static Set<ILevel> getLevelsOfRightSideWithLeftSidePC(Set<IConstraint> constraints, String signature) {
+		Set<ILevel> result = new HashSet<ILevel>();
+		for (IConstraint constraint : constraints) {
+			if (isProgramCounterReference(constraint.getLhs(), signature) && isLevel(constraint.getRhs())) {
+				ILevel level = (ILevel) constraint.getRhs();
+				result.add(level);
+			}
+		}
+		return result;
+	}
+	
+	public static Set<ILevel> getLevelsOfLeftSideWithRightSidePC(Set<IConstraint> constraints, String signature) {
+		Set<ILevel> result = new HashSet<ILevel>();
+		for (IConstraint constraint : constraints) {
+			if (isProgramCounterReference(constraint.getRhs(), signature) && isLevel(constraint.getLhs())) {
+				ILevel level = (ILevel) constraint.getLhs();
+				result.add(level);
+			}
+		}
+		return result;
+	}
+	
 }

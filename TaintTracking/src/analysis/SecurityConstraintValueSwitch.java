@@ -7,6 +7,7 @@ import model.AnalyzedMethodEnvironment;
 import model.ClassEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment;
+import soot.ArrayType;
 import soot.Local;
 import soot.SootClass;
 import soot.SootField;
@@ -67,6 +68,7 @@ import constraints.ConstraintsSet;
 import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
+import exception.CastInvalidException;
 import extractor.UsedObjectStore;
 
 public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch implements JimpleValueSwitch {
@@ -101,6 +103,10 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void caseCastExpr(CastExpr v) {
+		if (v.getCastType() instanceof ArrayType) {
+			// FIXME... Deny Cast from something into array
+			throw new CastInvalidException("Try to cast something into an Array: this is not allowed");
+		}
 		handleUnaryExpr(v.getOp());
 	}
 

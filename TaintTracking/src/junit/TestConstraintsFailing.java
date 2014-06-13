@@ -40,8 +40,12 @@ public class TestConstraintsFailing {
 	private static final TestFile INVALID12 = new TestFile(TEST_PACKAGE, "Invalid12");
 	private static final TestFile INVALID13 = new TestFile(TEST_PACKAGE, "Invalid13");
 	private static final TestFile INVALID14 = new TestFile(TEST_PACKAGE, "Invalid14");
-	private static final TestFile ID_FUNCTION = new TestFile(TEST_PACKAGE, "FailIdFunction");
+	private static final TestFile INVALID15 = new TestFile(TEST_PACKAGE, "Invalid15");
+	private static final TestFile LEVEL_FUNCTION = new TestFile(TEST_PACKAGE, "FailLevelFunction");
 	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "FailMethod");
+	private static final TestFile FIELD = new TestFile(TEST_PACKAGE, "FailField");
+	private static final TestFile EXPR = new TestFile(TEST_PACKAGE, "FailExpr");
+
 	
 	@BeforeClass
 	public static final void init() {
@@ -124,14 +128,29 @@ public class TestConstraintsFailing {
 	public final void test14Invalid() {
 		checkMethodStoreEquality(INVALID14, CHECK_LEVELS, CONSTRAINTS);
 	}
-	
-	@Test()
-	public final void test30IdFunction() {
-		checkMethodStoreEquality(ID_FUNCTION, CHECK_LEVELS, CONSTRAINTS);
+
+	@Test(expected = ExtractorException.class)
+	public final void test15Invalid() {
+		checkMethodStoreEquality(INVALID15, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
-	@Test()
+	@Test
+	public final void test30LevelFunction() {
+		checkMethodStoreEquality(LEVEL_FUNCTION, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
 	public final void test31Method() {
 		checkMethodStoreEquality(METHOD, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test32Field() {
+		checkMethodStoreEquality(FIELD, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test33Expr() {
+		checkMethodStoreEquality(EXPR, CHECK_LEVELS, CONSTRAINTS);
 	}
 }

@@ -1,6 +1,7 @@
 package junit.example;
 
 import constraints.AConstraint;
+import constraints.IConstraint;
 import constraints.IConstraintComponent;
 
 public class SnocE extends AConstraint {
@@ -36,6 +37,11 @@ public class SnocE extends AConstraint {
 	@Override
 	public String toString() {
 		return lhs.toString() + " = " + rhs.toString();
+	}
+
+	@Override
+	public IConstraint changeAllComponentsSignature(String signature) {
+		return new SnocE(getLhs().changeSignature(signature), getRhs().changeSignature(signature));
 	}
 
 }

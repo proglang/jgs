@@ -29,5 +29,10 @@ public class ConstraintReturnRef extends AConstraintReference {
 		} else if (!signature.equals(other.signature)) return false;
 		return true;
 	}
+
+	@Override
+	public IConstraintComponent changeSignature(String signature) {
+		return new ConstraintReturnRef(signature);
+	}
 	
 }

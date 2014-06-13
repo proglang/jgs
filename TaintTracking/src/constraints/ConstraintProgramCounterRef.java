@@ -29,6 +29,11 @@ public class ConstraintProgramCounterRef extends AConstraintReference {
 		} else if (!signature.equals(other.signature)) return false;
 		return true;
 	}
+
+	@Override
+	public IConstraintComponent changeSignature(String signature) {
+		return new ConstraintProgramCounterRef(signature);
+	}
 	
 	
 	

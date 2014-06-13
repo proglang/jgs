@@ -6,9 +6,6 @@ import static utils.AnalysisUtils.extractLineNumber;
 import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.getSignatureOfMethod;
 import static utils.AnalysisUtils.isClinitMethod;
-import constraints.IConstraint;
-import constraints.LEQConstraint;
-import exception.ConstraintUnsupportedException;
 import logging.AnalysisLog;
 import model.Cause.ArrayAssignCause;
 import model.Cause.AssignCause;
@@ -22,6 +19,9 @@ import soot.jimple.ArrayRef;
 import soot.jimple.Stmt;
 import utils.AnalysisUtils;
 import analysis.SecurityLevelAnalysis;
+import constraints.IConstraint;
+import constraints.LEQConstraint;
+import exception.ConstraintUnsupportedException;
 
 /**
  * <h1>Directly analysis environment for methods</h1>

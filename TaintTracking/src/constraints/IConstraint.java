@@ -9,6 +9,8 @@ public interface IConstraint {
 	public boolean containsComponent(IConstraintComponent component);
 
 	public boolean containsLocal();
+	
+	public boolean containsGeneratedLocal();
 
 	public boolean containsParameterReference();
 
@@ -39,5 +41,7 @@ public interface IConstraint {
 	public int hashCode();
 
 	public String toString();
+
+	public IConstraint changeAllComponentsSignature(String signature);
 
 }

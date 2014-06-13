@@ -1,40 +1,87 @@
 package junitConstraints;
 
 import static security.Definition.*;
+import security.Definition.FieldSecurity;
 
-@Constraints({ "low <= @pc" })
 public class FailField {
 
-	@FieldSecurity("low")
-	public static int lowField = 42;
-
-	@FieldSecurity("high")
-	public static int highField = 42;
-
-	@Constraints({ "low <= @pc", "@0 <= low" })
 	public static void main(String[] args) {}
 
-	@Constraints({ "low <= @pc" })
-	public FailField() {}
+	@FieldSecurity("low")
+	public int lowIField;
 
-//	@Constraints({ "low <= @pc", "low <= @return" })
-//	public int failField1() {
-//		int i = highField;
-//		// @security("Missing signature constraint: high <= @return")
-//		return i;
-//	}
-//
-//	@Constraints({ "low <= @pc", "low <= @0"})
-//	public void failField2(int a) {
-//		int i = mkHigh(42);
-//		// @security("Inequality --> high <= i, i <= low")
-//		lowField = i;
-//		return;
-//	}
-	
-	@Constraints({ "low <= @pc", "high <= @return"})
-	public int test() {
-		int i = mkLow(42);
+	@FieldSecurity("low")
+	public static int lowSField;
+
+	@FieldSecurity("high")
+	public int highIField;
+
+	@FieldSecurity("high")
+	public static int highSField;
+
+	// IMPORTANT "@pc <= high" is always valid
+	public void failField1() {
+		highIField = mkLow(42);
+		// @tautology("Missing write effect to high")
+		return;
+	}
+
+	public void failField2() {
+		lowIField = mkLow(42);
+		// @security("Missing write effect to low")
+		return;
+	}
+
+	@Constraints("@pc <= low")
+	public void failField3() {
+		// @security("Assignment of high value to low field")
+		// @security("Double error")
+		lowIField = mkHigh(42); // FIXME
+	}
+
+	@Constraints("low <= @return")
+	public int failField4() {
+		// @security("Assignment of high to low field")
+		return highIField;
+	}
+
+	@Constraints("low <= @return")
+	public int failField5() {
+		int i = highIField;
+		// @security("Assignment of high to low field")
+		return i;
+	}
+
+	// IMPORTANT "@pc <= high" is always valid
+	public void failField6() {
+		highSField = mkLow(42);
+		// @tautology("Missing write effect to high")
+		return;
+	}
+
+	public void failField7() {
+		lowSField = mkLow(42);
+		// @security("Missing write effect to low")
+		return;
+	}
+
+	@Constraints("@pc <= low")
+	public void failField8() {
+		// @security("Assignment of high value to low field")
+		// @security("Double error")
+		lowSField = mkHigh(42); // FIXME
+	}
+
+	@Constraints("low <= @return")
+	public int failField9() {
+		// @security("Assignment of high to low field")
+		return highSField;
+	}
+
+	@Constraints("low <= @return")
+	public int failField10() {
+		int i = highSField;
+		// @security("Assignment of high to low field")
 		return i;
 	}
 

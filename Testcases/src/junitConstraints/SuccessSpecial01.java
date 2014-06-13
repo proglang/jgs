@@ -2,7 +2,6 @@ package junitConstraints;
 
 import static security.Definition.*;
 
-@Constraints({ "@pc <= low" })
 public class SuccessSpecial01 {
 	
 	@FieldSecurity("high")
@@ -11,11 +10,7 @@ public class SuccessSpecial01 {
 	@FieldSecurity("low")
 	private int low = 42;
 	
-	@Constraints({ "@pc <= low", "@0 <= low" })
 	public static void main(String[] args) {}
-
-	@Constraints({ "@pc <= low" })
-	public SuccessSpecial01() {}
 
 	@Constraints({ "@pc <= low"})
 	public void validSpecial1() {

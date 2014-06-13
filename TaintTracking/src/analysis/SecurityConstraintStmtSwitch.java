@@ -31,6 +31,8 @@ import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.IfProgramCounterTrigger;
 import constraints.LEQConstraint;
+import constraints.LookupSwitchProgramCounterTrigger;
+import constraints.TableSwitchProgramCounterTrigger;
 import extractor.UsedObjectStore;
 
 public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch implements StmtSwitch {
@@ -46,6 +48,11 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	public void caseAssignStmt(AssignStmt stmt) {
 		SecurityConstraintValueSwitch switchLhs = getValueSwitch(stmt.getLeftOp());
 		SecurityConstraintValueSwitch switchRhs = getValueSwitch(stmt.getRightOp());
+		if (switchLhs.isField()) {
+			for (IConstraintComponent component : switchLhs.getComponents()) {
+				getOut().addWriteEffect(new LEQConstraint(new ConstraintProgramCounterRef(getAnalyzedSignature()), component));
+			}			
+		}
 		removeLocalAssignArtifacts(switchLhs);
 		addConstraints(generateConstraints(considerWriteEffect(switchLhs, switchRhs.getComponents()), switchLhs.getComponents()));
 		addConstraints(switchRhs.getConstraints());
@@ -80,11 +87,13 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
 		SecurityConstraintValueSwitch valueSwitch = getValueSwitch(stmt.getCondition());
-		ConstraintsSet tempConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(), getMediator());
+		ConstraintsSet tempConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(), getIn().getWriteEffects(), getMediator());
 		for (IConstraintComponent component : valueSwitch.getComponents()) {
 			tempConstraints.add(new LEQConstraint(component, new ConstraintProgramCounterRef(getAnalyzedSignature())));
 		}
-		getOut().addProgramCounterConstraints(new IfProgramCounterTrigger(stmt), tempConstraints.getTransitiveClosure().getConstraintsSet());
+		ConstraintsSet pcSet = tempConstraints.getTransitiveClosure();
+		pcSet.removeConstraintsContainingLocal();
+		getOut().addProgramCounterConstraints(new IfProgramCounterTrigger(stmt), pcSet.getConstraintsSet());
 	}
 
 	@Override
@@ -96,7 +105,15 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		throwNotImplementedException(stmt.getClass(), stmt.toString());
+		SecurityConstraintValueSwitch valueSwitch = getValueSwitch(stmt.getKey());
+		ConstraintsSet tempConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(), getIn().getWriteEffects(), getMediator());
+		for (IConstraintComponent component : valueSwitch.getComponents()) {
+			tempConstraints.add(new LEQConstraint(component, new ConstraintProgramCounterRef(getAnalyzedSignature())));
+		}
+		ConstraintsSet pcSet = tempConstraints.getTransitiveClosure();
+		pcSet.removeConstraintsContainingLocal();
+		getOut().addProgramCounterConstraints(new LookupSwitchProgramCounterTrigger(stmt),
+				pcSet.getConstraintsSet());
 	}
 
 	@Override
@@ -123,7 +140,15 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		throwNotImplementedException(stmt.getClass(), stmt.toString());
+		SecurityConstraintValueSwitch valueSwitch = getValueSwitch(stmt.getKey());
+		ConstraintsSet tempConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(), getIn().getWriteEffects(), getMediator());
+		for (IConstraintComponent component : valueSwitch.getComponents()) {
+			tempConstraints.add(new LEQConstraint(component, new ConstraintProgramCounterRef(getAnalyzedSignature())));
+		}
+		ConstraintsSet pcSet = tempConstraints.getTransitiveClosure();
+		pcSet.removeConstraintsContainingLocal();
+		getOut().addProgramCounterConstraints(new TableSwitchProgramCounterTrigger(stmt),
+				pcSet.getConstraintsSet());
 	}
 
 	@Override
@@ -146,7 +171,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	private Set<IConstraintComponent> considerWriteEffect(SecurityConstraintValueSwitch switchLhs, Set<IConstraintComponent> lComponents) {
 		Set<IConstraintComponent> components = new HashSet<IConstraintComponent>(lComponents);
-		if (switchLhs.isField()) {
+		if (switchLhs.isField() || switchLhs.isLocal()) {
 			components.add(new ConstraintProgramCounterRef(getAnalyzedSignature()));
 		}
 		return components;

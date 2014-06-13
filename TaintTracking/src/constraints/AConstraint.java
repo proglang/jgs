@@ -56,6 +56,17 @@ public abstract class AConstraint implements IConstraint {
 	public final boolean containsLocal() {
 		return isLocal(lhs) || isLocal(rhs);
 	}
+	
+	@Override
+	public boolean containsGeneratedLocal() {
+		if (isLocal(lhs)) {
+			if (((ConstraintLocal) lhs).isGeneratedLocal()) return true;
+		}
+		if (isLocal(rhs)) {
+			if (((ConstraintLocal) rhs).isGeneratedLocal()) return true;
+		}
+		return false;
+	}
 
 	public final Set<ConstraintParameterRef> getInvalidParameterReferencesFor(String signature, int count) {
 		Set<ConstraintParameterRef> invalid = new HashSet<ConstraintParameterRef>();
@@ -110,6 +121,8 @@ public abstract class AConstraint implements IConstraint {
 	}
 
 	public abstract String toString();
+	
+	public abstract IConstraint changeAllComponentsSignature(String signature);
 	
 	public abstract int hashCode();
 

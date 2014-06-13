@@ -1,13 +1,17 @@
 package constraints;
 
+import java.util.regex.Pattern;
+
 import soot.Local;
 
 public class ConstraintLocal implements IConstraintComponentVar {
 	
-	private final Local local;	
+	private final Local local;
+	private final boolean generatedLocal;
 	
 	public ConstraintLocal(Local local) {
 		this.local = local;
+		this.generatedLocal = Pattern.matches("temp\\$(\\d|[1-9]\\d*)", local.getName());
 	}
 
 	public Local getLocal() {
@@ -37,6 +41,15 @@ public class ConstraintLocal implements IConstraintComponentVar {
 			if (other.local != null) return false;
 		} else if (!local.equals(other.local)) return false;
 		return true;
+	}
+
+	@Override
+	public IConstraintComponent changeSignature(String signature) {
+		return new ConstraintLocal(local);
+	}
+
+	public boolean isGeneratedLocal() {
+		return generatedLocal;
 	}
 	
 }

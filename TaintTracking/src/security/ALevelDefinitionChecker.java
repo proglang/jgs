@@ -221,9 +221,9 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 							String signature = AnalysisUtils.generateSignature(method);
 							Set<IConstraint> constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation), signature);
 							if (! constraints.contains(new LEQConstraint(new ConstraintParameterRef(0, signature), level))
-									|| ! constraints.contains(new LEQConstraint(new ConstraintReturnRef(signature), level))
-									|| ! constraints.contains(new LEQConstraint(level, new ConstraintReturnRef(signature))) 
-									|| constraints.size() != 3) {
+//									|| ! constraints.contains(new LEQConstraint(new ConstraintReturnRef(signature), level)) /**/ ){
+									|| ! constraints.contains(new LEQConstraint(level, new ConstraintReturnRef(signature)))  /**/ ){
+//									|| constraints.size() != 3) {
 								throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.invalid_constraints", signatureLevelFunction));
 							}
 						} catch (AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {

@@ -75,7 +75,7 @@ public class SecurityLevelAnalysis extends ASecurityAnalysis<Unit, LocalsMap> {
 	private void checkEndOfImplicitFlow(Stmt statement, LocalsMap in, LocalsMap out) {
 		List<IfStmt> ifStmts = new ArrayList<IfStmt>(in.getProgramCounter().keySet());
 		for (IfStmt ifStmt : ifStmts) {
-			if (getContainer().postDomSetOfIfContainsS(ifStmt, statement)) {
+			if (getContainer().postDomSetOfStmtContainsS(ifStmt, statement)) {
 				out.removeProgramCounterLevel(ifStmt);
 			}
 		}

@@ -111,7 +111,7 @@ public class SecurityTransformer extends BodyTransformer {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void internalTransform(Body body, String phaseName, Map options) {
-		doInitialCheckForReasonability();
+		doInitialChecks();
 		UnitGraph graph = new BriefUnitGraph(body);
 		SootMethod sootMethod = graph.getBody().getMethod();
 		SootClass sootClass = sootMethod.getDeclaringClass();
@@ -130,8 +130,11 @@ public class SecurityTransformer extends BodyTransformer {
 		}
 	}
 
-	private void doInitialCheckForReasonability() {
-		if (0 == counter++) extractor.checkReasonability();
+	private void doInitialChecks() {
+		if (0 == counter++) {
+			extractor.checkReasonability();
+			extractor.checkHierarchy();
+		}
 	}
 
 }

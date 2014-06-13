@@ -8,4 +8,6 @@ public interface IConstraintComponent {
 	
 	public int hashCode();
 
+	public IConstraintComponent changeSignature(String signature);
+
 }

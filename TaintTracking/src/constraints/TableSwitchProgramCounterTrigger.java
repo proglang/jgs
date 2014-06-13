@@ -1,13 +1,13 @@
 package constraints;
 
-import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
+import soot.jimple.TableSwitchStmt;
 
-public class IfProgramCounterTrigger implements IProgramCounterTrigger {
+public class TableSwitchProgramCounterTrigger implements IProgramCounterTrigger {
 
-	private final IfStmt stmt;
+	private final TableSwitchStmt stmt;
 
-	public IfProgramCounterTrigger(IfStmt stmt) {
+	public TableSwitchProgramCounterTrigger(TableSwitchStmt stmt) {
 		this.stmt = stmt;
 	}
 
@@ -16,29 +16,28 @@ public class IfProgramCounterTrigger implements IProgramCounterTrigger {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		IfProgramCounterTrigger other = (IfProgramCounterTrigger) obj;
+		TableSwitchProgramCounterTrigger other = (TableSwitchProgramCounterTrigger) obj;
 		if (stmt == null) {
 			if (other.stmt != null) return false;
 		} else if (!stmt.equals(other.stmt)) return false;
 		return true;
 	}
 
-	public final IfStmt getIfStmt() {
+	public final TableSwitchStmt getTableSwitchStmt() {
 		return stmt;
 	}
 
-
-	@Override
-	public Stmt getStmt() {
-		return stmt;
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
 		return result;
+	}
+
+	@Override
+	public Stmt getStmt() {
+		return stmt;
 	}
 
 }

@@ -2,7 +2,11 @@ package constraints;
 
 import static constraints.ConstraintsUtils.isLevel;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import security.ILevel;
@@ -88,6 +92,48 @@ public class LEQConstraintsSet extends AConstraintsSet<LEQConstraint> {
 			}
 		}
 		return inequal;
+	}
+
+	public List<String> toBoundaryStrings() {
+		List<String> result = new ArrayList<String>();		
+		Map<IConstraintComponentVar, Set<ILevel>> lower = new HashMap<IConstraintComponentVar, Set<ILevel>>();
+		Map<IConstraintComponentVar, Set<ILevel>> upper = new HashMap<IConstraintComponentVar, Set<ILevel>>();
+		Set<IConstraintComponentVar> vars = new HashSet<IConstraintComponentVar>();
+		for (LEQConstraint constraint : getConstraintsSet()) {
+			IConstraintComponent left = constraint.getLhs();
+			IConstraintComponent right = constraint.getRhs();
+			if (isLevel(left) && right instanceof IConstraintComponentVar) {
+				ILevel level = (ILevel) left;
+				IConstraintComponentVar var = (IConstraintComponentVar) right;
+				if (! lower.containsKey(var)) lower.put(var, new HashSet<ILevel>());
+				if (! upper.containsKey(var)) upper.put(var, new HashSet<ILevel>());
+				vars.add(var);
+				lower.get(var).add(level);
+			}
+			if (isLevel(right) && left instanceof IConstraintComponentVar) {
+				ILevel level = (ILevel) right;				
+				IConstraintComponentVar var = (IConstraintComponentVar) left;
+				if (! lower.containsKey(var)) lower.put(var, new HashSet<ILevel>());
+				if (! upper.containsKey(var)) upper.put(var, new HashSet<ILevel>());
+				vars.add(var);
+				upper.get(var).add(level);	
+			}
+		}
+		for (IConstraintComponentVar var : vars) {
+			String string = "";
+			Set<ILevel> lowerLevels = lower.get(var);
+			Set<ILevel> upperLevels = upper.get(var); 
+			try {
+				if (lowerLevels.size() > 0) string += mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(lowerLevels)).toString() + " <= ";
+				string += var.toString();
+				if (upperLevels.size() > 0) string += " <= " + mediator.getGreatestLowerBoundLevelOf(new ArrayList<ILevel>(upperLevels)).toString();
+				result.add(string);
+			} catch (Exception e) {
+				System.err.println("error for " + var.toString() + " up: " + upperLevels.size() + " | low: " + lowerLevels.size());
+			}
+			
+		}
+		return result;
 	}
 
 }

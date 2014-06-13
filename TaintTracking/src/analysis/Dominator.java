@@ -1,6 +1,5 @@
 package analysis;
 
-import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.MHGDominatorsFinder;
@@ -64,8 +63,9 @@ class Dominator<N> {
 	 *          statement for which will be checked whether it is contained by the post-dominator set.
 	 * @return {@code true} if the post-dominator set of the given if-statement contains the other given statement, otherwise {@code false}.
 	 */
-	public boolean postDomSetOfIfContainsS(IfStmt ifStmt, Stmt s) {
-		return postDominatorFinder.getDominators(ifStmt).contains(s);
+	public boolean postDomSetOfStmtContainsS(Stmt stmt, Stmt s) {
+		return postDominatorFinder.getDominators(stmt).contains(s);
 	}
+	
 
 }

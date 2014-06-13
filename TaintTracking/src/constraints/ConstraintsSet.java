@@ -21,6 +21,15 @@ public class ConstraintsSet implements Collection<IConstraint> {
 	private final LEQConstraintsSet leqConstraintsSet;
 	private final ILevelMediator mediator;
 	private final Map<IProgramCounterTrigger, Set<IConstraint>> programCounter = new HashMap<IProgramCounterTrigger, Set<IConstraint>>();
+	private final Set<IConstraint> writeEffects = new HashSet<IConstraint>();
+	
+	public void addWriteEffect(IConstraint constraint) {
+		this.writeEffects.add(constraint);
+	}
+	
+	public Set<IConstraint> getWriteEffects() {
+		return new HashSet<IConstraint>(writeEffects);
+	}
 
 	public Map<IProgramCounterTrigger, Set<IConstraint>> getProgramCounter() {
 		return new HashMap<IProgramCounterTrigger, Set<IConstraint>>(programCounter);
@@ -39,6 +48,11 @@ public class ConstraintsSet implements Collection<IConstraint> {
 	public ConstraintsSet(Set<IConstraint> constraints, Map<IProgramCounterTrigger, Set<IConstraint>> programCounter, ILevelMediator mediator) {
 		this(constraints, mediator);
 		this.programCounter.putAll(programCounter);
+	}
+	
+	public ConstraintsSet(Set<IConstraint> constraints, Map<IProgramCounterTrigger, Set<IConstraint>> programCounter, Set<IConstraint> writeEffects,ILevelMediator mediator) {
+		this(constraints, programCounter, mediator);
+		this.writeEffects.addAll(writeEffects);
 	}
 
 	@Override
@@ -60,12 +74,18 @@ public class ConstraintsSet implements Collection<IConstraint> {
 	}
 
 	public void addAllProgramCounterConstraints(Map<IProgramCounterTrigger, Set<IConstraint>> map) {
-		programCounter.putAll(map);
+		this.programCounter.putAll(map);
+	}
+	
+	public void addAllWriteEffects(Set<IConstraint> writeEffects) {
+		this.writeEffects.addAll(writeEffects);
 	}
 
 	public boolean addProgramCounterConstraints(IProgramCounterTrigger trigger, Set<IConstraint> constraints) {
 		return null == programCounter.put(trigger, constraints);
 	}
+	
+	
 
 	public void calculateTransitiveClosure() {
 		leqConstraintsSet.calculateTransitiveClosure();
@@ -75,7 +95,7 @@ public class ConstraintsSet implements Collection<IConstraint> {
 		leqConstraintsSet.calculateTransitiveReduction();
 	}
 
-	public Set<IConstraint> checkForConsistency(ConstraintsSet expectedConstraints) {
+	public Set<IConstraint> checkForCompletness(ConstraintsSet expectedConstraints) {
 		expectedConstraints.calculateTransitiveClosure();
 		calculateTransitiveClosure();
 		Set<IConstraint> missing = new HashSet<IConstraint>();
@@ -138,7 +158,7 @@ public class ConstraintsSet implements Collection<IConstraint> {
 		return constraints;
 	}
 
-	public Set<IConstraint> getInequality() {
+	public Set<IConstraint> getInconsistent() {
 		Set<IConstraint> inequal = new HashSet<IConstraint>();
 		inequal.addAll(leqConstraintsSet.getInequality());
 		return inequal;
@@ -149,8 +169,8 @@ public class ConstraintsSet implements Collection<IConstraint> {
 	}
 
 	public ConstraintsSet getTransitiveClosure() {
-		ConstraintsSet closure = new ConstraintsSet(mediator);
-		closure.addAll(leqConstraintsSet.getTransitiveClosureSet());
+		ConstraintsSet closure = new ConstraintsSet(getConstraintsSet(), getProgramCounter(), getWriteEffects(), mediator);
+		closure.calculateTransitiveClosure();
 		return closure;
 	}
 
@@ -209,6 +229,11 @@ public class ConstraintsSet implements Collection<IConstraint> {
 		calculateTransitiveClosure();
 		leqConstraintsSet.removeConstraintsContainingLocal();
 	}
+	
+	public void removeConstraintsContainingGeneratedLocal() {
+		calculateTransitiveClosure();
+		leqConstraintsSet.removeConstraintsContainingGeneratedLocal();
+	}
 
 	public void removeConstraintsContainingReferencesFor(String... signatures) {
 		calculateTransitiveClosure();
@@ -248,6 +273,22 @@ public class ConstraintsSet implements Collection<IConstraint> {
 	@Override
 	public String toString() {
 		return ConstraintsUtils.constraintsAsString(getConstraintsSet());
+	}
+	
+	public String toBoundariesString() {
+		StringBuilder sb = new StringBuilder("{\n");
+		int count = 0;
+		for (String boundaries : leqConstraintsSet.toBoundaryStrings()) {
+			if (0 != count++) sb.append(",\n");
+			sb.append("\t" + boundaries);
+		}
+		sb.append("\n}");
+		return sb.toString();
+	}
+
+	public void removeConstraintsContainingProgramCounter() {
+		calculateTransitiveClosure();
+		leqConstraintsSet.removeConstraintsContainingProgramCounter();
 	}
 	
 }

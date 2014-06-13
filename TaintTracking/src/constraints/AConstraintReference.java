@@ -11,6 +11,8 @@ public abstract class AConstraintReference implements IConstraintComponentVar {
 	protected final String getSignature() {
 		return signature;
 	}
+	
+	
 
 	public abstract String toString();
 	

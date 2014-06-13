@@ -238,14 +238,14 @@ public class Definition extends ALevelDefinition {
 
 	@ParameterSecurity({ "high" })
 	@ReturnSecurity("high")
-	@Constraints({"@0 <= high", "@return = high" })
+	@Constraints({"@0 <= high", "high <= @return" })
 	public static <T> T mkHigh(T object) {
 		return object;
 	}
 
 	@ParameterSecurity({ "low" })
 	@ReturnSecurity("low")
-	@Constraints({"@0 <= low", "@return = low" })
+	@Constraints({"@0 <= low", "low <= @return" })
 	public static <T> T mkLow(T object) {
 		return object;
 	}

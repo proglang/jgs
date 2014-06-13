@@ -3,19 +3,22 @@ package exgradual;
 import static security.Definition.*;
 
 public class TestWhile {
-	
-	@FieldSecurity("low")
-	public int low = 42;
-	
-	@ParameterSecurity({"low"})
+
 	public static void main(String[] args) {}
-	
-	public void test() {
-		int v = mkLow(42);
-		while (v > 21) {
-			low = 23;
-			v = mkHigh(42);
-		}
+
+
+	// Crash
+	@Constraints("high <= @pc")
+	public void test1() {
+		H.low = 5;
 	}
 	
+	// run {pcs entfernen nach inequality, stack initialisieren mit Sig}
+	public void test() {
+		H.low = 5;
+		if (mkHigh(true)) {
+			H.high = 5;
+		}
+	}
+
 }

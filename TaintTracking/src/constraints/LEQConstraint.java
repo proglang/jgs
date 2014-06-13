@@ -35,4 +35,9 @@ public class LEQConstraint extends AConstraint {
 		return true;
 	}
 
+	@Override
+	public IConstraint changeAllComponentsSignature(String signature) {
+		return new LEQConstraint(getLhs().changeSignature(signature), getRhs().changeSignature(signature));
+	}
+
 }

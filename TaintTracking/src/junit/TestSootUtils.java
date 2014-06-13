@@ -22,6 +22,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import constraints.IConstraintComponent;
+
 import security.ILevel;
 import soot.ArrayType;
 import soot.RefType;
@@ -228,12 +230,21 @@ public class TestSootUtils {
 			public String getName() {
 				return "high";
 			}
+
+			@Override
+			public IConstraintComponent changeSignature(String signature) {
+				return this;
+			}
 		};
 		assertTrue("Correct level function name", generateLevelFunctionName(l1).equals("mkHigh"));
 		ILevel l2 = new ILevel() {
 			@Override
 			public String getName() {
 				return "low";
+			}
+			@Override
+			public IConstraintComponent changeSignature(String signature) {
+				return this;
 			}
 		};
 		assertTrue("Correct level function name", generateLevelFunctionName(l2).equals("mkLow"));

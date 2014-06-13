@@ -115,14 +115,14 @@ public class TestConstraintsSet {
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), EMPTY_CONSTRAINT_LIST));
 
 		c1.addAll(EMPTY_CONSTRAINT_LIST);
-		assertTrue(equalContentOfLists(c1.getInequality(), EMPTY_CONSTRAINT_LIST));
+		assertTrue(equalContentOfLists(c1.getInconsistent(), EMPTY_CONSTRAINT_LIST));
 
 		c1.addAll(mkList(new IConstraint[] { ra_h, l_h, p0a_l }));
-		assertTrue(equalContentOfLists(c1.getInequality(), EMPTY_CONSTRAINT_LIST));
+		assertTrue(equalContentOfLists(c1.getInconsistent(), EMPTY_CONSTRAINT_LIST));
 
 		Set<IConstraint> l1 = mkList(new IConstraint[] { h_l });
 		c1.addAll(l1);
-		assertTrue(equalContentOfLists(c1.getInequality(), l1));
+		assertTrue(equalContentOfLists(c1.getInconsistent(), l1));
 	}
 
 	@Test
@@ -130,11 +130,11 @@ public class TestConstraintsSet {
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), EMPTY_CONSTRAINT_LIST));
 
 		c1.addAll(EMPTY_CONSTRAINT_LIST);
-		assertTrue(equalContentOfLists(c1.getInequality(), EMPTY_CONSTRAINT_LIST));
+		assertTrue(equalContentOfLists(c1.getInconsistent(), EMPTY_CONSTRAINT_LIST));
 
 		Set<IConstraint> l1 = mkList(new IConstraint[] { h_l });
 		c1.addAll(mkList(new IConstraint[] { h_l, ra_h, l_h, p0a_l }));
-		assertTrue(equalContentOfLists(c1.getInequality(), l1));
+		assertTrue(equalContentOfLists(c1.getInconsistent(), l1));
 	}
 
 	@Test

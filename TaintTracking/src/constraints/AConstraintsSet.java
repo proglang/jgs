@@ -162,6 +162,18 @@ public abstract class AConstraintsSet<C extends IConstraint> implements Collecti
 			if (constraint.containsLocal()) remove(constraint);
 		}
 	}
+
+	public void removeConstraintsContainingGeneratedLocal() {
+		for (C constraint : getConstraintsSet()) {
+			if (constraint.containsGeneratedLocal()) remove(constraint);
+		}
+	}
+	
+	public void removeConstraintsContainingProgramCounter() {
+		for (C constraint : getConstraintsSet()) {
+			if (constraint.containsProgramCounterReference()) remove(constraint);
+		}
+	}
 	
 	public void removeConstraintsContaining(Local local) {
 		for (C constraint : getConstraintsSet()) {
@@ -203,7 +215,7 @@ public abstract class AConstraintsSet<C extends IConstraint> implements Collecti
 		sb.append(" }");
 		return sb.toString();
 	}
-
+	
 	protected abstract boolean transitivClosureMergeCondition(C leftConstraint, C rightConstraint);
 
 	protected abstract C transitivClosureMerge(C leftConstraint, C rightConstraint);

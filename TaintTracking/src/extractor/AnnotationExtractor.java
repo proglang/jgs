@@ -1,15 +1,19 @@
 package extractor;
 
+import static constraints.ConstraintsUtils.getLevelsOfLeftSideWithRightSidePC;
+import static constraints.ConstraintsUtils.getLevelsOfLeftSideWithRightSideParameter;
+import static constraints.ConstraintsUtils.getLevelsOfRightSideWithLeftSideReturn;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.containsStaticInitializer;
-import static utils.AnalysisUtils.getSignatureOfClass;
-import static utils.AnalysisUtils.getSignatureOfField;
-import static utils.AnalysisUtils.getSignatureOfMethod;
+import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.generatedEmptyStaticInitializer;
 import static utils.AnalysisUtils.getOverridenMethods;
 import static utils.AnalysisUtils.getParameterNames;
+import static utils.AnalysisUtils.getSignatureOfClass;
+import static utils.AnalysisUtils.getSignatureOfField;
+import static utils.AnalysisUtils.getSignatureOfMethod;
 import static utils.AnalysisUtils.isClinitMethod;
 import static utils.AnalysisUtils.isDefinitionClass;
 import static utils.AnalysisUtils.isInitMethod;
@@ -48,6 +52,8 @@ import soot.util.Chain;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
+import constraints.ConstraintsSet;
+import constraints.ConstraintsUtils;
 import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
@@ -115,43 +121,43 @@ public class AnnotationExtractor extends SceneTransformer {
 	 * @return
 	 */
 	public void checkReasonability() {
-			for (SootClass sootClass : store.getClasses()) {
-				ClassEnvironment ce = store.getClassEnvironment(sootClass);
-				if (!ce.isLibrary()) {
-					try {
-						ce.isReasonable(type);
-					} catch (AnnotationInvalidException | LevelInvalidException e) {
-						String signature = getSignatureOfClass(sootClass);
-						throw new ExtractorException(getMsg("exception.extractor.other.class_not_reasonable", signature), e);
-					}
-					
+		for (SootClass sootClass : store.getClasses()) {
+			ClassEnvironment ce = store.getClassEnvironment(sootClass);
+			if (!ce.isLibrary()) {
+				try {
+					ce.isReasonable(type);
+				} catch (AnnotationInvalidException | LevelInvalidException e) {
+					String signature = getSignatureOfClass(sootClass);
+					throw new ExtractorException(getMsg("exception.extractor.other.class_not_reasonable", signature), e);
 				}
+
 			}
-			for (SootField sootField : store.getFields()) {
-				FieldEnvironment fe = store.getFieldEnvironment(sootField);
-				if (!fe.isLibraryClass()) {
-					try {
-						fe.isReasonable(type);
-					} catch (AnnotationInvalidException | LevelInvalidException e) {
-						String signature = getSignatureOfField(sootField);
-						throw new ExtractorException(getMsg("exception.extractor.other.field_not_reasonable", signature), e);
-					}
-					
+		}
+		for (SootField sootField : store.getFields()) {
+			FieldEnvironment fe = store.getFieldEnvironment(sootField);
+			if (!fe.isLibraryClass()) {
+				try {
+					fe.isReasonable(type);
+				} catch (AnnotationInvalidException | LevelInvalidException e) {
+					String signature = getSignatureOfField(sootField);
+					throw new ExtractorException(getMsg("exception.extractor.other.field_not_reasonable", signature), e);
 				}
+
 			}
-			for (SootMethod sootMethod : store.getMethods()) {
-				MethodEnvironment me = store.getMethodEnvironment(sootMethod);
-				if (!me.isLibraryMethod()) {
-					try {
-						me.isReasonable(type);
-					} catch (AnnotationInvalidException | LevelInvalidException e) {
-						String signature = getSignatureOfMethod(sootMethod);
-						throw new ExtractorException(getMsg("exception.extractor.other.method_not_reasonable", signature), e);
-					}	
-					
+		}
+		for (SootMethod sootMethod : store.getMethods()) {
+			MethodEnvironment me = store.getMethodEnvironment(sootMethod);
+			if (!me.isLibraryMethod()) {
+				try {
+					me.isReasonable(type);
+				} catch (AnnotationInvalidException | LevelInvalidException e) {
+					String signature = getSignatureOfMethod(sootMethod);
+					throw new ExtractorException(getMsg("exception.extractor.other.method_not_reasonable", signature), e);
 				}
+
 			}
- 	
+		}
+
 	}
 
 	/**
@@ -195,17 +201,17 @@ public class AnnotationExtractor extends SceneTransformer {
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
 		Set<IConstraint> constraints = generateInitalClassConstraintsSignature(sootClass);
 		if (type.equals(CONSTRAINTS)) {
-			if (! isLibrary) {
-				if (hasConstraintsAnnotation) {					
+			if (!isLibrary) {
+				if (hasConstraintsAnnotation) {
 					try {
 						constraints.addAll(mediator.extractConstraints(sootClass));
 					} catch (AnnotationExtractionException e) {
 						throw new ExtractorException(getMsg("exception.extractor.class_constraints.error", getSignatureOfClass(sootClass)), e);
 					}
-				} 
-//				else {
-//					throw new ExtractorException(getMsg("exception.extractor.class_constraints.no_constraints", generateClassSignature(sootClass)));
-//				}
+				}
+				// else {
+				// throw new ExtractorException(getMsg("exception.extractor.class_constraints.no_constraints", generateClassSignature(sootClass)));
+				// }
 			} else {
 				constraints.addAll(mediator.getLibraryConstraints(sootClass));
 			}
@@ -227,7 +233,6 @@ public class AnnotationExtractor extends SceneTransformer {
 		ClassEnvironment ce = new ClassEnvironment(sootClass, classWriteEffects, constraints, log, mediator);
 		return ce;
 	}
-
 
 	/**
 	 * DOC
@@ -285,19 +290,32 @@ public class AnnotationExtractor extends SceneTransformer {
 		List<ILevel> methodWriteEffects = new ArrayList<ILevel>();
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
 		Set<IConstraint> constraints = generateInitialMethodConstraintsSignature(sootMethod, isVoid);
+
+		addClassEnvironmentForClass(declaringClass);
+		ClassEnvironment ce = store.getClassEnvironment(declaringClass);
+		classWriteEffects.addAll(ce.getWriteEffects());
+		for (SootClass exceptions : sootMethod.getExceptions()) {
+			addClassEnvironmentForClass(exceptions);
+		}
+
 		if (type.equals(CONSTRAINTS)) {
 			if (!isLibrary) {
-				boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootMethod);
-				if (hasConstraintsAnnotation) {
-					try {
-						constraints.addAll(mediator.extractConstraints(sootMethod));
-					} catch (AnnotationExtractionException e) {
-						throw new ExtractorException(getMsg("exception.extractor.method_constraints.error", getSignatureOfMethod(sootMethod)), e);
+				if (isClinit) {
+					constraints.addAll(ConstraintsUtils.changeAllComponentsSignature(sootMethod.getSignature(), ce.getSignatureContraints()));
+				} else {
+					boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootMethod);
+					if (hasConstraintsAnnotation) {
+						try {
+							constraints.addAll(mediator.extractConstraints(sootMethod));
+						} catch (AnnotationExtractionException e) {
+							throw new ExtractorException(getMsg("exception.extractor.method_constraints.error", getSignatureOfMethod(sootMethod)), e);
+						}
 					}
-				} 
-//				else if (!(isClinit || (isInit && parameterCount == 0) || (isVoid && parameterCount == 0))) {
-//					throw new ExtractorException(getMsg("exception.extractor.method_constraints.no_constraints", generateMethodSignature(sootMethod)));
-//				}
+				}
+				// else if (!(isClinit || (isInit && parameterCount == 0) || (isVoid && parameterCount == 0))) {
+				// throw new ExtractorException(getMsg("exception.extractor.method_constraints.no_constraints",
+				// generateMethodSignature(sootMethod)));
+				// }
 			} else {
 				constraints.addAll(mediator.getLibraryConstraints(sootMethod));
 			}
@@ -371,12 +389,6 @@ public class AnnotationExtractor extends SceneTransformer {
 		} else {
 			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}
-		addClassEnvironmentForClass(declaringClass);
-		ClassEnvironment ce = store.getClassEnvironment(declaringClass);
-		classWriteEffects.addAll(ce.getWriteEffects());
-		for (SootClass exceptions : sootMethod.getExceptions()) {
-			addClassEnvironmentForClass(exceptions);
-		}
 		MethodEnvironment methodEnvironment = new MethodEnvironment(sootMethod, isIdFunction, isClinit, isInit, isVoid, isSootSecurityMethod,
 				parameterSecurityLevel, returnSecurityLevel, methodWriteEffects, classWriteEffects, constraints, log, mediator);
 		return methodEnvironment;
@@ -404,7 +416,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		addBoundsFor(constraints, new ConstraintProgramCounterRef(sootClass.getName()));
 		return constraints;
 	}
-	
+
 	/**
 	 * DOC
 	 * 
@@ -489,6 +501,93 @@ public class AnnotationExtractor extends SceneTransformer {
 		for (SootClass sootClass : classes) {
 			doExtraction(sootClass);
 		}
+	}
+
+	public void checkHierarchy() {
+		for (SootMethod sootMethod : store.getMethods()) {
+			if (!sootMethod.isJavaLibraryMethod() && !isClinitMethod(sootMethod) && !isInitMethod(sootMethod)) {
+				MethodEnvironment overriddenMethod = store.getMethodEnvironment(sootMethod);
+				ConstraintsSet overriddenSet = new ConstraintsSet(overriddenMethod.getSignatureContraints(), mediator);
+				Set<IConstraint> overridenContraints = overriddenSet.getTransitiveClosure().getConstraintsSet();
+				String overriddenSignature = overriddenMethod.getSootMethod().getSignature();
+
+				List<SootMethod> superMethods = getOverridenMethods(sootMethod);
+				if (superMethods.size() != 0) {
+					MethodEnvironment superMethod = store.getMethodEnvironment(superMethods.get(0));
+					ConstraintsSet superSet = new ConstraintsSet(superMethod.getSignatureContraints(), mediator);
+					Set<IConstraint> superContraints = superSet.getTransitiveClosure().getConstraintsSet();
+					String superSignature = superMethod.getSootMethod().getSignature();
+
+					if (!overriddenMethod.isVoid() && !superMethod.isVoid()) {
+						Set<ILevel> returnsUpperBounds = getLevelsOfRightSideWithLeftSideReturn(overridenContraints, overriddenSignature);
+						Set<ILevel> superReturnsUpperBounds = getLevelsOfRightSideWithLeftSideReturn(superContraints, superSignature);
+						if (superReturnsUpperBounds.size() != 0) {
+							ILevel superReturnUpperBound = mediator.getGreatestLowerBoundLevelOf(new ArrayList<ILevel>(superReturnsUpperBounds));
+							if (returnsUpperBounds.size() != 0) {
+								ILevel returnUpperBound = mediator.getGreatestLowerBoundLevelOf(new ArrayList<ILevel>(returnsUpperBounds));
+								if (mediator.isStronger(returnUpperBound, superReturnUpperBound)) {
+									logSecurity(
+											generateFileName(sootMethod),
+											getMsg("hierarchy.return.stronger", getSignatureOfMethod(sootMethod), returnUpperBound.toString(),
+													getSignatureOfMethod(superMethods.get(0)), superReturnUpperBound.toString()));
+								}
+							} else {
+								logSecurity(
+										generateFileName(sootMethod),
+										getMsg("hierarchy.return.none", getSignatureOfMethod(sootMethod), getSignatureOfMethod(superMethods.get(0)),
+												superReturnUpperBound.toString()));
+							}
+						}
+					}
+
+					for (int position = 0; position < overriddenMethod.getSootMethod().getParameterCount(); position++) {
+						Set<ILevel> superParameterLowerBounds = getLevelsOfLeftSideWithRightSideParameter(superContraints, superSignature, position);
+						Set<ILevel> parameterLowerBounds = getLevelsOfLeftSideWithRightSideParameter(overridenContraints, overriddenSignature, position);
+						if (superParameterLowerBounds.size() != 0) {
+							ILevel superParameterLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(superParameterLowerBounds));
+							if (parameterLowerBounds.size() != 0) {
+								ILevel parameterLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(parameterLowerBounds));
+								if (mediator.isWeaker(parameterLowerBound, superParameterLowerBound)) {
+									logSecurity(
+											generateFileName(sootMethod),
+											getMsg("hierarchy.parameter.weaker", position, getSignatureOfMethod(sootMethod), parameterLowerBound.toString(),
+													getSignatureOfMethod(superMethods.get(0)), superParameterLowerBound.toString()));
+								}
+							} else {
+								logSecurity(
+										generateFileName(sootMethod),
+										getMsg("hierarchy.parameter.none", getSignatureOfMethod(sootMethod), position,
+												getSignatureOfMethod(superMethods.get(0)), superParameterLowerBound.toString()));
+							}
+						}
+					}
+
+					Set<ILevel> pcsLowerBounds = getLevelsOfLeftSideWithRightSidePC(overridenContraints, overriddenSignature);
+					Set<ILevel> superPcsLowerBounds = getLevelsOfLeftSideWithRightSidePC(superContraints, superSignature);
+					if (superPcsLowerBounds.size() != 0) {
+						ILevel superPcLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(superPcsLowerBounds));
+						if (pcsLowerBounds.size() != 0) {
+							ILevel pcLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(pcsLowerBounds));
+							if (mediator.isWeaker(pcLowerBound, superPcLowerBound)) {
+								logSecurity(
+										generateFileName(sootMethod),
+										getMsg("hierarchy.pc.weaker", getSignatureOfMethod(sootMethod), pcLowerBound.toString(),
+												getSignatureOfMethod(superMethods.get(0)), superPcLowerBound.toString()));
+							}
+						} else {
+							logSecurity(
+									generateFileName(sootMethod),
+									getMsg("hierarchy.pc.none", getSignatureOfMethod(sootMethod), getSignatureOfMethod(superMethods.get(0)),
+											superPcLowerBound.toString()));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void logSecurity(String filename, String msg) {
+		log.security(filename, 0, msg);
 	}
 
 }

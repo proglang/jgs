@@ -105,7 +105,21 @@ public class FieldEnvironment extends Environment {
 	 * @return
 	 */
 	public void isReasonable(AnalysisType type) {
-		if (type.equals(CONSTRAINTS) || type.equals(LEVELS)) {
+		if (type.equals(CONSTRAINTS)) {
+			if (level != null) { // some level given
+				if (!getLevelMediator().checkLevelValidity(level)) {
+					// level isn't a valid security level
+					throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), getSignatureOfField(sootField)));
+				}
+				if (!isLibraryClass() && sootField.isStatic() && sootField.isFinal() && !getWeakestSecurityLevel().equals(level)) {
+					// static final field has to be the weakest security level
+					throw new AnnotationInvalidException(getMsg("exception.level.field.public", level.getName(), getSignatureOfField(sootField)));
+				}
+			} else { // no level given
+				throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", getSignatureOfField(sootField)));
+			}
+
+		} else if (type.equals(LEVELS)) {
 			if (level != null) { // some level given
 				if (!getLevelMediator().checkLevelValidity(level)) {
 					// level isn't a valid security level

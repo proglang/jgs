@@ -38,5 +38,10 @@ public class ConstraintParameterRef extends AConstraintReference {
 		} else if (!signature.equals(other.signature)) return false;
 		return true;
 	}
+
+	@Override
+	public IConstraintComponent changeSignature(String signature) {
+		return new ConstraintParameterRef(parameterPos, signature);
+	}
 	
 }

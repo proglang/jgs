@@ -2,34 +2,45 @@ package junitConstraints;
 
 import static security.Definition.*;
 
-@Constraints({})
 public class FailMethod {
 
-	@FieldSecurity("low")
-	int low;
-
-	@Constraints({ "low <= @pc", "low <= @0" })
 	public static void main(String[] args) {}
-
-	// @Constraints({ "low <= @pc" })
-	// public FailMethod() {}
-	//
-	// @Constraints({ "@0 <= @return", "high <= @return" })
-	// public int failMethod1(int i) {
-	// int j = mkHigh(42);
-	// // @security("Return has stronger constraints than expected")
-	// return i + j;
-	// }
-	//
-	// @Constraints({ "@0 <= high", "@0 <= @return" })
-	// public int failMethod2(int i) {
-	// // @security("Return has stronger constraints than expected")
-	// return i;
-	// }
-
-	@Constraints({})
-	public void failMethod3() {
-		low = mkHigh(42);
+	
+	
+	public void test() {
+		int[] arr = new int[] {1,2,3};
+		Object arr1 = (Object) arr;
+		int[] arr2 = (int[]) arr1;
+		
+		
 	}
 
+////	@Constraints({"high <= @return"})
+//	public int test() {
+//		int i = mkLow(42);
+//		if (mkHigh(true)) {
+//			
+//			i = 42;
+//		}
+//		return i;
+//	}
+	
+//	@FieldSecurity("low")
+//	public int low;
+//	
+//	@FieldSecurity("high")
+//	public int high;
+//	
+//	public void test() {
+//		low = 42;
+//	}
+//	
+//	@Constraints({"@pc <= low"})
+//	public void test1() {
+//		low = 42;
+//		if (high == 0) {
+//			high = 1;
+//		}
+//	}
+	
 }
