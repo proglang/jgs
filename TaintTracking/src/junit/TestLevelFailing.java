@@ -3,6 +3,7 @@ package junit;
 import static junit.utils.JUnitMessageStoreHelper.checkMethodStoreEquality;
 import static logging.AnalysisLogLevel.SECURITY;
 import static logging.AnalysisLogLevel.SIDEEFFECT;
+import static main.AnalysisType.LEVELS;
 import static org.junit.Assert.fail;
 
 import java.util.logging.Level;
@@ -11,16 +12,11 @@ import junit.model.TestFile;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
-import static main.AnalysisType.*;
 
 import soot.G;
 import exception.ExtractorException;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestLevelFailing {
 
 

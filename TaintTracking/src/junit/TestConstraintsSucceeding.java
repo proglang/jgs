@@ -11,13 +11,10 @@ import java.util.logging.Level;
 import junit.model.TestFile;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 
 import soot.G;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestConstraintsSucceeding {
 	
 	private static final String TEST_PACKAGE = "junitConstraints";
