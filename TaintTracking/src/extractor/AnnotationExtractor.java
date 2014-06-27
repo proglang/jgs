@@ -1,8 +1,5 @@
 package extractor;
 
-import static constraints.ConstraintsUtils.getLevelsOfLeftSideWithRightSidePC;
-import static constraints.ConstraintsUtils.getLevelsOfLeftSideWithRightSideParameter;
-import static constraints.ConstraintsUtils.getLevelsOfRightSideWithLeftSideReturn;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
@@ -514,72 +511,35 @@ public class AnnotationExtractor extends SceneTransformer {
 				List<SootMethod> superMethods = getOverridenMethods(sootMethod);
 				if (superMethods.size() != 0) {
 					MethodEnvironment superMethod = store.getMethodEnvironment(superMethods.get(0));
-					ConstraintsSet superSet = new ConstraintsSet(superMethod.getSignatureContraints(), mediator);
-					Set<IConstraint> superContraints = superSet.getTransitiveClosure().getConstraintsSet();
-					String superSignature = superMethod.getSootMethod().getSignature();
-
+					Set<IConstraint> superContraints = superMethod.getSignatureContraints();
 					if (!overriddenMethod.isVoid() && !superMethod.isVoid()) {
-						Set<ILevel> returnsUpperBounds = getLevelsOfRightSideWithLeftSideReturn(overridenContraints, overriddenSignature);
-						Set<ILevel> superReturnsUpperBounds = getLevelsOfRightSideWithLeftSideReturn(superContraints, superSignature);
-						if (superReturnsUpperBounds.size() != 0) {
-							ILevel superReturnUpperBound = mediator.getGreatestLowerBoundLevelOf(new ArrayList<ILevel>(superReturnsUpperBounds));
-							if (returnsUpperBounds.size() != 0) {
-								ILevel returnUpperBound = mediator.getGreatestLowerBoundLevelOf(new ArrayList<ILevel>(returnsUpperBounds));
-								if (mediator.isStronger(returnUpperBound, superReturnUpperBound)) {
-									logSecurity(
-											generateFileName(sootMethod),
-											getMsg("hierarchy.return.stronger", getSignatureOfMethod(sootMethod), returnUpperBound.toString(),
-													getSignatureOfMethod(superMethods.get(0)), superReturnUpperBound.toString()));
-								}
-							} else {
-								logSecurity(
-										generateFileName(sootMethod),
-										getMsg("hierarchy.return.none", getSignatureOfMethod(sootMethod), getSignatureOfMethod(superMethods.get(0)),
-												superReturnUpperBound.toString()));
-							}
+						Set<IConstraint> missingReturnConstraints = ConstraintsUtils.checkReturn(overridenContraints, overriddenSignature,
+								superContraints);
+						for (IConstraint missingConstraint : missingReturnConstraints) {
+							logSecurity(
+									generateFileName(sootMethod),
+									getMsg("hierarchy.return", getSignatureOfMethod(sootMethod), missingConstraint.toString(),
+											getSignatureOfMethod(superMethods.get(0))));
 						}
 					}
 
 					for (int position = 0; position < overriddenMethod.getSootMethod().getParameterCount(); position++) {
-						Set<ILevel> superParameterLowerBounds = getLevelsOfLeftSideWithRightSideParameter(superContraints, superSignature, position);
-						Set<ILevel> parameterLowerBounds = getLevelsOfLeftSideWithRightSideParameter(overridenContraints, overriddenSignature, position);
-						if (superParameterLowerBounds.size() != 0) {
-							ILevel superParameterLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(superParameterLowerBounds));
-							if (parameterLowerBounds.size() != 0) {
-								ILevel parameterLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(parameterLowerBounds));
-								if (mediator.isWeaker(parameterLowerBound, superParameterLowerBound)) {
-									logSecurity(
-											generateFileName(sootMethod),
-											getMsg("hierarchy.parameter.weaker", position, getSignatureOfMethod(sootMethod), parameterLowerBound.toString(),
-													getSignatureOfMethod(superMethods.get(0)), superParameterLowerBound.toString()));
-								}
-							} else {
-								logSecurity(
-										generateFileName(sootMethod),
-										getMsg("hierarchy.parameter.none", getSignatureOfMethod(sootMethod), position,
-												getSignatureOfMethod(superMethods.get(0)), superParameterLowerBound.toString()));
-							}
+						Set<IConstraint> missingParameterConstraints = ConstraintsUtils.checkParameter(position, overridenContraints,
+								overriddenSignature, superContraints);
+						for (IConstraint missingConstraint : missingParameterConstraints) {
+							logSecurity(
+									generateFileName(sootMethod),
+									getMsg("hierarchy.parameter", getSignatureOfMethod(sootMethod), missingConstraint.toString(), position,
+											getSignatureOfMethod(superMethods.get(0))));
 						}
 					}
 
-					Set<ILevel> pcsLowerBounds = getLevelsOfLeftSideWithRightSidePC(overridenContraints, overriddenSignature);
-					Set<ILevel> superPcsLowerBounds = getLevelsOfLeftSideWithRightSidePC(superContraints, superSignature);
-					if (superPcsLowerBounds.size() != 0) {
-						ILevel superPcLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(superPcsLowerBounds));
-						if (pcsLowerBounds.size() != 0) {
-							ILevel pcLowerBound = mediator.getLeastUpperBoundLevelOf(new ArrayList<ILevel>(pcsLowerBounds));
-							if (mediator.isWeaker(pcLowerBound, superPcLowerBound)) {
-								logSecurity(
-										generateFileName(sootMethod),
-										getMsg("hierarchy.pc.weaker", getSignatureOfMethod(sootMethod), pcLowerBound.toString(),
-												getSignatureOfMethod(superMethods.get(0)), superPcLowerBound.toString()));
-							}
-						} else {
-							logSecurity(
-									generateFileName(sootMethod),
-									getMsg("hierarchy.pc.none", getSignatureOfMethod(sootMethod), getSignatureOfMethod(superMethods.get(0)),
-											superPcLowerBound.toString()));
-						}
+					Set<IConstraint> missingPCConstraints = ConstraintsUtils.checkPC(overridenContraints, overriddenSignature, superContraints);
+					for (IConstraint missingConstraint : missingPCConstraints) {
+						logSecurity(
+								generateFileName(sootMethod),
+								getMsg("hierarchy.pc", getSignatureOfMethod(sootMethod), missingConstraint.toString(),
+										getSignatureOfMethod(superMethods.get(0))));
 					}
 				}
 			}
