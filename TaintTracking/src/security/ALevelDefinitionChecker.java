@@ -50,7 +50,6 @@ import utils.AnalysisUtils;
 import annotation.JavaAnnotationDAO;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintReturnRef;
-import constraints.IConstraint;
 import constraints.LEQConstraint;
 import exception.AnnotationElementNotFoundException;
 import exception.AnnotationInvalidConstraintsException;
@@ -219,7 +218,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 						try {
 							existsConstraintsAnnotation = true;
 							String signature = AnalysisUtils.generateSignature(method);
-							Set<IConstraint> constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation), signature);
+							Set<LEQConstraint> constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation), signature);
 							if (! constraints.contains(new LEQConstraint(new ConstraintParameterRef(0, signature), level))
 //									|| ! constraints.contains(new LEQConstraint(new ConstraintReturnRef(signature), level)) /**/ ){
 									|| ! constraints.contains(new LEQConstraint(level, new ConstraintReturnRef(signature)))  /**/ ){

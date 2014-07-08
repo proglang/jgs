@@ -1,11 +1,11 @@
 package model;
 
+import static constraints.ConstraintsUtils.containsSetParameterReferenceFor;
+import static constraints.ConstraintsUtils.containsSetProgramCounterReference;
 import static constraints.ConstraintsUtils.containsSetReturnReferenceFor;
 import static constraints.ConstraintsUtils.getContainedLevelsOfSet;
-import static constraints.ConstraintsUtils.containsSetParameterReferenceFor;
 import static constraints.ConstraintsUtils.getInvalidParameterReferencesOfSet;
 import static constraints.ConstraintsUtils.getInvalidReturnReferencesOfSet;
-import static constraints.ConstraintsUtils.containsSetProgramCounterReference;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
@@ -27,7 +27,7 @@ import soot.SootMethod;
 import soot.Type;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintReturnRef;
-import constraints.IConstraint;
+import constraints.LEQConstraint;
 import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
 import exception.LevelInvalidException;
@@ -137,7 +137,7 @@ public class MethodEnvironment extends Environment {
 	/**
 	 * DOC
 	 */
-	private final Set<IConstraint> constraints = new HashSet<IConstraint>();
+	private final Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 	/**
 	 * DOC
 	 */
@@ -191,7 +191,7 @@ public class MethodEnvironment extends Environment {
 	 */
 	public MethodEnvironment(SootMethod sootMethod, boolean isIdFunction, boolean isClinit, boolean isInit, boolean isVoid,
 			boolean isSootSecurityMethod, List<MethodParameter> parameterSecurityLevel, ILevel returnSecurityLevel,
-			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, Set<IConstraint> constraints, AnalysisLog log,
+			List<ILevel> methodWriteEffects, List<ILevel> classWriteEffects, Set<LEQConstraint> constraints, AnalysisLog log,
 			ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootMethod = sootMethod;
@@ -218,8 +218,8 @@ public class MethodEnvironment extends Environment {
 		return classWriteEffects;
 	}
 
-	public Set<IConstraint> getSignatureContraints() {
-		return new HashSet<IConstraint>(constraints);
+	public Set<LEQConstraint> getSignatureContraints() {
+		return new HashSet<LEQConstraint>(constraints);
 	}
 
 	/**

@@ -65,7 +65,6 @@ import constraints.ConstraintParameterRef;
 import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.ConstraintsSet;
-import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
 import exception.CastInvalidException;
@@ -74,7 +73,7 @@ import extractor.UsedObjectStore;
 public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch implements JimpleValueSwitch {
 
 	private final Set<IConstraintComponent> constraintComponents = new HashSet<IConstraintComponent>();
-	private final Set<IConstraint> constraints = new HashSet<IConstraint>();
+	private final Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 
 	private SootField field = null;
 	private Local local = null;
@@ -342,7 +341,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 		return constraintComponents;
 	}
 
-	public Set<IConstraint> getConstraints() {
+	public Set<LEQConstraint> getConstraints() {
 		return constraints;
 	}
 
@@ -366,7 +365,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 		constraintComponents.addAll(set);
 	}
 
-	private void addAllConstraints(Set<IConstraint> set) {
+	private void addAllConstraints(Set<LEQConstraint> set) {
 		constraints.addAll(set);
 	}
 
@@ -374,7 +373,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 		constraintComponents.add(component);
 	}
 
-	private void addConstraint(IConstraint constraint) {
+	private void addConstraint(LEQConstraint constraint) {
 		constraints.add(constraint);
 	}
 

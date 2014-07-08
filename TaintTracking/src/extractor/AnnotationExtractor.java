@@ -19,6 +19,7 @@ import static utils.AnalysisUtils.isLevelFunction;
 import static utils.AnalysisUtils.isMethodOfDefinitionClass;
 import static utils.AnalysisUtils.isVoidMethod;
 import static utils.AnalysisUtils.overridesMethod;
+import static constraints.ConstraintsUtils.isSubSignature;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -51,9 +52,12 @@ import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.ConstraintsSet;
 import constraints.ConstraintsUtils;
-import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
+import error.ISubSignatureError;
+import error.SubSignatureParameterError;
+import error.SubSignatureProgramCounterError;
+import error.SubSignatureReturnError;
 import exception.AnalysisTypeException;
 import exception.AnnotationExtractionException;
 import exception.AnnotationInvalidException;
@@ -196,7 +200,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		boolean hasClassWriteEffectAnnotation = mediator.hasClassWriteEffectAnnotation(sootClass);
 		boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootClass);
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
-		Set<IConstraint> constraints = generateInitalClassConstraintsSignature(sootClass);
+		Set<LEQConstraint> constraints = generateInitalClassConstraintsSignature(sootClass);
 		if (type.equals(CONSTRAINTS)) {
 			if (!isLibrary) {
 				if (hasConstraintsAnnotation) {
@@ -286,7 +290,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		List<MethodParameter> parameterSecurityLevel = new ArrayList<MethodParameter>();
 		List<ILevel> methodWriteEffects = new ArrayList<ILevel>();
 		List<ILevel> classWriteEffects = new ArrayList<ILevel>();
-		Set<IConstraint> constraints = generateInitialMethodConstraintsSignature(sootMethod, isVoid);
+		Set<LEQConstraint> constraints = generateInitialMethodConstraintsSignature(sootMethod, isVoid);
 
 		addClassEnvironmentForClass(declaringClass);
 		ClassEnvironment ce = store.getClassEnvironment(declaringClass);
@@ -391,8 +395,8 @@ public class AnnotationExtractor extends SceneTransformer {
 		return methodEnvironment;
 	}
 
-	private Set<IConstraint> generateInitialMethodConstraintsSignature(SootMethod sootMethod, boolean isVoid) {
-		Set<IConstraint> constraints = new HashSet<IConstraint>();
+	private Set<LEQConstraint> generateInitialMethodConstraintsSignature(SootMethod sootMethod, boolean isVoid) {
+		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		addBoundsFor(constraints, new ConstraintProgramCounterRef(sootMethod.getSignature()));
 		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
 			addBoundsFor(constraints, new ConstraintParameterRef(i, sootMethod.getSignature()));
@@ -403,13 +407,13 @@ public class AnnotationExtractor extends SceneTransformer {
 		return constraints;
 	}
 
-	private void addBoundsFor(Set<IConstraint> constraints, IConstraintComponent component) {
+	private void addBoundsFor(Set<LEQConstraint> constraints, IConstraintComponent component) {
 		constraints.add(new LEQConstraint(component, mediator.getLeastUpperBoundLevel()));
 		constraints.add(new LEQConstraint(mediator.getGreatestLowerBoundLevel(), component));
 	}
 
-	private Set<IConstraint> generateInitalClassConstraintsSignature(SootClass sootClass) {
-		Set<IConstraint> constraints = new HashSet<IConstraint>();
+	private Set<LEQConstraint> generateInitalClassConstraintsSignature(SootClass sootClass) {
+		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		addBoundsFor(constraints, new ConstraintProgramCounterRef(sootClass.getName()));
 		return constraints;
 	}
@@ -505,41 +509,31 @@ public class AnnotationExtractor extends SceneTransformer {
 			if (!sootMethod.isJavaLibraryMethod() && !isClinitMethod(sootMethod) && !isInitMethod(sootMethod)) {
 				MethodEnvironment overriddenMethod = store.getMethodEnvironment(sootMethod);
 				ConstraintsSet overriddenSet = new ConstraintsSet(overriddenMethod.getSignatureContraints(), mediator);
-				Set<IConstraint> overridenContraints = overriddenSet.getTransitiveClosure().getConstraintsSet();
+				Set<LEQConstraint> overridenContraints = overriddenSet.getTransitiveClosure().getConstraintsSet();
 				String overriddenSignature = overriddenMethod.getSootMethod().getSignature();
 
 				List<SootMethod> superMethods = getOverridenMethods(sootMethod);
 				if (superMethods.size() != 0) {
 					MethodEnvironment superMethod = store.getMethodEnvironment(superMethods.get(0));
-					Set<IConstraint> superContraints = superMethod.getSignatureContraints();
-					if (!overriddenMethod.isVoid() && !superMethod.isVoid()) {
-						Set<IConstraint> missingReturnConstraints = ConstraintsUtils.checkReturn(overridenContraints, overriddenSignature,
-								superContraints);
-						for (IConstraint missingConstraint : missingReturnConstraints) {
+					Set<LEQConstraint> superContraints = superMethod.getSignatureContraints();
+					for (ISubSignatureError error : isSubSignature(overridenContraints, overriddenSignature, superContraints)) {
+						if (error instanceof SubSignatureReturnError) {
 							logSecurity(
 									generateFileName(sootMethod),
-									getMsg("hierarchy.return", getSignatureOfMethod(sootMethod), missingConstraint.toString(),
+									getMsg("hierarchy.return", getSignatureOfMethod(sootMethod), error.getConstraint().toString(),
 											getSignatureOfMethod(superMethods.get(0))));
-						}
-					}
-
-					for (int position = 0; position < overriddenMethod.getSootMethod().getParameterCount(); position++) {
-						Set<IConstraint> missingParameterConstraints = ConstraintsUtils.checkParameter(position, overridenContraints,
-								overriddenSignature, superContraints);
-						for (IConstraint missingConstraint : missingParameterConstraints) {
+						} else if (error instanceof SubSignatureProgramCounterError) {
 							logSecurity(
 									generateFileName(sootMethod),
-									getMsg("hierarchy.parameter", getSignatureOfMethod(sootMethod), missingConstraint.toString(), position,
+									getMsg("hierarchy.pc", getSignatureOfMethod(sootMethod), error.getConstraint().toString(),
+											getSignatureOfMethod(superMethods.get(0))));
+						} else if (error instanceof SubSignatureParameterError) {
+							SubSignatureParameterError paramError = (SubSignatureParameterError) error;
+							logSecurity(
+									generateFileName(sootMethod),
+									getMsg("hierarchy.parameter", getSignatureOfMethod(sootMethod), paramError.getConstraint().toString(), paramError.getPosition(),
 											getSignatureOfMethod(superMethods.get(0))));
 						}
-					}
-
-					Set<IConstraint> missingPCConstraints = ConstraintsUtils.checkPC(overridenContraints, overriddenSignature, superContraints);
-					for (IConstraint missingConstraint : missingPCConstraints) {
-						logSecurity(
-								generateFileName(sootMethod),
-								getMsg("hierarchy.pc", getSignatureOfMethod(sootMethod), missingConstraint.toString(),
-										getSignatureOfMethod(superMethods.get(0))));
 					}
 				}
 			}

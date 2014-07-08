@@ -9,7 +9,6 @@ import java.util.Set;
 import annotation.IAnnotationDAO;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintReturnRef;
-import constraints.IConstraint;
 import constraints.LEQConstraint;
 
 public abstract class ALevelDefinition implements ILevelDefinition {
@@ -42,7 +41,7 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public abstract int compare(ILevel level1, ILevel level2);
 
-	public abstract Set<IConstraint> extractConstraints(IAnnotationDAO dao, String signature);
+	public abstract Set<LEQConstraint> extractConstraints(IAnnotationDAO dao, String signature);
 
 	public abstract List<ILevel> extractEffects(IAnnotationDAO dao);
 
@@ -95,9 +94,9 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 		return new ArrayList<ILevel>();
 	}
 
-	public Set<IConstraint> getLibraryConstraints(String methodName, List<String> parameterTypes, String returnType,
+	public Set<LEQConstraint> getLibraryConstraints(String methodName, List<String> parameterTypes, String returnType,
 			String declaringClassName, String signature) {
-		Set<IConstraint> constraints = new HashSet<IConstraint>();
+		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		ConstraintReturnRef returnRef = new ConstraintReturnRef(signature);
 		if (!returnType.equals("void")) {
 			for (int i = 0; i < parameterTypes.size(); i++) {
@@ -109,8 +108,8 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 		return constraints;
 	}
 
-	public Set<IConstraint> getLibraryConstraints(String className) {
-		Set<IConstraint> constraints = new HashSet<IConstraint>();
+	public Set<LEQConstraint> getLibraryConstraints(String className) {
+		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		return constraints;
 	}
 

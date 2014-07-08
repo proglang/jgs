@@ -9,13 +9,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import security.*;
-
+import security.ALevel;
+import security.ALevelDefinition;
+import security.ILevel;
 import annotation.IAnnotationDAO;
-import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintParameterRef;
+import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
-import constraints.IConstraint;
 import constraints.IConstraintComponent;
 import constraints.LEQConstraint;
 import exception.AnnotationInvalidConstraintsException;
@@ -170,8 +170,8 @@ public class Fed1 extends ALevelDefinition {
 	}
 
 	@Override
-	public Set<IConstraint> extractConstraints(IAnnotationDAO dao, String signature) {
-		Set<IConstraint> constraints = new HashSet<IConstraint>();
+	public Set<LEQConstraint> extractConstraints(IAnnotationDAO dao, String signature) {
+		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		List<String> rawConstraints = dao.getStringArrayFor("value");
 		for (String constraint : rawConstraints) {
 			String errMsg = String.format("The specified constraint '%s' is invalid.", constraint);

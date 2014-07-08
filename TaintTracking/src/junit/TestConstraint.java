@@ -8,7 +8,6 @@ import static constraints.ConstraintsUtils.containsSetReturnReferenceFor;
 import static constraints.ConstraintsUtils.getContainedLevelsOfSet;
 import static constraints.ConstraintsUtils.getInvalidParameterReferencesOfSet;
 import static constraints.ConstraintsUtils.getInvalidReturnReferencesOfSet;
-import static constraints.ConstraintsUtils.isLEQConstraint;
 import static constraints.ConstraintsUtils.isLevel;
 import static constraints.ConstraintsUtils.isLocal;
 import static constraints.ConstraintsUtils.isParameterReference;
@@ -18,7 +17,6 @@ import static junit.utils.JUnitHelper.equalContentOfLists;
 import static junit.utils.JUnitHelper.mkList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import junit.example.SnocE;
 import junit.example.Fed1.VelS;
 
 import org.junit.Test;
@@ -31,7 +29,6 @@ import constraints.ConstraintLocal;
 import constraints.ConstraintParameterRef;
 import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
-import constraints.IConstraint;
 import constraints.LEQConstraint;
 
 public class TestConstraint {
@@ -42,22 +39,22 @@ public class TestConstraint {
 	private ConstraintParameterRef par1a = new ConstraintParameterRef(1, "a");
 	private ConstraintReturnRef reta = new ConstraintReturnRef("a");
 	private ConstraintProgramCounterRef pca = new ConstraintProgramCounterRef("a");
-	private IConstraint p0a_p1a = new LEQConstraint(par0a, par1a);
-	private IConstraint l_p0a = new LEQConstraint(low, par0a);
-	private IConstraint ra_h = new LEQConstraint(reta, high);
-	private IConstraint ra_pc = new LEQConstraint(reta, pca);
-	private IConstraint p1a_ra = new LEQConstraint(par1a, reta);
-	private IConstraint l_p1a = new LEQConstraint(low, par1a);
-	private IConstraint l_pc = new LEQConstraint(low, pca);
-	private IConstraint p0a_pc = new LEQConstraint(par0a, pca);
-	private IConstraint l_h = new LEQConstraint(low, high);
-	private IConstraint l_ra = new LEQConstraint(low, reta);
-	private IConstraint p0a_ra = new LEQConstraint(par0a, reta);
-	private IConstraint p0a_h = new LEQConstraint(par0a, high);
-	private IConstraint p1a_h = new LEQConstraint(par1a, high);
-	private IConstraint p1a_pc = new LEQConstraint(par1a, pca);
-	private IConstraint p0a_l = new LEQConstraint(par0a, low);
-	private IConstraint h_l = new LEQConstraint(high, low);
+	private LEQConstraint p0a_p1a = new LEQConstraint(par0a, par1a);
+	private LEQConstraint l_p0a = new LEQConstraint(low, par0a);
+	private LEQConstraint ra_h = new LEQConstraint(reta, high);
+	private LEQConstraint ra_pc = new LEQConstraint(reta, pca);
+	private LEQConstraint p1a_ra = new LEQConstraint(par1a, reta);
+	private LEQConstraint l_p1a = new LEQConstraint(low, par1a);
+	private LEQConstraint l_pc = new LEQConstraint(low, pca);
+	private LEQConstraint p0a_pc = new LEQConstraint(par0a, pca);
+	private LEQConstraint l_h = new LEQConstraint(low, high);
+	private LEQConstraint l_ra = new LEQConstraint(low, reta);
+	private LEQConstraint p0a_ra = new LEQConstraint(par0a, reta);
+	private LEQConstraint p0a_h = new LEQConstraint(par0a, high);
+	private LEQConstraint p1a_h = new LEQConstraint(par1a, high);
+	private LEQConstraint p1a_pc = new LEQConstraint(par1a, pca);
+	private LEQConstraint p0a_l = new LEQConstraint(par0a, low);
+	private LEQConstraint h_l = new LEQConstraint(high, low);
 	private Local local_a = new JimpleLocal("a", RefType.v("int"));
 	private Local local_b = new JimpleLocal("b", RefType.v("foo.baz.Bar"));
 	private ConstraintLocal loca = new ConstraintLocal(local_a);
@@ -157,102 +154,95 @@ public class TestConstraint {
 	}
 
 	@Test
-	public final void testIsLEQConstraint() {
-		assertTrue(isLEQConstraint(p0a_h));
-		assertTrue(isLEQConstraint(l_h));
-		assertFalse(isLEQConstraint(new SnocE(pca, low)));
-	}
-
-	@Test
 	public final void testContainsSetParameterReference() {
-		assertTrue(containsSetParameterReference(mkList(new IConstraint[] { p0a_h })));
-		assertTrue(containsSetParameterReference(mkList(new IConstraint[] { p0a_h, l_pc })));
-		assertTrue(containsSetParameterReference(mkList(new IConstraint[] { l_pc, p1a_h })));
-		assertFalse(containsSetParameterReference(mkList(new IConstraint[] {})));
-		assertFalse(containsSetParameterReference(mkList(new IConstraint[] { l_pc, ra_pc, l_ra })));
+		assertTrue(containsSetParameterReference(mkList(new LEQConstraint[] { p0a_h })));
+		assertTrue(containsSetParameterReference(mkList(new LEQConstraint[] { p0a_h, l_pc })));
+		assertTrue(containsSetParameterReference(mkList(new LEQConstraint[] { l_pc, p1a_h })));
+		assertFalse(containsSetParameterReference(mkList(new LEQConstraint[] {})));
+		assertFalse(containsSetParameterReference(mkList(new LEQConstraint[] { l_pc, ra_pc, l_ra })));
 	}
 
 	@Test
 	public final void testContainsSetParameterReferenceFor() {
-		assertTrue(containsSetParameterReferenceFor(mkList(new IConstraint[] { p0a_h }), "a", 0));
-		assertTrue(containsSetParameterReferenceFor(mkList(new IConstraint[] { p0a_h, l_pc }), "a", 0));
-		assertTrue(containsSetParameterReferenceFor(mkList(new IConstraint[] { l_pc, p1a_h }), "a", 1));
-		assertFalse(containsSetParameterReferenceFor(mkList(new IConstraint[] { p0a_h }), "b", 0));
-		assertFalse(containsSetParameterReferenceFor(mkList(new IConstraint[] { p0a_h, l_pc }), "a", 1));
-		assertFalse(containsSetParameterReferenceFor(mkList(new IConstraint[] { l_pc, p1a_h }), "b", 0));
-		assertFalse(containsSetParameterReferenceFor(mkList(new IConstraint[] {}), "a", 0));
-		assertFalse(containsSetParameterReferenceFor(mkList(new IConstraint[] { l_pc, ra_pc, l_ra }), "a", 0));
+		assertTrue(containsSetParameterReferenceFor(mkList(new LEQConstraint[] { p0a_h }), "a", 0));
+		assertTrue(containsSetParameterReferenceFor(mkList(new LEQConstraint[] { p0a_h, l_pc }), "a", 0));
+		assertTrue(containsSetParameterReferenceFor(mkList(new LEQConstraint[] { l_pc, p1a_h }), "a", 1));
+		assertFalse(containsSetParameterReferenceFor(mkList(new LEQConstraint[] { p0a_h }), "b", 0));
+		assertFalse(containsSetParameterReferenceFor(mkList(new LEQConstraint[] { p0a_h, l_pc }), "a", 1));
+		assertFalse(containsSetParameterReferenceFor(mkList(new LEQConstraint[] { l_pc, p1a_h }), "b", 0));
+		assertFalse(containsSetParameterReferenceFor(mkList(new LEQConstraint[] {}), "a", 0));
+		assertFalse(containsSetParameterReferenceFor(mkList(new LEQConstraint[] { l_pc, ra_pc, l_ra }), "a", 0));
 	}
 
 	@Test
 	public final void testContainsSetProgramCounterReference() {
-		assertTrue(containsSetProgramCounterReference(mkList(new IConstraint[] { p0a_pc })));
-		assertTrue(containsSetProgramCounterReference(mkList(new IConstraint[] { p0a_h, l_pc })));
-		assertTrue(containsSetProgramCounterReference(mkList(new IConstraint[] { l_pc, p1a_h })));
-		assertFalse(containsSetProgramCounterReference(mkList(new IConstraint[] {})));
-		assertFalse(containsSetProgramCounterReference(mkList(new IConstraint[] { p1a_ra, l_p1a, l_ra })));
+		assertTrue(containsSetProgramCounterReference(mkList(new LEQConstraint[] { p0a_pc })));
+		assertTrue(containsSetProgramCounterReference(mkList(new LEQConstraint[] { p0a_h, l_pc })));
+		assertTrue(containsSetProgramCounterReference(mkList(new LEQConstraint[] { l_pc, p1a_h })));
+		assertFalse(containsSetProgramCounterReference(mkList(new LEQConstraint[] {})));
+		assertFalse(containsSetProgramCounterReference(mkList(new LEQConstraint[] { p1a_ra, l_p1a, l_ra })));
 	}
 
 	@Test
 	public final void testContainsSetReturnReference() {
-		assertTrue(containsSetReturnReference(mkList(new IConstraint[] { ra_h })));
-		assertTrue(containsSetReturnReference(mkList(new IConstraint[] { p0a_h, ra_pc })));
-		assertTrue(containsSetReturnReference(mkList(new IConstraint[] { p0a_ra, p1a_h })));
-		assertFalse(containsSetReturnReference(mkList(new IConstraint[] {})));
-		assertFalse(containsSetReturnReference(mkList(new IConstraint[] { p1a_h, l_p1a, l_pc })));
+		assertTrue(containsSetReturnReference(mkList(new LEQConstraint[] { ra_h })));
+		assertTrue(containsSetReturnReference(mkList(new LEQConstraint[] { p0a_h, ra_pc })));
+		assertTrue(containsSetReturnReference(mkList(new LEQConstraint[] { p0a_ra, p1a_h })));
+		assertFalse(containsSetReturnReference(mkList(new LEQConstraint[] {})));
+		assertFalse(containsSetReturnReference(mkList(new LEQConstraint[] { p1a_h, l_p1a, l_pc })));
 	}
 
 	@Test
 	public final void testContainsSetReturnReferenceFor() {
-		assertTrue(containsSetReturnReferenceFor(mkList(new IConstraint[] { ra_h }), "a"));
-		assertTrue(containsSetReturnReferenceFor(mkList(new IConstraint[] { ra_pc, h_l }), "a"));
-		assertTrue(containsSetReturnReferenceFor(mkList(new IConstraint[] { p1a_pc, p0a_ra }), "a"));
-		assertFalse(containsSetReturnReferenceFor(mkList(new IConstraint[] { ra_h }), "b"));
-		assertFalse(containsSetReturnReferenceFor(mkList(new IConstraint[] { p0a_h, ra_h }), "b"));
-		assertFalse(containsSetReturnReferenceFor(mkList(new IConstraint[] { ra_h, p1a_h }), "b"));
-		assertFalse(containsSetReturnReferenceFor(mkList(new IConstraint[] {}), "a"));
-		assertFalse(containsSetReturnReferenceFor(mkList(new IConstraint[] { l_pc, l_p0a, p0a_p1a }), "a"));
+		assertTrue(containsSetReturnReferenceFor(mkList(new LEQConstraint[] { ra_h }), "a"));
+		assertTrue(containsSetReturnReferenceFor(mkList(new LEQConstraint[] { ra_pc, h_l }), "a"));
+		assertTrue(containsSetReturnReferenceFor(mkList(new LEQConstraint[] { p1a_pc, p0a_ra }), "a"));
+		assertFalse(containsSetReturnReferenceFor(mkList(new LEQConstraint[] { ra_h }), "b"));
+		assertFalse(containsSetReturnReferenceFor(mkList(new LEQConstraint[] { p0a_h, ra_h }), "b"));
+		assertFalse(containsSetReturnReferenceFor(mkList(new LEQConstraint[] { ra_h, p1a_h }), "b"));
+		assertFalse(containsSetReturnReferenceFor(mkList(new LEQConstraint[] {}), "a"));
+		assertFalse(containsSetReturnReferenceFor(mkList(new LEQConstraint[] { l_pc, l_p0a, p0a_p1a }), "a"));
 	}
 
 	@Test
 	public final void testGetContainedLevelsOfSet() {
-		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new IConstraint[] {})), mkList(new ILevel[] {})));
-		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new IConstraint[] { ra_pc })), mkList(new ILevel[] {})));
-		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new IConstraint[] { ra_h })), mkList(new ILevel[] { high })));
-		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new IConstraint[] { ra_h, p1a_h })), mkList(new ILevel[] { high })));
-		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new IConstraint[] { ra_h, p1a_h, p0a_l })), mkList(new ILevel[] { high,
+		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new LEQConstraint[] {})), mkList(new ILevel[] {})));
+		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new LEQConstraint[] { ra_pc })), mkList(new ILevel[] {})));
+		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new LEQConstraint[] { ra_h })), mkList(new ILevel[] { high })));
+		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h })), mkList(new ILevel[] { high })));
+		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h, p0a_l })), mkList(new ILevel[] { high,
 				low })));
-		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new IConstraint[] { p1a_pc, p0a_p1a, ra_pc })), mkList(new ILevel[] {})));
+		assertTrue(equalContentOfLists(getContainedLevelsOfSet(mkList(new LEQConstraint[] { p1a_pc, p0a_p1a, ra_pc })), mkList(new ILevel[] {})));
 	}
 
 	@Test
 	public final void testGetInvalidParameterReferencesOfSet() {
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new IConstraint[] {}), "a", 0),
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] {}), "a", 0),
 				mkList(new ConstraintParameterRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new IConstraint[] { p1a_h }), "a", 1),
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h }), "a", 1),
 				mkList(new ConstraintParameterRef[] { par1a })));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new IConstraint[] { p1a_h }), "a", 2),
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h }), "a", 2),
 				mkList(new ConstraintParameterRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new IConstraint[] { ra_h, p1a_h }), "b", 1),
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h }), "b", 1),
 				mkList(new ConstraintParameterRef[] { par1a })));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new IConstraint[] { p1a_h, p0a_l }), "a", 2),
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h, p0a_l }), "a", 2),
 				mkList(new ConstraintParameterRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new IConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "a", 2),
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "a", 2),
 				mkList(new ConstraintParameterRef[] {})));
 	}
 
 	@Test
 	public final void testGetInvalidReturnReferencesOfSet() {
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new IConstraint[] {}), "a"), mkList(new ConstraintReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new IConstraint[] { ra_pc }), "a"),
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] {}), "a"), mkList(new ConstraintReturnRef[] {})));
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_pc }), "a"),
 				mkList(new ConstraintReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new IConstraint[] { ra_pc }), "b"),
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_pc }), "b"),
 				mkList(new ConstraintReturnRef[] { reta })));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new IConstraint[] { ra_h, p1a_h }), "a"),
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h }), "a"),
 				mkList(new ConstraintReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new IConstraint[] { p1a_h, ra_h }), "a"),
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { p1a_h, ra_h }), "a"),
 				mkList(new ConstraintReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new IConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "b"),
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "b"),
 				mkList(new ConstraintReturnRef[] { reta })));
 	}
 

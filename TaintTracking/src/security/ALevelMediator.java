@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import constraints.LEQConstraint;
+
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -22,7 +24,6 @@ import soot.tagkit.AnnotationTag;
 import soot.tagkit.Host;
 import soot.tagkit.VisibilityAnnotationTag;
 import annotation.SootAnnotationDAO;
-import constraints.IConstraint;
 import exception.AnnotationElementNotFoundException;
 import exception.AnnotationExtractionException;
 import exception.AnnotationInvalidConstraintsException;
@@ -65,7 +66,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 
 	}
 
-	public final Set<IConstraint> extractConstraints(SootMethod sootMethod) {
+	public final Set<LEQConstraint> extractConstraints(SootMethod sootMethod) {
 		try {
 			VisibilityAnnotationTag vt = extractVisibilityAnnotationTag(sootMethod);
 			AnnotationTag at = extractAnnotationTagWithType(vt, getJNISignature(definition.getAnnotationClassConstraints()));
@@ -77,7 +78,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 		}
 	}
 	
-	public final Set<IConstraint> extractConstraints(SootClass sootClass) {
+	public final Set<LEQConstraint> extractConstraints(SootClass sootClass) {
 		try {
 			VisibilityAnnotationTag vt = extractVisibilityAnnotationTag(sootClass);
 			AnnotationTag at = extractAnnotationTagWithType(vt, getJNISignature(definition.getAnnotationClassConstraints()));
@@ -197,7 +198,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 		return this.definition.getLibraryClassWriteEffects(sootClass.getName());
 	}
 
-	public Set<IConstraint> getLibraryConstraints(SootMethod sootMethod) {
+	public Set<LEQConstraint> getLibraryConstraints(SootMethod sootMethod) {
 		List<String> paramType = new ArrayList<String>();
 		for (Object type : sootMethod.getParameterTypes()) {
 			paramType.add(type.toString());
@@ -207,7 +208,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 				sootMethod.getSignature());
 	}
 	
-	public Set<IConstraint> getLibraryConstraints(SootClass sootClass) {
+	public Set<LEQConstraint> getLibraryConstraints(SootClass sootClass) {
 		return this.definition.getLibraryConstraints(sootClass.getName());
 	}
 

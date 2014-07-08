@@ -27,7 +27,7 @@ import soot.jimple.ThrowStmt;
 import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.ConstraintsSet;
-import constraints.IConstraint;
+import constraints.ConstraintsUtils;
 import constraints.IConstraintComponent;
 import constraints.IfProgramCounterTrigger;
 import constraints.LEQConstraint;
@@ -46,17 +46,18 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
-		SecurityConstraintValueSwitch switchLhs = getValueSwitch(stmt.getLeftOp());
-		SecurityConstraintValueSwitch switchRhs = getValueSwitch(stmt.getRightOp());
+		SecurityConstraintValueSwitch switchLhs = getValueSwitch(stmt.getLeftOp()); // INST: b, sec / - STATIC: sec / CSig_C + {PC <= PC_C}
+		SecurityConstraintValueSwitch switchRhs = getValueSwitch(stmt.getRightOp()); // l /
 		if (switchLhs.isField()) {
 			for (IConstraintComponent component : switchLhs.getComponents()) {
-				getOut().addWriteEffect(new LEQConstraint(new ConstraintProgramCounterRef(getAnalyzedSignature()), component));
+				if (ConstraintsUtils.isLevel(component))	getOut().addWriteEffect(new LEQConstraint(new ConstraintProgramCounterRef(getAnalyzedSignature()), component));
 			}			
 		}
 		removeLocalAssignArtifacts(switchLhs);
-		addConstraints(generateConstraints(considerWriteEffect(switchLhs, switchRhs.getComponents()), switchLhs.getComponents()));
+		addConstraints(generateConstraints(considerWriteEffect(switchLhs, switchRhs.getComponents()) /* l, PC */, switchLhs.getComponents() /* b, sec | sec */));
 		addConstraints(switchRhs.getConstraints());
 		removeAccessArtifacts(switchRhs);
+		// { btm <= sec, Pc <= sec}
 	}
 
 	@Override
@@ -165,21 +166,21 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		return returnStmt != null;
 	}
 
-	private void addConstraints(Set<IConstraint> constraints) {
+	private void addConstraints(Set<LEQConstraint> constraints) {
 		getOut().addAll(constraints);
 	}
 
-	private Set<IConstraintComponent> considerWriteEffect(SecurityConstraintValueSwitch switchLhs, Set<IConstraintComponent> lComponents) {
-		Set<IConstraintComponent> components = new HashSet<IConstraintComponent>(lComponents);
+	private Set<IConstraintComponent> considerWriteEffect(SecurityConstraintValueSwitch switchLhs, Set<IConstraintComponent> rComponents) {
+		Set<IConstraintComponent> components = new HashSet<IConstraintComponent>(rComponents);
 		if (switchLhs.isField() || switchLhs.isLocal()) {
 			components.add(new ConstraintProgramCounterRef(getAnalyzedSignature()));
 		}
 		return components;
 	}
 
-	private Set<IConstraint> generateConstraints(Set<IConstraintComponent> leftComponents, Set<IConstraintComponent> rightComponents) {
-		Set<IConstraint> constraits = new HashSet<IConstraint>();
-		for (IConstraintComponent left : leftComponents) {
+	private Set<LEQConstraint> generateConstraints(Set<IConstraintComponent> leftComponents, Set<IConstraintComponent> rightComponents) {
+		Set<LEQConstraint> constraits = new HashSet<LEQConstraint>();
+		for (IConstraintComponent left : leftComponents) { 
 			for (IConstraintComponent right : rightComponents) {
 				constraits.add(new LEQConstraint(left, right));
 			}

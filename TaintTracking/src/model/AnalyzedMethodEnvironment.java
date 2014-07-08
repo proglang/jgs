@@ -19,9 +19,7 @@ import soot.jimple.ArrayRef;
 import soot.jimple.Stmt;
 import utils.AnalysisUtils;
 import analysis.SecurityLevelAnalysis;
-import constraints.IConstraint;
 import constraints.LEQConstraint;
-import exception.ConstraintUnsupportedException;
 
 /**
  * <h1>Directly analysis environment for methods</h1>
@@ -56,8 +54,8 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 	 */
 	public AnalyzedMethodEnvironment(MethodEnvironment me) {
 		super(me.getSootMethod(), me.isIdFunction(), me.isClinit(), me.isClinit(), me.isVoid(), me.isSootSecurityMethod(), me
-				.getMethodParameters(), me.getReturnLevel(), me.getWriteEffects(), me.getClassWriteEffects(), me.getSignatureContraints(), me.getLog(), me
-				.getLevelMediator());
+				.getMethodParameters(), me.getReturnLevel(), me.getWriteEffects(), me.getClassWriteEffects(), me.getSignatureContraints(), me
+				.getLog(), me.getLevelMediator());
 	}
 
 	/**
@@ -214,20 +212,16 @@ public class AnalyzedMethodEnvironment extends MethodEnvironment {
 		this.srcLn = extractLineNumber(stmt);
 	}
 
-	public void addConstraint(IConstraint constraint) {
-		if (constraint instanceof LEQConstraint) {
-			// add x ~ y iff x != y
-			if (!constraint.getLhs().equals(constraint.getRhs())) {
-				LEQConstraint leqConstraint = (LEQConstraint) constraint;
-				// x <= bottom implies x == bottom and high <= x implies x == high
-				if (leqConstraint.getRhs().equals(getLevelMediator().getGreatestLowerBoundLevel())
-						|| leqConstraint.getLhs().equals(getLevelMediator().getLeastUpperBoundLevel())) {
-					addConstraint(new LEQConstraint(leqConstraint.getRhs(), leqConstraint.getLhs()));
-				}
-				addConstraint(leqConstraint);
+	public void addConstraint(LEQConstraint constraint) {
+		// add x ~ y iff x != y
+		if (!constraint.getLhs().equals(constraint.getRhs())) {
+			LEQConstraint leqConstraint = (LEQConstraint) constraint;
+			// x <= bottom implies x == bottom and high <= x implies x == high
+			if (leqConstraint.getRhs().equals(getLevelMediator().getGreatestLowerBoundLevel())
+					|| leqConstraint.getLhs().equals(getLevelMediator().getLeastUpperBoundLevel())) {
+				addConstraint(new LEQConstraint(leqConstraint.getRhs(), leqConstraint.getLhs()));
 			}
-		} else {
-			throw new ConstraintUnsupportedException(getMsg("exception.constraints.unknown_type", constraint.toString()));
+			addConstraint(leqConstraint);
 		}
 	}
 	// /**

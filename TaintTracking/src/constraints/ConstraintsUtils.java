@@ -1,7 +1,5 @@
 package constraints;
 
-import static resource.Messages.getMsg;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,65 +7,68 @@ import java.util.List;
 import java.util.Set;
 
 import security.ILevel;
-import exception.ConstraintUnsupportedException;
+import error.ISubSignatureError;
+import error.SubSignatureParameterError;
+import error.SubSignatureProgramCounterError;
+import error.SubSignatureReturnError;
 
 public class ConstraintsUtils {
 
-	public static boolean containsSetParameterReference(Collection<IConstraint> constraints) {
-		for (IConstraint constraint : constraints) {
+	public static boolean containsSetParameterReference(Collection<LEQConstraint> constraints) {
+		for (LEQConstraint constraint : constraints) {
 			if (constraint.containsParameterReference()) return true;
 		}
 		return false;
 	}
 
-	public static boolean containsSetParameterReferenceFor(Collection<IConstraint> constraints, String signature, int position) {
-		for (IConstraint constraint : constraints) {
+	public static boolean containsSetParameterReferenceFor(Collection<LEQConstraint> constraints, String signature, int position) {
+		for (LEQConstraint constraint : constraints) {
 			if (constraint.containsParameterReferenceFor(signature, position)) return true;
 		}
 		return false;
 	}
 
-	public static boolean containsSetProgramCounterReference(Collection<IConstraint> constraints) {
-		for (IConstraint constraint : constraints) {
+	public static boolean containsSetProgramCounterReference(Collection<LEQConstraint> constraints) {
+		for (LEQConstraint constraint : constraints) {
 			if (constraint.containsProgramCounterReference()) return true;
 		}
 		return false;
 	}
 
-	public static boolean containsSetReturnReference(Collection<IConstraint> constraints) {
-		for (IConstraint constraint : constraints) {
+	public static boolean containsSetReturnReference(Collection<LEQConstraint> constraints) {
+		for (LEQConstraint constraint : constraints) {
 			if (constraint.containsReturnReference()) return true;
 		}
 		return false;
 	}
 
-	public static boolean containsSetReturnReferenceFor(Collection<IConstraint> constraints, String signature) {
-		for (IConstraint constraint : constraints) {
+	public static boolean containsSetReturnReferenceFor(Collection<LEQConstraint> constraints, String signature) {
+		for (LEQConstraint constraint : constraints) {
 			if (constraint.containsReturnReferenceFor(signature)) return true;
 		}
 		return false;
 	}
 
-	public static Set<ILevel> getContainedLevelsOfSet(Collection<IConstraint> constraints) {
+	public static Set<ILevel> getContainedLevelsOfSet(Collection<LEQConstraint> constraints) {
 		Set<ILevel> levels = new HashSet<ILevel>();
-		for (IConstraint constraint : constraints) {
+		for (LEQConstraint constraint : constraints) {
 			levels.addAll(constraint.getContainedLevel());
 		}
 		return levels;
 	}
 
-	public static List<ConstraintParameterRef> getInvalidParameterReferencesOfSet(Collection<IConstraint> constraints, String signature,
+	public static List<ConstraintParameterRef> getInvalidParameterReferencesOfSet(Collection<LEQConstraint> constraints, String signature,
 			int count) {
 		List<ConstraintParameterRef> invalid = new ArrayList<ConstraintParameterRef>();
-		for (IConstraint constraint : constraints) {
+		for (LEQConstraint constraint : constraints) {
 			invalid.addAll(constraint.getInvalidParameterReferencesFor(signature, count));
 		}
 		return invalid;
 	}
 
-	public static List<ConstraintReturnRef> getInvalidReturnReferencesOfSet(Collection<IConstraint> constraints, String signature) {
+	public static List<ConstraintReturnRef> getInvalidReturnReferencesOfSet(Collection<LEQConstraint> constraints, String signature) {
 		List<ConstraintReturnRef> invalid = new ArrayList<ConstraintReturnRef>();
-		for (IConstraint constraint : constraints) {
+		for (LEQConstraint constraint : constraints) {
 			invalid.addAll(constraint.getInvalidReturnReferencesFor(signature));
 		}
 		return invalid;
@@ -129,26 +130,22 @@ public class ConstraintsUtils {
 		return false;
 	}
 
-	public static boolean isLEQConstraint(IConstraint constraint) {
-		return constraint instanceof LEQConstraint;
-	}
-
 	public static boolean isLocal(IConstraintComponent component) {
 		return component instanceof ConstraintLocal;
 	}
 
-	public static Set<IConstraint> changeAllComponentsSignature(String newSignature, Set<IConstraint> constraints) {
-		Set<IConstraint> result = new HashSet<IConstraint>();
-		for (IConstraint constraint : constraints) {
+	public static Set<LEQConstraint> changeAllComponentsSignature(String newSignature, Set<LEQConstraint> constraints) {
+		Set<LEQConstraint> result = new HashSet<LEQConstraint>();
+		for (LEQConstraint constraint : constraints) {
 			result.add(constraint.changeAllComponentsSignature(newSignature));
 		}
 		return result;
 	}
 
-	public static String constraintsAsString(Set<IConstraint> constraints) {
+	public static String constraintsAsString(Set<LEQConstraint> constraints) {
 		StringBuilder sb = new StringBuilder("{ ");
 		int count = 0;
-		for (IConstraint constraint : constraints) {
+		for (LEQConstraint constraint : constraints) {
 			if (0 != count++) sb.append(", ");
 			sb.append(constraint.toString());
 		}
@@ -167,9 +164,9 @@ public class ConstraintsUtils {
 		return sb.toString();
 	}
 
-	public static Set<IConstraint> getConstraintsContaining(Set<IConstraint> constraints, IConstraintComponent component) {
-		Set<IConstraint> result = new HashSet<IConstraint>();
-		for (IConstraint constraint : constraints) {
+	public static Set<LEQConstraint> getConstraintsContaining(Set<LEQConstraint> constraints, IConstraintComponent component) {
+		Set<LEQConstraint> result = new HashSet<LEQConstraint>();
+		for (LEQConstraint constraint : constraints) {
 			if (constraint.containsComponent(component)) {
 				result.add(constraint);
 			}
@@ -206,95 +203,29 @@ public class ConstraintsUtils {
 		return component;
 	}
 
-	public static Set<IConstraint> checkReturn(Set<IConstraint> mPlus, String mSignature, Set<IConstraint> _m) {
-		Set<IConstraint> missing = new HashSet<IConstraint>();
-		Set<IConstraint> _MLowerBoundConstraintsForReturn = getLowerBoundConstraintsOfReturn(_m);
-		for (IConstraint _MLowerBoundConstraintForReturn : _MLowerBoundConstraintsForReturn) {
-			if (isLEQConstraint(_MLowerBoundConstraintForReturn)) {
-				LEQConstraint leq = (LEQConstraint) _MLowerBoundConstraintForReturn;
-				if (!mPlus.contains(changeSignatureOf(leq, mSignature))) {
-					missing.add(leq);
+	public static List<ISubSignatureError> isSubSignature(Set<LEQConstraint> mPlus, String mSignature, Set<LEQConstraint> _m) {
+		List<ISubSignatureError> errors = new ArrayList<ISubSignatureError>();
+		for (LEQConstraint constraint : _m) {
+			if (isReturnReference(constraint.getRhs())) {
+				if (!mPlus.contains(changeSignatureOf(constraint, mSignature))) {
+					errors.add(new SubSignatureReturnError(constraint));
 				}
-			} else {
-				throw new ConstraintUnsupportedException(getMsg("exception.constraints.unknown_type", _MLowerBoundConstraintForReturn.toString()));
+			}
+			if (isParameterReference(constraint.getLhs())) {
+				ConstraintParameterRef paramRef = (ConstraintParameterRef) constraint.getLhs();
+				if (!mPlus.contains(changeSignatureOf(constraint, mSignature))) {
+					errors.add(new SubSignatureParameterError(constraint, paramRef.getParameterPos()));
+				}
+			}
+			if (isProgramCounterReference(constraint.getLhs())) {
+				if (!mPlus.contains(changeSignatureOf(constraint, mSignature))) {
+					if (!mPlus.contains(changeSignatureOf(constraint, mSignature))) {
+						errors.add(new SubSignatureProgramCounterError(constraint));
+					}
+				}
 			}
 		}
-		return missing;
-	}
-
-	public static Set<IConstraint> checkParameter(int parameterPosition, Set<IConstraint> mPlus, String mSignature, Set<IConstraint> _m) {
-		Set<IConstraint> missing = new HashSet<IConstraint>();
-		Set<IConstraint> _MUpperBoundConstraintsForParameter = getUpperBoundConstraintsOfParameter(parameterPosition, _m);
-		for (IConstraint _MUpperBoundConstraintForParameter : _MUpperBoundConstraintsForParameter) {
-			if (isLEQConstraint(_MUpperBoundConstraintForParameter)) {
-				LEQConstraint leq = (LEQConstraint) _MUpperBoundConstraintForParameter;
-				if (!mPlus.contains(changeSignatureOf(leq, mSignature))) {
-					missing.add(leq);
-				}
-			} else {
-				throw new ConstraintUnsupportedException(
-						getMsg("exception.constraints.unknown_type", _MUpperBoundConstraintForParameter.toString()));
-			}
-		}
-		return missing;
-	}
-
-	public static Set<IConstraint> checkPC(Set<IConstraint> mPlus, String mSignature, Set<IConstraint> _m) {
-		Set<IConstraint> missing = new HashSet<IConstraint>();
-		Set<IConstraint> _MUpperBoundConstraintsForPC = getUpperBoundConstraintsOfProgramCounter(_m);
-		for (IConstraint _MUpperBoundConstraintForPC : _MUpperBoundConstraintsForPC) {
-			if (isLEQConstraint(_MUpperBoundConstraintForPC)) {
-				LEQConstraint leq = (LEQConstraint) _MUpperBoundConstraintForPC;
-				if (!mPlus.contains(changeSignatureOf(leq, mSignature))) {
-					missing.add(leq);
-				}
-			} else {
-				throw new ConstraintUnsupportedException(getMsg("exception.constraints.unknown_type", _MUpperBoundConstraintForPC.toString()));
-			}
-		}
-		return missing;
-	}
-
-	private static Set<IConstraint> getLowerBoundConstraintsOfReturn(Set<IConstraint> constraints) {
-		Set<IConstraint> lowerBoundConstraints = new HashSet<IConstraint>();
-		for (IConstraint constraint : constraints) {
-			if (isLEQConstraint(constraint)) {
-				if (isReturnReference(constraint.getRhs())) {
-					lowerBoundConstraints.add(constraint);
-				}
-			} else {
-				throw new ConstraintUnsupportedException(getMsg("exception.constraints.unknown_type", constraint.toString()));
-			}
-		}
-		return lowerBoundConstraints;
-	}
-
-	private static Set<IConstraint> getUpperBoundConstraintsOfParameter(int parameterPosition, Set<IConstraint> constraints) {
-		Set<IConstraint> upperBoundConstraints = new HashSet<IConstraint>();
-		for (IConstraint constraint : constraints) {
-			if (isLEQConstraint(constraint)) {
-				if (isParameterReference(constraint.getLhs(), parameterPosition)) {
-					upperBoundConstraints.add(constraint);
-				}
-			} else {
-				throw new ConstraintUnsupportedException(getMsg("exception.constraints.unknown_type", constraint.toString()));
-			}
-		}
-		return upperBoundConstraints;
-	}
-
-	private static Set<IConstraint> getUpperBoundConstraintsOfProgramCounter(Set<IConstraint> constraints) {
-		Set<IConstraint> upperBoundConstraints = new HashSet<IConstraint>();
-		for (IConstraint constraint : constraints) {
-			if (isLEQConstraint(constraint)) {
-				if (isProgramCounterReference(constraint.getLhs())) {
-					upperBoundConstraints.add(constraint);
-				}
-			} else {
-				throw new ConstraintUnsupportedException(getMsg("exception.constraints.unknown_type", constraint.toString()));
-			}
-		}
-		return upperBoundConstraints;
+		return errors;
 	}
 
 }

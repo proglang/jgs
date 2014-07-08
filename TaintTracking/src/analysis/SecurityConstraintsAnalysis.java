@@ -1,10 +1,13 @@
 package analysis;
 
 import static constraints.ConstraintsUtils.constraintsAsString;
+import static constraints.ConstraintsUtils.isSubSignature;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.getSignatureOfMethod;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import logging.AnalysisLog;
@@ -15,8 +18,9 @@ import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
 import constraints.ConstraintsSet;
-import constraints.IConstraint;
 import constraints.IProgramCounterTrigger;
+import constraints.LEQConstraint;
+import error.ISubSignatureError;
 import exception.AnalysisException;
 import exception.CastInvalidException;
 import exception.EnvironmentNotFoundException;
@@ -126,14 +130,9 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		checkEndOfImplicitFlow(stmt, in, out);
 		try {
 			SecurityConstraintStmtSwitch stmtSwitch = getStmtSwitch(in, out, stmt);
-//			G.v().out.println(" -- " + stmt.toString() + "@" + getAnalyzedEnvironment().getSootMethod().getName() + ": -- ");
-//			G.v().out.println("Constraints: " + out.toBoundariesString());
-//			G.v().out.println("PC: " + ConstraintsUtils.constraintsAsString(out.getAllProgramCounterConstraints()));
-//			G.v().out.println("Only PC-Constraints: " + ConstraintsUtils.constraintsAsString(ConstraintsUtils.getConstraintsContaining(out.getConstraintsSet(), new ConstraintProgramCounterRef(getAnalyzedEnvironment().getSootMethod().getSignature()))));
-//			G.v().out.println(" ---- ");
 			consistencyCheck(out, stmt);
 			if (stmtSwitch.isReturnStmt()) completnessCheck(out);
-			
+
 		} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
 				| LevelNotFoundException | CastInvalidException e) {
 			throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(),
@@ -154,44 +153,46 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		constraints.addAll(out.getWriteEffects());
 		ConstraintsSet signature = new ConstraintsSet(getAnalyzedEnvironment().getSignatureContraints(), getMediator());
 		signature.calculateTransitiveClosure();
-		Set<IConstraint> missing = constraints.checkForCompletness(signature);
-		if (missing.size() != 0) {
+		List<ISubSignatureError> errors = isSubSignature(signature.getConstraintsSet(), getAnalyzedEnvironment().getSootMethod().getSignature(), constraints.getConstraintsSet());
+		if (errors.size() != 0) {
+			Set<LEQConstraint> missingConstraints = extractConstraintsFrom(errors);
 			getLog().security(
 					generateFileName(getAnalyzedEnvironment().getSootMethod()),
 					getAnalyzedEnvironment().getSrcLn(),
 					getMsg("security.constraints.missing", getSignatureOfMethod(getAnalyzedEnvironment().getSootMethod()),
-							constraintsAsString(missing)));
+							constraintsAsString(missingConstraints)));
 		}
 	}
+	
+	private Set<LEQConstraint> extractConstraintsFrom(List<ISubSignatureError> errors) {
+		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
+		for (ISubSignatureError error : errors) {
+			constraints.add(error.getConstraint());
+		}
+		return constraints;
+	}
 
-	private void consistencyCheck(ConstraintsSet out, Stmt stmt) {		
+	private void consistencyCheck(ConstraintsSet out, Stmt stmt) {
 		out.addAll(out.getAllProgramCounterConstraints());
-		out.removeConstraintsContainingProgramCounter();		
+		out.removeConstraintsContainingProgramCounter();
 		if (!consistent) {
-			ConstraintsSet constraints = new ConstraintsSet(out.getConstraintsSet(), out.getProgramCounter(), out.getWriteEffects(), getMediator());
+			ConstraintsSet constraints = new ConstraintsSet(out.getConstraintsSet(), out.getProgramCounter(), out.getWriteEffects(),
+					getMediator());
 			constraints.addAll(getAnalyzedEnvironment().getSignatureContraints());
-			//constraints.addAll(out.getAllProgramCounterConstraints());
 			constraints.calculateTransitiveClosure();
 			constraints.addAll(out.getWriteEffects());
-//			ConstraintsSet reduction = constraints.getTransitiveClosure();
-//			if (constraints.size() != reduction.size()) {
-//				G.v().out.println("OLD: " + constraints);
-//				G.v().out.println("NEW: " + constraints.getTransitiveClosure());
-//				Set<IConstraint> inter = reduction.getConstraintsSet();
-//				inter.removeAll(constraints.getConstraintsSet());
-//				G.v().out.println("INTER: " + inter);
-//			}			
-			Set<IConstraint> inconsistentConstraints = constraints.getInconsistent();
+			Set<LEQConstraint> inconsistentConstraints = constraints.getInconsistent();
 			if (inconsistentConstraints.size() != 0) {
 				consistent = true;
 				getLog().security(
 						generateFileName(getAnalyzedEnvironment().getSootMethod()),
 						getAnalyzedEnvironment().getSrcLn(),
 						getMsg("security.constraints.inequality", getAnalyzedEnvironment().getSrcLn(), getSignatureOfMethod(getAnalyzedEnvironment()
-								.getSootMethod()) /*+ "@" + stmt.toString()*/, constraintsAsString(inconsistentConstraints), constraints.toBoundariesString()));
+								.getSootMethod()) /* + "@" + stmt.toString() */, constraintsAsString(inconsistentConstraints), constraints
+								.toBoundariesString()));
 			}
 		}
-		
+
 	}
 
 	private void checkEndOfImplicitFlow(Stmt statement, ConstraintsSet in, ConstraintsSet out) {
@@ -230,9 +231,6 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 	 */
 	@Override
 	protected ConstraintsSet newInitialFlow() {
-//		ConstraintsSet initialSet = new ConstraintsSet(getMediator());
-//		initialSet.addProgramCounterConstraints(new InitialProgramCounterTrigger(), getAnalyzedEnvironment().getSignatureContraints());
-//		return initialSet;
 		return new ConstraintsSet(getMediator());
 	}
 

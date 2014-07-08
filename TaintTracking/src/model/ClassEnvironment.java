@@ -1,5 +1,9 @@
 package model;
 
+import static constraints.ConstraintsUtils.containsSetParameterReference;
+import static constraints.ConstraintsUtils.containsSetProgramCounterReference;
+import static constraints.ConstraintsUtils.containsSetReturnReference;
+import static constraints.ConstraintsUtils.getContainedLevelsOfSet;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
@@ -10,16 +14,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static constraints.ConstraintsUtils.*;
-
-import constraints.IConstraint;
-
 import logging.AnalysisLog;
 import main.AnalysisType;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootField;
+import constraints.LEQConstraint;
 import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
 import exception.LevelInvalidException;
@@ -43,7 +44,7 @@ public class ClassEnvironment extends Environment {
 	/**
 	 * DOC
 	 */
-	private final Set<IConstraint> constraints = new HashSet<IConstraint>();
+	private final Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 
 	/**
 	 * DOC
@@ -53,7 +54,7 @@ public class ClassEnvironment extends Environment {
 	 * @param log
 	 * @param mediator
 	 */
-	public ClassEnvironment(SootClass sootClass, List<ILevel> classWriteEffects, Set<IConstraint> constraints, AnalysisLog log,
+	public ClassEnvironment(SootClass sootClass, List<ILevel> classWriteEffects, Set<LEQConstraint> constraints, AnalysisLog log,
 			ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootClass = sootClass;
@@ -141,8 +142,8 @@ public class ClassEnvironment extends Environment {
 	 * 
 	 * @return
 	 */
-	public Set<IConstraint> getSignatureContraints() {
-		return new HashSet<IConstraint>(constraints);
+	public Set<LEQConstraint> getSignatureContraints() {
+		return new HashSet<LEQConstraint>(constraints);
 	}
 
 }

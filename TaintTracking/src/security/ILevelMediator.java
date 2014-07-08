@@ -3,10 +3,11 @@ package security;
 import java.util.List;
 import java.util.Set;
 
+import constraints.LEQConstraint;
+
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
-import constraints.IConstraint;
 
 public interface ILevelMediator {
 
@@ -18,9 +19,9 @@ public interface ILevelMediator {
 
 	public List<ILevel> extractClassEffects(SootClass sootClass);
 
-	public Set<IConstraint> extractConstraints(SootMethod sootMethod);
+	public Set<LEQConstraint> extractConstraints(SootMethod sootMethod);
 
-	public Set<IConstraint> extractConstraints(SootClass sootClass);
+	public Set<LEQConstraint> extractConstraints(SootClass sootClass);
 
 	public ILevel extractFieldSecurityLevel(SootField sootField);
 
@@ -52,9 +53,9 @@ public interface ILevelMediator {
 
 	public List<ILevel> getLibraryClassWriteEffects(SootClass sootClass);
 
-	public Set<IConstraint> getLibraryConstraints(SootMethod sootMethod);
+	public Set<LEQConstraint> getLibraryConstraints(SootMethod sootMethod);
 
-	public Set<IConstraint> getLibraryConstraints(SootClass sootClass);
+	public Set<LEQConstraint> getLibraryConstraints(SootClass sootClass);
 
 	public ILevel getLibraryFieldSecurityLevel(SootField sootField);
 
