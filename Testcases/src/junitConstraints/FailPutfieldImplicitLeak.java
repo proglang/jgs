@@ -1,8 +1,9 @@
+package junitConstraints;
 
 // Quick throw-away examples and testcases for the security type checker
 import static security.Definition.*;
 
-public class Scratch {
+public class FailPutfieldImplicitLeak {
     
     @FieldSecurity("high")
     boolean high;
@@ -12,19 +13,20 @@ public class Scratch {
     @Constraints({"@pc <= low"})
     public boolean leak(boolean init) {
         this.high = init;
-        Scratch x = new Scratch();
+        FailPutfieldImplicitLeak x = new FailPutfieldImplicitLeak();
         x.f = true;
-        Scratch y = x;
+        FailPutfieldImplicitLeak y = x;
         if (this.high) {
-            y = new Scratch();
+            y = new FailPutfieldImplicitLeak();
         }
         y.f = false;
+        // @security("The returned value has a stronger security level than expected.")
         return x.f;
     }
    
     @Constraints({"@pc <= low"})
     public static void main(String[] args) {
-        Scratch s = new Scratch();
+        FailPutfieldImplicitLeak s = new FailPutfieldImplicitLeak();
         boolean result1 = s.leak(true);
         boolean result2 = s.leak(false);
         System.out.print(String.format("%s %s", result1, result2));
