@@ -150,4 +150,9 @@ public class TestConstraintsFailing {
 	public final void test33Expr() {
 		checkMethodStoreEquality(EXPR, CHECK_LEVELS, CONSTRAINTS);
 	}
+	
+	@Test
+	public final void testFailAssignSame() {
+	   checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "FailAssignSame"), CHECK_LEVELS, CONSTRAINTS);
+	}
 }
