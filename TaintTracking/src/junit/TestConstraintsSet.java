@@ -199,7 +199,7 @@ public class TestConstraintsSet {
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), EMPTY_CONSTRAINT_LIST));
 
 		c1.addAll(EMPTY_CONSTRAINT_LIST);
-		c1.removeConstraintsContaining(local_a);
+		c1.removeConstraintsContaining(new ConstraintLocal(local_a));
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), EMPTY_CONSTRAINT_LIST));
 	}
 
@@ -209,7 +209,7 @@ public class TestConstraintsSet {
 
 		Set<LEQConstraint> l1 = mkList(new LEQConstraint[] { ra_h, l_h, p0a_p1a });
 		c1.addAll(l1);
-		c1.removeConstraintsContaining(local_a);
+		c1.removeConstraintsContaining(new ConstraintLocal(local_a));
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), l1));
 	}
 
@@ -219,7 +219,7 @@ public class TestConstraintsSet {
 
 		Set<LEQConstraint> l1 = mkList(new LEQConstraint[] { ra_h, new LEQConstraint(par1b, new ConstraintLocal(local_b)), l_h, p0a_p1a });
 		c1.addAll(l1);
-		c1.removeConstraintsContaining(local_a);
+		c1.removeConstraintsContaining(new ConstraintLocal(local_a));
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), l1));
 	}
 
@@ -229,7 +229,7 @@ public class TestConstraintsSet {
 
 		c1.addAll(mkList(new LEQConstraint[] { ra_h, new LEQConstraint(par1a, new ConstraintLocal(local_a)), l_h, p0a_p1a,
 				new LEQConstraint(new ConstraintLocal(local_b), pca) }));
-		c1.removeConstraintsContaining(local_a);
+		c1.removeConstraintsContaining(new ConstraintLocal(local_a));
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), mkList(new LEQConstraint[] { ra_h, l_h, p0a_p1a,
 				new LEQConstraint(new ConstraintLocal(local_b), pca) })));
 	}
@@ -239,7 +239,7 @@ public class TestConstraintsSet {
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), EMPTY_CONSTRAINT_LIST));
 
 		c1.addAll(mkList(new LEQConstraint[] { ra_h, new LEQConstraint(par1b, new ConstraintLocal(local_a)), l_h, p0a_p1a }));
-		c1.removeConstraintsContaining(local_a);
+		c1.removeConstraintsContaining(new ConstraintLocal(local_a));
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), mkList(new LEQConstraint[] { ra_h, l_h, p0a_p1a })));
 	}
 
@@ -249,7 +249,7 @@ public class TestConstraintsSet {
 
 		c1.addAll(mkList(new LEQConstraint[] { ra_h, new LEQConstraint(new ConstraintLocal(local_a), par1b), l_h, p0a_p1a,
 				new LEQConstraint(new ConstraintLocal(local_a), high) }));
-		c1.removeConstraintsContaining(local_a);
+		c1.removeConstraintsContaining(new ConstraintLocal(local_a));
 		assertTrue(equalContentOfLists(c1.getConstraintsSet(), mkList(new LEQConstraint[] { ra_h, l_h, p0a_p1a })));
 	}
 

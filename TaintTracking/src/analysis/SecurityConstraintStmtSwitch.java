@@ -24,6 +24,7 @@ import soot.jimple.Stmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
+import constraints.ConstraintPlaceholder;
 import constraints.ConstraintProgramCounterRef;
 import constraints.ConstraintReturnRef;
 import constraints.ConstraintsSet;
@@ -46,18 +47,37 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
-		SecurityConstraintValueSwitch switchLhs = getValueSwitch(stmt.getLeftOp()); // INST: b, sec / - STATIC: sec / CSig_C + {PC <= PC_C}
-		SecurityConstraintValueSwitch switchRhs = getValueSwitch(stmt.getRightOp()); // l /
+		SecurityConstraintValueSwitch switchLhs = getValueSwitch(stmt.getLeftOp());
+		SecurityConstraintValueSwitch switchRhs = getValueSwitch(stmt.getRightOp());
+		if (switchLhs.isLocal()) {
+			ConstraintPlaceholder placeholder = new ConstraintPlaceholder(getAnalyzedSignature());
+			Set<IConstraintComponent> pComponents = new HashSet<IConstraintComponent>(Arrays.asList(new IConstraintComponent[] { placeholder }));
+			addConstraints(generateConstraints(considerWriteEffect(switchLhs, switchRhs.getComponents()), pComponents));
+			removeLocalAssignArtifacts(switchLhs);
+			addConstraint(new LEQConstraint(placeholder, switchLhs.getConstraintLocal()));
+			removePlaceholder(placeholder);
+			removeAccessArtifacts(switchRhs);	
+		} else {
+			addWriteEffects(switchLhs);
+			addConstraints(generateConstraints(considerWriteEffect(switchLhs, switchRhs.getComponents()), switchLhs.getComponents()));
+			addConstraints(switchRhs.getConstraints());
+			removeAccessArtifacts(switchRhs);		
+		}
+		
+		
+		
+	}
+
+	private void removePlaceholder(ConstraintPlaceholder placeholder) {
+		getOut().removeConstraintsContaining(placeholder);		
+	}
+
+	private void addWriteEffects(SecurityConstraintValueSwitch switchLhs) {
 		if (switchLhs.isField()) {
 			for (IConstraintComponent component : switchLhs.getComponents()) {
 				if (ConstraintsUtils.isLevel(component))	getOut().addWriteEffect(new LEQConstraint(new ConstraintProgramCounterRef(getAnalyzedSignature()), component));
 			}			
 		}
-		removeLocalAssignArtifacts(switchLhs);
-		addConstraints(generateConstraints(considerWriteEffect(switchLhs, switchRhs.getComponents()) /* l, PC */, switchLhs.getComponents() /* b, sec | sec */));
-		addConstraints(switchRhs.getConstraints());
-		removeAccessArtifacts(switchRhs);
-		// { btm <= sec, Pc <= sec}
 	}
 
 	@Override
@@ -169,6 +189,10 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	private void addConstraints(Set<LEQConstraint> constraints) {
 		getOut().addAll(constraints);
 	}
+	
+	private void addConstraint(LEQConstraint constraint) {
+		getOut().add(constraint);
+	}
 
 	private Set<IConstraintComponent> considerWriteEffect(SecurityConstraintValueSwitch switchLhs, Set<IConstraintComponent> rComponents) {
 		Set<IConstraintComponent> components = new HashSet<IConstraintComponent>(rComponents);
@@ -197,7 +221,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	private void removeLocalAssignArtifacts(SecurityConstraintValueSwitch valueSwitch) {
 		if (valueSwitch.isLocal()) {
-			getOut().removeConstraintsContaining(valueSwitch.getLocal());
+			getOut().removeConstraintsContaining(valueSwitch.getConstraintLocal());
 		}
 	}
 

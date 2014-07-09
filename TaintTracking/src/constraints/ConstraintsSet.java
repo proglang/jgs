@@ -13,7 +13,6 @@ import java.util.Set;
 
 import security.ILevel;
 import security.ILevelMediator;
-import soot.Local;
 
 public class ConstraintsSet implements Collection<LEQConstraint> {
 
@@ -223,10 +222,17 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 		return res;
 	}
 
-	public void removeConstraintsContaining(Local local) {
+	public void removeConstraintsContaining(ConstraintLocal local) {
 		calculateTransitiveClosure();
 		for (LEQConstraint constraint : getConstraintsSet()) {
-			if (constraint.containsComponent(new ConstraintLocal(local))) remove(constraint);
+			if (constraint.containsComponent(local)) remove(constraint);
+		}
+	}
+	
+	public void removeConstraintsContaining(ConstraintPlaceholder placeholder) {
+		calculateTransitiveClosure();
+		for (LEQConstraint constraint : getConstraintsSet()) {
+			if (constraint.containsComponent(placeholder)) remove(constraint);
 		}
 	}
 

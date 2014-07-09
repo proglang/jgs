@@ -76,7 +76,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	private final Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 
 	private SootField field = null;
-	private Local local = null;
+	private ConstraintLocal local = null;
 	private SootMethod method = null;
 	private SootClass staticClass = null;
 
@@ -96,7 +96,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 	}
 
 	@Override
-	public void caseArrayRef(ArrayRef v) {
+	public void caseArrayRef(ArrayRef v) {	
 		// TODO Auto-generated method stub
 	}
 
@@ -206,7 +206,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 
 	@Override
 	public void caseLocal(Local l) {
-		addComponent(new ConstraintLocal(local = l));
+		addComponent(local = new ConstraintLocal(l));
 	}
 
 	@Override
@@ -437,7 +437,7 @@ public class SecurityConstraintValueSwitch extends SecurityConstraintSwitch impl
 		return field;
 	}
 
-	protected Local getLocal() {
+	protected ConstraintLocal getConstraintLocal() {
 		return local;
 	}
 
