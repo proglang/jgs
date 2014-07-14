@@ -65,7 +65,7 @@ import extractor.UsedObjectStore;
 /**
  * <h1>Update switch for the {@link SecurityLevelAnalysis} analysis</h1>
  * 
- * The {@link SecurityLevelWriteValueSwitch} extends the switch {@link SecurityLevelSwitch} and contains the <em>security level</em> to which
+ * The {@link SecurityLevelValueWriteSwitch} extends the switch {@link SecurityLevelSwitch} and contains the <em>security level</em> to which
  * the level of the value should be updated, the incoming and outgoing locals map of a specific state in the progress of the method
  * {@link SecurityLevelAnalysis#flowThrough(LocalsMap, soot.Unit, LocalsMap)} as well as the environment of the current analyzed method. The
  * class provides for every possible value a method that updates the <em>security level</em> if it is possible. Also the methods check for
@@ -73,9 +73,9 @@ import extractor.UsedObjectStore;
  * etc. If a level will be stored, also the program counter is considered. <br / >
  * 
  * Note, there is a special case: An {@link IdentityStmt} can be the assignment of a this or a parameter reference to a local variable.
- * Because of a validity check there are inconsistencies: Please use for {@link IdentityStmt} a {@link SecurityLevelWriteValueSwitch} where
- * the level is set to {@code null} and the left hand side of the statement is added to the {@link SecurityLevelWriteValueSwitch} with the
- * method {@link SecurityLevelWriteValueSwitch#setIdentityInformation(Value)}. If the identity statement is a assignment of a parameter
+ * Because of a validity check there are inconsistencies: Please use for {@link IdentityStmt} a {@link SecurityLevelValueWriteSwitch} where
+ * the level is set to {@code null} and the left hand side of the statement is added to the {@link SecurityLevelValueWriteSwitch} with the
+ * method {@link SecurityLevelValueWriteSwitch#setIdentityInformation(Value)}. If the identity statement is a assignment of a parameter
  * reference please set also the parameter reference and the corresponding method parameter information.
  * 
  * <hr />
@@ -84,7 +84,7 @@ import extractor.UsedObjectStore;
  * @version 0.1
  * @see SecurityLevelSwitch
  */
-public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implements JimpleValueSwitch {
+public class SecurityLevelValueWriteSwitch extends SecurityLevelSwitch implements JimpleValueSwitch {
 
 	/**
 	 * The <em>security level</em> to which the level of the value should be updated.
@@ -96,12 +96,12 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	private Value value = null;
 
 	/**
-	 * Constructor of a {@link SecurityLevelWriteValueSwitch} that requires the current incoming and outgoing map of local variables as well as
+	 * Constructor of a {@link SecurityLevelValueWriteSwitch} that requires the current incoming and outgoing map of local variables as well as
 	 * the environment of the current analyzed method. Also the <em>security level</em> to which the level of the applied value should be
 	 * updated. Note, there is a special case: An {@link IdentityStmt} can be the assignment of a this or a parameter reference to a local
 	 * variable. Because of a validity check there are inconsistencies: Please use for {@link IdentityStmt} a
-	 * {@link SecurityLevelWriteValueSwitch} where the level is set to {@code null} and the left hand side of the statement is added to the
-	 * {@link SecurityLevelWriteValueSwitch} with the method {@link SecurityLevelWriteValueSwitch#setIdentityInformation(Value)}. If the
+	 * {@link SecurityLevelValueWriteSwitch} where the level is set to {@code null} and the left hand side of the statement is added to the
+	 * {@link SecurityLevelValueWriteSwitch} with the method {@link SecurityLevelValueWriteSwitch#setIdentityInformation(Value)}. If the
 	 * identity statement is a assignment of a parameter reference please set also the parameter reference and the corresponding method
 	 * parameter information.
 	 * 
@@ -114,7 +114,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	 * @param level
 	 *          <em>Security level</em> to which the level of the applied value will be updated.
 	 */
-	protected SecurityLevelWriteValueSwitch(AnalyzedMethodEnvironment analyzedMethodEnvironment, UsedObjectStore store, LocalsMap in,
+	protected SecurityLevelValueWriteSwitch(AnalyzedMethodEnvironment analyzedMethodEnvironment, UsedObjectStore store, LocalsMap in,
 			LocalsMap out, ILevel level) {
 		super(analyzedMethodEnvironment, store, in, out);
 		this.level = level;
@@ -392,13 +392,13 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	/**
 	 * Method that checks for <em>security level</em> violations as well as for <em>write effects</em> which may occur by the assignment to
 	 * the given instance field. Note, that static as well as instance fields are handled in the same way (see
-	 * {@link SecurityLevelWriteValueSwitch#handleFieldRef(FieldRef)}).
+	 * {@link SecurityLevelValueWriteSwitch#handleFieldRef(FieldRef)}).
 	 * 
 	 * @param v
 	 *          Instance field which is assigned and for which the <em>security level</em> violations as well as the <em>write effects</em>
 	 *          should be checked.
 	 * @see soot.jimple.RefSwitch#caseInstanceFieldRef(soot.jimple.InstanceFieldRef)
-	 * @see SecurityLevelWriteValueSwitch#handleFieldRef(FieldRef)
+	 * @see SecurityLevelValueWriteSwitch#handleFieldRef(FieldRef)
 	 */
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {
@@ -489,8 +489,8 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	 * locals map. Therefore, the level of the local and the level of the right hand side, which may be affected by the program counter, will
 	 * be considered. A special case here is the update of a local variable which is a parameter variable: here the name and the type of the
 	 * parameter reference and the corresponding local variable will be checked for equality. This requires that the parameter reference as
-	 * well as method parameter information are given in the {@link SecurityLevelWriteValueSwitch} instance (see
-	 * {@link SecurityLevelWriteValueSwitch#setParameterInformation(ParameterRef, MethodParameter)} ). Note, that occurring exceptions are
+	 * well as method parameter information are given in the {@link SecurityLevelValueWriteSwitch} instance (see
+	 * {@link SecurityLevelValueWriteSwitch#setParameterInformation(ParameterRef, MethodParameter)} ). Note, that occurring exceptions are
 	 * logged.
 	 * 
 	 * @param v
@@ -676,17 +676,17 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	}
 
 	/**
-	 * If {@link SecurityLevelWriteValueSwitch#value} is set and the {@link SecurityLevelWriteValueSwitch#level} is {@code null}, then the
+	 * If {@link SecurityLevelValueWriteSwitch#value} is set and the {@link SecurityLevelValueWriteSwitch#level} is {@code null}, then the
 	 * <em>security level</em> of the contained value will be updated to the level of the given parameter level. Also it will be checked
 	 * whether the handle assignment is valid, i.e. whether the name and the type of the local variable that is assigned corresponds to the
 	 * name and type of the parameter.
 	 * 
 	 * @param v
-	 *          Parameter reference that is assigned to the contained value {@link SecurityLevelWriteValueSwitch#value} for which the
+	 *          Parameter reference that is assigned to the contained value {@link SecurityLevelValueWriteSwitch#value} for which the
 	 *          <em>security level</em> should be updated to the level of the parameter.
 	 * @see soot.jimple.RefSwitch#caseParameterRef(soot.jimple.ParameterRef)
 	 * @throws UnimplementedSwitchException
-	 *           If {@link SecurityLevelWriteValueSwitch#value} is not set and the {@link SecurityLevelWriteValueSwitch#level} is not
+	 *           If {@link SecurityLevelValueWriteSwitch#value} is not set and the {@link SecurityLevelValueWriteSwitch#level} is not
 	 *           {@code null}, because the contained value requires information of the given parameter reference for updating the
 	 *           <em>security level</em>.
 	 */
@@ -767,13 +767,13 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	/**
 	 * Method that checks for <em>security level</em> violations as well as for <em>write effects</em> which may occur by the assignment to
 	 * the given static field. Note, that static as well as instance fields are handled in the same way (see
-	 * {@link SecurityLevelWriteValueSwitch#handleFieldRef(FieldRef)}).
+	 * {@link SecurityLevelValueWriteSwitch#handleFieldRef(FieldRef)}).
 	 * 
 	 * @param v
 	 *          Static field which is assigned and for which the <em>security level</em> violations as well as the <em>write effects</em>
 	 *          should be checked.
 	 * @see soot.jimple.RefSwitch#caseStaticFieldRef(soot.jimple.StaticFieldRef)
-	 * @see SecurityLevelWriteValueSwitch#handleFieldRef(FieldRef)
+	 * @see SecurityLevelValueWriteSwitch#handleFieldRef(FieldRef)
 	 */
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
@@ -829,7 +829,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	}
 
 	/**
-	 * If {@link SecurityLevelWriteValueSwitch#value} is set and the {@link SecurityLevelWriteValueSwitch#level} is {@code null}, then the
+	 * If {@link SecurityLevelValueWriteSwitch#value} is set and the {@link SecurityLevelValueWriteSwitch#level} is {@code null}, then the
 	 * <em>security level</em> of the contained value will be updated to the weakest available <em>security level</em> because {@code this}
 	 * has always the weakest <em>security level</em>.
 	 * 
@@ -838,7 +838,7 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	 *          updated to this <em>security level</em>.
 	 * @see soot.jimple.RefSwitch#caseThisRef(soot.jimple.ThisRef)
 	 * @throws UnimplementedSwitchException
-	 *           If {@link SecurityLevelWriteValueSwitch#value} is not set and the {@link SecurityLevelWriteValueSwitch#level} is not
+	 *           If {@link SecurityLevelValueWriteSwitch#value} is not set and the {@link SecurityLevelValueWriteSwitch#level} is not
 	 *           {@code null}, because the contained value requires information of the given this reference for updating the
 	 *           <em>security level</em>.
 	 */
@@ -955,8 +955,8 @@ public class SecurityLevelWriteValueSwitch extends SecurityLevelSwitch implement
 	 * 
 	 * @param value
 	 *          The value which should be updated in the special case for parameter and this references.
-	 * @see SecurityLevelWriteValueSwitch#caseParameterRef(ParameterRef)
-	 * @see SecurityLevelWriteValueSwitch#caseThisRef(ThisRef)
+	 * @see SecurityLevelValueWriteSwitch#caseParameterRef(ParameterRef)
+	 * @see SecurityLevelValueWriteSwitch#caseThisRef(ThisRef)
 	 */
 	protected void setIdentityInformation(Value value) {
 		this.value = value;

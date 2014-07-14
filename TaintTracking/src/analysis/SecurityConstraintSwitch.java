@@ -21,11 +21,13 @@ public class SecurityConstraintSwitch extends SecuritySwitch<ConstraintsSet> {
 	protected void throwUnknownObjectException(Object object) {
 		throw new SwitchException(getMsg("exception.analysis.switch.unknown_object", object.toString(), this.getClass().getSimpleName()));
 	}
+
+	protected SecurityConstraintValueReadSwitch getReadSwitch(Value value) {
+		return new SecurityConstraintValueReadSwitch(value, getAnalyzedEnvironment(), getStore(), getIn(), getOut());
+	}
 	
-	protected SecurityConstraintValueSwitch getValueSwitch(Value value) {
-		SecurityConstraintValueSwitch valueSwitch = new SecurityConstraintValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut());
-		value.apply(valueSwitch);
-		return valueSwitch;
+	protected SecurityConstraintValueWriteSwitch getWriteSwitch(Value value) {
+		return new SecurityConstraintValueWriteSwitch(value, getAnalyzedEnvironment(), getStore(), getIn(), getOut());
 	}
 	
 	protected String getAnalyzedSignature() {

@@ -69,17 +69,17 @@ import extractor.UsedObjectStore;
 /**
  * <h1>Lookup switch for the {@link SecurityLevelAnalysis} analysis</h1>
  * 
- * The {@link SecurityLevelReadValueSwitch} extends the switch {@link SecurityLevelSwitch} and contains incoming and outgoing locals map of a
+ * The {@link SecurityLevelValueReadSwitch} extends the switch {@link SecurityLevelSwitch} and contains incoming and outgoing locals map of a
  * specific state in the progress of the method {@link SecurityLevelAnalysis#flowThrough(LocalsMap, soot.Unit, LocalsMap)} as well as the
  * environment of the current analyzed method. The class provides for every possible value a method that looks up the
  * <em>security level</em> if it is possible. Also the methods check for security violations, such as the <em>security level</em> of the
  * method parameters, occurring <em>write effects</em>, etc. If a level was looked up, it will be stored in
- * {@link SecurityLevelReadValueSwitch#level}. <br / >
+ * {@link SecurityLevelValueReadSwitch#level}. <br / >
  * 
  * Note, there is a special case: An {@link IdentityStmt} can be the assignment of a this or a parameter reference to a local variable.
- * Because of a validity check there are inconsistencies: Please use for {@link IdentityStmt} a {@link SecurityLevelWriteValueSwitch} where
- * the level is set to {@code null} and the left hand side of the statement is added to the {@link SecurityLevelWriteValueSwitch} with the
- * method {@link SecurityLevelWriteValueSwitch#setIdentityInformation(Value)}. If the identity statement is a assignment of a parameter
+ * Because of a validity check there are inconsistencies: Please use for {@link IdentityStmt} a {@link SecurityLevelValueWriteSwitch} where
+ * the level is set to {@code null} and the left hand side of the statement is added to the {@link SecurityLevelValueWriteSwitch} with the
+ * method {@link SecurityLevelValueWriteSwitch#setIdentityInformation(Value)}. If the identity statement is a assignment of a parameter
  * reference please set also the parameter reference and the corresponding method parameter information.
  * 
  * <hr />
@@ -88,18 +88,18 @@ import extractor.UsedObjectStore;
  * @version 0.1
  * @see SecurityLevelSwitch
  */
-public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements JimpleValueSwitch {
+public class SecurityLevelValueReadSwitch extends SecurityLevelSwitch implements JimpleValueSwitch {
 
 	/** The calculated <em>security level</em> of the applied value. */
 	private ILevel level = null;
 
 	/**
-	 * Constructor of a {@link SecurityLevelReadValueSwitch} that requires the current incoming and outgoing map of local variables as well as
+	 * Constructor of a {@link SecurityLevelValueReadSwitch} that requires the current incoming and outgoing map of local variables as well as
 	 * the environment of the current analyzed method. Note, there is a special case: An {@link IdentityStmt} can be the assignment of a this
 	 * or a parameter reference to a local variable. Because of a validity check there are inconsistencies: Please use for
-	 * {@link IdentityStmt} a {@link SecurityLevelWriteValueSwitch} where the level is set to {@code null} and the left hand side of the
-	 * statement is added to the {@link SecurityLevelWriteValueSwitch} with the method
-	 * {@link SecurityLevelWriteValueSwitch#setIdentityInformation(Value)}. If the identity statement is a assignment of a parameter reference
+	 * {@link IdentityStmt} a {@link SecurityLevelValueWriteSwitch} where the level is set to {@code null} and the left hand side of the
+	 * statement is added to the {@link SecurityLevelValueWriteSwitch} with the method
+	 * {@link SecurityLevelValueWriteSwitch#setIdentityInformation(Value)}. If the identity statement is a assignment of a parameter reference
 	 * please set also the parameter reference and the corresponding method parameter information.
 	 * 
 	 * @param analysisEnvironment
@@ -109,19 +109,19 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	 * @param out
 	 *          Current outgoing map of the local variables.
 	 */
-	protected SecurityLevelReadValueSwitch(AnalyzedMethodEnvironment analyzedMethodEnvironment, UsedObjectStore store, LocalsMap in,
+	protected SecurityLevelValueReadSwitch(AnalyzedMethodEnvironment analyzedMethodEnvironment, UsedObjectStore store, LocalsMap in,
 			LocalsMap out) {
 		super(analyzedMethodEnvironment, store, in, out);
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link AddExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseAddExpr(soot.jimple.AddExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseAddExpr(AddExpr v) {
@@ -129,13 +129,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link AndExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseAndExpr(soot.jimple.AndExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseAndExpr(AndExpr v) {
@@ -143,7 +143,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given array reference and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given array reference and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * The resulting level is the strongest <em>security level</em> of the array level and the index level.
 	 * 
 	 * @param v
@@ -160,7 +160,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given cast expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given cast expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          The cast expression for which the <em>security level</em> should be looked up.
@@ -189,7 +189,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelReadValueSwitch#level}. For a
+	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelValueReadSwitch#level}. For a
 	 * {@link ClassConstant} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -202,13 +202,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link CmpgExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseCmpExpr(soot.jimple.CmpExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
@@ -216,13 +216,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link CmpgExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseCmpgExpr(soot.jimple.CmpgExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
@@ -230,13 +230,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link CmplExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseCmplExpr(soot.jimple.CmplExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
@@ -244,13 +244,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link DivExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseDivExpr(soot.jimple.DivExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseDivExpr(DivExpr v) {
@@ -258,7 +258,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelReadValueSwitch#level}. For a
+	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelValueReadSwitch#level}. For a
 	 * {@link DoubleConstant} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -272,13 +272,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> of the given invoke expression with the type {@link DynamicInvokeExpr} and stores the resulting
-	 * level in {@link SecurityLevelReadValueSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
+	 * level in {@link SecurityLevelValueReadSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
 	 * handled.
 	 * 
 	 * @param v
 	 *          The invoke expression, for which the level should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseDynamicInvokeExpr(soot.jimple.DynamicInvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleInvokeExpr(InvokeExpr)
+	 * @see SecurityLevelValueReadSwitch#handleInvokeExpr(InvokeExpr)
 	 */
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
@@ -286,13 +286,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link EqExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseEqExpr(soot.jimple.EqExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseEqExpr(EqExpr v) {
@@ -300,7 +300,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelReadValueSwitch#level}. For a
+	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelValueReadSwitch#level}. For a
 	 * {@link FloatConstant} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -313,13 +313,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link GeExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseGeExpr(soot.jimple.GeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseGeExpr(GeExpr v) {
@@ -327,13 +327,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link GtExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseGtExpr(soot.jimple.GtExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseGtExpr(GtExpr v) {
@@ -342,15 +342,15 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> of the given field reference with the type {@link InstanceFieldRef} and stores the resulting level
-	 * in {@link SecurityLevelReadValueSwitch#level}. Additionally, the base of the field will be checked and if the level of the base if
+	 * in {@link SecurityLevelValueReadSwitch#level}. Additionally, the base of the field will be checked and if the level of the base if
 	 * stronger than the resulting <em>security level</em> of the field, then this base <em>security level</em> will be stored in
-	 * {@link SecurityLevelReadValueSwitch#level}.
+	 * {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          Instance field reference for which the <em>security level</em> should be calculated.
 	 * @see soot.jimple.RefSwitch#caseInstanceFieldRef(soot.jimple.InstanceFieldRef)
-	 * @see SecurityLevelReadValueSwitch#handleFieldAccess(FieldRef)
-	 * @see SecurityLevelReadValueSwitch#handleBase(Value, Value)
+	 * @see SecurityLevelValueReadSwitch#handleFieldAccess(FieldRef)
+	 * @see SecurityLevelValueReadSwitch#handleBase(Value, Value)
 	 */
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {
@@ -361,12 +361,12 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> for the given instanceof expression and stores the level in
-	 * {@link SecurityLevelReadValueSwitch#level}.
+	 * {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          The instanceof expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseInstanceOfExpr(soot.jimple.InstanceOfExpr)
-	 * @see SecurityLevelReadValueSwitch#handleOneValue(Value, Value)
+	 * @see SecurityLevelValueReadSwitch#handleOneValue(Value, Value)
 	 */
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
@@ -375,7 +375,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelReadValueSwitch#level}. For a
+	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelValueReadSwitch#level}. For a
 	 * {@link IntConstant} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -389,16 +389,16 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> of the given invoke expression with the type {@link InterfaceInvokeExpr} and stores the resulting
-	 * level in {@link SecurityLevelReadValueSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
+	 * level in {@link SecurityLevelValueReadSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
 	 * handled. Additionally, the base of the invoke expression will be checked and if the level of the base if stronger than the resulting
 	 * <em>security level</em> of the invoke expression, then this base <em>security level</em> will be stored in
-	 * {@link SecurityLevelReadValueSwitch#level}.
+	 * {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          The invoke expression, for which the level should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseInterfaceInvokeExpr(soot.jimple.InterfaceInvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleInvokeExpr(InvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBase(Value, Value)
+	 * @see SecurityLevelValueReadSwitch#handleInvokeExpr(InvokeExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBase(Value, Value)
 	 */
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
@@ -408,13 +408,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link LeExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseLeExpr(soot.jimple.LeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseLeExpr(LeExpr v) {
@@ -422,13 +422,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given length expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given length expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * The resulting level is the level of the array.
 	 * 
 	 * @param v
 	 *          The length expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseLengthExpr(soot.jimple.LengthExpr)
-	 * @see SecurityLevelReadValueSwitch#handleUnaryOperation(UnopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleUnaryOperation(UnopExpr)
 	 */
 	@Override
 	public void caseLengthExpr(LengthExpr v) {
@@ -436,7 +436,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given local variable and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given local variable and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * The <em>security level</em> of a {@link Local} can be determined with the help of the {@link LocalsMap}. This map stores all local
 	 * variables and the corresponding <em>security levels</em>.
 	 * 
@@ -453,7 +453,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelReadValueSwitch#level}. For a
+	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelValueReadSwitch#level}. For a
 	 * {@link LongConstant} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -466,13 +466,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link LtExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseLtExpr(soot.jimple.LtExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseLtExpr(LtExpr v) {
@@ -480,13 +480,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link MulExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseMulExpr(soot.jimple.MulExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseMulExpr(MulExpr v) {
@@ -494,13 +494,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link NeExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseNeExpr(soot.jimple.NeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseNeExpr(NeExpr v) {
@@ -509,12 +509,12 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> for the given negation expression and stores the level in
-	 * {@link SecurityLevelReadValueSwitch#level}.
+	 * {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          The length negation for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseNegExpr(soot.jimple.NegExpr)
-	 * @see SecurityLevelReadValueSwitch#handleUnaryOperation(UnopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleUnaryOperation(UnopExpr)
 	 */
 	@Override
 	public void caseNegExpr(NegExpr v) {
@@ -522,7 +522,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given new expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given new expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link NewArrayExpr} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -535,7 +535,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given new expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given new expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link NewExpr} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -548,7 +548,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given new expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given new expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link NewMultiArrayExpr} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -561,7 +561,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelReadValueSwitch#level}. For a
+	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelValueReadSwitch#level}. For a
 	 * {@link NullConstant} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -574,13 +574,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link OrExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseOrExpr(soot.jimple.OrExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseOrExpr(OrExpr v) {
@@ -589,7 +589,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * The method should look up the <em>security level</em> of a {@link ParameterRef}, but the look up of the level of a this reference is
-	 * implemented in the {@link SecurityLevelWriteValueSwitch}.
+	 * implemented in the {@link SecurityLevelValueWriteSwitch}.
 	 * 
 	 * @param v
 	 *          The this reference for which the <em>security level</em> should be looked up.
@@ -604,13 +604,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link RemExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseRemExpr(soot.jimple.RemExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseRemExpr(RemExpr v) {
@@ -618,13 +618,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link ShlExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseShlExpr(soot.jimple.ShlExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseShlExpr(ShlExpr v) {
@@ -632,13 +632,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link ShrExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseShrExpr(soot.jimple.ShrExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseShrExpr(ShrExpr v) {
@@ -647,16 +647,16 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> of the given invoke expression with the type {@link SpecialInvokeExpr} and stores the resulting
-	 * level in {@link SecurityLevelReadValueSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
+	 * level in {@link SecurityLevelValueReadSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
 	 * handled. Additionally, the base of the invoke expression will be checked and if the level of the base if stronger than the resulting
 	 * <em>security level</em> of the invoke expression, then this base <em>security level</em> will be stored in
-	 * {@link SecurityLevelReadValueSwitch#level}.
+	 * {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          The invoke expression, for which the level should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseSpecialInvokeExpr(soot.jimple.SpecialInvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleInvokeExpr(InvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBase(Value, Value)
+	 * @see SecurityLevelValueReadSwitch#handleInvokeExpr(InvokeExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBase(Value, Value)
 	 */
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
@@ -667,12 +667,12 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> of the given field reference with the type {@link StaticFieldRef} and stores the resulting level
-	 * in {@link SecurityLevelReadValueSwitch#level}.
+	 * in {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          Static field reference for which the <em>security level</em> should be calculated.
 	 * @see soot.jimple.RefSwitch#caseStaticFieldRef(soot.jimple.StaticFieldRef)
-	 * @see SecurityLevelReadValueSwitch#handleFieldAccess(FieldRef)
+	 * @see SecurityLevelValueReadSwitch#handleFieldAccess(FieldRef)
 	 */
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
@@ -681,13 +681,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> of the given invoke expression with the type {@link StaticInvokeExpr} and stores the resulting
-	 * level in {@link SecurityLevelReadValueSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
+	 * level in {@link SecurityLevelValueReadSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
 	 * handled.
 	 * 
 	 * @param v
 	 *          The invoke expression, for which the level should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseStaticInvokeExpr(soot.jimple.StaticInvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleInvokeExpr(InvokeExpr)
+	 * @see SecurityLevelValueReadSwitch#handleInvokeExpr(InvokeExpr)
 	 */
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
@@ -695,7 +695,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelReadValueSwitch#level}. For a
+	 * Looks up the <em>security level</em> for the given constant and stores the level in {@link SecurityLevelValueReadSwitch#level}. For a
 	 * {@link StringConstant} this is the weakest available <em>security level</em>.
 	 * 
 	 * @param v
@@ -708,13 +708,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link SubExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseSubExpr(soot.jimple.SubExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseSubExpr(SubExpr v) {
@@ -723,7 +723,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * The method should look up the <em>security level</em> of a {@link ThisRef}, but the look up of the level of a this reference is
-	 * implemented in the {@link SecurityLevelWriteValueSwitch}.
+	 * implemented in the {@link SecurityLevelValueWriteSwitch}.
 	 * 
 	 * @param v
 	 *          The this reference for which the <em>security level</em> should be looked up.
@@ -738,13 +738,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link UshrExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseUshrExpr(soot.jimple.UshrExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
@@ -753,16 +753,16 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Looks up the <em>security level</em> of the given invoke expression with the type {@link VirtualInvokeExpr} and stores the resulting
-	 * level in {@link SecurityLevelReadValueSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
+	 * level in {@link SecurityLevelValueReadSwitch#level}. Also the parameter <em>security level</em> and the <em>write effects</em> will be
 	 * handled. Additionally, the base of the invoke expression will be checked and if the level of the base if stronger than the resulting
 	 * <em>security level</em> of the invoke expression, then this base <em>security level</em> will be stored in
-	 * {@link SecurityLevelReadValueSwitch#level}.
+	 * {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param v
 	 *          The invoke expression, for which the level should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseVirtualInvokeExpr(soot.jimple.VirtualInvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleInvokeExpr(InvokeExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBase(Value, Value)
+	 * @see SecurityLevelValueReadSwitch#handleInvokeExpr(InvokeExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBase(Value, Value)
 	 */
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
@@ -772,13 +772,13 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given binary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * For a {@link XorExpr} this is the strongest operand <em>security level</em> of the given binary expression.
 	 * 
 	 * @param v
 	 *          The expression for which the <em>security level</em> should be looked up.
 	 * @see soot.jimple.ExprSwitch#caseXorExpr(soot.jimple.XorExpr)
-	 * @see SecurityLevelReadValueSwitch#handleBinaryOperation(BinopExpr)
+	 * @see SecurityLevelValueReadSwitch#handleBinaryOperation(BinopExpr)
 	 */
 	@Override
 	public void caseXorExpr(XorExpr v) {
@@ -801,7 +801,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Method that handles the given value as a base and expects that the level {@link SecurityLevelReadValueSwitch#level} was calculated
+	 * Method that handles the given value as a base and expects that the level {@link SecurityLevelValueReadSwitch#level} was calculated
 	 * previously. If the calculated <em>security level</em> is weaker than the base level, the base level will be set to the calculated
 	 * <em>security level</em>.
 	 * 
@@ -818,7 +818,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Method looks up the <em>security level</em> of both operands of the given binary operation and stores the strongest of these two levels
-	 * in the variable {@link SecurityLevelReadValueSwitch#level}.
+	 * in the variable {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param expr
 	 *          The binary expression, for which the level should be looked up, i.e. the strongest <em>security level</em> of the operands
@@ -835,7 +835,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Method looks up the <em>security level</em> of the given field reference. Therefore it checks whether the level at the field is valid
-	 * and set this <em>security level</em> to the calculated level {@link SecurityLevelReadValueSwitch#level}. If the field is a library field
+	 * and set this <em>security level</em> to the calculated level {@link SecurityLevelValueReadSwitch#level}. If the field is a library field
 	 * or the level is not valid the weakest available level is taken instead. Occurring exceptions are logged.
 	 * 
 	 * @param fieldRef
@@ -849,7 +849,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 
 	/**
 	 * Method calculates the <em>security level</em> of the given invoke expression and stores levels in the variable
-	 * {@link SecurityLevelReadValueSwitch#level}. I.e. the method checks also the <em>security levels</em> of the method parameters. If an
+	 * {@link SecurityLevelValueReadSwitch#level}. I.e. the method checks also the <em>security levels</em> of the method parameters. If an
 	 * error occurs during the check of the parameter the weakest available <em>security level</em> will be stored. If the invoke expression
 	 * is a library method then the strongest level of the invoke expression arguments will be stored as resulting <em>security level</em>.
 	 * Additionally, also the <em>write effects</em> of the invoked method will be checked.
@@ -863,7 +863,7 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> of the given value and stores the resulting level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> of the given value and stores the resulting level in {@link SecurityLevelValueReadSwitch#level}.
 	 * The second given value encapsulates the first given value and is required only for logging reasons.
 	 * 
 	 * @param value
@@ -877,11 +877,11 @@ public class SecurityLevelReadValueSwitch extends SecurityLevelSwitch implements
 	}
 
 	/**
-	 * Looks up the <em>security level</em> for the given unary expression and stores the level in {@link SecurityLevelReadValueSwitch#level}.
+	 * Looks up the <em>security level</em> for the given unary expression and stores the level in {@link SecurityLevelValueReadSwitch#level}.
 	 * 
 	 * @param expr
 	 *          The unary expression for which the <em>security level</em> should be looked up.
-	 * @see SecurityLevelReadValueSwitch#handleOneValue(Value, Value)
+	 * @see SecurityLevelValueReadSwitch#handleOneValue(Value, Value)
 	 */
 	private void handleUnaryOperation(UnopExpr expr) {
 		Value value = expr.getOp();

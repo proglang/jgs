@@ -131,6 +131,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		try {
 			SecurityConstraintStmtSwitch stmtSwitch = getStmtSwitch(in, out, stmt);
 			consistencyCheck(out, stmt);
+			
 			if (stmtSwitch.isReturnStmt()) completnessCheck(out);
 
 		} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
@@ -138,6 +139,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 			throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(),
 					getSignatureOfMethod(getAnalyzedEnvironment().getSootMethod()), getAnalyzedEnvironment().getSrcLn()), e);
 		}
+		//System.out.println(stmt.toString() + ": " + out.toString());
 	}
 
 	private SecurityConstraintStmtSwitch getStmtSwitch(ConstraintsSet in, ConstraintsSet out, Stmt stmt) {

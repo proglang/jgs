@@ -36,10 +36,10 @@ import extractor.UsedObjectStore;
  * <li>{@link SecurityLevelStmtSwitch}: switch that processes statements - depending on the statement the <em>security levels</em> will be
  * calculated or updated (with the help of other switches) for components of the statements and also the statements will be checked for
  * security violations.</li>
- * <li>{@link SecurityLevelReadValueSwitch}: switch that processes values - depending on the value, the <em>security level</em> will be
+ * <li>{@link SecurityLevelValueReadSwitch}: switch that processes values - depending on the value, the <em>security level</em> will be
  * looked up for the value and also stored in the switch. If necessary the switch checks for security violations, too (e.g. for method
  * invocations the parameter <em>security level</em>).</li>
- * <li>{@link SecurityLevelWriteValueSwitch}: switch that processes values - depending on the value, the <em>security level</em> of this
+ * <li>{@link SecurityLevelValueWriteSwitch}: switch that processes values - depending on the value, the <em>security level</em> of this
  * value will be updated by the given level. The switch checks for security violations, too (e.g. occurring <em>write effects</em> or
  * invalid assignments).</li>
  * </ul>
@@ -92,20 +92,20 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	}
 
 	/**
-	 * Updates the <em>security level</em> of the given value to the level which the given {@link SecurityLevelWriteValueSwitch} stores. In
+	 * Updates the <em>security level</em> of the given value to the level which the given {@link SecurityLevelValueWriteSwitch} stores. In
 	 * order to identify possible errors, also the unit, which contains the value, has to be given as a String. Occurring exceptions are
 	 * logged.
 	 * 
 	 * @param value
 	 *          Value for which the <em>security level</em> should be updated to the given level.
 	 * @param updateSwitch
-	 *          {@link SecurityLevelWriteValueSwitch} which should be applied to the given value and which contains the <em>security level</em>
+	 *          {@link SecurityLevelValueWriteSwitch} which should be applied to the given value and which contains the <em>security level</em>
 	 *          to which the level of the value should be updated.
 	 * @param containing
 	 *          Unit that contains the given value as String.
-	 * @see SecurityLevelWriteValueSwitch
+	 * @see SecurityLevelValueWriteSwitch
 	 */
-	private void executeUpdateLevel(Value value, SecurityLevelWriteValueSwitch updateSwitch, String containing) {
+	private void executeUpdateLevel(Value value, SecurityLevelValueWriteSwitch updateSwitch, String containing) {
 		value.apply(updateSwitch);
 	}
 
@@ -235,10 +235,10 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 *          Unit that contains the given value as String.
 	 * @return Returns the <em>security level</em> of the given value, if it can be determined. Otherwise it returns the weakest available
 	 *         <em>security level</em>.
-	 * @see SecurityLevelReadValueSwitch
+	 * @see SecurityLevelValueReadSwitch
 	 */
 	protected ILevel calculateLevel(Value value, String containing) {
-		SecurityLevelReadValueSwitch lookupSwitch = new SecurityLevelReadValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut());
+		SecurityLevelValueReadSwitch lookupSwitch = new SecurityLevelValueReadSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut());
 		value.apply(lookupSwitch);
 		return lookupSwitch.getLevel();
 	}
@@ -299,7 +299,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 *          Unit that contains the given value as String.
 	 */
 	protected void updateIdentityLevel(Value rightSide, Value leftSide, String containing) {
-		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(), null);
+		SecurityLevelValueWriteSwitch updateSwitch = new SecurityLevelValueWriteSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(), null);
 		updateSwitch.setIdentityInformation(leftSide);
 		executeUpdateLevel(rightSide, updateSwitch, containing);
 	}
@@ -315,10 +315,10 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 *          The <em>security level</em> to which the level of the value should be updated.
 	 * @param containing
 	 *          Unit that contains the given value as String.
-	 * @see SecurityLevelSwitch#executeUpdateLevel(Value, SecurityLevelWriteValueSwitch, String)
+	 * @see SecurityLevelSwitch#executeUpdateLevel(Value, SecurityLevelValueWriteSwitch, String)
 	 */
 	protected void updateLevel(Value value, ILevel level, String containing) {
-		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(), level);
+		SecurityLevelValueWriteSwitch updateSwitch = new SecurityLevelValueWriteSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(), level);
 		executeUpdateLevel(value, updateSwitch, containing);
 	}
 
@@ -334,7 +334,7 @@ abstract public class SecurityLevelSwitch extends SecuritySwitch<LocalsMap> {
 	 */
 	protected void updateParameterLevel(Value value, ParameterRef parameterRef) {
 		MethodParameter methodParameter = getAnalyzedEnvironment().getMethodParameterAt(parameterRef.getIndex());
-		SecurityLevelWriteValueSwitch updateSwitch = new SecurityLevelWriteValueSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(),
+		SecurityLevelValueWriteSwitch updateSwitch = new SecurityLevelValueWriteSwitch(getAnalyzedEnvironment(), getStore(), getIn(), getOut(),
 				methodParameter.getLevel());
 		executeUpdateLevel(value, updateSwitch, parameterRef.toString());
 	}

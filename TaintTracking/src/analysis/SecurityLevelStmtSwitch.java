@@ -39,8 +39,8 @@ import extractor.UsedObjectStore;
  * @author Thomas Vogel
  * @version 0.1
  * @see SecurityLevelSwitch
- * @see SecurityLevelReadValueSwitch
- * @see SecurityLevelWriteValueSwitch
+ * @see SecurityLevelValueReadSwitch
+ * @see SecurityLevelValueWriteSwitch
  */
 public class SecurityLevelStmtSwitch extends SecurityLevelSwitch implements StmtSwitch {
 

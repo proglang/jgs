@@ -27,10 +27,10 @@ import extractor.UsedObjectStore;
  * <li>{@link SecurityLevelStmtSwitch}: switch that processes statements - depending on the statement the <em>security levels</em> will be
  * calculated or updated (with the help of other switches) for components of the statements and also the statements will be checked for
  * security violations.</li>
- * <li>{@link SecurityLevelReadValueSwitch}: switch that processes values - depending on the value, the <em>security level</em> will be
+ * <li>{@link SecurityLevelValueReadSwitch}: switch that processes values - depending on the value, the <em>security level</em> will be
  * looked up for the value and also stored in the switch. If necessary the switch checks for security violations, too (e.g. for method
  * invocations the parameter <em>security level</em>).</li>
- * <li>{@link SecurityLevelWriteValueSwitch}: switch that processes values - depending on the value, the <em>security level</em> of this
+ * <li>{@link SecurityLevelValueWriteSwitch}: switch that processes values - depending on the value, the <em>security level</em> of this
  * value will be updated by the given level. The switch checks for security violations, too (e.g. occurring <em>write effects</em> or
  * invalid assignments).</li>
  * </ul>
