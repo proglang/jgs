@@ -9,9 +9,11 @@ import static org.junit.Assert.fail;
 import java.util.logging.Level;
 
 import junit.model.TestFile;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.omg.PortableInterceptor.SUCCESSFUL;
 
 import soot.G;
 
@@ -66,5 +68,15 @@ public class TestConstraintsSucceeding {
 	@Test
 	public final void test90SuccessSpecial() {
 		checkMethodStoreEquality(SPECIAL_01, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void testSuccessLowRefHighUpdate() {
+	    checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "SuccessLowRefHighUpdate"), CHECK_LEVELS, CONSTRAINTS);
+	}
+
+	@Test
+	public final void testSuccessPolymorphicSetter() {
+	    checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "SuccessPolymorphicSetter"), CHECK_LEVELS, CONSTRAINTS);
 	}
 }
