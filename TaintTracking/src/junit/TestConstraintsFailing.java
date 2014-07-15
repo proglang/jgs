@@ -155,4 +155,9 @@ public class TestConstraintsFailing {
 	public final void testFailAssignSame() {
 	   checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "FailAssignSame"), CHECK_LEVELS, CONSTRAINTS);
 	}
+
+	@Test
+	public final void testFailPutfieldImplicitLeak() {
+	   checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "FailPutfieldImplicitLeak"), CHECK_LEVELS, CONSTRAINTS);
+	}
 }
