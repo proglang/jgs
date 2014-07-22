@@ -44,7 +44,9 @@ import java.util.logging.Level;
 
 import main.AnalysisType;
 import main.Main;
+import security.ArrayCreator;
 import security.ILevel;
+import soot.ArrayType;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -800,6 +802,22 @@ public class AnalysisUtils {
 		}
 		return false;
 	}
+	
+	/**
+	 * DOC
+	 * 
+	 * @param sootMethod
+	 * @return
+	 */
+	public static boolean isArrayFunction(SootMethod sootMethod) {
+		if (isMethodOfDefinitionClass(sootMethod)) {
+			if (hasVisibilityAnnnotationTag(sootMethod)) {
+				VisibilityAnnotationTag vat = extractVisibilityAnnotationTag(sootMethod);
+				return hasAnnotationOfType(vat, getJNISignature(ArrayCreator.class));
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * DOC
@@ -1015,7 +1033,13 @@ public class AnalysisUtils {
 		buffer.append(")");
 		return buffer.toString().intern();
 	}
+	
+	public static int getDimension(Type type) {
+		if (type instanceof ArrayType) {
+			ArrayType arrayType = (ArrayType) type;
+			return arrayType.numDimensions;
+		}
+		return 0;
+	}
 
-	
-	
 }

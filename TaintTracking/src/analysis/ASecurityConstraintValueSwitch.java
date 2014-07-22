@@ -2,7 +2,9 @@ package analysis;
 
 import static resource.Messages.getMsg;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import model.AnalyzedMethodEnvironment;
@@ -10,16 +12,18 @@ import soot.Local;
 import soot.SootField;
 import soot.Value;
 import constraints.ConstraintsSet;
-import constraints.IConstraintComponent;
+import constraints.IComponent;
 import constraints.LEQConstraint;
 import exception.SwitchException;
 import extractor.UsedObjectStore;
 
 public abstract class ASecurityConstraintValueSwitch extends SecurityConstraintSwitch {
 	
-	private final Set<IConstraintComponent> writeComponents = new HashSet<IConstraintComponent>();
-	private final Set<IConstraintComponent> readComponents = new HashSet<IConstraintComponent>();
+	private final Set<IComponent> writeComponents = new HashSet<IComponent>();
+	private final Set<IComponent> readComponents = new HashSet<IComponent>();
 	private final Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
+	private final List<IComponent> equalComponents = new ArrayList<IComponent>();
+	private int dimension = 0;
 	
 	protected SootField field = null;
 	protected Local local = null;
@@ -41,27 +45,27 @@ public abstract class ASecurityConstraintValueSwitch extends SecurityConstraintS
 	}
 	
 	
-	protected void addWriteComponent(IConstraintComponent component) {
+	protected void addWriteComponent(IComponent component) {
 		this.writeComponents.add(component);
 	}
 
-	protected void addWriteComponents(Set<IConstraintComponent> components) {
+	protected void addWriteComponents(Set<IComponent> components) {
 		this.writeComponents.addAll(components);
 	}
 	
-	protected final Set<IConstraintComponent> getWriteComponents() {
+	protected final Set<IComponent> getWriteComponents() {
 		return writeComponents;
 	}
 
-	protected void addReadComponent(IConstraintComponent component) {
+	protected void addReadComponent(IComponent component) {
 		this.readComponents.add(component);
 	}
 	
-	protected void addReadComponents(Set<IConstraintComponent> components) {
+	protected void addReadComponents(Set<IComponent> components) {
 		this.readComponents.addAll(components);
 	}
 	
-	protected final Set<IConstraintComponent> getReadComponents() {
+	protected final Set<IComponent> getReadComponents() {
 		return readComponents;
 	}
 	
@@ -84,6 +88,22 @@ public abstract class ASecurityConstraintValueSwitch extends SecurityConstraintS
 	protected ASecurityConstraintValueSwitch(AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, ConstraintsSet in,
 			ConstraintsSet out) {
 		super(methodEnvironment, store, in, out);
+	}
+
+	protected List<IComponent> getEqualComponents() {
+		return equalComponents;
+	}
+	
+	protected void appendEqualComponent(IComponent component) {
+		equalComponents.add(component);
+	}
+
+	protected int getDimension() {
+		return dimension;
+	}
+
+	protected void setDimension(int dimension) {
+		this.dimension = dimension;
 	}
 	
 }

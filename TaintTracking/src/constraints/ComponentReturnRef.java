@@ -1,8 +1,8 @@
 package constraints;
 
-public class ConstraintReturnRef extends AConstraintReference {
+public class ComponentReturnRef extends AComponentReference implements IComponentArrayBase {
 	
-	public ConstraintReturnRef(String signature) {
+	public ComponentReturnRef(String signature) {
 		super(signature);
 	}
 
@@ -23,7 +23,7 @@ public class ConstraintReturnRef extends AConstraintReference {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		ConstraintReturnRef other = (ConstraintReturnRef) obj;
+		ComponentReturnRef other = (ComponentReturnRef) obj;
 		if (signature == null) {
 			if (other.signature != null) return false;
 		} else if (!signature.equals(other.signature)) return false;
@@ -31,8 +31,8 @@ public class ConstraintReturnRef extends AConstraintReference {
 	}
 
 	@Override
-	public IConstraintComponent changeSignature(String signature) {
-		return new ConstraintReturnRef(signature);
+	public IComponentArrayBase changeSignature(String signature) {
+		return new ComponentReturnRef(signature);
 	}
 	
 }

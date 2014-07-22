@@ -23,7 +23,7 @@ public interface ILevelMediator {
 
 	public Set<LEQConstraint> extractConstraints(SootClass sootClass);
 
-	public ILevel extractFieldSecurityLevel(SootField sootField);
+	public List<ILevel> extractFieldSecurityLevel(SootField sootField);
 
 	public List<ILevel> extractMethodEffects(SootMethod sootMethod);
 
@@ -57,7 +57,7 @@ public interface ILevelMediator {
 
 	public Set<LEQConstraint> getLibraryConstraints(SootClass sootClass);
 
-	public ILevel getLibraryFieldSecurityLevel(SootField sootField);
+	public List<ILevel> getLibraryFieldSecurityLevel(SootField sootField);
 
 	public List<ILevel> getLibraryParameterSecurityLevel(SootMethod sootMethod);
 
@@ -88,5 +88,7 @@ public interface ILevelMediator {
 	public boolean isWeaker(ILevel level1, ILevel level2);
 
 	public boolean isWeakerOrEquals(ILevel level1, ILevel level2);
+	
+	public List<ILevel> translateNamesIntoLevels(List<String> names);
 
 }

@@ -24,13 +24,15 @@ import soot.jimple.Stmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
-import constraints.ConstraintLocal;
-import constraints.ConstraintPlaceholder;
-import constraints.ConstraintProgramCounterRef;
-import constraints.ConstraintReturnRef;
+import utils.AnalysisUtils;
+import constraints.ComponentArrayRef;
+import constraints.ComponentLocal;
+import constraints.ComponentPlaceholder;
+import constraints.ComponentProgramCounterRef;
+import constraints.ComponentReturnRef;
 import constraints.ConstraintsSet;
 import constraints.ConstraintsUtils;
-import constraints.IConstraintComponent;
+import constraints.IComponent;
 import constraints.IProgramCounterTrigger;
 import constraints.IfProgramCounterTrigger;
 import constraints.LEQConstraint;
@@ -49,15 +51,17 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
+		System.err.println(stmt.toString());
 		SecurityConstraintValueWriteSwitch writeSwitch = getWriteSwitch(stmt.getLeftOp());
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getRightOp());
+		if (writeSwitch.getDimension() != readSwitch.getDimension()) throw new RuntimeException("Unexpected behaviour - dimensions of left and right side for assignment are not equal ??? ");
 		handleReadAndWriteStmt(writeSwitch, readSwitch);
 
 	}
 
 	private void handleReadAndWriteStmt(SecurityConstraintValueWriteSwitch writeSwitch, SecurityConstraintValueReadSwitch readSwitch) {
 		if (writeSwitch.isLocal()) {
-			ConstraintLocal local = new ConstraintLocal(writeSwitch.getLocal());			
+			ComponentLocal local = new ComponentLocal(writeSwitch.getLocal());			
 			addConstraints(generateConstraints(writeSwitch, readSwitch));
 			restoreLocalForPlaceholder(local);
 			removeAccessArtifacts(readSwitch);
@@ -68,18 +72,23 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		}
 	}
 
-	private void restoreLocalForPlaceholder(ConstraintLocal local) {
-		ConstraintPlaceholder placeholder = new ConstraintPlaceholder();
-		getOut().removeConstraintsContaining(local);
+	private void restoreLocalForPlaceholder(ComponentLocal local) {
+		ComponentPlaceholder placeholder = new ComponentPlaceholder();
+		getOut().removeConstraintsContainingInclBase(local);
 		addConstraint(new LEQConstraint(placeholder, local));
-		getOut().removeConstraintsContaining(placeholder);
+		int dimension = AnalysisUtils.getDimension(local.getLocal().getType());
+		for (int i = 1; i <= dimension; i++) {
+			addConstraint(new LEQConstraint(new ComponentArrayRef(placeholder, i), new ComponentArrayRef(local, i)));
+			addConstraint(new LEQConstraint(new ComponentArrayRef(local, i), new ComponentArrayRef(placeholder, i)));
+		}
+		getOut().removeConstraintsContainingInclBase(placeholder);
 	}
 
 	private void addWriteEffects(SecurityConstraintValueWriteSwitch writeSwitch) {
 		if (writeSwitch.isField()) {
-			for (IConstraintComponent component : writeSwitch.getWriteComponents()) {
+			for (IComponent component : writeSwitch.getWriteComponents()) {
 				if (ConstraintsUtils.isLevel(component))
-					getOut().addWriteEffect(new LEQConstraint(new ConstraintProgramCounterRef(getAnalyzedSignature()), component));
+					getOut().addWriteEffect(new LEQConstraint(new ComponentProgramCounterRef(getAnalyzedSignature()), component));
 			}
 		}
 	}
@@ -140,8 +149,8 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		returnStmt = stmt;
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getOp());
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>(readSwitch.getConstraints());
-		for (IConstraintComponent read : readSwitch.getReadComponents()) {
-			constraints.add(new LEQConstraint(read, new ConstraintReturnRef(getAnalyzedSignature())));
+		for (IComponent read : readSwitch.getReadComponents()) {
+			constraints.add(new LEQConstraint(read, new ComponentReturnRef(getAnalyzedSignature())));
 		}
 		addConstraints(constraints);
 	}
@@ -159,8 +168,8 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	private void handleBranch(Value condition, IProgramCounterTrigger programCounterTrigger) {
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(condition);
 		ConstraintsSet pcConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(),	getIn().getWriteEffects(), getMediator());
-		for (IConstraintComponent component : readSwitch.getReadComponents()) {
-			pcConstraints.add(new LEQConstraint(component, new ConstraintProgramCounterRef(getAnalyzedSignature())));
+		for (IComponent component : readSwitch.getReadComponents()) {
+			pcConstraints.add(new LEQConstraint(component, new ComponentProgramCounterRef(getAnalyzedSignature())));
 		}
 		pcConstraints.removeConstraintsContainingLocal();
 		getOut().addProgramCounterConstraints(programCounterTrigger, pcConstraints.getConstraintsSet());
@@ -192,13 +201,18 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	private Set<LEQConstraint> generateConstraints(SecurityConstraintValueWriteSwitch writeSwitch, SecurityConstraintValueReadSwitch readSwitch) {
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		readSwitch.addReadComponents(writeSwitch.getReadComponents());
-		readSwitch.addReadComponent(new ConstraintProgramCounterRef(getAnalyzedSignature()));
+		readSwitch.addReadComponent(new ComponentProgramCounterRef(getAnalyzedSignature()));
 		constraints.addAll(readSwitch.getConstraints());		
-		for (IConstraintComponent write : writeSwitch.getWriteComponents()) {
-			for (IConstraintComponent read : readSwitch.getReadComponents()) {
+		for (IComponent write : writeSwitch.getWriteComponents()) {
+			for (IComponent read : readSwitch.getReadComponents()) {
 				constraints.add(new LEQConstraint(read, write));
 			}
 		}
+		for (int i = 0; i < Math.min(writeSwitch.getEqualComponents().size(), readSwitch.getEqualComponents().size()); i++) {
+			constraints.add(new LEQConstraint(writeSwitch.getEqualComponents().get(i), readSwitch.getEqualComponents().get(i)));
+			constraints.add(new LEQConstraint(readSwitch.getEqualComponents().get(i), writeSwitch.getEqualComponents().get(i)));
+		}
+		System.err.println(ConstraintsUtils.constraintsAsString(constraints));
 		return constraints;
 	}
 
@@ -206,7 +220,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		List<String> signatures = new ArrayList<String>();
 		if (readSwitch.isMethod()) signatures.add(readSwitch.getMethod().getSignature());
 		if (readSwitch.usesStaticAccess()) signatures.add(readSwitch.getStaticClass().getName());
-		getOut().removeConstraintsContainingReferencesFor(signatures);
+		getOut().removeConstraintsContainingReferencesInclBaseFor(signatures);
 	}
 
 }

@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 import annotation.IAnnotationDAO;
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintReturnRef;
+import constraints.ComponentParameterRef;
+import constraints.ComponentReturnRef;
 import constraints.LEQConstraint;
 
 public abstract class ALevelDefinition implements ILevelDefinition {
@@ -45,7 +45,7 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 
 	public abstract List<ILevel> extractEffects(IAnnotationDAO dao);
 
-	public abstract ILevel extractFieldLevel(IAnnotationDAO dao);
+	public abstract List<ILevel> extractFieldLevel(IAnnotationDAO dao);
 
 	public abstract List<ILevel> extractParameterLevels(IAnnotationDAO dao);
 
@@ -97,10 +97,10 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 	public Set<LEQConstraint> getLibraryConstraints(String methodName, List<String> parameterTypes, String returnType,
 			String declaringClassName, String signature) {
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
-		ConstraintReturnRef returnRef = new ConstraintReturnRef(signature);
+		ComponentReturnRef returnRef = new ComponentReturnRef(signature);
 		if (!returnType.equals("void")) {
 			for (int i = 0; i < parameterTypes.size(); i++) {
-				ConstraintParameterRef paramRef = new ConstraintParameterRef(i, signature);
+				ComponentParameterRef paramRef = new ComponentParameterRef(i, signature);
 				constraints.add(new LEQConstraint(paramRef, returnRef));
 			}
 			if (parameterTypes.size() == 0) constraints.add(new LEQConstraint(getGreatesLowerBoundLevel(), returnRef));
@@ -113,8 +113,12 @@ public abstract class ALevelDefinition implements ILevelDefinition {
 		return constraints;
 	}
 
-	public ILevel getLibraryFieldLevel(String fieldName, String declaringClassName, String signature) {
-		return this.getGreatesLowerBoundLevel();
+	public List<ILevel> getLibraryFieldLevel(String fieldName, String declaringClassName, String signature, int dimension) {
+		List<ILevel> list = new ArrayList<ILevel>();
+		for (int i = 0; i <= dimension; i++) {
+			list.add(this.getGreatesLowerBoundLevel());
+		}
+		return list;
 	}
 
 	public List<ILevel> getLibraryMethodWriteEffects(String methodName, List<String> parameterTypes, String declaringClassName,

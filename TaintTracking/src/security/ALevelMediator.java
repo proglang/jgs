@@ -3,10 +3,10 @@ package security;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.extractAnnotationTagWithType;
 import static utils.AnalysisUtils.extractVisibilityAnnotationTag;
+import static utils.AnalysisUtils.getJNISignature;
 import static utils.AnalysisUtils.getSignatureOfClass;
 import static utils.AnalysisUtils.getSignatureOfField;
 import static utils.AnalysisUtils.getSignatureOfMethod;
-import static utils.AnalysisUtils.getJNISignature;
 import static utils.AnalysisUtils.hasAnnotationOfType;
 import static utils.AnalysisUtils.hasVisibilityAnnnotationTag;
 
@@ -15,8 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import constraints.LEQConstraint;
-
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
@@ -24,6 +22,7 @@ import soot.tagkit.AnnotationTag;
 import soot.tagkit.Host;
 import soot.tagkit.VisibilityAnnotationTag;
 import annotation.SootAnnotationDAO;
+import constraints.LEQConstraint;
 import exception.AnnotationElementNotFoundException;
 import exception.AnnotationExtractionException;
 import exception.AnnotationInvalidConstraintsException;
@@ -90,7 +89,7 @@ public abstract class ALevelMediator implements ILevelMediator {
 		}
 	}
 
-	public final ILevel extractFieldSecurityLevel(SootField sootField) {
+	public final List<ILevel> extractFieldSecurityLevel(SootField sootField) {
 		try {
 			VisibilityAnnotationTag vt = extractVisibilityAnnotationTag(sootField);
 			AnnotationTag at = extractAnnotationTagWithType(vt, getJNISignature(definition.getAnnotationClassFieldLevel()));
@@ -212,8 +211,9 @@ public abstract class ALevelMediator implements ILevelMediator {
 		return this.definition.getLibraryConstraints(sootClass.getName());
 	}
 
-	public ILevel getLibraryFieldSecurityLevel(SootField sootField) {
-		return this.definition.getLibraryFieldLevel(sootField.getName(), sootField.getDeclaringClass().getName(), sootField.getSignature());
+	public List<ILevel> getLibraryFieldSecurityLevel(SootField sootField) {
+		// FIXME: ARRAY
+		return this.definition.getLibraryFieldLevel(sootField.getName(), sootField.getDeclaringClass().getName(), sootField.getSignature(), 0);
 	}
 
 	public List<ILevel> getLibraryParameterSecurityLevel(SootMethod sootMethod) {
@@ -302,5 +302,15 @@ public abstract class ALevelMediator implements ILevelMediator {
 			return false;
 		}
 	}
-
+	
+	public final List<ILevel> translateNamesIntoLevels(List<String> names) {
+		List<ILevel> levels = new ArrayList<ILevel>();		
+		for (String name : names) {
+			for (ILevel level : getAvailableLevels()) {
+				if (level.getName().equals(name)) levels.add(level);
+			}
+		}
+		return levels;
+	}
+	
 }

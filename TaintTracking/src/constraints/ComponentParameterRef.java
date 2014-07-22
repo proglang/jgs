@@ -1,10 +1,10 @@
 package constraints;
 
-public class ConstraintParameterRef extends AConstraintReference {
+public class ComponentParameterRef extends AComponentReference implements IComponentArrayBase {
 
 	private final int parameterPos;
 
-	public ConstraintParameterRef(int parameterPos, String signature) {
+	public ComponentParameterRef(int parameterPos, String signature) {
 		super(signature);
 		this.parameterPos = parameterPos;
 	}
@@ -31,7 +31,7 @@ public class ConstraintParameterRef extends AConstraintReference {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		ConstraintParameterRef other = (ConstraintParameterRef) obj;
+		ComponentParameterRef other = (ComponentParameterRef) obj;
 		if (parameterPos != other.parameterPos) return false;
 		if (signature == null) {
 			if (other.signature != null) return false;
@@ -40,8 +40,8 @@ public class ConstraintParameterRef extends AConstraintReference {
 	}
 
 	@Override
-	public IConstraintComponent changeSignature(String signature) {
-		return new ConstraintParameterRef(parameterPos, signature);
+	public IComponentArrayBase changeSignature(String signature) {
+		return new ComponentParameterRef(parameterPos, signature);
 	}
 	
 }

@@ -13,10 +13,10 @@ import security.ALevel;
 import security.ALevelDefinition;
 import security.ILevel;
 import annotation.IAnnotationDAO;
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintProgramCounterRef;
-import constraints.ConstraintReturnRef;
-import constraints.IConstraintComponent;
+import constraints.ComponentParameterRef;
+import constraints.ComponentProgramCounterRef;
+import constraints.ComponentReturnRef;
+import constraints.IComponent;
 import constraints.LEQConstraint;
 import exception.AnnotationInvalidConstraintsException;
 
@@ -34,7 +34,7 @@ public class Fed1 extends ALevelDefinition {
 	@Retention(RetentionPolicy.RUNTIME)
 	protected @interface FieldSecurity {
 
-		String value();
+		String[] value();
 
 	}
 
@@ -142,8 +142,12 @@ public class Fed1 extends ALevelDefinition {
 	}
 
 	@Override
-	public ILevel extractFieldLevel(IAnnotationDAO dao) {
-		return new VelS(dao.getStringFor("value"));
+	public List<ILevel> extractFieldLevel(IAnnotationDAO dao) {
+		List<ILevel> list = new ArrayList<ILevel>();
+		for (String value : dao.getStringArrayFor("value")) {
+			list.add(new VelS(value));
+		}
+		return list;
 	}
 
 	@Override
@@ -180,8 +184,8 @@ public class Fed1 extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					IComponent l = convertIntoConstraintComponent(lhs, signature);
+					IComponent r = convertIntoConstraintComponent(rhs, signature);
 					constraints.add(new LEQConstraint(l, r));
 				} else {
 					throw new AnnotationInvalidConstraintsException(errMsg);
@@ -191,8 +195,8 @@ public class Fed1 extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					IComponent l = convertIntoConstraintComponent(lhs, signature);
+					IComponent r = convertIntoConstraintComponent(rhs, signature);
 					constraints.add(new LEQConstraint(l, r));
 					constraints.add(new LEQConstraint(r, l));
 				} else {
@@ -203,8 +207,8 @@ public class Fed1 extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					IComponent l = convertIntoConstraintComponent(lhs, signature);
+					IComponent r = convertIntoConstraintComponent(rhs, signature);
 					constraints.add(new LEQConstraint(r, l));
 				} else {
 					throw new AnnotationInvalidConstraintsException(errMsg);
@@ -216,15 +220,15 @@ public class Fed1 extends ALevelDefinition {
 		return constraints;
 	}
 
-	private IConstraintComponent convertIntoConstraintComponent(String component, String signature) {
+	private IComponent convertIntoConstraintComponent(String component, String signature) {
 		if (component.startsWith("@")) {
 			String position = component.substring(1);
 			if (position.equals("return")) {
-				return new ConstraintReturnRef(signature);
+				return new ComponentReturnRef(signature);
 			} else if (position.equals("pc")) {
-				return new ConstraintProgramCounterRef(signature);
+				return new ComponentProgramCounterRef(signature);
 			} else {
-				return new ConstraintParameterRef(Integer.valueOf(position), signature);
+				return new ComponentParameterRef(Integer.valueOf(position), signature);
 			}
 		} else {
 			return new VelS(component);

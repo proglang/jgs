@@ -9,6 +9,7 @@ import static java.lang.reflect.Modifier.isStatic;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static resource.Configuration.DEF_CLASS_NAME;
 import static resource.Configuration.DEF_PACKAGE_NAME;
+import static resource.Configuration.PREFIX_ARRAY_FUNCTION;
 import static resource.Configuration.PREFIX_LEVEL_FUNCTION;
 import static resource.Messages.getMsg;
 import static security.ALevelDefinition.SIGNATURE_DEFAULT_VAR;
@@ -20,6 +21,7 @@ import static security.ALevelDefinition.SIGNATURE_LIB_METHOD;
 import static security.ALevelDefinition.SIGNATURE_LIB_PARAM;
 import static security.ALevelDefinition.SIGNATURE_LIB_RETURN;
 import static security.ALevelDefinition.SIGNATURE_LUB;
+import static utils.AnalysisUtils.generateSignature;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -48,8 +50,8 @@ import soot.jimple.JimpleBody;
 import soot.util.Chain;
 import utils.AnalysisUtils;
 import annotation.JavaAnnotationDAO;
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintReturnRef;
+import constraints.ComponentParameterRef;
+import constraints.ComponentReturnRef;
 import constraints.LEQConstraint;
 import exception.AnnotationElementNotFoundException;
 import exception.AnnotationInvalidConstraintsException;
@@ -219,10 +221,8 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 							existsConstraintsAnnotation = true;
 							String signature = AnalysisUtils.generateSignature(method);
 							Set<LEQConstraint> constraints = implementation.extractConstraints(new JavaAnnotationDAO(annotation), signature);
-							if (! constraints.contains(new LEQConstraint(new ConstraintParameterRef(0, signature), level))
-//									|| ! constraints.contains(new LEQConstraint(new ConstraintReturnRef(signature), level)) /**/ ){
-									|| ! constraints.contains(new LEQConstraint(level, new ConstraintReturnRef(signature)))  /**/ ){
-//									|| constraints.size() != 3) {
+							if (!constraints.contains(new LEQConstraint(new ComponentParameterRef(0, signature), level))
+									|| !constraints.contains(new LEQConstraint(level, new ComponentReturnRef(signature)))) {
 								throw new DefinitionInvalidException(getMsg("exception.def_class.level_func.invalid_constraints", signatureLevelFunction));
 							}
 						} catch (AnnotationElementNotFoundException | AnnotationInvalidConstraintsException e) {
@@ -255,6 +255,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		checkValidityOfImportantInstanceMethods();
 		checkCorrectnessOfConventionsForAllLevels();
 		checkValidityOfAdditionalInstanceMethods();
+		checkArrayCreationMethods();
 		checkPossibleMistakes();
 	}
 
@@ -273,6 +274,9 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 						printWarning(getMsg("warning.def_class.level.no_level", String.format(ID_SIGNATURE_PATTERN, methodName)));
 					}
 				}
+			} else if ((methodName.startsWith(PREFIX_ARRAY_FUNCTION) && !method.isAnnotationPresent(ArrayCreator.class))
+					|| (!methodName.startsWith(PREFIX_ARRAY_FUNCTION) && method.isAnnotationPresent(ArrayCreator.class))) {
+				printWarning(getMsg("warning.def_class.array_creator.invalid", AnalysisUtils.generateSignature(method)));
 			}
 		}
 	}
@@ -305,7 +309,7 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		if (implementation.getLibraryMethodWriteEffects(methodName, paramTypeList, className, methodSignature) == null) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_method_effects", SIGNATURE_LIB_METHOD));
 		}
-		if (implementation.getLibraryFieldLevel(fieldName, className, fieldSignature) == null) {
+		if (implementation.getLibraryFieldLevel(fieldName, className, fieldSignature, 0) == null) {
 			throw new DefinitionInvalidException(getMsg("exception.def_class.methods.no_lib_field", SIGNATURE_LIB_FIELD));
 		}
 		if (implementation.getLibraryParameterLevel(methodName, paramTypeList, className, methodSignature) == null
@@ -382,6 +386,60 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 		return names;
 	}
 
+	private void checkArrayCreationMethods() {
+		for (Method method : getImplementationMethods()) {
+			String name = method.getName();
+			if (name.startsWith(PREFIX_ARRAY_FUNCTION) && method.isAnnotationPresent(ArrayCreator.class)) {
+				Class<?> ret = method.getReturnType();
+				int dimesion = getDimensionCount(ret);
+				Class<?>[] params = method.getParameterTypes();
+				for (Class<?> param : params) {
+					if (!param.equals(int.class)) {
+						throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_type", generateSignature(method),
+								param.getName()));
+					}
+				}
+				if (!ret.isArray()) {
+					throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_return", generateSignature(method),
+							ret.getName()));
+				}
+				if (params.length != dimesion) {
+					throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_dimension", generateSignature(method),
+							params.length, dimesion));
+				}
+				if (!isStatic(method.getModifiers()) || !isPublic(method.getModifiers())) {
+					throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.not_public_static", generateSignature(method)));
+				}
+				try {
+					JavaAnnotationDAO annotationDAO = new JavaAnnotationDAO(getArrayCreatorAnnotation(method.getDeclaredAnnotations()));
+					List<String> arrayLevels = annotationDAO.getStringArrayFor("value");
+					if (dimesion != arrayLevels.size()) {
+						throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_level_count", generateSignature(method),
+								arrayLevels.size(), dimesion));
+					}
+					ILevel previous = null;
+					for (String arrayLevel : arrayLevels) {
+						if (!getLevelNames().contains(arrayLevel)) {
+							throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_level", generateSignature(method),
+									arrayLevel));
+						} else {
+							ILevel level = getLevelForName(arrayLevel);
+							if (previous != null) {
+								if (implementation.compare(previous, level) > 0) {
+									throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_level_order",
+											generateSignature(method), previous.getName(), level.getName()));
+								}
+							}
+							previous = level;
+						}
+					}
+				} catch (Exception e) {
+					throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.no_access", generateSignature(method)));
+				}
+			}
+		}
+	}
+
 	protected abstract void checkAdditionalValidityOfImplementation();
 
 	protected final void printWarning(String msg) {
@@ -392,6 +450,31 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 				System.out.println(msg);
 			}
 		}
+	}
+
+	private Annotation getArrayCreatorAnnotation(Annotation[] annotations) {
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof ArrayCreator) {
+				return annotation;
+			}
+		}
+		return null;
+	}
+
+	private ILevel getLevelForName(String name) {
+		for (ILevel level : getLevels()) {
+			if (level.getName().equals(name)) return level;
+		}
+		return null;
+	}
+
+	private int getDimensionCount(Class<?> cl) {
+		int count = 0;
+		while (cl.isArray()) {
+			count++;
+			cl = cl.getComponentType();
+		}
+		return count;
 	}
 
 }

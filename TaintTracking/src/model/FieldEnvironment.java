@@ -3,6 +3,7 @@ package model;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.getDimension;
 import static utils.AnalysisUtils.getSignatureOfField;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import soot.SootClass;
 import soot.SootField;
 import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
+import exception.InvalidDimensionException;
 import exception.LevelInvalidException;
 
 /**
@@ -38,18 +40,21 @@ public class FieldEnvironment extends Environment {
 	/**
 	 * The <em>write effects</em> of the class which declares the {@link SootField}.
 	 */
-	private List<ILevel> classWriteEffects = new ArrayList<ILevel>();
+	private final List<ILevel> classWriteEffects = new ArrayList<ILevel>();
 	/** The <em>security level</em> of the {@link SootField}. */
-	private ILevel level = null;
+	private final List<ILevel> levels = new ArrayList<ILevel>();
 
 	/** The {@link SootField} for which this is the environment. */
-	private SootField sootField;
+	private final SootField sootField;
+	
+	private final int dimension;
 
-	public FieldEnvironment(SootField sootField, ILevel level, List<ILevel> classWriteEffect, AnalysisLog log, ILevelMediator mediator) {
+	public FieldEnvironment(SootField sootField, List<ILevel> levels, List<ILevel> classWriteEffect, AnalysisLog log, ILevelMediator mediator) {
 		super(log, mediator);
 		this.sootField = sootField;
-		this.level = level;
+		this.levels.addAll(levels);
 		this.classWriteEffects.addAll(classWriteEffect);
+		this.dimension = getDimension(sootField.getType());
 	}
 
 	/**
@@ -76,9 +81,18 @@ public class FieldEnvironment extends Environment {
 	 * @return The <em>security level</em> of the field.
 	 */
 	public ILevel getLevel() {
-		return level;
+		return getLevel(0);		
 	}
 
+	public ILevel getLevel(int dim) {
+		if (dim > dimension) throw new InvalidDimensionException(getMsg("exception.level.field.invalid_dim_access", dim, getSignatureOfField(sootField)));
+		if (dim == 0) {
+			return levels.get(0);
+		} else {
+			return levels.get(dim - 1);
+		}				
+	}
+	
 	/**
 	 * Method that returns the {@link SootField} for which this is the environment (see {@link FieldEnvironment#sootField}).
 	 * 
@@ -106,27 +120,40 @@ public class FieldEnvironment extends Environment {
 	 */
 	public void isReasonable(AnalysisType type) {
 		if (type.equals(CONSTRAINTS)) {
-			if (level != null) { // some level given
-				if (!getLevelMediator().checkLevelValidity(level)) {
-					// level isn't a valid security level
-					throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), getSignatureOfField(sootField)));
-				}
-				if (!isLibraryClass() && sootField.isStatic() && sootField.isFinal() && !getWeakestSecurityLevel().equals(level)) {
-					// static final field has to be the weakest security level
-					throw new AnnotationInvalidException(getMsg("exception.level.field.public", level.getName(), getSignatureOfField(sootField)));
+			if ((dimension == 0  && levels.size() == 1) || (dimension == levels.size() && levels.size() > 0)) { // some level given
+				for (int i = 0; i < levels.size(); i++) {
+					ILevel level = levels.get(i);
+					if (!getLevelMediator().checkLevelValidity(level)) {
+						// level isn't a valid security level
+						throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), getSignatureOfField(sootField)));
+					}
+					if (!isLibraryClass() && sootField.isStatic() && sootField.isFinal() && !getWeakestSecurityLevel().equals(levels)) {
+						// static final field has to be the weakest security level
+						throw new AnnotationInvalidException(getMsg("exception.level.field.public", level.getName(), getSignatureOfField(sootField)));
+					}
+					if (i > 0) {
+						ILevel prev = levels.get(i - 1);
+						// check whether previous level is weaker or equal than the current
+						if (! getLevelMediator().isWeakerOrEquals(prev, level)) {
+							throw new AnnotationInvalidException(getMsg("exception.level.field.invalid_order", prev.getName(), i, getSignatureOfField(sootField), level.getName(), i + 1));
+						}
+					}
 				}
 			} else { // no level given
-				throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", getSignatureOfField(sootField)));
+				throw new AnnotationInvalidException(getMsg("exception.level.field.invalid_dim_count", getSignatureOfField(sootField), (dimension == 0 ? 1 : dimension) , levels.size()));
 			}
-
 		} else if (type.equals(LEVELS)) {
-			if (level != null) { // some level given
-				if (!getLevelMediator().checkLevelValidity(level)) {
+			if (levels.size() == 1) { // some level given
+				if (! getLevelMediator().checkLevelValidity(getLevel())) {
 					// level isn't a valid security level
-					throw new LevelInvalidException(getMsg("exception.level.field.invalid", level.getName(), getSignatureOfField(sootField)));
+					throw new LevelInvalidException(getMsg("exception.level.field.invalid", getLevel().getName(), getSignatureOfField(sootField)));
 				}
-			} else { // no level given
-				throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", getSignatureOfField(sootField)));
+			} else {  // no level or too many given
+				if (levels.size() < 1) {
+					throw new AnnotationInvalidException(getMsg("exception.level.field.no_level", getSignatureOfField(sootField)));
+				} else {
+					throw new AnnotationInvalidException(getMsg("exception.level.field.invalid_dim_count", getSignatureOfField(sootField), 1, levels.size()));
+				}				
 			}
 		} else {
 			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
@@ -142,8 +169,7 @@ public class FieldEnvironment extends Environment {
 		return sootField.isStatic();
 	}
 
-	public void updateSootField(SootField sootField) {
-		this.sootField = sootField;
+	public int getDimesion() {
+		return dimension;
 	}
-
 }

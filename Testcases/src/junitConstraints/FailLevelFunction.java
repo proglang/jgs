@@ -10,6 +10,7 @@ public class FailLevelFunction {
 	public void failLevelFunction1(int i) {
 		// @security("Argument has stronger constraints")
 		mkLow(i);
+		// @security("")
 		return;
 	}
 
@@ -17,6 +18,7 @@ public class FailLevelFunction {
 	public int failLevelFunction2() {
 		int high = mkHigh(42);
 		// @security("The returned value has a stronger security level than expected.")
+		// @security("double subsign & inequality")
 		return high;
 	}
 

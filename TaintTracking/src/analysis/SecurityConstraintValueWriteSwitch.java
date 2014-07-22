@@ -2,10 +2,8 @@ package analysis;
 
 import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
-import constraints.ConstraintPlaceholder;
-import constraints.ConstraintsSet;
-import extractor.UsedObjectStore;
 import soot.Local;
+import soot.SootField;
 import soot.Value;
 import soot.jimple.AddExpr;
 import soot.jimple.AndExpr;
@@ -53,11 +51,16 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
+import utils.AnalysisUtils;
+import constraints.ComponentArrayRef;
+import constraints.ComponentPlaceholder;
+import constraints.ConstraintsSet;
+import extractor.UsedObjectStore;
 
 public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValueSwitch implements JimpleValueSwitch {
-	
-	protected SecurityConstraintValueWriteSwitch(Value value, AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, ConstraintsSet in,
-			ConstraintsSet out) {
+
+	protected SecurityConstraintValueWriteSwitch(Value value, AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store,
+			ConstraintsSet in, ConstraintsSet out) {
 		super(methodEnvironment, store, in, out);
 		value.apply(this);
 	}
@@ -264,22 +267,48 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 
 	@Override
 	public void caseArrayRef(ArrayRef v) {
-		throwNotImplementedException(getClass(), v.toString());
+		Value array = v.getBase();
+		Value index = v.getIndex();
+		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(array);
+		SecurityConstraintValueReadSwitch indexSwitch = getReadSwitch(index);
+		addReadComponents(baseSwitch.getReadComponents());
+		addReadComponents(indexSwitch.getReadComponents());
+		setDimension(AnalysisUtils.getDimension(v.getType()));
+		if (baseSwitch.getEqualComponents().size() > 0) {
+			addWriteComponent(baseSwitch.getEqualComponents().get(0));
+			for (int i = 1; i < baseSwitch.getEqualComponents().size(); i++) {
+				appendEqualComponent(baseSwitch.getEqualComponents().get(1));
+			}
+		} else {
+			throw new RuntimeException("Unexpected behaviour - expected array has no equal components ???");
+		}
 	}
 
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
-		FieldEnvironment fe = getStore().getFieldEnvironment(field = v.getField());
-		addWriteComponent(fe.getLevel());
-		
+		handleField(v.getField());
 	}
 
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {
-		FieldEnvironment fe = getStore().getFieldEnvironment(field = v.getField());
-		addWriteComponent(fe.getLevel());
-		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(v.getBase());
+		handleBase(v.getBase());
+		handleField(v.getField());
+	}
+
+	private void handleBase(Value base) {
+		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(base);
 		addReadComponents(baseSwitch.getReadComponents());
+	}
+
+	private void handleField(SootField f) {
+		FieldEnvironment fe = getStore().getFieldEnvironment(field = f);
+		addWriteComponent(fe.getLevel());
+		setDimension(AnalysisUtils.getDimension(f.getType()));
+		if (getDimension() > 0) {
+			for (int i = 1; i <= getDimension(); i++) {
+				appendEqualComponent(fe.getLevel(i));
+			}
+		}
 	}
 
 	@Override
@@ -300,7 +329,14 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 	@Override
 	public void caseLocal(Local l) {
 		local = l;
-		addWriteComponent(new ConstraintPlaceholder());
+		ComponentPlaceholder cp = new ComponentPlaceholder();
+		addWriteComponent(cp);
+		setDimension(AnalysisUtils.getDimension(l.getType()));
+		if (getDimension() > 0) {
+			for (int i = 1; i <= getDimension(); i++) {
+				appendEqualComponent(new ComponentArrayRef(cp, i));
+			}
+		}
 	}
-	
+
 }

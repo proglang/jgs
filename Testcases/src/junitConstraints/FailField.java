@@ -19,12 +19,12 @@ public class FailField {
 	@FieldSecurity("high")
 	public static int highSField;
 
-	// IMPORTANT "@pc <= high" is always valid
-	public void failField1() {
-		highIField = mkLow(42);
-		// @tautology("Missing write effect to high")
-		return;
-	}
+//	// IMPORTANT "@pc <= high" is always valid
+//	public void failField1() {
+//		highIField = mkLow(42);
+//		/*@tautology("Missing write effect to high")*/
+//		return;
+//	}
 
 	public void failField2() {
 		lowIField = mkLow(42);
@@ -35,7 +35,6 @@ public class FailField {
 	@Constraints("@pc <= low")
 	public void failField3() {
 		// @security("Assignment of high value to low field")
-		// @security("Double error")
 		lowIField = mkHigh(42); // FIXME
 	}
 
@@ -55,7 +54,7 @@ public class FailField {
 	// IMPORTANT "@pc <= high" is always valid
 	public void failField6() {
 		highSField = mkLow(42);
-		// @tautology("Missing write effect to high")
+		/* @tautology("Missing write effect to high") */
 		return;
 	}
 
@@ -68,7 +67,6 @@ public class FailField {
 	@Constraints("@pc <= low")
 	public void failField8() {
 		// @security("Assignment of high value to low field")
-		// @security("Double error")
 		lowSField = mkHigh(42); // FIXME
 	}
 
@@ -81,7 +79,7 @@ public class FailField {
 	@Constraints("low <= @return")
 	public int failField10() {
 		int i = highSField;
-		// @security("Assignment of high to low field")
+	// @security("Assignment of high to low field")
 		return i;
 	}
 

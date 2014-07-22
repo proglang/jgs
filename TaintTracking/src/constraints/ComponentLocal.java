@@ -4,12 +4,12 @@ import java.util.regex.Pattern;
 
 import soot.Local;
 
-public class ConstraintLocal implements IConstraintComponentVar {
+public class ComponentLocal implements IComponentVar, IComponentArrayBase {
 	
 	private final Local local;
 	private final boolean generatedLocal;
 	
-	public ConstraintLocal(Local local) {
+	public ComponentLocal(Local local) {
 		this.local = local;
 		this.generatedLocal = Pattern.matches("temp\\$(\\d|[1-9]\\d*)", local.getName());
 	}
@@ -36,7 +36,7 @@ public class ConstraintLocal implements IConstraintComponentVar {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		ConstraintLocal other = (ConstraintLocal) obj;
+		ComponentLocal other = (ComponentLocal) obj;
 		if (local == null) {
 			if (other.local != null) return false;
 		} else if (!local.equals(other.local)) return false;
@@ -44,8 +44,8 @@ public class ConstraintLocal implements IConstraintComponentVar {
 	}
 
 	@Override
-	public IConstraintComponent changeSignature(String signature) {
-		return new ConstraintLocal(local);
+	public IComponentArrayBase changeSignature(String signature) {
+		return new ComponentLocal(local);
 	}
 
 	public boolean isGeneratedLocal() {

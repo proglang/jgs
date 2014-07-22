@@ -1,8 +1,8 @@
 package security;
 
-import constraints.IConstraintComponentConstant;
+import constraints.IComponentConstant;
 
-public interface ILevel extends IConstraintComponentConstant {
+public interface ILevel extends IComponentConstant {
 
 	public boolean equals(Object obj);
 	

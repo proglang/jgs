@@ -16,7 +16,7 @@ public interface ILevelDefinition {
 
 	public List<ILevel> extractEffects(IAnnotationDAO dao);
 
-	public ILevel extractFieldLevel(IAnnotationDAO dao);
+	public List<ILevel> extractFieldLevel(IAnnotationDAO dao);
 
 	public List<ILevel> extractParameterLevels(IAnnotationDAO dao);
 
@@ -50,7 +50,7 @@ public interface ILevelDefinition {
 	
 	public Set<LEQConstraint> getLibraryConstraints(String className);
 
-	public ILevel getLibraryFieldLevel(String fieldName, String declaringClassName, String signature);
+	public List<ILevel> getLibraryFieldLevel(String fieldName, String declaringClassName, String signature, int dimension);
 
 	public List<ILevel> getLibraryMethodWriteEffects(String methodName, List<String> parameterTypes, String declaringClassName, String signature);
 

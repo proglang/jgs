@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import constraints.IConstraintComponent;
+import constraints.IComponent;
 
 import security.ILevel;
 import soot.ArrayType;
@@ -232,7 +232,7 @@ public class TestSootUtils {
 			}
 
 			@Override
-			public IConstraintComponent changeSignature(String signature) {
+			public IComponent changeSignature(String signature) {
 				return this;
 			}
 		};
@@ -243,7 +243,7 @@ public class TestSootUtils {
 				return "low";
 			}
 			@Override
-			public IConstraintComponent changeSignature(String signature) {
+			public IComponent changeSignature(String signature) {
 				return this;
 			}
 		};

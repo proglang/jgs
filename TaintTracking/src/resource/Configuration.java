@@ -57,4 +57,9 @@ public class Configuration {
 	 * DOC
 	 */
 	public static final String PREFIX_LEVEL_FUNCTION = "mk";
+	/**
+	 * DOC
+	 */
+	public static final String PREFIX_ARRAY_FUNCTION = "array";
+	
 }

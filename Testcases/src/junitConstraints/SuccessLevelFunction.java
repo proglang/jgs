@@ -7,13 +7,13 @@ public class SuccessLevelFunction {
 	
 	public static void main(String[] args) {}
 
-	@Constraints({ "low <= @0" })
+	@Constraints({ "@0 <= low" })
 	public void successLevelFunction1(int i) {
 		mkLow(i);
 		return;
 	}
 	
-	@Constraints({ "low <= @0" })
+	@Constraints({ "@0 <= low" })
 	public void successLevelFunction2(int i) {
 		mkHigh(i);
 		return;
@@ -25,13 +25,13 @@ public class SuccessLevelFunction {
 		return;
 	}
 	
-	@Constraints({ "@return <= high" })
+	@Constraints({ "high <= @return" })
 	public int successLevelFunction4() {
 		int high = mkHigh(42);
 		return high;
 	}
 	
-	@Constraints({ "@return <= high" })
+	@Constraints({ "high <= @return" })
 	public int successLevelFunction5() {
 		int low = mkLow(42);
 		return low;

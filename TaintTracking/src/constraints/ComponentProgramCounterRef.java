@@ -1,8 +1,8 @@
 package constraints;
 
-public class ConstraintProgramCounterRef extends AConstraintReference {
+public class ComponentProgramCounterRef extends AComponentReference {
 	
-	public ConstraintProgramCounterRef(String signature) {
+	public ComponentProgramCounterRef(String signature) {
 		super(signature);
 	}
 
@@ -23,7 +23,7 @@ public class ConstraintProgramCounterRef extends AConstraintReference {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		ConstraintProgramCounterRef other = (ConstraintProgramCounterRef) obj;
+		ComponentProgramCounterRef other = (ComponentProgramCounterRef) obj;
 		if (signature == null) {
 			if (other.signature != null) return false;
 		} else if (!signature.equals(other.signature)) return false;
@@ -31,8 +31,8 @@ public class ConstraintProgramCounterRef extends AConstraintReference {
 	}
 
 	@Override
-	public IConstraintComponent changeSignature(String signature) {
-		return new ConstraintProgramCounterRef(signature);
+	public IComponent changeSignature(String signature) {
+		return new ComponentProgramCounterRef(signature);
 	}
 	
 	

@@ -13,16 +13,28 @@ import security.ILevel;
 
 public final class LEQConstraint {
 
-	private final IConstraintComponent lhs;
+	private final IComponent lhs;
 
-	private final IConstraintComponent rhs;
+	private final IComponent rhs;
 
-	public LEQConstraint(IConstraintComponent lhs, IConstraintComponent rhs) {
+	public LEQConstraint(IComponent lhs, IComponent rhs) {
 		this.lhs = lhs;
 		this.rhs = rhs;
 	}
 
-	public final boolean containsComponent(IConstraintComponent component) {
+	public final boolean containsComponent(IComponent component) {
+		return lhs.equals(component) || rhs.equals(component);
+	}
+	
+	public final boolean containsComponentInclBase(IComponent component) {
+		if (lhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) lhs;
+			if (car.getBase().equals(component)) return true;
+		}
+		if (rhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) rhs;
+			if (car.getBase().equals(component)) return true;
+		}
 		return lhs.equals(component) || rhs.equals(component);
 	}
 
@@ -32,6 +44,18 @@ public final class LEQConstraint {
 
 	public final boolean containsReturnReference() {
 		return isReturnReference(lhs) || isReturnReference(rhs);
+	}
+	
+	public final boolean containsReturnReferenceInclBaseFor(String signature) {
+		if (lhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) lhs;
+			if (isReturnReference(car.getBase(), signature)) return true;
+		}
+		if (rhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) rhs;
+			if (isReturnReference(car.getBase(), signature)) return true;
+		}
+		return isReturnReference(lhs, signature) || isReturnReference(rhs, signature);
 	}
 
 	public final Set<ILevel> getContainedLevel() {
@@ -48,6 +72,18 @@ public final class LEQConstraint {
 	public final boolean containsParameterReferenceFor(String signature) {
 		return isParameterReference(lhs, signature) || isParameterReference(rhs, signature);
 	}
+	
+	public final boolean containsParameterReferenceInclBaseFor(String signature) {
+		if (lhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) lhs;
+			if (isParameterReference(car.getBase(), signature)) return true;
+		}
+		if (rhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) rhs;
+			if (isParameterReference(car.getBase(), signature)) return true;
+		}
+		return isParameterReference(lhs, signature) || isParameterReference(rhs, signature);
+	}
 
 	public final boolean containsParameterReference() {
 		return isParameterReference(lhs) || isParameterReference(rhs);
@@ -59,24 +95,24 @@ public final class LEQConstraint {
 
 	public boolean containsGeneratedLocal() {
 		if (isLocal(lhs)) {
-			if (((ConstraintLocal) lhs).isGeneratedLocal()) return true;
+			if (((ComponentLocal) lhs).isGeneratedLocal()) return true;
 		}
 		if (isLocal(rhs)) {
-			if (((ConstraintLocal) rhs).isGeneratedLocal()) return true;
+			if (((ComponentLocal) rhs).isGeneratedLocal()) return true;
 		}
 		return false;
 	}
 
-	public final Set<ConstraintParameterRef> getInvalidParameterReferencesFor(String signature, int count) {
-		Set<ConstraintParameterRef> invalid = new HashSet<ConstraintParameterRef>();
+	public final Set<ComponentParameterRef> getInvalidParameterReferencesFor(String signature, int count) {
+		Set<ComponentParameterRef> invalid = new HashSet<ComponentParameterRef>();
 		if (isParameterReference(lhs)) {
-			ConstraintParameterRef paramRef = (ConstraintParameterRef) lhs;
+			ComponentParameterRef paramRef = (ComponentParameterRef) lhs;
 			if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
 				invalid.add(paramRef);
 			}
 		}
 		if (isParameterReference(rhs)) {
-			ConstraintParameterRef paramRef = (ConstraintParameterRef) rhs;
+			ComponentParameterRef paramRef = (ComponentParameterRef) rhs;
 			if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
 				invalid.add(paramRef);
 			}
@@ -84,16 +120,16 @@ public final class LEQConstraint {
 		return invalid;
 	}
 
-	public final Set<ConstraintReturnRef> getInvalidReturnReferencesFor(String signature) {
-		Set<ConstraintReturnRef> invalid = new HashSet<ConstraintReturnRef>();
+	public final Set<ComponentReturnRef> getInvalidReturnReferencesFor(String signature) {
+		Set<ComponentReturnRef> invalid = new HashSet<ComponentReturnRef>();
 		if (isReturnReference(lhs)) {
-			ConstraintReturnRef returnRef = (ConstraintReturnRef) lhs;
+			ComponentReturnRef returnRef = (ComponentReturnRef) lhs;
 			if (!returnRef.getSignature().equals(signature)) {
 				invalid.add(returnRef);
 			}
 		}
 		if (isReturnReference(rhs)) {
-			ConstraintReturnRef returnRef = (ConstraintReturnRef) rhs;
+			ComponentReturnRef returnRef = (ComponentReturnRef) rhs;
 			if (!returnRef.getSignature().equals(signature)) {
 				invalid.add(returnRef);
 			}
@@ -109,11 +145,11 @@ public final class LEQConstraint {
 		return isProgramCounterReference(lhs, signature) || isProgramCounterReference(rhs, signature);
 	}
 
-	public final IConstraintComponent getLhs() {
+	public final IComponent getLhs() {
 		return lhs;
 	}
 
-	public final IConstraintComponent getRhs() {
+	public final IComponent getRhs() {
 		return rhs;
 	}
 

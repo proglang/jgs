@@ -44,8 +44,8 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 
 	@Override
 	public boolean add(LEQConstraint constraint) {
-		IConstraintComponent left = constraint.getLhs();
-		IConstraintComponent right = constraint.getRhs();
+		IComponent left = constraint.getLhs();
+		IComponent right = constraint.getRhs();
 		if (!left.equals(right)) {
 			if (right.equals(mediator.getGreatestLowerBoundLevel()) || left.equals(mediator.getLeastUpperBoundLevel())) {
 				LEQConstraint bound = new LEQConstraint(right, left);
@@ -161,8 +161,8 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 	public Set<LEQConstraint> getInconsistent() {
 		Set<LEQConstraint> inequal = new HashSet<LEQConstraint>();
 		for (LEQConstraint constraint : getConstraintsSet()) {
-			IConstraintComponent left = constraint.getLhs();
-			IConstraintComponent right = constraint.getRhs();
+			IComponent left = constraint.getLhs();
+			IComponent right = constraint.getRhs();
 			if (isLevel(left) && isLevel(right)) {
 				ILevel l1 = (ILevel) left;
 				ILevel l2 = (ILevel) right;
@@ -222,14 +222,21 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 		return res;
 	}
 
-	public void removeConstraintsContaining(ConstraintLocal local) {
+	public void removeConstraintsContaining(ComponentLocal local) {
 		calculateTransitiveClosure();
 		for (LEQConstraint constraint : getConstraintsSet()) {
 			if (constraint.containsComponent(local)) remove(constraint);
 		}
 	}
 	
-	public void removeConstraintsContaining(ConstraintPlaceholder placeholder) {
+	public void removeConstraintsContainingInclBase(IComponent component) {
+		calculateTransitiveClosure();
+		for (LEQConstraint constraint : getConstraintsSet()) {
+			if (constraint.containsComponentInclBase(component)) remove(constraint);
+		}
+	}
+	
+	public void removeConstraintsContaining(ComponentPlaceholder placeholder) {
 		calculateTransitiveClosure();
 		for (LEQConstraint constraint : getConstraintsSet()) {
 			if (constraint.containsComponent(placeholder)) remove(constraint);
@@ -261,6 +268,24 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 		calculateTransitiveClosure();
 		String[] array = signatures.toArray(new String[] {});
 		removeConstraintsContainingReferencesFor(array);
+	}
+	
+	public void removeConstraintsContainingReferencesInclBaseFor(List<String> signatures) {
+		calculateTransitiveClosure();
+		String[] array = signatures.toArray(new String[] {});
+		removeConstraintsContainingReferencesInclBaseFor(array);
+	}
+	
+	public void removeConstraintsContainingReferencesInclBaseFor(String... signatures) {
+		calculateTransitiveClosure();
+		for (String signature : signatures) {
+			for (LEQConstraint constraint : getConstraintsSet()) {
+				if (constraint.containsReturnReferenceInclBaseFor(signature) || constraint.containsParameterReferenceInclBaseFor(signature)
+						|| constraint.containsProgramCounterReferenceFor(signature)) {
+					remove(constraint);
+				}
+			}
+		}
 	}
 
 	public void removeConstraintsContainingReferencesFor(String... signatures) {
@@ -318,30 +343,30 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 
 	private List<String> toBoundaryStrings() {
 		List<String> result = new ArrayList<String>();
-		Map<IConstraintComponentVar, Set<ILevel>> lower = new HashMap<IConstraintComponentVar, Set<ILevel>>();
-		Map<IConstraintComponentVar, Set<ILevel>> upper = new HashMap<IConstraintComponentVar, Set<ILevel>>();
-		Set<IConstraintComponentVar> vars = new HashSet<IConstraintComponentVar>();
+		Map<IComponentVar, Set<ILevel>> lower = new HashMap<IComponentVar, Set<ILevel>>();
+		Map<IComponentVar, Set<ILevel>> upper = new HashMap<IComponentVar, Set<ILevel>>();
+		Set<IComponentVar> vars = new HashSet<IComponentVar>();
 		for (LEQConstraint constraint : getConstraintsSet()) {
-			IConstraintComponent left = constraint.getLhs();
-			IConstraintComponent right = constraint.getRhs();
-			if (isLevel(left) && right instanceof IConstraintComponentVar) {
+			IComponent left = constraint.getLhs();
+			IComponent right = constraint.getRhs();
+			if (isLevel(left) && right instanceof IComponentVar) {
 				ILevel level = (ILevel) left;
-				IConstraintComponentVar var = (IConstraintComponentVar) right;
+				IComponentVar var = (IComponentVar) right;
 				if (!lower.containsKey(var)) lower.put(var, new HashSet<ILevel>());
 				if (!upper.containsKey(var)) upper.put(var, new HashSet<ILevel>());
 				vars.add(var);
 				lower.get(var).add(level);
 			}
-			if (isLevel(right) && left instanceof IConstraintComponentVar) {
+			if (isLevel(right) && left instanceof IComponentVar) {
 				ILevel level = (ILevel) right;
-				IConstraintComponentVar var = (IConstraintComponentVar) left;
+				IComponentVar var = (IComponentVar) left;
 				if (!lower.containsKey(var)) lower.put(var, new HashSet<ILevel>());
 				if (!upper.containsKey(var)) upper.put(var, new HashSet<ILevel>());
 				vars.add(var);
 				upper.get(var).add(level);
 			}
 		}
-		for (IConstraintComponentVar var : vars) {
+		for (IComponentVar var : vars) {
 			String string = "";
 			Set<ILevel> lowerLevels = lower.get(var);
 			Set<ILevel> upperLevels = upper.get(var);

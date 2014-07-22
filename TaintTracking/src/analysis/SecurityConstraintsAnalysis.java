@@ -24,6 +24,7 @@ import error.ISubSignatureError;
 import exception.AnalysisException;
 import exception.CastInvalidException;
 import exception.EnvironmentNotFoundException;
+import exception.IllegalNewArrayException;
 import exception.LevelNotFoundException;
 import exception.MethodParameterNotFoundException;
 import exception.ProgramCounterException;
@@ -135,7 +136,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 			if (stmtSwitch.isReturnStmt()) completnessCheck(out);
 
 		} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
-				| LevelNotFoundException | CastInvalidException e) {
+				| LevelNotFoundException | CastInvalidException | IllegalNewArrayException e) {
 			throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(),
 					getSignatureOfMethod(getAnalyzedEnvironment().getSootMethod()), getAnalyzedEnvironment().getSrcLn()), e);
 		}

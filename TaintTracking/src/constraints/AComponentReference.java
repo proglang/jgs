@@ -1,10 +1,10 @@
 package constraints;
 
-public abstract class AConstraintReference implements IConstraintComponentVar {
+public abstract class AComponentReference implements IComponentVar {
 
 	protected final String signature;
 
-	public AConstraintReference(String signature) {
+	public AComponentReference(String signature) {
 		this.signature = signature;
 	}
 

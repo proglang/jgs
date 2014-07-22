@@ -19,6 +19,7 @@ public class FailPutfieldImplicitLeak {
         if (this.high) {
             y = new FailPutfieldImplicitLeak();
         }
+        // @security("Reference stronger than field security")
         y.f = false;
         // @security("The returned value has a stronger security level than expected.")
         return x.f;
@@ -29,7 +30,10 @@ public class FailPutfieldImplicitLeak {
         FailPutfieldImplicitLeak s = new FailPutfieldImplicitLeak();
         boolean result1 = s.leak(true);
         boolean result2 = s.leak(false);
-        System.out.print(String.format("%s %s", result1, result2));
+        Object[] objs = arrayObjectLow(2);
+        objs[0] = result1;
+        objs[1] = result2;
+        System.out.print(String.format("%s %s", objs));
         if (result1 != result2) {
             System.out.println(": There was a leak!");
         } else {

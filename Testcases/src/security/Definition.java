@@ -8,14 +8,18 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import annotation.IAnnotationDAO;
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintProgramCounterRef;
-import constraints.ConstraintReturnRef;
-import constraints.IConstraintComponent;
+import constraints.ComponentArrayRef;
+import constraints.ComponentParameterRef;
+import constraints.ComponentProgramCounterRef;
+import constraints.ComponentReturnRef;
+import constraints.IComponent;
 import constraints.LEQConstraint;
 import exception.AnnotationInvalidConstraintsException;
+import security.ArrayCreator;
 
 public class Definition extends ALevelDefinition {
 
@@ -31,9 +35,10 @@ public class Definition extends ALevelDefinition {
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface FieldSecurity {
 
-		String value();
+		String[] value();
 
 	}
+	
 
 	@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 	@Retention(RetentionPolicy.RUNTIME)
@@ -146,8 +151,12 @@ public class Definition extends ALevelDefinition {
 	}
 
 	@Override
-	public ILevel extractFieldLevel(IAnnotationDAO dao) {
-		return new StringLevel(dao.getStringFor("value"));
+	public List<ILevel> extractFieldLevel(IAnnotationDAO dao) {
+		List<ILevel> list = new ArrayList<ILevel>();
+		for (String value : dao.getStringArrayFor("value")) {
+			list.add(new StringLevel(value));
+		}
+		return list;
 	}
 
 	@Override
@@ -184,8 +193,8 @@ public class Definition extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					IComponent l = convertIntoConstraintComponent(lhs, signature);
+					IComponent r = convertIntoConstraintComponent(rhs, signature);
 					constraints.add(new LEQConstraint(l, r));
 				} else {
 					throw new AnnotationInvalidConstraintsException(errMsg);
@@ -195,8 +204,8 @@ public class Definition extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					IComponent l = convertIntoConstraintComponent(lhs, signature);
+					IComponent r = convertIntoConstraintComponent(rhs, signature);
 					constraints.add(new LEQConstraint(l, r));
 					constraints.add(new LEQConstraint(r, l));
 				} else {
@@ -207,8 +216,8 @@ public class Definition extends ALevelDefinition {
 				if (components.length == 2) {
 					String lhs = components[0].trim();
 					String rhs = components[1].trim();
-					IConstraintComponent l = convertIntoConstraintComponent(lhs, signature);
-					IConstraintComponent r = convertIntoConstraintComponent(rhs, signature);
+					IComponent l = convertIntoConstraintComponent(lhs, signature);
+					IComponent r = convertIntoConstraintComponent(rhs, signature);
 					constraints.add(new LEQConstraint(r, l));
 				} else {
 					throw new AnnotationInvalidConstraintsException(errMsg);
@@ -220,19 +229,46 @@ public class Definition extends ALevelDefinition {
 		return constraints;
 	}
 
-	private IConstraintComponent convertIntoConstraintComponent(String component, String signature) {
+	private IComponent convertIntoConstraintComponent(String component, String signature) {
 		if (component.startsWith("@")) {
 			String position = component.substring(1);
-			if (position.equals("return")) {
-				return new ConstraintReturnRef(signature);
+			if (position.startsWith("return")) {
+				ComponentReturnRef returnRef = new ComponentReturnRef(signature);
+				if (position.equals("return")) {
+					return returnRef;
+				} else {
+					String arrRef = position.replaceFirst("return", "");
+					if (isArrayReference(arrRef)) return new ComponentArrayRef(returnRef, arrRef.length());
+				}
 			} else if (position.equals("pc")) {
-				return new ConstraintProgramCounterRef(signature);
-			} else {
-				return new ConstraintParameterRef(Integer.valueOf(position), signature);
+				return new ComponentProgramCounterRef(signature);
+			} else if (Character.isDigit(position.charAt(0))) {
+				int param = extractParameterPositionFromBeginOf(position);
+				ComponentParameterRef paramRef = new ComponentParameterRef(param, signature);
+				if (position.equals(String.valueOf(param))) {
+					return paramRef;
+				} else {
+					String arrRef = position.replaceFirst(String.valueOf(param), "");
+					if (isArrayReference(arrRef)) return new ComponentArrayRef(paramRef, arrRef.length());
+				}
 			}
-		} else {
-			return new StringLevel(component);
 		}
+		return new StringLevel(component);
+	}
+	
+	private int extractParameterPositionFromBeginOf(String input) {
+		String number = "";
+		while (!input.isEmpty() && Character.isDigit(input.charAt(0))) {
+			number += input.charAt(0);
+			input = input.substring(1);
+		}
+		return Integer.valueOf(number).intValue();
+	}
+	
+	private boolean isArrayReference(String input){
+		Pattern pattern = Pattern.compile("\\[*");
+		Matcher matcher = pattern.matcher(input);
+		return matcher.matches();
 	}
 
 	@ParameterSecurity({ "high" })
@@ -247,6 +283,27 @@ public class Definition extends ALevelDefinition {
 	@Constraints({"@0 <= low", "low <= @return" })
 	public static <T> T mkLow(T object) {
 		return object;
+	}
+	
+	
+	@ArrayCreator("high")
+	public static int[] arrayIntHigh(int capacity1) {
+		return new int[capacity1];
+	}
+	
+	@ArrayCreator({ "low", "high"})
+	public static int[][] arrayIntLowHigh(int capacity1, int capacity2) {
+		return new int[capacity1][capacity2];
+	}
+	
+	@ArrayCreator({ "low" })
+	public static Object[] arrayObjectLow(int capacity1) {
+		return new Object[capacity1];
+	}
+	
+	@ArrayCreator({"low", "high", "high"})
+	public static int[][][] arrayIntLowHighHigh(int capacity1, int capacity2, int capacity3) {
+		return new int[capacity1][capacity2][capacity3];
 	}
 
 }

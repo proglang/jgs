@@ -1,5 +1,6 @@
 package extractor;
 
+import static constraints.ConstraintsUtils.isSubSignature;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
@@ -19,7 +20,6 @@ import static utils.AnalysisUtils.isLevelFunction;
 import static utils.AnalysisUtils.isMethodOfDefinitionClass;
 import static utils.AnalysisUtils.isVoidMethod;
 import static utils.AnalysisUtils.overridesMethod;
-import static constraints.ConstraintsUtils.isSubSignature;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,6 +34,7 @@ import model.ClassEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment;
 import model.MethodEnvironment.MethodParameter;
+import security.ArrayCreator;
 import security.ILevel;
 import security.ILevelMediator;
 import soot.Body;
@@ -44,15 +45,21 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
+import soot.tagkit.AnnotationTag;
+import soot.tagkit.VisibilityAnnotationTag;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintProgramCounterRef;
-import constraints.ConstraintReturnRef;
+import utils.AnalysisUtils;
+import annotation.IAnnotationDAO;
+import annotation.SootAnnotationDAO;
+import constraints.ComponentArrayRef;
+import constraints.ComponentParameterRef;
+import constraints.ComponentProgramCounterRef;
+import constraints.ComponentReturnRef;
 import constraints.ConstraintsSet;
 import constraints.ConstraintsUtils;
-import constraints.IConstraintComponent;
+import constraints.IComponent;
 import constraints.LEQConstraint;
 import error.ISubSignatureError;
 import error.SubSignatureParameterError;
@@ -244,13 +251,13 @@ public class AnnotationExtractor extends SceneTransformer {
 	private FieldEnvironment checkAndBuildFieldEnvironment(SootField sootField) {
 		SootClass declaringClass = sootField.getDeclaringClass();
 		boolean isLibrary = declaringClass.isJavaLibraryClass();
-		ILevel fieldSecurityLevel = null;
+		List<ILevel> fieldSecurityLevels = new ArrayList<ILevel>();
 		if (type.equals(LEVELS) || type.equals(CONSTRAINTS)) {
 			boolean hasFieldSecurityAnnotation = mediator.hasFieldSecurityAnnotation(sootField);
 			if (!isLibrary) {
 				if (hasFieldSecurityAnnotation) {
 					try {
-						fieldSecurityLevel = mediator.extractFieldSecurityLevel(sootField);
+						fieldSecurityLevels.addAll(mediator.extractFieldSecurityLevel(sootField));
 					} catch (AnnotationExtractionException e) {
 						throw new ExtractorException(getMsg("exception.extractor.level.field.error", getSignatureOfField(sootField)), e);
 					}
@@ -258,7 +265,7 @@ public class AnnotationExtractor extends SceneTransformer {
 					throw new ExtractorException(getMsg("exception.extractor.level.field.no_level", getSignatureOfField(sootField)));
 				}
 			} else {
-				fieldSecurityLevel = mediator.getLibraryFieldSecurityLevel(sootField);
+				fieldSecurityLevels.addAll(mediator.getLibraryFieldSecurityLevel(sootField));
 			}
 		} else {
 			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
@@ -267,7 +274,7 @@ public class AnnotationExtractor extends SceneTransformer {
 		addClassEnvironmentForClass(declaringClass);
 		ClassEnvironment ce = store.getClassEnvironment(declaringClass);
 		classWriteEffects.addAll(ce.getWriteEffects());
-		FieldEnvironment fe = new FieldEnvironment(sootField, fieldSecurityLevel, classWriteEffects, log, mediator);
+		FieldEnvironment fe = new FieldEnvironment(sootField, fieldSecurityLevels, classWriteEffects, log, mediator);
 		return fe;
 	}
 
@@ -303,6 +310,8 @@ public class AnnotationExtractor extends SceneTransformer {
 			if (!isLibrary) {
 				if (isClinit) {
 					constraints.addAll(ConstraintsUtils.changeAllComponentsSignature(sootMethod.getSignature(), ce.getSignatureContraints()));
+				} else if (AnalysisUtils.isArrayFunction(sootMethod)) {
+					constraints.addAll(generateArrayCreatorConstraints(sootMethod));
 				} else {
 					boolean hasConstraintsAnnotation = mediator.hasConstraintsAnnotation(sootMethod);
 					if (hasConstraintsAnnotation) {
@@ -395,26 +404,50 @@ public class AnnotationExtractor extends SceneTransformer {
 		return methodEnvironment;
 	}
 
-	private Set<LEQConstraint> generateInitialMethodConstraintsSignature(SootMethod sootMethod, boolean isVoid) {
+	private Set<LEQConstraint> generateArrayCreatorConstraints(SootMethod sootMethod) {
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
-		addBoundsFor(constraints, new ConstraintProgramCounterRef(sootMethod.getSignature()));
-		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
-			addBoundsFor(constraints, new ConstraintParameterRef(i, sootMethod.getSignature()));
+		VisibilityAnnotationTag vat = AnalysisUtils.extractVisibilityAnnotationTag(sootMethod);
+		AnnotationTag at = AnalysisUtils.extractAnnotationTagWithType(vat, AnalysisUtils.getJNISignature(ArrayCreator.class));
+		IAnnotationDAO dao = new SootAnnotationDAO(ArrayCreator.class, at);
+		List<String> stringLevels = dao.getStringArrayFor("value");
+		List<ILevel> levels = mediator.translateNamesIntoLevels(stringLevels);
+		ComponentReturnRef retRef = new ComponentReturnRef(sootMethod.getSignature());
+		if (levels.size() > 0) {
+			constraints.add(new LEQConstraint(new ComponentParameterRef(0, sootMethod.getSignature()), retRef));
 		}
-		if (!isVoid) {
-			addBoundsFor(constraints, new ConstraintReturnRef(sootMethod.getSignature()));
+		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+			int j = i + 1;
+			ComponentParameterRef paramRef = new ComponentParameterRef(j, sootMethod.getSignature());
+			ComponentArrayRef arrayRef = new ComponentArrayRef(retRef, j);
+			constraints.add(new LEQConstraint(levels.get(i), arrayRef));
+			constraints.add(new LEQConstraint(arrayRef, levels.get(i)));
+			if (j < sootMethod.getParameterCount()) {
+				constraints.add(new LEQConstraint(paramRef, arrayRef));
+			}
 		}
 		return constraints;
 	}
 
-	private void addBoundsFor(Set<LEQConstraint> constraints, IConstraintComponent component) {
+	private Set<LEQConstraint> generateInitialMethodConstraintsSignature(SootMethod sootMethod, boolean isVoid) {
+		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
+		addBoundsFor(constraints, new ComponentProgramCounterRef(sootMethod.getSignature()));
+		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+			addBoundsFor(constraints, new ComponentParameterRef(i, sootMethod.getSignature()));
+		}
+		if (!isVoid) {
+			addBoundsFor(constraints, new ComponentReturnRef(sootMethod.getSignature()));
+		}
+		return constraints;
+	}
+
+	private void addBoundsFor(Set<LEQConstraint> constraints, IComponent component) {
 		constraints.add(new LEQConstraint(component, mediator.getLeastUpperBoundLevel()));
 		constraints.add(new LEQConstraint(mediator.getGreatestLowerBoundLevel(), component));
 	}
 
 	private Set<LEQConstraint> generateInitalClassConstraintsSignature(SootClass sootClass) {
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
-		addBoundsFor(constraints, new ConstraintProgramCounterRef(sootClass.getName()));
+		addBoundsFor(constraints, new ComponentProgramCounterRef(sootClass.getName()));
 		return constraints;
 	}
 
@@ -531,8 +564,8 @@ public class AnnotationExtractor extends SceneTransformer {
 							SubSignatureParameterError paramError = (SubSignatureParameterError) error;
 							logSecurity(
 									generateFileName(sootMethod),
-									getMsg("hierarchy.parameter", getSignatureOfMethod(sootMethod), paramError.getConstraint().toString(), paramError.getPosition(),
-											getSignatureOfMethod(superMethods.get(0))));
+									getMsg("hierarchy.parameter", getSignatureOfMethod(sootMethod), paramError.getConstraint().toString(),
+											paramError.getPosition(), getSignatureOfMethod(superMethods.get(0))));
 						}
 					}
 				}

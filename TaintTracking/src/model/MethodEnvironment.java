@@ -25,8 +25,8 @@ import security.ILevel;
 import security.ILevelMediator;
 import soot.SootMethod;
 import soot.Type;
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintReturnRef;
+import constraints.ComponentParameterRef;
+import constraints.ComponentReturnRef;
 import constraints.LEQConstraint;
 import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
@@ -333,7 +333,7 @@ public class MethodEnvironment extends Environment {
 		String methodSignature = getSignatureOfMethod(sootMethod);
 		if (type.equals(CONSTRAINTS)) {
 			String signature = sootMethod.getSignature();
-			for (ConstraintReturnRef returnRef : getInvalidReturnReferencesOfSet(constraints, signature)) {
+			for (ComponentReturnRef returnRef : getInvalidReturnReferencesOfSet(constraints, signature)) {
 				throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_return_ref", methodSignature, returnRef.toString()));
 			}
 			if (isVoid) {
@@ -351,7 +351,7 @@ public class MethodEnvironment extends Environment {
 					throw new LevelInvalidException(getMsg("exception.constraints.method_invalid_level", invalidEffect.getName(), methodSignature));
 				}
 			}
-			for (ConstraintParameterRef paramRef : getInvalidParameterReferencesOfSet(constraints, signature, sootMethod.getParameterCount())) {
+			for (ComponentParameterRef paramRef : getInvalidParameterReferencesOfSet(constraints, signature, sootMethod.getParameterCount())) {
 				throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_param_ref", methodSignature, paramRef.toString()));
 			}
 			for (int i = 0; i < sootMethod.getParameterCount(); i++) {

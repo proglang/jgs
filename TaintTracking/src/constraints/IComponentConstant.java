@@ -1,6 +1,6 @@
 package constraints;
 
-public interface IConstraintComponentConstant extends IConstraintComponent {
+public interface IComponentConstant extends IComponent {
 
 	public String toString();
 

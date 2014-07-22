@@ -57,81 +57,81 @@ public class ConstraintsUtils {
 		return levels;
 	}
 
-	public static List<ConstraintParameterRef> getInvalidParameterReferencesOfSet(Collection<LEQConstraint> constraints, String signature,
+	public static List<ComponentParameterRef> getInvalidParameterReferencesOfSet(Collection<LEQConstraint> constraints, String signature,
 			int count) {
-		List<ConstraintParameterRef> invalid = new ArrayList<ConstraintParameterRef>();
+		List<ComponentParameterRef> invalid = new ArrayList<ComponentParameterRef>();
 		for (LEQConstraint constraint : constraints) {
 			invalid.addAll(constraint.getInvalidParameterReferencesFor(signature, count));
 		}
 		return invalid;
 	}
 
-	public static List<ConstraintReturnRef> getInvalidReturnReferencesOfSet(Collection<LEQConstraint> constraints, String signature) {
-		List<ConstraintReturnRef> invalid = new ArrayList<ConstraintReturnRef>();
+	public static List<ComponentReturnRef> getInvalidReturnReferencesOfSet(Collection<LEQConstraint> constraints, String signature) {
+		List<ComponentReturnRef> invalid = new ArrayList<ComponentReturnRef>();
 		for (LEQConstraint constraint : constraints) {
 			invalid.addAll(constraint.getInvalidReturnReferencesFor(signature));
 		}
 		return invalid;
 	}
 
-	public static boolean isLevel(IConstraintComponent component) {
+	public static boolean isLevel(IComponent component) {
 		return component instanceof ILevel;
 	}
 
-	public static boolean isParameterReference(IConstraintComponent component) {
-		return component instanceof ConstraintParameterRef;
+	public static boolean isParameterReference(IComponent component) {
+		return component instanceof ComponentParameterRef;
 	}
 
-	public static boolean isParameterReference(IConstraintComponent component, String signature) {
-		if (component instanceof ConstraintParameterRef) {
-			ConstraintParameterRef paramRef = (ConstraintParameterRef) component;
+	public static boolean isParameterReference(IComponent component, String signature) {
+		if (component instanceof ComponentParameterRef) {
+			ComponentParameterRef paramRef = (ComponentParameterRef) component;
 			return paramRef.getSignature().equals(signature);
 		}
 		return false;
 	}
 
-	public static boolean isParameterReference(IConstraintComponent component, int position) {
+	public static boolean isParameterReference(IComponent component, int position) {
 		if (isParameterReference(component)) {
-			ConstraintParameterRef paramRef = (ConstraintParameterRef) component;
+			ComponentParameterRef paramRef = (ComponentParameterRef) component;
 			return paramRef.getParameterPos() == position;
 		}
 		return false;
 	}
 
-	public static boolean isParameterReference(IConstraintComponent component, String signature, int position) {
+	public static boolean isParameterReference(IComponent component, String signature, int position) {
 		if (isParameterReference(component)) {
-			ConstraintParameterRef paramRef = (ConstraintParameterRef) component;
+			ComponentParameterRef paramRef = (ComponentParameterRef) component;
 			return paramRef.getSignature().equals(signature) && paramRef.getParameterPos() == position;
 		}
 		return false;
 	}
 
-	public static boolean isProgramCounterReference(IConstraintComponent component) {
-		return component instanceof ConstraintProgramCounterRef;
+	public static boolean isProgramCounterReference(IComponent component) {
+		return component instanceof ComponentProgramCounterRef;
 	}
 
-	public static boolean isProgramCounterReference(IConstraintComponent component, String signature) {
-		if (component instanceof ConstraintProgramCounterRef) {
-			ConstraintProgramCounterRef pc = (ConstraintProgramCounterRef) component;
+	public static boolean isProgramCounterReference(IComponent component, String signature) {
+		if (component instanceof ComponentProgramCounterRef) {
+			ComponentProgramCounterRef pc = (ComponentProgramCounterRef) component;
 			return pc.getSignature().equals(signature);
 		}
 		return false;
 	}
 
-	public static boolean isReturnReference(IConstraintComponent component) {
-		return component instanceof ConstraintReturnRef;
+	public static boolean isReturnReference(IComponent component) {
+		return component instanceof ComponentReturnRef;
 	}
 
-	public static boolean isReturnReference(IConstraintComponent component, String signature) {
-		if (component instanceof ConstraintReturnRef) {
-			ConstraintReturnRef returnRef = (ConstraintReturnRef) component;
+	public static boolean isReturnReference(IComponent component, String signature) {
+		if (component instanceof ComponentReturnRef) {
+			ComponentReturnRef returnRef = (ComponentReturnRef) component;
 			return returnRef.getSignature().equals(signature);
 		}
 		return false;
 	}
 
-	public static boolean isLocal(IConstraintComponent component) {
-		return component instanceof ConstraintLocal;
+	public static boolean isLocal(IComponent component) {
+		return component instanceof ComponentLocal;
 	}
 
 	public static Set<LEQConstraint> changeAllComponentsSignature(String newSignature, Set<LEQConstraint> constraints) {
@@ -164,7 +164,7 @@ public class ConstraintsUtils {
 		return sb.toString();
 	}
 
-	public static Set<LEQConstraint> getConstraintsContaining(Set<LEQConstraint> constraints, IConstraintComponent component) {
+	public static Set<LEQConstraint> getConstraintsContaining(Set<LEQConstraint> constraints, IComponent component) {
 		Set<LEQConstraint> result = new HashSet<LEQConstraint>();
 		for (LEQConstraint constraint : constraints) {
 			if (constraint.containsComponent(component)) {
@@ -175,30 +175,30 @@ public class ConstraintsUtils {
 	}
 
 	private static LEQConstraint changeSignatureOf(LEQConstraint constraint, String signature) {
-		IConstraintComponent left = constraint.getLhs();
-		IConstraintComponent right = constraint.getRhs();
-		if (left instanceof IConstraintComponentVar && right instanceof IConstraintComponentVar) {
-			IConstraintComponentVar leftVar = (IConstraintComponentVar) left;
-			IConstraintComponentVar rightVar = (IConstraintComponentVar) right;
+		IComponent left = constraint.getLhs();
+		IComponent right = constraint.getRhs();
+		if (left instanceof IComponentVar && right instanceof IComponentVar) {
+			IComponentVar leftVar = (IComponentVar) left;
+			IComponentVar rightVar = (IComponentVar) right;
 			return new LEQConstraint(changeSignatureOf(leftVar, signature), changeSignatureOf(rightVar, signature));
-		} else if (left instanceof IConstraintComponentVar) {
-			IConstraintComponentVar leftVar = (IConstraintComponentVar) left;
+		} else if (left instanceof IComponentVar) {
+			IComponentVar leftVar = (IComponentVar) left;
 			return new LEQConstraint(changeSignatureOf(leftVar, signature), right);
-		} else if (right instanceof IConstraintComponentVar) {
-			IConstraintComponentVar rightVar = (IConstraintComponentVar) right;
+		} else if (right instanceof IComponentVar) {
+			IComponentVar rightVar = (IComponentVar) right;
 			return new LEQConstraint(left, changeSignatureOf(rightVar, signature));
 		}
 		return new LEQConstraint(left, right);
 	}
 
-	private static IConstraintComponentVar changeSignatureOf(IConstraintComponentVar component, String signature) {
+	private static IComponentVar changeSignatureOf(IComponentVar component, String signature) {
 		if (isProgramCounterReference(component)) {
-			return new ConstraintProgramCounterRef(signature);
+			return new ComponentProgramCounterRef(signature);
 		} else if (isParameterReference(component)) {
-			ConstraintParameterRef paramRef = (ConstraintParameterRef) component;
-			return new ConstraintParameterRef(paramRef.getParameterPos(), signature);
+			ComponentParameterRef paramRef = (ComponentParameterRef) component;
+			return new ComponentParameterRef(paramRef.getParameterPos(), signature);
 		} else if (isReturnReference(component)) {
-			return new ConstraintReturnRef(signature);
+			return new ComponentReturnRef(signature);
 		}
 		return component;
 	}
@@ -212,7 +212,7 @@ public class ConstraintsUtils {
 				}
 			}
 			if (isParameterReference(constraint.getLhs())) {
-				ConstraintParameterRef paramRef = (ConstraintParameterRef) constraint.getLhs();
+				ComponentParameterRef paramRef = (ComponentParameterRef) constraint.getLhs();
 				if (!mPlus.contains(changeSignatureOf(constraint, mSignature))) {
 					errors.add(new SubSignatureParameterError(constraint, paramRef.getParameterPos()));
 				}

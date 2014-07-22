@@ -1,9 +1,6 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-
-import java.util.Set;
-
 import model.AnalyzedMethodEnvironment;
 import model.ClassEnvironment;
 import model.FieldEnvironment;
@@ -61,14 +58,17 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
-import constraints.ConstraintLocal;
-import constraints.ConstraintParameterRef;
-import constraints.ConstraintProgramCounterRef;
-import constraints.ConstraintReturnRef;
+import utils.AnalysisUtils;
+import constraints.ComponentArrayRef;
+import constraints.ComponentLocal;
+import constraints.ComponentParameterRef;
+import constraints.ComponentProgramCounterRef;
+import constraints.ComponentReturnRef;
 import constraints.ConstraintsSet;
-import constraints.IConstraintComponent;
+import constraints.IComponent;
 import constraints.LEQConstraint;
 import exception.CastInvalidException;
+import exception.IllegalNewArrayException;
 import extractor.UsedObjectStore;
 
 public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueSwitch implements JimpleValueSwitch {
@@ -287,12 +287,12 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
-		// Nothing to do...
+		throwIllegalNewArrayException(v);
 	}
 
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-		// Nothing to do...
+		throwIllegalNewArrayException(v);
 	}
 
 	@Override
@@ -312,7 +312,21 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	@Override
 	public void caseArrayRef(ArrayRef v) {
-		// TODO: Array Reference
+		Value array = v.getBase();
+		Value index = v.getIndex();
+		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(array);
+		SecurityConstraintValueReadSwitch indexSwitch = getReadSwitch(index);
+		addReadComponents(baseSwitch.getReadComponents());
+		addReadComponents(indexSwitch.getReadComponents());
+		setDimension(AnalysisUtils.getDimension(v.getType()));
+		if (baseSwitch.getEqualComponents().size() > 0) {
+			addReadComponent(baseSwitch.getEqualComponents().get(0));
+			for (int i = 1; i < baseSwitch.getEqualComponents().size(); i++) {
+				appendEqualComponent(baseSwitch.getEqualComponents().get(1));
+			}
+		} else {
+			throw new RuntimeException("Unexpected behaviour - expected array has no equal components ???");
+		}
 	}
 
 	@Override
@@ -331,7 +345,12 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	@Override
 	public void caseParameterRef(ParameterRef v) {
-		addReadComponent(new ConstraintParameterRef(v.getIndex(), getAnalyzedSignature()));
+		ComponentParameterRef paramRef = new ComponentParameterRef(v.getIndex(), getAnalyzedSignature());
+		addReadComponent(paramRef);
+		setDimension(AnalysisUtils.getDimension(v.getType()));
+		for (int i = 1; i <= getDimension(); i++) {
+			appendEqualComponent(new ComponentArrayRef(paramRef, i));
+		}
 	}
 
 	@Override
@@ -346,7 +365,14 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	@Override
 	public void caseLocal(Local l) {
-		addReadComponent(new ConstraintLocal(local = l));
+		ComponentLocal cl = new ComponentLocal(local = l);
+		addReadComponent(cl);
+		setDimension(AnalysisUtils.getDimension(l.getType()));
+		if (getDimension() > 0) {
+			for (int i = 1; i <= getDimension(); i++) {
+				appendEqualComponent(new ComponentArrayRef(cl, i));
+			}
+		}
 	}
 
 	private void handleBinaryExpr(Value op1, Value op2) {
@@ -372,6 +398,10 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 	private void handleField(SootField sootField) {
 		FieldEnvironment fe = getStore().getFieldEnvironment(field = sootField);
 		addReadComponent(fe.getLevel());
+		setDimension(AnalysisUtils.getDimension(sootField.getType()));
+		for (int i = 1; i <= getDimension(); i++) {
+			appendEqualComponent(fe.getLevel(i));
+		}
 	}
 	
 	private void handleInvoke(InvokeExpr invokeExpr) {
@@ -381,28 +411,44 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 		addConstraints(me.getSignatureContraints());
 		for (int i = 0; i < invokeExpr.getArgCount(); i++) {
 			SecurityConstraintValueReadSwitch argSwitch = getReadSwitch(invokeExpr.getArg(i));
-			addParameterConstraints(argSwitch.getReadComponents(), signature, i);
+			addParameterConstraints(argSwitch, signature, i);
 			addConstraints(argSwitch.getConstraints());
 		}
 		addProgramCounterConstraint(signature);
-		addReadComponent(new ConstraintReturnRef(signature));
+		ComponentReturnRef retRef = new ComponentReturnRef(signature);
+		addReadComponent(retRef);
+		setDimension(AnalysisUtils.getDimension(method.getReturnType()));
+		for (int i = 1; i <= getDimension(); i++) {
+			appendEqualComponent(new ComponentArrayRef(retRef, i));
+		}
 	}
 	
-	private void addParameterConstraints(Set<IConstraintComponent> leftComponents, String signature, int position) {
-		IConstraintComponent right = new ConstraintParameterRef(position, signature);
-		for (IConstraintComponent left : leftComponents) {
+	private void addParameterConstraints(SecurityConstraintValueReadSwitch argSwitch, String signature, int position) {
+		ComponentParameterRef right = new ComponentParameterRef(position, signature);
+		for (IComponent left : argSwitch.getReadComponents()) {
 			addConstraint(new LEQConstraint(left, right));
+			
+		}
+		for (int i = 0; i < argSwitch.getEqualComponents().size(); i++) {
+			ComponentArrayRef paramArrayRef = new ComponentArrayRef(right, i + 1);
+			IComponent localArrayRef = argSwitch.getEqualComponents().get(i);
+			addConstraint(new LEQConstraint(localArrayRef, paramArrayRef));
+			addConstraint(new LEQConstraint(paramArrayRef, localArrayRef));
 		}
 	}
 	
 	private void addProgramCounterConstraint(String signature) {
-		addConstraint(new LEQConstraint(new ConstraintProgramCounterRef(getAnalyzedSignature()), new ConstraintProgramCounterRef(signature)));
+		addConstraint(new LEQConstraint(new ComponentProgramCounterRef(getAnalyzedSignature()), new ComponentProgramCounterRef(signature)));
 	}
 	
 	private void handleBase(Value base) {
 		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(base);
 		addReadComponents(baseSwitch.getReadComponents());
 		addConstraints(baseSwitch.getConstraints());
+	}
+	
+	private void throwIllegalNewArrayException(Value value) {
+		throw new IllegalNewArrayException(getMsg("exception.analysis.other.illegal_new_array", value.toString()));
 	}
 	
 }

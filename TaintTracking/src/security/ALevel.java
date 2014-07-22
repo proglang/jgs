@@ -1,6 +1,6 @@
 package security;
 
-import constraints.IConstraintComponent;
+import constraints.IComponent;
 
 public abstract class ALevel implements ILevel {
 
@@ -12,7 +12,7 @@ public abstract class ALevel implements ILevel {
 
 	public abstract String toString();
 	
-	public IConstraintComponent changeSignature(String signature) {
+	public IComponent changeSignature(String signature) {
 		return this;
 	}
 
