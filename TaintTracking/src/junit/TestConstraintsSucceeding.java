@@ -13,7 +13,6 @@ import junit.model.TestFile;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.omg.PortableInterceptor.SUCCESSFUL;
 
 import soot.G;
 

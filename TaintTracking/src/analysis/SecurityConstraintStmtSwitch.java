@@ -54,7 +54,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		System.err.println(stmt.toString());
 		SecurityConstraintValueWriteSwitch writeSwitch = getWriteSwitch(stmt.getLeftOp());
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getRightOp());
-		if (writeSwitch.getDimension() != readSwitch.getDimension()) throw new RuntimeException("Unexpected behaviour - dimensions of left and right side for assignment are not equal ??? ");
+		if (writeSwitch.getComponentDimension() != readSwitch.getComponentDimension()) throw new RuntimeException("Unexpected behaviour - dimensions of left and right side for assignment are not equal ??? ");
 		handleReadAndWriteStmt(writeSwitch, readSwitch);
 
 	}

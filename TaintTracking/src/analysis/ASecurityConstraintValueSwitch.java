@@ -1,6 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
+import static utils.AnalysisUtils.getDimension;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,11 +9,15 @@ import java.util.List;
 import java.util.Set;
 
 import model.AnalyzedMethodEnvironment;
+import model.FieldEnvironment;
 import soot.Local;
 import soot.SootField;
+import soot.Type;
 import soot.Value;
+import constraints.ComponentArrayRef;
 import constraints.ConstraintsSet;
 import constraints.IComponent;
+import constraints.IComponentArrayBase;
 import constraints.LEQConstraint;
 import exception.SwitchException;
 import extractor.UsedObjectStore;
@@ -98,12 +103,26 @@ public abstract class ASecurityConstraintValueSwitch extends SecurityConstraintS
 		equalComponents.add(component);
 	}
 
-	protected int getDimension() {
+	protected int getComponentDimension() {
 		return dimension;
 	}
 
-	protected void setDimension(int dimension) {
+	protected void setComponentDimension(int dimension) {
 		this.dimension = dimension;
+	}
+	
+	protected void handleDimension(Type type, IComponentArrayBase cab) {
+		setComponentDimension(getDimension(type));
+		for (int i = 1; i <= getComponentDimension(); i++) {
+			appendEqualComponent(new ComponentArrayRef(cab, i));
+		}
+	}
+	
+	protected void handleFieldDimension(FieldEnvironment fe) {
+		setComponentDimension(getDimension(fe.getSootField().getType()));
+		for (int i = 1; i <= getComponentDimension(); i++) {
+			appendEqualComponent(fe.getLevel(i));
+		}
 	}
 	
 }

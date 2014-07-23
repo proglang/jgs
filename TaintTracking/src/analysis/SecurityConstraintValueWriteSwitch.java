@@ -52,7 +52,6 @@ import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
 import utils.AnalysisUtils;
-import constraints.ComponentArrayRef;
 import constraints.ComponentPlaceholder;
 import constraints.ConstraintsSet;
 import extractor.UsedObjectStore;
@@ -273,7 +272,7 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 		SecurityConstraintValueReadSwitch indexSwitch = getReadSwitch(index);
 		addReadComponents(baseSwitch.getReadComponents());
 		addReadComponents(indexSwitch.getReadComponents());
-		setDimension(AnalysisUtils.getDimension(v.getType()));
+		setComponentDimension(AnalysisUtils.getDimension(v.getType()));
 		if (baseSwitch.getEqualComponents().size() > 0) {
 			addWriteComponent(baseSwitch.getEqualComponents().get(0));
 			for (int i = 1; i < baseSwitch.getEqualComponents().size(); i++) {
@@ -303,12 +302,7 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 	private void handleField(SootField f) {
 		FieldEnvironment fe = getStore().getFieldEnvironment(field = f);
 		addWriteComponent(fe.getLevel());
-		setDimension(AnalysisUtils.getDimension(f.getType()));
-		if (getDimension() > 0) {
-			for (int i = 1; i <= getDimension(); i++) {
-				appendEqualComponent(fe.getLevel(i));
-			}
-		}
+		handleFieldDimension(fe);
 	}
 
 	@Override
@@ -331,12 +325,7 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 		local = l;
 		ComponentPlaceholder cp = new ComponentPlaceholder();
 		addWriteComponent(cp);
-		setDimension(AnalysisUtils.getDimension(l.getType()));
-		if (getDimension() > 0) {
-			for (int i = 1; i <= getDimension(); i++) {
-				appendEqualComponent(new ComponentArrayRef(cp, i));
-			}
-		}
+		handleDimension(l.getType(), cp);
 	}
 
 }
