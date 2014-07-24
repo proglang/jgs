@@ -11,7 +11,6 @@ import model.MessageStore;
 import security.ILevelDefinition;
 import security.ILevelDefinitionChecker;
 import security.ILevelMediator;
-import soot.G;
 import soot.PackManager;
 import soot.Transform;
 import utils.AnalysisUtils.ArgumentParser;

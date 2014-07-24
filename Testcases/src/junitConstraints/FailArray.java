@@ -37,8 +37,8 @@ public class FailArray {
 
 	public void test3() {
 		int h = mkHigh(1);
-		// @security("capacity is illegal")
 		int[] arr = arrayIntLow(h);
 	}
+	
 
 }

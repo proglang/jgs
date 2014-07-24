@@ -291,7 +291,7 @@ public class Definition extends ALevelDefinition {
 		return new int[capacity1];
 	}
 	
-	@ArrayCreator("low")
+	@ArrayCreator({"low"})
 	public static int[] arrayIntLow(int capacity1) {
 		return new int[capacity1];
 	}

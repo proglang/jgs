@@ -9,6 +9,12 @@ import soot.G;
 
 public class Debugger {
 	
+	private interface Style {
+
+		String getCode();
+
+	}
+	
 	public static class Header {
 		
 		private final String header;
@@ -24,13 +30,7 @@ public class Debugger {
 			this.subheader = "";
 		}
 		
-	}
-
-	private interface Style {
-
-		String getCode();
-
-	}
+	}	
 
 	protected enum BGColor implements Style {
 		BLACK(0), RED(1), GREEN(2), YELLOW(3), BLUE(4), MAGENTA(5), CYAN(6), WHITE(7);

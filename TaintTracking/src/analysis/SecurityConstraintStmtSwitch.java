@@ -208,6 +208,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 				constraints.add(new LEQConstraint(read, write));
 			}
 		}
+		// Reason for min: int[] arr = new int[]{1,2,3}; Object obj = (Object) arr;
 		for (int i = 0; i < Math.min(writeSwitch.getEqualComponents().size(), readSwitch.getEqualComponents().size()); i++) {
 			constraints.add(new LEQConstraint(writeSwitch.getEqualComponents().get(i), readSwitch.getEqualComponents().get(i)));
 			constraints.add(new LEQConstraint(readSwitch.getEqualComponents().get(i), writeSwitch.getEqualComponents().get(i)));
