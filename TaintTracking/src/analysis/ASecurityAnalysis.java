@@ -9,6 +9,8 @@ import security.ILevelMediator;
 import soot.SootMethod;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
+import utils.Debugger;
+import utils.Debugger.Header;
 import exception.AnalysisException;
 import exception.EnvironmentNotFoundException;
 import extractor.UsedObjectStore;
@@ -66,6 +68,7 @@ public abstract class ASecurityAnalysis<N, A> extends ForwardFlowAnalysis<N, A> 
 		try {
 			MethodEnvironment me = this.store.getMethodEnvironment(sootMethod.retrieveActiveBody().getMethod());
 			analyzedMethodEnvironment = new AnalyzedMethodEnvironment(me);
+			Debugger.show(new Header("New Method: " + sootMethod.getSignature()));
 			doAnalysis();
 		} catch (EnvironmentNotFoundException e) {
 			throw new AnalysisException(getMsg("exception.analysis.other.error_env", getSignatureOfMethod(sootMethod)), e);

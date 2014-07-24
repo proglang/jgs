@@ -90,6 +90,14 @@ public final class LEQConstraint {
 	}
 
 	public final boolean containsLocal() {
+		if (lhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) lhs;
+			if (isLocal(car.getBase())) return true;
+		}
+		if (rhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) rhs;
+			if (isLocal(car.getBase())) return true;
+		}
 		return isLocal(lhs) || isLocal(rhs);
 	}
 
@@ -99,6 +107,20 @@ public final class LEQConstraint {
 		}
 		if (isLocal(rhs)) {
 			if (((ComponentLocal) rhs).isGeneratedLocal()) return true;
+		}
+		if (lhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) lhs;
+			if (isLocal(car.getBase())) {
+				ComponentLocal l = (ComponentLocal) car.getBase();
+				if (l.isGeneratedLocal()) return true;
+			}
+		}
+		if (rhs instanceof ComponentArrayRef) {
+			ComponentArrayRef car = (ComponentArrayRef) rhs;
+			if (isLocal(car.getBase())) {
+				ComponentLocal l = (ComponentLocal) car.getBase();
+				if (l.isGeneratedLocal()) return true;
+			}
 		}
 		return false;
 	}

@@ -8,11 +8,11 @@ public class FailMethod {
 	
 	
 	public void test() {
-		int[] arr = new int[] {1,2,3};
-		Object arr1 = (Object) arr;
-		int[] arr2 = (int[]) arr1;
-		
-		
+		int[] arr = arrayIntHigh(3);
+		arr[0] = 1;
+		arr[1] = 2;
+		arr[2] = 3;
+		Object arr1 = (Object) arr;		
 	}
 
 ////	@Constraints({"high <= @return"})

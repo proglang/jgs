@@ -47,8 +47,6 @@ public class AnalysisLogUtils {
 	public static final String TXT_TIME = "Time";
 	/** {@link Formatter} which formats the messages for outputting them as text files. */
 	private static final AnalysisLogConsoleFormatter FORMATTER_CONSOLE = new AnalysisLogConsoleFormatter();
-	/** Number of trace elements which should be printed for an exception. */
-	private static final int TRACE_ELEMENTS_MAX = 15;
 	/** Characters with which the heading of a message ends. */
 	private static final String TXT_CLOSE_TAG = " ] --|";
 	/** String represents the value {@code false} for a setting. */
@@ -293,45 +291,6 @@ public class AnalysisLogUtils {
 	 */
 	protected static String generateStructureMessage(String msg) {
 		return TXT_OPEN_TAG + msg + TXT_CLOSE_TAG + TXT_LINE_SEPARATOR;
-	}
-
-	/**
-	 * Generates a formatted String which contains the information about a given {@link Throwable} and its stack trace. The number of shown
-	 * stack trace elements depend on the value of {@link AnalysisLogUtils#TRACE_ELEMENTS_MAX}. The given thread id is used to discover the
-	 * thread in which the exception occurred. Note: this method is provided for the {@link Formatter} subclasses.
-	 * 
-	 * @param thrown
-	 *          Throwable for which the formatted String should be generated.
-	 * @param threadID
-	 *          ID of the thread in which the exception occurred.
-	 * @return Formatted String that contains the information of the given {@link Throwable} and which occurred in the thread with the given
-	 *         thread id.
-	 * @see SootLoggerFileFormatter
-	 * @see AnalysisLogConsoleFormatter
-	 */
-	protected static String handleThrownException(Throwable thrown, int threadID) {
-		StringBuilder result = new StringBuilder();
-		if (thrown != null) {
-			String thread = "unknown";
-			for (Thread t : Thread.getAllStackTraces().keySet()) {
-				if (t.getId() == threadID) {
-					thread = t.getName();
-				}
-			}
-			result.append(TXT_TAB + "Exception in thread \"" + thread + "\" " + thrown.getClass().getName());
-			result.append(": " + thrown.getLocalizedMessage() + TXT_LINE_SEPARATOR);
-			StackTraceElement[] stackTraceElements = thrown.getStackTrace();
-			for (int i = 0; i < TRACE_ELEMENTS_MAX && i < stackTraceElements.length; i++) {
-				StackTraceElement stackTraceElement = stackTraceElements[i];
-				result.append(TXT_TAB + TXT_TAB + "at " + stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName());
-				result.append("(" + stackTraceElement.getFileName() + ":" + stackTraceElement.getLineNumber() + ")");
-				result.append(TXT_LINE_SEPARATOR);
-			}
-			if (TRACE_ELEMENTS_MAX <= stackTraceElements.length) {
-				result.append(TXT_TAB + TXT_TAB + "..." + TXT_LINE_SEPARATOR);
-			}
-		}
-		return result.toString();
 	}
 
 	/**

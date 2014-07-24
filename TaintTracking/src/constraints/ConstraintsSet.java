@@ -341,7 +341,7 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 		return sb.toString();
 	}
 
-	private List<String> toBoundaryStrings() {
+	public List<String> toBoundaryStrings() {
 		List<String> result = new ArrayList<String>();
 		Map<IComponentVar, Set<ILevel>> lower = new HashMap<IComponentVar, Set<ILevel>>();
 		Map<IComponentVar, Set<ILevel>> upper = new HashMap<IComponentVar, Set<ILevel>>();

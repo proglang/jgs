@@ -3,19 +3,19 @@ package junit;
 import static junit.utils.JUnitMessageStoreHelper.checkMethodStoreEquality;
 import static logging.AnalysisLogLevel.SECURITY;
 import static logging.AnalysisLogLevel.SIDEEFFECT;
+import static main.AnalysisType.CONSTRAINTS;
 import static org.junit.Assert.fail;
 
 import java.util.logging.Level;
 
 import junit.model.TestFile;
 
-import static main.AnalysisType.*;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import soot.G;
+import exception.AnalysisException;
 import exception.ExtractorException;
 
 public class TestConstraintsFailing {
@@ -43,10 +43,15 @@ public class TestConstraintsFailing {
 	private static final TestFile INVALID18 = new TestFile(TEST_PACKAGE, "Invalid18");
 	private static final TestFile INVALID19 = new TestFile(TEST_PACKAGE, "Invalid19");
 	private static final TestFile INVALID20 = new TestFile(TEST_PACKAGE, "Invalid20");
+	private static final TestFile INVALID21 = new TestFile(TEST_PACKAGE, "Invalid21");
+	private static final TestFile INVALID22 = new TestFile(TEST_PACKAGE, "Invalid22");
+	private static final TestFile INVALID23 = new TestFile(TEST_PACKAGE, "Invalid23");
+	private static final TestFile INVALID24 = new TestFile(TEST_PACKAGE, "Invalid24");
 	private static final TestFile LEVEL_FUNCTION = new TestFile(TEST_PACKAGE, "FailLevelFunction");
 	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "FailMethod");
 	private static final TestFile FIELD = new TestFile(TEST_PACKAGE, "FailField");
 	private static final TestFile EXPR = new TestFile(TEST_PACKAGE, "FailExpr");
+	private static final TestFile ARRAY = new TestFile(TEST_PACKAGE, "FailArray");
 
 	
 	@BeforeClass
@@ -161,33 +166,58 @@ public class TestConstraintsFailing {
 		checkMethodStoreEquality(INVALID20, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
+	@Test(expected = AnalysisException.class)
+	public final void test21Invalid() {
+		checkMethodStoreEquality(INVALID21, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = AnalysisException.class)
+	public final void test22Invalid() {
+		checkMethodStoreEquality(INVALID22, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = AnalysisException.class)
+	public final void test23Invalid() {
+		checkMethodStoreEquality(INVALID23, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
+	public final void test24Invalid() {
+		checkMethodStoreEquality(INVALID24, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
 	@Test
-	public final void test30LevelFunction() {
+	public final void test50LevelFunction() {
 		checkMethodStoreEquality(LEVEL_FUNCTION, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test31Method() {
+	public final void test51Method() {
 		checkMethodStoreEquality(METHOD, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test32Field() {
+	public final void test52Field() {
 		checkMethodStoreEquality(FIELD, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test33Expr() {
+	public final void test53Expr() {
 		checkMethodStoreEquality(EXPR, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void testFailAssignSame() {
+	public final void test54Array() {
+		checkMethodStoreEquality(ARRAY, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test80FailAssignSame() {
 	   checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "FailAssignSame"), CHECK_LEVELS, CONSTRAINTS);
 	}
 
 	@Test
-	public final void testFailPutfieldImplicitLeak() {
+	public final void test81FailPutfieldImplicitLeak() {
 	   checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "FailPutfieldImplicitLeak"), CHECK_LEVELS, CONSTRAINTS);
 	}
 }

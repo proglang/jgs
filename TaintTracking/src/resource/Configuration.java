@@ -61,5 +61,14 @@ public class Configuration {
 	 * DOC
 	 */
 	public static final String PREFIX_ARRAY_FUNCTION = "array";
+	/**
+	 * DOC
+	 */
+	public static final boolean DEBUG = true;
+	/**
+	 * DOC
+	 */
+	public static final int DISPLAY_SIZE = 150;
+	
 	
 }

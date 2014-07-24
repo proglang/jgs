@@ -152,6 +152,15 @@ public class ConstraintsUtils {
 		sb.append(" }");
 		return sb.toString();
 	}
+	
+	public static String[] constraintsAsStringArray(Set<LEQConstraint> constraints) {
+		String[] result = new String[constraints.size()];
+		int i = 0;
+		for (LEQConstraint constraint : constraints) {
+			result[i++] = constraint.toString();
+		}
+		return result;
+	}
 
 	public static String levelsAsString(Set<ILevel> levels) {
 		StringBuilder sb = new StringBuilder("{ ");

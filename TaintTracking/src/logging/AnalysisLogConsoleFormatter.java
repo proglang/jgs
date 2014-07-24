@@ -7,9 +7,9 @@ import static logging.AnalysisLogUtils.TXT_TAB;
 import static logging.AnalysisLogUtils.generateDefaultMessage;
 import static logging.AnalysisLogUtils.generateLogHeading;
 import static logging.AnalysisLogUtils.generateStructureMessage;
-import static logging.AnalysisLogUtils.handleThrownException;
 import static logging.AnalysisLogUtils.isStandardLoggableMessage;
 import static logging.AnalysisLogUtils.repeat;
+import static resource.Configuration.DISPLAY_SIZE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +32,6 @@ import java.util.logging.LogRecord;
  * @see AnalysisLogLevel
  */
 public class AnalysisLogConsoleFormatter extends Formatter {
-
-	/**
-	 * Maximal character number of a single line. I.e. a printed line has to have at most the given number of characters.
-	 */
-	private static final int LINE_WIDTH = 100;
 
 	/**
 	 * Stores the given message formatted in the given {@link StringBuilder}. The given message will be divided in lines with maximal
@@ -96,8 +91,8 @@ public class AnalysisLogConsoleFormatter extends Formatter {
 		List<String> result = new ArrayList<String>();
 		for (String subMsg : preResult) {
 			subMsg = subMsg.trim();
-			if (subMsg.length() > LINE_WIDTH - prefix) {
-				int indexLastSpace = subMsg.lastIndexOf(" ", LINE_WIDTH);
+			if (subMsg.length() > DISPLAY_SIZE - prefix) {
+				int indexLastSpace = subMsg.lastIndexOf(" ", DISPLAY_SIZE);
 				String partOne = subMsg.substring(0, indexLastSpace);
 				String partTwo = subMsg.substring(indexLastSpace);
 				result.add(partOne);
@@ -135,7 +130,6 @@ public class AnalysisLogConsoleFormatter extends Formatter {
 		} else {
 			result.append(generateDefaultMessage(record.getLevel().getLocalizedName(), formatMessage(record)));
 		}
-		result.append(handleThrownException(record.getThrown(), record.getThreadID()));
 		return result.toString();
 	}
 

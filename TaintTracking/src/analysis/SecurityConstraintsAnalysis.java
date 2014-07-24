@@ -17,6 +17,8 @@ import soot.Unit;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
+import utils.Debugger;
+import utils.Debugger.Header;
 import constraints.ConstraintsSet;
 import constraints.IProgramCounterTrigger;
 import constraints.LEQConstraint;
@@ -132,15 +134,20 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		try {
 			SecurityConstraintStmtSwitch stmtSwitch = getStmtSwitch(in, out, stmt);
 			consistencyCheck(out, stmt);
-			
 			if (stmtSwitch.isReturnStmt()) completnessCheck(out);
-
+			Debugger.show(
+					new Header("Boundaries after the statement: " + getAnalyzedEnvironment().getStmt().toString(), "at line " + getAnalyzedEnvironment().getSrcLn()),
+					out.toBoundaryStrings());
 		} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
 				| LevelNotFoundException | CastInvalidException | IllegalNewArrayException e) {
-			throw new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(),
-					getSignatureOfMethod(getAnalyzedEnvironment().getSootMethod()), getAnalyzedEnvironment().getSrcLn()), e);
+			Debugger
+					.show(new Header("Boundaries before the exceptional statement: " + getAnalyzedEnvironment().getStmt().toString(), "at line " + getAnalyzedEnvironment().getSrcLn()), in.toBoundaryStrings());
+			Debugger.show(
+					new Header("Boundaries after the exceptional statement: " + getAnalyzedEnvironment().getStmt().toString(), "at line " + getAnalyzedEnvironment().getSrcLn()),
+					out.toBoundaryStrings(),
+					new AnalysisException(getMsg("exception.analysis.other.error_switch", stmt.toString(),
+							getSignatureOfMethod(getAnalyzedEnvironment().getSootMethod()), getAnalyzedEnvironment().getSrcLn()), e));
 		}
-		//System.out.println(stmt.toString() + ": " + out.toString());
 	}
 
 	private SecurityConstraintStmtSwitch getStmtSwitch(ConstraintsSet in, ConstraintsSet out, Stmt stmt) {
@@ -156,7 +163,8 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		constraints.addAll(out.getWriteEffects());
 		ConstraintsSet signature = new ConstraintsSet(getAnalyzedEnvironment().getSignatureContraints(), getMediator());
 		signature.calculateTransitiveClosure();
-		List<ISubSignatureError> errors = isSubSignature(signature.getConstraintsSet(), getAnalyzedEnvironment().getSootMethod().getSignature(), constraints.getConstraintsSet());
+		List<ISubSignatureError> errors = isSubSignature(signature.getConstraintsSet(),
+				getAnalyzedEnvironment().getSootMethod().getSignature(), constraints.getConstraintsSet());
 		if (errors.size() != 0) {
 			Set<LEQConstraint> missingConstraints = extractConstraintsFrom(errors);
 			getLog().security(
@@ -166,7 +174,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 							constraintsAsString(missingConstraints)));
 		}
 	}
-	
+
 	private Set<LEQConstraint> extractConstraintsFrom(List<ISubSignatureError> errors) {
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		for (ISubSignatureError error : errors) {

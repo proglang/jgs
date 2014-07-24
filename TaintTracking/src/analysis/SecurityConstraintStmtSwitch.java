@@ -25,6 +25,8 @@ import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
 import utils.AnalysisUtils;
+import utils.Debugger;
+import utils.Debugger.Header;
 import constraints.ComponentArrayRef;
 import constraints.ComponentLocal;
 import constraints.ComponentPlaceholder;
@@ -51,17 +53,14 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
-		System.err.println(stmt.toString());
 		SecurityConstraintValueWriteSwitch writeSwitch = getWriteSwitch(stmt.getLeftOp());
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getRightOp());
-		if (writeSwitch.getComponentDimension() != readSwitch.getComponentDimension()) throw new RuntimeException("Unexpected behaviour - dimensions of left and right side for assignment are not equal ??? ");
 		handleReadAndWriteStmt(writeSwitch, readSwitch);
-
 	}
 
 	private void handleReadAndWriteStmt(SecurityConstraintValueWriteSwitch writeSwitch, SecurityConstraintValueReadSwitch readSwitch) {
 		if (writeSwitch.isLocal()) {
-			ComponentLocal local = new ComponentLocal(writeSwitch.getLocal());			
+			ComponentLocal local = new ComponentLocal(writeSwitch.getLocal());
 			addConstraints(generateConstraints(writeSwitch, readSwitch));
 			restoreLocalForPlaceholder(local);
 			removeAccessArtifacts(readSwitch);
@@ -116,7 +115,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		SecurityConstraintValueWriteSwitch writeSwitch = getWriteSwitch(stmt.getLeftOp());
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getRightOp());
 		handleReadAndWriteStmt(writeSwitch, readSwitch);
-		
+
 	}
 
 	@Override
@@ -167,14 +166,14 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	private void handleBranch(Value condition, IProgramCounterTrigger programCounterTrigger) {
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(condition);
-		ConstraintsSet pcConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(),	getIn().getWriteEffects(), getMediator());
+		ConstraintsSet pcConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(), getIn().getWriteEffects(),
+				getMediator());
 		for (IComponent component : readSwitch.getReadComponents()) {
 			pcConstraints.add(new LEQConstraint(component, new ComponentProgramCounterRef(getAnalyzedSignature())));
 		}
 		pcConstraints.removeConstraintsContainingLocal();
 		getOut().addProgramCounterConstraints(programCounterTrigger, pcConstraints.getConstraintsSet());
 	}
-	
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
@@ -198,11 +197,12 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		getOut().add(constraint);
 	}
 
-	private Set<LEQConstraint> generateConstraints(SecurityConstraintValueWriteSwitch writeSwitch, SecurityConstraintValueReadSwitch readSwitch) {
+	private Set<LEQConstraint> generateConstraints(SecurityConstraintValueWriteSwitch writeSwitch,
+			SecurityConstraintValueReadSwitch readSwitch) {
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>();
 		readSwitch.addReadComponents(writeSwitch.getReadComponents());
 		readSwitch.addReadComponent(new ComponentProgramCounterRef(getAnalyzedSignature()));
-		constraints.addAll(readSwitch.getConstraints());		
+		constraints.addAll(readSwitch.getConstraints());
 		for (IComponent write : writeSwitch.getWriteComponents()) {
 			for (IComponent read : readSwitch.getReadComponents()) {
 				constraints.add(new LEQConstraint(read, write));
@@ -212,7 +212,8 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 			constraints.add(new LEQConstraint(writeSwitch.getEqualComponents().get(i), readSwitch.getEqualComponents().get(i)));
 			constraints.add(new LEQConstraint(readSwitch.getEqualComponents().get(i), writeSwitch.getEqualComponents().get(i)));
 		}
-		System.err.println(ConstraintsUtils.constraintsAsString(constraints));
+		Debugger.show(new Header("Generated Constraints of Assignment", getAnalyzedEnvironment().getStmt().toString()),
+				ConstraintsUtils.constraintsAsStringArray(constraints));
 		return constraints;
 	}
 

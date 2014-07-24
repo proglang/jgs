@@ -278,8 +278,6 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 			for (int i = 1; i < baseSwitch.getEqualComponents().size(); i++) {
 				appendEqualComponent(baseSwitch.getEqualComponents().get(1));
 			}
-		} else {
-			throw new RuntimeException("Unexpected behaviour - expected array has no equal components ???");
 		}
 	}
 
