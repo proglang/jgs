@@ -1,4 +1,4 @@
-package main;
+	package main;
 
 import static logging.AnalysisLogUtils.makeInstantLoggingSetting;
 import static logging.AnalysisLogUtils.makeLoggerLevelSetting;

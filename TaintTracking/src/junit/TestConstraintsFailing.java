@@ -47,6 +47,10 @@ public class TestConstraintsFailing {
 	private static final TestFile INVALID22 = new TestFile(TEST_PACKAGE, "Invalid22");
 	private static final TestFile INVALID23 = new TestFile(TEST_PACKAGE, "Invalid23");
 	private static final TestFile INVALID24 = new TestFile(TEST_PACKAGE, "Invalid24");
+	private static final TestFile INVALID25 = new TestFile(TEST_PACKAGE, "Invalid25");
+	private static final TestFile INVALID26 = new TestFile(TEST_PACKAGE, "Invalid26");
+	private static final TestFile INVALID27 = new TestFile(TEST_PACKAGE, "Invalid27");
+	private static final TestFile INVALID28 = new TestFile(TEST_PACKAGE, "Invalid28");
 	private static final TestFile LEVEL_FUNCTION = new TestFile(TEST_PACKAGE, "FailLevelFunction");
 	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "FailMethod");
 	private static final TestFile FIELD = new TestFile(TEST_PACKAGE, "FailField");
@@ -184,6 +188,26 @@ public class TestConstraintsFailing {
 	@Test(expected = ExtractorException.class)
 	public final void test24Invalid() {
 		checkMethodStoreEquality(INVALID24, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
+	public final void test25Invalid() {
+		checkMethodStoreEquality(INVALID25, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
+	public final void test26Invalid() {
+		checkMethodStoreEquality(INVALID26, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
+	public final void test27Invalid() {
+		checkMethodStoreEquality(INVALID27, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
+	public final void test28Invalid() {
+		checkMethodStoreEquality(INVALID28, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test

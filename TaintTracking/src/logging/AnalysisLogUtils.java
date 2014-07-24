@@ -3,7 +3,6 @@ package logging;
 import static java.util.logging.Level.ALL;
 import static java.util.logging.Level.OFF;
 import static logging.AnalysisLogLevel.CONFIGURATION;
-import static logging.AnalysisLogLevel.DEBUGGING;
 import static logging.AnalysisLogLevel.HEADING;
 import static logging.AnalysisLogLevel.SECURITY;
 import static logging.AnalysisLogLevel.SIDEEFFECT;
@@ -312,7 +311,7 @@ public class AnalysisLogUtils {
 	 * @see SootLoggerFileFormatter
 	 */
 	protected static boolean isStandardLoggableMessage(Level level) {
-		return level.equals(WARNING) || level.equals(DEBUGGING) || level.equals(SIDEEFFECT) || level.equals(SECURITY)
+		return level.equals(WARNING) || level.equals(SIDEEFFECT) || level.equals(SECURITY)
 				|| level.equals(CONFIGURATION);
 
 	}

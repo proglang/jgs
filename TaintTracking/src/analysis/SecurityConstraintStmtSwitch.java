@@ -45,6 +45,7 @@ import extractor.UsedObjectStore;
 public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch implements StmtSwitch {
 
 	private Stmt returnStmt = null;
+	private final Set<LEQConstraint> recentlyAdded = new HashSet<LEQConstraint>();
 
 	protected SecurityConstraintStmtSwitch(AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store, ConstraintsSet in,
 			ConstraintsSet out) {
@@ -190,10 +191,12 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	}
 
 	private void addConstraints(Set<LEQConstraint> constraints) {
+		recentlyAdded.addAll(constraints);
 		getOut().addAll(constraints);
 	}
 
 	private void addConstraint(LEQConstraint constraint) {
+		recentlyAdded.add(constraint);
 		getOut().add(constraint);
 	}
 
@@ -223,6 +226,10 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		if (readSwitch.isMethod()) signatures.add(readSwitch.getMethod().getSignature());
 		if (readSwitch.usesStaticAccess()) signatures.add(readSwitch.getStaticClass().getName());
 		getOut().removeConstraintsContainingReferencesInclBaseFor(signatures);
+	}
+
+	public Set<LEQConstraint> getRecentlyAdded() {
+		return recentlyAdded;
 	}
 
 }

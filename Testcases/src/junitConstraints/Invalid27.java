@@ -2,10 +2,10 @@ package junitConstraints;
 
 import security.Definition.FieldSecurity;
 
-public class Invalid18 {
+public class Invalid27 {
 
-	@FieldSecurity({ "low" })
-	public static int[] field;
+	@FieldSecurity({ "low", "low", "high" })
+	public int[] field;
 
 	public static void main(String[] args) {}
 

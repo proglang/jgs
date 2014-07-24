@@ -135,14 +135,14 @@ public class Debugger {
 			String header = "DEBUG" + ((title.isEmpty()) ? "" : (" - " + reduceString(title, 8)));
 			String subheader = (position.isEmpty()) ? "" : ("[ " + reduceString(position, 4) + " ]");
 			OUT.println();
-			OUT.println(generateStyle(new Style[] { TextColor.RED, TextStyle.BOLD, TextStyle.DOUBLE }) + header
+			OUT.println(generateStyle(new Style[] { TextColor.BLUE, TextStyle.BOLD, TextStyle.DOUBLE }) + header
 					+ repeat(Configuration.DISPLAY_SIZE - header.length(), " ") + generateStyle(new Style[] { TextStyle.RESET }));
 			if (!subheader.isEmpty()) {
-				OUT.println(generateStyle(new Style[] { TextColor.RED, TextStyle.BOLD }) + repeat(Configuration.DISPLAY_SIZE - subheader.length(), " ")
+				OUT.println(generateStyle(new Style[] { TextColor.BLUE, TextStyle.BOLD }) + repeat(Configuration.DISPLAY_SIZE - subheader.length(), " ")
 						+ subheader + generateStyle(new Style[] { TextStyle.RESET }));
 			}
 			for (int i = 0; i < txts.length; i++) {
-				OUT.println(generateStyle(new Style[] { TextColor.RED }) + txts[i] + generateStyle(new Style[] { TextStyle.RESET }));
+				OUT.println(generateStyle(new Style[] { TextColor.BLUE }) + txts[i] + generateStyle(new Style[] { TextStyle.RESET }));
 			}
 		}
 		if (exception != null) throw exception;		

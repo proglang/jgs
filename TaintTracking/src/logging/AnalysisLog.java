@@ -5,8 +5,6 @@ import static java.util.logging.Level.ALL;
 import static java.util.logging.Logger.getLogger;
 import static logging.AnalysisLogLevel.CONFIGURATION;
 import static logging.AnalysisLogLevel.CONFIGURATION_NAME;
-import static logging.AnalysisLogLevel.DEBUGGING;
-import static logging.AnalysisLogLevel.DEBUGGING_NAME;
 import static logging.AnalysisLogLevel.HEADING;
 import static logging.AnalysisLogLevel.SECURITY;
 import static logging.AnalysisLogLevel.SECURITY_NAME;
@@ -121,33 +119,6 @@ public class AnalysisLog {
 	}
 
 	/**
-	 * Writes the given message to the available handlers of the logger {@link SootLogger#LOG} with the level
-	 * {@link AnalysisLogLevel#DEBUGGING} depending on the fact whether the logger should log instantaneously. Right before the logged message
-	 * a heading will be created that illustrates the level, the given file name and the given source line number where the message was
-	 * generated. Also, the given message will be stored in the {@link SootLogger#messageStore} persistently.<br />
-	 * <b>This logger level method should be used for printing debug information.</b>
-	 * 
-	 * @param fileName
-	 *          File name in which the given message is generated.
-	 * @param srcLn
-	 *          Source line number of the given file name at which the given message is generated.
-	 * @param msg
-	 *          Message that should be exported by the logger {@link SootLogger#LOG}.
-	 */
-	public void debug(String fileName, long srcLn, String msg) {
-		if (storeMessages) {
-			this.messageStore.addMessage(msg, fileName, srcLn, DEBUGGING);
-		}
-		if (instantLogging) {
-			if (isLevelEnabled(DEBUGGING)) {
-				ExtendedHeadingInformation info = new ExtendedHeadingInformation(1, srcLn, fileName);
-				LOG.log(HEADING, DEBUGGING_NAME.toUpperCase(ENGLISH), new Object[] { info });
-			}
-			LOG.log(DEBUGGING, msg);
-		}
-	}
-
-	/**
 	 * Method which disables the storing of messages in the {@link SootLogger#messageStore} and which also enables the writing of the messages
 	 * to the handlers of the logger {@link SootLogger#LOG}. The method will return whether the instant logging was enabled or disabled. This
 	 * method should be used in the case of printing all the stored messages after the analysis.
@@ -243,8 +214,6 @@ public class AnalysisLog {
 				effect(fileName, srcLn, msg);
 			} else if (level.equals(SECURITY)) {
 				security(fileName, srcLn, msg);
-			} else if (level.equals(DEBUGGING)) {
-				debug(fileName, srcLn, msg);
 			} else if (level.equals(WARNING)) {
 				warning(fileName, srcLn, msg);
 			}

@@ -20,6 +20,7 @@ import soot.toolkits.scalar.ForwardFlowAnalysis;
 import utils.Debugger;
 import utils.Debugger.Header;
 import constraints.ConstraintsSet;
+import constraints.ConstraintsUtils;
 import constraints.IProgramCounterTrigger;
 import constraints.LEQConstraint;
 import error.ISubSignatureError;
@@ -133,11 +134,8 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		checkEndOfImplicitFlow(stmt, in, out);
 		try {
 			SecurityConstraintStmtSwitch stmtSwitch = getStmtSwitch(in, out, stmt);
-			consistencyCheck(out, stmt);
+			consistencyCheck(out, in, stmtSwitch, stmt);
 			if (stmtSwitch.isReturnStmt()) completnessCheck(out);
-			Debugger.show(
-					new Header("Boundaries after the statement: " + getAnalyzedEnvironment().getStmt().toString(), "at line " + getAnalyzedEnvironment().getSrcLn()),
-					out.toBoundaryStrings());
 		} catch (ProgramCounterException | EnvironmentNotFoundException | SwitchException | MethodParameterNotFoundException
 				| LevelNotFoundException | CastInvalidException | IllegalNewArrayException e) {
 			Debugger
@@ -183,7 +181,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 		return constraints;
 	}
 
-	private void consistencyCheck(ConstraintsSet out, Stmt stmt) {
+	private void consistencyCheck(ConstraintsSet out, ConstraintsSet in, SecurityConstraintStmtSwitch stmtSwitch, Stmt stmt) {
 		out.addAll(out.getAllProgramCounterConstraints());
 		out.removeConstraintsContainingProgramCounter();
 		if (!consistent) {
@@ -195,11 +193,13 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 			Set<LEQConstraint> inconsistentConstraints = constraints.getInconsistent();
 			if (inconsistentConstraints.size() != 0) {
 				consistent = true;
+				Debugger.show(new Header("Boundaries before the inconsistent state", "at line " + getAnalyzedEnvironment().getSrcLn()), in.toBoundaryStrings());
+				Debugger.show(new Header("Constraints leading to the inconsistent state", "at line " + getAnalyzedEnvironment().getSrcLn()), ConstraintsUtils.constraintsAsStringArray(stmtSwitch.getRecentlyAdded()));
 				getLog().security(
 						generateFileName(getAnalyzedEnvironment().getSootMethod()),
 						getAnalyzedEnvironment().getSrcLn(),
 						getMsg("security.constraints.inequality", getAnalyzedEnvironment().getSrcLn(), getSignatureOfMethod(getAnalyzedEnvironment()
-								.getSootMethod()) /* + "@" + stmt.toString() */, constraintsAsString(inconsistentConstraints), constraints
+								.getSootMethod()), constraintsAsString(inconsistentConstraints), constraints
 								.toBoundariesString()));
 			}
 		}

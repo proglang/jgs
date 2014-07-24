@@ -3,7 +3,6 @@ package utils;
 import static java.util.logging.Level.ALL;
 import static java.util.logging.Level.OFF;
 import static logging.AnalysisLogLevel.CONFIGURATION;
-import static logging.AnalysisLogLevel.DEBUGGING;
 import static logging.AnalysisLogLevel.SECURITY;
 import static logging.AnalysisLogLevel.SIDEEFFECT;
 import static logging.AnalysisLogLevel.STRUCTURE;
@@ -119,7 +118,6 @@ public class AnalysisUtils {
 		private static final String EXCL_SECURITY = "security.";
 		private static final String LEV_ALL = "all";
 		private static final String LEV_CONFIGURATION = "configuration";
-		private static final String LEV_DEBUG = "debug";
 		private static final String LEV_EFFECT = "effect";
 		private static final String LEV_IMPORTANT = "important";
 		private static final String LEV_OFF = "off";
@@ -427,9 +425,6 @@ public class AnalysisUtils {
 						break;
 					case LEV_STRUCTURE:
 						logLevels.add(STRUCTURE);
-						break;
-					case LEV_DEBUG:
-						logLevels.add(DEBUGGING);
 						break;
 					case LEV_SIDEEFFECT:
 						logLevels.add(SIDEEFFECT);

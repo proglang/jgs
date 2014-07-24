@@ -25,10 +25,6 @@ final public class AnalysisLogLevel extends Level {
 	public static final Level CONFIGURATION = new AnalysisLogLevel("Configuration", CONFIG.intValue());
 	/** Name of the logger level {@link AnalysisLogLevel#CONFIGURATION}. */
 	public static final String CONFIGURATION_NAME = CONFIGURATION.getLocalizedName();
-	/** Level, to be used for printing debug information. */
-	public static final Level DEBUGGING = new AnalysisLogLevel("Debug", FINER.intValue());
-	/** Name of the logger level {@link AnalysisLogLevel#DEBUGGING}. */
-	public static final String DEBUGGING_NAME = DEBUGGING.getLocalizedName();
 	/**
 	 * Level, to be used for security violations, e.g. if a strong <em>security level</em> will be returned by a method body, but the
 	 * corresponding annotation expects a weaker <em>security level</em>.

@@ -7,19 +7,19 @@ public class FailArray {
 
 	public static void main(String[] args) {}
 
-	@FieldSecurity({ "low" })
+	@FieldSecurity({ "low", "low" })
 	public int[] low;
 
-	@FieldSecurity({ "high" })
+	@FieldSecurity({ "high", "high" })
 	public int[] high;
 
-	@FieldSecurity({ "low", "low" })
+	@FieldSecurity({ "low", "low", "low"})
 	public int[][] lowLow;
 
-	@FieldSecurity({ "low", "high" })
+	@FieldSecurity({ "low", "low", "high" })
 	public int[][] lowHigh;
 
-	@FieldSecurity({ "high", "high" })
+	@FieldSecurity({ "high", "high", "high" })
 	public int[][] highHigh;
 
 	@Constraints({ "low <= @return" })
