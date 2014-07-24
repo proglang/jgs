@@ -321,7 +321,7 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 	@Override
 	public void caseLocal(Local l) {
 		local = l;
-		ComponentPlaceholder cp = new ComponentPlaceholder();
+		ComponentPlaceholder cp = ComponentPlaceholder.getInstance();
 		addWriteComponent(cp);
 		handleDimension(l.getType(), cp);
 	}

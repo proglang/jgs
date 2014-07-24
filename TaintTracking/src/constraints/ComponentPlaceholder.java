@@ -1,6 +1,19 @@
 package constraints;
 
 public class ComponentPlaceholder implements IComponent, IComponentArrayBase {
+	
+	private static ComponentPlaceholder placeholder = null;
+	
+	public static ComponentPlaceholder getInstance() {
+		if (ComponentPlaceholder.placeholder == null) {
+			ComponentPlaceholder.placeholder = new ComponentPlaceholder();
+		}
+		return ComponentPlaceholder.placeholder;
+	}
+	
+	private ComponentPlaceholder() {
+		super();
+	}
 
 	@Override
 	public IComponentArrayBase changeSignature(String signature) {

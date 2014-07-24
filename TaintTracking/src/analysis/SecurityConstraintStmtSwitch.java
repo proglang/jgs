@@ -72,7 +72,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	}
 
 	private void restoreLocalForPlaceholder(ComponentLocal local) {
-		ComponentPlaceholder placeholder = new ComponentPlaceholder();
+		ComponentPlaceholder placeholder = ComponentPlaceholder.getInstance();
 		getOut().removeConstraintsContainingInclBase(local);
 		addConstraint(new LEQConstraint(placeholder, local));
 		int dimension = AnalysisUtils.getDimension(local.getLocal().getType());
