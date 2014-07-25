@@ -55,7 +55,7 @@ public class TestConstraintsFailing {
 	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "FailMethod");
 	private static final TestFile FIELD = new TestFile(TEST_PACKAGE, "FailField");
 	private static final TestFile EXPR = new TestFile(TEST_PACKAGE, "FailExpr");
-	private static final TestFile ARRAY = new TestFile(TEST_PACKAGE, "FailArray");
+	private static final TestFile ARRAY = new TestFile(TEST_PACKAGE, "FailArraySignature");
 
 	
 	@BeforeClass
@@ -231,9 +231,15 @@ public class TestConstraintsFailing {
 	}
 	
 	@Test
-	public final void test54Array() {
+	public final void testFailArraySignature() {
 		checkMethodStoreEquality(ARRAY, CHECK_LEVELS, CONSTRAINTS);
 	}
+
+	@Test
+	public final void testFailArrayAssign() {
+	    checkMethodStoreEquality(new TestFile("junitConstraints", "FailArrayAssign"), CHECK_LEVELS, CONSTRAINTS);
+	}
+
 	
 	@Test
 	public final void test80FailAssignSame() {
