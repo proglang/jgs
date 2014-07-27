@@ -417,20 +417,10 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 						throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_level_count", generateSignature(method),
 								arrayLevels.size(), dimesion));
 					}
-					ILevel previous = null;
 					for (String arrayLevel : arrayLevels) {
 						if (!getLevelNames().contains(arrayLevel)) {
 							throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_level", generateSignature(method),
 									arrayLevel));
-						} else {
-							ILevel level = getLevelForName(arrayLevel);
-							if (previous != null) {
-								if (implementation.compare(previous, level) > 0) {
-									throw new DefinitionInvalidException(getMsg("exception.def_class.array_func.invalid_level_order",
-											generateSignature(method), previous.getName(), level.getName()));
-								}
-							}
-							previous = level;
 						}
 					}
 				} catch (Exception e) {
@@ -457,13 +447,6 @@ public abstract class ALevelDefinitionChecker implements ILevelDefinitionChecker
 			if (annotation instanceof ArrayCreator) {
 				return annotation;
 			}
-		}
-		return null;
-	}
-
-	private ILevel getLevelForName(String name) {
-		for (ILevel level : getLevels()) {
-			if (level.getName().equals(name)) return level;
 		}
 		return null;
 	}

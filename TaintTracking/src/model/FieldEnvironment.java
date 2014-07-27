@@ -129,14 +129,6 @@ public class FieldEnvironment extends Environment {
 						// static final field has to be the weakest security level
 						throw new AnnotationInvalidException(getMsg("exception.level.field.public", level.getName(), getSignatureOfField(sootField)));
 					}
-					if (i > 0) {
-						ILevel prev = levels.get(i - 1);
-						// check whether previous level is weaker or equal than the current
-						if (!getLevelMediator().isWeakerOrEquals(prev, level)) {
-							throw new AnnotationInvalidException(getMsg("exception.level.field.invalid_order", prev.getName(), i,
-									getSignatureOfField(sootField), level.getName(), i + 1));
-						}
-					}
 				}
 			} else { // no level given
 				throw new AnnotationInvalidException(getMsg("exception.level.field.invalid_dim_count", getSignatureOfField(sootField),

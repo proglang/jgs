@@ -199,8 +199,7 @@ public class SecurityConstraintsAnalysis extends ASecurityAnalysis<Unit, Constra
 						generateFileName(getAnalyzedEnvironment().getSootMethod()),
 						getAnalyzedEnvironment().getSrcLn(),
 						getMsg("security.constraints.inequality", getAnalyzedEnvironment().getSrcLn(), getSignatureOfMethod(getAnalyzedEnvironment()
-								.getSootMethod()), constraintsAsString(inconsistentConstraints), constraints
-								.toBoundariesString()));
+								.getSootMethod()), stmt.toString(), constraintsAsString(inconsistentConstraints)));
 			}
 		}
 

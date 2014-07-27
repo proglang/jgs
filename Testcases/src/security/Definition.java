@@ -296,6 +296,11 @@ public class Definition extends ALevelDefinition {
 		return new int[capacity1];
 	}
 	
+	@ArrayCreator({ "high", "low" })
+	public static int[][] arrayTest(int capacity1, int capacity2) {
+		return new int[capacity1][capacity2];
+	}
+	
 	@ArrayCreator({ "low", "high"})
 	public static int[][] arrayIntLowHigh(int capacity1, int capacity2) {
 		return new int[capacity1][capacity2];
