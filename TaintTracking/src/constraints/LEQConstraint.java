@@ -2,11 +2,13 @@ package constraints;
 
 import static constraints.ConstraintsUtils.isLevel;
 import static constraints.ConstraintsUtils.isLocal;
+import static constraints.ConstraintsUtils.isArrayReference;
 import static constraints.ConstraintsUtils.isParameterReference;
 import static constraints.ConstraintsUtils.isProgramCounterReference;
 import static constraints.ConstraintsUtils.isReturnReference;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import security.ILevel;
@@ -27,11 +29,11 @@ public final class LEQConstraint {
 	}
 	
 	public final boolean containsComponentInclBase(IComponent component) {
-		if (lhs instanceof ComponentArrayRef) {
+		if (isArrayReference(lhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) lhs;
 			if (car.getBase().equals(component)) return true;
 		}
-		if (rhs instanceof ComponentArrayRef) {
+		if (isArrayReference(rhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) rhs;
 			if (car.getBase().equals(component)) return true;
 		}
@@ -47,11 +49,11 @@ public final class LEQConstraint {
 	}
 	
 	public final boolean containsReturnReferenceInclBaseFor(String signature) {
-		if (lhs instanceof ComponentArrayRef) {
+		if (isArrayReference(lhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) lhs;
 			if (isReturnReference(car.getBase(), signature)) return true;
 		}
-		if (rhs instanceof ComponentArrayRef) {
+		if (isArrayReference(rhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) rhs;
 			if (isReturnReference(car.getBase(), signature)) return true;
 		}
@@ -74,11 +76,11 @@ public final class LEQConstraint {
 	}
 	
 	public final boolean containsParameterReferenceInclBaseFor(String signature) {
-		if (lhs instanceof ComponentArrayRef) {
+		if (isArrayReference(lhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) lhs;
 			if (isParameterReference(car.getBase(), signature)) return true;
 		}
-		if (rhs instanceof ComponentArrayRef) {
+		if (isArrayReference(rhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) rhs;
 			if (isParameterReference(car.getBase(), signature)) return true;
 		}
@@ -90,11 +92,11 @@ public final class LEQConstraint {
 	}
 
 	public final boolean containsLocal() {
-		if (lhs instanceof ComponentArrayRef) {
+		if (isArrayReference(lhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) lhs;
 			if (isLocal(car.getBase())) return true;
 		}
-		if (rhs instanceof ComponentArrayRef) {
+		if (isArrayReference(rhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) rhs;
 			if (isLocal(car.getBase())) return true;
 		}
@@ -108,14 +110,14 @@ public final class LEQConstraint {
 		if (isLocal(rhs)) {
 			if (((ComponentLocal) rhs).isGeneratedLocal()) return true;
 		}
-		if (lhs instanceof ComponentArrayRef) {
+		if (isArrayReference(lhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) lhs;
 			if (isLocal(car.getBase())) {
 				ComponentLocal l = (ComponentLocal) car.getBase();
 				if (l.isGeneratedLocal()) return true;
 			}
 		}
-		if (rhs instanceof ComponentArrayRef) {
+		if (isArrayReference(rhs)) {
 			ComponentArrayRef car = (ComponentArrayRef) rhs;
 			if (isLocal(car.getBase())) {
 				ComponentLocal l = (ComponentLocal) car.getBase();
@@ -125,35 +127,83 @@ public final class LEQConstraint {
 		return false;
 	}
 
-	public final Set<ComponentParameterRef> getInvalidParameterReferencesFor(String signature, int count) {
-		Set<ComponentParameterRef> invalid = new HashSet<ComponentParameterRef>();
+	public final Set<IComponent> getInvalidParameterReferencesFor(String signature, int count, List<Integer> dimension) {
+		Set<IComponent> invalid = new HashSet<IComponent>();
 		if (isParameterReference(lhs)) {
 			ComponentParameterRef paramRef = (ComponentParameterRef) lhs;
 			if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
 				invalid.add(paramRef);
 			}
+		} else if (isArrayReference(lhs)) {
+			ComponentArrayRef arrayRef = (ComponentArrayRef) lhs;
+			if (isParameterReference(arrayRef.getBase())) {
+				ComponentParameterRef paramRef = (ComponentParameterRef) arrayRef.getBase();
+				if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
+					invalid.add(arrayRef);
+				} else {
+					if (arrayRef.getDimesion() > dimension.get(paramRef.getParameterPos())) {
+						invalid.add(arrayRef);
+					}
+				}
+			}			
 		}
 		if (isParameterReference(rhs)) {
 			ComponentParameterRef paramRef = (ComponentParameterRef) rhs;
 			if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
 				invalid.add(paramRef);
 			}
+		} else if (isArrayReference(rhs)) {
+			ComponentArrayRef arrayRef = (ComponentArrayRef) rhs;
+			if (isParameterReference(arrayRef.getBase())) {
+				ComponentParameterRef paramRef = (ComponentParameterRef) arrayRef.getBase();
+				if (!paramRef.getSignature().equals(signature) || paramRef.getParameterPos() >= count) {
+					invalid.add(arrayRef);
+				} else {
+					if (arrayRef.getDimesion() > dimension.get(paramRef.getParameterPos())) {
+						invalid.add(arrayRef);
+					}
+				}
+			}			
 		}
 		return invalid;
 	}
 
-	public final Set<ComponentReturnRef> getInvalidReturnReferencesFor(String signature) {
-		Set<ComponentReturnRef> invalid = new HashSet<ComponentReturnRef>();
+	public final Set<IComponent> getInvalidReturnReferencesFor(String signature, int dimension) {
+		Set<IComponent> invalid = new HashSet<IComponent>();
 		if (isReturnReference(lhs)) {
 			ComponentReturnRef returnRef = (ComponentReturnRef) lhs;
 			if (!returnRef.getSignature().equals(signature)) {
 				invalid.add(returnRef);
+			}
+		} else if (isArrayReference(lhs)) {
+			ComponentArrayRef arrayRef = (ComponentArrayRef) lhs;
+			if (isReturnReference(arrayRef.getBase())) {
+				ComponentReturnRef returnRef = (ComponentReturnRef) arrayRef.getBase();				
+				if (!returnRef.getSignature().equals(signature)) {
+					invalid.add(arrayRef);
+				} else {
+					if (arrayRef.getDimesion() > dimension) {
+						invalid.add(arrayRef);
+					}
+				}				
 			}
 		}
 		if (isReturnReference(rhs)) {
 			ComponentReturnRef returnRef = (ComponentReturnRef) rhs;
 			if (!returnRef.getSignature().equals(signature)) {
 				invalid.add(returnRef);
+			}
+		} else if (isArrayReference(rhs)) {
+			ComponentArrayRef arrayRef = (ComponentArrayRef) rhs;
+			if (isReturnReference(arrayRef.getBase())) {
+				ComponentReturnRef returnRef = (ComponentReturnRef) arrayRef.getBase();				
+				if (!returnRef.getSignature().equals(signature)) {
+					invalid.add(arrayRef);
+				} else {
+					if (arrayRef.getDimesion() > dimension) {
+						invalid.add(arrayRef);
+					}
+				}				
 			}
 		}
 		return invalid;

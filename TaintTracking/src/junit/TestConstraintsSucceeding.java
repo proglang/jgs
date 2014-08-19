@@ -18,14 +18,18 @@ import soot.G;
 
 public class TestConstraintsSucceeding {
 	
-	private static final String TEST_PACKAGE = "junitConstraints";
-	private static Level[] CHECK_LEVELS = { SECURITY, SIDEEFFECT };	
+	private static final String TEST_PACKAGE = "junitConstraints";private static Level[] CHECK_LEVELS = { SECURITY, SIDEEFFECT };	
 	private static final TestFile VALID01 = new TestFile(TEST_PACKAGE, "Valid01");
-	private static final TestFile SPECIAL_01 = new TestFile(TEST_PACKAGE, "SuccessSpecial01");
 	private static final TestFile LEVEL_FUNCTION = new TestFile(TEST_PACKAGE, "SuccessLevelFunction");
 	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "SuccessMethod");
-	private static final TestFile FIELD = new TestFile(TEST_PACKAGE, "SuccessField");
+	private static final TestFile FIELD_INSTANCE = new TestFile(TEST_PACKAGE, "SuccessFieldInstance");
+	private static final TestFile FIELD_STATIC = new TestFile(TEST_PACKAGE, "SuccessFieldStatic");
 	private static final TestFile EXPR = new TestFile(TEST_PACKAGE, "SuccessExpr");
+	private static final TestFile ARRAY = new TestFile(TEST_PACKAGE, "SuccessArray");
+	private static final TestFile SPECIAL_01 = new TestFile(TEST_PACKAGE, "SuccessSpecial01");
+	private static final TestFile POLYMORPHIC_SETTER = new TestFile(TEST_PACKAGE, "SuccessPolymorphicSetter");
+	private static final TestFile LOW_REF_HIGH_UPDATE = new TestFile(TEST_PACKAGE, "SuccessLowRefHighUpdate");
+	
 
 	@BeforeClass
 	public static final void init() {
@@ -55,27 +59,37 @@ public class TestConstraintsSucceeding {
 	}
 	
 	@Test
-	public final void test32SuccessField() {
-		checkMethodStoreEquality(FIELD, CHECK_LEVELS, CONSTRAINTS);
+	public final void test32SuccessFieldInstance() {
+		checkMethodStoreEquality(FIELD_INSTANCE, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test33Expr() {
+	public final void test33SuccessFieldStatic() {
+		checkMethodStoreEquality(FIELD_STATIC, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test34SuccessExpr() {
 		checkMethodStoreEquality(EXPR, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test90SuccessSpecial() {
+	public final void test35SuccessArray() {
+		checkMethodStoreEquality(ARRAY, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test80SuccessSpecial() {
 		checkMethodStoreEquality(SPECIAL_01, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void testSuccessLowRefHighUpdate() {
-	    checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "SuccessLowRefHighUpdate"), CHECK_LEVELS, CONSTRAINTS);
+	public final void test81SuccessLowRefHighUpdate() {
+	    checkMethodStoreEquality(LOW_REF_HIGH_UPDATE, CHECK_LEVELS, CONSTRAINTS);
 	}
 
 	@Test
-	public final void testSuccessPolymorphicSetter() {
-	    checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "SuccessPolymorphicSetter"), CHECK_LEVELS, CONSTRAINTS);
+	public final void test82SuccessPolymorphicSetter() {
+	    checkMethodStoreEquality(POLYMORPHIC_SETTER, CHECK_LEVELS, CONSTRAINTS);
 	}
 }

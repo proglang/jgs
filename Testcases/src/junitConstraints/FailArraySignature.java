@@ -1,9 +1,8 @@
 package junitConstraints;
 
 import static security.Definition.*;
-import security.Definition.FieldSecurity;
 
-public class FailArraySignature extends stubs.Arrays {
+public class FailArraySignature extends stubs.SpecialArrays {
     
     public static void main(String[] args) {}
 
@@ -15,6 +14,7 @@ public class FailArraySignature extends stubs.Arrays {
 		return arr[0];
 	}
 
+	@SuppressWarnings("unused")
 	public void test3() {
 		int h = mkHigh(1);
 		int[] arr = arrayIntLow(h);

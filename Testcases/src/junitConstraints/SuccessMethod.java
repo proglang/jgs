@@ -3,7 +3,7 @@ package junitConstraints;
 import static security.Definition.*;
 
 public class SuccessMethod {
-
+	
 	@FieldSecurity({ "low" })
 	private int iFieldL;
 
@@ -15,8 +15,21 @@ public class SuccessMethod {
 
 	@FieldSecurity({ "high" })
 	private static int sFieldH;
-
+	
 	public static void main(String[] args) {}
+
+	// Static methods
+
+	// Instance mehtods
+
+	// --> recursive call
+	// --> call of another method
+	// --> parameter and return values
+	
+	
+
+	
+
 
 	@Constraints({})
 	public void test1() {}
@@ -117,7 +130,7 @@ public class SuccessMethod {
 	public static int test22(int a1) {
 		return a1;
 	}
-	
+
 	@Constraints({ "@0 <= high", "@0 <= @return" })
 	public int test23(int a1) {
 		return a1;

@@ -6,15 +6,29 @@ public class FailMethod {
 
 	public static void main(String[] args) {}
 	
+	// Static methods
 	
-	public void test() {
-		int[] arr = arrayIntHigh(3);
-		arr[0] = 1;
-		arr[1] = 2;
-		arr[2] = 3;
-		Object arr1 = (Object) arr;		
-	}
+	// Instance mehtods
+	
+	
+	// --> recursive call
+	// --> call of another method
+	// --> parameter and return values
+	
+	
+	
+	
+	
+//	
+//	public void test() {
+//		int[] arr = arrayIntHigh(3);
+//		arr[0] = 1;
+//		arr[1] = 2;
+//		arr[2] = 3;
+//		Object arr1 = (Object) arr;		
+//	}
 
+	
 ////	@Constraints({"high <= @return"})
 //	public int test() {
 //		int i = mkLow(42);

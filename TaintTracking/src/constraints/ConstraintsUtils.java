@@ -57,19 +57,19 @@ public class ConstraintsUtils {
 		return levels;
 	}
 
-	public static List<ComponentParameterRef> getInvalidParameterReferencesOfSet(Collection<LEQConstraint> constraints, String signature,
-			int count) {
-		List<ComponentParameterRef> invalid = new ArrayList<ComponentParameterRef>();
+	public static List<IComponent> getInvalidParameterReferencesOfSet(Collection<LEQConstraint> constraints, String signature,
+			int count, List<Integer> dimensions) {
+		List<IComponent> invalid = new ArrayList<IComponent>();
 		for (LEQConstraint constraint : constraints) {
-			invalid.addAll(constraint.getInvalidParameterReferencesFor(signature, count));
+			invalid.addAll(constraint.getInvalidParameterReferencesFor(signature, count, dimensions));
 		}
 		return invalid;
 	}
 
-	public static List<ComponentReturnRef> getInvalidReturnReferencesOfSet(Collection<LEQConstraint> constraints, String signature) {
-		List<ComponentReturnRef> invalid = new ArrayList<ComponentReturnRef>();
+	public static List<IComponent> getInvalidReturnReferencesOfSet(Collection<LEQConstraint> constraints, String signature, int dimension) {
+		List<IComponent> invalid = new ArrayList<IComponent>();
 		for (LEQConstraint constraint : constraints) {
-			invalid.addAll(constraint.getInvalidReturnReferencesFor(signature));
+			invalid.addAll(constraint.getInvalidReturnReferencesFor(signature, dimension));
 		}
 		return invalid;
 	}
@@ -133,6 +133,10 @@ public class ConstraintsUtils {
 	public static boolean isLocal(IComponent component) {
 		return component instanceof ComponentLocal;
 	}
+	
+	public static boolean isArrayReference(IComponent component) {
+		return component instanceof ComponentArrayRef;
+	}
 
 	public static Set<LEQConstraint> changeAllComponentsSignature(String newSignature, Set<LEQConstraint> constraints) {
 		Set<LEQConstraint> result = new HashSet<LEQConstraint>();
@@ -172,7 +176,7 @@ public class ConstraintsUtils {
 		sb.append(" }");
 		return sb.toString();
 	}
-
+	
 	public static Set<LEQConstraint> getConstraintsContaining(Set<LEQConstraint> constraints, IComponent component) {
 		Set<LEQConstraint> result = new HashSet<LEQConstraint>();
 		for (LEQConstraint constraint : constraints) {

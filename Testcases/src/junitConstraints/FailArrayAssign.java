@@ -2,7 +2,7 @@ package junitConstraints;
 
 import static security.Definition.*;
 
-public class FailArrayAssign extends stubs.Arrays {
+public class FailArrayAssign extends stubs.SpecialArrays {
     
     public static void main(String[] args) { }
     

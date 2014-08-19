@@ -4,7 +4,6 @@ import static security.Definition.*;
 
 public class FailExpr {
 
-	@Constraints({ })
 	public static void main(String[] args) {}
 	
 	@Constraints("low <= @return")

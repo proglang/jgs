@@ -15,8 +15,10 @@ import static constraints.ConstraintsUtils.isProgramCounterReference;
 import static constraints.ConstraintsUtils.isReturnReference;
 import static junit.utils.JUnitHelper.equalContentOfLists;
 import static junit.utils.JUnitHelper.mkList;
+import static junit.utils.JUnitHelper.mkIntList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import junit.example.Fed1.VelS;
 
 import org.junit.Test;
@@ -25,10 +27,12 @@ import security.ILevel;
 import soot.Local;
 import soot.RefType;
 import soot.jimple.internal.JimpleLocal;
+import constraints.ComponentArrayRef;
 import constraints.ComponentLocal;
 import constraints.ComponentParameterRef;
 import constraints.ComponentProgramCounterRef;
 import constraints.ComponentReturnRef;
+import constraints.IComponent;
 import constraints.LEQConstraint;
 
 public class TestConstraint {
@@ -38,11 +42,14 @@ public class TestConstraint {
 	private ComponentParameterRef par0a = new ComponentParameterRef(0, "a");
 	private ComponentParameterRef par1a = new ComponentParameterRef(1, "a");
 	private ComponentReturnRef reta = new ComponentReturnRef("a");
+	private ComponentArrayRef areta = new ComponentArrayRef(reta, 1);
+	private ComponentArrayRef apar0a = new ComponentArrayRef(par0a, 1);
 	private ComponentProgramCounterRef pca = new ComponentProgramCounterRef("a");
 	private LEQConstraint p0a_p1a = new LEQConstraint(par0a, par1a);
 	private LEQConstraint l_p0a = new LEQConstraint(low, par0a);
 	private LEQConstraint ra_h = new LEQConstraint(reta, high);
 	private LEQConstraint ra_pc = new LEQConstraint(reta, pca);
+	private LEQConstraint ara_pc = new LEQConstraint(areta, pca);
 	private LEQConstraint p1a_ra = new LEQConstraint(par1a, reta);
 	private LEQConstraint l_p1a = new LEQConstraint(low, par1a);
 	private LEQConstraint l_pc = new LEQConstraint(low, pca);
@@ -50,6 +57,7 @@ public class TestConstraint {
 	private LEQConstraint l_h = new LEQConstraint(low, high);
 	private LEQConstraint l_ra = new LEQConstraint(low, reta);
 	private LEQConstraint p0a_ra = new LEQConstraint(par0a, reta);
+	private LEQConstraint ap0a_ra = new LEQConstraint(apar0a, reta);
 	private LEQConstraint p0a_h = new LEQConstraint(par0a, high);
 	private LEQConstraint p1a_h = new LEQConstraint(par1a, high);
 	private LEQConstraint p1a_pc = new LEQConstraint(par1a, pca);
@@ -217,33 +225,35 @@ public class TestConstraint {
 
 	@Test
 	public final void testGetInvalidParameterReferencesOfSet() {
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] {}), "a", 0),
-				mkList(new ComponentParameterRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h }), "a", 1),
-				mkList(new ComponentParameterRef[] { par1a })));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h }), "a", 2),
-				mkList(new ComponentParameterRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h }), "b", 1),
-				mkList(new ComponentParameterRef[] { par1a })));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h, p0a_l }), "a", 2),
-				mkList(new ComponentParameterRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "a", 2),
-				mkList(new ComponentParameterRef[] {})));
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] {}), "a", 0, mkIntList()),
+				mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h }), "a", 1, mkIntList(0)),
+				mkList(new IComponent[] { par1a })));
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h }), "a", 2, mkIntList(0, 0)),
+				mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h }), "b", 1, mkIntList(0)),
+				mkList(new IComponent[] { par1a })));
+		assertTrue(equalContentOfLists(
+				getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_h, p0a_l }), "a", 2, mkIntList(0, 2)),
+				mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(
+				getInvalidParameterReferencesOfSet(mkList(new LEQConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "a", 2, mkIntList(0, 0)),
+				mkList(new IComponent[] {})));
 	}
 
 	@Test
 	public final void testGetInvalidReturnReferencesOfSet() {
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] {}), "a"), mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_pc }), "a"),
-				mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_pc }), "b"),
-				mkList(new ComponentReturnRef[] { reta })));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h }), "a"),
-				mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { p1a_h, ra_h }), "a"),
-				mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "b"),
-				mkList(new ComponentReturnRef[] { reta })));
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] {}), "a", 0), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_pc }), "a", 0),
+				mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_pc }), "b", 0),
+				mkList(new IComponent[] { reta })));
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { ra_h, p1a_h }), "a", 0),
+				mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { p1a_h, ra_h }), "a", 0),
+				mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(getInvalidReturnReferencesOfSet(mkList(new LEQConstraint[] { p1a_pc, p0a_p1a, ra_pc }), "b", 0),
+				mkList(new IComponent[] { reta })));
 	}
 
 	@Test
@@ -380,26 +390,35 @@ public class TestConstraint {
 
 	@Test
 	public final void testGetInvalidParameterReferencesFor() {
-		assertTrue(equalContentOfLists(p0a_h.getInvalidParameterReferencesFor("a", 0), mkList(new ComponentParameterRef[] { par0a })));
-		assertTrue(equalContentOfLists(p0a_h.getInvalidParameterReferencesFor("a", 1), mkList(new ComponentParameterRef[] {})));
-		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("a", 0), mkList(new ComponentParameterRef[] { par0a, par1a })));
-		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("a", 1), mkList(new ComponentParameterRef[] { par1a })));
-		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("a", 2), mkList(new ComponentParameterRef[] {})));
-		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("b", 0), mkList(new ComponentParameterRef[] { par0a, par1a })));
-		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("b", 2), mkList(new ComponentParameterRef[] { par0a, par1a })));
-		assertTrue(equalContentOfLists(l_h.getInvalidParameterReferencesFor("a", 3), mkList(new ComponentParameterRef[] {})));
-		assertTrue(equalContentOfLists(ra_pc.getInvalidParameterReferencesFor("b", 0), mkList(new ComponentParameterRef[] {})));
+		assertTrue(equalContentOfLists(p0a_h.getInvalidParameterReferencesFor("a", 0, mkIntList()), mkList(new IComponent[] { par0a })));
+		assertTrue(equalContentOfLists(p0a_h.getInvalidParameterReferencesFor("a", 1, mkIntList(0)), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(ap0a_ra.getInvalidParameterReferencesFor("a", 1, mkIntList(0)), mkList(new IComponent[] { apar0a })));
+		assertTrue(equalContentOfLists(ap0a_ra.getInvalidParameterReferencesFor("b", 1, mkIntList(0)), mkList(new IComponent[] { apar0a })));
+		assertTrue(equalContentOfLists(ap0a_ra.getInvalidParameterReferencesFor("a", 0, mkIntList()), mkList(new IComponent[] { apar0a })));
+		assertTrue(equalContentOfLists(ap0a_ra.getInvalidParameterReferencesFor("a", 1, mkIntList(1)), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("a", 0, mkIntList()), mkList(new IComponent[] { par0a, par1a })));
+		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("a", 1, mkIntList(0)), mkList(new IComponent[] { par1a })));
+		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("a", 2, mkIntList(0, 0)), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("b", 0, mkIntList()), mkList(new IComponent[] { par0a, par1a })));
+		assertTrue(equalContentOfLists(p0a_p1a.getInvalidParameterReferencesFor("b", 2, mkIntList(0, 0)), mkList(new IComponent[] { par0a,
+				par1a })));
+		assertTrue(equalContentOfLists(l_h.getInvalidParameterReferencesFor("a", 3, mkIntList(0, 0, 0)), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(ra_pc.getInvalidParameterReferencesFor("b", 0, mkIntList()), mkList(new IComponent[] {})));
 	}
 
 	@Test
 	public final void testGetInvalidReturnReferencesFor() {
-		assertTrue(equalContentOfLists(ra_pc.getInvalidReturnReferencesFor("a"), mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(ra_pc.getInvalidReturnReferencesFor("b"), mkList(new ComponentReturnRef[] { reta })));
-		assertTrue(equalContentOfLists(p1a_ra.getInvalidReturnReferencesFor("a"), mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(p1a_ra.getInvalidReturnReferencesFor("b"), mkList(new ComponentReturnRef[] { reta })));
-		assertTrue(equalContentOfLists(p0a_h.getInvalidReturnReferencesFor("a"), mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(p0a_p1a.getInvalidReturnReferencesFor("a"), mkList(new ComponentReturnRef[] {})));
-		assertTrue(equalContentOfLists(l_h.getInvalidReturnReferencesFor("a"), mkList(new ComponentReturnRef[] {})));
+		assertTrue(equalContentOfLists(ra_pc.getInvalidReturnReferencesFor("a", 0), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(ra_pc.getInvalidReturnReferencesFor("b", 0), mkList(new IComponent[] { reta })));
+		assertTrue(equalContentOfLists(ara_pc.getInvalidReturnReferencesFor("b", 0), mkList(new IComponent[] { areta })));
+		assertTrue(equalContentOfLists(ara_pc.getInvalidReturnReferencesFor("a", 0), mkList(new IComponent[] { areta })));
+		assertTrue(equalContentOfLists(ara_pc.getInvalidReturnReferencesFor("b", 1), mkList(new IComponent[] { areta })));
+		assertTrue(equalContentOfLists(ara_pc.getInvalidReturnReferencesFor("a", 1), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(p1a_ra.getInvalidReturnReferencesFor("a", 0), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(p1a_ra.getInvalidReturnReferencesFor("b", 0), mkList(new IComponent[] { reta })));
+		assertTrue(equalContentOfLists(p0a_h.getInvalidReturnReferencesFor("a", 0), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(p0a_p1a.getInvalidReturnReferencesFor("a", 0), mkList(new IComponent[] {})));
+		assertTrue(equalContentOfLists(l_h.getInvalidReturnReferencesFor("a", 0), mkList(new IComponent[] {})));
 	}
 
 }

@@ -149,8 +149,15 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		returnStmt = stmt;
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getOp());
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>(readSwitch.getConstraints());
+		ComponentReturnRef returnRef = new ComponentReturnRef(getAnalyzedSignature());
 		for (IComponent read : readSwitch.getReadComponents()) {
-			constraints.add(new LEQConstraint(read, new ComponentReturnRef(getAnalyzedSignature())));
+			constraints.add(new LEQConstraint(read, returnRef));
+		}
+		for (int j = 0; j < readSwitch.getEqualComponents().size(); j++) {
+			IComponent equalComponent = readSwitch.getEqualComponents().get(j);
+			ComponentArrayRef arrayRef = new ComponentArrayRef(returnRef, j + 1);
+			constraints.add(new LEQConstraint(arrayRef, equalComponent));
+			constraints.add(new LEQConstraint(equalComponent, arrayRef));
 		}
 		addConstraints(constraints);
 	}

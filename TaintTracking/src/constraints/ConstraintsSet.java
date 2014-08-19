@@ -130,6 +130,34 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((constraints == null) ? 0 : constraints.hashCode());
+		result = prime * result + ((programCounter == null) ? 0 : programCounter.hashCode());
+		result = prime * result + ((writeEffects == null) ? 0 : writeEffects.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		ConstraintsSet other = (ConstraintsSet) obj;
+		if (constraints == null) {
+			if (other.constraints != null) return false;
+		} else if (!constraints.equals(other.constraints)) return false;
+		if (programCounter == null) {
+			if (other.programCounter != null) return false;
+		} else if (!programCounter.equals(other.programCounter)) return false;
+		if (writeEffects == null) {
+			if (other.writeEffects != null) return false;
+		} else if (!writeEffects.equals(other.writeEffects)) return false;
+		return true;
+	}
+
+	@Override
 	public void clear() {
 		constraints.clear();
 		programCounter.clear();
@@ -228,14 +256,14 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 			if (constraint.containsComponent(local)) remove(constraint);
 		}
 	}
-	
+
 	public void removeConstraintsContainingInclBase(IComponent component) {
 		calculateTransitiveClosure();
 		for (LEQConstraint constraint : getConstraintsSet()) {
 			if (constraint.containsComponentInclBase(component)) remove(constraint);
 		}
 	}
-	
+
 	public void removeConstraintsContaining(ComponentPlaceholder placeholder) {
 		calculateTransitiveClosure();
 		for (LEQConstraint constraint : getConstraintsSet()) {
@@ -269,13 +297,13 @@ public class ConstraintsSet implements Collection<LEQConstraint> {
 		String[] array = signatures.toArray(new String[] {});
 		removeConstraintsContainingReferencesFor(array);
 	}
-	
+
 	public void removeConstraintsContainingReferencesInclBaseFor(List<String> signatures) {
 		calculateTransitiveClosure();
 		String[] array = signatures.toArray(new String[] {});
 		removeConstraintsContainingReferencesInclBaseFor(array);
 	}
-	
+
 	public void removeConstraintsContainingReferencesInclBaseFor(String... signatures) {
 		calculateTransitiveClosure();
 		for (String signature : signatures) {

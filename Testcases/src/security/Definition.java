@@ -301,8 +301,18 @@ public class Definition extends ALevelDefinition {
 		return new int[capacity1][capacity2];
 	}
 	
+	@ArrayCreator({ "low", "low"})
+	public static int[][] arrayIntLowLow(int capacity1, int capacity2) {
+		return new int[capacity1][capacity2];
+	}
+	
 	@ArrayCreator({ "low", "high"})
 	public static int[][] arrayIntLowHigh(int capacity1, int capacity2) {
+		return new int[capacity1][capacity2];
+	}
+	
+	@ArrayCreator({ "high", "high"})
+	public static int[][] arrayIntHighHigh(int capacity1, int capacity2) {
 		return new int[capacity1][capacity2];
 	}
 	

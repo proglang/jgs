@@ -10,7 +10,7 @@ public class FailLevelFunction {
 	public void failLevelFunction1(int i) {
 		// @security("Argument has stronger constraints")
 		mkLow(i);
-		// @security("")
+		// @security("Inconsistent constraint set, because of previous invalidity")
 		return;
 	}
 

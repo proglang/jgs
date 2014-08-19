@@ -3,9 +3,7 @@ package stubs;
 import static security.Definition.*;
 
 
-public class Arrays {
-    
-    public static void main(String[] args) {}
+public class SpecialArrays {
 
     @FieldSecurity({ "low", "low" })
     public int[] lowLow;
@@ -17,7 +15,7 @@ public class Arrays {
     public int[][] lowLowLow;
 
     @FieldSecurity({ "low", "low", "high" })
-    public int[][] lowHigh;
+    public int[][] lowLowHigh;
 
     @FieldSecurity({ "high", "high", "high" })
     public int[][] highHighHigh;

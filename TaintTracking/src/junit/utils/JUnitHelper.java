@@ -2,9 +2,11 @@ package junit.utils;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import main.AnalysisType;
@@ -101,6 +103,14 @@ public class JUnitHelper {
 
 	public static <U> Set<U> mkList(U[] array) {
 		return new HashSet<U>(Arrays.asList(array));
+	}
+	
+	public static List<Integer> mkIntList(int... dimensions) {
+		List<Integer> result = new ArrayList<Integer>();
+		for (int dimension : dimensions) {
+			result.add(Integer.valueOf(dimension));
+		}
+		return result;
 	}
 
 }

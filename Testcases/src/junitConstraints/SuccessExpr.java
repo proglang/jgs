@@ -6,576 +6,575 @@ public class SuccessExpr {
 
 	public static void main(String[] args) {}
 	
-	
 	@Constraints("high <= @return")
-	public int test1() {
+	public int successExpr1() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High - op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test2() {
+	public int successExpr2() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High + op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test3() {
+	public int successExpr3() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High * op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test4() {
+	public int successExpr4() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High / op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test5() {
+	public boolean successExpr5() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High > op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test6() {
+	public boolean successExpr6() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High >= op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test7() {
+	public boolean successExpr7() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High < op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test8() {
+	public boolean successExpr8() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High <= op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test9() {
+	public boolean successExpr9() {
 		int op1High = mkHigh(42);
 		int op2High = mkHigh(42);
 		return op1High == op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test10() {
+	public boolean successExpr10() {
 		boolean op1High = mkHigh(false);
 		boolean op2High = mkHigh(false);
 		return op1High && op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test11() {
+	public boolean successExpr11() {
 		boolean op1High = mkHigh(false);
 		boolean op2High = mkHigh(false);
 		return op1High || op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test12() {
+	public boolean successExpr12() {
 		boolean op1High = mkHigh(false);
 		boolean op2High = mkHigh(false);
 		return op1High ^ op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test13() {
+	public boolean successExpr13() {
 		boolean op1High = mkHigh(false);
 		boolean op2High = mkHigh(false);
 		return op1High  & op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test14() {
+	public boolean successExpr14() {
 		boolean op1High = mkHigh(false);
 		boolean op2High = mkHigh(false);
 		return op1High | op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test15() {
+	public int successExpr15() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High - op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public int test16() {
+	public int successExpr16() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High + op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public int test17() {
+	public int successExpr17() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High * op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public int test18() {
+	public int successExpr18() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High / op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test19() {
+	public boolean successExpr19() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High > op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test20() {
+	public boolean successExpr20() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High >= op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test21() {
+	public boolean successExpr21() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High < op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test22() {
+	public boolean successExpr22() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High <= op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test23() {
+	public boolean successExpr23() {
 		int op1High = mkHigh(42);
 		int op2Low = mkLow(42);
 		return op1High == op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test24() {
+	public boolean successExpr24() {
 		boolean op1High = mkHigh(false);
 		boolean op2Low = mkLow(false);
 		return op1High && op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test25() {
+	public boolean successExpr25() {
 		boolean op1High = mkHigh(false);
 		boolean op2Low = mkLow(false);
 		return op1High || op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test26() {
+	public boolean successExpr26() {
 		boolean op1High = mkHigh(false);
 		boolean op2Low = mkLow(false);
 		return op1High ^ op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test27() {
+	public boolean successExpr27() {
 		boolean op1High = mkHigh(false);
 		boolean op2Low = mkLow(false);
 		return op1High  & op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test28() {
+	public boolean successExpr28() {
 		boolean op1High = mkHigh(false);
 		boolean op2Low = mkLow(false);
 		return op1High | op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public int test29() {
+	public int successExpr29() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low - op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test30() {
+	public int successExpr30() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low + op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test31() {
+	public int successExpr31() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low * op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test32() {
+	public int successExpr32() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low / op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test33() {
+	public boolean successExpr33() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low > op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test34() {
+	public boolean successExpr34() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low >= op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test35() {
+	public boolean successExpr35() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low < op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test36() {
+	public boolean successExpr36() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low <= op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test37() {
+	public boolean successExpr37() {
 		int op1Low = mkLow(42);
 		int op2High = mkHigh(42);
 		return op1Low == op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test38() {
+	public boolean successExpr38() {
 		boolean op1Low = mkLow(false);
 		boolean op2High = mkHigh(false);
 		return op1Low && op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test39() {
+	public boolean successExpr39() {
 		boolean op1Low = mkLow(false);
 		boolean op2High = mkHigh(false);
 		return op1Low || op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test40() {
+	public boolean successExpr40() {
 		boolean op1Low = mkLow(false);
 		boolean op2High = mkHigh(false);
 		return op1Low ^ op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test41() {
+	public boolean successExpr41() {
 		boolean op1Low = mkLow(false);
 		boolean op2High = mkHigh(false);
 		return op1Low  & op2High;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test42() {
+	public boolean successExpr42() {
 		boolean op1Low = mkLow(false);
 		boolean op2High = mkHigh(false);
 		return op1Low | op2High;
 	}
 
 	@Constraints("high <= @return")
-	public int test43() {
+	public int successExpr43() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low - op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public int test44() {
+	public int successExpr44() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low + op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public int test45() {
+	public int successExpr45() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low * op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public int test46() {
+	public int successExpr46() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low / op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test47() {
+	public boolean successExpr47() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low > op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test48() {
+	public boolean successExpr48() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low >= op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test49() {
+	public boolean successExpr49() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low < op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test50() {
+	public boolean successExpr50() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low <= op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test51() {
+	public boolean successExpr51() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low == op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test52() {
+	public boolean successExpr52() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low && op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test53() {
+	public boolean successExpr53() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low || op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test54() {
+	public boolean successExpr54() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low ^ op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test55() {
+	public boolean successExpr55() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low  & op2Low;
 	}
 
 	@Constraints("high <= @return")
-	public boolean test56() {
+	public boolean successExpr56() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low | op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public int test57() {
+	public int successExpr57() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low - op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public int test58() {
+	public int successExpr58() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low + op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public int test59() {
+	public int successExpr59() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low * op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public int test60() {
+	public int successExpr60() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low / op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test61() {
+	public boolean successExpr61() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low > op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test62() {
+	public boolean successExpr62() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low >= op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test63() {
+	public boolean successExpr63() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low < op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test64() {
+	public boolean successExpr64() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low <= op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test65() {
+	public boolean successExpr65() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low == op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test66() {
+	public boolean successExpr66() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low && op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test67() {
+	public boolean successExpr67() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low || op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test68() {
+	public boolean successExpr68() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low ^ op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test69() {
+	public boolean successExpr69() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low  & op2Low;
 	}
 
 	@Constraints("low <= @return")
-	public boolean test70() {
+	public boolean successExpr70() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low | op2Low;
 	}
 	
-	public int test71() {
+	public int successExpr71() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low - op2Low;
 	}
 
-	public int test72() {
+	public int successExpr72() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low + op2Low;
 	}
 
-	public int test73() {
+	public int successExpr73() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low * op2Low;
 	}
 
-public int test74() {
+public int successExpr74() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low / op2Low;
 	}
 
-	public boolean test75() {
+	public boolean successExpr75() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low > op2Low;
 	}
 
-	public boolean test76() {
+	public boolean successExpr76() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low >= op2Low;
 	}
 
-	public boolean test77() {
+	public boolean successExpr77() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low < op2Low;
 	}
 
-	public boolean test78() {
+	public boolean successExpr78() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low <= op2Low;
 	}
 
-	public boolean test79() {
+	public boolean successExpr79() {
 		int op1Low = mkLow(42);
 		int op2Low = mkLow(42);
 		return op1Low == op2Low;
 	}
 
-	public boolean test80() {
+	public boolean successExpr80() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low && op2Low;
 	}
 
-	public boolean test81() {
+	public boolean successExpr81() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low || op2Low;
 	}
 
-	public boolean test82() {
+	public boolean successExpr82() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low ^ op2Low;
 	}
 
-	public boolean test83() {
+	public boolean successExpr83() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low  & op2Low;
 	}
 
-	public boolean test84() {
+	public boolean successExpr84() {
 		boolean op1Low = mkLow(false);
 		boolean op2Low = mkLow(false);
 		return op1Low | op2Low;

@@ -46,15 +46,23 @@ public class TestConstraintsFailing {
 	private static final TestFile INVALID21 = new TestFile(TEST_PACKAGE, "Invalid21");
 	private static final TestFile INVALID22 = new TestFile(TEST_PACKAGE, "Invalid22");
 	private static final TestFile INVALID23 = new TestFile(TEST_PACKAGE, "Invalid23");
-	private static final TestFile INVALID26 = new TestFile(TEST_PACKAGE, "Invalid26");
-	private static final TestFile INVALID27 = new TestFile(TEST_PACKAGE, "Invalid27");
-	private static final TestFile INVALID28 = new TestFile(TEST_PACKAGE, "Invalid28");
+	private static final TestFile INVALID24 = new TestFile(TEST_PACKAGE, "Invalid26");
+	private static final TestFile INVALID25 = new TestFile(TEST_PACKAGE, "Invalid27");
+	private static final TestFile INVALID26 = new TestFile(TEST_PACKAGE, "Invalid28");
+	private static final TestFile INVALID27 = new TestFile(TEST_PACKAGE, "Invalid29");
+	private static final TestFile INVALID28 = new TestFile(TEST_PACKAGE, "Invalid30");
+	private static final TestFile INVALID29 = new TestFile(TEST_PACKAGE, "Invalid31");
+	private static final TestFile INVALID30 = new TestFile(TEST_PACKAGE, "Invalid32");
 	private static final TestFile LEVEL_FUNCTION = new TestFile(TEST_PACKAGE, "FailLevelFunction");
 	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "FailMethod");
-	private static final TestFile FIELD = new TestFile(TEST_PACKAGE, "FailField");
+	private static final TestFile FIELD_INSTANCE = new TestFile(TEST_PACKAGE, "FailFieldInstance");
+	private static final TestFile FIELD_STATIC = new TestFile(TEST_PACKAGE, "FailFieldStatic");
 	private static final TestFile EXPR = new TestFile(TEST_PACKAGE, "FailExpr");
-	private static final TestFile ARRAY = new TestFile(TEST_PACKAGE, "FailArraySignature");
-
+	private static final TestFile ARRAY = new TestFile(TEST_PACKAGE, "FailArray");
+	private static final TestFile ARRAY_SIGNATURE = new TestFile(TEST_PACKAGE, "FailArraySignature");
+	private static final TestFile ARRAY_ASSIGN = new TestFile(TEST_PACKAGE, "FailArrayAssign");
+	private static final TestFile ASSIGN_SAME = new TestFile(TEST_PACKAGE, "FailAssignSame");
+	private static final TestFile PUTFIELD_IMPLICIT_LEAK = new TestFile(TEST_PACKAGE, "FailPutfieldImplicitLeak");
 	
 	@BeforeClass
 	public static final void init() {
@@ -184,6 +192,16 @@ public class TestConstraintsFailing {
 	}
 	
 	@Test(expected = ExtractorException.class)
+	public final void test24Invalid() {
+		checkMethodStoreEquality(INVALID24, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
+	public final void test25Invalid() {
+		checkMethodStoreEquality(INVALID25, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
 	public final void test26Invalid() {
 		checkMethodStoreEquality(INVALID26, CHECK_LEVELS, CONSTRAINTS);
 	}
@@ -198,44 +216,64 @@ public class TestConstraintsFailing {
 		checkMethodStoreEquality(INVALID28, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
+	@Test(expected = ExtractorException.class)
+	public final void test29Invalid() {
+		checkMethodStoreEquality(INVALID29, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test(expected = ExtractorException.class)
+	public final void test30Invalid() {
+		checkMethodStoreEquality(INVALID30, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
 	@Test
-	public final void test50LevelFunction() {
+	public final void test50FailLevelFunction() {
 		checkMethodStoreEquality(LEVEL_FUNCTION, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test51Method() {
+	public final void test51FailMethod() {
 		checkMethodStoreEquality(METHOD, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test52Field() {
-		checkMethodStoreEquality(FIELD, CHECK_LEVELS, CONSTRAINTS);
+	public final void test52FailFieldInstance() {
+		checkMethodStoreEquality(FIELD_INSTANCE, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test53Expr() {
+	public final void test53FailFieldStatic() {
+		checkMethodStoreEquality(FIELD_STATIC, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test54FailArray() {
+		checkMethodStoreEquality(ARRAY, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test55FailExpr() {
 		checkMethodStoreEquality(EXPR, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void testFailArraySignature() {
-		checkMethodStoreEquality(ARRAY, CHECK_LEVELS, CONSTRAINTS);
-	}
-
-	@Test
-	public final void testFailArrayAssign() {
-	    checkMethodStoreEquality(new TestFile("junitConstraints", "FailArrayAssign"), CHECK_LEVELS, CONSTRAINTS);
-	}
-
-	
-	@Test
 	public final void test80FailAssignSame() {
-	   checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "FailAssignSame"), CHECK_LEVELS, CONSTRAINTS);
+	   checkMethodStoreEquality(ASSIGN_SAME, CHECK_LEVELS, CONSTRAINTS);
 	}
 
 	@Test
 	public final void test81FailPutfieldImplicitLeak() {
-	   checkMethodStoreEquality(new TestFile(TEST_PACKAGE, "FailPutfieldImplicitLeak"), CHECK_LEVELS, CONSTRAINTS);
+	   checkMethodStoreEquality(PUTFIELD_IMPLICIT_LEAK, CHECK_LEVELS, CONSTRAINTS);
 	}
+	
+	@Test
+	public final void test82FailArrayAssign() {
+	    checkMethodStoreEquality(ARRAY_ASSIGN, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test83FailArraySignature() {
+		checkMethodStoreEquality(ARRAY_SIGNATURE, CHECK_LEVELS, CONSTRAINTS);
+	}
+
 }

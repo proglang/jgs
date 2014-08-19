@@ -11,6 +11,7 @@ import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.generateFileName;
 import static utils.AnalysisUtils.getSignatureOfMethod;
+import static utils.AnalysisUtils.getDimension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +26,7 @@ import security.ILevel;
 import security.ILevelMediator;
 import soot.SootMethod;
 import soot.Type;
-import constraints.ComponentParameterRef;
-import constraints.ComponentReturnRef;
+import constraints.IComponent;
 import constraints.LEQConstraint;
 import exception.AnalysisTypeException;
 import exception.AnnotationInvalidException;
@@ -127,6 +127,14 @@ public class MethodEnvironment extends Environment {
 		 */
 		public Type getType() {
 			return this.type;
+		}
+		
+		/**
+		 * 
+		 * @return
+		 */
+		public int getDim() {
+			return getDimension(this.type);
 		}
 	}
 
@@ -333,7 +341,7 @@ public class MethodEnvironment extends Environment {
 		String methodSignature = getSignatureOfMethod(sootMethod);
 		if (type.equals(CONSTRAINTS)) {
 			String signature = sootMethod.getSignature();
-			for (ComponentReturnRef returnRef : getInvalidReturnReferencesOfSet(constraints, signature)) {
+			for (IComponent returnRef : getInvalidReturnReferencesOfSet(constraints, signature, getDimension(sootMethod.getReturnType()))) {
 				throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_return_ref", methodSignature, returnRef.toString()));
 			}
 			if (isVoid) {
@@ -351,7 +359,7 @@ public class MethodEnvironment extends Environment {
 					throw new LevelInvalidException(getMsg("exception.constraints.method_invalid_level", invalidEffect.getName(), methodSignature));
 				}
 			}
-			for (ComponentParameterRef paramRef : getInvalidParameterReferencesOfSet(constraints, signature, sootMethod.getParameterCount())) {
+			for (IComponent paramRef : getInvalidParameterReferencesOfSet(constraints, signature, sootMethod.getParameterCount(), getParameterDimensions())) {
 				throw new AnnotationInvalidException(getMsg("exception.constraints.invalid_param_ref", methodSignature, paramRef.toString()));
 			}
 			for (int i = 0; i < sootMethod.getParameterCount(); i++) {
@@ -394,6 +402,15 @@ public class MethodEnvironment extends Environment {
 		} else {
 			throw new AnalysisTypeException(getMsg("exception.analysis_type.unknown", type.toString()));
 		}		
+	}
+
+	public List<Integer> getParameterDimensions() {
+		List<Integer> result = new ArrayList<Integer>();
+		for (int i = 0; i < sootMethod.getParameterCount(); i++) {
+			Type paramType = sootMethod.getParameterType(i);
+			result.add(getDimension(paramType));
+		}
+		return result;
 	}
 
 	/**
