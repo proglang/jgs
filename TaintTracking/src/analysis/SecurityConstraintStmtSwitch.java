@@ -1,11 +1,15 @@
 package analysis;
 
+import static constraints.ConstraintsUtils.getCalleeSignatureFor;
+import static constraints.ConstraintsUtils.getLevelOfEqualConstraintsContainingLevelAndComponent;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import model.AnalyzedMethodEnvironment;
+import security.ILevel;
 import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
@@ -59,7 +63,9 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		handleReadAndWriteStmt(writeSwitch, readSwitch);
 	}
 
+
 	private void handleReadAndWriteStmt(SecurityConstraintValueWriteSwitch writeSwitch, SecurityConstraintValueReadSwitch readSwitch) {
+		addInheritedWriteEffects(readSwitch);
 		if (writeSwitch.isLocal()) {
 			ComponentLocal local = new ComponentLocal(writeSwitch.getLocal());
 			addConstraints(generateConstraints(writeSwitch, readSwitch));
@@ -83,12 +89,26 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 		}
 		getOut().removeConstraintsContainingInclBase(placeholder);
 	}
+	
+	private void addInheritedWriteEffects(SecurityConstraintValueReadSwitch readSwitch) {
+		for (LEQConstraint constraint : readSwitch.getInheritedWriteEffects()) {
+			getOut().addWriteEffect(constraint);
+		}
+	}
 
 	private void addWriteEffects(SecurityConstraintValueWriteSwitch writeSwitch) {
 		if (writeSwitch.isField()) {
 			for (IComponent component : writeSwitch.getWriteComponents()) {
 				if (ConstraintsUtils.isLevel(component))
 					getOut().addWriteEffect(new LEQConstraint(new ComponentProgramCounterRef(getAnalyzedSignature()), component));
+			}
+		} else if (writeSwitch.isArrayRef()) {
+			for (IComponent component : writeSwitch.getWriteComponents()) {
+				Set<ILevel> levels = getLevelOfEqualConstraintsContainingLevelAndComponent(getIn().getConstraintsSet(), component);
+				if (levels.size() > 0) {
+					ILevel level = getMediator().getGreatestLowerBoundLevelOf(new ArrayList<ILevel>(levels));
+					getOut().addWriteEffect(new LEQConstraint(new ComponentProgramCounterRef(getAnalyzedSignature()), level));
+				}
 			}
 		}
 	}
@@ -128,6 +148,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	public void caseInvokeStmt(InvokeStmt stmt) {
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getInvokeExpr());
 		addConstraints(readSwitch.getConstraints());
+		addInheritedWriteEffects(readSwitch);
 		removeAccessArtifacts(readSwitch);
 	}
 
@@ -148,6 +169,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 	public void caseReturnStmt(ReturnStmt stmt) {
 		returnStmt = stmt;
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(stmt.getOp());
+		addInheritedWriteEffects(readSwitch);
 		Set<LEQConstraint> constraints = new HashSet<LEQConstraint>(readSwitch.getConstraints());
 		ComponentReturnRef returnRef = new ComponentReturnRef(getAnalyzedSignature());
 		for (IComponent read : readSwitch.getReadComponents()) {
@@ -174,6 +196,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	private void handleBranch(Value condition, IProgramCounterTrigger programCounterTrigger) {
 		SecurityConstraintValueReadSwitch readSwitch = getReadSwitch(condition);
+		addInheritedWriteEffects(readSwitch);
 		ConstraintsSet pcConstraints = new ConstraintsSet(getIn().getConstraintsSet(), getIn().getProgramCounter(), getIn().getWriteEffects(),
 				getMediator());
 		for (IComponent component : readSwitch.getReadComponents()) {
@@ -230,7 +253,7 @@ public class SecurityConstraintStmtSwitch extends SecurityConstraintSwitch imple
 
 	private void removeAccessArtifacts(SecurityConstraintValueReadSwitch readSwitch) {
 		List<String> signatures = new ArrayList<String>();
-		if (readSwitch.isMethod()) signatures.add(readSwitch.getMethod().getSignature());
+		if (readSwitch.isMethod()) signatures.add(getCalleeSignatureFor(readSwitch.getMethod().getSignature()));
 		if (readSwitch.usesStaticAccess()) signatures.add(readSwitch.getStaticClass().getName());
 		getOut().removeConstraintsContainingReferencesInclBaseFor(signatures);
 	}

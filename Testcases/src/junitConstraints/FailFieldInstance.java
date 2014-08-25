@@ -212,13 +212,11 @@ public class FailFieldInstance extends stubs.Fields {
 		lowHighIField = arrayIntLow(mkHigh(42));
 	}
 
-	@Constraints("@pc <= high")
 	public void failField33() {
 		// @security("Assignment of high value to low field")
 		highHighIField = arrayIntLow(mkHigh(42));
 	}
 
-	@Constraints("@pc <= high")
 	public void failField34() {
 		// @security("Assignment of high value to low field")
 		highHighIField = arrayIntLow(42);
@@ -367,7 +365,7 @@ public class FailFieldInstance extends stubs.Fields {
 		// @security("Assignment of high value to low field")
 		lowLowHighIField[23] = arrayIntLow(42);
 	}
-
+	
 	@Constraints("@pc <= low")
 	public void failField59() {
 		// @security("Assignment of high value to low field")
@@ -422,43 +420,36 @@ public class FailFieldInstance extends stubs.Fields {
 		lowHighHighIField = arrayIntHighHigh(mkHigh(42), mkHigh(7));
 	}
 
-	@Constraints("@pc <= low")
 	public void failField68() {
 		// @security("Assignment of high value to low field")
 		lowHighHighIField[23] = arrayIntLow(42);
 	}
 
-	@Constraints("@pc <= low")
 	public void failField69() {
 		// @security("Assignment of high value to low field")
 		lowHighHighIField[23] = arrayIntLow(mkHigh(42));
 	}
 
-	@Constraints("@pc <= low")
 	public void failField70() {
 		// @security("Assignment of high value to low field")
 		highHighHighIField = arrayIntLowHigh(mkHigh(42), 7);
 	}
 
-	@Constraints("@pc <= low")
 	public void failField71() {
 		// @security("Assignment of high value to low field")
 		highHighHighIField = arrayIntLowHigh(mkHigh(42), mkHigh(7));
 	}
 
-	@Constraints("@pc <= low")
 	public void failField72() {
 		// @security("Assignment of high value to low field")
 		highHighHighIField = arrayIntLowHigh(42, mkHigh(7));
 	}
 
-	@Constraints("@pc <= low")
 	public void failField73() {
 		// @security("Assignment of high value to low field")
 		highHighHighIField = arrayIntLowLow(mkHigh(42), 7);
 	}
 
-	@Constraints("@pc <= low")
 	public void failField74() {
 		// @security("Assignment of high value to low field")
 		highHighHighIField = arrayIntLowLow(mkHigh(42), mkHigh(7));
@@ -470,13 +461,11 @@ public class FailFieldInstance extends stubs.Fields {
 		highHighHighIField = arrayIntLowLow(42, mkHigh(7));
 	}
 
-	@Constraints("@pc <= low")
 	public void failField78() {
 		// @security("Assignment of high value to low field")
 		highHighHighIField[23] = arrayIntLow(42);
 	}
 
-	@Constraints("@pc <= low")
 	public void failField79() {
 		// @security("Assignment of high value to low field")
 		highHighHighIField[23] = arrayIntLow(mkHigh(42));
@@ -517,6 +506,12 @@ public class FailFieldInstance extends stubs.Fields {
 	@Constraints("@pc <= high")
 	public void failField85() {
 		lowLowLowIField = arrayIntLowLow(42, 7);
+		// @security("Missing write effect to low")
+		return;
+	}
+
+	public void failField86() {
+		lowLowIField[23] = 42;
 		// @security("Missing write effect to low")
 		return;
 	}

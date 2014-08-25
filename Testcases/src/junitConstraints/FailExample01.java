@@ -1,12 +1,12 @@
-package exgradual;
+package junitConstraints;
 
 import static security.Definition.*;
 
 @Constraints({ "@pc <= low" })
-public class Example {
+public class FailExample01 {
 	
 	@Constraints({ "@pc <= low" })
-	public Example() {}
+	public FailExample01() {}
 	
 	@Constraints({ "@pc <= low" })
 	public static class C {
@@ -50,7 +50,7 @@ public class Example {
 		// that's fine too, (o:low) <= high)
 		C cL = mkLow(new C(oL, oL));
 
-		// that's an error: cH:high !<= cl.l:low
+		// @security("That's an error: cH:high !<= cl.l:low")
 		cL.l = cH;
 	}
 	@Constraints({ "@pc <= low" })
@@ -61,7 +61,7 @@ public class Example {
 
 		// note: no annotation
 		// i1 <= low, ret = i2
-		@Constraints({ "@pc <= low", "@0 <= low", "@1 <= low", "@return = @0" })
+		@Constraints({ "@pc <= low", "@0 <= low", "@return = @1" })
 		public C m(C i1, C i2) {
 			l = i1;
 			return i2;
@@ -72,6 +72,7 @@ public class Example {
 	}
 
 	// Note: no need for the constraints annotation
+	@SuppressWarnings("unused")
 	@Constraints({ "@pc <= low" })
 	public static void methodCall() {
 		// as before:
@@ -86,7 +87,7 @@ public class Example {
 		// ok, as the first argument is low
 		C c1 = d.m(cL, cH); // c1 is now high
 
-		// error: c1 is high
+		// @security("error: c1 is high")
 		C c2 = d.m(c1, cL);
 
 		// ok
@@ -99,12 +100,12 @@ public class Example {
 		Object l;
 
 		// note: no annotation
-		@Constraints({ "@pc <= low", "@0 <= low", "@1 <= low", "@2 <= low", "@return <= high" })
+		@Constraints({"@0 <= @return", "@1 <= @return", "@2 <= @return"})
 		public C m(C i1, C i2, boolean b) {
 			return m1(i2, i1, !b);
 		}
 
-		@Constraints({ "@pc <= low", "@0 <= low", "@1 <= low", "@2 <= low", "@return <= high" })
+		@Constraints({"@2 <= @pc", "@0 <= @return", "@1 <= @return", "@2 <= @return"})
 		public C m1(C i1, C i2, boolean b) {
 			if (b) {
 				return m(i1, i2, !b);

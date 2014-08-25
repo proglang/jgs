@@ -2,14 +2,12 @@ package junitConstraints;
 
 import static security.Definition.*;
 
-public class Valid01 {
+@Constraints("@pc <= low")
+public class Valid04 {
 	
 	@FieldSecurity("low")
-	public int lowIField = 42;
+	public static int lowIField = 42;
 
 	public static void main(String[] args) {}
-
-	@Constraints("@pc <= low")
-	public Valid01() {}
 
 }

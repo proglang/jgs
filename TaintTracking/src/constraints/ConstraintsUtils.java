@@ -145,6 +145,10 @@ public class ConstraintsUtils {
 		}
 		return result;
 	}
+	
+	public static String getCalleeSignatureFor(String signature) {
+		return "#" + signature;
+	}
 
 	public static String constraintsAsString(Set<LEQConstraint> constraints) {
 		StringBuilder sb = new StringBuilder("{ ");
@@ -239,6 +243,30 @@ public class ConstraintsUtils {
 			}
 		}
 		return errors;
+	}
+
+	public static Set<ILevel> getLevelOfEqualConstraintsContainingLevelAndComponent(Set<LEQConstraint> constraints,	IComponent component) {
+		Set<ILevel> result = new HashSet<ILevel>();
+		for (LEQConstraint constraint : constraints) {
+			if (constraint.getLhs().equals(component) && isLevel(constraint.getRhs())) {
+				ILevel level = (ILevel) constraint.getRhs();
+				LEQConstraint reverse = new LEQConstraint(level, component);
+				if (constraints.contains(reverse)) result.add(level);
+			}
+		}
+		return result;
+	}
+
+	public static Set<LEQConstraint> getUpdatedPCConstraints(Set<LEQConstraint> constraints, String signature) {
+		Set<LEQConstraint> result = new HashSet<LEQConstraint>();
+		for (LEQConstraint constraint : constraints) {
+			if (constraint.containsProgramCounterReference()) {
+				if (isLevel(constraint.getLhs()) || isLevel(constraint.getRhs())) {
+					result.add(constraint.changeAllComponentsSignature(signature));
+				}
+			}
+		}
+		return result;
 	}
 
 }

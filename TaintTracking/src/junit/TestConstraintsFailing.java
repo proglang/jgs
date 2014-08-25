@@ -46,23 +46,38 @@ public class TestConstraintsFailing {
 	private static final TestFile INVALID21 = new TestFile(TEST_PACKAGE, "Invalid21");
 	private static final TestFile INVALID22 = new TestFile(TEST_PACKAGE, "Invalid22");
 	private static final TestFile INVALID23 = new TestFile(TEST_PACKAGE, "Invalid23");
-	private static final TestFile INVALID24 = new TestFile(TEST_PACKAGE, "Invalid26");
-	private static final TestFile INVALID25 = new TestFile(TEST_PACKAGE, "Invalid27");
-	private static final TestFile INVALID26 = new TestFile(TEST_PACKAGE, "Invalid28");
-	private static final TestFile INVALID27 = new TestFile(TEST_PACKAGE, "Invalid29");
-	private static final TestFile INVALID28 = new TestFile(TEST_PACKAGE, "Invalid30");
-	private static final TestFile INVALID29 = new TestFile(TEST_PACKAGE, "Invalid31");
-	private static final TestFile INVALID30 = new TestFile(TEST_PACKAGE, "Invalid32");
+	private static final TestFile INVALID24 = new TestFile(TEST_PACKAGE, "Invalid24");
+	private static final TestFile INVALID25 = new TestFile(TEST_PACKAGE, "Invalid25");
+	private static final TestFile INVALID26 = new TestFile(TEST_PACKAGE, "Invalid26");
+	private static final TestFile INVALID27 = new TestFile(TEST_PACKAGE, "Invalid27");
+	private static final TestFile INVALID28 = new TestFile(TEST_PACKAGE, "Invalid28");
+	private static final TestFile INVALID29 = new TestFile(TEST_PACKAGE, "Invalid29");
+	private static final TestFile INVALID30 = new TestFile(TEST_PACKAGE, "Invalid30");
+	private static final TestFile INVALID31 = new TestFile(TEST_PACKAGE, "Invalid31");
+	private static final TestFile INVALID32 = new TestFile(TEST_PACKAGE, "Invalid32");
+	private static final TestFile INVALID33 = new TestFile(TEST_PACKAGE, "Invalid33");
+	private static final TestFile INVALID34 = new TestFile(TEST_PACKAGE, "Invalid34");
+	private static final TestFile INVALID35 = new TestFile(TEST_PACKAGE, "Invalid35");
+	private static final TestFile INVALID36 = new TestFile(TEST_PACKAGE, "Invalid36");
+	private static final TestFile INVALID37 = new TestFile(TEST_PACKAGE, "Invalid37");
+	private static final TestFile INVALID38 = new TestFile(TEST_PACKAGE, "Invalid38");
 	private static final TestFile LEVEL_FUNCTION = new TestFile(TEST_PACKAGE, "FailLevelFunction");
-	private static final TestFile METHOD = new TestFile(TEST_PACKAGE, "FailMethod");
+	private static final TestFile METHOD_INSTANCE = new TestFile(TEST_PACKAGE, "FailMethodInstance");
+	private static final TestFile METHOD_STATIC = new TestFile(TEST_PACKAGE, "FailMethodStatic");
 	private static final TestFile FIELD_INSTANCE = new TestFile(TEST_PACKAGE, "FailFieldInstance");
 	private static final TestFile FIELD_STATIC = new TestFile(TEST_PACKAGE, "FailFieldStatic");
 	private static final TestFile EXPR = new TestFile(TEST_PACKAGE, "FailExpr");
+	private static final TestFile IF = new TestFile(TEST_PACKAGE, "FailIf");
+	private static final TestFile OBJECT = new TestFile(TEST_PACKAGE, "FailObject");
+	private static final TestFile WHILE = new TestFile(TEST_PACKAGE, "FailWhile");
 	private static final TestFile ARRAY = new TestFile(TEST_PACKAGE, "FailArray");
+	private static final TestFile INHERITANCE = new TestFile(TEST_PACKAGE, "FailInheritance");
+	private static final TestFile EFFECT = new TestFile(TEST_PACKAGE, "FailWriteEffect");
 	private static final TestFile ARRAY_SIGNATURE = new TestFile(TEST_PACKAGE, "FailArraySignature");
 	private static final TestFile ARRAY_ASSIGN = new TestFile(TEST_PACKAGE, "FailArrayAssign");
 	private static final TestFile ASSIGN_SAME = new TestFile(TEST_PACKAGE, "FailAssignSame");
 	private static final TestFile PUTFIELD_IMPLICIT_LEAK = new TestFile(TEST_PACKAGE, "FailPutfieldImplicitLeak");
+	private static final TestFile EXAMPLE01 = new TestFile(TEST_PACKAGE, "FailExample01");
 	
 	@BeforeClass
 	public static final void init() {
@@ -227,13 +242,58 @@ public class TestConstraintsFailing {
 	}
 	
 	@Test
+	public final void test31Invalid() {
+		checkMethodStoreEquality(INVALID31, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test32Invalid() {
+		checkMethodStoreEquality(INVALID32, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test33Invalid() {
+		checkMethodStoreEquality(INVALID33, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test34Invalid() {
+		checkMethodStoreEquality(INVALID34, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test35Invalid() {
+		checkMethodStoreEquality(INVALID35, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test36Invalid() {
+		checkMethodStoreEquality(INVALID36, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test37Invalid() {
+		checkMethodStoreEquality(INVALID37, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test38Invalid() {
+		checkMethodStoreEquality(INVALID38, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
 	public final void test50FailLevelFunction() {
 		checkMethodStoreEquality(LEVEL_FUNCTION, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test51FailMethod() {
-		checkMethodStoreEquality(METHOD, CHECK_LEVELS, CONSTRAINTS);
+	public final void test51FailMethodInstance() {
+		checkMethodStoreEquality(METHOD_INSTANCE, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test52FailMethodStatic() {
+		checkMethodStoreEquality(METHOD_STATIC, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
@@ -247,13 +307,38 @@ public class TestConstraintsFailing {
 	}
 	
 	@Test
-	public final void test54FailArray() {
+	public final void test54FailExpr() {
+		checkMethodStoreEquality(EXPR, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test55FailIf() {
+		checkMethodStoreEquality(IF, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test56FailObject() {
+		checkMethodStoreEquality(OBJECT, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test57FailWhile() {
+		checkMethodStoreEquality(WHILE, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test58FailArray() {
 		checkMethodStoreEquality(ARRAY, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
-	public final void test55FailExpr() {
-		checkMethodStoreEquality(EXPR, CHECK_LEVELS, CONSTRAINTS);
+	public final void test59FailInheritance() {
+		checkMethodStoreEquality(INHERITANCE, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
+	@Test
+	public final void test60FailEffect() {
+		checkMethodStoreEquality(EFFECT, CHECK_LEVELS, CONSTRAINTS);
 	}
 	
 	@Test
@@ -276,4 +361,9 @@ public class TestConstraintsFailing {
 		checkMethodStoreEquality(ARRAY_SIGNATURE, CHECK_LEVELS, CONSTRAINTS);
 	}
 
+	@Test
+	public final void test100FailExample01() {
+		checkMethodStoreEquality(EXAMPLE01, CHECK_LEVELS, CONSTRAINTS);
+	}
+	
 }

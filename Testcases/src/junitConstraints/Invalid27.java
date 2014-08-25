@@ -1,12 +1,14 @@
 package junitConstraints;
 
-import security.Definition.FieldSecurity;
+import security.Definition.Constraints;
 
 public class Invalid27 {
 
-	@FieldSecurity({ "low", "low", "high" })
-	public int[] field;
-
 	public static void main(String[] args) {}
+	
+	@Constraints({"low <= @return", "low = @return["})
+	public int invalid29() {
+		return 42;
+	}
 
 }

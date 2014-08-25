@@ -7,6 +7,9 @@ public class SpecialArrays {
 
     @FieldSecurity({ "low", "low" })
     public int[] lowLow;
+    
+    @FieldSecurity({ "low", "high" })
+    public int[] lowHigh;
 
     @FieldSecurity({ "high", "high" })
     public int[] highHigh;
@@ -16,6 +19,9 @@ public class SpecialArrays {
 
     @FieldSecurity({ "low", "low", "high" })
     public int[][] lowLowHigh;
+    
+    @FieldSecurity({ "low", "high", "high" })
+    public int[][] lowHighHigh;
 
     @FieldSecurity({ "high", "high", "high" })
     public int[][] highHighHigh;

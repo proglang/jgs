@@ -13,7 +13,7 @@ public class SuccessSpecial01 {
 	public static void main(String[] args) {}
 
 	@Constraints({ "@pc <= low" })
-	public void validSpecial1() {
+	public void successSpecial1() {
 		int x = this.high;
 		x = this.low;
 		this.low = x;

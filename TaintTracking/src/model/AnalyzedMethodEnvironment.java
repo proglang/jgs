@@ -37,7 +37,7 @@ import constraints.LEQConstraint;
  * @version 0.1
  */
 public class AnalyzedMethodEnvironment extends MethodEnvironment {
-
+	
 	/**
 	 * The store that provides the storing of calculated <em>side effects</em> (see {@link EffectsStore}).
 	 */

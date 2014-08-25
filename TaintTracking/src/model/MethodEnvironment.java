@@ -6,6 +6,8 @@ import static constraints.ConstraintsUtils.containsSetReturnReferenceFor;
 import static constraints.ConstraintsUtils.getContainedLevelsOfSet;
 import static constraints.ConstraintsUtils.getInvalidParameterReferencesOfSet;
 import static constraints.ConstraintsUtils.getInvalidReturnReferencesOfSet;
+import static constraints.ConstraintsUtils.changeAllComponentsSignature;
+import static constraints.ConstraintsUtils.getCalleeSignatureFor;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
@@ -215,6 +217,14 @@ public class MethodEnvironment extends Environment {
 		this.writeEffects.addAll(methodWriteEffects);
 		this.classWriteEffects.addAll(classWriteEffects);
 		this.constraints.addAll(constraints);
+	}
+	
+	public Set<LEQConstraint> getCalleeSignatureConstraints(){
+		return changeAllComponentsSignature(getCalleeSiganture(), constraints);
+	}
+	
+	public String getCalleeSiganture() {
+		return getCalleeSignatureFor(getSootMethod().getSignature());
 	}
 
 	/**

@@ -2,6 +2,10 @@ package analysis;
 
 import static resource.Messages.getMsg;
 import static utils.AnalysisUtils.getDimension;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import model.AnalyzedMethodEnvironment;
 import model.ClassEnvironment;
 import model.FieldEnvironment;
@@ -65,6 +69,7 @@ import constraints.ComponentParameterRef;
 import constraints.ComponentProgramCounterRef;
 import constraints.ComponentReturnRef;
 import constraints.ConstraintsSet;
+import constraints.ConstraintsUtils;
 import constraints.IComponent;
 import constraints.LEQConstraint;
 import exception.CastInvalidException;
@@ -75,6 +80,7 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	protected SootClass klass = null;
 	protected SootMethod method = null;
+	protected Set<LEQConstraint> writeEffects = new HashSet<LEQConstraint>();
 
 	protected SecurityConstraintValueReadSwitch(Value value, AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store,
 			ConstraintsSet in, ConstraintsSet out) {
@@ -96,6 +102,14 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	protected SootClass getStaticClass() {
 		return klass;
+	}
+	
+	protected Set<LEQConstraint> getInheritedWriteEffects(){
+		return writeEffects;
+	}
+	
+	protected void addInheritedWriteEffects(Set<LEQConstraint> writeEffects) {
+		writeEffects.addAll(writeEffects);
 	}
 
 	@Override
@@ -316,6 +330,8 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 		Value index = v.getIndex();
 		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(array);
 		SecurityConstraintValueReadSwitch indexSwitch = getReadSwitch(index);
+		addInheritedWriteEffects(baseSwitch.getInheritedWriteEffects());
+		addInheritedWriteEffects(indexSwitch.getInheritedWriteEffects());
 		addReadComponents(baseSwitch.getReadComponents());
 		addReadComponents(indexSwitch.getReadComponents());
 		setComponentDimension(getDimension(v.getType()));
@@ -368,6 +384,8 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 	private void handleBinaryExpr(Value op1, Value op2) {
 		SecurityConstraintValueReadSwitch switchOp1 = getReadSwitch(op1);
 		SecurityConstraintValueReadSwitch switchOp2 = getReadSwitch(op2);
+		addInheritedWriteEffects(switchOp1.getInheritedWriteEffects());
+		addInheritedWriteEffects(switchOp2.getInheritedWriteEffects());
 		addReadComponents(switchOp1.getReadComponents());
 		addReadComponents(switchOp2.getReadComponents());
 		addConstraints(switchOp1.getConstraints());
@@ -376,6 +394,7 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	private void handleUnaryExpr(Value op) {
 		SecurityConstraintValueReadSwitch switchOp = getReadSwitch(op);
+		addInheritedWriteEffects(switchOp.getInheritedWriteEffects());
 		addReadComponents(switchOp.getReadComponents());
 		addConstraints(switchOp.getConstraints());
 	}
@@ -383,6 +402,7 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 	private void handleStatic(SootClass sootClass) {
 		ClassEnvironment ce = getStore().getClassEnvironment(klass = sootClass);
 		addConstraints(ce.getSignatureContraints());
+		handleInheritedWriteEffect(ce.getSignatureContraints());
 	}
 
 	private void handleField(SootField sootField) {
@@ -392,12 +412,14 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 	}
 
 	private void handleInvoke(InvokeExpr invokeExpr) {
-		method = invokeExpr.getMethod();
-		String signature = method.getSignature();
+		method = invokeExpr.getMethod();		
 		MethodEnvironment me = getStore().getMethodEnvironment(method);
-		addConstraints(me.getSignatureContraints());
+		addConstraints(me.getCalleeSignatureConstraints());
+		handleInheritedWriteEffect(me.getCalleeSignatureConstraints());
+		String signature = me.getCalleeSiganture();
 		for (int i = 0; i < invokeExpr.getArgCount(); i++) {
 			SecurityConstraintValueReadSwitch argSwitch = getReadSwitch(invokeExpr.getArg(i));
+			addInheritedWriteEffects(argSwitch.getInheritedWriteEffects());
 			addParameterConstraints(argSwitch, signature, i);
 			addConstraints(argSwitch.getConstraints());
 		}
@@ -426,6 +448,7 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 
 	private void handleBase(Value base) {
 		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(base);
+		addInheritedWriteEffects(baseSwitch.getInheritedWriteEffects());
 		addReadComponents(baseSwitch.getReadComponents());
 		addConstraints(baseSwitch.getConstraints());
 	}
@@ -434,4 +457,7 @@ public class SecurityConstraintValueReadSwitch extends ASecurityConstraintValueS
 		throw new IllegalNewArrayException(getMsg("exception.analysis.other.illegal_new_array", value.toString()));
 	}
 
+	private void handleInheritedWriteEffect(Set<LEQConstraint> constraints) {
+		writeEffects.addAll(ConstraintsUtils.getUpdatedPCConstraints(constraints, getAnalyzedSignature()));		
+	}
 }

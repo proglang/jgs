@@ -58,6 +58,8 @@ import extractor.UsedObjectStore;
 
 public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValueSwitch implements JimpleValueSwitch {
 
+	private ArrayRef arrayRef;
+
 	protected SecurityConstraintValueWriteSwitch(Value value, AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store,
 			ConstraintsSet in, ConstraintsSet out) {
 		super(methodEnvironment, store, in, out);
@@ -266,8 +268,9 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 
 	@Override
 	public void caseArrayRef(ArrayRef v) {
-		Value array = v.getBase();
-		Value index = v.getIndex();
+		arrayRef = v;
+		Value array = arrayRef.getBase();
+		Value index = arrayRef.getIndex();
 		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(array);
 		SecurityConstraintValueReadSwitch indexSwitch = getReadSwitch(index);
 		addReadComponents(baseSwitch.getReadComponents());
@@ -324,6 +327,10 @@ public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValue
 		ComponentPlaceholder cp = ComponentPlaceholder.getInstance();
 		addWriteComponent(cp);
 		handleDimension(l.getType(), cp);
+	}
+
+	public boolean isArrayRef() {
+		return arrayRef != null;
 	}
 
 }
