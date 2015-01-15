@@ -1,6 +1,6 @@
 package exgradual;
 
-import security.Annotations.*;
+import static security.Definition.*;
 
 public class CSF2013 {
 	

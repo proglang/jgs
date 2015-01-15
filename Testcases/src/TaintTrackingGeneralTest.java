@@ -1,13 +1,10 @@
-
-import security.Annotations;
-import security.SootSecurityLevel;
-
+import static security.Definition.*;
 
 @SuppressWarnings("unused")
 public class TaintTrackingGeneralTest {
 	
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({ })
+	@ReturnSecurity("void")
+	@ParameterSecurity({ })
 	public void dependsOnIf() {
 		boolean a = true;
 		boolean b = false;
@@ -19,19 +16,19 @@ public class TaintTrackingGeneralTest {
 		System.out.println("Depends on nothing.");		
 	}
 	
-	@Annotations.FieldSecurity("high")
+	@FieldSecurity("high")
 	public static int statField = 42;
 	
-	@Annotations.FieldSecurity("low")
+	@FieldSecurity("low")
 	public int field = 23;
 	
 	public static class TaintTrackingTest2 {
 		
-		@Annotations.FieldSecurity("low")
+		@FieldSecurity("low")
 		public static int statField = 21;
 		
-		@Annotations.ReturnSecurity("low")
-		@Annotations.ParameterSecurity({ "low" })
+		@ReturnSecurity("low")
+		@ParameterSecurity({ "low" })
 		public int returnInteger(int i) {
 			boolean res = false;
 			return res ? i : 0;
@@ -40,25 +37,25 @@ public class TaintTrackingGeneralTest {
 	}
 
 	// type: void -> String^H
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({ "low" })
+	@ReturnSecurity("void")
+	@ParameterSecurity({ "low" })
 	public static void assignStatField(int i) {
 		if (statField == 1) statField = 2; 
 		statField = i;
 	}
 	
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("void")
+	@ParameterSecurity({})
 	public void ifTest() {
-		boolean cond1 = SootSecurityLevel.highId(false);
-		boolean cond2 = SootSecurityLevel.lowId(true);
+		boolean cond1 = mkHigh(false);
+		boolean cond2 = mkLow(true);
 		if (cond1 || cond2) {
 			int i = 1;
 		}
 	}
 	
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("void")
+	@ParameterSecurity({})
 	public void ifIfTest() {
 		boolean cond1 = false;
 		boolean cond2 = true;
@@ -69,8 +66,8 @@ public class TaintTrackingGeneralTest {
 		}
 	}
 	
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("void")
+	@ParameterSecurity({})
 	public void ifElseTest() {
 		boolean cond = false;
 		if (cond) {
@@ -80,8 +77,8 @@ public class TaintTrackingGeneralTest {
 		}
 	}
 	
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("void")
+	@ParameterSecurity({})
 	public void ifElseIfElseTest() {
 		boolean cond1 = false;
 		boolean cond2 = true;
@@ -97,8 +94,8 @@ public class TaintTrackingGeneralTest {
 		}
 	}
 	
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("void")
+	@ParameterSecurity({})
 	public void forStmt() {
 		for (int i = 0; i < 10; i++) {
 			int j = i;
@@ -106,62 +103,62 @@ public class TaintTrackingGeneralTest {
 	}
 	
 	// type: void -> String^H
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({"low"})
+	@ReturnSecurity("void")
+	@ParameterSecurity({"low"})
 	public void assignField(int i) {
 		field = i;
 	}
 
 	// type: int^L -> int^L
-	@Annotations.ReturnSecurity("low")
-	@Annotations.ParameterSecurity({ "low" })
+	@ReturnSecurity("low")
+	@ParameterSecurity({ "low" })
 	public static int returnInteger(int i) {
-		boolean res = SootSecurityLevel.highId(false);
-		int j = SootSecurityLevel.lowId(3);
+		boolean res = mkHigh(false);
+		int j = mkLow(3);
 		return res ? i : j;
 	}
 
 	// type: void -> String^H
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("void")
+	@ParameterSecurity({})
 	public void assignField2() {
-		TaintTrackingTest2 a = SootSecurityLevel.highId(new TaintTrackingTest2());
+		TaintTrackingTest2 a = mkHigh(new TaintTrackingTest2());
 		statField = a.returnInteger(2);
 	}
 
 	// type: void -> String^H
-	@Annotations.ReturnSecurity("high")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("high")
+	@ParameterSecurity({})
 	public static String secretSource() {
-		String result = SootSecurityLevel.highId("Secret!");
+		String result = mkHigh("Secret!");
 		return result;
 	}
 
 	// type: void -> String^L
-	@Annotations.ReturnSecurity("low")
-	@Annotations.ParameterSecurity({})
+	@ReturnSecurity("low")
+	@ParameterSecurity({})
 	public static String publicSource() {
 		return "Blablabla!";
 	}
 
 	// type: String^H -> void
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({"high"})
+	@ReturnSecurity("void")
+	@ParameterSecurity({"high"})
 	public static void confidentialSink(String s) {
-		//SootSecurityLevel.highId(true);
+		//highId(true);
 		System.out.println("XXXX");
 	}
 	
 	// type: String^L -> void
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({"low"})
+	@ReturnSecurity("void")
+	@ParameterSecurity({"low"})
 	public static void publicSink(String s) {
 		System.out.println(s);
 	}
 	
 	// type: (String^B1, String^B2) -> String^B1+B2
-	@Annotations.ReturnSecurity("high")
-	@Annotations.ParameterSecurity({"high", "low"})
+	@ReturnSecurity("high")
+	@ParameterSecurity({"high", "low"})
 	public static String strAppend(String s1, String s2) {
 		return s1 + s2;
 	}
@@ -170,8 +167,8 @@ public class TaintTrackingGeneralTest {
 	 * @param args
 	 */
 	
-	@Annotations.ReturnSecurity("void")
-	@Annotations.ParameterSecurity({"low"})
+	@ReturnSecurity("void")
+	@ParameterSecurity({"low"})
 	public static void main(String[] args) {
 		
 		// type: String^H

@@ -1,19 +1,16 @@
+import static security.Definition.*;
 
-
-import security.Annotations;
-import security.SootSecurityLevel;
-
-@Annotations.WriteEffect({})
+@WriteEffect({})
 public class TaintTrackingIfTest {
 	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("low")
-	@Annotations.WriteEffect({"low"})
+	@ParameterSecurity({})
+	@ReturnSecurity("low")
+	@WriteEffect({"low"})
 	public int forLoop() {
-		int var3Low = SootSecurityLevel.lowId(42);
-		for (int i = SootSecurityLevel.highId(0); i < 100; i++) {
+		int var3Low = mkLow(42);
+		for (int i = mkHigh(0); i < 100; i++) {
 //			if (i == 50) {
-//				var3Low = SootSecurityLevel.highId(42);
+//				var3Low = highId(42);
 //			} else {
 				assignLow();
 //			}
@@ -21,31 +18,31 @@ public class TaintTrackingIfTest {
 		return var3Low;
 	}
 	
-//	@Annotations.ParameterSecurity({})
-//	@Annotations.ReturnSecurity("void")
-//	@Annotations.WriteEffect({"low"})
+//	@ParameterSecurity({})
+//	@ReturnSecurity("void")
+//	@WriteEffect({"low"})
 //	public void invoke() {
-//		if (SootSecurityLevel.highId(23) == 5) {
+//		if (highId(23) == 5) {
 //			assignLow();
 //		}
 //	}
 
 	
-	@Annotations.ParameterSecurity({})
-	@Annotations.ReturnSecurity("void")
-	@Annotations.WriteEffect({"low"})
+	@ParameterSecurity({})
+	@ReturnSecurity("void")
+	@WriteEffect({"low"})
 	public void assignLow() {
 		lowField = 42; 
 	}
 
-	@Annotations.FieldSecurity("low")
-	public int lowField = SootSecurityLevel.lowId(42);
+	@FieldSecurity("low")
+	public int lowField = mkLow(42);
 	
-	@Annotations.FieldSecurity("high")
-	public int highField = SootSecurityLevel.highId(42);
+	@FieldSecurity("high")
+	public int highField = mkHigh(42);
 	
-	@Annotations.ParameterSecurity({})
-	@Annotations.WriteEffect({"high", "low"})
+	@ParameterSecurity({})
+	@WriteEffect({"high", "low"})
 	public TaintTrackingIfTest() {
 		super();
 	}

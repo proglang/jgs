@@ -1,6 +1,4 @@
-import security.Annotations.ParameterSecurity;
-import security.Annotations.ReturnSecurity;
-import security.Annotations.WriteEffect;
+import static security.Definition.*;
 
 @WriteEffect({"high"})
 public class A {
