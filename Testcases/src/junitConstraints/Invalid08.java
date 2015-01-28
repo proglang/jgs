@@ -6,6 +6,7 @@ import static security.Definition.*;
 @Constraints({ "@return <= low" })
 public class Invalid08 {
 
-	public static void main(String[] args) {}
+    public static void main(String[] args) {
+    }
 
 }

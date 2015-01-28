@@ -4,13 +4,13 @@ package junitConstraints;
 import static security.Definition.*;
 
 public class SuccessLowRefHighUpdate {
-    
+
     @FieldSecurity("high")
     boolean high;
     @FieldSecurity("low")
     boolean f;
 
-    @Constraints({"@return <= low"})
+    @Constraints({ "@return <= low" })
     public boolean noleak(boolean init) {
         SuccessLowRefHighUpdate x = new SuccessLowRefHighUpdate();
         SuccessLowRefHighUpdate y = new SuccessLowRefHighUpdate();
@@ -19,7 +19,7 @@ public class SuccessLowRefHighUpdate {
         // this is not a leak.
         return x == y;
     }
-   
+
     public static void main(String[] args) {
     }
 }

@@ -6,6 +6,7 @@ import static security.Definition.*;
 @Constraints({ "@pc <= confidential" })
 public class Invalid07 {
 
-	public static void main(String[] args) {}
+    public static void main(String[] args) {
+    }
 
 }

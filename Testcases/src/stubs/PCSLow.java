@@ -5,17 +5,19 @@ import security.Definition.FieldSecurity;
 
 @Constraints("@pc <= low")
 public class PCSLow {
-	
-	@FieldSecurity("low")
-	public static int lowSField;
-	
-	@FieldSecurity("high")
-	public static int highSField;
 
-	@Constraints("@pc <= low")
-	public static void lowPC() {}
+    @FieldSecurity("low")
+    public static int lowSField;
 
-	@Constraints("@pc <= high")
-	public static void highPC() {}
+    @FieldSecurity("high")
+    public static int highSField;
+
+    @Constraints("@pc <= low")
+    public static void lowPC() {
+    }
+
+    @Constraints("@pc <= high")
+    public static void highPC() {
+    }
 
 }

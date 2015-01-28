@@ -11,29 +11,31 @@ import logging.AnalysisLogLevel;
  * 
  */
 public enum MessageType {
-	SECURITY(AnalysisLogLevel.SECURITY), SIDEEFFECT(AnalysisLogLevel.SIDEEFFECT), WARNING(AnalysisLogLevel.WARNING);
+    SECURITY(AnalysisLogLevel.SECURITY),
+    SIDEEFFECT(AnalysisLogLevel.SIDEEFFECT),
+    WARNING(AnalysisLogLevel.WARNING);
 
-	/**
-	 * TODO: documentation
-	 * 
-	 */
-	private Level level;
+    /**
+     * TODO: documentation
+     * 
+     */
+    private Level level;
 
-	/**
-	 * TODO: documentation
-	 * 
-	 * @param level
-	 */
-	private MessageType(Level level) {
-		this.level = level;
-	}
+    /**
+     * TODO: documentation
+     * 
+     * @param level
+     */
+    private MessageType(Level level) {
+        this.level = level;
+    }
 
-	/**
-	 * TODO: documentation
-	 * 
-	 * @return
-	 */
-	public Level getLevel() {
-		return this.level;
-	}
+    /**
+     * TODO: documentation
+     * 
+     * @return
+     */
+    public Level getLevel() {
+        return this.level;
+    }
 }

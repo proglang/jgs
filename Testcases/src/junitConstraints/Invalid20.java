@@ -4,9 +4,10 @@ import security.Definition.FieldSecurity;
 
 public class Invalid20 {
 
-	@FieldSecurity({ "low", "low", "high" })
-	public static int[] field;
+    @FieldSecurity({ "low", "low", "high" })
+    public static int[] field;
 
-	public static void main(String[] args) {}
+    public static void main(String[] args) {
+    }
 
 }

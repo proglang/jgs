@@ -4,8 +4,8 @@ import constraints.LEQConstraint;
 
 public class SubSignatureProgramCounterError extends ASubSignatureError {
 
-	public SubSignatureProgramCounterError(LEQConstraint constraint) {
-		super(constraint);
-	}
+    public SubSignatureProgramCounterError(LEQConstraint constraint) {
+        super(constraint);
+    }
 
 }

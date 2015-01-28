@@ -4,12 +4,14 @@ import static security.Definition.*;
 
 public class Invalid31 {
 
-	// @security("missing write effect to low")
-	@FieldSecurity("low")
-	public int lowIField = 42;
+    // @security("missing write effect to low")
+    @FieldSecurity("low")
+    public int lowIField = 42;
 
-	public static void main(String[] args) {}
+    public static void main(String[] args) {
+    }
 
-	public Invalid31() {}
+    public Invalid31() {
+    }
 
 }

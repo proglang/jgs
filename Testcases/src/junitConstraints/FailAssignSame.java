@@ -5,16 +5,15 @@ import static security.Definition.*;
 
 public class FailAssignSame {
 
+    @SuppressWarnings("all")
+    public int assignSame() {
+        int x = mkHigh(42);
+        x = x;
+        // @security("The returned value has a stronger security level than expected.")
+        return x;
+    }
 
-	@SuppressWarnings("all")
-	public int assignSame() {
-		int x = mkHigh(42);
-		x = x;
-		// @security("The returned value has a stronger security level than expected.")
-		return x;
-	}
+    public static void main(String[] args) {
 
-	public static void main(String[] args) {
-
-	}
+    }
 }

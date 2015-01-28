@@ -20,21 +20,26 @@ import exception.DefinitionNotFoundException;
  */
 public class DefinitionClassHandler {
 
-	/**
-	 * 
-	 * @return
-	 */
-	public static ILevelDefinition getDefinitionClass(String definitionClassPath) {
-		try {
-			URL url = new File(definitionClassPath).toURI().toURL();
-			URL[] urls = { url };
-			URLClassLoader loader = new URLClassLoader(urls);
-			ILevelDefinition impl = (ILevelDefinition) loader.loadClass(DEF_PATH_JAVA).newInstance();
-			loader.close();
-			return impl;
-		} catch (IOException | NullPointerException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			throw new DefinitionNotFoundException(getMsg("exception.utils.error_loading_class", DEF_CLASS_NAME), e);
-		}
-	}
+    /**
+     * 
+     * @return
+     */
+    public static ILevelDefinition getDefinitionClass(String definitionClassPath) {
+        try {
+            URL url = new File(definitionClassPath).toURI().toURL();
+            URL[] urls = { url };
+            URLClassLoader loader = new URLClassLoader(urls);
+            ILevelDefinition impl =
+                (ILevelDefinition) loader.loadClass(DEF_PATH_JAVA)
+                                         .newInstance();
+            loader.close();
+            return impl;
+        } catch (IOException | NullPointerException | ClassNotFoundException
+                | InstantiationException | IllegalAccessException e) {
+            throw new DefinitionNotFoundException(getMsg("exception.utils.error_loading_class",
+                                                         DEF_CLASS_NAME),
+                                                  e);
+        }
+    }
 
 }

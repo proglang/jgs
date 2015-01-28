@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface ILevelDefinitionChecker {
 
-	public List<ILevel> getLevels();
+    public List<ILevel> getLevels();
 
 }

@@ -12,36 +12,37 @@ import security.ILevelDefinition;
  */
 public class DefinitionChecker extends ALevelDefinitionChecker {
 
-	/**
-	 * DOC
-	 * 
-	 * @param implementation
-	 */
-	public DefinitionChecker(ILevelDefinition implementation) {
-		super(implementation);
-	}
+    /**
+     * DOC
+     * 
+     * @param implementation
+     */
+    public DefinitionChecker(ILevelDefinition implementation) {
+        super(implementation);
+    }
 
-	/**
-	 * DOC
-	 * 
-	 * @param implementation
-	 * @param logger
-	 * @param logging
-	 */
-	protected DefinitionChecker(ILevelDefinition implementation, AnalysisLog logger, boolean logging) {
-		super(implementation, logger, logging);
-	}
+    /**
+     * DOC
+     * 
+     * @param implementation
+     * @param logger
+     * @param logging
+     */
+    protected DefinitionChecker(ILevelDefinition implementation,
+            AnalysisLog logger, boolean logging) {
+        super(implementation, logger, logging);
+    }
 
-	/**
-	 * DOC
-	 * 
-	 * @return
-	 * 
-	 * @see ALevelDefinitionChecker#checkAdditionalValidityOfImplementation()
-	 */
-	@Override
-	protected void checkAdditionalValidityOfImplementation() {
-		return;
-	}
+    /**
+     * DOC
+     * 
+     * @return
+     * 
+     * @see ALevelDefinitionChecker#checkAdditionalValidityOfImplementation()
+     */
+    @Override
+    protected void checkAdditionalValidityOfImplementation() {
+        return;
+    }
 
 }

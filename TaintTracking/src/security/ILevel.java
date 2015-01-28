@@ -4,12 +4,12 @@ import constraints.IComponentConstant;
 
 public interface ILevel extends IComponentConstant {
 
-	public boolean equals(Object obj);
-	
-	public int hashCode();
+    public boolean equals(Object obj);
 
-	public String getName();
+    public int hashCode();
 
-	public String toString();
+    public String getName();
+
+    public String toString();
 
 }

@@ -56,281 +56,283 @@ import constraints.ComponentPlaceholder;
 import constraints.ConstraintsSet;
 import extractor.UsedObjectStore;
 
-public class SecurityConstraintValueWriteSwitch extends ASecurityConstraintValueSwitch implements JimpleValueSwitch {
+public class SecurityConstraintValueWriteSwitch extends
+        ASecurityConstraintValueSwitch implements JimpleValueSwitch {
 
-	private ArrayRef arrayRef;
+    private ArrayRef arrayRef;
 
-	protected SecurityConstraintValueWriteSwitch(Value value, AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store,
-			ConstraintsSet in, ConstraintsSet out) {
-		super(methodEnvironment, store, in, out);
-		value.apply(this);
-	}
+    protected SecurityConstraintValueWriteSwitch(Value value,
+            AnalyzedMethodEnvironment methodEnvironment, UsedObjectStore store,
+            ConstraintsSet in, ConstraintsSet out) {
+        super(methodEnvironment, store, in, out);
+        value.apply(this);
+    }
 
-	@Override
-	public void caseDoubleConstant(DoubleConstant v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseDoubleConstant(DoubleConstant v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseFloatConstant(FloatConstant v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseFloatConstant(FloatConstant v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseIntConstant(IntConstant v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseIntConstant(IntConstant v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseLongConstant(LongConstant v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseLongConstant(LongConstant v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseNullConstant(NullConstant v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseNullConstant(NullConstant v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseStringConstant(StringConstant v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseStringConstant(StringConstant v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseClassConstant(ClassConstant v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseClassConstant(ClassConstant v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void defaultCase(Object object) {
-		throwUnknownObjectException(object);
-	}
+    @Override
+    public void defaultCase(Object object) {
+        throwUnknownObjectException(object);
+    }
 
-	@Override
-	public void caseAddExpr(AddExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseAddExpr(AddExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseAndExpr(AndExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseAndExpr(AndExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseCmpExpr(CmpExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseCmpExpr(CmpExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseCmpgExpr(CmpgExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseCmpgExpr(CmpgExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseCmplExpr(CmplExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseCmplExpr(CmplExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseDivExpr(DivExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseDivExpr(DivExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseEqExpr(EqExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseEqExpr(EqExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseNeExpr(NeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseNeExpr(NeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseGeExpr(GeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseGeExpr(GeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseGtExpr(GtExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseGtExpr(GtExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseLeExpr(LeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseLeExpr(LeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseLtExpr(LtExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseLtExpr(LtExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseMulExpr(MulExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseMulExpr(MulExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseOrExpr(OrExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseOrExpr(OrExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseRemExpr(RemExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseRemExpr(RemExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseShlExpr(ShlExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseShlExpr(ShlExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseShrExpr(ShrExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseShrExpr(ShrExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseUshrExpr(UshrExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseUshrExpr(UshrExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseSubExpr(SubExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseSubExpr(SubExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseXorExpr(XorExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseXorExpr(XorExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseStaticInvokeExpr(StaticInvokeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseCastExpr(CastExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseCastExpr(CastExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseInstanceOfExpr(InstanceOfExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseInstanceOfExpr(InstanceOfExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseNewArrayExpr(NewArrayExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseNewArrayExpr(NewArrayExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseNewExpr(NewExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseNewExpr(NewExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseLengthExpr(LengthExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseLengthExpr(LengthExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseNegExpr(NegExpr v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseNegExpr(NegExpr v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseArrayRef(ArrayRef v) {
-		arrayRef = v;
-		Value array = arrayRef.getBase();
-		Value index = arrayRef.getIndex();
-		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(array);
-		SecurityConstraintValueReadSwitch indexSwitch = getReadSwitch(index);
-		addReadComponents(baseSwitch.getReadComponents());
-		addReadComponents(indexSwitch.getReadComponents());
-		setComponentDimension(AnalysisUtils.getDimension(v.getType()));
-		if (baseSwitch.getEqualComponents().size() > 0) {
-			addWriteComponent(baseSwitch.getEqualComponents().get(0));
-			for (int i = 1; i < baseSwitch.getEqualComponents().size(); i++) {
-				appendEqualComponent(baseSwitch.getEqualComponents().get(1));
-			}
-		}
-	}
+    @Override
+    public void caseArrayRef(ArrayRef v) {
+        arrayRef = v;
+        Value array = arrayRef.getBase();
+        Value index = arrayRef.getIndex();
+        SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(array);
+        SecurityConstraintValueReadSwitch indexSwitch = getReadSwitch(index);
+        addReadComponents(baseSwitch.getReadComponents());
+        addReadComponents(indexSwitch.getReadComponents());
+        setComponentDimension(AnalysisUtils.getDimension(v.getType()));
+        if (baseSwitch.getEqualComponents().size() > 0) {
+            addWriteComponent(baseSwitch.getEqualComponents().get(0));
+            for (int i = 1; i < baseSwitch.getEqualComponents().size(); i++) {
+                appendEqualComponent(baseSwitch.getEqualComponents().get(1));
+            }
+        }
+    }
 
-	@Override
-	public void caseStaticFieldRef(StaticFieldRef v) {
-		handleField(v.getField());
-	}
+    @Override
+    public void caseStaticFieldRef(StaticFieldRef v) {
+        handleField(v.getField());
+    }
 
-	@Override
-	public void caseInstanceFieldRef(InstanceFieldRef v) {
-		handleBase(v.getBase());
-		handleField(v.getField());
-	}
+    @Override
+    public void caseInstanceFieldRef(InstanceFieldRef v) {
+        handleBase(v.getBase());
+        handleField(v.getField());
+    }
 
-	private void handleBase(Value base) {
-		SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(base);
-		addReadComponents(baseSwitch.getReadComponents());
-	}
+    private void handleBase(Value base) {
+        SecurityConstraintValueReadSwitch baseSwitch = getReadSwitch(base);
+        addReadComponents(baseSwitch.getReadComponents());
+    }
 
-	private void handleField(SootField f) {
-		FieldEnvironment fe = getStore().getFieldEnvironment(field = f);
-		addWriteComponent(fe.getLevel());
-		handleFieldDimension(fe);
-	}
+    private void handleField(SootField f) {
+        FieldEnvironment fe = getStore().getFieldEnvironment(field = f);
+        addWriteComponent(fe.getLevel());
+        handleFieldDimension(fe);
+    }
 
-	@Override
-	public void caseParameterRef(ParameterRef v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseParameterRef(ParameterRef v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseCaughtExceptionRef(CaughtExceptionRef v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseThisRef(ThisRef v) {
-		throwInvalidWriteException(v);
-	}
+    @Override
+    public void caseThisRef(ThisRef v) {
+        throwInvalidWriteException(v);
+    }
 
-	@Override
-	public void caseLocal(Local l) {
-		local = l;
-		ComponentPlaceholder cp = ComponentPlaceholder.getInstance();
-		addWriteComponent(cp);
-		handleDimension(l.getType(), cp);
-	}
+    @Override
+    public void caseLocal(Local l) {
+        local = l;
+        ComponentPlaceholder cp = ComponentPlaceholder.getInstance();
+        addWriteComponent(cp);
+        handleDimension(l.getType(), cp);
+    }
 
-	public boolean isArrayRef() {
-		return arrayRef != null;
-	}
+    public boolean isArrayRef() {
+        return arrayRef != null;
+    }
 
 }

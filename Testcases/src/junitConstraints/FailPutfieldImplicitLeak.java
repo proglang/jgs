@@ -4,13 +4,13 @@ package junitConstraints;
 import static security.Definition.*;
 
 public class FailPutfieldImplicitLeak {
-    
+
     @FieldSecurity("high")
     boolean high;
     @FieldSecurity("low")
     boolean f;
 
-    @Constraints({"@pc <= low"})
+    @Constraints({ "@pc <= low" })
     public boolean leak(boolean init) {
         this.high = init;
         FailPutfieldImplicitLeak x = new FailPutfieldImplicitLeak();
@@ -24,8 +24,8 @@ public class FailPutfieldImplicitLeak {
         // @security("The returned value has a stronger security level than expected.")
         return x.f;
     }
-   
-    @Constraints({"@pc <= low"})
+
+    @Constraints({ "@pc <= low" })
     public static void main(String[] args) {
         FailPutfieldImplicitLeak s = new FailPutfieldImplicitLeak();
         boolean result1 = s.leak(true);
