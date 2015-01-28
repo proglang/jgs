@@ -17,7 +17,7 @@ A research project with the goal to allow gradual integration of refined type sy
 ## Setup
 Required software:
 
-1. IDE Eclipse (tested and developed with [Eclipse Juno][1])
+1. IDE Eclipse (tested and developed with [Eclipse Luna][1])
 2. [Soot framework (version 2.5.0)][2]
 3. [Soot Eclipse plugin][3]
 4. [Apache Ant][4]
@@ -301,8 +301,8 @@ looks up the *security level* of the returned value and compares it with the exp
 
 -----
 
-[1]: http://www.eclipse.org/juno/ "Download Eclipse Juno"
-[2]: http://www.sable.mcgill.ca/soot/soot_download.html "Download Soot Framework"
+[1]: http://www.eclipse.org/downloads/ "Eclipse Luna"
+[2]: https://ssebuild.cased.de/nightly/soot/lib/ "Download Soot Framework"
 [3]: http://www.sable.mcgill.ca/soot/eclipse/updates/index.html "Download Soot Eclipse plugin"
 [4]: http://ant.apache.org/bindownload.cgi "Download Apache Ant"
 [5]: https://github.com/junit-team/junit/wiki/Download-and-Install "JUnit 4"
