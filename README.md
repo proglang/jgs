@@ -1,5 +1,5 @@
 # Security Types for Java
-
+.
 ## How to run (currently)
 The run configurations AllJUnitTests.launch and AnalysisRun.launch should work out of the box. They run the unit tests and the main application, respectively.
 - Command line arguments for the main application are:
