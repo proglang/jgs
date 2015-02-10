@@ -32,10 +32,11 @@ Use the run configuration AllJUnitTests.launch to run the unit tests.
 
 ### Run own project
 - [TaintTracking] needs to be on the build path of your own project.
-- The project must contain a security.Definition.java file, which extends ALevelDefinition. You can copy the Definition.java from Testcases/security. To implement your own Definition file, see section ....
-- To perform the analysis, please use the lauch configuration [AnalysisRun] and specify the class which should be analyzed. For further configuration, see [#test]
+- The project must contain a security.Definition.java file, which extends ALevelDefinition. You can copy the Definition.java from Testcases/security. To implement your own Definition file, see section `TODO` 
+- To perform the analysis, please use the lauch configuration [AnalysisRun] and specify the class which should be analyzed (it should contain the main class). For further configuration details, see `TODO`
+- For information about possible annotations, see `TODO` 
 
-#test
+# Configuration of the launch file
 - Command line arguments for the main application are:
   - `-def-classpath` the classpath of the "Definitions"-file, e.g. `./../Testcases/bin`. The "Definitions"-file is the new way to specify the security lattice, etc.
   - `-source-path` path to the source files to be analyzed, e.g. `./../Testcases/src`
