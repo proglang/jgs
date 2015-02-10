@@ -15,36 +15,27 @@ Required software:
 6. The Eclipse projects [TaintTracking] and [Testcases] from this repository
 
 ### Setup the Project TaintTracking in Eclipse
-- import [TaintTracking] into eclipse
+- import [TaintTracking] into Eclipse
 - Add polyglott.jar, jasminclasses-2.5.0.jar, sootclasses - 2.5.0.jar and ant.jar es external jar in the project's build path.
 - Add "classes" folder of the soot project as external classes to the build path.
 - use Java 1.7 JRE
  
 ### Setup the Project TestCases in Eclipse
 - import [TestCases] into Eclipse
-
-
-  
-### Setup the Security-Type for Java projects
-- Import the projects [TaintTracking] and [Testcases] from this repository into Eclipse.
-- The project [Testcases] requires the following:
-	- source folder on the build path is `src/`
-	- use the Java 1.7 JRE
-- The project [TaintTracking] requires the following:
-	- Soot Eclipse project on the build path of the project [TaintTracking]
-	- JUnit 4 JARs on the build path of the project [TaintTracking]
-	- source folder on the build path is `src/`
-	- use the Java 1.7 JRE
-	- 
-	
-
-
-
-
+- [TaintTracking] needs to be on the build path of [TestCases]
 
 .
-## How to run (currently)
-The run configurations AllJUnitTests.launch and AnalysisRun.launch should work out of the box. They run the unit tests and the main application, respectively.
+## How to run
+### Run test cases
+
+Use the run configuration AllJUnitTests.launch to run the unit tests.
+
+### Run own project
+- [TaintTracking] needs to be on the build path of your own project.
+- The project must contain a security.Definition.java file, which extends ALevelDefinition. You can copy the Definition.java from Testcases/security. To implement your own Definition file, see section ....
+- To perform the analysis, please use the lauch configuration [AnalysisRun] and specify the class which should be analyzed. For further configuration, see [#test]
+
+#test
 - Command line arguments for the main application are:
   - `-def-classpath` the classpath of the "Definitions"-file, e.g. `./../Testcases/bin`. The "Definitions"-file is the new way to specify the security lattice, etc.
   - `-source-path` path to the source files to be analyzed, e.g. `./../Testcases/src`
@@ -239,13 +230,6 @@ public class Definition extends ALevelDefinition {
 }
 ```
 
-### Source code specific
-*Coming soon...*
-
-### Run the analysis
-To perform the analysis, please use the lauch configuration [AnalysisRun] and specify the class which should be analyzed. 
-
-## Violation policy
 
 ### Effects
 
