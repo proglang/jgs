@@ -15,13 +15,13 @@ Required software:
 6. The Eclipse projects [TaintTracking] and [Testcases] from this repository
 
 ### Setup the Project TaintTracking in Eclipse
-- import [TaintTracking] into Eclipse
+- Import [TaintTracking] into Eclipse
 - Add polyglott.jar, jasminclasses-2.5.0.jar, sootclasses - 2.5.0.jar and ant.jar es external jar in the project's build path.
 - Add "classes" folder of the soot project as external classes to the build path.
-- use Java 1.7 JRE
+- Use Java 1.7 JRE
  
-### Setup the Project TestCases in Eclipse
-- import [TestCases] into Eclipse
+### Setup the Project TestCases in Eclipse (This project contains the JUnit test for ... `TODO`)
+- Import [TestCases] into Eclipse
 - [TaintTracking] needs to be on the build path of [TestCases]
 
 .
@@ -36,7 +36,7 @@ Use the run configuration AllJUnitTests.launch to run the unit tests.
 - To perform the analysis, please use the lauch configuration [AnalysisRun] and specify the class which should be analyzed (it should contain the main class). For further configuration details, see `TODO`
 - For information about possible annotations, see `TODO` 
 
-# Configuration of the launch file
+### Configuration of the launch file
 - Command line arguments for the main application are:
   - `-def-classpath` the classpath of the "Definitions"-file, e.g. `./../Testcases/bin`. The "Definitions"-file is the new way to specify the security lattice, etc.
   - `-source-path` path to the source files to be analyzed, e.g. `./../Testcases/src`
