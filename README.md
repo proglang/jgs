@@ -20,7 +20,8 @@ Required software:
 - Add "classes" folder of the soot project as external classes to the build path.
 - Use Java 1.7 JRE
  
-### Setup the Project TestCases in Eclipse (This project contains the JUnit test for ... `TODO`)
+### Setup the Project TestCases in Eclipse 
+This project contains the JUnit tests for ... `TODO`
 - Import [TestCases] into Eclipse
 - [TaintTracking] needs to be on the build path of [TestCases]
 
