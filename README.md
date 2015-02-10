@@ -1,14 +1,4 @@
 # Security Types for Java
-.
-## How to run (currently)
-The run configurations AllJUnitTests.launch and AnalysisRun.launch should work out of the box. They run the unit tests and the main application, respectively.
-- Command line arguments for the main application are:
-  - `-def-classpath` the classpath of the "Definitions"-file, e.g. `./../Testcases/bin`. The "Definitions"-file is the new way to specify the security lattice, etc.
-  - `-source-path` path to the source files to be analyzed, e.g. `./../Testcases/src`
-  - `-program-classpath` classpath to the code implementing the analysis, e.g. `./bin`
-  - `-cp` Soot's classpath parameter. It should be set to the jdk/jre, e.g. `/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar`
-  - `-main-class` class that contains the main method, e.g. `junitAnalysis.FailArray`
-  - `<class>`, e.g. `junitAnalysis.FailArray`. Is this (also) the class to be analyzed, like `-main-class`?
 
 ## Summary
 
@@ -18,24 +8,22 @@ A research project with the goal to allow gradual integration of refined type sy
 Required software:
 
 1. IDE Eclipse (tested and developed with [Eclipse Luna][1])
-2. [Soot framework (version 2.5.0)][2]
-3. [Soot Eclipse plugin][3]
+2. [Soot framework (version 2.5.0)][2] (Unpack the archive somewhere - the three directories `soot-2.5.0`, `polyglot-1.3.5`, `jasmin-2.5.0` will be created )
+3. Optional: [Soot Eclipse Plugin][3]
 4. [Apache Ant][4]
 5. [JUnit 4][5] (`junit.jar` and `hamcrest-core.jar` are required)
-6. The Eclipse projects [TaintTracking] and [Testcases]
+6. The Eclipse projects [TaintTracking] and [Testcases] from this repository
 
-### Install Eclipse
-- If not already installed, get [Eclipse (e.g. Juno)][1] and install the IDE
+### Setup the Project TaintTracking in Eclipse
+- import [TaintTracking] into eclipse
+- Add polyglott.jar, jasminclasses-2.5.0.jar, sootclasses - 2.5.0.jar and ant.jar es external jar in the project's build path.
+- Add "classes" folder of the soot project as external classes to the build path.
+- use Java 1.7 JRE
+ 
+### Setup the Project TestCases in Eclipse
+- import [TestCases] into Eclipse
 
-### Install Soot
-The static analysis is based on the [Soot compiler framework][Soot]. Here are some quick setup instructions:
 
-- Go to the [Soot website][2], download `sootall-2.5.0.jar`, the complete package
-- Unpack the archive somewhere (the three directories `soot-2.5.0`, `polyglot-1.3.5`, `jasmin-2.5.0` will be created)
-- Download a binary distribution of [Apache Ant][4]
-- Follow instructions in `soot-2.5.0/soot_in_eclipse_howto.html`.
-- Install the [Soot Eclipse plugin][3]
-- Now you should be able to import the projects ([TaintTracking] and [Testcases]) from this repository without soot-related compilation errors (see [next step](#output)).
   
 ### Setup the Security-Type for Java projects
 - Import the projects [TaintTracking] and [Testcases] from this repository into Eclipse.
@@ -47,6 +35,23 @@ The static analysis is based on the [Soot compiler framework][Soot]. Here are so
 	- JUnit 4 JARs on the build path of the project [TaintTracking]
 	- source folder on the build path is `src/`
 	- use the Java 1.7 JRE
+	- 
+	
+
+
+
+
+
+.
+## How to run (currently)
+The run configurations AllJUnitTests.launch and AnalysisRun.launch should work out of the box. They run the unit tests and the main application, respectively.
+- Command line arguments for the main application are:
+  - `-def-classpath` the classpath of the "Definitions"-file, e.g. `./../Testcases/bin`. The "Definitions"-file is the new way to specify the security lattice, etc.
+  - `-source-path` path to the source files to be analyzed, e.g. `./../Testcases/src`
+  - `-program-classpath` classpath to the code implementing the analysis, e.g. `./bin`
+  - `-cp` Soot's classpath parameter. It should be set to the jdk/jre, e.g. `/Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/jre/lib/rt.jar`
+  - `-main-class` class that contains the main method, e.g. `junitAnalysis.FailArray`
+  - `<class>`, e.g. `junitAnalysis.FailArray`. Is this (also) the class to be analyzed, like `-main-class`?
 
 ## How to use
 To check a specific source with the Security-Type for Java project for security violations, several requirements must be satisfied. This includes on the one hand the implementation of the class `Definition` in the to-be-checked project, which is a subclass of [`ALevelDefinition`][ALevelDefinition] and which specifies the *security levels* as well as the Java annotation classes which provides the levels and the effects information of field, methods and classes. On the other hand, adding the required annotations in the source code as well as adding also the *security levels* of local variables.
@@ -302,7 +307,7 @@ looks up the *security level* of the returned value and compares it with the exp
 -----
 
 [1]: http://www.eclipse.org/downloads/ "Eclipse Luna"
-[2]: https://ssebuild.cased.de/nightly/soot/lib/ "Download Soot Framework"
+[2]: http://www.sable.mcgill.ca/software/sootall-2.5.0.jar "Download Soot Framework"
 [3]: http://www.sable.mcgill.ca/soot/eclipse/updates/index.html "Download Soot Eclipse plugin"
 [4]: http://ant.apache.org/bindownload.cgi "Download Apache Ant"
 [5]: https://github.com/junit-team/junit/wiki/Download-and-Install "JUnit 4"
