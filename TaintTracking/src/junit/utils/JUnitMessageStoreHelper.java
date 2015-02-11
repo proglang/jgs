@@ -98,14 +98,20 @@ public class JUnitMessageStoreHelper {
     /**
      * DOC
      * 
-     * @param levels
-     * @param calculatedMessages
-     * @param expectedMessages
+     * @param levels defines which log messages shall be printed. For more details {@link Level}
+     * @param calculatedMessages list of all calculated messages.
+     * @param expectedMessages list of all expected messages.
      */
     public static void printDifferences(Level[] levels,
                                         MessageStore calculatedMessages,
                                         MessageStore expectedMessages) {
+        
+        /** 
+         * The levels array stored in a list 
+         */
         List<Level> levelList = Arrays.asList(levels);
+        
+        /** */
         Map<Level, Map<String, Set<Long>>> alreadyPrinted =
             new HashMap<Level, Map<String, Set<Long>>>();
         for (Level level : levels) {
@@ -217,10 +223,18 @@ public class JUnitMessageStoreHelper {
                 calculatedMessages.getAllMessages(testFile.getClassName(),
                                                   lineNumber.longValue(),
                                                   level);
+            for (int i = 0; i < calculated.size(); i++) {
+                System.out.println("Calculated: " + calculated.get(i).getMessage() + " line " + calculated.get(i).getSrcLn());
+            }
+            System.out.println("Size calc after init: " + calculated.size());
             List<Message> expected =
                 expectedMessages.getAllMessages(testFile.getClassName(),
                                                 lineNumber.longValue(),
                                                 level);
+            for (int i = 0; i < expected.size(); i++) {
+                System.out.println("Expected: " + expected.get(i).getMessage() + " line " + expected.get(i).getSrcLn());
+            }
+            System.out.println("Size exp after init: " + expected.size());
             if (calculated.size() != expected.size()) {
                 if (calculated.size() > expected.size()) {
                     fail(String.format("In file %s at line %d for level %s: More calculated (%d) than expected messages (%d).",
@@ -230,6 +244,8 @@ public class JUnitMessageStoreHelper {
                                        calculated.size(),
                                        expected.size()));
                 } else {
+                    System.out.println(calculated.size() + " ");
+                    System.out.println(expected.size() + " ");
                     fail(String.format("In file %s at line %d for level %s: More expected (%d) than calculated messages (%d).",
                                        testFile.getClassName(),
                                        lineNumber.longValue(),
@@ -242,10 +258,11 @@ public class JUnitMessageStoreHelper {
     }
 
     /**
-     * DOC
+     * Extracts expected error messages from given file by checking for a regex match 
+     * and stores them in messageStore.
      * 
      * @param file
-     * @return
+     * @return messageStore contains all extracted messages.
      * @throws IOException
      */
     private static MessageStore extractMessagesFromFile(File file) throws IOException {
@@ -263,7 +280,7 @@ public class JUnitMessageStoreHelper {
                     queue.add(comment);
                 }
             } else {
-                for (String annotation : queue) {
+               for (String annotation : queue) {
                     tryAddingErrorMessage(messageStore,
                                           fileName,
                                           lineNumber,
@@ -280,7 +297,7 @@ public class JUnitMessageStoreHelper {
     }
 
     /**
-     * DOC
+     * Prints the amount of calculated and expected messages.
      * 
      * @param expectedMessages
      * @param calculatedMessages
@@ -313,7 +330,8 @@ public class JUnitMessageStoreHelper {
     }
 
     /**
-     * DOC
+     * Adds error message to messageStore, if it matches the type and message regex pattern.
+     * The message is provided in the parameter annotation.
      * 
      * @param messageStore
      * @param fileName
