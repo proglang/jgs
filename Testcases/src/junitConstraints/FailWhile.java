@@ -58,9 +58,9 @@ public class FailWhile extends stubs.MinimalFields {
 
     @Constraints("@pc <= low")
     public void failWhile7() {
-        while (lowIField <= 42) {
-            // @security("Illegal flow from high to low")
+        while (lowIField <= 42) {        
             if (lowIField <= 23)
+            	// @security("Illegal flow from high to low")
                 lowIField = mkHigh(42);
         }
     }
@@ -68,8 +68,8 @@ public class FailWhile extends stubs.MinimalFields {
     @Constraints("@pc <= low")
     public void failWhile8() {
         while (lowIField <= 42) {
-            // @security("Illegal flow from high to low")
             if (highIField <= 23)
+            	// @security("Illegal flow from high to low")
                 lowIField = 42;
         }
     }
@@ -77,8 +77,8 @@ public class FailWhile extends stubs.MinimalFields {
     @Constraints("@pc <= low")
     public void failWhile9() {
         while (highIField <= 42) {
-            // @security("Illegal flow from high to low")
             if (lowIField <= 23)
+            	// @security("Illegal flow from high to low")
                 lowIField = 42;
         }
     }
@@ -86,8 +86,8 @@ public class FailWhile extends stubs.MinimalFields {
     @Constraints("@pc <= low")
     public void failWhile10() {
         while (highIField <= 42) {
-            // @security("Illegal flow from high to low")
             if (highIField <= 23)
+                // @security("Illegal flow from high to low")
                 lowIField = 42;
         }
     }
@@ -95,8 +95,8 @@ public class FailWhile extends stubs.MinimalFields {
     @Constraints("@pc <= low")
     public void failWhile11() {
         while (lowIField <= 42) {
-            // @security("Illegal flow from high to low")
             if (highIField <= 23)
+                // @security("Illegal flow from high to low")
                 lowIField = mkHigh(42);
         }
     }
@@ -104,8 +104,8 @@ public class FailWhile extends stubs.MinimalFields {
     @Constraints("@pc <= low")
     public void failWhile12() {
         while (highIField <= 42) {
-            // @security("Illegal flow from high to low")
             if (lowIField <= 23)
+                // @security("Illegal flow from high to low")
                 lowIField = mkHigh(42);
         }
     }
@@ -113,8 +113,8 @@ public class FailWhile extends stubs.MinimalFields {
     @Constraints("@pc <= low")
     public void failWhile13() {
         while (highIField <= 42) {
-            // @security("Illegal flow from high to low")
             if (highIField <= 23)
+                // @security("Illegal flow from high to low")
                 lowIField = mkHigh(42);
         }
     }
@@ -157,8 +157,8 @@ public class FailWhile extends stubs.MinimalFields {
         int i = lowIField;
         while (i <= 42) {
             lowIField = i;
-            // @security("Illegal flow from high to low")
             if (i <= -23)
+                // @security("Illegal flow from high to low")
                 i = mkHigh(7);
         }
     }
