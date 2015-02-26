@@ -223,18 +223,12 @@ public class JUnitMessageStoreHelper {
                 calculatedMessages.getAllMessages(testFile.getClassName(),
                                                   lineNumber.longValue(),
                                                   level);
-            for (int i = 0; i < calculated.size(); i++) {
-                System.out.println("Calculated: " + calculated.get(i).getMessage() + " line " + calculated.get(i).getSrcLn());
-            }
-            System.out.println("Size calc after init: " + calculated.size());
+
             List<Message> expected =
                 expectedMessages.getAllMessages(testFile.getClassName(),
                                                 lineNumber.longValue(),
                                                 level);
-            for (int i = 0; i < expected.size(); i++) {
-                System.out.println("Expected: " + expected.get(i).getMessage() + " line " + expected.get(i).getSrcLn());
-            }
-            System.out.println("Size exp after init: " + expected.size());
+
             if (calculated.size() != expected.size()) {
                 if (calculated.size() > expected.size()) {
                     fail(String.format("In file %s at line %d for level %s: More calculated (%d) than expected messages (%d).",
@@ -244,8 +238,6 @@ public class JUnitMessageStoreHelper {
                                        calculated.size(),
                                        expected.size()));
                 } else {
-                    System.out.println(calculated.size() + " ");
-                    System.out.println(expected.size() + " ");
                     fail(String.format("In file %s at line %d for level %s: More expected (%d) than calculated messages (%d).",
                                        testFile.getClassName(),
                                        lineNumber.longValue(),

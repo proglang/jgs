@@ -34,22 +34,22 @@ public class FailIf extends stubs.MinimalFields {
 
     @Constraints("@pc <= low")
     public void failIf4() {
-        // @security("Illegal flow from high to low")
         if (lowIField == 0)
+            // @security("Illegal flow from high to low")
             lowIField = mkHigh(42);
     }
 
     @Constraints("@pc <= low")
-    public void failIf5() {
-        // @security("Illegal flow from high to low")
+    public void failIf5() {     
         if (highIField == 0)
+        	// @security("Illegal flow from high to low")
             lowIField = 42;
     }
 
     @Constraints("@pc <= low")
-    public void failIf6() {
-        // @security("Illegal flow from high to low")
+    public void failIf6() {        
         if (highIField == 0)
+        	// @security("Illegal flow from high to low")
             lowIField = mkHigh(42);
     }
 

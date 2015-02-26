@@ -298,7 +298,7 @@ looks up the *security level* of the returned value and compares it with the exp
 [4]: http://ant.apache.org/bindownload.cgi "Download Apache Ant"
 [5]: https://github.com/junit-team/junit/wiki/Download-and-Install "JUnit 4"
 
-[Soot]: http://www.sable.mcgill.ca/soot/ "Soot compiler framework"
+[Soot]: https://www.sable.mcgill.ca/soot/soot_download.html "Soot compiler framework"
 [SootCommandline]: http://www.sable.mcgill.ca/soot/tutorial/usage/ "Soot command-line options"
 [TaintTracking]: TaintTracking/ "Project TaintTracking"
 [Testcases]: Testcases/ "Project Testcase"
