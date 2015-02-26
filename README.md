@@ -49,12 +49,12 @@ Use the run configuration AllJUnitTests.launch to run the unit tests.
 -----
 
 [1]: http://www.eclipse.org/downloads/ "Eclipse Luna"
-[2]: http://www.sable.mcgill.ca/software/sootall-2.5.0.jar "Download Soot Framework"
+[2]: https://www.sable.mcgill.ca/soot/soot_download.html "Download Soot Framework"
 [3]: http://www.sable.mcgill.ca/soot/eclipse/updates/index.html "Download Soot Eclipse plugin"
 [4]: http://ant.apache.org/bindownload.cgi "Download Apache Ant"
 [5]: https://github.com/junit-team/junit/wiki/Download-and-Install "JUnit 4"
 
-[Soot]: https://www.sable.mcgill.ca/soot/soot_download.html "Soot compiler framework"
+[Soot]: http://sable.github.io/soot/ "Soot compiler framework"
 [SootCommandline]: http://www.sable.mcgill.ca/soot/tutorial/usage/ "Soot command-line options"
 [TaintTracking]: TaintTracking/ "Project TaintTracking"
 [Testcases]: Testcases/ "Project Testcase"
