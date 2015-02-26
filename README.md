@@ -1,5 +1,5 @@
 # Security Types for Java
-
+[configuration] (#configuration)
 ## Summary
 
 A research project with the goal to allow gradual integration of refined type systems in Java (e.g. type systems for physical dimensions, effects, security, ...)
