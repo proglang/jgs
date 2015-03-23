@@ -30,7 +30,7 @@ examples:
   ```
   
 * Multidimensional array with a label for each dimension
-* 
+
   ```java
   @FieldSecurity({"low", "low", "low"})
   int[][] array;
