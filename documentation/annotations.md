@@ -9,21 +9,21 @@ TODO explanation
 
 examples:
 * Field with a high security label
-* 
+ 
  ```java
   @FieldSecurity("high")
   int highField;
   ```
   
 * Field with a low security label
-* 
+ 
  ```java
   @FieldSecurity("low")
   int lowField;
   ```
   
 * Array field. The array itself has a low security label, its content has a high label
-* 
+
   ```java
   @FieldSecurity("low", "high")
   int[] array;
