@@ -5,6 +5,6 @@ Add fields
 ----------
 
 ```java
-SootField f = new SootField("sdfs", IntType.v());
+SootField f = new SootField("field_name", IntType.v());
 SootClass c = Scene.v().getSootClass("main.Test").getFields().add(f);
 ```
