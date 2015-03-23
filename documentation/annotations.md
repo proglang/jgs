@@ -8,20 +8,33 @@ Static Analysis
 TODO explanation
 
 examples:
-* @FieldSecurity("high")
-
+* Field with a high security label
+* 
+ ```java
+  @FieldSecurity("high")
   int highField;
-* @FieldSecurity("low")
-
+  ```
+  
+* Field with a low security label
+* 
+ ```java
+  @FieldSecurity("low")
   int lowField;
+  ```
   
-* @FieldSecurity("low", "high")
-
+* Array field. The array itself has a low security label, its content has a high label
+* 
+  ```java
+  @FieldSecurity("low", "high")
   int[] array;
+  ```
   
-* @FieldSecurity({"low", "low", "low"})
-
+* Multidimensional array with a label for each dimension
+* 
+  ```java
+  @FieldSecurity({"low", "low", "low"})
   int[][] array;
+  ```
   
 ### Program counter
 
