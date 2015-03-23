@@ -37,6 +37,11 @@ Use the run configuration AllJUnitTests.launch to run the unit tests.
 - To perform the analysis, please use the lauch configuration [AnalysisRun] and specify the class which should be analyzed (it should contain the main class). For further configuration details, see [configuration] (#configuration)
 - For information about possible annotations, see `TODO` 
 
+[SampleProject] is a simple example how to setup an own project. The Definition.java file is mandatory.
+You can use [ManualAnalysis.launch] to start the analysis of this project.
+
+[SampleProject] contains a single file with small examples of annotations. For more example you might want to take a look at [TestCases].
+
 <a name="configuration"></a>
 ### Configuration of the launch file
 - Command line arguments for the main application are:
@@ -59,5 +64,7 @@ Use the run configuration AllJUnitTests.launch to run the unit tests.
 [SootCommandline]: http://www.sable.mcgill.ca/soot/tutorial/usage/ "Soot command-line options"
 [TaintTracking]: TaintTracking/ "Project TaintTracking"
 [Testcases]: Testcases/ "Project Testcase"
+[SampleProject]: SampleProject/ "SampleProject"
 [ALevelDefinition]: TaintTracking/src/security/ALevelDefinition.java "ALevelDefinition"
+[ManualAnalysis.launch]: TaintTracking/ManualAnalysis.launch "ManualAnalysis.launch"
 [AnalysisRun]: AnalysisRun.launch "Analysis Run"
