@@ -92,7 +92,7 @@ examples:
 * 
 
 ```java
- @Constraints({@return[ = high})
+@Constraints({"@return[ = high"})
 ```
 
 * 
