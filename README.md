@@ -4,6 +4,8 @@
 
 A research project with the goal to allow gradual integration of refined type systems in Java (e.g. type systems for physical dimensions, effects, security, ...)
 
+![GitHub Logo](/img/front.png)
+
 ## Setup
 Required software:
 
