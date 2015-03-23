@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/TaintTracking/src/main/Main.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<mapAttribute key="org.eclipse.debug.core.environmentVariables">
+<mapEntry key="HIGH_INTENSITY" value="true"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="main.Main"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-def-classpath ./../SampleProject/bin -source-path ./../SampleProject/src -program-classpath ./bin -cp ${system_property:java.home}/lib/rt.jar -main-class -constraints main.Sample main.Sample"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="TaintTracking"/>
+</launchConfiguration>
