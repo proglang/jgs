@@ -37,21 +37,65 @@ examples:
   ```
   
 ### Program counter
+TODO explanation
 
 examples:
-* @Constraints({"high <= @pc"})
-* @Constraints({"@pc <= low"}
+* method can be invoked if the program counter is high
+
+```java
+@Constraints({"high <= @pc"})
+```
+
+* low program counter
+
+```java
+@Constraints({"@pc <= low"}
+```
 
 ### Parameter security
-examples:
-* @Constraints({"@0 <= low"})
-* @Constraints({"high <= @0","@1 <= low"})
-* @Constraints({"@0[ = high"})
+TODO explanation
 
+examples:
+* Methods accepts the first argument only if its security label is <= low
+```java
+@Constraints({"@0 <= low"})
+```
+
+* 
+
+```java
+@Constraints({"high <= @0","@1 <= low"})
+```
+
+* 
+
+```java
+@Constraints({"@0[ = high"})
+```
 
 ### Return security
+TODO explanation
+
 examples:
-* @Constraints({"high <= @return"})
-* @Constraints({"@return <= low"})
-* @Constraints({@return[ = high})
-* @Constraints({"low = @return[["})
+* 
+
+```java
+@Constraints({"high <= @return"})
+```
+
+* 
+
+```java
+@Constraints({"@return <= low"})
+```
+
+* 
+
+```java
+ @Constraints({@return[ = high})
+```
+
+* 
+
+```java
+@Constraints({"low = @return[["})
