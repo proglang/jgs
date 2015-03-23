@@ -66,5 +66,5 @@ You can use [ManualAnalysis.launch] to start the analysis of this project.
 [Testcases]: Testcases/ "Project Testcase"
 [SampleProject]: SampleProject/ "SampleProject"
 [ALevelDefinition]: TaintTracking/src/security/ALevelDefinition.java "ALevelDefinition"
-[ManualAnalysis.launch]: TaintTracking/ManualAnalysis.launch "ManualAnalysis.launch"
+[ManualAnalysis.launch]: TaintTracking/Manual Analysis.launch "ManualAnalysis.launch"
 [AnalysisRun]: AnalysisRun.launch "Analysis Run"
