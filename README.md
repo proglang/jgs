@@ -40,7 +40,7 @@ Use the run configuration AllJUnitTests.launch to run the unit tests.
 [SampleProject] is a simple example how to setup an own project. The Definition.java file is mandatory.
 You can use [ManualAnalysis] to start the analysis of this project.
 
-[SampleProject] contains a single file with small examples of annotations. For more example you might want to take a look at [TestCases].
+[SampleProject] contains a single file with small examples of annotations. For more examples you might want to take a look at [TestCases].
 
 <a name="configuration"></a>
 ### Configuration of the launch file
@@ -67,4 +67,4 @@ You can use [ManualAnalysis] to start the analysis of this project.
 [SampleProject]: SampleProject/ "SampleProject"
 [ALevelDefinition]: TaintTracking/src/security/ALevelDefinition.java "ALevelDefinition"
 [ManualAnalysis]: TaintTracking/ManualAnalysis.launch "ManualAnalysis.launch"
-[AnalysisRun]: TaintTracking/AnalysisRun.launch "Analysis Run"
+[AnalysisRun]: TaintTracking/AnalysisRunScratch.launch "Analysis Run"
