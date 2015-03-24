@@ -21,7 +21,7 @@ A method has a chain with its locals and units (which contain all expressions an
 ```java
 Body body = method.getActiveBody();  
 Chain<Unit> units = body.getUnits();
-Chain <Local> locals = body.getLocals();
+Chain<Local> locals = body.getLocals();
 ```
 
 
