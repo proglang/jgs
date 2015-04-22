@@ -50,6 +50,11 @@ public class HandleStmt {
 		lm.insertElement(signature, Level.LOW); 
 	}
 	
+	public Level setLocalLevel(String signature, Level level) {
+		lm.setLevel(signature, level);
+		return lm.getLevel(signature);
+	}
+	
 	public Level getLocalLevel(String signature) {
 		return lm.getLevel(signature);
 	}
@@ -111,24 +116,30 @@ public class HandleStmt {
 		return res;		
 	}
 
-	public void assignFieldToField(String string, String... rightOp) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void assignLocalsToField(String field, String... locals) {
-		// TODO Auto-generated method stub
-		
+	public Level assignLocalsToField(Object o, String field, String... locals) {
+		System.out.println("Assign " + locals + " to " + field);
+		System.out.println("Check if " + lm.getLevel(field) + " >= " + lm.getLocalPC());
+		if (!checkLocalPC(field)) {
+			try {
+			throw new IllegalFlowException("System.exit because of illegal flow to " + field);
+			} catch(IllegalFlowException e) {
+				e.printMessage();
+				e.printStackTrace();
+			   // System.exit(0);
+			}
+		}
+		om.setField(o, field, join(locals));
+		return om.getFieldLevel(o, field);
 	}
 	
 
 
 	public void returnLocal(String signature) {
 		lm.setReturnLevel(lm.getLevel(signature));
-		
+		// TODO Auch CalleeReturn aktualisieren
 	}
 
-	public void returnField(Object o, String signature) {
+	public void returnField(Object o, String signature) { // TODO: nicht nötig?
 		lm.setReturnLevel(om.getFieldLevel(o, signature));		
 	}
 }

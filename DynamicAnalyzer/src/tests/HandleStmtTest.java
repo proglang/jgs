@@ -25,6 +25,7 @@ public class HandleStmtTest {
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
 		hs.addLocal("int_z", Level.HIGH);
+		hs.addLocal("TestSubClass_xy");
 		
 		/*
 		 *  int x = c;
@@ -62,7 +63,9 @@ public class HandleStmtTest {
 		
 		/*
 		 *  Assign new Object
-		 *  
+		 *  check(xy) >= lpc
+		 *  lpc -> xy
+		 *  add new Object to ObjectMap
 		 */
 		TestSubClass xy = new TestSubClass();
 		
@@ -111,14 +114,45 @@ public class HandleStmtTest {
 		System.out.println("ASSIGN FIELD TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.addObjectToObjectMap(this);
+		hs.addLocal("int_var1", Level.LOW);
+		hs.addLocal("int_var2", Level.LOW);
+		hs.addLocal("int_var3", Level.HIGH);
+		hs.addFieldToObjectMap(this, "int_field");
 		
-		// Assign Constant to Field
+		assertEquals(Level.LOW, hs.getFieldLevel(this, "int_field"));
+		assertEquals(Level.LOW, hs.getLocalLevel("int_var1"));
+		assertEquals(Level.LOW, hs.getLocalLevel("int_var2"));
 		
-		// Assign Local To Field
-		hs.assignLocalsToField("int_field", "int_var");
+		/* Assign Constant to Field
+		 *  int field = c;
+		 *  1. Check if Level(x) >= lpc
+		 *  2. Assign level of lpc to field
+		 */
+		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field"));
+		hs.setLocalPC(Level.HIGH);
+		assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field"));
 		
-		// Assign Field to Field
-		hs.assignFieldToField("sdf", "dfg");
+		/* Assign Local To Field
+		 *  int field = var1 + var2;
+		 *  1. Check if Level(x) >= lpc
+		 *  2. Assign Join(y, z, lpc) to x
+		 */
+		hs.setLocalPC(Level.LOW);
+		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field", "int_var1"));
+		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
+		hs.setLocalLevel("int_var2", Level.HIGH);
+		assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
+		
+		/*
+		 * Assign new Object
+		 */
+		
+		/*
+		 * Assign method (return)
+		 */
+		
+		// TODO What happens if a local doesn't exist?
 		
 		System.out.println("ASSIGN FIELD TEST FINISHED");
 	}
