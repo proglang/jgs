@@ -5,11 +5,22 @@ import annotations.*;
 public class Test {
 
 	int intField = 3;
+	int intField2 = 0;
 	
     public int ifReturnExpr() {
         int High = 42;
     	intField = 456;
         return High;
+    }
+    
+    public int constReturn() {
+    	int x = intField;
+    	return 3;
+    }
+    
+    public int returnField() {
+    	intField2 = intField;
+    	return intField;
     }
     
     

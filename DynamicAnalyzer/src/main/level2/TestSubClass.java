@@ -34,10 +34,4 @@ public class TestSubClass {
 		hs.returnLocal("int_result");
 		return result;
 	}
-	
-	public int methodWithFieldReturn() {
-		HandleStmt hs = new HandleStmt();
-		hs.returnField(this, "int_field");
-		return field;
-	}
 }

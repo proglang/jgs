@@ -48,6 +48,7 @@ public class HandleStmtTest {
 		
 		
 		/*
+		 *  Assign Locals to Local
 		 *  int x = y + z;
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
@@ -60,6 +61,14 @@ public class HandleStmtTest {
 		
 		hs.setLocalPC(Level.HIGH);
 		assertEquals(Level.HIGH, hs.assignLocal("int_x", "int_y", "int_z"));
+		
+		/*
+		 * Assign Field to Local
+		 */
+		
+		/*
+		 * Assign Join of Local and Field to Local
+		 */
 		
 		/*
 		 *  Assign new Object
@@ -80,6 +89,12 @@ public class HandleStmtTest {
 		/*
 		 * Assign method (result)
 		 */
+		int res;
+		hs.addLocal("int_res");
+		assertEquals(Level.LOW, hs.getLocalLevel("int_res"));
+		
+		res = xy.methodWithConstReturn();
+		res = xy.methodWithLocalReturn();
 		
 		System.out.println("ASSIGN LOCAL TEST FINISHED");
 	}
@@ -95,7 +110,6 @@ public class HandleStmtTest {
 		 * Invoke New Stmt
 		 * 1. Add new Object to ObjectMap
 		 * 2. Add Fields to ObjectMap
-		 *
 		 */
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
@@ -104,13 +118,12 @@ public class HandleStmtTest {
 		/*
 		 *  Static Invoke
 		 */
+		// TODO: shold be the same as New Stmt
 		
 		/*
 		 *  Invoke Method
-		 */
-		
-		/*
-		 * Invoke Method
+		 *  1. Create new LocalMap
+		 *  2. Add Locals to LocalMap
 		 */
 		
 		System.out.println("INVOKE TEST FINISHED");
@@ -166,8 +179,15 @@ public class HandleStmtTest {
 	}
 	
 	@Test
-	public void ifStmtTest() {
-		
+	public void ifStmtTest() {	
+	}
+	
+	@Test
+	public void ifWhileTest() {	
+	}
+	
+	@Test
+	public void ifSwitchTest() {	
 	}
 	
 	@Test
@@ -197,7 +217,6 @@ public class HandleStmtTest {
 		
 		tsc.method();
 		resField1 = tsc.methodWithConstReturn();
-		resField2 = tsc.methodWithFieldReturn();
 		resField3 = tsc.methodWithLocalReturn();
 		
 		assertEquals(Level.LOW, hs.getFieldLevel(this, "int_resField1"));

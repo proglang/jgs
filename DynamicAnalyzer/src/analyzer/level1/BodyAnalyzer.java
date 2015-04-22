@@ -79,7 +79,7 @@ public class BodyAnalyzer extends BodyTransformer{
         	Unit item = uit.next();
 			item.apply(stmtSwitch);
         }
-         JimpleInjector.addUnitsToChain();
+        // JimpleInjector.addUnitsToChain();
         
         // outputForDebug();	
 	}

@@ -138,8 +138,4 @@ public class HandleStmt {
 		lm.setReturnLevel(lm.getLevel(signature));
 		// TODO Auch CalleeReturn aktualisieren
 	}
-
-	public void returnField(Object o, String signature) { // TODO: nicht nötig?
-		lm.setReturnLevel(om.getFieldLevel(o, signature));		
-	}
 }
