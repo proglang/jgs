@@ -8,6 +8,14 @@ public class HandleStmt {
 	LocalMap lm = new LocalMap();
 	ObjectMap om = ObjectMap.getInstance();
 	
+	public Level setActualReturnLevel(Level l) {
+		return om.setActualReturnLevel(l);
+	}
+	
+	public Level getActualReturnLevel() {
+		return om.getActualReturnLevel();
+	}
+	
 	public void addObjectToObjectMap(Object o) {
 		System.out.println("Insert Object " + o +" to ObjectMap\n");
 		om.insertNewObject(o);
@@ -133,10 +141,14 @@ public class HandleStmt {
 	}
 	
 
+	public void returnConstant() {
+		// TODO
+		om.setActualReturnLevel(lm.getLocalPC()); // ??
+	}
 
 	public void returnLocal(String signature) {
-		lm.setReturnLevel(lm.getLevel(signature));
-		// TODO Auch CalleeReturn aktualisieren
+		lm.setReturnLevel(lm.getLevel(signature)); // TODO: not needed??
+		om.setActualReturnLevel(lm.getLevel(signature)); 
 	}
 
 	public Level assignFieldsToLocal(Object o,

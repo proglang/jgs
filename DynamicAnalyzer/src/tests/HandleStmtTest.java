@@ -94,8 +94,10 @@ public class HandleStmtTest {
 		hs.addLocal("int_res");
 		assertEquals(Level.LOW, hs.getLocalLevel("int_res"));
 		
+		// TODO
 		res = xy.methodWithConstReturn();
-		res = xy.methodWithLocalReturn();
+		res = xy.methodWithLowLocalReturn();
+		res = xy.methodWithHighLocalReturn();
 		
 		System.out.println("ASSIGN LOCAL TEST FINISHED");
 	}
@@ -198,6 +200,7 @@ public class HandleStmtTest {
 		
 		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
+		hs.setLocalPC(Level.LOW);
 		assertEquals(Level.LOW, hs.addFieldToObjectMap(this, "int_resField1"));
 		assertEquals(Level.LOW, hs.addFieldToObjectMap(this, "int_resField2"));
 		assertEquals(Level.LOW, hs.addFieldToObjectMap(this, "int_resField3"));
@@ -212,13 +215,15 @@ public class HandleStmtTest {
 		assertEquals(Level.LOW, hs.getFieldLevel(this, "int_resField3"));
 		
 		TestSubClass tsc = new TestSubClass();
-		
-		// TODO Wie bekommt das Feld den ReturnWert?
+		tsc.methodWithConstReturn();
+		assertEquals(Level.LOW, hs.getActualReturnLevel());
+		tsc.methodWithLowLocalReturn();
+		assertEquals(Level.LOW, hs.getActualReturnLevel());
+		tsc.methodWithHighLocalReturn();
+		assertEquals(Level.HIGH, hs.getActualReturnLevel());
 		
 		
 		tsc.method();
-		resField1 = tsc.methodWithConstReturn();
-		resField3 = tsc.methodWithLocalReturn();
 		
 		assertEquals(Level.LOW, hs.getFieldLevel(this, "int_resField1"));
 		assertEquals(Level.LOW, hs.getFieldLevel(this, "int_resField2"));

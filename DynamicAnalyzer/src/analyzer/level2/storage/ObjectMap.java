@@ -15,10 +15,12 @@ public class ObjectMap{
 private ReferenceIdentityMap<Object, HashMap<String, Level>> innerMap;
 private Level globalPC;
 private static ObjectMap instance = null;
+private Level actualReturnLevel;
 
 
 private ObjectMap() {
 	globalPC = Level.LOW; 
+	actualReturnLevel = Level.LOW;
 	innerMap = new ReferenceIdentityMap<Object, HashMap<String, Level>>();
 }
 
@@ -43,6 +45,15 @@ public void setGlobalPC(Level l) {
  */
 public Level getGlobalPC() {
 	return globalPC;
+}
+
+public Level setActualReturnLevel(Level l) {
+	actualReturnLevel = l;
+	return actualReturnLevel;
+}
+
+public Level getActualReturnLevel() {
+	return actualReturnLevel;
 }
   
   /**

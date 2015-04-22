@@ -18,18 +18,30 @@ public class TestSubClass {
 	}
 	
 	public int methodWithConstReturn() {
-		
 		HandleStmt hs = new HandleStmt();
 		
+		hs.returnConstant();
 		return 2;
 	}
 	
-	public int methodWithLocalReturn() {
+	public int methodWithLowLocalReturn() {
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_result");
 		
 		hs.assignLocalsToLocal("int_result");
 		int result = 0;
+		
+		hs.returnLocal("int_result");
+		return result;
+	}
+	
+	public int methodWithHighLocalReturn() {
+		HandleStmt hs = new HandleStmt();
+		hs.addLocal("int_result");
+		
+		hs.assignLocalsToLocal("int_result");
+		int result = 0;
+		hs.makeLocalHigh("int_result");
 		
 		hs.returnLocal("int_result");
 		return result;
