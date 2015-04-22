@@ -11,6 +11,15 @@ public class LocalMap {
 	private Level localPC = Level.LOW;
 	private HashMap<String, Level> lMap = new HashMap<String, Level>();
 	private Level returnLevel = Level.LOW;
+	private Level returnLevelOfLastCallee = Level.LOW;
+	
+	public void setCalleeReturnLevel(Level l) {
+		returnLevelOfLastCallee = l;
+	}
+	
+	public Level getCalleeReturnLevel() {
+		return returnLevelOfLastCallee;
+	}
 	
 	public void setReturnLevel(Level l) {
 		returnLevel = l;
