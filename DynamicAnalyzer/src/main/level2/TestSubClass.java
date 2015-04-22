@@ -28,7 +28,7 @@ public class TestSubClass {
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_result");
 		
-		hs.assignLocal("int_result");
+		hs.assignLocalsToLocal("int_result");
 		int result = 0;
 		
 		hs.returnLocal("int_result");

@@ -32,18 +32,18 @@ public class HandleStmtTest {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign level of lpc to local
 		 */
-		assertEquals(Level.LOW, hs.assignLocal("int_x")); // x = LOW, lpc = LOW
+		assertEquals(Level.LOW, hs.assignLocalsToLocal("int_x")); // x = LOW, lpc = LOW
 		
 		hs.makeLocalHigh("int_x");
-		assertEquals(Level.LOW, hs.assignLocal("int_x")); // x = HIGH, lpc = LOW
+		assertEquals(Level.LOW, hs.assignLocalsToLocal("int_x")); // x = HIGH, lpc = LOW
 		
 		hs.makeLocalHigh("int_x");
 		hs.setLocalPC(Level.HIGH);
-		assertEquals(Level.HIGH, hs.assignLocal("int_x")); // x = HIGH, lpc = HIGH
+		assertEquals(Level.HIGH, hs.assignLocalsToLocal("int_x")); // x = HIGH, lpc = HIGH
 		
 		hs.makeLocalLow("int_x"); // x = LOW, lpc = HIGH
 		//thrown.expect(IllegalFlowException.class); TODO
-		hs.assignLocal("int_x");
+		hs.assignLocalsToLocal("int_x");
 		
 		
 		
@@ -54,17 +54,22 @@ public class HandleStmtTest {
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
 		hs.setLocalPC(Level.LOW);
-		assertEquals(Level.HIGH, hs.assignLocal("int_x", "int_y", "int_z"));
+		assertEquals(Level.HIGH, hs.assignLocalsToLocal("int_x", "int_y", "int_z"));
 		
 		hs.makeLocalLow("int_z");
-		assertEquals(Level.LOW, hs.assignLocal("int_x", "int_y", "int_z"));
+		assertEquals(Level.LOW, hs.assignLocalsToLocal("int_x", "int_y", "int_z"));
 		
 		hs.setLocalPC(Level.HIGH);
-		assertEquals(Level.HIGH, hs.assignLocal("int_x", "int_y", "int_z"));
+		assertEquals(Level.HIGH, hs.assignLocalsToLocal("int_x", "int_y", "int_z"));
 		
 		/*
 		 * Assign Field to Local
 		 */
+		hs.setLocalPC(Level.LOW);
+		hs.addObjectToObjectMap(this);
+		hs.addFieldToObjectMap(this, "String_field");
+		hs.addLocal("String_local");
+		assertEquals(Level.LOW, hs.assignFieldsToLocal(this, "String_local", "String_field"));
 		
 		/*
 		 * Assign Join of Local and Field to Local
@@ -77,13 +82,13 @@ public class HandleStmtTest {
 		 *  add new Object to ObjectMap
 		 */
 		hs.setLocalPC(Level.LOW);
-		hs.assignLocal("TestSubClass_xy");
+		hs.assignLocalsToLocal("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(Level.LOW, hs.getLocalLevel("TestSubClass_xy"));
 		
 		hs.setLocalLevel("TestSubClass_xy", Level.HIGH);
-		hs.assignLocal("TestSubClass_xy");
+		hs.assignLocalsToLocal("TestSubClass_xy");
 		assertEquals(Level.LOW, hs.getLocalLevel("TestSubClass_xy"));
 		
 		/*
@@ -256,21 +261,35 @@ public class HandleStmtTest {
 	}
 	
 	@Test
-	public void joinTest() {
-		System.out.println("JOIN TEST STARTED");
+	public void joinLocalsTest() {
+		System.out.println("JOIN LOCALS TEST STARTED");
 
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_x", Level.LOW);
 		hs.addLocal("int_y", Level.HIGH);
 		hs.addLocal("int_z", Level.LOW);
-		assertEquals(Level.LOW, hs.join("int_x"));
-		assertEquals(Level.HIGH, hs.join("int_x", "int_y"));		
-		assertEquals(Level.HIGH, hs.join("int_x", "int_y", "int_z"));
+		assertEquals(Level.LOW, hs.joinLocals("int_x"));
+		assertEquals(Level.HIGH, hs.joinLocals("int_x", "int_y"));		
+		assertEquals(Level.HIGH, hs.joinLocals("int_x", "int_y", "int_z"));
 		
 		
 		hs.setLocalPC(Level.HIGH);
-		assertEquals(Level.HIGH, hs.join("int_x"));
+		assertEquals(Level.HIGH, hs.joinLocals("int_x"));
 
-		System.out.println("JOIN TEST FINISHED");
+		System.out.println("JOIN LOCALS TEST FINISHED");
+	}
+	
+	@Test
+	public void joinFieldsTest() {
+		System.out.println("JOIN FIELDS TEST STARTED");
+
+		HandleStmt hs = new HandleStmt();
+		hs.addObjectToObjectMap(this);
+		hs.addFieldToObjectMap(this, "int_x");
+		hs.addFieldToObjectMap(this, "int_y");
+		
+		// TODO
+
+		System.out.println("JOIN FIELDS TEST FINISHED");
 	}
 }

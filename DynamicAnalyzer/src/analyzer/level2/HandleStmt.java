@@ -67,7 +67,7 @@ public class HandleStmt {
 		lm.setLevel(signature, Level.LOW);
 	}
 
-	public Level assignLocal(String leftOp, String... rightOp) {
+	public Level assignLocalsToLocal(String leftOp, String... rightOp) {
 		System.out.println("Assign " + rightOp + " to " + leftOp);
 		System.out.println("Check if " + lm.getLevel(leftOp) + " >= " + lm.getLocalPC());
 		if (!checkLocalPC(leftOp)) {
@@ -80,7 +80,7 @@ public class HandleStmt {
 			}
 		}
 		checkLocalPC(leftOp);
-		lm.setLevel(leftOp, join(rightOp));
+		lm.setLevel(leftOp, joinLocals(rightOp));
 		System.out.println("Set " + leftOp + " to level " + lm.getLevel(leftOp) + "\n");
 		return lm.getLevel(leftOp);
 	}
@@ -90,10 +90,28 @@ public class HandleStmt {
 	 * @param stringList 
 	 * @return
 	 */
-	public Level join(String... stringList) {
+	public Level joinLocals(String... stringList) {
 		Level result = Level.LOW;
 		for(String op: stringList) {
 			if (lm.getLevel(op) == Level.HIGH) {
+				result = Level.HIGH;
+			}
+		}
+		if (lm.getLocalPC() == Level.HIGH) {
+			result = Level.HIGH;
+		}
+		return result;
+	}
+	
+	/**
+	 * Joins the Levels of the given fields and the local pc
+	 * @param fields 
+	 * @return
+	 */
+	public Level joinFields(Object o, String... fields) {
+		Level result = Level.LOW;
+		for(String op: fields) {
+			if (om.getFieldLevel(o, op) == Level.HIGH) {
 				result = Level.HIGH;
 			}
 		}
@@ -118,7 +136,7 @@ public class HandleStmt {
 
 	public Level assignLocalsToField(Object o, String field, String... locals) {
 		System.out.println("Assign " + locals + " to " + field);
-		System.out.println("Check if " + lm.getLevel(field) + " >= " + lm.getLocalPC());
+		System.out.println("Check if " + om.getFieldLevel(o, field) + " >= " + lm.getLocalPC());
 		if (!checkLocalPC(field)) {
 			try {
 			throw new IllegalFlowException("System.exit because of illegal flow to " + field);
@@ -128,7 +146,7 @@ public class HandleStmt {
 			   // System.exit(0);
 			}
 		}
-		om.setField(o, field, join(locals));
+		om.setField(o, field, joinLocals(locals));
 		return om.getFieldLevel(o, field);
 	}
 	
@@ -137,5 +155,22 @@ public class HandleStmt {
 	public void returnLocal(String signature) {
 		lm.setReturnLevel(lm.getLevel(signature));
 		// TODO Auch CalleeReturn aktualisieren
+	}
+
+	public Level assignFieldsToLocal(Object o,
+			String local, String... fields) {
+		System.out.println("Assign " + fields + " to " + local);
+		System.out.println("Check if " + lm.getLevel(local) + " >= " + lm.getLocalPC());
+		if (!checkLocalPC(local)) {
+			try {
+			throw new IllegalFlowException("System.exit because of illegal flow to " + local);
+			} catch(IllegalFlowException e) {
+				e.printMessage();
+				e.printStackTrace();
+			   // System.exit(0);
+			}
+		}
+		om.setField(o, local, joinFields(fields));
+		return om.getFieldLevel(o, local);
 	}
 }

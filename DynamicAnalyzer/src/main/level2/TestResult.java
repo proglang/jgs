@@ -50,10 +50,10 @@ public class TestResult {
     	int a2 = 23;
     	
     	hs.makeLocalHigh("int_a2");
-    	hs.assignLocal("int_res", "int_a1", "int_a2");
+    	hs.assignLocalsToLocal("int_res", "int_a1", "int_a2");
     	int res = a1 + a2;
     	
-    	hs.assignLocal("int_anotherRes", "int_res", "int_res");
+    	hs.assignLocalsToLocal("int_anotherRes", "int_res", "int_res");
     	int anotherRes = res + res;
     	
     	String s;
@@ -62,7 +62,7 @@ public class TestResult {
     	
     	s = "ghj";
     	
-    	hs.assignLocal("String_schrott", "String_dreck");
+    	hs.assignLocalsToLocal("String_schrott", "String_dreck");
     	s = d;
     	
     	ifReturnExpr();
