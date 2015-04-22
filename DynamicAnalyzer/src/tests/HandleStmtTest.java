@@ -67,7 +67,15 @@ public class HandleStmtTest {
 		 *  lpc -> xy
 		 *  add new Object to ObjectMap
 		 */
+		hs.setLocalPC(Level.LOW);
+		hs.assignLocal("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
+		assertTrue(hs.containsObjectInObjectMap(xy));
+		assertEquals(Level.LOW, hs.getLocalLevel("TestSubClass_xy"));
+		
+		hs.setLocalLevel("TestSubClass_xy", Level.HIGH);
+		hs.assignLocal("TestSubClass_xy");
+		assertEquals(Level.LOW, hs.getLocalLevel("TestSubClass_xy"));
 		
 		/*
 		 * Assign method (result)
