@@ -19,10 +19,6 @@ public class Test {
     	int a2 = 23;
     	int res = a1 + a2;
     	int anotherRes = res + res;
-    	String schrott;
-    	String dreck = "jhjk";
-    	schrott = "ghj";
-    	schrott = dreck;
     	//TODO: Wie kann man selber eine Konstante (Enum) erstellen, mit eigenem Typ?
     	
     	return;
