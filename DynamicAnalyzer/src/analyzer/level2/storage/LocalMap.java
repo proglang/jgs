@@ -1,6 +1,7 @@
 package analyzer.level2.storage;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import analyzer.level2.Level;
@@ -8,9 +9,14 @@ import analyzer.level2.Level;
 
 public class LocalMap {
 	
-	private Level localPC = Level.LOW;
+	// private Level localPC = Level.LOW;
+	private LinkedList<Level> localPC = new LinkedList<Level>();
 	private HashMap<String, Level> lMap = new HashMap<String, Level>();
 	private Level returnLevel = Level.LOW;
+	
+	public LocalMap() {
+		localPC.push(Level.LOW);
+	}
 	
 	public void setReturnLevel(Level l) {
 		returnLevel = l;
@@ -20,12 +26,22 @@ public class LocalMap {
 		return returnLevel;
 	}
 	
-	public void setLocalPC(Level l) {
-		localPC = l;
+	public Level setLocalPC(Level l) {
+		// localPC = l;
+		return localPC.set(0, l);
 	}
 	
 	public Level getLocalPC() {
-		return localPC;
+		// return localPC;
+		return localPC.getFirst();
+	}
+	
+	public void popLocalPC() {
+		localPC.pop();
+	}
+	
+	public void pushLocalPC(Level l) {
+		localPC.push(l);
 	}
 	
 	public void insertElement(String signature, Level level) {

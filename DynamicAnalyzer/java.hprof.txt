@@ -1,0 +1,690 @@
+JAVA PROFILE 1.0.1, created Wed Apr 22 21:02:26 2015
+
+Copyright (c) 2003, 2005, Oracle and/or its affiliates. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+  - Neither the name of Oracle nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Header for -agentlib:hprof (or -Xrunhprof) ASCII Output (JDK 5.0 JVMTI based)
+
+WARNING!  This file format is under development, and is subject to
+change without notice.
+
+This file contains the following types of records:
+
+THREAD START
+THREAD END      mark the lifetime of Java threads
+
+TRACE           represents a Java stack trace.  Each trace consists
+                of a series of stack frames.  Other records refer to
+                TRACEs to identify (1) where object allocations have
+                taken place, (2) the frames in which GC roots were
+                found, and (3) frequently executed methods.
+
+HEAP DUMP       is a complete snapshot of all live objects in the Java
+                heap.  Following distinctions are made:
+
+                ROOT    root set as determined by GC
+                CLS     classes 
+                OBJ     instances
+                ARR     arrays
+
+SITES           is a sorted list of allocation sites.  This identifies
+                the most heavily allocated object types, and the TRACE
+                at which those allocations occurred.
+
+CPU SAMPLES     is a statistical profile of program execution.  The VM
+                periodically samples all running threads, and assigns
+                a quantum to active TRACEs in those threads.  Entries
+                in this record are TRACEs ranked by the percentage of
+                total quanta they consumed; top-ranked TRACEs are
+                typically hot spots in the program.
+
+CPU TIME        is a profile of program execution obtained by measuring
+                the time spent in individual methods (excluding the time
+                spent in callees), as well as by counting the number of
+                times each method is called. Entries in this record are
+                TRACEs ranked by the percentage of total CPU time. The
+                "count" field indicates the number of times each TRACE 
+                is invoked.
+
+MONITOR TIME    is a profile of monitor contention obtained by measuring
+                the time spent by a thread waiting to enter a monitor.
+                Entries in this record are TRACEs ranked by the percentage
+                of total monitor contention time and a brief description
+                of the monitor.  The "count" field indicates the number of 
+                times the monitor was contended at that TRACE.
+
+MONITOR DUMP    is a complete snapshot of all the monitors and threads in 
+                the System.
+
+HEAP DUMP, SITES, CPU SAMPLES|TIME and MONITOR DUMP|TIME records are generated 
+at program exit.  They can also be obtained during program execution by typing 
+Ctrl-\ (on Solaris) or by typing Ctrl-Break (on Win32).
+
+--------
+
+THREAD START (obj=5000016f, id = 200001, name="main", group="main")
+THREAD END (id = 200001)
+THREAD START (obj=5000016f, id = 200005, name="DestroyJavaVM", group="main")
+THREAD END (id = 200005)
+TRACE 300193:
+	soot.coffi.Util.jimpleTypesOfFieldOrMethodDescriptor(Util.java:549)
+	soot.coffi.Util.resolveFromClassFile(Util.java:331)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+TRACE 300168:
+	java.util.zip.ZipFile.getNextEntry(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.access$500(ZipFile.java:56)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:497)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:483)
+TRACE 300048:
+	java.lang.ClassLoader.defineClass1(ClassLoader.java:Unknown line)
+	java.lang.ClassLoader.defineClass(ClassLoader.java:800)
+	java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+	java.net.URLClassLoader.defineClass(URLClassLoader.java:449)
+TRACE 300173:
+	java.util.zip.ZipFile.getEntryTime(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(ZipFile.java:534)
+	java.util.zip.ZipFile.access$900(ZipFile.java:56)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:513)
+TRACE 300210:
+	java.lang.Object.getClass(Object.java:Unknown line)
+	java.util.Arrays.copyOf(Arrays.java:2219)
+	java.util.ArrayList.toArray(ArrayList.java:358)
+	java.util.ArrayList.addAll(ArrayList.java:559)
+TRACE 300031:
+	java.io.UnixFileSystem.getLastModifiedTime(UnixFileSystem.java:Unknown line)
+	java.io.File.lastModified(File.java:937)
+	java.util.zip.ZipFile.<init>(ZipFile.java:215)
+	java.util.zip.ZipFile.<init>(ZipFile.java:145)
+TRACE 300072:
+	java.util.zip.Inflater.inflateBytes(Inflater.java:Unknown line)
+	java.util.zip.Inflater.inflate(Inflater.java:259)
+	java.util.zip.InflaterInputStream.read(InflaterInputStream.java:152)
+	sun.misc.Resource.getBytes(Resource.java:124)
+TRACE 300170:
+	java.util.zip.ZipCoder.toString(ZipCoder.java:49)
+	java.util.zip.ZipFile.getZipEntry(ZipFile.java:531)
+	java.util.zip.ZipFile.access$900(ZipFile.java:56)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:513)
+TRACE 300212:
+	java.lang.Object.<init>(Object.java:37)
+	java.util.zip.ZipFile.<init>(ZipFile.java:197)
+	java.util.zip.ZipFile.<init>(ZipFile.java:145)
+	java.util.zip.ZipFile.<init>(ZipFile.java:116)
+TRACE 300217:
+	java.lang.System.arraycopy(System.java:Unknown line)
+	java.io.ByteArrayInputStream.read(ByteArrayInputStream.java:194)
+	java.io.DataInputStream.readFully(DataInputStream.java:195)
+	java.io.DataInputStream.readUTF(DataInputStream.java:609)
+TRACE 300222:
+	java.lang.String.intern(String.java:Unknown line)
+	soot.SootField.getSubSignature(SootField.java:94)
+	soot.SootClass.declaresField(SootClass.java:282)
+	soot.SootClass.addField(SootClass.java:185)
+TRACE 300073:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:64)
+	java.lang.StringBuilder.<init>(StringBuilder.java:85)
+	sun.net.www.protocol.jar.Handler.parseURL(Handler.java:160)
+	java.net.URL.<init>(URL.java:614)
+TRACE 300166:
+	java.util.zip.ZipFile.freeEntry(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.access$1000(ZipFile.java:56)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:514)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:483)
+TRACE 300171:
+	java.util.zip.ZipFile.getEntryBytes(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(ZipFile.java:527)
+	java.util.zip.ZipFile.access$900(ZipFile.java:56)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:513)
+TRACE 300175:
+	java.io.UnixFileSystem.getBooleanAttributes0(UnixFileSystem.java:Unknown line)
+	java.io.UnixFileSystem.getBooleanAttributes(UnixFileSystem.java:242)
+	java.io.File.exists(File.java:813)
+	sun.misc.URLClassPath$FileLoader.getResource(URLClassPath.java:1080)
+TRACE 300182:
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:652)
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:615)
+	soot.coffi.ClassFile.readMethods(ClassFile.java:940)
+	soot.coffi.ClassFile.readClass(ClassFile.java:410)
+TRACE 300184:
+	java.util.ArrayList.ensureExplicitCapacity(ArrayList.java:212)
+	java.util.ArrayList.ensureCapacityInternal(ArrayList.java:208)
+	java.util.ArrayList.add(ArrayList.java:440)
+	soot.coffi.Util.resolveFromClassFile(Util.java:326)
+TRACE 300187:
+	java.util.ArrayList$Itr.next(ArrayList.java:836)
+	java.util.AbstractCollection.addAll(AbstractCollection.java:341)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:46)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+TRACE 300190:
+	soot.coffi.Util.resolveFromClassFile(Util.java:315)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.processResolveWorklist(SootResolver.java:155)
+TRACE 300194:
+	java.lang.Thread.currentThread(Thread.java:Unknown line)
+	java.lang.ThreadLocal.get(ThreadLocal.java:143)
+	java.util.concurrent.ThreadLocalRandom.current(ThreadLocalRandom.java:113)
+	sun.misc.Hashing.randomHashSeed(Hashing.java:249)
+TRACE 300231:
+	java.lang.Object.<init>(Object.java:37)
+	java.io.InputStream.<init>(InputStream.java:45)
+	java.util.zip.ZipFile$ZipFileInputStream.<init>(ZipFile.java:659)
+	java.util.zip.ZipFile.getInputStream(ZipFile.java:356)
+TRACE 300055:
+	java.util.jar.Attributes$Name.hashCode(Attributes.java:514)
+	java.util.HashMap.hash(HashMap.java:362)
+	java.util.HashMap.put(HashMap.java:492)
+	java.util.jar.Attributes.put(Attributes.java:148)
+TRACE 300064:
+	java.lang.Object.<init>(Object.java:37)
+	java.io.InputStream.<init>(InputStream.java:45)
+	java.io.FilterInputStream.<init>(FilterInputStream.java:61)
+	java.util.zip.InflaterInputStream.<init>(InflaterInputStream.java:81)
+TRACE 300066:
+	java.util.Collections.unmodifiableMap(Collections.java:1318)
+	soot.G.<init>(G.java:73)
+	soot.G.<clinit>(G.java:45)
+	soot.Scene.v(Scene.java:107)
+TRACE 300067:
+	soot.Scene.<init>(Scene.java:116)
+	soot.Singletons.soot_Scene(Singletons.java:501)
+	soot.Scene.v(Scene.java:107)
+	main.Main.execute(Main.java:24)
+TRACE 300068:
+	soot.Scene.determineExcludedPackages(Scene.java:92)
+	soot.Scene.<init>(Scene.java:88)
+	soot.Singletons.soot_Scene(Singletons.java:501)
+	soot.Scene.v(Scene.java:107)
+TRACE 300070:
+	main.Main.execute(Main.java:32)
+	main.Main.main(Main.java:14)
+TRACE 300071:
+	java.util.Arrays.copyOfRange(Arrays.java:2694)
+	java.lang.String.<init>(String.java:203)
+	java.lang.String.substring(String.java:1913)
+	java.lang.ClassLoader.checkCerts(ClassLoader.java:933)
+TRACE 300074:
+	java.lang.String.replace(String.java:2021)
+	java.net.URLClassLoader$1.run(URLClassLoader.java:357)
+	java.net.URLClassLoader$1.run(URLClassLoader.java:355)
+	java.security.AccessController.doPrivileged(AccessController.java:Unknown line)
+TRACE 300077:
+	soot.PackManager.init(PackManager.java:136)
+	soot.PackManager.<init>(PackManager.java:76)
+	soot.Singletons.soot_PackManager(Singletons.java:471)
+	soot.PackManager.v(PackManager.java:286)
+TRACE 300078:
+	java.lang.String.toCharArray(String.java:2746)
+	java.util.zip.ZipCoder.getBytes(ZipCoder.java:78)
+	java.util.zip.ZipFile.getInputStream(ZipFile.java:351)
+	java.util.jar.JarFile.getInputStream(JarFile.java:412)
+TRACE 300079:
+	soot.PackManager.init(PackManager.java:209)
+	soot.PackManager.<init>(PackManager.java:76)
+	soot.Singletons.soot_PackManager(Singletons.java:471)
+	soot.PackManager.v(PackManager.java:286)
+TRACE 300082:
+	soot.Main.run(Main.java:159)
+	soot.Main.main(Main.java:141)
+	main.Main.execute(Main.java:37)
+	main.Main.main(Main.java:14)
+TRACE 300102:
+	sun.nio.cs.UTF_8$Encoder.encodeArrayLoop(UTF_8.java:515)
+	sun.nio.cs.UTF_8$Encoder.encodeLoop(UTF_8.java:619)
+	java.nio.charset.CharsetEncoder.encode(CharsetEncoder.java:561)
+	sun.nio.fs.UnixPath.encode(UnixPath.java:138)
+TRACE 300148:
+	sun.misc.MetaIndex.registerDirectory(MetaIndex.java:166)
+	sun.misc.Launcher$BootClassPathHolder$1.run(Launcher.java:378)
+	sun.misc.Launcher$BootClassPathHolder$1.run(Launcher.java:365)
+	java.security.AccessController.doPrivileged(AccessController.java:Unknown line)
+TRACE 300160:
+	java.io.UnixFileSystem.checkAccess(UnixFileSystem.java:Unknown line)
+	java.io.File.canRead(File.java:765)
+	soot.SourceLocator.lookupInDir(SourceLocator.java:457)
+	soot.SourceLocator.lookupInClassPath(SourceLocator.java:449)
+TRACE 300161:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:64)
+	java.lang.StringBuilder.<init>(StringBuilder.java:85)
+	java.io.UnixFileSystem.resolve(UnixFileSystem.java:108)
+	java.io.File.<init>(File.java:367)
+TRACE 300162:
+	soot.SootResolver.<init>(SootResolver.java:68)
+	soot.Singletons.soot_SootResolver(Singletons.java:795)
+	soot.SootResolver.v(SootResolver.java:89)
+	soot.Scene.tryLoadClass(Scene.java:416)
+TRACE 300167:
+	sun.nio.cs.UTF_8$Decoder.decode(UTF_8.java:370)
+	java.util.zip.ZipCoder.toString(ZipCoder.java:56)
+	java.util.zip.ZipFile.getZipEntry(ZipFile.java:531)
+	java.util.zip.ZipFile.access$900(ZipFile.java:56)
+TRACE 300169:
+	java.util.zip.ZipFile.getEntryFlag(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(ZipFile.java:523)
+	java.util.zip.ZipFile.access$900(ZipFile.java:56)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:513)
+TRACE 300172:
+	java.util.zip.ZipFile.getEntryBytes(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.getZipEntry(ZipFile.java:539)
+	java.util.zip.ZipFile.access$900(ZipFile.java:56)
+	java.util.zip.ZipFile$1.nextElement(ZipFile.java:513)
+TRACE 300174:
+	java.util.HashMap.transfer(HashMap.java:601)
+	java.util.HashMap.resize(HashMap.java:581)
+	java.util.HashMap.addEntry(HashMap.java:879)
+	java.util.HashMap.put(HashMap.java:505)
+TRACE 300176:
+	java.util.Arrays.copyOf(Arrays.java:2271)
+	java.util.zip.ZipCoder.getBytes(ZipCoder.java:89)
+	java.util.zip.ZipFile.getEntry(ZipFile.java:306)
+	java.util.jar.JarFile.getEntry(JarFile.java:227)
+TRACE 300177:
+	java.util.zip.InflaterInputStream.<init>(InflaterInputStream.java:112)
+	java.util.zip.ZipFile$ZipFileInflaterInputStream.<init>(ZipFile.java:389)
+	java.util.zip.ZipFile.getInputStream(ZipFile.java:370)
+	java.util.jar.JarFile.getInputStream(JarFile.java:412)
+TRACE 300178:
+	soot.coffi.Util.resolveFromClassFile(Util.java:253)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.bringToSignatures(SootResolver.java:239)
+TRACE 300179:
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:812)
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:615)
+	soot.coffi.ClassFile.readMethods(ClassFile.java:940)
+	soot.coffi.ClassFile.readClass(ClassFile.java:410)
+TRACE 300180:
+	soot.coffi.Util.resolveFromClassFile(Util.java:328)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.bringToSignatures(SootResolver.java:239)
+TRACE 300181:
+	java.io.DataInputStream.<init>(DataInputStream.java:58)
+	soot.coffi.CONSTANT_Utf8_info.convert(CONSTANT_Utf8_info.java:83)
+	soot.coffi.CONSTANT_Utf8_collector.add(CONSTANT_Utf8_collector.java:47)
+	soot.coffi.ClassFile.readConstantPool(ClassFile.java:537)
+TRACE 300183:
+	java.util.ArrayList.add(ArrayList.java:440)
+	soot.coffi.Util.resolveFromClassFile(Util.java:326)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+TRACE 300185:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:64)
+	java.lang.StringBuffer.<init>(StringBuffer.java:96)
+	soot.SootMethod.getSubSignatureImpl(SootMethod.java:574)
+	soot.SootMethod.getSubSignature(SootMethod.java:560)
+TRACE 300186:
+	soot.coffi.Util.resolveFromClassFile(Util.java:240)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.processResolveWorklist(SootResolver.java:155)
+TRACE 300188:
+	soot.CharType.hashCode(CharType.java:54)
+	soot.ArrayType.hashCode(ArrayType.java:133)
+	java.util.HashMap.hash(HashMap.java:362)
+	java.util.HashMap.put(HashMap.java:492)
+TRACE 300189:
+	java.lang.System.arraycopy(System.java:Unknown line)
+	java.lang.String.getChars(String.java:826)
+	java.lang.AbstractStringBuilder.append(AbstractStringBuilder.java:416)
+	java.lang.StringBuilder.append(StringBuilder.java:132)
+TRACE 300191:
+	java.util.ArrayList$Itr.next(ArrayList.java:832)
+	java.util.AbstractCollection.addAll(AbstractCollection.java:341)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:46)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+TRACE 300192:
+	java.lang.String.compareTo(String.java:1138)
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:619)
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:615)
+	soot.coffi.ClassFile.readMethods(ClassFile.java:940)
+TRACE 300195:
+	soot.coffi.Util.jimpleTypesOfFieldOrMethodDescriptor(Util.java:549)
+	soot.coffi.Util.resolveFromClassFile(Util.java:237)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+TRACE 300196:
+	java.lang.String.substring(String.java:1873)
+	soot.coffi.Util.jimpleTypeOfFieldDescriptor(Util.java:655)
+	soot.coffi.Util.resolveFromClassFile(Util.java:324)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+TRACE 300197:
+	soot.coffi.Util.resolveFromClassFile(Util.java:321)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.processResolveWorklist(SootResolver.java:155)
+TRACE 300198:
+	soot.RefType.hashCode(RefType.java:138)
+	java.util.HashMap.hash(HashMap.java:362)
+	java.util.HashMap.put(HashMap.java:492)
+	java.util.HashSet.add(HashSet.java:217)
+TRACE 300199:
+	soot.coffi.Util.jimpleTypeOfFieldDescriptor(Util.java:690)
+	soot.coffi.Util.resolveFromClassFile(Util.java:324)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+TRACE 300200:
+	java.lang.System.arraycopy(System.java:Unknown line)
+	java.io.ByteArrayInputStream.read(ByteArrayInputStream.java:194)
+	java.io.DataInputStream.read(DataInputStream.java:100)
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:815)
+TRACE 300201:
+	java.lang.Object.getClass(Object.java:Unknown line)
+	java.util.ArrayList.toArray(ArrayList.java:389)
+	soot.coffi.Util.jimpleTypesOfFieldOrMethodDescriptor(Util.java:639)
+	soot.coffi.Util.resolveFromClassFile(Util.java:237)
+TRACE 300202:
+	soot.coffi.Util.resolveFromClassFile(Util.java:328)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.processResolveWorklist(SootResolver.java:155)
+TRACE 300203:
+	soot.ArrayType.v(ArrayType.java:73)
+	soot.coffi.Util.jimpleTypeOfFieldDescriptor(Util.java:691)
+	soot.coffi.Util.resolveFromClassFile(Util.java:324)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+TRACE 300204:
+	soot.coffi.Util.resolveFromClassFile(Util.java:315)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.processResolveWorklist(SootResolver.java:155)
+TRACE 300205:
+	java.util.zip.ZipFile.getEntry(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.getEntry(ZipFile.java:306)
+	soot.SourceLocator.lookupInJar(SourceLocator.java:465)
+	soot.SourceLocator.lookupInClassPath(SourceLocator.java:447)
+TRACE 300206:
+	java.lang.String.toCharArray(String.java:2746)
+	java.util.zip.ZipCoder.getBytes(ZipCoder.java:78)
+	java.util.zip.ZipFile.getInputStream(ZipFile.java:351)
+	soot.SourceLocator$FoundFile.inputStream(SourceLocator.java:416)
+TRACE 300207:
+	java.lang.StringCoding$StringEncoder.encode(StringCoding.java:300)
+	java.lang.StringCoding.encode(StringCoding.java:344)
+	java.lang.String.getBytes(String.java:916)
+	java.io.UnixFileSystem.getBooleanAttributes0(UnixFileSystem.java:Unknown line)
+TRACE 300208:
+	soot.coffi.Util.resolveFromClassFile(Util.java:315)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+	soot.SootResolver.bringToHierarchy(SootResolver.java:215)
+	soot.SootResolver.bringToSignatures(SootResolver.java:239)
+TRACE 300209:
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:636)
+	soot.coffi.ClassFile.readAttributes(ClassFile.java:615)
+	soot.coffi.ClassFile.readMethods(ClassFile.java:940)
+	soot.coffi.ClassFile.readClass(ClassFile.java:410)
+TRACE 300211:
+	java.lang.StringCoding$StringEncoder.encode(StringCoding.java:300)
+	java.lang.StringCoding.encode(StringCoding.java:344)
+	java.lang.String.getBytes(String.java:916)
+	java.io.UnixFileSystem.getLastModifiedTime(UnixFileSystem.java:Unknown line)
+TRACE 300213:
+	java.lang.Double.longBitsToDouble(Double.java:Unknown line)
+	soot.coffi.CONSTANT_Double_info.convert(CONSTANT_Double_info.java:52)
+	soot.coffi.Util.resolveFromClassFile(Util.java:177)
+	soot.CoffiClassSource.resolve(CoffiClassSource.java:39)
+TRACE 300214:
+	soot.util.HashChain$LinkIterator.hasNext(HashChain.java:539)
+	soot.SootClass.declaresField(SootClass.java:280)
+	soot.SootClass.addField(SootClass.java:185)
+	soot.coffi.Util.resolveFromClassFile(Util.java:147)
+TRACE 300215:
+	java.util.Arrays.copyOf(Arrays.java:2245)
+	java.util.Arrays.copyOf(Arrays.java:2219)
+	java.util.ArrayList.toArray(ArrayList.java:358)
+	java.util.ArrayList.addAll(ArrayList.java:559)
+TRACE 300216:
+	java.util.WeakHashMap.newTable(WeakHashMap.java:250)
+	java.util.WeakHashMap.<init>(WeakHashMap.java:275)
+	java.util.WeakHashMap.<init>(WeakHashMap.java:298)
+	java.util.zip.ZipFile.<init>(ZipFile.java:324)
+TRACE 300220:
+	java.util.zip.Inflater.inflateBytes(Inflater.java:Unknown line)
+	java.util.zip.Inflater.inflate(Inflater.java:259)
+	java.util.zip.InflaterInputStream.read(InflaterInputStream.java:152)
+	soot.SourceLocator.doJDKBugWorkaround(SourceLocator.java:434)
+TRACE 300221:
+	java.lang.AbstractStringBuilder.<init>(AbstractStringBuilder.java:64)
+	java.lang.StringBuilder.<init>(StringBuilder.java:85)
+	soot.SourceLocator.lookupInDir(SourceLocator.java:456)
+	soot.SourceLocator.lookupInClassPath(SourceLocator.java:449)
+TRACE 300223:
+	java.io.UnixFileSystem.getBooleanAttributes0(UnixFileSystem.java:Unknown line)
+	java.io.UnixFileSystem.getBooleanAttributes(UnixFileSystem.java:242)
+	java.io.File.isFile(File.java:876)
+	soot.SourceLocator.isJar(SourceLocator.java:160)
+TRACE 300224:
+	java.io.UnixFileSystem.checkAccess(UnixFileSystem.java:Unknown line)
+	java.io.File.canRead(File.java:765)
+	soot.SourceLocator.isJar(SourceLocator.java:160)
+	soot.SourceLocator.lookupInClassPath(SourceLocator.java:446)
+TRACE 300225:
+	java.util.zip.ZipCoder.getBytes(ZipCoder.java:87)
+	java.util.zip.ZipFile.getEntry(ZipFile.java:306)
+	soot.SourceLocator.lookupInJar(SourceLocator.java:465)
+	soot.SourceLocator.lookupInClassPath(SourceLocator.java:447)
+TRACE 300227:
+	soot.Scene.prepareClasses(Scene.java:1146)
+	soot.Scene.loadNecessaryClasses(Scene.java:1080)
+	soot.Main.run(Main.java:167)
+	soot.Main.main(Main.java:141)
+TRACE 300228:
+	java.lang.System.nanoTime(System.java:Unknown line)
+	sun.misc.PerfCounter.addElapsedTimeFrom(PerfCounter.java:119)
+	java.net.URLClassLoader.defineClass(URLClassLoader.java:448)
+	java.net.URLClassLoader.access$100(URLClassLoader.java:71)
+TRACE 300229:
+	java.lang.System.nanoTime(System.java:Unknown line)
+	java.net.URLClassLoader.defineClass(URLClassLoader.java:410)
+	java.net.URLClassLoader.access$100(URLClassLoader.java:71)
+	java.net.URLClassLoader$1.run(URLClassLoader.java:361)
+TRACE 300230:
+	java.lang.System.arraycopy(System.java:Unknown line)
+	java.lang.String.toCharArray(String.java:2747)
+	java.util.zip.ZipCoder.getBytes(ZipCoder.java:78)
+	java.util.zip.ZipFile.getEntry(ZipFile.java:306)
+TRACE 300232:
+	sun.misc.Unsafe.getLong(Unsafe.java:Unknown line)
+	java.nio.DirectLongBufferU.get(DirectLongBufferU.java:253)
+	sun.misc.PerfCounter.get(PerfCounter.java:83)
+	sun.misc.PerfCounter.add(PerfCounter.java:97)
+TRACE 300233:
+	soot.coffi.CoffiMethodSource.getBody(CoffiMethodSource.java:87)
+	soot.SootMethod.getBodyFromMethodSource(SootMethod.java:89)
+	soot.SootMethod.retrieveActiveBody(SootMethod.java:322)
+	soot.PackManager.retrieveAllBodies(PackManager.java:974)
+TRACE 300236:
+	soot.JimpleBodyPack.applyPhaseOptions(JimpleBodyPack.java:48)
+	soot.JimpleBodyPack.internalApply(JimpleBodyPack.java:89)
+	soot.Pack.apply(Pack.java:124)
+	soot.coffi.CoffiMethodSource.getBody(CoffiMethodSource.java:117)
+TRACE 300237:
+	java.util.zip.ZipCoder.getBytes(ZipCoder.java:77)
+	java.util.zip.ZipFile.getEntry(ZipFile.java:306)
+	java.util.jar.JarFile.getEntry(JarFile.java:227)
+	java.util.jar.JarFile.getJarEntry(JarFile.java:210)
+TRACE 300244:
+	java.util.zip.ZipCoder.getBytes(ZipCoder.java:86)
+	java.util.zip.ZipFile.getEntry(ZipFile.java:306)
+	java.util.jar.JarFile.getEntry(JarFile.java:227)
+	java.util.jar.JarFile.getJarEntry(JarFile.java:210)
+TRACE 300245:
+	java.util.zip.ZipFile.getEntry(ZipFile.java:Unknown line)
+	java.util.zip.ZipFile.getEntry(ZipFile.java:306)
+	java.util.jar.JarFile.getEntry(JarFile.java:227)
+	java.util.jar.JarFile.getJarEntry(JarFile.java:210)
+TRACE 300246:
+	java.util.jar.JarFile.getEntry(JarFile.java:227)
+	java.util.jar.JarFile.getJarEntry(JarFile.java:210)
+	sun.misc.URLClassPath$JarLoader.getResource(URLClassPath.java:840)
+	sun.misc.URLClassPath.getResource(URLClassPath.java:199)
+TRACE 300247:
+	java.util.Collections$UnmodifiableCollection.size(Collections.java:1055)
+	soot.toolkits.graph.PseudoTopologicalOrderer.visitNode(PseudoTopologicalOrderer.java:118)
+	soot.toolkits.graph.PseudoTopologicalOrderer.computeOrder(PseudoTopologicalOrderer.java:90)
+	soot.toolkits.graph.PseudoTopologicalOrderer.newList(PseudoTopologicalOrderer.java:66)
+TRACE 300248:
+	java.util.IdentityHashMap.init(IdentityHashMap.java:261)
+	java.util.IdentityHashMap.<init>(IdentityHashMap.java:223)
+	soot.toolkits.graph.PseudoTopologicalOrderer.computeOrder(PseudoTopologicalOrderer.java:78)
+	soot.toolkits.graph.PseudoTopologicalOrderer.newList(PseudoTopologicalOrderer.java:66)
+TRACE 300249:
+	java.lang.System.identityHashCode(System.java:Unknown line)
+	java.util.IdentityHashMap.hash(IdentityHashMap.java:301)
+	java.util.IdentityHashMap.get(IdentityHashMap.java:334)
+	soot.toolkits.graph.PseudoTopologicalOrderer.computeOrder(PseudoTopologicalOrderer.java:89)
+TRACE 300250:
+	soot.toolkits.scalar.ForwardFlowAnalysis$1.compare(ForwardFlowAnalysis.java:205)
+	java.util.TreeMap.put(TreeMap.java:545)
+	java.util.TreeSet.add(TreeSet.java:255)
+	soot.toolkits.scalar.ForwardFlowAnalysis.doAnalysis(ForwardFlowAnalysis.java:83)
+TRACE 300251:
+	java.util.HashMap.inflateTable(HashMap.java:316)
+	java.util.HashMap.put(HashMap.java:488)
+	soot.PhaseOptions.getPhaseOptions(PhaseOptions.java:61)
+	soot.PhaseOptions.getPhaseOptions(PhaseOptions.java:49)
+TRACE 300252:
+	soot.PackManager.writeClass(PackManager.java:896)
+	soot.PackManager.writeOutput(PackManager.java:475)
+	soot.PackManager.writeOutput(PackManager.java:400)
+	soot.Main.run(Main.java:199)
+TRACE 300253:
+	sun.nio.cs.UTF_8$Encoder.encodeArrayLoop(UTF_8.java:523)
+	sun.nio.cs.UTF_8$Encoder.encodeLoop(UTF_8.java:619)
+	java.nio.charset.CharsetEncoder.encode(CharsetEncoder.java:561)
+	sun.nio.cs.StreamEncoder.implWrite(StreamEncoder.java:271)
+TRACE 300254:
+	java.util.HashMap.put(HashMap.java:487)
+	soot.toolkits.graph.UnitGraph.buildUnexceptionalEdges(UnitGraph.java:101)
+	soot.toolkits.graph.BriefUnitGraph.<init>(BriefUnitGraph.java:60)
+	soot.Printer.printTo(Printer.java:348)
+CPU SAMPLES BEGIN (total = 161) Wed Apr 22 21:02:28 2015
+rank   self  accum   count trace method
+   1  8,07%  8,07%      13 300193 soot.coffi.Util.jimpleTypesOfFieldOrMethodDescriptor
+   2  7,45% 15,53%      12 300168 java.util.zip.ZipFile.getNextEntry
+   3  5,59% 21,12%       9 300048 java.lang.ClassLoader.defineClass1
+   4  3,73% 24,84%       6 300173 java.util.zip.ZipFile.getEntryTime
+   5  3,11% 27,95%       5 300210 java.lang.Object.getClass
+   6  1,86% 29,81%       3 300031 java.io.UnixFileSystem.getLastModifiedTime
+   7  1,86% 31,68%       3 300072 java.util.zip.Inflater.inflateBytes
+   8  1,86% 33,54%       3 300170 java.util.zip.ZipCoder.toString
+   9  1,86% 35,40%       3 300212 java.lang.Object.<init>
+  10  1,86% 37,27%       3 300217 java.lang.System.arraycopy
+  11  1,86% 39,13%       3 300222 java.lang.String.intern
+  12  1,24% 40,37%       2 300073 java.lang.AbstractStringBuilder.<init>
+  13  1,24% 41,61%       2 300166 java.util.zip.ZipFile.freeEntry
+  14  1,24% 42,86%       2 300171 java.util.zip.ZipFile.getEntryBytes
+  15  1,24% 44,10%       2 300175 java.io.UnixFileSystem.getBooleanAttributes0
+  16  1,24% 45,34%       2 300182 soot.coffi.ClassFile.readAttributes
+  17  1,24% 46,58%       2 300184 java.util.ArrayList.ensureExplicitCapacity
+  18  1,24% 47,83%       2 300187 java.util.ArrayList$Itr.next
+  19  1,24% 49,07%       2 300190 soot.coffi.Util.resolveFromClassFile
+  20  1,24% 50,31%       2 300194 java.lang.Thread.currentThread
+  21  1,24% 51,55%       2 300231 java.lang.Object.<init>
+  22  0,62% 52,17%       1 300055 java.util.jar.Attributes$Name.hashCode
+  23  0,62% 52,80%       1 300064 java.lang.Object.<init>
+  24  0,62% 53,42%       1 300066 java.util.Collections.unmodifiableMap
+  25  0,62% 54,04%       1 300067 soot.Scene.<init>
+  26  0,62% 54,66%       1 300068 soot.Scene.determineExcludedPackages
+  27  0,62% 55,28%       1 300070 main.Main.execute
+  28  0,62% 55,90%       1 300071 java.util.Arrays.copyOfRange
+  29  0,62% 56,52%       1 300074 java.lang.String.replace
+  30  0,62% 57,14%       1 300077 soot.PackManager.init
+  31  0,62% 57,76%       1 300078 java.lang.String.toCharArray
+  32  0,62% 58,39%       1 300079 soot.PackManager.init
+  33  0,62% 59,01%       1 300082 soot.Main.run
+  34  0,62% 59,63%       1 300102 sun.nio.cs.UTF_8$Encoder.encodeArrayLoop
+  35  0,62% 60,25%       1 300148 sun.misc.MetaIndex.registerDirectory
+  36  0,62% 60,87%       1 300160 java.io.UnixFileSystem.checkAccess
+  37  0,62% 61,49%       1 300161 java.lang.AbstractStringBuilder.<init>
+  38  0,62% 62,11%       1 300162 soot.SootResolver.<init>
+  39  0,62% 62,73%       1 300167 sun.nio.cs.UTF_8$Decoder.decode
+  40  0,62% 63,35%       1 300169 java.util.zip.ZipFile.getEntryFlag
+  41  0,62% 63,98%       1 300172 java.util.zip.ZipFile.getEntryBytes
+  42  0,62% 64,60%       1 300174 java.util.HashMap.transfer
+  43  0,62% 65,22%       1 300176 java.util.Arrays.copyOf
+  44  0,62% 65,84%       1 300177 java.util.zip.InflaterInputStream.<init>
+  45  0,62% 66,46%       1 300178 soot.coffi.Util.resolveFromClassFile
+  46  0,62% 67,08%       1 300179 soot.coffi.ClassFile.readAttributes
+  47  0,62% 67,70%       1 300180 soot.coffi.Util.resolveFromClassFile
+  48  0,62% 68,32%       1 300181 java.io.DataInputStream.<init>
+  49  0,62% 68,94%       1 300183 java.util.ArrayList.add
+  50  0,62% 69,57%       1 300185 java.lang.AbstractStringBuilder.<init>
+  51  0,62% 70,19%       1 300186 soot.coffi.Util.resolveFromClassFile
+  52  0,62% 70,81%       1 300188 soot.CharType.hashCode
+  53  0,62% 71,43%       1 300189 java.lang.System.arraycopy
+  54  0,62% 72,05%       1 300191 java.util.ArrayList$Itr.next
+  55  0,62% 72,67%       1 300192 java.lang.String.compareTo
+  56  0,62% 73,29%       1 300195 soot.coffi.Util.jimpleTypesOfFieldOrMethodDescriptor
+  57  0,62% 73,91%       1 300196 java.lang.String.substring
+  58  0,62% 74,53%       1 300197 soot.coffi.Util.resolveFromClassFile
+  59  0,62% 75,16%       1 300198 soot.RefType.hashCode
+  60  0,62% 75,78%       1 300199 soot.coffi.Util.jimpleTypeOfFieldDescriptor
+  61  0,62% 76,40%       1 300200 java.lang.System.arraycopy
+  62  0,62% 77,02%       1 300201 java.lang.Object.getClass
+  63  0,62% 77,64%       1 300202 soot.coffi.Util.resolveFromClassFile
+  64  0,62% 78,26%       1 300203 soot.ArrayType.v
+  65  0,62% 78,88%       1 300204 soot.coffi.Util.resolveFromClassFile
+  66  0,62% 79,50%       1 300205 java.util.zip.ZipFile.getEntry
+  67  0,62% 80,12%       1 300206 java.lang.String.toCharArray
+  68  0,62% 80,75%       1 300207 java.lang.StringCoding$StringEncoder.encode
+  69  0,62% 81,37%       1 300208 soot.coffi.Util.resolveFromClassFile
+  70  0,62% 81,99%       1 300209 soot.coffi.ClassFile.readAttributes
+  71  0,62% 82,61%       1 300211 java.lang.StringCoding$StringEncoder.encode
+  72  0,62% 83,23%       1 300213 java.lang.Double.longBitsToDouble
+  73  0,62% 83,85%       1 300214 soot.util.HashChain$LinkIterator.hasNext
+  74  0,62% 84,47%       1 300215 java.util.Arrays.copyOf
+  75  0,62% 85,09%       1 300216 java.util.WeakHashMap.newTable
+  76  0,62% 85,71%       1 300220 java.util.zip.Inflater.inflateBytes
+  77  0,62% 86,34%       1 300221 java.lang.AbstractStringBuilder.<init>
+  78  0,62% 86,96%       1 300223 java.io.UnixFileSystem.getBooleanAttributes0
+  79  0,62% 87,58%       1 300224 java.io.UnixFileSystem.checkAccess
+  80  0,62% 88,20%       1 300225 java.util.zip.ZipCoder.getBytes
+  81  0,62% 88,82%       1 300227 soot.Scene.prepareClasses
+  82  0,62% 89,44%       1 300228 java.lang.System.nanoTime
+  83  0,62% 90,06%       1 300229 java.lang.System.nanoTime
+  84  0,62% 90,68%       1 300230 java.lang.System.arraycopy
+  85  0,62% 91,30%       1 300232 sun.misc.Unsafe.getLong
+  86  0,62% 91,93%       1 300233 soot.coffi.CoffiMethodSource.getBody
+  87  0,62% 92,55%       1 300236 soot.JimpleBodyPack.applyPhaseOptions
+  88  0,62% 93,17%       1 300237 java.util.zip.ZipCoder.getBytes
+  89  0,62% 93,79%       1 300244 java.util.zip.ZipCoder.getBytes
+  90  0,62% 94,41%       1 300245 java.util.zip.ZipFile.getEntry
+  91  0,62% 95,03%       1 300246 java.util.jar.JarFile.getEntry
+  92  0,62% 95,65%       1 300247 java.util.Collections$UnmodifiableCollection.size
+  93  0,62% 96,27%       1 300248 java.util.IdentityHashMap.init
+  94  0,62% 96,89%       1 300249 java.lang.System.identityHashCode
+  95  0,62% 97,52%       1 300250 soot.toolkits.scalar.ForwardFlowAnalysis$1.compare
+  96  0,62% 98,14%       1 300251 java.util.HashMap.inflateTable
+  97  0,62% 98,76%       1 300252 soot.PackManager.writeClass
+  98  0,62% 99,38%       1 300253 sun.nio.cs.UTF_8$Encoder.encodeArrayLoop
+  99  0,62% 100,00%       1 300254 java.util.HashMap.put
+CPU SAMPLES END

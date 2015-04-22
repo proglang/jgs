@@ -154,8 +154,8 @@ public class HandleStmtTest {
 		 *  2. Assign level of lpc to field
 		 */
 		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field"));
-		hs.setLocalPC(Level.HIGH);
-		assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field"));
+		// hs.setLocalPC(Level.HIGH);
+		// assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field"));
 		
 		/* Assign Local To Field
 		 *  int field = var1 + var2;
@@ -281,16 +281,13 @@ public class HandleStmtTest {
 	}
 	
 	@Test
-	public void joinFieldsTest() {
-		System.out.println("JOIN FIELDS TEST STARTED");
+	public void localPCTest() {
+		System.out.println("LOCAL PC TEST STARTED");
 
 		HandleStmt hs = new HandleStmt();
-		hs.addObjectToObjectMap(this);
-		hs.addFieldToObjectMap(this, "int_x");
-		hs.addFieldToObjectMap(this, "int_y");
 		
 		// TODO
 
-		System.out.println("JOIN FIELDS TEST FINISHED");
+		System.out.println("LOCAL PC TEST FINISHED");
 	}
 }
