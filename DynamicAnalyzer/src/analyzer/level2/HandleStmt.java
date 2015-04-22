@@ -103,24 +103,6 @@ public class HandleStmt {
 		return result;
 	}
 	
-	/**
-	 * Joins the Levels of the given fields and the local pc
-	 * @param fields 
-	 * @return
-	 */
-	public Level joinFields(Object o, String... fields) {
-		Level result = Level.LOW;
-		for(String op: fields) {
-			if (om.getFieldLevel(o, op) == Level.HIGH) {
-				result = Level.HIGH;
-			}
-		}
-		if (lm.getLocalPC() == Level.HIGH) {
-			result = Level.HIGH;
-		}
-		return result;
-	}
-	
 	public Level setLocalPC(Level l) {
 		lm.setLocalPC(l);
 		return lm.getLocalPC();
@@ -158,8 +140,8 @@ public class HandleStmt {
 	}
 
 	public Level assignFieldsToLocal(Object o,
-			String local, String... fields) {
-		System.out.println("Assign " + fields + " to " + local);
+			String local, String field) {
+		System.out.println("Assign " + field + " to " + local);
 		System.out.println("Check if " + lm.getLevel(local) + " >= " + lm.getLocalPC());
 		if (!checkLocalPC(local)) {
 			try {
@@ -170,7 +152,7 @@ public class HandleStmt {
 			   // System.exit(0);
 			}
 		}
-		om.setField(o, local, joinFields(fields));
-		return om.getFieldLevel(o, local);
+		lm.setLevel(local, om.getFieldLevel(o,  field));
+		return lm.getLevel(local);
 	}
 }

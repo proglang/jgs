@@ -10,11 +10,13 @@ public class Test {
     public int ifReturnExpr() {
         int High = 42;
     	intField = 456;
+    	High = intField + intField2;
         return High;
     }
     
     public int constReturn() {
     	int x = intField;
+    	x = x + intField;
     	return 3;
     }
     

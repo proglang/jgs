@@ -72,10 +72,6 @@ public class HandleStmtTest {
 		assertEquals(Level.LOW, hs.assignFieldsToLocal(this, "String_local", "String_field"));
 		
 		/*
-		 * Assign Join of Local and Field to Local
-		 */
-		
-		/*
 		 *  Assign new Object
 		 *  check(xy) >= lpc
 		 *  lpc -> xy
