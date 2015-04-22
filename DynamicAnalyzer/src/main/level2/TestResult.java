@@ -56,14 +56,14 @@ public class TestResult {
     	hs.assignLocal("int_anotherRes", "int_res", "int_res");
     	int anotherRes = res + res;
     	
-    	String schrott;
+    	String s;
     	
-    	String dreck = "jhjk";
+    	String d = "jhjk";
     	
-    	schrott = "ghj";
+    	s = "ghj";
     	
     	hs.assignLocal("String_schrott", "String_dreck");
-    	schrott = dreck;
+    	s = d;
     	
     	ifReturnExpr();
     	
