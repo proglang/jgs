@@ -1,5 +1,6 @@
 package main;
 
+import analyzer.level2.HandleStmt;
 import annotations.*;
 
 public class Test {
@@ -25,6 +26,15 @@ public class Test {
     	return intField;
     }
     
+    public void ifStmt() {
+    	if (intField == intField2) {
+    		HandleStmt hs = new HandleStmt();
+    		int v = 0;
+    	} else {
+    		int v = 1;
+    	}
+    	HandleStmt hs = new HandleStmt();
+    }
     
     @MyAnnotation
     public static void main(String[] args) {
