@@ -1,5 +1,6 @@
 package main;
 
+import main.level2.TestSubClass;
 import analyzer.level2.HandleStmt;
 import annotations.*;
 
@@ -7,6 +8,7 @@ public class Test {
 
 	int intField = 3;
 	int intField2 = 0;
+	TestSubClass xy;
 	
     public int ifReturnExpr() {
         int High = 42;
@@ -24,6 +26,11 @@ public class Test {
     public int returnField() {
     	intField2 = intField;
     	return intField;
+    }
+    
+    public void assignToField() {
+    	xy = new TestSubClass();
+    	intField = xy.methodWithConstReturn();
     }
     
     public void methodWithParams(int i, int x, String c) {

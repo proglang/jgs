@@ -1,0 +1,77 @@
+package tests.handleStmtTests;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.Level;
+
+public class internalMethods {
+
+	@Test
+	public void checkLocalPCTest() {
+		System.out.println("LOCAL PC TEST STARTED");
+
+		HandleStmtForTests hs = new HandleStmtForTests();
+		hs.addLocal("int_x");
+		
+		// Level(x) = LOW, Level(lpc) = LOW
+		assertEquals(true, hs.checkLocalPC("int_x"));
+		
+		// Level(x) = HIGH, Level(lpc) = LOW
+		hs.makeLocalHigh("int_x");
+		assertEquals(true, hs.checkLocalPC("int_x"));
+		
+		// Level(x) = HIGH, Level(lpc) = HIGH
+		hs.setLocalPC(Level.HIGH);
+		assertEquals(true, hs.checkLocalPC("int_x"));
+		
+		// Level(x) = LOW, Level(lpc) = HIGH
+		hs.makeLocalLow("int_x");
+		assertEquals(false, hs.checkLocalPC("int_x"));
+		
+		System.out.println("LOCAL PC TEST FINISHED");
+	}
+	
+	@Test
+	public void joinLocalsTest() {
+		System.out.println("JOIN LOCALS TEST STARTED");
+
+		HandleStmtForTests hs = new HandleStmtForTests();
+		hs.addLocal("int_x", Level.LOW);
+		hs.addLocal("int_y", Level.HIGH);
+		hs.addLocal("int_z", Level.LOW);
+		assertEquals(Level.LOW, hs.joinLocals("int_x"));
+		assertEquals(Level.HIGH, hs.joinLocals("int_x", "int_y"));		
+		assertEquals(Level.HIGH, hs.joinLocals("int_x", "int_y", "int_z"));
+		
+		
+		hs.setLocalPC(Level.HIGH);
+		assertEquals(Level.HIGH, hs.joinLocals("int_x"));
+
+		System.out.println("JOIN LOCALS TEST FINISHED");
+	}
+	
+	@Test
+	public void localPCTest() {
+		System.out.println("LOCAL PC TEST STARTED");
+
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		// TODO
+
+		System.out.println("LOCAL PC TEST FINISHED");
+	}
+	
+	@Test
+	public void argumentsListTest() {
+		
+	}
+	
+	@Test
+	public void localMapStackTest() {
+		
+	}
+
+}

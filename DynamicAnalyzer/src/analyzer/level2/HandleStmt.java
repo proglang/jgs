@@ -109,6 +109,10 @@ public class HandleStmt {
 		lm.setLocalPC(l);
 		return lm.getLocalPC();
 	}
+	
+	public Level getLocalPC() {
+		return lm.getLocalPC();
+	}
 
 	public boolean checkLocalPC(String signature) {
 		boolean res = true;
@@ -139,7 +143,7 @@ public class HandleStmt {
 		om.setActualReturnLevel(lm.getLevel(signature)); 
 	}
 
-	public Level assignFieldsToLocal(Object o,
+	public Level assignFieldToLocal(Object o,
 			String local, String field) {
 		System.out.println("Assign " + field + " to " + local);
 		System.out.println("Check if " + lm.getLevel(local) + " >= " + lm.getLocalPC());
