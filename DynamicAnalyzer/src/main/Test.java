@@ -26,6 +26,10 @@ public class Test {
     	return intField;
     }
     
+    public void methodWithParams(int i, int x, String c) {
+    	
+    }
+    
     public void ifStmt() {
     	if (intField == intField2) {
     		HandleStmt hs = new HandleStmt();

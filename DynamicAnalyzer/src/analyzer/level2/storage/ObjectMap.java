@@ -1,6 +1,8 @@
 package analyzer.level2.storage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 
@@ -16,11 +18,15 @@ private ReferenceIdentityMap<Object, HashMap<String, Level>> innerMap;
 private Level globalPC;
 private static ObjectMap instance = null;
 private Level actualReturnLevel;
+private ArrayList<Level> actualArguments;
+private LinkedList<LocalMap> localMapStack;
 
 
 private ObjectMap() {
 	globalPC = Level.LOW; 
 	actualReturnLevel = Level.LOW;
+	actualArguments = new ArrayList<Level>();
+	localMapStack = new LinkedList<LocalMap>();
 	innerMap = new ReferenceIdentityMap<Object, HashMap<String, Level>>();
 }
 
@@ -29,6 +35,28 @@ public static synchronized ObjectMap getInstance() {
 		instance = new ObjectMap();
 	}
 	return instance;
+}
+
+public LinkedList<LocalMap> addLocalMap(LocalMap localMap) {
+	localMapStack.push(localMap);
+	return localMapStack;
+}
+
+public LocalMap getLastLocalMap() {
+	return localMapStack.getFirst();
+}
+
+public LinkedList<LocalMap>	getLocalMapStack() {
+	return localMapStack;
+}
+
+public ArrayList<Level> setActualArguments(ArrayList<Level> args) {
+	actualArguments = args;
+	return actualArguments;
+}
+
+public ArrayList<Level> getActualArguments() {
+	return actualArguments;
 }
   
 /**
