@@ -10,7 +10,7 @@ import analyzer.level2.HandleStmtForTests;
 public class invokeSuccess {
 
 	@Test
-	public void invokeStmtTest() {
+	public void invokeNewObject() {
 		
 		System.out.println("INVOKE TEST STARTED");
 		
@@ -25,18 +25,29 @@ public class invokeSuccess {
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(1, hs.getNumberOfFields(xy));
 		
-		/*
-		 *  Static Invoke
-		 */
-		// TODO: shold be the same as New Stmt
-		
+	}
+	
+	@Test
+	public void staticInvoke() {
+		// TODO: should be the same as other invoke
+	}
+	
+	@Test
+	public void invokeMethodWithoutArguments() {
 		/*
 		 *  Invoke Method
 		 *  1. Create new LocalMap
 		 *  2. Add Locals to LocalMap
 		 */
-		
-		System.out.println("INVOKE TEST FINISHED");
+	}
+	
+	@Test
+	public void invokeMethodWithArguments() {
+		/*
+		 *  Invoke Method
+		 *  1. Create new LocalMap
+		 *  2. Add Locals to LocalMap
+		 */
 	}
 
 }

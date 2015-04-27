@@ -17,10 +17,23 @@ public class assignFieldsSuccess {
 		
 		/* Assign Constant to Field
 		 *  int field = c;
-		 *  1. Check if Level(x) >= lpc
+		 *  1. Check if Level(field) >= lpc
 		 *  2. Assign level of lpc to field
 		 */
+		// field = LOW, lpc = LOW
 		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field"));
+		
+
+		// field = HIGH, lpc = LOW
+		hs.makeFieldHigh(this, "int_field");
+		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field"));
+		
+
+		// field = HIGH, lpc = HIGH
+		hs.makeFieldHigh(this, "int_field");
+		hs.setLocalPC(Level.HIGH);
+		assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field"));
+	
 	}
 	
 	@Test
@@ -28,6 +41,8 @@ public class assignFieldsSuccess {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "int_field");
+		hs.addLocal("int_var1");
+		hs.addLocal("int_var2");
 		
 		/* Assign Local To Field
 		 *  int field = var1 + var2;
@@ -37,6 +52,7 @@ public class assignFieldsSuccess {
 		hs.setLocalPC(Level.LOW);
 		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field", "int_var1"));
 		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
+		
 		hs.setLocalLevel("int_var2", Level.HIGH);
 		assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
 	}

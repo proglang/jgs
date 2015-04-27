@@ -121,11 +121,19 @@ public class HandleStmt {
 		}
 		return res;		
 	}
+	
+	public boolean checkLocalPC(Object o, String signature) {
+		boolean res = true;
+		if (om.getFieldLevel(o, signature) == Level.LOW && lm.getLocalPC() == Level.HIGH) {
+			res = false;
+		}
+		return res;		
+	}
 
 	public Level assignLocalsToField(Object o, String field, String... locals) {
 		System.out.println("Assign " + locals + " to " + field);
 		System.out.println("Check if " + om.getFieldLevel(o, field) + " >= " + lm.getLocalPC());
-		if (!checkLocalPC(field)) {
+		if (!checkLocalPC(o, field)) {
 			abort(field);
 		}
 		om.setField(o, field, joinLocals(locals));
