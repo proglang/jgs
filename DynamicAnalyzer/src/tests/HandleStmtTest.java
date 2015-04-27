@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import exceptions.IllegalFlowException;
-import analyzer.level2.HandleStmt;
+import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
 
 public class HandleStmtTest {
@@ -16,12 +16,12 @@ public class HandleStmtTest {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	@Test
+	@Test(expected = IllegalFlowException.class)
 	public void assignLocalTest() {
 		
 		System.out.println("ASSIGN LOCAL TEST STARTED");
 		
-		HandleStmt hs = new HandleStmt();
+		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
 		hs.addLocal("int_z", Level.HIGH);
@@ -101,13 +101,15 @@ public class HandleStmtTest {
 		
 		System.out.println("ASSIGN LOCAL TEST FINISHED");
 	}
+	
+
 
 	@Test
 	public void invokeStmtTest() {
 		
 		System.out.println("INVOKE TEST STARTED");
 		
-		HandleStmt hs = new HandleStmt();
+		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		/*
 		 * Invoke New Stmt
@@ -137,7 +139,7 @@ public class HandleStmtTest {
 		
 		System.out.println("ASSIGN FIELD TEST STARTED");
 		
-		HandleStmt hs = new HandleStmt();
+		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_var1", Level.LOW);
 		hs.addLocal("int_var2", Level.LOW);
@@ -198,7 +200,7 @@ public class HandleStmtTest {
 		
 		System.out.println("RETURN TEST STARTED");
 		
-		HandleStmt hs = new HandleStmt();
+		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
 		hs.setLocalPC(Level.LOW);
 		assertEquals(Level.LOW, hs.addFieldToObjectMap(this, "int_resField1"));
@@ -240,7 +242,7 @@ public class HandleStmtTest {
 	public void checkLocalPCTest() {
 		System.out.println("LOCAL PC TEST STARTED");
 
-		HandleStmt hs = new HandleStmt();
+		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
 		
 		// Level(x) = LOW, Level(lpc) = LOW
@@ -265,7 +267,7 @@ public class HandleStmtTest {
 	public void joinLocalsTest() {
 		System.out.println("JOIN LOCALS TEST STARTED");
 
-		HandleStmt hs = new HandleStmt();
+		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", Level.LOW);
 		hs.addLocal("int_y", Level.HIGH);
 		hs.addLocal("int_z", Level.LOW);
@@ -284,10 +286,20 @@ public class HandleStmtTest {
 	public void localPCTest() {
 		System.out.println("LOCAL PC TEST STARTED");
 
-		HandleStmt hs = new HandleStmt();
+		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		// TODO
 
 		System.out.println("LOCAL PC TEST FINISHED");
+	}
+	
+	@Test
+	public void argumentsListTest() {
+		
+	}
+	
+	@Test
+	public void localMapStackTest() {
+		
 	}
 }

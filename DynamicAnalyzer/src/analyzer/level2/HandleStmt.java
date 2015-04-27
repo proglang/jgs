@@ -79,13 +79,7 @@ public class HandleStmt {
 		System.out.println("Assign " + rightOp + " to " + leftOp);
 		System.out.println("Check if " + lm.getLevel(leftOp) + " >= " + lm.getLocalPC());
 		if (!checkLocalPC(leftOp)) {
-			try {
-			throw new IllegalFlowException("System.exit because of illegal flow to " + leftOp);
-			} catch(IllegalFlowException e) {
-				e.printMessage();
-				e.printStackTrace();
-			   // System.exit(0);
-			}
+			abort(leftOp);
 		}
 		checkLocalPC(leftOp);
 		lm.setLevel(leftOp, joinLocals(rightOp));
@@ -128,13 +122,7 @@ public class HandleStmt {
 		System.out.println("Assign " + locals + " to " + field);
 		System.out.println("Check if " + om.getFieldLevel(o, field) + " >= " + lm.getLocalPC());
 		if (!checkLocalPC(field)) {
-			try {
-			throw new IllegalFlowException("System.exit because of illegal flow to " + field);
-			} catch(IllegalFlowException e) {
-				e.printMessage();
-				e.printStackTrace();
-			   // System.exit(0);
-			}
+			abort(field);
 		}
 		om.setField(o, field, joinLocals(locals));
 		return om.getFieldLevel(o, field);
@@ -156,15 +144,19 @@ public class HandleStmt {
 		System.out.println("Assign " + field + " to " + local);
 		System.out.println("Check if " + lm.getLevel(local) + " >= " + lm.getLocalPC());
 		if (!checkLocalPC(local)) {
-			try {
-			throw new IllegalFlowException("System.exit because of illegal flow to " + local);
-			} catch(IllegalFlowException e) {
-				e.printMessage();
-				e.printStackTrace();
-			   // System.exit(0);
-			}
+			abort(local);
 		}
 		lm.setLevel(local, om.getFieldLevel(o,  field));
 		return lm.getLevel(local);
+	}
+	
+	public void abort(String sink) {
+		try {
+		throw new IllegalFlowException("System.exit because of illegal flow to " + sink);
+		} catch(IllegalFlowException e) {
+			e.printMessage();
+			e.printStackTrace();
+		    System.exit(0);
+		}
 	}
 }
