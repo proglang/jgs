@@ -42,6 +42,21 @@ public class TestSubClass {
 	}
 	
 	public int methodWithParams(int a, int b, int c) {
+		HandleStmt hs = new HandleStmt();
+		hs.addLocal("int_a1");
+		hs.addLocal("int_b1");
+		hs.addLocal("int_c1");
+		hs.addLocal("int_tmp");
+		hs.addLocal("int_tmp2");
+		
+		hs.assignArgumentToLocal(0, "int_a1");
+		hs.assignArgumentToLocal(1, "int_b1");
+		hs.assignArgumentToLocal(2, "int_c1");
+		hs.assignLocalsToLocal("int_tmp", "int_b1", "int_c1");
+		hs.assignLocalsToLocal("int_tmp2", "int_tmp", "int_a1");
+		
+		hs.returnLocal("int_tmp2");
+		hs.close();
 		return a + b + c;
 	}
 	

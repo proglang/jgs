@@ -71,6 +71,11 @@ public ArrayList<Level> setActualArguments(ArrayList<Level> args) {
 public ArrayList<Level> getActualArguments() {
 	return actualArguments;
 }
+
+public Level getArgLevelAt(int i) {
+	// TODO Fehlerbehandlung
+	return actualArguments.get(i);
+}
   
 /**
  * Sets the global program counter to given Level

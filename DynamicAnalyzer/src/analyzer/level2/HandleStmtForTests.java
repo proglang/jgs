@@ -8,4 +8,6 @@ public class HandleStmtForTests extends HandleStmt {
 	public void abort(String sink) {
 		throw new IllegalFlowException("System.exit because of illegal flow to " + sink);
 	}
+
+
 }

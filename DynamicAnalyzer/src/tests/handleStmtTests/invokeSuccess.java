@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 
 public class invokeSuccess {
@@ -79,9 +80,21 @@ public class invokeSuccess {
 		 *  3. Add it to LocalMapStack
 		 *  4. Update gpc
 		 */
+    	hs.storeArgumentLevels("int_a", "int_b", "int_c");
+    	assertEquals(3, m.getActualArguments().size());
     	xy.methodWithParams(a, b, c);
-	    hs.close();	
-
+    	assertEquals(Level.LOW, hs.getActualReturnLevel());
+    	
+    	
+    	hs.makeLocalHigh("int_b");
+    	hs.storeArgumentLevels("int_a", "int_b", "int_c");
+    	assertEquals(3, m.getActualArguments().size());
+    	xy.methodWithParams(a, b, c);
+    	assertEquals(Level.HIGH, hs.getActualReturnLevel());
+    	
+	    hs.close();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+	    
 		System.out.println("INVOKE METHOD WITH ARGUMENTS TEST STARTED");
 		
 	}

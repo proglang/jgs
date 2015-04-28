@@ -1,5 +1,7 @@
 package analyzer.level2;
 
+import java.util.ArrayList;
+
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
@@ -178,5 +180,18 @@ public class HandleStmt {
 			e.printStackTrace();
 		    System.exit(0);
 		}
+	}
+	
+	public void storeArgumentLevels(String... arguments) {
+		ArrayList<Level> levelArr = new ArrayList<Level>();
+		for (String el : arguments) {
+			levelArr.add(lm.getLevel(el));
+		}
+		om.setActualArguments(levelArr);
+	}
+	
+	public Level assignArgumentToLocal(int pos, String local) {
+		lm.setLevel(local, om.getArgLevelAt(pos));
+		return lm.getLevel(local);
 	}
 }

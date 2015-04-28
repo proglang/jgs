@@ -193,5 +193,27 @@ public class assignLocalsSuccess {
 
 		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
+	
+	@Test
+	public void assignArgumentToLocal() {
+
+		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+		
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		/*
+		 * Assign argument
+		 */
+
+		
+	    hs.close();	
+	    
+	    assertEquals(0, m.sizeOfLocalMapStack());
+
+		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+	}
 
 }
