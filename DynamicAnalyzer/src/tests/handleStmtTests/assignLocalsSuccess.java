@@ -7,11 +7,18 @@ import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
+import analyzer.level2.storage.ObjectMap;
 
 public class assignLocalsSuccess {
 
 	@Test
 	public void assignConstantToLocal() {
+		
+		System.out.println("ASSIGN CONSTANT TO LOCAL TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", Level.LOW);
 		
@@ -28,10 +35,20 @@ public class assignLocalsSuccess {
 		hs.makeLocalHigh("int_x");
 		hs.setLocalPC(Level.HIGH);
 		assertEquals(Level.HIGH, hs.assignLocalsToLocal("int_x")); // x = HIGH, lpc = HIGH
+		
+	    hs.close();
+
+		System.out.println("ASSIGN CONSTANT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignLocalsToLocal() {
+		
+		System.out.println("ASSIGN LOCALS TO LOCAL TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
@@ -67,10 +84,20 @@ public class assignLocalsSuccess {
 		assertEquals(Level.LOW, hs.getLocalLevel("int_z"));
 		assertEquals(Level.HIGH, hs.getLocalPC());
 		assertEquals(Level.HIGH, hs.assignLocalsToLocal("int_x", "int_y", "int_z"));
+		
+	    hs.close();	
+
+		System.out.println("ASSIGN CONSTANT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignFieldToLocal() {
+		
+		System.out.println("ASSIGN FIELD TO LOCAL TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 
 		hs.addObjectToObjectMap(this);
@@ -100,10 +127,20 @@ public class assignLocalsSuccess {
 		assertEquals(Level.LOW, hs.getFieldLevel(this, "String_field"));
 		assertEquals(Level.LOW, hs.getLocalPC());
 		assertEquals(Level.LOW, hs.assignFieldToLocal(this, "String_local", "String_field"));
+		
+	    hs.close();	
+
+		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignNewObjectToLocal() {
+		
+		System.out.println("ASSIGN FIELD TO LOCAL TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.assignLocalsToLocal("TestSubClass_xy");
 		
@@ -120,10 +157,20 @@ public class assignLocalsSuccess {
 		hs.setLocalLevel("TestSubClass_xy", Level.HIGH);
 		hs.assignLocalsToLocal("TestSubClass_xy");
 		assertEquals(Level.LOW, hs.getLocalLevel("TestSubClass_xy"));
+		
+	    hs.close();	
+
+		System.out.println("ASSIGN NEW OBJECT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignMethodResultToLocal() {
+
+		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		/*
@@ -139,6 +186,12 @@ public class assignLocalsSuccess {
 		res = xy.methodWithConstReturn();
 		res = xy.methodWithLowLocalReturn();
 		res = xy.methodWithHighLocalReturn();
+		
+	    hs.close();	
+	    
+	    assertEquals(0, m.sizeOfLocalMapStack());
+
+		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 
 }

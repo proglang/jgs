@@ -8,6 +8,14 @@ public class HandleStmt {
 	LocalMap lm = new LocalMap();
 	ObjectMap om = ObjectMap.getInstance();
 	
+	public HandleStmt() {
+		om.pushLocalMap(lm);
+	}
+	
+	public void close() {
+		om.popLocalMap();
+	}
+	
 	public Level setActualReturnLevel(Level l) {
 		return om.setActualReturnLevel(l);
 	}

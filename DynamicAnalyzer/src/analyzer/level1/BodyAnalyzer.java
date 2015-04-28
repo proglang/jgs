@@ -23,6 +23,7 @@ import visitor.AnnotationValueSwitch;
  * For each method, a HandleStmt object is inserted (which contains a local Map for the Locals and the localPC).
  * Then every Local is inserted into this map.
  * At least it iterates over all Units and calls the appropriate operation
+ * At the end (but before the return statement) it calls HandleStmt.close()
  * @author koenigr
  *
  */

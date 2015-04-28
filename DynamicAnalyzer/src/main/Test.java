@@ -33,9 +33,18 @@ public class Test {
     	intField = xy.methodWithConstReturn();
     }
     
-    public void methodWithParams(int i, int x, String c) {
-    	
+    
+    public void invokeMethodWithParams() {
+    	TestSubClass xy = new TestSubClass();
+    	int a = 0;
+    	int b = 1;
+    	int c = 2;
+    	xy.methodWithParams(a, b, c);
     }
+    
+	public int methodWithParams(int a, int b, int c) {
+		return a + b + c;
+	}
     
     public void ifStmt() {
     	if (intField == intField2) {

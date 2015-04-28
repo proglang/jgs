@@ -3,9 +3,11 @@ package tests.handleStmtTests;
 import static org.junit.Assert.*;
 import main.level2.TestSubClass;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.storage.ObjectMap;
 
 public class invokeSuccess {
 
@@ -13,6 +15,9 @@ public class invokeSuccess {
 	public void invokeNewObject() {
 		
 		System.out.println("INVOKE TEST STARTED");
+
+		ObjectMap m = ObjectMap.getInstance();
+		assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -24,7 +29,9 @@ public class invokeSuccess {
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(1, hs.getNumberOfFields(xy));
-		
+	    hs.close();	
+	    
+	    System.out.println("INVOKE TEST FINISHED");
 	}
 	
 	@Test
@@ -34,20 +41,49 @@ public class invokeSuccess {
 	
 	@Test
 	public void invokeMethodWithoutArguments() {
+		
+		System.out.println("INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
+
+		ObjectMap m = ObjectMap.getInstance();
+		assertEquals(0, m.sizeOfLocalMapStack());
+		
+		HandleStmtForTests hs = new HandleStmtForTests();
 		/*
 		 *  Invoke Method
 		 *  1. Create new LocalMap
 		 *  2. Add Locals to LocalMap
 		 */
-	}
+	    hs.close();	
+	    
+		System.out.println("INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
+		
+    	}
 	
 	@Test
-	public void invokeMethodWithArguments() {
+	public void invokeMethodWithArguments() {		
+		
+		System.out.println("INVOKE METHOD WITH ARGUMENTS TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+	    
+		HandleStmtForTests hs = new HandleStmtForTests();
+    	TestSubClass xy = new TestSubClass();
+    	int a = 0;
+    	int b = 1;
+    	int c = 2;
 		/*
-		 *  Invoke Method
-		 *  1. Create new LocalMap
-		 *  2. Add Locals to LocalMap
+		 *  Invoke Method With Arguments
+		 *  1. Store argument levels in argument list
+		 *  2. Create New Local Map
+		 *  3. Add it to LocalMapStack
+		 *  4. Update gpc
 		 */
+    	xy.methodWithParams(a, b, c);
+	    hs.close();	
+
+		System.out.println("INVOKE METHOD WITH ARGUMENTS TEST STARTED");
+		
 	}
 
 }

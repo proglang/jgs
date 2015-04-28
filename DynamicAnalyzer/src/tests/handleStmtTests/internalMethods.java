@@ -2,16 +2,27 @@ package tests.handleStmtTests;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
+import analyzer.level2.storage.ObjectMap;
 
 public class internalMethods {
+	
+	@Before
+	public void init() {
+	    ObjectMap m = ObjectMap.getInstance();
+	    m.deleteLocalMapStack();
+	}
 
 	@Test
 	public void checkLocalPCTest() {
 		System.out.println("LOCAL PC TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -31,12 +42,21 @@ public class internalMethods {
 		hs.makeLocalLow("int_x");
 		assertEquals(false, hs.checkLocalPC("int_x"));
 		
+	    hs.close();	
+	    
+
+	    assertEquals(0, m.sizeOfLocalMapStack());
+		
 		System.out.println("LOCAL PC TEST FINISHED");
 	}
 	
 	@Test
 	public void joinLocalsTest() {
 		System.out.println("JOIN LOCALS TEST STARTED");
+
+	    ObjectMap m = ObjectMap.getInstance();
+	    m.deleteLocalMapStack();
+	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", Level.LOW);
@@ -50,6 +70,8 @@ public class internalMethods {
 		hs.setLocalPC(Level.HIGH);
 		assertEquals(Level.HIGH, hs.joinLocals("int_x"));
 
+	    hs.close();	
+		
 		System.out.println("JOIN LOCALS TEST FINISHED");
 	}
 	
@@ -57,10 +79,15 @@ public class internalMethods {
 	public void localPCTest() {
 		System.out.println("LOCAL PC TEST STARTED");
 
+	    ObjectMap m = ObjectMap.getInstance();
+	    assertEquals(0, m.sizeOfLocalMapStack());
+
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		// TODO
 
+	    hs.close();	
+		
 		System.out.println("LOCAL PC TEST FINISHED");
 	}
 	

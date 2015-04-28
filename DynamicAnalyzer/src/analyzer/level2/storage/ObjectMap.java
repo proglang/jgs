@@ -37,8 +37,13 @@ public static synchronized ObjectMap getInstance() {
 	return instance;
 }
 
-public LinkedList<LocalMap> addLocalMap(LocalMap localMap) {
+public LinkedList<LocalMap> pushLocalMap(LocalMap localMap) {
 	localMapStack.push(localMap);
+	return localMapStack;
+}
+
+public LinkedList<LocalMap> popLocalMap() {
+	localMapStack.pop();
 	return localMapStack;
 }
 
@@ -48,6 +53,14 @@ public LocalMap getLastLocalMap() {
 
 public LinkedList<LocalMap>	getLocalMapStack() {
 	return localMapStack;
+}
+
+public int sizeOfLocalMapStack() {
+	return localMapStack.size();
+}
+
+public void deleteLocalMapStack() {
+	localMapStack.clear();
 }
 
 public ArrayList<Level> setActualArguments(ArrayList<Level> args) {

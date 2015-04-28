@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 
@@ -64,6 +65,24 @@ public class ObjectMapTest {
 		m.setField(o2, f1, Level.HIGH);
 		m.setField(o2, f2, Level.LOW);
 		m.setField(o2, f3);
+	}
+	
+	@Test
+	public void localMapStackTest() {
+		ObjectMap m = ObjectMap.getInstance();
+		assertEquals(0, m.sizeOfLocalMapStack());
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		assertEquals(1, m.sizeOfLocalMapStack());
+		
+		{
+			HandleStmtForTests tmpHs = new HandleStmtForTests();
+			assertEquals(2, m.sizeOfLocalMapStack());
+			tmpHs.close();
+		}
+
+		assertEquals(1, m.sizeOfLocalMapStack());
+		
 	}
 
 }

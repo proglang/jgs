@@ -17,6 +17,7 @@ public class TestResult {
 		
 		// TODO : ?????
 		intField = 3;
+		hs.close();
 	}
 	
     public static int ifReturnExpr() {
@@ -30,6 +31,7 @@ public class TestResult {
         
         hs.assignLocalsToField("int_intField", "int_High");
     	intField = High;
+		hs.close();
         return High;
     }
     
@@ -68,6 +70,7 @@ public class TestResult {
     	ifReturnExpr();
     	
     	System.out.println("finish");
+		hs.close();
 
     }
 
