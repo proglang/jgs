@@ -11,7 +11,7 @@ import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 
-public class invokeSuccess {
+public class InvokeSuccess {
 
 	private HandleStmt hs;
 

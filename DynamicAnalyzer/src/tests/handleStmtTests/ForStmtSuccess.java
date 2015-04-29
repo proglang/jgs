@@ -8,7 +8,7 @@ public class ForStmtSuccess {
 
 	@Test
 	public void test() {
-		for(;;){
+		for(int i = 0;i < 1; i++){
 			
 		}
 	}

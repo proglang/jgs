@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import analyzer.level2.storage.ObjectMap;
 
-public class invokeFail {
+public class InvokeFail {
 
 	@Test
 	public void test() {

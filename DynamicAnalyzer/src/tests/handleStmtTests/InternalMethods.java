@@ -9,7 +9,7 @@ import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 
-public class internalMethods {
+public class InternalMethods {
 	
 	@Before
 	public void init() {

@@ -8,7 +8,7 @@ import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 
-public class assignFieldsSuccess {
+public class AssignFieldsSuccess {
 
 	@Test
 	public void assignConstantToField() {
@@ -19,6 +19,7 @@ public class assignFieldsSuccess {
 	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
+		assertEquals(0,  hs.getNumberOfElements());
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "int_field");
 		
@@ -56,6 +57,7 @@ public class assignFieldsSuccess {
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
+		assertEquals(1,  hs.getNumberOfElements());
 		hs.addFieldToObjectMap(this, "int_field");
 		hs.addLocal("int_var1");
 		hs.addLocal("int_var2");

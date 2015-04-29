@@ -12,7 +12,7 @@ public class Test {
 	
 	public void ifWhileSwitchFor(int a, int b) {
 		if (a == b) {
-			
+			a = 3;
 		}
 	}
 	

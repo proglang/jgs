@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import analyzer.level2.storage.ObjectMap;
 
-public class ifStmtFail {
+public class IfStmtFail {
 
 	@Test
 	public void test() {

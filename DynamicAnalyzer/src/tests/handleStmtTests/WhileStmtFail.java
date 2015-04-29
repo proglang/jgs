@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import analyzer.level2.storage.ObjectMap;
 
-public class whileStmtFail {
+public class WhileStmtFail {
 
 	@Test
 	public void test() {

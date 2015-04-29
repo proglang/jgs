@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import analyzer.level2.storage.ObjectMap;
 
-public class switchStmtFail {
+public class SwitchStmtFail {
 
 	@Test
 	public void test() {

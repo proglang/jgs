@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
+import org.apache.commons.collections4.map.AbstractReferenceMap;
 
 import analyzer.level2.Level;
 
@@ -27,7 +28,7 @@ private ObjectMap() {
 	actualReturnLevel = Level.LOW;
 	actualArguments = new ArrayList<Level>();
 	localMapStack = new LinkedList<LocalMap>();
-	innerMap = new ReferenceIdentityMap<Object, HashMap<String, Level>>();
+	innerMap = new ReferenceIdentityMap<Object, HashMap<String, Level>>(AbstractReferenceMap.ReferenceStrength.WEAK, AbstractReferenceMap.ReferenceStrength.WEAK);
 }
 
 public static synchronized ObjectMap getInstance() {
@@ -109,7 +110,9 @@ public Level getActualReturnLevel() {
   * @param o 
   */
   public void insertNewObject(Object o) {
-	  innerMap.put(o, new HashMap<String, Level>());
+	  if (!innerMap.containsKey(o)) {
+	    innerMap.put(o, new HashMap<String, Level>());
+	  }
   }
  
   

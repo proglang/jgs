@@ -9,7 +9,7 @@ import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 
-public class assignLocalsSuccess {
+public class AssignLocalsSuccess {
 
 	@Test
 	public void assignConstantToLocal() {

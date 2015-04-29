@@ -10,7 +10,7 @@ import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
-public class assignFieldsFail {
+public class AssignFieldsFail {
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantToField() {
@@ -20,6 +20,7 @@ public class assignFieldsFail {
 		assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
+		assertEquals(0,  hs.getNumberOfElements());
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "int_field");
 		

@@ -10,7 +10,7 @@ import analyzer.level2.Level;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
-public class assignLocalsFail {
+public class AssignLocalsFail {
 	
 
 
