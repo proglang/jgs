@@ -9,7 +9,6 @@ import analyzer.level2.Level;
 
 public class LocalMap {
 	
-	// private Level localPC = Level.LOW;
 	private LinkedList<Level> localPC = new LinkedList<Level>();
 	private HashMap<String, Level> lMap = new HashMap<String, Level>();
 	private Level returnLevel = Level.LOW;
