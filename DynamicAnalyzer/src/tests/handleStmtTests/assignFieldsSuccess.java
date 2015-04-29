@@ -78,6 +78,11 @@ public class assignFieldsSuccess {
 		
 	}
 	
+	@Test
+	public void assignToAStaticField() {
+		
+	}
+	
 	
 
 }

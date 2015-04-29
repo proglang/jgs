@@ -1,4 +1,4 @@
-package main.level2;
+package tests.testClasses;
 
 import analyzer.level2.HandleStmt;
 import analyzer.level2.Level;
@@ -6,11 +6,11 @@ import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import annotations.*;
 
-public class TestResult {
+public class TestClass {
 
 	static int intField;
 	
-	public TestResult() {
+	public TestClass() {
 		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "int_intField");
@@ -43,8 +43,8 @@ public class TestResult {
     	hs.addLocal("int_a2");
     	hs.addLocal("int_res");
     	hs.addLocal("int_anotherRes");
-    	hs.addLocal("String_schrott");
-    	hs.addLocal("String_dreck");
+    	hs.addLocal("String_s");
+    	hs.addLocal("String_d");
     	
 // TODO: Was passiert hier?
     	int a1 = 22;
@@ -64,7 +64,7 @@ public class TestResult {
     	
     	s = "ghj";
     	
-    	hs.assignLocalsToLocal("String_schrott", "String_dreck");
+    	hs.assignLocalsToLocal("String_s", "String_d");
     	s = d;
     	
     	ifReturnExpr();

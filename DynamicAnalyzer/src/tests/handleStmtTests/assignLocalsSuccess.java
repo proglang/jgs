@@ -1,7 +1,7 @@
 package tests.handleStmtTests;
 
 import static org.junit.Assert.*;
-import main.level2.TestSubClass;
+import tests.testClasses.TestSubClass;
 
 import org.junit.Test;
 

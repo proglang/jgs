@@ -1,6 +1,6 @@
 package main;
 
-import main.level2.TestSubClass;
+import tests.testClasses.TestSubClass;
 import analyzer.level2.HandleStmt;
 import annotations.*;
 

@@ -1,7 +1,7 @@
 package tests.handleStmtTests;
 
 import static org.junit.Assert.*;
-import main.level2.TestSubClass;
+import tests.testClasses.TestSubClass;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,17 @@ public class invokeSuccess {
 	
 	@Test
 	public void staticInvoke() {
-		// TODO: should be the same as other invoke
+		
+		System.out.println("STATIC INVOKE TEST STARTED");
+		
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		
+		hs.close();
+		
+
+		System.out.println("STATIC INVOKE TEST FINISHED");
+		
 	}
 	
 	@Test

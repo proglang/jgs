@@ -1,4 +1,4 @@
-package main.level2;
+package tests.testClasses;
 
 import static org.junit.Assert.assertEquals;
 import analyzer.level2.HandleStmt;
