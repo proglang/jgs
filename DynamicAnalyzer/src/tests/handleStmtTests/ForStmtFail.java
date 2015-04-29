@@ -4,10 +4,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class whileStmtSuccess {
+public class ForStmtFail {
 
 	@Test
 	public void test() {
+		fail("Not yet implemented");
 	}
 
 }

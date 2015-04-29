@@ -8,7 +8,7 @@ import annotations.*;
 
 public class TestClass {
 
-	static int intField;
+	public static int intField;
 	
 	public TestClass() {
 		HandleStmt hs = new HandleStmt();

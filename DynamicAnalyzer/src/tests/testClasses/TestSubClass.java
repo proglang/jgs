@@ -29,6 +29,10 @@ public class TestSubClass {
 		return 2;
 	}
 	
+	public void writeToCallerField(TestClass ts) {
+		ts.intField = 4;
+	}
+	
 	public int methodWithLowLocalReturn() {
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_result");

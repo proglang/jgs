@@ -4,10 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class ifStmtSuccess {
+public class WhileStmtSuccess {
 
 	@Test
-	public void test() {
+	public void whileStmtSimpleTest() {
+		
+		while (true) {
+			
+		}
 	}
 
 }

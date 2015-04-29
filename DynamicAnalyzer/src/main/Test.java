@@ -10,6 +10,12 @@ public class Test {
 	int intField2 = 0;
 	TestSubClass xy;
 	
+	public void ifWhileSwitchFor(int a, int b) {
+		if (a == b) {
+			
+		}
+	}
+	
     public int ifReturnExpr() {
         int High = 42;
     	intField = 456;
