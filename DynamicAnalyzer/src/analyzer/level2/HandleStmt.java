@@ -50,6 +50,9 @@ public class HandleStmt {
 			LOGGER.warning("setting up the logger was not successful");
 			e.printStackTrace();
 		}
+		if (om == null) {
+			om = ObjectMap.getInstance();
+		}
 		om.flush();
 	}
 	

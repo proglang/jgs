@@ -16,7 +16,7 @@ public class AssignFieldsFail {
 	
 	@Before
 	public void init() {
-
+		HandleStmtForTests.init();
 	}
 
 	@Test(expected = IllegalFlowException.class)

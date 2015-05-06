@@ -18,7 +18,6 @@ public class ObjectMapTest {
 
 	@Before
 	public void init() {
-		HandleStmtForTests hs = new HandleStmtForTests();
 		HandleStmt.init();
 	}
 

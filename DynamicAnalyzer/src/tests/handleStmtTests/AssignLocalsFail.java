@@ -3,6 +3,7 @@ package tests.handleStmtTests;
 import static org.junit.Assert.*;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
@@ -12,7 +13,10 @@ import exceptions.IllegalFlowException;
 
 public class AssignLocalsFail {
 	
-
+	@Before
+	public void init() {
+		HandleStmtForTests.init();
+	}
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantToLocal() {

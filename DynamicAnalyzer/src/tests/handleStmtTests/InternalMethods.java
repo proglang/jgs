@@ -13,7 +13,7 @@ public class InternalMethods {
 	
 	@Before
 	public void init() {
-
+		HandleStmtForTests.init();
 	}
 
 	@Test

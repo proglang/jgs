@@ -3,6 +3,7 @@ package tests.handleStmtTests;
 import static org.junit.Assert.*;
 import tests.testClasses.TestSubClass;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
@@ -10,6 +11,11 @@ import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
 
 public class AssignLocalsSuccess {
+	
+	@Before
+	public void init() {
+		HandleStmtForTests.init();
+	}
 
 	@Test
 	public void assignConstantToLocal() {

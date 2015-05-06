@@ -21,6 +21,8 @@ import org.junit.runners.Suite.SuiteClasses;
 				tests.handleStmtTests.WhileStmtFail.class,
 				tests.handleStmtTests.SwitchStmtSuccess.class,
 				tests.handleStmtTests.SwitchStmtFail.class,
+				tests.handleStmtTests.StaticFieldsSuccess.class,
+				tests.handleStmtTests.StaticFieldsFail.class,
 				ObjectMapTest.class, 
 				JimpleInjectorTest.class })
 

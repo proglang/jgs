@@ -13,12 +13,11 @@ import analyzer.level2.storage.ObjectMap;
 
 public class InvokeSuccess {
 
-	private HandleStmt hs;
 	private ObjectMap m = ObjectMap.getInstance();
 	
 	@Before
 	public void init() {
-		hs.init();
+		HandleStmtForTests.init();
 	}
 
 	@Test
