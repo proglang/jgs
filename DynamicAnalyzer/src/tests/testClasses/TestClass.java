@@ -1,9 +1,6 @@
 package tests.testClasses;
 
 import analyzer.level2.HandleStmt;
-import analyzer.level2.Level;
-import analyzer.level2.storage.LocalMap;
-import analyzer.level2.storage.ObjectMap;
 import annotations.*;
 
 public class TestClass {

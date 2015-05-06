@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 
 /**
  * @author koenigr
@@ -15,20 +15,20 @@ import analyzer.level2.Level;
  */
 public class ObjectMap{
 	
-private ReferenceIdentityMap<Object, HashMap<String, Level>> innerMap;
-private Level globalPC;
+private ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>> innerMap;
+private SecurityLevel globalPC;
 private static ObjectMap instance = null;
-private Level actualReturnLevel;
-private ArrayList<Level> actualArguments;
+private SecurityLevel actualReturnLevel;
+private ArrayList<SecurityLevel> actualArguments;
 private LinkedList<LocalMap> localMapStack;
 
 
 private ObjectMap() {
-	globalPC = Level.LOW; 
-	actualReturnLevel = Level.LOW;
-	actualArguments = new ArrayList<Level>();
+	globalPC = SecurityLevel.LOW; 
+	actualReturnLevel = SecurityLevel.LOW;
+	actualArguments = new ArrayList<SecurityLevel>();
 	localMapStack = new LinkedList<LocalMap>();
-	innerMap = new ReferenceIdentityMap<Object, HashMap<String, Level>>(AbstractReferenceMap.ReferenceStrength.WEAK, AbstractReferenceMap.ReferenceStrength.WEAK);
+	innerMap = new ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>>(AbstractReferenceMap.ReferenceStrength.WEAK, AbstractReferenceMap.ReferenceStrength.WEAK);
 }
 
 public static synchronized ObjectMap getInstance() {
@@ -64,16 +64,16 @@ public void deleteLocalMapStack() {
 	localMapStack.clear();
 }
 
-public ArrayList<Level> setActualArguments(ArrayList<Level> args) {
+public ArrayList<SecurityLevel> setActualArguments(ArrayList<SecurityLevel> args) {
 	actualArguments = args;
 	return actualArguments;
 }
 
-public ArrayList<Level> getActualArguments() {
+public ArrayList<SecurityLevel> getActualArguments() {
 	return actualArguments;
 }
 
-public Level getArgLevelAt(int i) {
+public SecurityLevel getArgLevelAt(int i) {
 	// TODO Fehlerbehandlung
 	return actualArguments.get(i);
 }
@@ -82,7 +82,7 @@ public Level getArgLevelAt(int i) {
  * Sets the global program counter to given Level
  * @param l
  */
-public void setGlobalPC(Level l) {
+public void setGlobalPC(SecurityLevel l) {
 	  globalPC = l;
 }
  
@@ -90,16 +90,16 @@ public void setGlobalPC(Level l) {
  * Returns the Level of the global program counter
  * @return 
  */
-public Level getGlobalPC() {
+public SecurityLevel getGlobalPC() {
 	return globalPC;
 }
 
-public Level setActualReturnLevel(Level l) {
+public SecurityLevel setActualReturnLevel(SecurityLevel l) {
 	actualReturnLevel = l;
 	return actualReturnLevel;
 }
 
-public Level getActualReturnLevel() {
+public SecurityLevel getActualReturnLevel() {
 	return actualReturnLevel;
 }
   
@@ -111,7 +111,7 @@ public Level getActualReturnLevel() {
   */
   public void insertNewObject(Object o) {
 	  if (!innerMap.containsKey(o)) {
-	    innerMap.put(o, new HashMap<String, Level>());
+	    innerMap.put(o, new HashMap<String, SecurityLevel>());
 	  }
   }
  
@@ -122,17 +122,17 @@ public Level getActualReturnLevel() {
   * @param l
   * @return
   */ 
-public Level getFieldLevel(Object o, String f) {
+public SecurityLevel getFieldLevel(Object o, String f) {
 	return innerMap.get(o).get(f);
 }
 
-public Level setField(Object o, String f, Level l) {
+public SecurityLevel setField(Object o, String f, SecurityLevel l) {
 	innerMap.get(o).put(f, l);
 	return innerMap.get(o).get(f);
 }
 
-public Level setField(Object o, String f) {
-	return setField(o, f, Level.LOW);
+public SecurityLevel setField(Object o, String f) {
+	return setField(o, f, SecurityLevel.LOW);
 }
   
  /**

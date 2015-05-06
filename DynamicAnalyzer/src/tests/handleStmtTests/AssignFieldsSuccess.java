@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
 
 public class AssignFieldsSuccess {
@@ -29,18 +29,18 @@ public class AssignFieldsSuccess {
 		 *  2. Assign level of lpc to field
 		 */
 		// field = LOW, lpc = LOW
-		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field"));
+		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field"));
 		
 
 		// field = HIGH, lpc = LOW
 		hs.makeFieldHigh(this, "int_field");
-		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field"));
+		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field"));
 		
 
 		// field = HIGH, lpc = HIGH
 		hs.makeFieldHigh(this, "int_field");
-		hs.setLocalPC(Level.HIGH);
-		assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field"));
+		hs.setLocalPC(SecurityLevel.HIGH);
+		assertEquals(SecurityLevel.HIGH, hs.assignLocalsToField(this, "int_field"));
 		
 	    hs.close();	
 
@@ -67,12 +67,12 @@ public class AssignFieldsSuccess {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
-		hs.setLocalPC(Level.LOW);
-		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field", "int_var1"));
-		assertEquals(Level.LOW, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
+		hs.setLocalPC(SecurityLevel.LOW);
+		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field", "int_var1"));
+		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
 		
-		hs.setLocalLevel("int_var2", Level.HIGH);
-		assertEquals(Level.HIGH, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
+		hs.setLocalLevel("int_var2", SecurityLevel.HIGH);
+		assertEquals(SecurityLevel.HIGH, hs.assignLocalsToField(this, "int_field", "int_var1", "int_var2"));
 		
 	    hs.close();	
 	    

@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
 
 public class InternalMethods {
@@ -35,7 +35,7 @@ public class InternalMethods {
 		assertEquals(true, hs.checkLocalPC("int_x"));
 		
 		// Level(x) = HIGH, Level(lpc) = HIGH
-		hs.setLocalPC(Level.HIGH);
+		hs.setLocalPC(SecurityLevel.HIGH);
 		assertEquals(true, hs.checkLocalPC("int_x"));
 		
 		// Level(x) = LOW, Level(lpc) = HIGH
@@ -59,16 +59,16 @@ public class InternalMethods {
 	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		HandleStmtForTests hs = new HandleStmtForTests();
-		hs.addLocal("int_x", Level.LOW);
-		hs.addLocal("int_y", Level.HIGH);
-		hs.addLocal("int_z", Level.LOW);
-		assertEquals(Level.LOW, hs.joinLocals("int_x"));
-		assertEquals(Level.HIGH, hs.joinLocals("int_x", "int_y"));		
-		assertEquals(Level.HIGH, hs.joinLocals("int_x", "int_y", "int_z"));
+		hs.addLocal("int_x", SecurityLevel.LOW);
+		hs.addLocal("int_y", SecurityLevel.HIGH);
+		hs.addLocal("int_z", SecurityLevel.LOW);
+		assertEquals(SecurityLevel.LOW, hs.joinLocals("int_x"));
+		assertEquals(SecurityLevel.HIGH, hs.joinLocals("int_x", "int_y"));		
+		assertEquals(SecurityLevel.HIGH, hs.joinLocals("int_x", "int_y", "int_z"));
 		
 		
-		hs.setLocalPC(Level.HIGH);
-		assertEquals(Level.HIGH, hs.joinLocals("int_x"));
+		hs.setLocalPC(SecurityLevel.HIGH);
+		assertEquals(SecurityLevel.HIGH, hs.joinLocals("int_x"));
 
 	    hs.close();	
 		

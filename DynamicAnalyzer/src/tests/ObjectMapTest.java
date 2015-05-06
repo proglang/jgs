@@ -2,14 +2,24 @@ package tests;
 
 import static org.junit.Assert.*;
 
+import java.util.logging.Logger;
+
+import logging.L2Logger;
+
+import org.junit.Before;
 import org.junit.Test;
 
+import analyzer.level2.HandleStmt;
 import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
 
 public class ObjectMapTest {
 
+	@Before
+	public void init() {
+		HandleStmt.init();
+	}
 
 	@Test
 	public void singletonTest() {
@@ -30,9 +40,9 @@ public class ObjectMapTest {
 		System.out.println("GLOBAL PC TEST STARTED");
 		
 		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(Level.LOW, m.getGlobalPC());
-		m.setGlobalPC(Level.HIGH);
-		assertEquals(Level.HIGH, m.getGlobalPC());
+		assertEquals(SecurityLevel.LOW, m.getGlobalPC());
+		m.setGlobalPC(SecurityLevel.HIGH);
+		assertEquals(SecurityLevel.HIGH, m.getGlobalPC());
 
 		System.out.println("GLOBAL PC TEST FINISHED");
 	}
@@ -73,15 +83,15 @@ public class ObjectMapTest {
 		String f2 = "<int i2>";
 		String f3 = "<String s1>";
 		
-		m.setField(o, f1, Level.LOW);
+		m.setField(o, f1, SecurityLevel.LOW);
 		m.setField(o, f2);
-		m.setField(o, f3, Level.HIGH);
+		m.setField(o, f3, SecurityLevel.HIGH);
 		
 		Object o2 = new Object();
 		m.insertNewObject(o2);
 		
-		m.setField(o2, f1, Level.HIGH);
-		m.setField(o2, f2, Level.LOW);
+		m.setField(o2, f1, SecurityLevel.HIGH);
+		m.setField(o2, f2, SecurityLevel.LOW);
 		m.setField(o2, f3);
 
 		System.out.println("FIELDS IN OBJECT MAP TEST FINISHED");
@@ -114,6 +124,8 @@ public class ObjectMapTest {
 	public void multipleObjectsTest() {
 
 		System.out.println("MULTIPLE OBJECTS TEST STARTED");
+		
+		Logger l = L2Logger.getLogger();
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		ObjectMap m = ObjectMap.getInstance();

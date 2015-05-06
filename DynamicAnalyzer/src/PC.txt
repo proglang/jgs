@@ -1,0 +1,82 @@
+
+public class PC {
+	
+	// [] ist ein Stack, der Wert ganz rechts ist immer der gerade aktuelle
+
+public static void main(String[] args) {
+	/*
+	 * gpc ???????
+	 */
+		
+	this.m1() { // Methode wird aufgerufen
+		/*
+		 * gpc = [LOW]
+		 * lpc(m1) = [LOW]
+		 */
+		
+		this.m2() { // zweite Methode wird aufgerufen
+			/*
+			 * gpc = [LOW, LOW]
+			 * lpc(m1) = [LOW]
+			 * lpc(m2) = [LOW]
+			 */
+			
+			if/for/while/switch (HIGH) { // Der Ausdruck beinhaltet eine Var, die High ist
+				/*
+				 * gpc = [LOW, LOW, HIGH]
+				 * lpc(m1) = [LOW]
+				 * lpc(m2) = [LOW, HIGH] 
+				 */
+				
+			} // lpc(m2).pop() und gpc.pop()
+			
+			/*
+			 * gpc = [LOW, LOW]
+			 * lpc(m1) = [LOW]
+			 * lpc(m2) = [LOW]
+			 */
+			
+			if/for/while/switch (LOW) { // Der Ausdruck beinhaltet keine Var, die High ist
+				/*
+				 * gpc = [LOW, LOW, LOW]
+				 * lpc(m1) = [LOW]
+				 * lpc(m2) = [LOW, LOW] 
+				 */
+				
+				if/for/while/switch (HIGH) { // Der Ausdruck beinhaltet eine Var, die High ist
+					/*
+					 * gpc = [LOW, LOW, LOW, HIGH]
+					 * lpc(m1) = [LOW]
+					 * lpc(m2) = [LOW, LOW, HIGH] 
+					 */
+					
+				} // lpc(m2).pop() und gpc.pop()
+				
+				/*
+				 * gpc = [LOW, LOW, LOW]
+				 * lpc(m1) = [LOW]
+				 * lpc(m2) = [LOW, LOW] 
+				 */
+				
+			} // lpc(m2).pop() und gpc.pop()
+	
+			/*
+			 * gpc = [LOW, LOW]
+			 * lpc(m1) = [LOW]
+			 * lpc(m2) = [LOW] 
+			 */
+			
+		} // lpc(m2).pop() und gpc.pop()  (bzw die LocalMap von m2 wird komplett gelöscht)
+		
+		/*
+		 * gpc = [LOW]
+		 * lpc(m1) = [LOW]
+		 */
+	}// lpc(m1).pop() und gpc.pop()  (bzw die LocalMap von m1 wird komplett gelöscht)
+	
+	/*
+	 * gpc = [LOW]	
+	 */
+}
+
+}

@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
@@ -23,8 +23,8 @@ public class AssignLocalsFail {
 	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
-		hs.addLocal("int_x", Level.LOW);
-		hs.setLocalPC(Level.HIGH);
+		hs.addLocal("int_x", SecurityLevel.LOW);
+		hs.setLocalPC(SecurityLevel.HIGH);
 		// x = LOW, lpc = HIGH
 		hs.assignLocalsToLocal("int_x");
 		hs.close();
@@ -44,7 +44,7 @@ public class AssignLocalsFail {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
-		hs.addLocal("int_z", Level.HIGH);
+		hs.addLocal("int_z", SecurityLevel.HIGH);
 		
 		/*
 		 *  Assign Locals to Local
@@ -52,12 +52,12 @@ public class AssignLocalsFail {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
-		hs.setLocalPC(Level.HIGH);
+		hs.setLocalPC(SecurityLevel.HIGH);
 		// x = LOW, lpc = HIGH
-		assertEquals(Level.LOW, hs.getLocalLevel("int_x"));
-		assertEquals(Level.LOW, hs.getLocalLevel("int_y"));
-		assertEquals(Level.HIGH, hs.getLocalLevel("int_z"));
-		assertEquals(Level.HIGH, hs.getLocalPC());
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_x"));
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
+		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_z"));
+		assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 		hs.assignLocalsToLocal("int_x", "int_y", "int_z");
 		
 		

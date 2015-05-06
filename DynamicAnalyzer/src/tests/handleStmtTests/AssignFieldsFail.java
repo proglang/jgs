@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
@@ -32,7 +32,7 @@ public class AssignFieldsFail {
 
 		// field = LOW, lpc = HIGH
 		hs.makeFieldLOW(this, "int_field");
-		hs.setLocalPC(Level.HIGH);
+		hs.setLocalPC(SecurityLevel.HIGH);
 		hs.assignLocalsToField(this, "int_field");
 		
 	    hs.close();	

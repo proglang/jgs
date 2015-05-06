@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LocalMap;
 
 public class LocalMapTest {
@@ -12,12 +12,12 @@ public class LocalMapTest {
 	@Test
 	public void testInsertElementStringLevel() {
 		LocalMap lm = new LocalMap();
-		lm.insertElement("a1", Level.LOW);
+		lm.insertElement("a1", SecurityLevel.LOW);
 		lm.insertElement("a2");
-		lm.insertElement("a3", Level.HIGH);
-		assertSame(Level.LOW, lm.getLevel("a1"));
-		assertSame(Level.LOW, lm.getLevel("a2"));
-		assertSame(Level.HIGH, lm.getLevel("a3"));	
+		lm.insertElement("a3", SecurityLevel.HIGH);
+		assertSame(SecurityLevel.LOW, lm.getLevel("a1"));
+		assertSame(SecurityLevel.LOW, lm.getLevel("a2"));
+		assertSame(SecurityLevel.HIGH, lm.getLevel("a3"));	
 	}
 
 	@Test
@@ -28,7 +28,7 @@ public class LocalMapTest {
 	@Test
 	public void testGetLevel() {
 		LocalMap lm = new LocalMap();
-		assertSame(Level.LOW, lm.getLevel("a"));
+		assertSame(SecurityLevel.LOW, lm.getLevel("a"));
 	}
 
 	@Test

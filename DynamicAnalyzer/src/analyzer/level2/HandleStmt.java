@@ -1,38 +1,76 @@
 package analyzer.level2;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import logging.L2Formatter;
+import logging.L2Logger;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
 public class HandleStmt {
-	LocalMap lm = new LocalMap();
-	ObjectMap om = ObjectMap.getInstance();
 	
+	private static final String LOGGER_NAME = HandleStmt.class.getName();
+	private final static Logger LOGGER = L2Logger.getLogger();
+	
+	private LocalMap lm;
+	private ObjectMap om;
+	
+	/**
+	 * This method must be called at the beginning of the main method
+	 */
+	public static void init() {
+		try {
+			L2Logger.setup();
+		} catch (IOException e) {
+			LOGGER.warning("setting up the logger was not successful");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	public HandleStmt() {
+		lm = new LocalMap();
+		om = ObjectMap.getInstance();
 		om.pushLocalMap(lm);
 	}
 	
+	/**
+	 * 
+	 */
 	public void close() {
 		om.popLocalMap();
 	}
 	
-	public Level setActualReturnLevel(Level l) {
+	/**
+	 * @param l
+	 * @return
+	 */
+	public SecurityLevel setActualReturnLevel(SecurityLevel l) {
 		return om.setActualReturnLevel(l);
 	}
 	
-	public Level getActualReturnLevel() {
+	/**
+	 * @return
+	 */
+	public SecurityLevel getActualReturnLevel() {
 		return om.getActualReturnLevel();
 	}
 	
 	public void addObjectToObjectMap(Object o) {
-		System.out.println("Insert Object " + o +" to ObjectMap\n");
+		LOGGER.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
 		om.insertNewObject(o);
 	}
 	
-	public Level addFieldToObjectMap(Object o, String signature) {
-		System.out.println("Add Field " + signature + " to object " + o + "\n");
+	public SecurityLevel addFieldToObjectMap(Object o, String signature) {
+		LOGGER.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {signature, o});
 		return om.setField(o, signature);
 	}
 	
@@ -48,52 +86,52 @@ public class HandleStmt {
 		return om.getNumberOfFields(o);
 	}
 	
-	public Level getFieldLevel(Object o, String signature) {
+	public SecurityLevel getFieldLevel(Object o, String signature) {
 		return om.getFieldLevel(o, signature);
 	}
 	
 	public void makeFieldHigh(Object o, String signature) {
-		om.setField(o, signature, Level.HIGH);
+		om.setField(o, signature, SecurityLevel.HIGH);
 	}
 	
 	public void makeFieldLOW(Object o, String signature) {
-		om.setField(o, signature, Level.LOW);
+		om.setField(o, signature, SecurityLevel.LOW);
 	}
 	
-	public void addLocal(String signature, Level level) {
+	public void addLocal(String signature, SecurityLevel level) {
+	    LOGGER.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap", new Object[] {signature, level });
+
 		lm.insertElement(signature, level); 
 	}
 	
 	public void addLocal(String signature) {
-		lm.insertElement(signature, Level.LOW); 
+		lm.insertElement(signature, SecurityLevel.LOW); 
 	}
 	
-	public Level setLocalLevel(String signature, Level level) {
+	public SecurityLevel setLocalLevel(String signature, SecurityLevel level) {
 		lm.setLevel(signature, level);
 		return lm.getLevel(signature);
 	}
 	
-	public Level getLocalLevel(String signature) {
+	public SecurityLevel getLocalLevel(String signature) {
 		return lm.getLevel(signature);
 	}
 	
 	public void makeLocalHigh(String signature) {
-		lm.setLevel(signature, Level.HIGH);
+		lm.setLevel(signature, SecurityLevel.HIGH);
 	}
 	
 	public void makeLocalLow(String signature) {
-		lm.setLevel(signature, Level.LOW);
+		lm.setLevel(signature, SecurityLevel.LOW);
 	}
 
-	public Level assignLocalsToLocal(String leftOp, String... rightOp) {
-		System.out.println("Assign " + rightOp + " to " + leftOp);
-		System.out.println("Check if " + lm.getLevel(leftOp) + " >= " + lm.getLocalPC());
+	public SecurityLevel assignLocalsToLocal(String leftOp, String... rightOp) {
+		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {rightOp, leftOp});
 		if (!checkLocalPC(leftOp)) {
 			abort(leftOp);
 		}
 		checkLocalPC(leftOp);
 		lm.setLevel(leftOp, joinLocals(rightOp));
-		System.out.println("Set " + leftOp + " to level " + lm.getLevel(leftOp) + "\n");
 		return lm.getLevel(leftOp);
 	}
 
@@ -102,48 +140,49 @@ public class HandleStmt {
 	 * @param stringList 
 	 * @return
 	 */
-	public Level joinLocals(String... stringList) {
-		Level result = Level.LOW;
+	public SecurityLevel joinLocals(String... stringList) {
+		SecurityLevel result = SecurityLevel.LOW;
 		for(String op: stringList) {
-			if (lm.getLevel(op) == Level.HIGH) {
-				result = Level.HIGH;
+			if (lm.getLevel(op) == SecurityLevel.HIGH) {
+				result = SecurityLevel.HIGH;
 			}
 		}
-		if (lm.getLocalPC() == Level.HIGH) {
-			result = Level.HIGH;
+		if (lm.getLocalPC() == SecurityLevel.HIGH) {
+			result = SecurityLevel.HIGH;
 		}
 		return result;
 	}
 	
-	public Level setLocalPC(Level l) {
+	public SecurityLevel setLocalPC(SecurityLevel l) {
 		lm.setLocalPC(l);
 		return lm.getLocalPC();
 	}
 	
-	public Level getLocalPC() {
+	public SecurityLevel getLocalPC() {
 		return lm.getLocalPC();
 	}
 
 	public boolean checkLocalPC(String signature) {
+		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {lm.getLevel(signature), lm.getLocalPC()  });
 		boolean res = true;
-		if (lm.getLevel(signature) == Level.LOW && lm.getLocalPC() == Level.HIGH) {
+		if (lm.getLevel(signature) == SecurityLevel.LOW && lm.getLocalPC() == SecurityLevel.HIGH) {
 			res = false;
 		}
 		return res;		
 	}
 	
-	public boolean checkLocalPC(Object o, String signature) {
+	public boolean checkGlobalPC(Object o, String signature) {
+		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {om.getFieldLevel(o, signature), om.getGlobalPC()  });
 		boolean res = true;
-		if (om.getFieldLevel(o, signature) == Level.LOW && lm.getLocalPC() == Level.HIGH) {
+		if (om.getFieldLevel(o, signature) == SecurityLevel.LOW && om.getGlobalPC() == SecurityLevel.HIGH) {
 			res = false;
 		}
 		return res;		
 	}
 
-	public Level assignLocalsToField(Object o, String field, String... locals) {
-		System.out.println("Assign " + locals + " to " + field);
-		System.out.println("Check if " + om.getFieldLevel(o, field) + " >= " + lm.getLocalPC());
-		if (!checkLocalPC(o, field)) {
+	public SecurityLevel assignLocalsToField(Object o, String field, String... locals) {
+		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {locals, field});
+		if (!checkGlobalPC(o, field)) {
 			abort(field);
 		}
 		om.setField(o, field, joinLocals(locals));
@@ -161,10 +200,9 @@ public class HandleStmt {
 		om.setActualReturnLevel(lm.getLevel(signature)); 
 	}
 
-	public Level assignFieldToLocal(Object o,
+	public SecurityLevel assignFieldToLocal(Object o,
 			String local, String field) {
-		System.out.println("Assign " + field + " to " + local);
-		System.out.println("Check if " + lm.getLevel(local) + " >= " + lm.getLocalPC());
+		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {field, local});
 		if (!checkLocalPC(local)) {
 			abort(local);
 		}
@@ -173,24 +211,20 @@ public class HandleStmt {
 	}
 	
 	public void abort(String sink) {
-		try {
-		throw new IllegalFlowException("System.exit because of illegal flow to " + sink);
-		} catch(IllegalFlowException e) {
-			e.printMessage();
-			e.printStackTrace();
-		    System.exit(0);
-		}
+
+		LOGGER.log(Level.SEVERE, "", new IllegalFlowException("System.exit because of illegal flow to " + sink));
+	    System.exit(0);
 	}
 	
 	public void storeArgumentLevels(String... arguments) {
-		ArrayList<Level> levelArr = new ArrayList<Level>();
+		ArrayList<SecurityLevel> levelArr = new ArrayList<SecurityLevel>();
 		for (String el : arguments) {
 			levelArr.add(lm.getLevel(el));
 		}
 		om.setActualArguments(levelArr);
 	}
 	
-	public Level assignArgumentToLocal(int pos, String local) {
+	public SecurityLevel assignArgumentToLocal(int pos, String local) {
 		lm.setLevel(local, om.getArgLevelAt(pos));
 		return lm.getLevel(local);
 	}

@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import analyzer.level2.HandleStmt;
 import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.Level;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
 
 public class InvokeSuccess {
@@ -81,14 +81,14 @@ public class InvokeSuccess {
     	hs.storeArgumentLevels("int_a", "int_b", "int_c");
     	assertEquals(3, m.getActualArguments().size());
     	xy.methodWithParams(a, b, c);
-    	assertEquals(Level.LOW, hs.getActualReturnLevel());
+    	assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
     	
     	
     	hs.makeLocalHigh("int_b");
     	hs.storeArgumentLevels("int_a", "int_b", "int_c");
     	assertEquals(3, m.getActualArguments().size());
     	xy.methodWithParams(a, b, c);
-    	assertEquals(Level.HIGH, hs.getActualReturnLevel());
+    	assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
     	
 	    hs.close();
 	    assertEquals(0, m.sizeOfLocalMapStack());
