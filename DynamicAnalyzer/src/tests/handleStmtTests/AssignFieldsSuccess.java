@@ -2,6 +2,7 @@ package tests.handleStmtTests;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
@@ -10,25 +11,31 @@ import analyzer.level2.storage.ObjectMap;
 
 public class AssignFieldsSuccess {
 
+	ObjectMap m = ObjectMap.getInstance();
+	
+	@Before
+	public void init() {
+		HandleStmtForTests.init();
+	}
+
 	@Test
 	public void assignConstantToField() {
 		
 		System.out.println("ASSIGN CONSTANT TO FIELD TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		assertEquals(0,  hs.getNumberOfElements());
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "int_field");
+		assertTrue(m.containsField(this, "int_field"));
 		
 		/* Assign Constant to Field
 		 *  int field = c;
-		 *  1. Check if Level(field) >= lpc
-		 *  2. Assign level of lpc to field
+		 *  1. Check if Level(field) >= gpc
+		 *  2. Assign level of gpc to field
 		 */
-		// field = LOW, lpc = LOW
+		// field = LOW, gpc = LOW
+		assertEquals(SecurityLevel.LOW, hs.getGlocalPC());
 		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field"));
 		
 
@@ -53,7 +60,6 @@ public class AssignFieldsSuccess {
 		System.out.println("ASSIGN LOCALS TO FIELD TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);

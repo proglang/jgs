@@ -17,7 +17,6 @@ public class ReturnStmtSuccess {
 		System.out.println("RETURN TEST STARTED");
 
 		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);

@@ -18,6 +18,7 @@ public class ObjectMapTest {
 
 	@Before
 	public void init() {
+		HandleStmtForTests hs = new HandleStmtForTests();
 		HandleStmt.init();
 	}
 
@@ -41,7 +42,7 @@ public class ObjectMapTest {
 		
 		ObjectMap m = ObjectMap.getInstance();
 		assertEquals(SecurityLevel.LOW, m.getGlobalPC());
-		m.setGlobalPC(SecurityLevel.HIGH);
+		m.pushGlobalPC(SecurityLevel.HIGH);
 		assertEquals(SecurityLevel.HIGH, m.getGlobalPC());
 
 		System.out.println("GLOBAL PC TEST FINISHED");
@@ -97,29 +98,6 @@ public class ObjectMapTest {
 		System.out.println("FIELDS IN OBJECT MAP TEST FINISHED");
 	}
 	
-	@Test
-	public void localMapStackTest() {
-
-		System.out.println("LOCAL MAP STACK TEST STARTED");
-		
-		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(0, m.sizeOfLocalMapStack());
-		HandleStmtForTests hs = new HandleStmtForTests();
-		
-		assertEquals(1, m.sizeOfLocalMapStack());
-		
-		{
-			HandleStmtForTests tmpHs = new HandleStmtForTests();
-			assertEquals(2, m.sizeOfLocalMapStack());
-			tmpHs.close();
-		}
-
-		assertEquals(1, m.sizeOfLocalMapStack());	
-		hs.close();
-
-		System.out.println("LOCAL MAP STACK TEST FINISHED");
-	}
-	
 	@Test 
 	public void multipleObjectsTest() {
 
@@ -134,13 +112,9 @@ public class ObjectMapTest {
 		hs.addObjectToObjectMap(this);
 		// The map should contain the same object twice
 		assertEquals(numOfEl + 1, m.getNumberOfElements());
-		{
-			assertEquals(numOfEl + 1, m.getNumberOfElements());
-			Integer i = new Integer(3);
-			hs.addObjectToObjectMap(i);
-			assertEquals(numOfEl + 2, m.getNumberOfElements());
-		}
-		assertEquals(numOfEl + 1, m.getNumberOfElements());
+		Integer i = new Integer(3);
+		hs.addObjectToObjectMap(i);
+		assertEquals(numOfEl + 2, m.getNumberOfElements());
 		hs.close();
 		
 		System.out.println("MULTIPLE OBJECTS TEST FINISHED");

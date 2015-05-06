@@ -12,11 +12,6 @@ public class SwitchStmtFail {
 	@Test
 	public void test() {
 	}
-	
-	@After
-	public void close() {
-	    ObjectMap m = ObjectMap.getInstance();
-	    m.deleteLocalMapStack();
-	}
+
 
 }

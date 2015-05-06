@@ -13,9 +13,5 @@ public class WhileStmtFail {
 	public void test() {
 	}
 
-	@After
-	public void close() {
-	    ObjectMap m = ObjectMap.getInstance();
-	    m.deleteLocalMapStack();
-	}
+
 }

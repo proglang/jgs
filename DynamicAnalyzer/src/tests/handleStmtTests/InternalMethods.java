@@ -13,8 +13,7 @@ public class InternalMethods {
 	
 	@Before
 	public void init() {
-	    ObjectMap m = ObjectMap.getInstance();
-	    m.deleteLocalMapStack();
+
 	}
 
 	@Test
@@ -22,7 +21,6 @@ public class InternalMethods {
 		System.out.println("LOCAL PC TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -44,8 +42,6 @@ public class InternalMethods {
 		
 	    hs.close();	
 	    
-
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		System.out.println("LOCAL PC TEST FINISHED");
 	}
@@ -55,8 +51,6 @@ public class InternalMethods {
 		System.out.println("JOIN LOCALS TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    m.deleteLocalMapStack();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", SecurityLevel.LOW);
@@ -80,7 +74,6 @@ public class InternalMethods {
 		System.out.println("LOCAL PC TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		

@@ -13,16 +13,35 @@ import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
+/**
+ * Blabl
+ *
+ * @author koenigr
+ * 
+ */
 public class HandleStmt {
 	
-	private static final String LOGGER_NAME = HandleStmt.class.getName();
 	private final static Logger LOGGER = L2Logger.getLogger();
 	
 	private LocalMap lm;
-	private ObjectMap om;
+	private static ObjectMap om;
+	
+
 	
 	/**
-	 * This method must be called at the beginning of the main method
+	 * This must be called at the beginning of every method in the analyzed code.
+	 * It creates a new LocalMap for the method and adjusts the {@link SecurityLevel}
+	 * of the globalPC
+	 */
+	public HandleStmt() {
+		lm = new LocalMap();
+		om = ObjectMap.getInstance();
+		om.pushGlobalPC(joinLevels(om.getGlobalPC(), lm.getLocalPC()));
+	}
+	
+	/**
+	 * This method must be called just once at the beginning of the main method.
+	 * It triggers the setup of the logger.
 	 */
 	public static void init() {
 		try {
@@ -31,22 +50,20 @@ public class HandleStmt {
 			LOGGER.warning("setting up the logger was not successful");
 			e.printStackTrace();
 		}
+		om.flush();
 	}
 	
 	/**
-	 * 
-	 */
-	public HandleStmt() {
-		lm = new LocalMap();
-		om = ObjectMap.getInstance();
-		om.pushLocalMap(lm);
-	}
-	
-	/**
-	 * 
+	 * This must be called at the end of every method in the analyzed code.
+	 * It resets the globalPC to its initial value
 	 */
 	public void close() {
-		om.popLocalMap();
+		om.popGlobalPC();
+	}
+	
+	public void abort(String sink) {
+		LOGGER.log(Level.SEVERE, "", new IllegalFlowException("System.exit because of illegal flow to " + sink));
+	    System.exit(0);
 	}
 	
 	/**
@@ -75,7 +92,11 @@ public class HandleStmt {
 	}
 	
 	public boolean containsObjectInObjectMap(Object o) {
-		return om.contains(o);
+		return om.containsObject(o);
+	}
+	
+	public boolean containsFieldInObjectMap(Object o, String signature) {
+		return om.containsField(o, signature);
 	}
 	
 	public int getNumberOfElements() {
@@ -161,6 +182,19 @@ public class HandleStmt {
 	public SecurityLevel getLocalPC() {
 		return lm.getLocalPC();
 	}
+	
+	public SecurityLevel pushGlobalPC(SecurityLevel l) {
+		om.pushGlobalPC(l);
+		return om.getGlobalPC();
+	}
+	
+	public SecurityLevel getGlocalPC() {
+		return om.getGlobalPC();
+	}
+	
+	public SecurityLevel popGlobalPC() {
+		return om.popGlobalPC();
+	}
 
 	public boolean checkLocalPC(String signature) {
 		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {lm.getLevel(signature), lm.getLocalPC()  });
@@ -210,11 +244,7 @@ public class HandleStmt {
 		return lm.getLevel(local);
 	}
 	
-	public void abort(String sink) {
 
-		LOGGER.log(Level.SEVERE, "", new IllegalFlowException("System.exit because of illegal flow to " + sink));
-	    System.exit(0);
-	}
 	
 	public void storeArgumentLevels(String... arguments) {
 		ArrayList<SecurityLevel> levelArr = new ArrayList<SecurityLevel>();
@@ -227,5 +257,15 @@ public class HandleStmt {
 	public SecurityLevel assignArgumentToLocal(int pos, String local) {
 		lm.setLevel(local, om.getArgLevelAt(pos));
 		return lm.getLevel(local);
+	}
+	
+	public SecurityLevel joinLevels(SecurityLevel... levels) {
+		SecurityLevel res = SecurityLevel.LOW;
+		for (SecurityLevel l: levels) {
+			if ( l == SecurityLevel.HIGH) {
+				res = SecurityLevel.HIGH;
+			}
+		}
+		return res;
 	}
 }

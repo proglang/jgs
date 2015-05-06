@@ -3,34 +3,54 @@ package analyzer.level2.storage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import logging.L2Logger;
 
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 
+import exceptions.InternalAnalyzerException;
 import analyzer.level2.SecurityLevel;
 
 /**
- * @author koenigr
- *
+ * The ObjectMap holds all objects which are created in the analyzed code. 
+ * To each object belongs a HashMap with the SercurityLevel of the respective fields.
+ * The ObjectMap should never used directly. For each action exists an appropriate 
+ * method in {@link analyzer.level2.HandleStmt}.
+ * Additionally the ObjectMap holds the SecurityLevels of the arguments and 
+ * return variable of the least recently called method.
+ * 
+ * @author Regina König
+ * @version 1.0
  */
 public class ObjectMap{
 	
-private ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>> innerMap;
-private SecurityLevel globalPC;
+private static ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>> innerMap;
+private static LinkedList<SecurityLevel> globalPC;
 private static ObjectMap instance = null;
-private SecurityLevel actualReturnLevel;
-private ArrayList<SecurityLevel> actualArguments;
-private LinkedList<LocalMap> localMapStack;
+private static SecurityLevel actualReturnLevel;
+private static ArrayList<SecurityLevel> actualArguments;
+private static Logger logger;
 
 
+/**
+ * Constructor
+ */
 private ObjectMap() {
-	globalPC = SecurityLevel.LOW; 
+	globalPC = new LinkedList<SecurityLevel>();
+	globalPC.push(SecurityLevel.LOW); 
 	actualReturnLevel = SecurityLevel.LOW;
 	actualArguments = new ArrayList<SecurityLevel>();
-	localMapStack = new LinkedList<LocalMap>();
 	innerMap = new ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>>(AbstractReferenceMap.ReferenceStrength.WEAK, AbstractReferenceMap.ReferenceStrength.WEAK);
+	logger = L2Logger.getLogger();
 }
 
+/**
+ * Returns the singleton ObjectMap
+ * @return
+ */
 public static synchronized ObjectMap getInstance() {
 	if (instance == null) {
 		instance = new ObjectMap();
@@ -38,67 +58,80 @@ public static synchronized ObjectMap getInstance() {
 	return instance;
 }
 
-public LinkedList<LocalMap> pushLocalMap(LocalMap localMap) {
-	localMapStack.push(localMap);
-	return localMapStack;
-}
-
-public LinkedList<LocalMap> popLocalMap() {
-	localMapStack.pop();
-	return localMapStack;
-}
-
-public LocalMap getLastLocalMap() {
-	return localMapStack.getFirst();
-}
-
-public LinkedList<LocalMap>	getLocalMapStack() {
-	return localMapStack;
-}
-
-public int sizeOfLocalMapStack() {
-	return localMapStack.size();
-}
-
-public void deleteLocalMapStack() {
-	localMapStack.clear();
-}
-
+/**
+ * Store the argument {@link SecurityLevel} s for the next method which will be invoked.
+ * @param args ArrayList containing {@link SecurityLevel} s of the arguments
+ * @return The ArrayList of currently set argument levels
+ */
 public ArrayList<SecurityLevel> setActualArguments(ArrayList<SecurityLevel> args) {
 	actualArguments = args;
 	return actualArguments;
 }
 
+/**
+ * Returns ArrayList of {@link SecurityLevel} s of the arguments for the least
+ * recently invoked method.
+ * @return ArrayList of {@link SecurityLevel}s
+ */
 public ArrayList<SecurityLevel> getActualArguments() {
 	return actualArguments;
 }
 
+/**
+ * Get the {@link SecurityLevel} of the argument on the i-th position
+ * @param i position of the argument
+ * @return SecurityLevel of i-th argument
+ */
 public SecurityLevel getArgLevelAt(int i) {
-	// TODO Fehlerbehandlung
-	return actualArguments.get(i);
-}
-  
-/**
- * Sets the global program counter to given Level
- * @param l
- */
-public void setGlobalPC(SecurityLevel l) {
-	  globalPC = l;
-}
- 
-/**
- * Returns the Level of the global program counter
- * @return 
- */
-public SecurityLevel getGlobalPC() {
-	return globalPC;
+	if (actualArguments.size() <= i ) {
+		logger.log(Level.SEVERE, "Internal Error", new InternalAnalyzerException());
+		System.exit(0);
+	}
+	  
+	return actualArguments.get(i);	
 }
 
+/**
+ * Push a new globalPC on the stack. This is needed when a method
+ * is invoked in the analyzed code.
+ * @param l {@link SecurityLevel} 
+ * @return recently pushed {@link SecurityLevel} 
+ */
+public SecurityLevel pushGlobalPC(SecurityLevel l) {
+	globalPC.push(l);
+	return globalPC.getFirst();
+}
+
+/**
+ * Pops actual globalPC from GlobalPC stack. 
+ * This is needed when a method in the analyzed code is closed.
+ * @return the last globalPC before it was changed.
+ */
+public SecurityLevel popGlobalPC() {
+	return globalPC.pop();
+}
+
+/**
+ * @return SecurityLevel of the global PC
+ */
+public SecurityLevel getGlobalPC() {
+	return globalPC.getFirst();
+}
+
+/**
+ * Set the return level of the actual return operation
+ * @param l
+ * @return
+ */
 public SecurityLevel setActualReturnLevel(SecurityLevel l) {
 	actualReturnLevel = l;
 	return actualReturnLevel;
 }
 
+/**
+ * Get the return level of least recently called method
+ * @return
+ */
 public SecurityLevel getActualReturnLevel() {
 	return actualReturnLevel;
 }
@@ -114,23 +147,50 @@ public SecurityLevel getActualReturnLevel() {
 	    innerMap.put(o, new HashMap<String, SecurityLevel>());
 	  }
   }
+  
+  public void flush() {
+	  innerMap.clear();
+	  globalPC.clear();
+	  globalPC.push(SecurityLevel.LOW);
+  }
  
   
   /**
-  * @param o
-  * @param f
-  * @param l
-  * @return
-  */ 
+   * Get the {@link SecurityLevel} of a field
+   * @param o The Object it belongs to
+   * @param f The signature of the field
+   * @return {@link SecurityLevel} 
+   */ 
 public SecurityLevel getFieldLevel(Object o, String f) {
+	if (!innerMap.containsKey(o)) {
+		logger.log(Level.SEVERE, "Missing Object", new InternalAnalyzerException());
+		System.exit(0);
+	}
+	if (!innerMap.get(o).containsKey(f)) {
+		logger.log(Level.SEVERE, "Missing Field", new InternalAnalyzerException());
+		System.exit(0);
+	}
 	return innerMap.get(o).get(f);
 }
 
+/**
+ * Get the {@link SecurityLevel} of a field
+ * @param o The Object it belongs to
+ * @param f The signature of the field
+ * @param l The {@link Security Level} of the field
+ * @return {@link SecurityLevel} 
+ */
 public SecurityLevel setField(Object o, String f, SecurityLevel l) {
 	innerMap.get(o).put(f, l);
 	return innerMap.get(o).get(f);
 }
 
+/**
+ * Calls {@link setField(Object,String,SecurityLevel)} with {@link SecurityLevel}.LOW
+ * @param o
+ * @param f
+ * @return
+ */
 public SecurityLevel setField(Object o, String f) {
 	return setField(o, f, SecurityLevel.LOW);
 }
@@ -143,13 +203,28 @@ public int getNumberOfElements() {
 	  return innerMap.size();
   }
 
-public boolean contains(Object o) {
+/**
+ * Returns true if the object is contained in the map
+ * @param o
+ * @return
+ */
+public boolean containsObject(Object o) {
 	return innerMap.containsKey(o);
 }
 
 /**
+ * Returns true if the field is contained in the map
+ * @param o
+ * @param signature
+ * @return
+ */
+public boolean containsField(Object o, String signature) {
+	return innerMap.get(o).containsKey(signature);
+}
+
+/**
  * @param o 
- * @return Returns number of fields of the given object
+ * @return Returns number of fields belonging to the given object
  */
 public int getNumberOfFields(Object o) {
 	return innerMap.get(o).size();

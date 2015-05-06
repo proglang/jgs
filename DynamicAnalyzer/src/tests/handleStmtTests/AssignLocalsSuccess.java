@@ -17,7 +17,6 @@ public class AssignLocalsSuccess {
 		System.out.println("ASSIGN CONSTANT TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", SecurityLevel.LOW);
@@ -47,7 +46,6 @@ public class AssignLocalsSuccess {
 		System.out.println("ASSIGN LOCALS TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -96,7 +94,6 @@ public class AssignLocalsSuccess {
 		System.out.println("ASSIGN FIELD TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 
@@ -139,7 +136,6 @@ public class AssignLocalsSuccess {
 		System.out.println("ASSIGN FIELD TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.assignLocalsToLocal("TestSubClass_xy");
@@ -169,7 +165,6 @@ public class AssignLocalsSuccess {
 		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -189,7 +184,6 @@ public class AssignLocalsSuccess {
 		
 	    hs.close();	
 	    
-	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
@@ -200,7 +194,6 @@ public class AssignLocalsSuccess {
 		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -211,7 +204,6 @@ public class AssignLocalsSuccess {
 		
 	    hs.close();	
 	    
-	    assertEquals(0, m.sizeOfLocalMapStack());
 
 		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}

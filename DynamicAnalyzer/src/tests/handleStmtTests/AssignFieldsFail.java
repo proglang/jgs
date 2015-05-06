@@ -1,8 +1,10 @@
 package tests.handleStmtTests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
@@ -11,28 +13,32 @@ import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
 public class AssignFieldsFail {
+	
+	@Before
+	public void init() {
+
+	}
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantToField() {
 		System.out.println("ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
-
-		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		assertEquals(0,  hs.getNumberOfElements());
 		hs.addObjectToObjectMap(this);
+		assertEquals(1,  hs.getNumberOfElements());
 		hs.addFieldToObjectMap(this, "int_field");
+		assertTrue(hs.containsFieldInObjectMap(this, "int_field"));
 		
 		/* Assign Constant to Field
 		 *  int field = c;
-		 *  1. Check if Level(field) >= lpc
-		 *  2. Assign level of lpc to field
+		 *  1. Check if Level(field) >= gpc
+		 *  2. Assign level of gpc to field
 		 */
 
-		// field = LOW, lpc = HIGH
+		// field = LOW, gpc = HIGH
 		hs.makeFieldLOW(this, "int_field");
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushGlobalPC(SecurityLevel.HIGH);
 		hs.assignLocalsToField(this, "int_field");
 		
 	    hs.close();	
@@ -45,9 +51,4 @@ public class AssignFieldsFail {
 		
 	}
 	
-	@After
-	public void close() {
-	    ObjectMap m = ObjectMap.getInstance();
-	    m.deleteLocalMapStack();
-	}
 }

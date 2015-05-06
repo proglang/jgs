@@ -14,14 +14,18 @@ import analyzer.level2.storage.ObjectMap;
 public class InvokeSuccess {
 
 	private HandleStmt hs;
+	private ObjectMap m = ObjectMap.getInstance();
+	
+	@Before
+	public void init() {
+		hs.init();
+	}
 
 	@Test
 	public void invokeNewObject() {
 		
 		System.out.println("INVOKE TEST STARTED");
 
-		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -44,7 +48,6 @@ public class InvokeSuccess {
 		System.out.println("INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
 
 		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		/*
@@ -64,7 +67,6 @@ public class InvokeSuccess {
 		System.out.println("INVOKE METHOD WITH ARGUMENTS TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
     	TestSubClass xy = new TestSubClass();
@@ -91,7 +93,6 @@ public class InvokeSuccess {
     	assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
     	
 	    hs.close();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 	    
 		System.out.println("INVOKE METHOD WITH ARGUMENTS TEST STARTED");		
 	}
@@ -115,11 +116,9 @@ public class InvokeSuccess {
 				HandleStmtForTests hs = new HandleStmtForTests();
 				ObjectMap om = ObjectMap.getInstance();
 				
-				assertEquals(2, om.getLocalMapStack().size());
 				
 				method2();
 
-				assertEquals(2, om.getLocalMapStack().size());
 				
 				hs.close();
 			}
@@ -128,11 +127,9 @@ public class InvokeSuccess {
 				HandleStmtForTests hs = new HandleStmtForTests();
 				ObjectMap om = ObjectMap.getInstance();
 
-				assertEquals(3, om.getLocalMapStack().size());
 				
 				method3();
 
-				assertEquals(3, om.getLocalMapStack().size());
 				
 				hs.close();
 			}
@@ -141,7 +138,6 @@ public class InvokeSuccess {
 				HandleStmtForTests hs = new HandleStmtForTests();
 				ObjectMap om = ObjectMap.getInstance();
 
-				assertEquals(4, om.getLocalMapStack().size());
 				
 				hs.close();
 			}
@@ -151,22 +147,18 @@ public class InvokeSuccess {
 		ObjectMap om = ObjectMap.getInstance();
 		
 		assertEquals(0, hs.getNumberOfElements());
-		assertEquals(1, om.getLocalMapStack().size());
 		
 		hs.addObjectToObjectMap(this);		
 		hs.addFieldToObjectMap(this, "SomeClass_sc");
 		
 		assertEquals(1, hs.getNumberOfElements());
-		assertEquals(1, om.getLocalMapStack().size());
 		
 		SomeClass sc = new SomeClass();
 		
 		assertEquals(2, hs.getNumberOfElements());
-		assertEquals(1, om.getLocalMapStack().size());
 		
 		sc.method1();
 		
-		assertEquals(1, om.getLocalMapStack().size());
 		
 		hs.close();
 

@@ -20,7 +20,6 @@ public class AssignLocalsFail {
 		System.out.println("ASSIGN CONSTANT TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", SecurityLevel.LOW);
@@ -39,7 +38,6 @@ public class AssignLocalsFail {
 		System.out.println("ASSIGN LOCALS TO LOCAL TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
-	    assertEquals(0, m.sizeOfLocalMapStack());
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -73,10 +71,5 @@ public class AssignLocalsFail {
 	public void assignMethodResultToLocal() {
 	
 	}
-	
-	@After
-	public void close() {
-	    ObjectMap m = ObjectMap.getInstance();
-	    m.deleteLocalMapStack();
-	}
+
 }
