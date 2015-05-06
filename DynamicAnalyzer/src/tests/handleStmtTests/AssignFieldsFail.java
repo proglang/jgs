@@ -37,7 +37,7 @@ public class AssignFieldsFail {
 		 */
 
 		// field = LOW, gpc = HIGH
-		hs.makeFieldLOW(this, "int_field");
+		hs.makeFieldLow(this, "int_field");
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		hs.assignLocalsToField(this, "int_field");
 		

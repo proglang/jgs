@@ -7,6 +7,7 @@ import analyzer.level2.storage.ObjectMap;
 public class TestSubClass {
 	
 	int field;
+	public int pField;
 	
 	public TestSubClass() {
 		HandleStmt hs = new HandleStmt();

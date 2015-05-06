@@ -60,9 +60,6 @@ public class InternalMethods {
 		assertEquals(SecurityLevel.HIGH, hs.joinLocals("int_x", "int_y"));		
 		assertEquals(SecurityLevel.HIGH, hs.joinLocals("int_x", "int_y", "int_z"));
 		
-		
-		hs.setLocalPC(SecurityLevel.HIGH);
-		assertEquals(SecurityLevel.HIGH, hs.joinLocals("int_x"));
 
 	    hs.close();	
 		

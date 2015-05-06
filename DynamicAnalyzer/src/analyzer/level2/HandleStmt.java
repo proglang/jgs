@@ -118,7 +118,7 @@ public class HandleStmt {
 		om.setField(o, signature, SecurityLevel.HIGH);
 	}
 	
-	public void makeFieldLOW(Object o, String signature) {
+	public void makeFieldLow(Object o, String signature) {
 		om.setField(o, signature, SecurityLevel.LOW);
 	}
 	
@@ -149,15 +149,7 @@ public class HandleStmt {
 		lm.setLevel(signature, SecurityLevel.LOW);
 	}
 
-	public SecurityLevel assignLocalsToLocal(String leftOp, String... rightOp) {
-		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {rightOp, leftOp});
-		if (!checkLocalPC(leftOp)) {
-			abort(leftOp);
-		}
-		checkLocalPC(leftOp);
-		lm.setLevel(leftOp, joinLocals(rightOp));
-		return lm.getLevel(leftOp);
-	}
+
 
 	/**
 	 * Joins the Levels of the given locals and the local pc
@@ -171,7 +163,20 @@ public class HandleStmt {
 				result = SecurityLevel.HIGH;
 			}
 		}
-		if (lm.getLocalPC() == SecurityLevel.HIGH) {
+		return result;
+	}
+	
+	public SecurityLevel joinWithLPC(SecurityLevel l) {
+		SecurityLevel result = SecurityLevel.LOW;
+		if (lm.getLocalPC() == SecurityLevel.HIGH || l == SecurityLevel.HIGH) {
+			result = SecurityLevel.HIGH;
+		}
+		return result;
+	}
+	
+	public SecurityLevel joinWithGPC(SecurityLevel l) {
+		SecurityLevel result = SecurityLevel.LOW;
+		if (om.getGlobalPC() == SecurityLevel.HIGH || l == SecurityLevel.HIGH) {
 			result = SecurityLevel.HIGH;
 		}
 		return result;
@@ -191,7 +196,7 @@ public class HandleStmt {
 		return om.getGlobalPC();
 	}
 	
-	public SecurityLevel getGlocalPC() {
+	public SecurityLevel getGlobalPC() {
 		return om.getGlobalPC();
 	}
 	
@@ -222,8 +227,33 @@ public class HandleStmt {
 		if (!checkGlobalPC(o, field)) {
 			abort(field);
 		}
-		om.setField(o, field, joinLocals(locals));
+		om.setField(o, field, joinWithGPC(joinLocals(locals)));
 		return om.getFieldLevel(o, field);
+	}
+	
+	public SecurityLevel assignLocalsToLocal(String leftOp, String... rightOp) {
+		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {rightOp, leftOp});
+		if (!checkLocalPC(leftOp)) {
+			abort(leftOp);
+		}
+		checkLocalPC(leftOp);
+		lm.setLevel(leftOp, joinWithLPC(joinLocals(rightOp)));
+		return lm.getLevel(leftOp);
+	}
+	
+	public SecurityLevel assignFieldToLocal(Object o,
+			String local, String field) {
+		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {field, local});
+		if (!checkLocalPC(local)) {
+			abort(local);
+		}
+		lm.setLevel(local, joinWithLPC(om.getFieldLevel(o,  field)));
+		return lm.getLevel(local);
+	}
+	
+	public SecurityLevel assignArgumentToLocal(int pos, String local) {
+		lm.setLevel(local, joinWithLPC(om.getArgLevelAt(pos)));
+		return lm.getLevel(local);
 	}
 	
 
@@ -237,15 +267,7 @@ public class HandleStmt {
 		om.setActualReturnLevel(lm.getLevel(signature)); 
 	}
 
-	public SecurityLevel assignFieldToLocal(Object o,
-			String local, String field) {
-		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {field, local});
-		if (!checkLocalPC(local)) {
-			abort(local);
-		}
-		lm.setLevel(local, om.getFieldLevel(o,  field));
-		return lm.getLevel(local);
-	}
+
 	
 
 	
@@ -257,10 +279,7 @@ public class HandleStmt {
 		om.setActualArguments(levelArr);
 	}
 	
-	public SecurityLevel assignArgumentToLocal(int pos, String local) {
-		lm.setLevel(local, om.getArgLevelAt(pos));
-		return lm.getLevel(local);
-	}
+
 	
 	public SecurityLevel joinLevels(SecurityLevel... levels) {
 		SecurityLevel res = SecurityLevel.LOW;
@@ -270,5 +289,15 @@ public class HandleStmt {
 			}
 		}
 		return res;
+	}
+	
+	public void checkCondition(String... args) {
+		lm.pushLocalPC(joinWithLPC(joinLocals(args)));
+		om.pushGlobalPC(joinWithGPC(lm.getLocalPC()));
+	}
+	
+	public void exitInnerScope() {
+		lm.popLocalPC();
+		om.popGlobalPC();
 	}
 }

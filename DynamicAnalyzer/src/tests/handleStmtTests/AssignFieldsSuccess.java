@@ -24,10 +24,8 @@ public class AssignFieldsSuccess {
 		System.out.println("ASSIGN CONSTANT TO FIELD TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
-		assertEquals(0,  hs.getNumberOfElements());
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "int_field");
-		assertTrue(m.containsField(this, "int_field"));
 		
 		/* Assign Constant to Field
 		 *  int field = c;
@@ -35,18 +33,22 @@ public class AssignFieldsSuccess {
 		 *  2. Assign level of gpc to field
 		 */
 		// field = LOW, gpc = LOW
-		assertEquals(SecurityLevel.LOW, hs.getGlocalPC());
+		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());
+		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_field"));
 		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field"));
 		
 
-		// field = HIGH, lpc = LOW
+		// field = HIGH, gpc = LOW
 		hs.makeFieldHigh(this, "int_field");
+		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());
+		assertEquals(SecurityLevel.HIGH, hs.getFieldLevel(this, "int_field"));
 		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field"));
 		
-
-		// field = HIGH, lpc = HIGH
+		// field = HIGH, gpc = HIGH
 		hs.makeFieldHigh(this, "int_field");
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushGlobalPC(SecurityLevel.HIGH);
+		assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());
+		assertEquals(SecurityLevel.HIGH, hs.getFieldLevel(this, "int_field"));
 		assertEquals(SecurityLevel.HIGH, hs.assignLocalsToField(this, "int_field"));
 		
 	    hs.close();	
@@ -87,8 +89,18 @@ public class AssignFieldsSuccess {
 	}
 	
 	@Test
-	public void assignToAStaticField() {
+	public void assignLocalsToAStaticField() {
 		
+	}
+	
+	@Test
+	public void assignLocalsToAnExternalField() {
+		/*
+		 * Object o;
+		 * o.F = local
+		 * 1. check(F >= join(x,gpc))
+		 * 2. join(x,gpc,local)->F
+		 */
 	}
 	
 	
