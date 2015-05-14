@@ -111,7 +111,7 @@ public class BodyAnalyzer extends BodyTransformer{
         // outputForDebug();	
         
         
-        // TODO: hs.close();
+        JimpleInjector.closeHS();
 	}
 
 	public void outputForDebug() {

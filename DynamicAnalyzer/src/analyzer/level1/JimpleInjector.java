@@ -46,6 +46,8 @@ public class JimpleInjector {
     static LocalStore localStore = new LocalStore();
     
 
+	static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
+
 	// Locals needed to add Locals to Map
 	static Local local = Jimple.v().newLocal("local_name", RefType.v("java.lang.String"));
 	static Local level = Jimple.v().newLocal("local_level", RefType.v("java.lang.String"));
@@ -59,11 +61,10 @@ public class JimpleInjector {
 	
 	
 	public static void invokeHS() {
-		Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 		locals.add(hs);
 		Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(RefType.v(HANDLE_CLASS)));
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		Expr specialIn = Jimple.v().newSpecialInvokeExpr(hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "<init>", paramTypes, VoidType.v(), false));
+		Expr specialIn = Jimple.v().newSpecialInvokeExpr(hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
 		
 		units.insertBefore(in, units.getLast());
 		units.insertBefore(Jimple.v().newInvokeStmt(specialIn), units.getLast());
@@ -71,7 +72,10 @@ public class JimpleInjector {
   
 	public static void initHS() {}
 
-	public void closeHS() {
+	public static void closeHS() {
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		Expr invokeClose = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "close", paramTypes, VoidType.v(), false));
+		units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
 	}
 	
 	public void getActualReturnLevel() {}

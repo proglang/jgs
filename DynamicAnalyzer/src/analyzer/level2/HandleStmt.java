@@ -62,6 +62,7 @@ public class HandleStmt {
 	 * It resets the globalPC to its initial value
 	 */
 	public void close() {
+		LOGGER.severe("close HS");
 		om.popGlobalPC();
 	}
 	
