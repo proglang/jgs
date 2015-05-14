@@ -108,7 +108,10 @@ public SecurityLevel pushGlobalPC(SecurityLevel l) {
  * @return the last globalPC before it was changed.
  */
 public SecurityLevel popGlobalPC() {
+	if (globalPC.size() > 1) {
 	return globalPC.pop();
+	}
+	return globalPC.getFirst();
 }
 
 /**

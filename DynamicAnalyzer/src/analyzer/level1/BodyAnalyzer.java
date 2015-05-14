@@ -66,6 +66,9 @@ public class BodyAnalyzer extends BodyTransformer{
         
         
         // TODO: wenn main, dann hs.init()
+        if (method.isMain()) {
+          JimpleInjector.initHS();
+        }
 
         // TODO: wenn init(), dann add Object to ObjectMap
         // TODO: wenn init(), dann add Fields to Map

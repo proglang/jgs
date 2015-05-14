@@ -66,11 +66,18 @@ public class JimpleInjector {
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		Expr specialIn = Jimple.v().newSpecialInvokeExpr(hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
 		
-		units.insertBefore(in, units.getLast());
-		units.insertBefore(Jimple.v().newInvokeStmt(specialIn), units.getLast());
+		units.insertAfter(in, units.getFirst()); // TODO Anzahl der Argumente überspringen
+		units.insertAfter(Jimple.v().newInvokeStmt(specialIn), in);
 	}
   
-	public static void initHS() {}
+	public static void initHS() {
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		Expr invokeInit = Jimple.v().newStaticInvokeExpr(Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "init", paramTypes, VoidType.v(), true));
+		Iterator it = units.iterator();
+		it.next();
+		it.next();
+		units.insertAfter(Jimple.v().newInvokeStmt(invokeInit), (Unit) it.next());
+	}
 
 	public static void closeHS() {
 		ArrayList<Type> paramTypes = new ArrayList<Type>();

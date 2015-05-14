@@ -45,6 +45,7 @@ public class HandleStmt {
 	 * It triggers the setup of the logger.
 	 */
 	public static void init() {
+		LOGGER.severe("init HS");
 		try {
 			L2Logger.setup();
 		} catch (IOException e) {
