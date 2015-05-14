@@ -1,9 +1,13 @@
 package analyzer.level1;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import logging.L1Logger;
 import annotationExtractor.Extractor;
 import soot.Body;
 import soot.BodyTransformer;
@@ -40,12 +44,20 @@ public class BodyAnalyzer extends BodyTransformer{
     AnnotationStmtSwitch stmtSwitch;
     AnnotationValueSwitch valueSwitch;
     Chain<SootField> fields;
+    Logger LOGGER;
     
     
 	
 	@Override
 	protected void internalTransform(Body arg0, String arg1, Map arg2) {
-		System.out.println("BodyTransform started: " + arg0.getMethod().getName());
+		try { // TODO gibt es beim BodyTransformer auch eine Init Klasse, in die ich das schieben kann?
+			L1Logger.setup();
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "L1Logger couldn't be initialized properly");
+			e.printStackTrace();
+		}
+		LOGGER = L1Logger.getLogger();
+		LOGGER.log(Level.SEVERE, "BodyTransform started: {0}", arg0.getMethod().getName());
 		
 		stmtSwitch = new AnnotationStmtSwitch();
     	valueSwitch = new AnnotationValueSwitch();	
@@ -97,7 +109,7 @@ public class BodyAnalyzer extends BodyTransformer{
         	Unit item = uit.next();
 			item.apply(stmtSwitch);
         }
-        // JimpleInjector.addUnitsToChain();
+        JimpleInjector.addUnitsToChain();
         
         // outputForDebug();	
         

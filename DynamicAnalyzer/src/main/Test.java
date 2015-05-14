@@ -10,6 +10,7 @@ public class Test {
     }
     
     public static void m() {
+    	//System.out.println("m()");
     	int a = 2;
     }
 

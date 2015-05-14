@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import logging.L1Logger;
 import logging.L2Logger;
 import exceptions.IllegalFlowException;
 import analyzer.level1.storage.UnitStore;
@@ -44,9 +46,6 @@ public class JimpleInjector {
   
     static UnitStore unitStore = new UnitStore();
     static LocalStore localStore = new LocalStore();
-    
-    static Unit lastPos;
-    
 
 	static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 
@@ -54,6 +53,7 @@ public class JimpleInjector {
 	static Local local = Jimple.v().newLocal("local_name", RefType.v("java.lang.String"));
 	static Local level = Jimple.v().newLocal("local_level", RefType.v("java.lang.String"));
 	
+	static Logger LOGGER = L1Logger.getLogger();
 	
 	public static void setBody(Body body) {
 		b = body;
@@ -63,18 +63,31 @@ public class JimpleInjector {
 	
 	
 	public static void invokeHS() {
+		LOGGER.log(Level.INFO, "Invoke HandleStmt in method {0}", b.getMethod().getName());
+		
 		locals.add(hs);
 		Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(RefType.v(HANDLE_CLASS)));
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		Expr specialIn = Jimple.v().newSpecialInvokeExpr(hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
 		
-		units.insertAfter(in, units.getFirst()); // TODO Anzahl der Argumente überspringen
+		Iterator<Unit> it = units.iterator();
+		Unit pos = null;
+		
+		int numOfArgs = getStartPos();
+		for(int i = 0; i < numOfArgs; i++) {
+			pos = it.next();
+		}
+		
+		unitStore.insertElement(unitStore.new Element(in, pos)); 
+		unitStore.lastPos = in;
 		Unit inv = Jimple.v().newInvokeStmt(specialIn);
-		units.insertAfter(inv, in);
-		lastPos = inv;
+		unitStore.insertElement(unitStore.new Element(inv, unitStore.lastPos));
+		unitStore.lastPos = inv;
 	}
 	
 	public static void addLocal(Local l) {
+		LOGGER.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+		
 		// hs.addLocal(String signature)
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
@@ -86,21 +99,25 @@ public class JimpleInjector {
 		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
 		
 
-	    units.insertAfter(sig, lastPos);
-	    lastPos = sig;
-		units.insertAfter(ass, lastPos);
-		lastPos = ass;
+	    unitStore.insertElement(unitStore.new Element(sig, unitStore.lastPos));
+	    unitStore.lastPos = sig;
+		unitStore.insertElement(unitStore.new Element(ass, unitStore.lastPos));
+		unitStore.lastPos = ass;
 	}
   
 	public static void initHS() {
+		LOGGER.log(Level.INFO, "Initialize HandleStmt in method {0}", b.getMethod().getName());
+		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		Expr invokeInit = Jimple.v().newStaticInvokeExpr(Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "init", paramTypes, VoidType.v(), true));
 		Unit init = Jimple.v().newInvokeStmt(invokeInit);
-		units.insertAfter(init, lastPos);
-		lastPos = init;
+		unitStore.insertElement(unitStore.new Element(init, unitStore.lastPos));
+		unitStore.lastPos = init;
 	}
 
 	public static void closeHS() {
+		LOGGER.log(Level.INFO, "Close HandleStmt in method {0} {1}", new Object[] {b.getMethod().getName(), System.getProperty("line.separator")});
+		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		Expr invokeClose = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "close", paramTypes, VoidType.v(), false));
 		units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
@@ -250,21 +267,6 @@ public static void invokeHandleStmtUnit( Unit stmt, List<ValueBox> def, List<Val
 	}
   */
   
-/*
-	
-	public static void addUnitsToChain() {
-		
-		Iterator<Element> UIt = unitStore.getElements().iterator();
-		while(UIt.hasNext()) {
-			Element item = (Element) UIt.next();
-			if (!item.getPosition().equals(units.getFirst())) { // TODO aendern
-				System.out.println("POSITION " + item.getUnit() + " " + item.getPosition());
-			units.insertBefore(item.getUnit(), units.getFirst()); // TODO: an richtiger Stelle einfügen
-			}
-		}
-		b.validate();
-	}
-	*/
 
 /*
 	public static void addLocalToMap(Local item) {
@@ -292,6 +294,21 @@ public static void invokeHandleStmtUnit( Unit stmt, List<ValueBox> def, List<Val
 
 
 */
+	
+public static void addUnitsToChain() {	
+	Iterator<Element> UIt = unitStore.getElements().iterator();
+	while(UIt.hasNext()) {
+		Element item = (Element) UIt.next();
+		if (item.getPosition() == null) {
+			units.addFirst(item.getUnit());
+		} else {
+		    units.insertAfter(item.getUnit(), item.getPosition()); 
+		}
+	}
+	
+	unitStore.flush();
+	b.validate();
+}
 
 public static void addNeededLocals() {
 	locals.add(local);
@@ -306,5 +323,12 @@ private static String getSignatureForField(SootField f) {
 	return f.getType() + "_" + f.getName();
 }
 
+private static int getStartPos() {
+	if (b.getMethod().isConstructor()) {
+		return 1;
+	} else {
+		return b.getMethod().getParameterCount();
+	}
+}
 
 }

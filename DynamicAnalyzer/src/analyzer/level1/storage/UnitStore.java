@@ -7,6 +7,7 @@ public class UnitStore {
 	
 	ArrayList<Element> units = new ArrayList<Element>();
 
+	public Unit lastPos;
 	
 	public void insertElement(Element e) {
 		units.add(e);
@@ -32,5 +33,9 @@ public class UnitStore {
 		public Unit getPosition() {
 			return j;
 		}
+	}
+
+	public void flush() {
+		units.clear();
 	}
 }
