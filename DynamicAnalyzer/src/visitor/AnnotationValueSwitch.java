@@ -330,7 +330,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLocal(Local l) {
-		JimpleInjector.addLocalToMap(l);
+		//JimpleInjector.addLocalToMap(l);
 
 	}
 

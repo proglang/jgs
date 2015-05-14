@@ -24,11 +24,9 @@ public class AssignFieldsFail {
 		System.out.println("ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
-		assertEquals(0,  hs.getNumberOfElements());
 		hs.addObjectToObjectMap(this);
-		assertEquals(1,  hs.getNumberOfElements());
+		
 		hs.addFieldToObjectMap(this, "int_field");
-		assertTrue(hs.containsFieldInObjectMap(this, "int_field"));
 		
 		/* Assign Constant to Field
 		 *  int field = c;

@@ -39,7 +39,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		// Ziel: Field/Local
 		// Quelle: Expr, Local, Field, Constant
 		Unit unit = stmt;
-		JimpleInjector.invokeHandleStmtUnit(unit, stmt.getDefBoxes(), stmt.getUseBoxes());
+	//	JimpleInjector.invokeHandleStmtUnit(unit, stmt.getDefBoxes(), stmt.getUseBoxes());
 
 	}
 

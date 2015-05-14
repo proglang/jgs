@@ -60,7 +60,33 @@ public class BodyAnalyzer extends BodyTransformer{
         units = body.getUnits();
         locals = body.getLocals();
         
+        // invokeHS should be at the beginning of every methodbody. It creates a map for locals.
+        JimpleInjector.invokeHS();
         JimpleInjector.addNeededLocals();
+        
+        
+        // TODO: wenn main, dann hs.init()
+
+        // TODO: wenn init(), dann add Object to ObjectMap
+        // TODO: wenn init(), dann add Fields to Map
+        
+        // TODO add Locals to LocalMap
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         Iterator<SootField> fIt = fields.iterator();
         while(fIt.hasNext()) {
@@ -83,6 +109,9 @@ public class BodyAnalyzer extends BodyTransformer{
         // JimpleInjector.addUnitsToChain();
         
         // outputForDebug();	
+        
+        
+        // TODO: hs.close();
 	}
 
 	public void outputForDebug() {

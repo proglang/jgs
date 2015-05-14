@@ -1,13 +1,19 @@
 package analyzer.level1;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
+import logging.L2Logger;
+import exceptions.IllegalFlowException;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.LocalStore;
 import analyzer.level1.storage.UnitStore.Element;
+import analyzer.level2.SecurityLevel;
+import analyzer.level2.storage.ObjectMap;
 import soot.Body;
 import soot.Local;
 import soot.RefType;
@@ -29,6 +35,8 @@ import soot.util.Chain;
 public class JimpleInjector {
 	
 	private final static String HANDLE_CLASS = "analyzer.level2.HandleStmt";
+
+
 	
 	static Body b = Jimple.v().newBody();
     static Chain<Unit> units = b.getUnits();
@@ -48,13 +56,65 @@ public class JimpleInjector {
 		units = b.getUnits();
 		locals = b.getLocals();
 	}
+	
+	
+	public static void invokeHS() {
+		Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
+		locals.add(hs);
+		Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(RefType.v(HANDLE_CLASS)));
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		Expr specialIn = Jimple.v().newSpecialInvokeExpr(hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "<init>", paramTypes, VoidType.v(), false));
+		
+		units.insertBefore(in, units.getLast());
+		units.insertBefore(Jimple.v().newInvokeStmt(specialIn), units.getLast());
+	}
   
-  /**
- * @param resStr
- * @param lO
- * @param rO
- * @param pos
- */
+	public static void initHS() {}
+
+	public void closeHS() {
+	}
+	
+	public void getActualReturnLevel() {}
+	
+	public void addObjectToObjectMap(Object o) {}
+	
+	public void addFieldToObjectMap(Object o, String signature) {}
+	
+	public void makeFieldHigh(Object o, String signature) {}
+	
+	public void makeFieldLow(Object o, String signature) {}
+	
+	public void addLocal(String signature, SecurityLevel level) {}
+	
+	public void addLocal(String signature) {}
+	
+	public void setLocalLevel(String signature, SecurityLevel level) {}
+	
+	public void getLocalLevel(String signature) {}
+	
+	public void makeLocalHigh(String signature) {}
+	
+	public void makeLocalLow(String signature) {}
+
+	public void assignLocalsToField(Object o, String field, String... locals) {}
+	
+	public void assignLocalsToLocal(String leftOp, String... rightOp) {}
+	
+	public void assignFieldToLocal(Object o, String local, String field) {}
+	
+	public void assignArgumentToLocal(int pos, String local) {}
+	
+	public void returnConstant() {}
+
+	public void returnLocal(String signature) {}
+
+	public void storeArgumentLevels(String... arguments) {}
+	
+	public void checkCondition(String... args) {}
+	
+	public void exitInnerScope() {}
+	
+	/*
 public static void Join(String resStr, String lO, String rO, Unit pos) {
 
     Local res = Jimple.v().newLocal("res", RefType.v("java.lang.String"));
@@ -95,12 +155,15 @@ public static void Join(String resStr, String lO, String rO, Unit pos) {
 
     b.validate();
   }
+  */
 
   /**
  * @param stmt
  * @param def
  * @param use
+ * 
  */
+/*
 public static void invokeHandleStmtUnit( Unit stmt, List<ValueBox> def, List<ValueBox> use) {
 	  System.out.println("invokeHandleStmt");
 	  System.out.print("Definition Box: " + def);
@@ -157,13 +220,7 @@ public static void invokeHandleStmtUnit( Unit stmt, List<ValueBox> def, List<Val
 	}
   */
   
-	private static String getSignatureForLocal(Local l) {
-		return l.getType() + "_" + l.getName();
-	}
-	
-	private static String getSignatureForField(SootField f) {
-		return f.getType() + "_" + f.getName();
-	}
+/*
 	
 	public static void addUnitsToChain() {
 		
@@ -177,8 +234,9 @@ public static void invokeHandleStmtUnit( Unit stmt, List<ValueBox> def, List<Val
 		}
 		b.validate();
 	}
-	
+	*/
 
+/*
 	public static void addLocalToMap(Local item) {
 	    Stmt l1 = Jimple.v().newAssignStmt(local, StringConstant.v(getSignatureForLocal(item))); 
 	    Stmt l2 = Jimple.v().newAssignStmt(level, StringConstant.v("High"));    
@@ -202,15 +260,21 @@ public static void invokeHandleStmtUnit( Unit stmt, List<ValueBox> def, List<Val
 	    b.validate();	
 	}
 
-	public static void addNeededLocals() {
 
-		
-		locals.add(local);
-		locals.add(level);
-		
-	}
+*/
 
+public static void addNeededLocals() {
+	locals.add(local);
+	locals.add(level);	
+}
 
+private static String getSignatureForLocal(Local l) {
+	return l.getType() + "_" + l.getName();
+}
+
+private static String getSignatureForField(SootField f) {
+	return f.getType() + "_" + f.getName();
+}
 
 
 }

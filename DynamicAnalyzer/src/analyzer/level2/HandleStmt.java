@@ -34,6 +34,7 @@ public class HandleStmt {
 	 * of the globalPC
 	 */
 	public HandleStmt() {
+		LOGGER.severe("invoke new HandleStmt");
 		lm = new LocalMap();
 		om = ObjectMap.getInstance();
 		om.pushGlobalPC(joinLevels(om.getGlobalPC(), lm.getLocalPC()));
@@ -119,6 +120,7 @@ public class HandleStmt {
 	}
 	
 	public void makeFieldLow(Object o, String signature) {
+		LOGGER.log(Level.INFO, "Set SecurityLevel of field {0} to LOW", signature);
 		om.setField(o, signature, SecurityLevel.LOW);
 	}
 	
@@ -192,6 +194,7 @@ public class HandleStmt {
 	}
 	
 	public SecurityLevel pushGlobalPC(SecurityLevel l) {
+		LOGGER.log(Level.INFO, "Set globalPC to {0}", l);
 		om.pushGlobalPC(l);
 		return om.getGlobalPC();
 	}

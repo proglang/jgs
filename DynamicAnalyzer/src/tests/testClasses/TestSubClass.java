@@ -8,6 +8,7 @@ public class TestSubClass {
 	
 	int field;
 	public int pField;
+	public static int sField;
 	
 	public TestSubClass() {
 		HandleStmt hs = new HandleStmt();
