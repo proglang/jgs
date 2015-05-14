@@ -133,6 +133,7 @@ public class HandleStmt {
 	}
 	
 	public void addLocal(String signature) {
+		LOGGER.log(Level.INFO, "add Local {0}", signature);
 		lm.insertElement(signature, SecurityLevel.LOW); 
 	}
 	

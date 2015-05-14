@@ -75,33 +75,21 @@ public class BodyAnalyzer extends BodyTransformer{
         
         // TODO add Locals to LocalMap
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        if (method.isConstructor()) {
         Iterator<SootField> fIt = fields.iterator();
         while(fIt.hasNext()) {
         	SootField item = fIt.next();
         	//JimpleInjector.addFieldToMap(item, Level.HIGH);
+        }
         }
        
 
         Iterator<Local> lit = locals.iterator();
         while(lit.hasNext()) {
         	Local item = lit.next();
-        	item.apply(valueSwitch); // TODO ist das nötig, oder sollte man die Locals einfach hinzufügen, weil es eh immer Local ist?
+        	if (!(item.getName() == "local_name")&& !(item.getName() == "local_level")&& !(item.getName() == "hs")) {
+        	  JimpleInjector.addLocal(item);
+        	}
         }
         
         Iterator<Unit> uit = units.iterator();

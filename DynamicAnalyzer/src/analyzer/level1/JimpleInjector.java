@@ -45,6 +45,8 @@ public class JimpleInjector {
     static UnitStore unitStore = new UnitStore();
     static LocalStore localStore = new LocalStore();
     
+    static Unit lastPos;
+    
 
 	static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 
@@ -67,16 +69,35 @@ public class JimpleInjector {
 		Expr specialIn = Jimple.v().newSpecialInvokeExpr(hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
 		
 		units.insertAfter(in, units.getFirst()); // TODO Anzahl der Argumente überspringen
-		units.insertAfter(Jimple.v().newInvokeStmt(specialIn), in);
+		Unit inv = Jimple.v().newInvokeStmt(specialIn);
+		units.insertAfter(inv, in);
+		lastPos = inv;
+	}
+	
+	public static void addLocal(Local l) {
+		// hs.addLocal(String signature)
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		String signature = getSignatureForLocal(l);
+	    Stmt sig = Jimple.v().newAssignStmt(local, StringConstant.v(signature));
+		
+		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "addLocal", paramTypes, VoidType.v(),  false), local);
+		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
+
+	    units.insertAfter(sig, lastPos);
+	    lastPos = sig;
+		units.insertAfter(ass, lastPos);
+		lastPos = ass;
 	}
   
 	public static void initHS() {
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		Expr invokeInit = Jimple.v().newStaticInvokeExpr(Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "init", paramTypes, VoidType.v(), true));
-		Iterator it = units.iterator();
-		it.next();
-		it.next();
-		units.insertAfter(Jimple.v().newInvokeStmt(invokeInit), (Unit) it.next());
+		Unit init = Jimple.v().newInvokeStmt(invokeInit);
+		units.insertAfter(init, lastPos);
+		lastPos = init;
 	}
 
 	public static void closeHS() {
@@ -96,8 +117,6 @@ public class JimpleInjector {
 	public void makeFieldLow(Object o, String signature) {}
 	
 	public void addLocal(String signature, SecurityLevel level) {}
-	
-	public void addLocal(String signature) {}
 	
 	public void setLocalLevel(String signature, SecurityLevel level) {}
 	

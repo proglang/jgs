@@ -34,7 +34,7 @@ public class Main {
         		   .add(new Transform("jtp.analyzer", banalyzer));  
 
         // TODO ich kann den Classpath auch als Argument übergeben
-       soot.Main.main(new String[]{"-f","J", "-main-class", "main.Test", "main.Test"});
+       soot.Main.main(new String[]{"-f","c", "-main-class", "main.Test", "main.Test"});
 
     }
 
