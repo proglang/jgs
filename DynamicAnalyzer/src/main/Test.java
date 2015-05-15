@@ -10,10 +10,11 @@ public class Test {
     	m();
     }
     
-    public static void m() {
+    public static int m() {
     	int a = 2;
     	int b = a;
     	int c = a + b;
+    	return c;
     }
 
 }

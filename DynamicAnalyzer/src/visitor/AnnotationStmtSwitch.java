@@ -7,6 +7,7 @@ import soot.Value;
 import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
+import soot.jimple.Constant;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
 import soot.jimple.GotoStmt;
@@ -132,7 +133,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
-		// TODO Update return Level in Local Map
+		System.out.println(stmt.getUseBoxes().toString());
+		Value val = stmt.getUseBoxes().get(0).getValue();
+		if (val instanceof Constant) {
+			JimpleInjector.returnConstant();
+		} else if (val instanceof Local) {
+			JimpleInjector.returnLocal((Local) val);
+		}
 
 	}
 

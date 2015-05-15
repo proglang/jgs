@@ -274,11 +274,12 @@ public class HandleStmt {
 	
 
 	public void returnConstant() {
-		// TODO
+		LOGGER.log(Level.INFO, "Return a constant value");
 		om.setActualReturnLevel(lm.getLocalPC()); // ??
 	}
 
 	public void returnLocal(String signature) {
+		LOGGER.log(Level.INFO, "Return Local {0}", signature);
 		lm.setReturnLevel(lm.getLevel(signature)); // TODO: not needed??
 		om.setActualReturnLevel(lm.getLevel(signature)); 
 	}

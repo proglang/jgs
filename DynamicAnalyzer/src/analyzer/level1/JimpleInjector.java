@@ -313,9 +313,38 @@ public class JimpleInjector {
 	
 	public static void assignArgumentToLocal(int pos, String local) {}
 	
-	public static void returnConstant() {}
+	public static void returnConstant() {
+		LOGGER.log(Level.INFO, "Return a constant value");
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		
+		Expr returnConst = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "returnConstant", 
+				parameterTypes, VoidType.v(), false));
+	
+		unitStore.insertElement(unitStore.new Element(Jimple.v().newInvokeStmt(returnConst),
+				unitStore.lastPos)); // TODO es sollte genau vor HS.close stehen
+	}
 
-	public static void returnLocal(String signature) {}
+	public static void returnLocal(Local l) {
+		LOGGER.log(Level.INFO, "Return Local {0}", getSignatureForLocal(l));
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(RefType.v("java.lang.String"));
+		
+		Stmt sig = Jimple.v().newAssignStmt(local1, StringConstant.v(getSignatureForLocal(l)));
+		
+		Expr returnLocal = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "returnLocal", parameterTypes,
+				VoidType.v(), false), local1);
+		
+		Stmt returnL = Jimple.v().newInvokeStmt(returnLocal);
+		
+		unitStore.insertElement(unitStore.new Element(sig, unitStore.lastPos));
+		unitStore.lastPos = sig;
+		unitStore.insertElement(unitStore.new Element(returnL, unitStore.lastPos));
+		unitStore.lastPos = returnL;
+	}
 
 	public static void storeArgumentLevels(String... arguments) {}
 	
