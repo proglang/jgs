@@ -13,6 +13,7 @@ public class Test {
     public static void m() {
     	int a = 2;
     	int b = a;
+    	int c = a + b;
     }
 
 }

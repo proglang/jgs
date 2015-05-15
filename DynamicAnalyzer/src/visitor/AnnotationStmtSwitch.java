@@ -44,19 +44,42 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		Value leftValue = unit.getDefBoxes().get(0).getValue();
 		Local left = (Local) leftValue;
 		
-		Value rightValue = unit.getUseBoxes().get(0).getValue();
 
+		System.out.println(unit.getUseBoxes().toString());
 		
-		if (rightValue instanceof Local) {
-			System.out.println("Local on the right side");
-			Local right = (Local) rightValue;
-			JimpleInjector.assignLocalToLocal(left, right, stmt);
-		} else {
+
+		int numOfArgs = unit.getUseBoxes().size();
 		
-		JimpleInjector.assignConstantToLocal(left, stmt); 
-	    // TODO: kann man hier was mit dem ValueSwitch machen? 
-		// ZB rausfinden, welchen Typ die Argumente habe
-		} 
+
+
+			if (numOfArgs == 1) {
+				Value rightValue = unit.getUseBoxes().get(0).getValue();
+
+				
+				if (rightValue instanceof Local) {
+			    System.out.println("Local on the right side");
+
+			    Local right = (Local) rightValue;
+			    JimpleInjector.assignLocalToLocal(left, right, stmt);
+				} else {
+					JimpleInjector.assignConstantToLocal(left, stmt); 
+				    // TODO: kann man hier was mit dem ValueSwitch machen? 
+					// ZB rausfinden, welchen Typ die Argumente habe
+					} 
+			} else if (numOfArgs == 3) {
+				System.out.println("2 Locals on the right side");
+				
+
+				Value rightValue1 = unit.getUseBoxes().get(0).getValue();
+				Local right1 = (Local) rightValue1;
+				
+				Value rightValue2 = unit.getUseBoxes().get(1).getValue();
+				Local right2 = (Local) rightValue2;
+				
+				JimpleInjector.assignLocalsToLocal(left, right1, right2, stmt);
+			}
+			
+
 	}
 
 	@Override

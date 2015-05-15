@@ -196,11 +196,55 @@ public class JimpleInjector {
 		unitStore.lastPos = ass;
 	}
 
-	public static void assignLocalsToField(Object o, String field, String... locals) {}
+	public static void assignLocalsToField(Object o, String field, String... locals) {
+	}
 	
-	public static void assignLocalToLocal(Local leftOp, Local rightOp, Unit pos) { // TODO 2 Locals?
+	public static void assignLocalsToLocal(Local leftOp, Local right1, Local right2,
+			Unit pos) {
 		//assignLocalsToLocal(String leftOp, String... rightOp)
-		LOGGER.log(Level.INFO, "Assign Local {0} to Local {1} in method {2}",
+		LOGGER.log(Level.INFO, "Assign Local {0} and Local {1} to Local {2} in method {2}",
+				new Object[] {getSignatureForLocal(right1), 
+				getSignatureForLocal(right2),getSignatureForLocal(leftOp),  b.getMethod().getName()});
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1));
+		
+		String signatureLeft = getSignatureForLocal(leftOp);
+		String signatureRight1 = getSignatureForLocal(right1);
+		String signatureRight2 = getSignatureForLocal(right2);
+
+	    Expr strArr = Jimple.v().newNewArrayExpr(RefType.v("java.lang.String"), IntConstant.v(2));
+		
+	    Stmt sigLeft = Jimple.v().newAssignStmt(local1, StringConstant.v(signatureLeft));
+	    Stmt sigRight = Jimple.v().newAssignStmt(local2, strArr);
+	    
+	    Stmt arrAssign1 = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+	    		local2, IntConstant.v(0)), StringConstant.v(signatureRight1));
+	    Stmt arrAssign2 = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+	    		local2, IntConstant.v(1)), StringConstant.v(signatureRight2));
+		
+		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"assignLocalsToLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),  false), local1, local2);
+		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
+
+	    unitStore.insertElement(unitStore.new Element(sigLeft, unitStore.lastPos));
+	    unitStore.lastPos = sigLeft;
+	    unitStore.insertElement(unitStore.new Element(sigRight, unitStore.lastPos));
+	    unitStore.lastPos = sigRight;
+	    unitStore.insertElement(unitStore.new Element(arrAssign1, unitStore.lastPos));
+	    unitStore.lastPos = arrAssign1;
+	    unitStore.insertElement(unitStore.new Element(arrAssign2, unitStore.lastPos));
+	    unitStore.lastPos = arrAssign2;
+		unitStore.insertElement(unitStore.new Element(ass, unitStore.lastPos));
+		unitStore.lastPos = pos;
+		
+	}
+	
+	public static void assignLocalToLocal(Local leftOp, Local rightOp, Unit pos) { 
+		LOGGER.log(Level.INFO, "Assign Local {1} to Local {0} in method {2}",
 				new Object[] {getSignatureForLocal(leftOp), 
 				getSignatureForLocal(rightOp), b.getMethod().getName()});
 		
@@ -401,5 +445,8 @@ private static int getStartPos() {
 		return b.getMethod().getParameterCount();
 	}
 }
+
+
+
 
 }
