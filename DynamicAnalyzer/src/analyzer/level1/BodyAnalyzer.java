@@ -99,7 +99,9 @@ public class BodyAnalyzer extends BodyTransformer{
         Iterator<Local> lit = locals.iterator();
         while(lit.hasNext()) {
         	Local item = lit.next();
-        	if (!(item.getName() == "local_name")&& !(item.getName() == "local_level")&& !(item.getName() == "hs")) {
+        	if (!(item.getName() == "local_name1")&& !(item.getName() == "local_name2")
+        			&&!(item.getName() == "local_name3")&&!(item.getName() == "local_level")
+        			&& !(item.getName() == "hs")) {
         	  JimpleInjector.addLocal(item);
         	}
         }

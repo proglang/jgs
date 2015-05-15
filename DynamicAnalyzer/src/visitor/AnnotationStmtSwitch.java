@@ -1,6 +1,7 @@
 package visitor;
 
 import analyzer.level1.JimpleInjector;
+import soot.Local;
 import soot.Unit;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
@@ -35,12 +36,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
-		// TODO: Unterscheiden, was das Ziel ist und was die Quelle.
-		// Ziel: Field/Local
-		// Quelle: Expr, Local, Field, Constant
 		Unit unit = stmt;
-	//	JimpleInjector.invokeHandleStmtUnit(unit, stmt.getDefBoxes(), stmt.getUseBoxes());
-
+		System.out.println(unit.getDefBoxes().toString());
+		
+		Local left = (Local) unit.getDefBoxes().get(0).getValue();
+		
+		JimpleInjector.assignConstantToLocal(left); 
+	    // TODO: kann man hier was mit dem ValueSwitch machen? 
+		// ZB rausfinden, welchen Typ die Argumente habe
 	}
 
 	@Override

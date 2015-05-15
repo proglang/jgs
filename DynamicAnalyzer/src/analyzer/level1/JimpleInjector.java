@@ -16,6 +16,7 @@ import analyzer.level1.storage.LocalStore;
 import analyzer.level1.storage.UnitStore.Element;
 import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
+import soot.ArrayType;
 import soot.Body;
 import soot.Local;
 import soot.RefType;
@@ -29,6 +30,7 @@ import soot.ValueBox;
 import soot.VoidType;
 import soot.jimple.AddExpr;
 import soot.jimple.Expr;
+import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
@@ -50,7 +52,9 @@ public class JimpleInjector {
 	static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 
 	// Locals needed to add Locals to Map
-	static Local local = Jimple.v().newLocal("local_name", RefType.v("java.lang.String"));
+	static Local local1 = Jimple.v().newLocal("local_name1", RefType.v("java.lang.String"));
+	static Local local2 = Jimple.v().newLocal("local_name2", RefType.v("java.lang.String"));
+	static Local local3 = Jimple.v().newLocal("local_name3", RefType.v("java.lang.String"));
 	static Local level = Jimple.v().newLocal("local_level", RefType.v("java.lang.String"));
 	
 	static Logger LOGGER = L1Logger.getLogger();
@@ -68,7 +72,8 @@ public class JimpleInjector {
 		locals.add(hs);
 		Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(RefType.v(HANDLE_CLASS)));
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		Expr specialIn = Jimple.v().newSpecialInvokeExpr(hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
+		Expr specialIn = Jimple.v().newSpecialInvokeExpr(
+				hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
 		
 		Iterator<Unit> it = units.iterator();
 		Unit pos = null;
@@ -86,16 +91,18 @@ public class JimpleInjector {
 	}
 	
 	public static void addLocal(Local l) {
-		LOGGER.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+		LOGGER.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
+				getSignatureForLocal(l), b.getMethod().getName()});
 		
-		// hs.addLocal(String signature)
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 		
 		String signature = getSignatureForLocal(l);
-	    Stmt sig = Jimple.v().newAssignStmt(local, StringConstant.v(signature));
+	    Stmt sig = Jimple.v().newAssignStmt(local1, StringConstant.v(signature));
 		
-		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "addLocal", paramTypes, VoidType.v(),  false), local);
+		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"addLocal", paramTypes, VoidType.v(),  false), local1);
 		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
 		
 
@@ -109,57 +116,161 @@ public class JimpleInjector {
 		LOGGER.log(Level.INFO, "Initialize HandleStmt in method {0}", b.getMethod().getName());
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		Expr invokeInit = Jimple.v().newStaticInvokeExpr(Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "init", paramTypes, VoidType.v(), true));
+		Expr invokeInit = Jimple.v().newStaticInvokeExpr(
+				Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"init", paramTypes, VoidType.v(), true));
 		Unit init = Jimple.v().newInvokeStmt(invokeInit);
 		unitStore.insertElement(unitStore.new Element(init, unitStore.lastPos));
 		unitStore.lastPos = init;
 	}
 
 	public static void closeHS() {
-		LOGGER.log(Level.INFO, "Close HandleStmt in method {0} {1}", new Object[] {b.getMethod().getName(), System.getProperty("line.separator")});
+		LOGGER.log(Level.INFO, "Close HandleStmt in method {0} {1}", 
+				new Object[] {b.getMethod().getName(), System.getProperty("line.separator")});
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		Expr invokeClose = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "close", paramTypes, VoidType.v(), false));
+		Expr invokeClose = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"close", paramTypes, VoidType.v(), false));
 		units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
 	}
 	
-	public void getActualReturnLevel() {}
+	public static void getActualReturnLevel() {}
 	
-	public void addObjectToObjectMap(Object o) {}
+	public static void addObjectToObjectMap(Object o) {}
 	
-	public void addFieldToObjectMap(Object o, String signature) {}
+	public static void addFieldToObjectMap(Object o, String signature) {}
 	
-	public void makeFieldHigh(Object o, String signature) {}
+	public static void makeFieldHigh(Object o, String signature) {}
 	
-	public void makeFieldLow(Object o, String signature) {}
+	public static void makeFieldLow(Object o, String signature) {}
 	
-	public void addLocal(String signature, SecurityLevel level) {}
+	public static void addLocal(String signature, SecurityLevel level) {}
 	
-	public void setLocalLevel(String signature, SecurityLevel level) {}
+	public static void setLocalLevel(String signature, SecurityLevel level) {}
 	
-	public void getLocalLevel(String signature) {}
+	public static void getLocalLevel(String signature) {}
 	
-	public void makeLocalHigh(String signature) {}
-	
-	public void makeLocalLow(String signature) {}
+	public static void makeLocalHigh(Local l) {
+		LOGGER.log(Level.INFO, "Make Local {0} high in method {1}",
+				new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		String signature = getSignatureForLocal(l);
+	    Stmt sig = Jimple.v().newAssignStmt(local1, StringConstant.v(signature));
+		
+		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"makeLocalHigh", paramTypes, VoidType.v(),  false), local1);
+		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
 
-	public void assignLocalsToField(Object o, String field, String... locals) {}
+	    unitStore.insertElement(unitStore.new Element(sig, unitStore.lastPos));
+	    unitStore.lastPos = sig;
+		unitStore.insertElement(unitStore.new Element(ass, unitStore.lastPos));
+		unitStore.lastPos = ass;
+	}
 	
-	public void assignLocalsToLocal(String leftOp, String... rightOp) {}
-	
-	public void assignFieldToLocal(Object o, String local, String field) {}
-	
-	public void assignArgumentToLocal(int pos, String local) {}
-	
-	public void returnConstant() {}
+	public static void makeLocalLow(Local l) {
+		LOGGER.log(Level.INFO, "Make Local {0} low in method {1}",
+				new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		String signature = getSignatureForLocal(l);
+	    Stmt sig = Jimple.v().newAssignStmt(local1, StringConstant.v(signature));
+		
+		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"makeLocalLow", paramTypes, VoidType.v(),  false), local1);
+		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
 
-	public void returnLocal(String signature) {}
+	    unitStore.insertElement(unitStore.new Element(sig, unitStore.lastPos));
+	    unitStore.lastPos = sig;
+		unitStore.insertElement(unitStore.new Element(ass, unitStore.lastPos));
+		unitStore.lastPos = ass;
+	}
 
-	public void storeArgumentLevels(String... arguments) {}
+	public static void assignLocalsToField(Object o, String field, String... locals) {}
 	
-	public void checkCondition(String... args) {}
+	public static void assignLocalsToLocal(Local leftOp, Local rightOp) { // TODO 2 Locals?
+		//assignLocalsToLocal(String leftOp, String... rightOp)
+		LOGGER.log(Level.INFO, "Assign Local {0} to Local {1} in method {2}",
+				new Object[] {getSignatureForLocal(leftOp), 
+				getSignatureForLocal(rightOp), b.getMethod().getName()});
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		String signatureLeft = getSignatureForLocal(leftOp);
+		String signatureRight = getSignatureForLocal(rightOp);
+		
+	    Stmt sigLeft = Jimple.v().newAssignStmt(local1, StringConstant.v(signatureLeft));
+	    Stmt sigRight = Jimple.v().newAssignStmt(local2, StringConstant.v(signatureRight));
+		
+		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"makeLocalLow", paramTypes, VoidType.v(),  false), local1, local2);
+		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
+
+	    unitStore.insertElement(unitStore.new Element(sigLeft, unitStore.lastPos));
+	    unitStore.lastPos = sigLeft;
+	    unitStore.insertElement(unitStore.new Element(sigRight, unitStore.lastPos));
+	    unitStore.lastPos = sigRight;
+		unitStore.insertElement(unitStore.new Element(ass, unitStore.lastPos));
+		unitStore.lastPos = ass;
+	}
 	
-	public void exitInnerScope() {}
+	public static void assignConstantToLocal(Local leftOp) { // TODO mit der anderen Methode mergen?
+		//assignLocalsToLocal(String leftOp, String... rightOp)
+		LOGGER.log(Level.INFO, "Assign Constant to Local {0} in method {1}",
+				new Object[] {getSignatureForLocal(leftOp), b.getMethod().getName()});
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1));
+		
+		String signatureLeft = getSignatureForLocal(leftOp);
+
+	    //  $r2 = newarray (java.lang.String)[0];
+	    Expr strArr = Jimple.v().newNewArrayExpr(RefType.v("java.lang.String"), IntConstant.v(0));
+		
+	    Stmt sigLeft = Jimple.v().newAssignStmt(local1, StringConstant.v(signatureLeft));
+	    Stmt right = Jimple.v().newAssignStmt(local2, strArr);
+		
+		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"assignLocalsToLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),  false), local1, local2);
+		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
+
+	    unitStore.insertElement(unitStore.new Element(sigLeft, unitStore.lastPos));
+	    unitStore.lastPos = sigLeft;    
+	    unitStore.insertElement(unitStore.new Element(right, unitStore.lastPos));
+	    unitStore.lastPos = right;
+		unitStore.insertElement(unitStore.new Element(ass, unitStore.lastPos));
+		unitStore.lastPos = ass;
+	}
+	
+	public static void assignFieldToLocal(Object o, String local, String field) {}
+	
+	public static void assignArgumentToLocal(int pos, String local) {}
+	
+	public static void returnConstant() {}
+
+	public static void returnLocal(String signature) {}
+
+	public static void storeArgumentLevels(String... arguments) {}
+	
+	public static void checkCondition(String... args) {}
+	
+	public static void exitInnerScope() {}
 	
 	/*
 public static void Join(String resStr, String lO, String rO, Unit pos) {
@@ -311,7 +422,9 @@ public static void addUnitsToChain() {
 }
 
 public static void addNeededLocals() {
-	locals.add(local);
+	locals.add(local1);
+	locals.add(local2);
+	locals.add(local3);
 	locals.add(level);	
 }
 

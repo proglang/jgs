@@ -2,6 +2,7 @@ package main;
 
 import analyzer.level2.HandleStmt;
 
+
 public class Test {
    
     public static void main(String[] args) {
@@ -10,7 +11,6 @@ public class Test {
     }
     
     public static void m() {
-    	//System.out.println("m()");
     	int a = 2;
     }
 

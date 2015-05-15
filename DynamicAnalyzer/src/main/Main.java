@@ -34,6 +34,7 @@ public class Main {
         Scene.v().setSootClassPath(Scene.v().getSootClassPath() + ":.:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar");
         // Scene.v().setSootClassPath(Scene.v().getSootClassPath() + ":.:/home/koenigr/Eclipse/eclipse/jre/lib/jce.jar:/home/koenigr/Eclipse/eclipse/jre/lib/rt.jar");
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
+        Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
         
         BodyAnalyzer banalyzer = new BodyAnalyzer();
