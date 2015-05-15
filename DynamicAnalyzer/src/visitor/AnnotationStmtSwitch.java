@@ -3,6 +3,8 @@ package visitor;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Unit;
+import soot.Value;
+import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
 import soot.jimple.EnterMonitorStmt;
@@ -39,11 +41,22 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		Unit unit = stmt;
 		System.out.println(unit.getDefBoxes().toString());
 		
-		Local left = (Local) unit.getDefBoxes().get(0).getValue();
+		Value leftValue = unit.getDefBoxes().get(0).getValue();
+		Local left = (Local) leftValue;
 		
-		JimpleInjector.assignConstantToLocal(left); 
+		Value rightValue = unit.getUseBoxes().get(0).getValue();
+
+		
+		if (rightValue instanceof Local) {
+			System.out.println("Local on the right side");
+			Local right = (Local) rightValue;
+			JimpleInjector.assignLocalToLocal(left, right, stmt);
+		} else {
+		
+		JimpleInjector.assignConstantToLocal(left, stmt); 
 	    // TODO: kann man hier was mit dem ValueSwitch machen? 
 		// ZB rausfinden, welchen Typ die Argumente habe
+		} 
 	}
 
 	@Override

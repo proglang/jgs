@@ -12,6 +12,7 @@ import logging.L2Logger;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
+import exceptions.InternalAnalyzerException;
 
 /**
  * Blabl
@@ -238,11 +239,20 @@ public class HandleStmt {
 	}
 	
 	public SecurityLevel assignLocalsToLocal(String leftOp, String... rightOp) {
-		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {rightOp, leftOp});
+		switch(rightOp.length) {
+		case 0: 
+			LOGGER.log(Level.INFO, "Assign a Constant to Local {0}", leftOp); break;
+		case 1:
+			LOGGER.log(Level.INFO, "Assign Local {0} to Local {1}", new Object[] {rightOp[0], leftOp}); break;
+		case 2:
+			LOGGER.log(Level.INFO, "Assign Locals {0} and {1} to Local {2}", new Object[] {rightOp[0], rightOp[1], leftOp}); break;
+		default:
+			LOGGER.log(Level.SEVERE, "Internal Error", new InternalAnalyzerException());
+		}
+		
 		if (!checkLocalPC(leftOp)) {
 			abort(leftOp);
 		}
-		checkLocalPC(leftOp);
 		lm.setLevel(leftOp, joinWithLPC(joinLocals(rightOp)));
 		return lm.getLevel(leftOp);
 	}
