@@ -1,10 +1,13 @@
 package main;
 
+import tests.testClasses.TestSubClass;
 import analyzer.level2.HandleStmt;
 
 
 public class Test {
-	int field;
+	int field = 1;
+	
+	static int sField = 2;
    
     public static void main(String[] args) {
     	
@@ -13,7 +16,12 @@ public class Test {
     }
     
     public static int m() {
+    	
+    	TestSubClass ts = new TestSubClass();
 
+    	sField = 2;
+    	
+    	sField = ts.methodWithConstReturn();
     	
     	int a = 2;
     	int b = a;

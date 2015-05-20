@@ -14,6 +14,7 @@ public class TestSubClass {
 		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this	,"int_field");
+		hs.addFieldToObjectMap(this	,"int_pField");
 
 		hs.close();
 	}

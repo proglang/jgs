@@ -1,6 +1,11 @@
 package tests.handleStmtTests;
 
 import static org.junit.Assert.*;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import logging.L2Logger;
 import tests.testClasses.TestSubClass;
 
 import org.junit.Before;
@@ -13,6 +18,8 @@ import analyzer.level2.storage.ObjectMap;
 
 public class InvokeSuccess {
 
+	Logger LOGGER = L2Logger.getLogger();
+
 	private ObjectMap m = ObjectMap.getInstance();
 	
 	@Before
@@ -23,7 +30,7 @@ public class InvokeSuccess {
 	@Test
 	public void invokeNewObject() {
 		
-		System.out.println("INVOKE TEST STARTED");
+		LOGGER.log(Level.INFO, "INVOKE TEST STARTED");
 
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
@@ -38,13 +45,13 @@ public class InvokeSuccess {
 		assertEquals(1, hs.getNumberOfFields(xy));
 	    hs.close();	
 	    
-	    System.out.println("INVOKE TEST FINISHED");
+	    LOGGER.log(Level.INFO, "INVOKE TEST FINISHED");
 	}
 	
 	@Test
 	public void invokeMethodWithoutArguments() {
 		
-		System.out.println("INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
+		LOGGER.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
 
 		ObjectMap m = ObjectMap.getInstance();
 		
@@ -56,14 +63,14 @@ public class InvokeSuccess {
 		 */
 	    hs.close();	
 	    
-		System.out.println("INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
+	    LOGGER.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
 		
     	}
 	
 	@Test
 	public void invokeMethodWithArguments() {		
 		
-		System.out.println("INVOKE METHOD WITH ARGUMENTS TEST STARTED");
+		LOGGER.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");
 
 	    ObjectMap m = ObjectMap.getInstance();
 	    
@@ -93,7 +100,7 @@ public class InvokeSuccess {
     	
 	    hs.close();
 	    
-		System.out.println("INVOKE METHOD WITH ARGUMENTS TEST STARTED");		
+	    LOGGER.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");		
 	}
 	
 	@Test

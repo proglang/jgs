@@ -2,16 +2,21 @@ package tests.handleStmtTests;
 
 import static org.junit.Assert.*;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import logging.L2Logger;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import tests.testClasses.TestSubClass;
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 
 public class AssignFieldsSuccess {
 
-	ObjectMap m = ObjectMap.getInstance();
+	Logger LOGGER = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
@@ -21,7 +26,7 @@ public class AssignFieldsSuccess {
 	@Test
 	public void assignConstantToField() {
 		
-		System.out.println("ASSIGN CONSTANT TO FIELD TEST STARTED");
+		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO FIELD TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -35,33 +40,31 @@ public class AssignFieldsSuccess {
 		// field = LOW, gpc = LOW
 		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());
 		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_field"));
-		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field"));
+		assertEquals(SecurityLevel.LOW, hs.assignConstantToField(this, "int_field"));
 		
 
 		// field = HIGH, gpc = LOW
 		hs.makeFieldHigh(this, "int_field");
 		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());
 		assertEquals(SecurityLevel.HIGH, hs.getFieldLevel(this, "int_field"));
-		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field"));
+		assertEquals(SecurityLevel.LOW, hs.assignConstantToField(this, "int_field"));
 		
 		// field = HIGH, gpc = HIGH
 		hs.makeFieldHigh(this, "int_field");
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());
 		assertEquals(SecurityLevel.HIGH, hs.getFieldLevel(this, "int_field"));
-		assertEquals(SecurityLevel.HIGH, hs.assignLocalsToField(this, "int_field"));
+		assertEquals(SecurityLevel.HIGH, hs.assignConstantToField(this, "int_field"));
 		
 	    hs.close();	
 
-		System.out.println("ASSIGN CONSTANT TO FIELD TEST STARTED");
+	    LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO FIELD TEST FINISHED");
 	}
 	
 	@Test
 	public void assignLocalsToField() {
 		
-		System.out.println("ASSIGN LOCALS TO FIELD TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST STARTED");
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -72,8 +75,8 @@ public class AssignFieldsSuccess {
 		
 		/* Assign Local To Field
 		 *  int field = var1 + var2;
-		 *  1. Check if Level(x) >= lpc
-		 *  2. Assign Join(y, z, lpc) to x
+		 *  1. Check if Level(field) >= lpc
+		 *  2. Assign Join(y, z, lpc) to field
 		 */
 		hs.setLocalPC(SecurityLevel.LOW);
 		assertEquals(SecurityLevel.LOW, hs.assignLocalsToField(this, "int_field", "int_var1"));
@@ -84,23 +87,58 @@ public class AssignFieldsSuccess {
 		
 	    hs.close();	
 	    
-		System.out.println("ASSIGN LOCALS TO FIELD TEST STARTED");
+	    LOGGER.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST FINISHED");
 		
 	}
 	
 	@Test
 	public void assignLocalsToAStaticField() {
 		
+		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD STARTED");
+
+		// TODO 
+		
+		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD FINISHED");
 	}
 	
 	@Test
 	public void assignLocalsToAnExternalField() {
+		
+		LOGGER.log(Level.INFO, "ASSIGN LOCAL TO AN EXTERNAL FIELD STARTED");
+		
+		HandleStmtForTests hs = new HandleStmtForTests();
+		hs.addObjectToObjectMap(this);
+		
 		/*
 		 * Object o;
 		 * o.F = local
-		 * 1. check(F >= join(x,gpc))
-		 * 2. join(x,gpc,local)->F
+		 * 1. check(F >= join(gpc))
+		 * 2. join(local,gpc,local)->F
 		 */
+		
+		hs.addLocal("int_local");
+		hs.assignConstantToLocal("int_local");
+		int local = 2;
+		
+		hs.addLocal("TestSubClass_o");
+		TestSubClass o = new TestSubClass();
+		
+		// field = LOW, gpc = LOW
+		hs.assignLocalsToField(o, "int_pField", "int_local");
+		o.pField = local;
+		
+		// field = HIGH, gpc = LOW
+		hs.makeFieldHigh(o, "int_pField");
+		hs.assignLocalsToField(o, "int_pField", "int_local");
+		o.pField = local;
+		
+		// field = HIGH, gpc = HIGH
+		hs.makeFieldHigh(o, "int_pField");
+		hs.pushGlobalPC(SecurityLevel.HIGH);
+		hs.assignLocalsToField(o, "int_pField", "int_local");
+		o.pField = local;
+		
+		LOGGER.log(Level.INFO, "ASSIGN LOCAL TO AN EXTERNAL FIELD FINISHED");
 	}
 	
 	

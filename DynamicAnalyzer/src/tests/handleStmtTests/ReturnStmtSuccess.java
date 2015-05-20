@@ -1,6 +1,11 @@
 package tests.handleStmtTests;
 
 import static org.junit.Assert.*;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import logging.L2Logger;
 import tests.testClasses.TestSubClass;
 
 import org.junit.Before;
@@ -8,9 +13,10 @@ import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 
 public class ReturnStmtSuccess {
+	
+	Logger LOGGER = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
@@ -20,44 +26,46 @@ public class ReturnStmtSuccess {
 	@Test
 	public void returnStmtTest() {
 		
-		System.out.println("RETURN TEST STARTED");
-
-		ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "RETURN TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
 		hs.setLocalPC(SecurityLevel.LOW);
-		assertEquals(SecurityLevel.LOW, hs.addFieldToObjectMap(this, "int_resField1"));
-		assertEquals(SecurityLevel.LOW, hs.addFieldToObjectMap(this, "int_resField2"));
-		assertEquals(SecurityLevel.LOW, hs.addFieldToObjectMap(this, "int_resField3"));
+		hs.addLocal("int_res1");
+		hs.addLocal("int_res2");
+		hs.addLocal("int_res3");
 		
+		@SuppressWarnings("unused")
+		int res1;
 		
-		int resField1;
-		int resField2;
-		int resField3;
+		@SuppressWarnings("unused")
+		int res2;
 		
-		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_resField1"));
-		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_resField2"));
-		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_resField3"));
+		@SuppressWarnings("unused")
+		int res3;
+		
 		
 		TestSubClass tsc = new TestSubClass();
-		tsc.methodWithConstReturn();
+		res1 = tsc.methodWithConstReturn();
 		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
-		tsc.methodWithLowLocalReturn();
+		hs.assignReturnLevelToLocal("int_res1");
+		
+		res2 = tsc.methodWithLowLocalReturn();
 		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
-		tsc.methodWithHighLocalReturn();
+		hs.assignReturnLevelToLocal("int_res2");
+		
+		res3 = tsc.methodWithHighLocalReturn();
 		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
+		hs.assignReturnLevelToLocal("int_res3");
+
 		
-		
-		tsc.method();
-		
-		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_resField1"));
-		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_resField2"));
-		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(this, "int_resField3"));
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res1"));
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res2"));
+		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_res3"));
 		
 	    hs.close();	
 	    
-		System.out.println("RETURN TEST FINISHED");
+	    LOGGER.log(Level.INFO, "RETURN TEST FINISHED");
 	}
 
 }

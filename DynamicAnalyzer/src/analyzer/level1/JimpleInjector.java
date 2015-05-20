@@ -314,7 +314,7 @@ public class JimpleInjector {
 		unitStore.lastPos = pos;
 	}
 	
-	public static void assignConstantToLocal(Local leftOp, Unit pos) { // TODO mit der anderen Methode mergen?
+	public static void assignConstantToLocal(Local leftOp, Unit pos) { // TODO assignConstantToLocal in hs
 		//assignLocalsToLocal(String leftOp, String... rightOp)
 		LOGGER.log(Level.INFO, "Assign Constant to Local {0} in method {1}",
 				new Object[] {getSignatureForLocal(leftOp), b.getMethod().getName()});

@@ -16,6 +16,7 @@ public class StaticFieldsSuccess {
 
 	@Test
 	public void test() {
+		// TODO
 		fail("Not yet implemented");
 	}
 

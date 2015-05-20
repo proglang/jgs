@@ -35,7 +35,7 @@ public class HandleStmt {
 	 * of the globalPC
 	 */
 	public HandleStmt() {
-		LOGGER.severe("invoke new HandleStmt");
+		LOGGER.log(Level.INFO, "invoke new HandleStmt");
 		lm = new LocalMap();
 		om = ObjectMap.getInstance();
 		om.pushGlobalPC(joinLevels(om.getGlobalPC(), lm.getLocalPC()));
@@ -238,6 +238,10 @@ public class HandleStmt {
 		return om.getFieldLevel(o, field);
 	}
 	
+	public SecurityLevel assignConstantToField(Object o, String field) {
+		return assignLocalsToField(o, field);
+	}
+	
 	public SecurityLevel assignLocalsToLocal(String leftOp, String... rightOp) {
 		switch(rightOp.length) {
 		case 0: 
@@ -257,6 +261,10 @@ public class HandleStmt {
 		return lm.getLevel(leftOp);
 	}
 	
+	public SecurityLevel assignConstantToLocal(String leftOp) {
+		return assignLocalsToLocal(leftOp);
+	}
+	
 	public SecurityLevel assignFieldToLocal(Object o,
 			String local, String field) {
 		LOGGER.log(Level.INFO, "Assign {0} to {1}", new Object[] {field, local});
@@ -273,7 +281,8 @@ public class HandleStmt {
 	}
 	
 	public void assignReturnLevelToLocal(String local) {
-		// TODO
+		// TODO check with lpc? gpc?
+		setLocalLevel(local, om.getActualReturnLevel());
 	}
 
 	public void returnConstant() {
