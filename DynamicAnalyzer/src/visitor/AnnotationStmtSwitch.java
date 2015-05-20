@@ -10,6 +10,7 @@ import soot.jimple.BreakpointStmt;
 import soot.jimple.Constant;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
+import soot.jimple.FieldRef;
 import soot.jimple.GotoStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
@@ -24,6 +25,8 @@ import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
+	
+	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
@@ -43,15 +46,15 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		System.out.println(unit.getDefBoxes().toString());
 		
 		Value leftValue = unit.getDefBoxes().get(0).getValue();
-		Local left = (Local) leftValue;
-		
+
 
 		System.out.println(unit.getUseBoxes().toString());
 		
 
 		int numOfArgs = unit.getUseBoxes().size();
 		
-
+		if(leftValue instanceof Local) {
+			Local left = (Local) leftValue;
 
 			if (numOfArgs == 1) {
 				Value rightValue = unit.getUseBoxes().get(0).getValue();
@@ -80,13 +83,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				JimpleInjector.assignLocalsToLocal(left, right1, right2, stmt);
 			}
 			
-
+		}
 	}
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
-		// TODO Auto-generated method stub
-
+		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
+		System.out.println(stmt.getRightOp().getType());
+		stmt.getRightOp().apply(valueSwitch);
 	}
 
 	@Override

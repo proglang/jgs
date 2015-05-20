@@ -137,7 +137,8 @@ public class JimpleInjector {
 	}
 	
 	public static void assignReturnLevelToLocal(Local l) {
-		LOGGER.log(Level.INFO, "Assign return level of invoked method to local {0}", getSignatureForLocal(l));
+		LOGGER.log(Level.INFO, "Assign return level of invoked method to local {0}", 
+				getSignatureForLocal(l));
 		
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
@@ -146,7 +147,8 @@ public class JimpleInjector {
 		Expr assignRet = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 						Scene.v().getSootClass(HANDLE_CLASS), "assignReturnLevelToLocal", 
-						parameterTypes , VoidType.v(), false), StringConstant.v(getSignatureForLocal(l)));
+						parameterTypes , VoidType.v(), false), 
+						StringConstant.v(getSignatureForLocal(l)));
 		Unit assignExpr = Jimple.v().newInvokeStmt(assignRet);
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
@@ -155,6 +157,22 @@ public class JimpleInjector {
 	
 	public static void addObjectToObjectMap(Object o) {
 		LOGGER.log(Level.INFO, "Add object {0} to ObjectMap", o.toString());
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(RefType.v("java.lang.Object"));
+		
+		Unit assignThis = Jimple.v().newIdentityStmt(local1, Jimple.v().newThisRef(RefType.v("java.lang.Object")));
+		
+		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
+				parameterTypes, VoidType.v(), false), 
+				local1);
+		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+		//units.addFirst(assignThis);
+		//unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		//unitStore.lastPos = assignExpr;
 		
 	}
 	

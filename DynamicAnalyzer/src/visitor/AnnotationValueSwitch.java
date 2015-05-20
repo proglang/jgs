@@ -324,7 +324,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseThisRef(ThisRef v) {
-		// TODO Auto-generated method stub
+		System.out.println("juhuu");
 
 	}
 

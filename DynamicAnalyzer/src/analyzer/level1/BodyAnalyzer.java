@@ -76,18 +76,19 @@ public class BodyAnalyzer extends BodyTransformer{
         JimpleInjector.invokeHS();
         JimpleInjector.addNeededLocals();
         
-        
-        // TODO: wenn main, dann hs.init()
         if (method.isMain()) {
           JimpleInjector.initHS();
         }
 
-        // TODO: wenn init(), dann add Object to ObjectMap
-        // TODO: wenn init(), dann add Fields to Map
-        
-        // TODO add Locals to LocalMap
+       
         
         if (method.isConstructor()) {
+            // TODO: wenn init(), dann add Object to ObjectMap
+            // TODO: wenn init(), dann add Fields to Map
+        LOGGER.log(Level.INFO, "Entering <init>");
+        
+       // JimpleInjector.addObjectToObjectMap(this);
+        
         Iterator<SootField> fIt = fields.iterator();
         while(fIt.hasNext()) {
         	SootField item = fIt.next();
@@ -111,28 +112,9 @@ public class BodyAnalyzer extends BodyTransformer{
         	Unit item = uit.next();
 			item.apply(stmtSwitch);
         }
-        JimpleInjector.addUnitsToChain();
-        
-        // outputForDebug();	
-        
+        JimpleInjector.addUnitsToChain();      
         
         JimpleInjector.closeHS();
-	}
-
-	public void outputForDebug() {
-        System.out.println("sootClass: " + sootClass);
-		
-	    List<SootMethod> list = sootClass.getMethods();
-	    for (SootMethod method2 : list) {
-	    	System.out.println("name: " + method2.getName());
-	    }
-		
-        for (Unit unit : units) {
-        	System.out.println("Unit: " + unit);
-        	System.out.println("Boxes: " + unit.getUseAndDefBoxes());
-        }
-        
-        System.out.println(annotationExtractor.extractAnnotations(method));
 	}
 
 
