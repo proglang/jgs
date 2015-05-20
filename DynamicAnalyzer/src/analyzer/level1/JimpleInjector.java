@@ -136,9 +136,27 @@ public class JimpleInjector {
 		units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
 	}
 	
-	public static void getActualReturnLevel() {}
+	public static void assignReturnLevelToLocal(Local l) {
+		LOGGER.log(Level.INFO, "Assign return level of invoked method to local {0}", getSignatureForLocal(l));
+		
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(RefType.v("java.lang.String"));
+		
+		Expr assignRet = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(
+						Scene.v().getSootClass(HANDLE_CLASS), "assignReturnLevelToLocal", 
+						parameterTypes , VoidType.v(), false), StringConstant.v(getSignatureForLocal(l)));
+		Unit assignExpr = Jimple.v().newInvokeStmt(assignRet);
+		
+		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		unitStore.lastPos = assignExpr;
+	}
 	
-	public static void addObjectToObjectMap(Object o) {}
+	public static void addObjectToObjectMap(Object o) {
+		LOGGER.log(Level.INFO, "Add object {0} to ObjectMap", o.toString());
+		
+	}
 	
 	public static void addFieldToObjectMap(Object o, String signature) {}
 	
@@ -352,90 +370,6 @@ public class JimpleInjector {
 	
 	public static void exitInnerScope() {}
 
-/*
-public static void invokeHandleStmtUnit( Unit stmt, List<ValueBox> def, List<ValueBox> use) {
-	  System.out.println("invokeHandleStmt");
-	  System.out.print("Definition Box: " + def);
-	  System.out.println(" Use Box: " + use);
-	  
-	  Iterator<ValueBox> ubIt = use.iterator();
-	  while (ubIt.hasNext()) {
-	  ValueBox vb = (ValueBox) ubIt.next();
-	  Value v = vb.getValue();
-	  if (v instanceof AddExpr ) {
-		  Local lO = (Local) ((AddExpr) v).getOp1();
-		  Local rO = (Local) ((AddExpr) v).getOp2();
-		  Local res = (Local) def.get(0).getValue(); // TODO : das geschickter machen
-		  
-		  String lOStr = getSignatureForLocal(lO);
-		  String rOStr = getSignatureForLocal(rO);
-		  String resStr = getSignatureForLocal(res);
-		  // TODO ich habe ein Problem damit, dass handleStmt in die Unit chain schreibt und dadurch eine Exception auslöst
-		   Join(resStr, lOStr, rOStr, stmt);
-		  
-	  }
-	  }
-	  
-	  b.validate();
-  }
-  
-  /*
-	public static void addFieldToMap(SootField item, Level level) {
-	    Local field = Jimple.v().newLocal("field", RefType.v("java.lang.String"));
-	    Local levelStr = Jimple.v().newLocal("level", RefType.v("java.lang.String"));
-	    locals.add(field);
-	    locals.add(levelStr); // TODO hier das enum einsetzen
-	    Stmt l1 = Jimple.v().newAssignStmt(field, StringConstant.v(getSignatureForField(item))); 
-	    Stmt l2 = Jimple.v().newAssignStmt(field, StringConstant.v(getSignatureForField(item)));    
-	    unitStore.insertElement(unitStore.new Element(l1, item));        
-	    unitStore.insertElement(unitStore.new Element(l2, units.getFirst())); 
-		    
-	    ArrayList paramTypes3 = new ArrayList();
-	   	paramTypes3.add(RefType.v("java.lang.String"));
-	   	paramTypes3.add(RefType.v("java.lang.String"));
-	   	
-	   	ArrayList<Local> params3 = new ArrayList();
-	   	params3.add(field);
-	   	params3.add(levelStr);
-	   	
-	   	
-	   	SootMethodRef methodtI3 = Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "addField", paramTypes3, VoidType.v(), true);
-	    Expr methodInvoke3 = Jimple.v().newStaticInvokeExpr(methodtI3, params3);
-
-	    unitStore.insertElement(unitStore.new Element(Jimple.v().newInvokeStmt(methodInvoke3), units.getFirst()));
-
-	    b.validate();
-		
-	}
-  */
-  
-
-/*
-	public static void addLocalToMap(Local item) {
-	    Stmt l1 = Jimple.v().newAssignStmt(local, StringConstant.v(getSignatureForLocal(item))); 
-	    Stmt l2 = Jimple.v().newAssignStmt(level, StringConstant.v("High"));    
-	    unitStore.insertElement(unitStore.new Element(l1, units.getFirst()));        
-	    unitStore.insertElement(unitStore.new Element(l2, units.getFirst())); 
-		    
-	    ArrayList<Type> paramTypes3 = new ArrayList<Type>();
-	   	paramTypes3.add(RefType.v("java.lang.String"));
-	   	paramTypes3.add(RefType.v("java.lang.String"));
-	   	
-	   	ArrayList<Local> params3 = new ArrayList<Local>();
-	   	params3.add(item);
-	   	params3.add(level);
-	   	
-	   	
-	   	SootMethodRef methodtI3 = Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "addLocal", paramTypes3, VoidType.v(), true);
-	    Expr methodInvoke3 = Jimple.v().newStaticInvokeExpr(methodtI3, params3);
-
-	    unitStore.insertElement(unitStore.new Element(Jimple.v().newInvokeStmt(methodInvoke3), units.getFirst()));
-
-	    b.validate();	
-	}
-
-
-*/
 	
 public static void addUnitsToChain() {	
 	Iterator<Element> UIt = unitStore.getElements().iterator();
@@ -457,6 +391,8 @@ public static void addNeededLocals() {
 	locals.add(local2);
 	locals.add(local3);
 	locals.add(level);	
+	
+	b.validate();
 }
 
 private static String getSignatureForLocal(Local l) {

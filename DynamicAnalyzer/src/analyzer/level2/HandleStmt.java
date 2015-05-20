@@ -272,6 +272,9 @@ public class HandleStmt {
 		return lm.getLevel(local);
 	}
 	
+	public void assignReturnLevelToLocal(String local) {
+		// TODO
+	}
 
 	public void returnConstant() {
 		LOGGER.log(Level.INFO, "Return a constant value");
