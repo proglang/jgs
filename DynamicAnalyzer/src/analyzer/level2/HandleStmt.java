@@ -46,7 +46,7 @@ public class HandleStmt {
 	 * It triggers the setup of the logger.
 	 */
 	public static void init() {
-		LOGGER.severe("init HS");
+		LOGGER.log(Level.INFO, "init HS");
 		try {
 			L2Logger.setup();
 		} catch (IOException e) {
@@ -64,7 +64,7 @@ public class HandleStmt {
 	 * It resets the globalPC to its initial value
 	 */
 	public void close() {
-		LOGGER.severe("close HS");
+		LOGGER.log(Level.INFO, "close HS");
 		om.popGlobalPC();
 	}
 	
@@ -281,7 +281,9 @@ public class HandleStmt {
 	}
 	
 	public void assignReturnLevelToLocal(String local) {
-		// TODO check with lpc? gpc?
+		if (!checkLocalPC(local)) {
+			abort(local);
+		}
 		setLocalLevel(local, om.getActualReturnLevel());
 	}
 

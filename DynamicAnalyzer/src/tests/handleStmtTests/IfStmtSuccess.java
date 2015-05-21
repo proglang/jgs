@@ -93,28 +93,5 @@ public class IfStmtSuccess {
 		System.out.println("SIMPLE IF STMT TEST FINISHED");
 		
 	}
-	
-	@Test
-	public void ifStmt2Test() {
-		
-		int x = 1;
-		
-		if ( x == 1) {
-			x = 2;
-		}
-		
-	}
-	
-	@Test
-	public void ifStmt3Test() {
-		
-		int x = 1;
-		int y = 2;
-		
-		if ( x == y) {
-			x = 2;
-		}
-		
-	}
 
 }

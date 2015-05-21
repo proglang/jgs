@@ -15,7 +15,7 @@ public class TestSubClass {
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this	,"int_field");
 		hs.addFieldToObjectMap(this	,"int_pField");
-
+		hs.addFieldToObjectMap(this.getClass(), "int_sField");
 		hs.close();
 	}
 	

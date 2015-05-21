@@ -301,7 +301,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
