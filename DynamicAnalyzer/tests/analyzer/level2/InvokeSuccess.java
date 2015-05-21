@@ -19,8 +19,6 @@ import analyzer.level2.storage.ObjectMap;
 public class InvokeSuccess {
 
 	Logger LOGGER = L2Logger.getLogger();
-
-	private ObjectMap m = ObjectMap.getInstance();
 	
 	@Before
 	public void init() {
@@ -54,8 +52,6 @@ public class InvokeSuccess {
 	public void invokeMethodWithoutArguments() {
 		
 		LOGGER.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
-
-		ObjectMap m = ObjectMap.getInstance();
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		/*
@@ -73,8 +69,6 @@ public class InvokeSuccess {
 	public void invokeMethodWithArguments() {		
 		
 		LOGGER.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
     	TestSubClass xy = new TestSubClass();
@@ -89,14 +83,12 @@ public class InvokeSuccess {
 		 *  4. Update gpc
 		 */
     	hs.storeArgumentLevels("int_a", "int_b", "int_c");
-    	assertEquals(3, m.getActualArguments().size());
     	xy.methodWithParams(a, b, c);
     	assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
     	
     	
     	hs.makeLocalHigh("int_b");
     	hs.storeArgumentLevels("int_a", "int_b", "int_c");
-    	assertEquals(3, m.getActualArguments().size());
     	xy.methodWithParams(a, b, c);
     	assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
     	
@@ -122,7 +114,6 @@ public class InvokeSuccess {
 			
 			public void method1() {
 				HandleStmtForTests hs = new HandleStmtForTests();
-				ObjectMap om = ObjectMap.getInstance();
 				
 				
 				method2();
@@ -133,7 +124,6 @@ public class InvokeSuccess {
 			
 			public void method2() {
 				HandleStmtForTests hs = new HandleStmtForTests();
-				ObjectMap om = ObjectMap.getInstance();
 
 				
 				method3();
@@ -144,7 +134,6 @@ public class InvokeSuccess {
 			
 			public void method3() {
 				HandleStmtForTests hs = new HandleStmtForTests();
-				ObjectMap om = ObjectMap.getInstance();
 
 				
 				hs.close();
@@ -152,7 +141,6 @@ public class InvokeSuccess {
 			
 		}
 		HandleStmtForTests hs = new HandleStmtForTests();
-		ObjectMap om = ObjectMap.getInstance();
 		
 		assertEquals(0, hs.getNumberOfElements());
 		

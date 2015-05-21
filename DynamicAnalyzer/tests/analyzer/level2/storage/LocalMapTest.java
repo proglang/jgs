@@ -1,4 +1,4 @@
-package analyzer.level2;
+package analyzer.level2.storage;
 
 import static org.junit.Assert.*;
 
@@ -40,6 +40,7 @@ public class LocalMapTest {
 
 	@Test
 	public void testSetLevel() {
+		fail();
 	}
 
 	@Test

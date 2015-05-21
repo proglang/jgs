@@ -12,10 +12,11 @@ import analyzer.level2.AssignLocalsFail;
 import analyzer.level2.AssignLocalsSuccess;
 import analyzer.level2.IfStmtFail;
 import analyzer.level2.IfStmtSuccess;
+import analyzer.level2.InternalMethods;
 import analyzer.level2.InvokeFail;
 import analyzer.level2.InvokeSuccess;
-import analyzer.level2.LocalMapTest;
-import analyzer.level2.ObjectMapTest;
+import analyzer.level2.storage.LocalMapTest;
+import analyzer.level2.storage.ObjectMapTest;
 import analyzer.level2.ReturnStmtFail;
 import analyzer.level2.ReturnStmtSuccess;
 import analyzer.level2.StaticFieldsFail;
@@ -45,10 +46,12 @@ import analyzer.level2.WhileStmtSuccess;
 				StaticFieldsFail.class,
 				
 				ExampleFailScenarios.class,
-				ObjectMapTest.class, 
+				analyzer.level2.storage.ObjectMapTest.class, 
 				JimpleInjectorTest.class, 
 				
-				analyzer.level2.InternalMethods.class
+				InternalMethods.class,
+				ObjectMapTest.class,
+				LocalMapTest.class
 
 
 })
