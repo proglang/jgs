@@ -242,14 +242,24 @@ public class HandleStmt {
 		return assignLocalsToField(o, field);
 	}
 	
-	public SecurityLevel assignLocalsToLocal(String leftOp, String... rightOp) {
-		switch(rightOp.length) {
+	public SecurityLevel assignLocalsToLocal(String leftOp, String... rightOps) {
+		for (String local : rightOps) {
+			if (!lm.contains(local)) {
+				new InternalAnalyzerException("Local "+ local + " not found in LocalMap");
+			}
+		}
+		
+		if (!lm.contains(leftOp)) {
+			new InternalAnalyzerException("Local "+ leftOp + " not found in LocalMap");
+		}
+		
+		switch(rightOps.length) {
 		case 0: 
 			LOGGER.log(Level.INFO, "Assign a Constant to Local {0}", leftOp); break;
 		case 1:
-			LOGGER.log(Level.INFO, "Assign Local {0} to Local {1}", new Object[] {rightOp[0], leftOp}); break;
+			LOGGER.log(Level.INFO, "Assign Local {0} to Local {1}", new Object[] {rightOps[0], leftOp}); break;
 		case 2:
-			LOGGER.log(Level.INFO, "Assign Locals {0} and {1} to Local {2}", new Object[] {rightOp[0], rightOp[1], leftOp}); break;
+			LOGGER.log(Level.INFO, "Assign Locals {0} and {1} to Local {2}", new Object[] {rightOps[0], rightOps[1], leftOp}); break;
 		default:
 			LOGGER.log(Level.SEVERE, "Internal Error", new InternalAnalyzerException());
 		}
@@ -257,7 +267,7 @@ public class HandleStmt {
 		if (!checkLocalPC(leftOp)) {
 			abort(leftOp);
 		}
-		lm.setLevel(leftOp, joinWithLPC(joinLocals(rightOp)));
+		lm.setLevel(leftOp, joinWithLPC(joinLocals(rightOps)));
 		return lm.getLevel(leftOp);
 	}
 	

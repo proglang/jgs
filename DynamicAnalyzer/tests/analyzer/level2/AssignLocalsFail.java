@@ -10,9 +10,10 @@ import logging.L2Logger;
 import org.junit.Before;
 import org.junit.Test;
 
+import tests.testClasses.TestSubClass;
+
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 import exceptions.IllegalFlowException;
 
 public class AssignLocalsFail {
@@ -44,8 +45,6 @@ public class AssignLocalsFail {
 	public void assignLocalsToLocal() {
 		
 		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -70,27 +69,61 @@ public class AssignLocalsFail {
 	}
 	
 	
-	@Test
+	@SuppressWarnings("unused")
+	@Test(expected = IllegalFlowException.class)
 	public void assignNewObjectToLocal() {
 		LOGGER.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
+		HandleStmtForTests hs = new HandleStmtForTests();
+		hs.addLocal("TestSubClass_xy");
 		
+		TestSubClass xy;
+		
+		hs.setLocalPC(SecurityLevel.HIGH);
+		
+		hs.assignConstantToLocal("TestSubClass_xy");
+		xy = new TestSubClass();
+		
+		
+	    hs.close();	
 
 		LOGGER.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST FINISHED");
 		
 	}
 	
-	@Test
+	@SuppressWarnings("unused")
+	@Test(expected = IllegalFlowException.class)
 	public void assignMethodResultToLocal() {
 
 		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 		
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		hs.addLocal("TestSubClass_ts");
+		hs.addLocal("int_res");
+		hs.addLocal("int_high", SecurityLevel.HIGH);
+		TestSubClass ts = new TestSubClass();
+		int res ;
+		int high = 0;
+		
+		hs.checkCondition("int_high");
+		if (high == 0) {
+		
+			hs.assignLocalsToLocal("int_res", "TestSubClass_ts");
+			res = ts.methodWithConstReturn();
+			hs.assignReturnLevelToLocal("int_res");
+			
+			hs.exitInnerScope();
+		
+		}
+		
+		hs.close();
 
 		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 	
 	}
 	
-	@Test
+	@Test(expected = IllegalFlowException.class)
 	public void assignConstantAndLocalToLocal() {
 		
 		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST STARTED");

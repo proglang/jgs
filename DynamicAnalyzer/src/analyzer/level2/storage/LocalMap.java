@@ -67,4 +67,8 @@ public class LocalMap {
 			System.out.println("Key " + entry.getKey() + " , Value: " + entry.getValue());
 		}
 	}
+	
+	public boolean contains(String local) {
+		return lMap.containsKey(local);
+	}
 }

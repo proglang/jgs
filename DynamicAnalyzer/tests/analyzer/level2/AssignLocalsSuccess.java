@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 
 public class AssignLocalsSuccess {
 	
@@ -143,6 +142,7 @@ public class AssignLocalsSuccess {
 		LOGGER.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
+		hs.addLocal("TestSubClass_xy");
 		hs.assignLocalsToLocal("TestSubClass_xy");
 		
 		/*
@@ -151,6 +151,8 @@ public class AssignLocalsSuccess {
 		 *  lpc -> xy
 		 *  add new Object to ObjectMap
 		 */
+		
+		
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("TestSubClass_xy"));
@@ -180,11 +182,21 @@ public class AssignLocalsSuccess {
 		hs.addLocal("int_res");
 		hs.addLocal("TestSubClass_xy");
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res"));
-		
-		// TODO
+
+		hs.assignLocalsToLocal("int_res", "TestSubClass_xy");
 		res = xy.methodWithConstReturn();
+		hs.assignReturnLevelToLocal("int_res");
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res"));
+		
+		hs.assignLocalsToLocal("int_res", "TestSubClass_xy");
 		res = xy.methodWithLowLocalReturn();
+		hs.assignReturnLevelToLocal("int_res");
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res"));
+		
+		hs.assignLocalsToLocal("int_res", "TestSubClass_xy");
 		res = xy.methodWithHighLocalReturn();
+		hs.assignReturnLevelToLocal("int_res");
+		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_res"));
 		
 	    hs.close();	
 	    
@@ -224,6 +236,7 @@ public class AssignLocalsSuccess {
 	    LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
+	@SuppressWarnings("unused")
 	@Test
 	public void assignConstantAndLocalToLocal() {
 		

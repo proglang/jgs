@@ -84,8 +84,7 @@ public ArrayList<SecurityLevel> getActualArguments() {
  */
 public SecurityLevel getArgLevelAt(int i) {
 	if (actualArguments.size() <= i ) {
-		logger.log(Level.SEVERE, "Internal Error", new InternalAnalyzerException());
-		System.exit(0);
+		new InternalAnalyzerException();	
 	}
 	  
 	return actualArguments.get(i);	
@@ -170,8 +169,7 @@ public SecurityLevel getFieldLevel(Object o, String f) {
 		System.exit(0);
 	}
 	if (!innerMap.get(o).containsKey(f)) {
-		logger.log(Level.SEVERE, "Missing Field", new InternalAnalyzerException());
-		System.exit(0);
+		new InternalAnalyzerException("Missing field " + f);
 	}
 	return innerMap.get(o).get(f);
 }
