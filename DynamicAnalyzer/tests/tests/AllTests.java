@@ -8,7 +8,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ LocalMapTest.class, 
 				tests.handleStmtTests.AssignLocalsSuccess.class,
 				tests.handleStmtTests.AssignLocalsFail.class,
-				tests.handleStmtTests.InternalMethods.class,
 				tests.handleStmtTests.AssignFieldsSuccess.class,
 				tests.handleStmtTests.AssignFieldsFail.class,
 				tests.handleStmtTests.InvokeSuccess.class,
@@ -23,9 +22,15 @@ import org.junit.runners.Suite.SuiteClasses;
 				tests.handleStmtTests.SwitchStmtFail.class,
 				tests.handleStmtTests.StaticFieldsSuccess.class,
 				tests.handleStmtTests.StaticFieldsFail.class,
+				
 				ExampleFailScenarios.class,
 				ObjectMapTest.class, 
-				JimpleInjectorTest.class })
+				JimpleInjectorTest.class, 
+				
+				analyzer.level2.InternalMethods.class
+
+
+})
 
 public class AllTests {
 

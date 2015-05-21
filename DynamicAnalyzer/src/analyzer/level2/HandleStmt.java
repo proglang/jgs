@@ -211,7 +211,7 @@ public class HandleStmt {
 		return om.popGlobalPC();
 	}
 
-	public boolean checkLocalPC(String signature) {
+	protected boolean checkLocalPC(String signature) {
 		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {lm.getLevel(signature), lm.getLocalPC()  });
 		boolean res = true;
 		if (lm.getLevel(signature) == SecurityLevel.LOW && lm.getLocalPC() == SecurityLevel.HIGH) {

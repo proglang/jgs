@@ -18,6 +18,9 @@ public class Test {
     public static int m() {
     	
     	TestSubClass ts = new TestSubClass();
+    	
+    	TestSubClass.sField = 2;
+    	ts.sField = 3;
 
     	sField = 2;
     	
