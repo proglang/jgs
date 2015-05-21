@@ -1,4 +1,4 @@
-package tests.handleStmtTests;
+package analyzer.level2;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

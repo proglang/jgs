@@ -11,9 +11,4 @@ public class HandleStmtForTests extends HandleStmt {
 	}
 
 
-	protected void test() {
-		
-	}
-
-
 }

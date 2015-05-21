@@ -1,8 +1,6 @@
-package tests.handleStmtTests;
+package analyzer.level2;
 
 import static org.junit.Assert.*;
-
-import exceptions.IllegalFlowException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,39 +13,38 @@ import org.junit.Test;
 import tests.testClasses.TestSubClass;
 
 import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
 
-public class StaticFieldsFail {
+public class StaticFieldsSuccess {
 	
 	Logger LOGGER = L2Logger.getLogger();
+	static int field;
 	
 	@Before
 	public void init() {
 		HandleStmtForTests.init();
 	}
 
-	@Test(expected = IllegalFlowException.class)
-	public void internalStaticFieldFailTest() {
+	@Test
+	public void internalStaticFieldSuccessTest() {
 		
-		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD FAIL TEST STARTED");
+		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST STARTED");
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
 		hs.addObjectToObjectMap(this.getClass());
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
 		
-		hs.pushGlobalPC(SecurityLevel.HIGH);
 		hs.assignConstantToField(this.getClass(), "int_field");
 			
-		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD FAIL TEST STARTED");
+		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST STARTED");
 		
 	}
 	
 	@SuppressWarnings("static-access")
-	@Test(expected = IllegalFlowException.class)
-	public void externalStaticFieldFailTest() {
+	@Test
+	public void externalStaticFieldSuccessTest() {
 		
-		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD FAIL TEST STARTED");
+		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD SUCCESS TEST STARTED");
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -59,14 +56,14 @@ public class StaticFieldsFail {
 		assertTrue(hs.containsFieldInObjectMap(TestSubClass.class, "int_sField"));
 		assertTrue(hs.containsFieldInObjectMap(tsc.getClass(), "int_sField"));
 		
-		hs.pushGlobalPC(SecurityLevel.HIGH);
-		
 		hs.assignConstantToField(tsc.getClass(), "int_sField");
+		hs.assignConstantToField(TestSubClass.class, "int_sField");
 		TestSubClass.sField = 2;
 		tsc.sField = 3;
 			
-		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD FAIL TEST STARTED");
+		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD SUCCESS TEST STARTED");
 		
 	}
+	
 
 }

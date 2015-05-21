@@ -4,26 +4,26 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import tests.handleStmtTests.AssignFieldsFail;
-import tests.handleStmtTests.AssignFieldsSuccess;
-import tests.handleStmtTests.AssignLocalsFail;
-import tests.handleStmtTests.AssignLocalsSuccess;
-import tests.handleStmtTests.IfStmtFail;
-import tests.handleStmtTests.IfStmtSuccess;
-import tests.handleStmtTests.InvokeFail;
-import tests.handleStmtTests.InvokeSuccess;
-import tests.handleStmtTests.ReturnStmtFail;
-import tests.handleStmtTests.ReturnStmtSuccess;
-import tests.handleStmtTests.StaticFieldsFail;
-import tests.handleStmtTests.StaticFieldsSuccess;
-import tests.handleStmtTests.SwitchStmtFail;
-import tests.handleStmtTests.SwitchStmtSuccess;
-import tests.handleStmtTests.WhileStmtFail;
-import tests.handleStmtTests.WhileStmtSuccess;
 
 import analyzer.level1.JimpleInjectorTest;
+import analyzer.level2.AssignFieldsFail;
+import analyzer.level2.AssignFieldsSuccess;
+import analyzer.level2.AssignLocalsFail;
+import analyzer.level2.AssignLocalsSuccess;
+import analyzer.level2.IfStmtFail;
+import analyzer.level2.IfStmtSuccess;
+import analyzer.level2.InvokeFail;
+import analyzer.level2.InvokeSuccess;
 import analyzer.level2.LocalMapTest;
 import analyzer.level2.ObjectMapTest;
+import analyzer.level2.ReturnStmtFail;
+import analyzer.level2.ReturnStmtSuccess;
+import analyzer.level2.StaticFieldsFail;
+import analyzer.level2.StaticFieldsSuccess;
+import analyzer.level2.SwitchStmtFail;
+import analyzer.level2.SwitchStmtSuccess;
+import analyzer.level2.WhileStmtFail;
+import analyzer.level2.WhileStmtSuccess;
 
 @RunWith(Suite.class)
 @SuiteClasses({ LocalMapTest.class, 

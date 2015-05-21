@@ -1,4 +1,4 @@
-package tests.handleStmtTests;
+package analyzer.level2;
 
 import static org.junit.Assert.*;
 import tests.testClasses.TestSubClass;
@@ -212,6 +212,11 @@ public class AssignLocalsSuccess {
 	    
 
 		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+	}
+	
+	@Test
+	public void assignConstantAndLocalToLocal() {
+		// TODO
 	}
 
 }

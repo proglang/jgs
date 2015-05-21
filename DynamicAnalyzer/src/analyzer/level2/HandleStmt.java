@@ -15,7 +15,7 @@ import exceptions.IllegalFlowException;
 import exceptions.InternalAnalyzerException;
 
 /**
- * Blabl
+ * 
  *
  * @author koenigr
  * 
@@ -68,7 +68,7 @@ public class HandleStmt {
 		om.popGlobalPC();
 	}
 	
-	public void abort(String sink) {
+	protected void abort(String sink) {
 		LOGGER.log(Level.SEVERE, "", new IllegalFlowException("System.exit because of illegal flow to " + sink));
 	    System.exit(0);
 	}
@@ -77,14 +77,14 @@ public class HandleStmt {
 	 * @param l
 	 * @return
 	 */
-	public SecurityLevel setActualReturnLevel(SecurityLevel l) {
+	protected SecurityLevel setActualReturnLevel(SecurityLevel l) {
 		return om.setActualReturnLevel(l);
 	}
 	
 	/**
 	 * @return
 	 */
-	public SecurityLevel getActualReturnLevel() {
+	protected SecurityLevel getActualReturnLevel() {
 		return om.getActualReturnLevel();
 	}
 	
@@ -98,23 +98,23 @@ public class HandleStmt {
 		return om.setField(o, signature);
 	}
 	
-	public boolean containsObjectInObjectMap(Object o) {
+	protected boolean containsObjectInObjectMap(Object o) {
 		return om.containsObject(o);
 	}
 	
-	public boolean containsFieldInObjectMap(Object o, String signature) {
+	protected boolean containsFieldInObjectMap(Object o, String signature) {
 		return om.containsField(o, signature);
 	}
 	
-	public int getNumberOfElements() {
+	protected int getNumberOfElements() {
 		return om.getNumberOfElements();
 	}
 	
-	public int getNumberOfFields(Object o) {
+	protected int getNumberOfFields(Object o) {
 		return om.getNumberOfFields(o);
 	}
 	
-	public SecurityLevel getFieldLevel(Object o, String signature) {
+	protected SecurityLevel getFieldLevel(Object o, String signature) {
 		return om.getFieldLevel(o, signature);
 	}
 	
@@ -138,12 +138,12 @@ public class HandleStmt {
 		lm.insertElement(signature, SecurityLevel.LOW); 
 	}
 	
-	public SecurityLevel setLocalLevel(String signature, SecurityLevel level) {
+	protected SecurityLevel setLocalLevel(String signature, SecurityLevel level) {
 		lm.setLevel(signature, level);
 		return lm.getLevel(signature);
 	}
 	
-	public SecurityLevel getLocalLevel(String signature) {
+	protected SecurityLevel getLocalLevel(String signature) {
 		return lm.getLevel(signature);
 	}
 	
@@ -162,7 +162,7 @@ public class HandleStmt {
 	 * @param stringList 
 	 * @return
 	 */
-	public SecurityLevel joinLocals(String... stringList) {
+	protected SecurityLevel joinLocals(String... stringList) {
 		SecurityLevel result = SecurityLevel.LOW;
 		for(String op: stringList) {
 			if (lm.getLevel(op) == SecurityLevel.HIGH) {
@@ -172,7 +172,7 @@ public class HandleStmt {
 		return result;
 	}
 	
-	public SecurityLevel joinWithLPC(SecurityLevel l) {
+	protected SecurityLevel joinWithLPC(SecurityLevel l) {
 		SecurityLevel result = SecurityLevel.LOW;
 		if (lm.getLocalPC() == SecurityLevel.HIGH || l == SecurityLevel.HIGH) {
 			result = SecurityLevel.HIGH;
@@ -180,7 +180,7 @@ public class HandleStmt {
 		return result;
 	}
 	
-	public SecurityLevel joinWithGPC(SecurityLevel l) {
+	protected SecurityLevel joinWithGPC(SecurityLevel l) {
 		SecurityLevel result = SecurityLevel.LOW;
 		if (om.getGlobalPC() == SecurityLevel.HIGH || l == SecurityLevel.HIGH) {
 			result = SecurityLevel.HIGH;
@@ -188,26 +188,26 @@ public class HandleStmt {
 		return result;
 	}
 	
-	public SecurityLevel setLocalPC(SecurityLevel l) {
+	protected SecurityLevel setLocalPC(SecurityLevel l) {
 		lm.setLocalPC(l);
 		return lm.getLocalPC();
 	}
 	
-	public SecurityLevel getLocalPC() {
+	protected SecurityLevel getLocalPC() {
 		return lm.getLocalPC();
 	}
 	
-	public SecurityLevel pushGlobalPC(SecurityLevel l) {
+	protected SecurityLevel pushGlobalPC(SecurityLevel l) {
 		LOGGER.log(Level.INFO, "Set globalPC to {0}", l);
 		om.pushGlobalPC(l);
 		return om.getGlobalPC();
 	}
 	
-	public SecurityLevel getGlobalPC() {
+	protected SecurityLevel getGlobalPC() {
 		return om.getGlobalPC();
 	}
 	
-	public SecurityLevel popGlobalPC() {
+	protected SecurityLevel popGlobalPC() {
 		return om.popGlobalPC();
 	}
 
@@ -220,7 +220,7 @@ public class HandleStmt {
 		return res;		
 	}
 	
-	public boolean checkGlobalPC(Object o, String signature) {
+	protected boolean checkGlobalPC(Object o, String signature) {
 		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {om.getFieldLevel(o, signature), om.getGlobalPC()  });
 		boolean res = true;
 		if (om.getFieldLevel(o, signature) == SecurityLevel.LOW && om.getGlobalPC() == SecurityLevel.HIGH) {
@@ -312,7 +312,7 @@ public class HandleStmt {
 	
 
 	
-	public SecurityLevel joinLevels(SecurityLevel... levels) {
+	protected SecurityLevel joinLevels(SecurityLevel... levels) {
 		SecurityLevel res = SecurityLevel.LOW;
 		for (SecurityLevel l: levels) {
 			if ( l == SecurityLevel.HIGH) {

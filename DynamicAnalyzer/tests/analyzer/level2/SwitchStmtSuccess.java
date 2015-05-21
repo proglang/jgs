@@ -1,4 +1,4 @@
-package tests.handleStmtTests;
+package analyzer.level2;
 
 import static org.junit.Assert.*;
 
@@ -13,9 +13,7 @@ import org.junit.Test;
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
 
-import exceptions.IllegalFlowException;
-
-public class SwitchStmtFail {
+public class SwitchStmtSuccess {
 	
 	Logger LOGGER = L2Logger.getLogger();
 	
@@ -24,18 +22,50 @@ public class SwitchStmtFail {
 		HandleStmtForTests.init();
 	}
 
-	@Test(expected = IllegalFlowException.class)
+	@Test
 	public void switchStmtLowTest() {
 		
-		LOGGER.log(Level.INFO, "SWITCH STMT FAIL TEST STARTED");
+		LOGGER.log(Level.INFO, "SWITCH STMT LOW TEST STARTED");
+		
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		hs.addLocal("int_x");
+		int x = 0;
+		
+		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
+		
+		hs.checkCondition("int_x");
+		switch(x) {
+		
+		case 0: 
+			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
+			hs.exitInnerScope();
+			break;
+		case 1:  
+			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
+			hs.exitInnerScope();
+			break;
+		default:  
+			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
+			hs.exitInnerScope();
+			break;
+		
+		} 
+
+		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
+
+		LOGGER.log(Level.INFO, "SWITCH STMT LOW TEST FINISHED");
+	}
+	
+	@Test
+	public void switchStmtHighTest() {
+		
+		LOGGER.log(Level.INFO, "SWITCH STMT HIGH TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		hs.addLocal("int_x", SecurityLevel.HIGH);
 		int x = 0;
-		hs.addLocal("int_y", SecurityLevel.LOW);
-		@SuppressWarnings("unused")
-		int y = 0;
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		
@@ -45,8 +75,7 @@ public class SwitchStmtFail {
 		case 0: 
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
 			
-			hs.assignConstantToLocal("int_y");
-			x += 2;
+			hs.assignConstantToLocal("int_x");
 			
 			hs.exitInnerScope();
 			break;
@@ -63,8 +92,7 @@ public class SwitchStmtFail {
 
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 
-		LOGGER.log(Level.INFO, "SWITCH STMT FAIL TEST FINISHED");
+		LOGGER.log(Level.INFO, "SWITCH STMT HIGH TEST FINISHED");
 	}
-
 
 }

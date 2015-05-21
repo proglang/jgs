@@ -1,4 +1,4 @@
-package tests.handleStmtTests;
+package analyzer.level2;
 
 import static org.junit.Assert.*;
 
@@ -88,6 +88,11 @@ public class AssignLocalsFail {
 
 		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 	
+	}
+	
+	@Test
+	public void assignConstantAndLocalToLocal() {
+		// TODO
 	}
 
 }
