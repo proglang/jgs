@@ -1,6 +1,11 @@
 package analyzer.level2;
 
 import static org.junit.Assert.*;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import logging.L2Logger;
 import tests.testClasses.TestSubClass;
 
 import org.junit.Before;
@@ -12,6 +17,8 @@ import analyzer.level2.storage.ObjectMap;
 
 public class AssignLocalsSuccess {
 	
+	Logger LOGGER = L2Logger.getLogger();
+	
 	@Before
 	public void init() {
 		HandleStmtForTests.init();
@@ -20,9 +27,7 @@ public class AssignLocalsSuccess {
 	@Test
 	public void assignConstantToLocal() {
 		
-		System.out.println("ASSIGN CONSTANT TO LOCAL TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", SecurityLevel.LOW);
@@ -43,15 +48,13 @@ public class AssignLocalsSuccess {
 		
 	    hs.close();
 
-		System.out.println("ASSIGN CONSTANT TO LOCAL TEST FINISHED");
+	    LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignLocalsToLocal() {
 		
-		System.out.println("ASSIGN LOCALS TO LOCAL TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -91,15 +94,13 @@ public class AssignLocalsSuccess {
 		
 	    hs.close();	
 
-		System.out.println("ASSIGN CONSTANT TO LOCAL TEST FINISHED");
+	    LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignFieldToLocal() {
 		
-		System.out.println("ASSIGN FIELD TO LOCAL TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 
@@ -133,15 +134,13 @@ public class AssignLocalsSuccess {
 		
 	    hs.close();	
 
-		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+	    LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignNewObjectToLocal() {
 		
-		System.out.println("ASSIGN FIELD TO LOCAL TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.assignLocalsToLocal("TestSubClass_xy");
@@ -162,15 +161,14 @@ public class AssignLocalsSuccess {
 		
 	    hs.close();	
 
-		System.out.println("ASSIGN NEW OBJECT TO LOCAL TEST FINISHED");
+	    LOGGER.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL TEST FINISHED");
 	}
 	
+	@SuppressWarnings("unused")
 	@Test
 	public void assignMethodResultToLocal() {
 
-		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -191,32 +189,61 @@ public class AssignLocalsSuccess {
 	    hs.close();	
 	    
 
-		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+	    LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignArgumentToLocal() {
 
-		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		/*
 		 * Assign argument
 		 */
+		
+		hs.addLocal("int_a");
+		hs.addLocal("int_b", SecurityLevel.HIGH);
+		hs.addLocal("int_c");
+		
+		hs.addLocal("int_res");
+		
+		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 
+		hs.assignArgumentToLocal(0, "int_res");
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res"));
+		hs.assignArgumentToLocal(1, "int_res");
+		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_res"));
+		hs.assignArgumentToLocal(2, "int_res");
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res"));
 		
 	    hs.close();	
 	    
 
-		System.out.println("ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+	    LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignConstantAndLocalToLocal() {
-		// TODO
+		
+		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL SUCCESS TEST STARTED");
+				
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		/*
+		 * x++; or x += 1;  or x = x + 1;
+		 */
+		
+		hs.addLocal("int_x");
+		int x = 0;
+		
+		hs.assignLocalsToLocal("int_x", "int_x"); // Just ignore the constants
+		x++;
+		
+		hs.close();
+				
+		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL SUCCESS TEST FINISHED");
 	}
 
 }

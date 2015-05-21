@@ -92,7 +92,22 @@ public class AssignLocalsFail {
 	
 	@Test
 	public void assignConstantAndLocalToLocal() {
-		// TODO
+		
+		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST STARTED");
+				
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		/*
+		 * x++; or x += 1;  or x = x + 1;
+		 */
+		
+		hs.addLocal("int_x");
+		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.assignLocalsToLocal("int_x", "int_x"); // Just ignore the constants
+		
+		hs.close();
+				
+		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST FINISHED");
 	}
 
 }

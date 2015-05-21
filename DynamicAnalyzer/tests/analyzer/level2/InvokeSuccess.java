@@ -40,6 +40,8 @@ public class InvokeSuccess {
 		 * 1. Add new Object to ObjectMap
 		 * 2. Add Fields to ObjectMap
 		 */
+		
+		hs.assignConstantToLocal("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(1, hs.getNumberOfFields(xy));
