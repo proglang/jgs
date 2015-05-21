@@ -4,24 +4,45 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import tests.handleStmtTests.AssignFieldsFail;
+import tests.handleStmtTests.AssignFieldsSuccess;
+import tests.handleStmtTests.AssignLocalsFail;
+import tests.handleStmtTests.AssignLocalsSuccess;
+import tests.handleStmtTests.IfStmtFail;
+import tests.handleStmtTests.IfStmtSuccess;
+import tests.handleStmtTests.InvokeFail;
+import tests.handleStmtTests.InvokeSuccess;
+import tests.handleStmtTests.ReturnStmtFail;
+import tests.handleStmtTests.ReturnStmtSuccess;
+import tests.handleStmtTests.StaticFieldsFail;
+import tests.handleStmtTests.StaticFieldsSuccess;
+import tests.handleStmtTests.SwitchStmtFail;
+import tests.handleStmtTests.SwitchStmtSuccess;
+import tests.handleStmtTests.WhileStmtFail;
+import tests.handleStmtTests.WhileStmtSuccess;
+
+import analyzer.level1.JimpleInjectorTest;
+import analyzer.level2.LocalMapTest;
+import analyzer.level2.ObjectMapTest;
+
 @RunWith(Suite.class)
 @SuiteClasses({ LocalMapTest.class, 
-				tests.handleStmtTests.AssignLocalsSuccess.class,
-				tests.handleStmtTests.AssignLocalsFail.class,
-				tests.handleStmtTests.AssignFieldsSuccess.class,
-				tests.handleStmtTests.AssignFieldsFail.class,
-				tests.handleStmtTests.InvokeSuccess.class,
-				tests.handleStmtTests.InvokeFail.class,
-				tests.handleStmtTests.ReturnStmtSuccess.class,
-				tests.handleStmtTests.ReturnStmtFail.class,
-				tests.handleStmtTests.IfStmtSuccess.class,
-				tests.handleStmtTests.IfStmtFail.class,
-				tests.handleStmtTests.WhileStmtSuccess.class,
-				tests.handleStmtTests.WhileStmtFail.class,
-				tests.handleStmtTests.SwitchStmtSuccess.class,
-				tests.handleStmtTests.SwitchStmtFail.class,
-				tests.handleStmtTests.StaticFieldsSuccess.class,
-				tests.handleStmtTests.StaticFieldsFail.class,
+				AssignLocalsSuccess.class,
+				AssignLocalsFail.class,
+				AssignFieldsSuccess.class,
+				AssignFieldsFail.class,
+				InvokeSuccess.class,
+				InvokeFail.class,
+				ReturnStmtSuccess.class,
+				ReturnStmtFail.class,
+				IfStmtSuccess.class,
+				IfStmtFail.class,
+				WhileStmtSuccess.class,
+				WhileStmtFail.class,
+				SwitchStmtSuccess.class,
+				SwitchStmtFail.class,
+				StaticFieldsSuccess.class,
+				StaticFieldsFail.class,
 				
 				ExampleFailScenarios.class,
 				ObjectMapTest.class, 

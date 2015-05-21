@@ -1,4 +1,4 @@
-package tests;
+package analyzer.level1;
 
 import static org.junit.Assert.*;
 
