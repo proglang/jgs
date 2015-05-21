@@ -11,10 +11,8 @@ import tests.testClasses.TestSubClass;
 import org.junit.Before;
 import org.junit.Test;
 
-import analyzer.level2.HandleStmt;
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 
 public class InvokeSuccess {
 
@@ -100,7 +98,7 @@ public class InvokeSuccess {
 	@Test
 	public void nestedMethodsTest() {
 		
-		System.out.println("INVOKE NESTED METHODS TEST STARTED");
+		LOGGER.log(Level.INFO, "INVOKE NESTED METHODS TEST STARTED");
 		
 		
 		class SomeClass {
@@ -158,7 +156,7 @@ public class InvokeSuccess {
 		
 		hs.close();
 
-		System.out.println("INVOKE NESTED METHODS TEST FINISHED");
+		LOGGER.log(Level.INFO, "INVOKE NESTED METHODS TEST FINISHED");
 	}
 
 }

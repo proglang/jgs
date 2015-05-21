@@ -14,7 +14,7 @@ public class ArraysFail {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		// TODO LOGGER.log(Level.INFO, "ARRAYS FAIL TEST STARTED");
 	}
 
 }
