@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import logging.L1Logger;
 import logging.L2Logger;
 import exceptions.IllegalFlowException;
+import exceptions.InternalAnalyzerException;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.LocalStore;
 import analyzer.level1.storage.UnitStore.Element;
@@ -31,6 +32,7 @@ import soot.VoidType;
 import soot.jimple.AddExpr;
 import soot.jimple.AssignStmt;
 import soot.jimple.Expr;
+import soot.jimple.IdentityStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
@@ -155,9 +157,44 @@ public class JimpleInjector {
 		unitStore.lastPos = assignExpr;
 	}
 	
-	public static void addObjectToObjectMap(Object o) {
-		LOGGER.log(Level.INFO, "Add object {0} to ObjectMap", o.toString());
+	public static void addObjectToObjectMap() {
 		
+		
+		if (!(units.getFirst() instanceof IdentityStmt)) {
+			new InternalAnalyzerException("Expected @this reference");
+		}
+
+		String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
+
+		LOGGER.log(Level.INFO, "Add object {0} to ObjectMap", thisObj);
+
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(RefType.v("java.lang.Object"));
+		
+
+		Value thisValue = (Value) units.getFirst().getDefBoxes().get(0).getValue();
+		
+		Unit assignThis = Jimple.v().newAssignStmt(local1, thisValue);
+		
+		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
+				parameterTypes, VoidType.v(), false), 
+				local1); // TODO: nicht die local1 nehmen
+		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+		 // TODO: das Problem ist, dass es schon eine @this referenz gibt
+		
+		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		unitStore.lastPos = assignExpr;
+		
+	}
+	
+	public static void addFieldToObjectMap(Object o, String signature) {
+		
+		LOGGER.log(Level.INFO, "Add field {0} to ObjectMap", signature);
+		
+		/*
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		
@@ -174,11 +211,8 @@ public class JimpleInjector {
 		 // TODO: das Problem ist, dass es schon eine @this referenz gibt
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
-		unitStore.lastPos = assignExpr;
-		
+		unitStore.lastPos = assignExpr;*/
 	}
-	
-	public static void addFieldToObjectMap(Object o, String signature) {}
 	
 	public static void makeFieldHigh(Object o, String signature) {}
 	

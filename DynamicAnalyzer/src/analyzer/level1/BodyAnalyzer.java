@@ -80,13 +80,15 @@ public class BodyAnalyzer extends BodyTransformer{
           JimpleInjector.initHS();
         }
 
-        
-        if (method.isConstructor() && !method.isStatic()) {
-            // TODO: wenn init(), dann add Object to ObjectMap
+        /*
+         * If the method is the constructor, the newly created object
+         * is added to the ObjectMap and its fields are added to the
+         * new object
+         */
+        if (method.isConstructor() && !method.isStatic()) { // TODO: wie kommt man an clinit?
             // TODO: wenn init(), dann add Fields to Map
         LOGGER.log(Level.INFO, "Entering <init>");
-        
-        JimpleInjector.addObjectToObjectMap(this);
+        JimpleInjector.addObjectToObjectMap();
         
         Iterator<SootField> fIt = fields.iterator();
         while(fIt.hasNext()) {
