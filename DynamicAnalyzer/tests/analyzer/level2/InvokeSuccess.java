@@ -30,7 +30,7 @@ public class InvokeSuccess {
 
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
-		
+		hs.addLocal("TestSubClass_xy");
 		/*
 		 * Invoke New Stmt
 		 * 1. Add new Object to ObjectMap
@@ -40,7 +40,7 @@ public class InvokeSuccess {
 		hs.assignConstantToLocal("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
-		assertEquals(1, hs.getNumberOfFields(xy));
+		assertEquals(2, hs.getNumberOfFields(xy)); // The third fiel is static
 	    hs.close();	
 	    
 	    LOGGER.log(Level.INFO, "INVOKE TEST FINISHED");

@@ -2,14 +2,21 @@ package analyzer.level2;
 
 import static org.junit.Assert.*;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import logging.L2Logger;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import tests.testClasses.TestSubClass;
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 
 public class InternalMethods {
+
+	Logger LOGGER = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
@@ -18,9 +25,7 @@ public class InternalMethods {
 
 	@Test
 	public void checkLocalPCTest() {
-		System.out.println("LOCAL PC TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "LOCAL PC TEST STARTED");
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -43,14 +48,12 @@ public class InternalMethods {
 	    hs.close();	
 	    
 		
-		System.out.println("LOCAL PC TEST FINISHED");
+	    LOGGER.log(Level.INFO, "LOCAL PC TEST FINISHED");
 	}
 	
 	@Test
 	public void joinLocalsTest() {
-		System.out.println("JOIN LOCALS TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
+		LOGGER.log(Level.INFO, "JOIN LOCALS TEST STARTED");
 
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", SecurityLevel.LOW);
@@ -63,32 +66,32 @@ public class InternalMethods {
 
 	    hs.close();	
 		
-		System.out.println("JOIN LOCALS TEST FINISHED");
+	    LOGGER.log(Level.INFO, "JOIN LOCALS TEST FINISHED");
 	}
 	
-	@Test
-	public void localPCTest() {
-		System.out.println("LOCAL PC TEST STARTED");
-
-	    ObjectMap m = ObjectMap.getInstance();
-
-		HandleStmtForTests hs = new HandleStmtForTests();
-		
-		// TODO
-
-	    hs.close();	
-		
-		System.out.println("LOCAL PC TEST FINISHED");
-	}
 	
 	@Test
 	public void argumentsListTest() {
-		fail();
-	}
-	
-	@Test
-	public void localMapStackTest() {
+		LOGGER.log(Level.INFO, "ARGUMENTS LIST TEST STARTED");
+			
+		HandleStmtForTests hs = new HandleStmtForTests();
 		
+		hs.addLocal("TestSubClass_xy");
+		TestSubClass xy = new TestSubClass();
+		
+		hs.addLocal("int_i1");
+		hs.addLocal("int_i2");
+		hs.addLocal("int_i3");
+		int i1 = 0;
+		int i2 = 0;
+		int i3 = 0;
+		
+		hs.storeArgumentLevels("int_i1", "int_i2", "int_i3");
+		xy.methodWithArgs(i1, i2, i3);
+		
+		hs.close();
+		
+		LOGGER.log(Level.INFO, "ARGUMENTS LIST TEST FINISHED");
 	}
 
 }

@@ -13,7 +13,6 @@ import analyzer.level2.AssignLocalsSuccess;
 import analyzer.level2.IfStmtFail;
 import analyzer.level2.IfStmtSuccess;
 import analyzer.level2.InternalMethods;
-import analyzer.level2.InvokeFail;
 import analyzer.level2.InvokeSuccess;
 import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
@@ -33,7 +32,6 @@ import analyzer.level2.WhileStmtSuccess;
 				AssignFieldsSuccess.class,
 				AssignFieldsFail.class,
 				InvokeSuccess.class,
-				InvokeFail.class,
 				ReturnStmtSuccess.class,
 				ReturnStmtFail.class,
 				IfStmtSuccess.class,
