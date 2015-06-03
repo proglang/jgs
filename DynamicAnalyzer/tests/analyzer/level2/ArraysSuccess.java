@@ -19,13 +19,15 @@ public class ArraysSuccess {
 		LOGGER.log(Level.INFO, "CREATE ARRAY SUCCESS TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
-	// TODO Wie sieht es in Jimple aus?
 		
 		hs.addLocal("String[] a");
 		String[] a = new String[] {"asd", "", ""};
 		hs.addObjectToObjectMap(a);
-		// TODO hs.addFieldToObjectMap(a, "")
+		for(int i = 0; i < a.length ; i++) {
+			hs.addFieldToObjectMap(a, Integer.toString(i));
+		}
 		
+		assertEquals(3, hs.getNumberOfFields(a));
 		
 		hs.close();
 
@@ -40,7 +42,16 @@ public class ArraysSuccess {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		String[] a = new String[] {"asd", "", ""};
+		
+		/*
+		 * x = Join(i,a, pgc)
+		 */
+		hs.assignArrayFieldToLocal("String_x", a , Integer.toString(2));
 		String x = a[2];
+		
+		int i = 3;
+		hs.assignArrayFieldToLocal("String_x", a , Integer.toString(2));
+		x = a[i];
 		
 		hs.close();
 		
@@ -56,7 +67,18 @@ public class ArraysSuccess {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		String[] a = new String[] {"asd", "", ""};
+		
+		/*
+		 * check(pgc)
+		 * level(a) = join(gpc,local, ??i??)
+		 * i = ??
+		 */
+		hs.assignLocalsToArrayField(a, Integer.toString(2), "int_3");
 		a[2] = "3";
+		
+		int i = 4;
+		hs.assignLocalsToArrayField(a, Integer.toString(2), "int_3");
+		a[i] = "3";
 		
 		hs.close();
 		
