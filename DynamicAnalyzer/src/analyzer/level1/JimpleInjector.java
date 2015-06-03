@@ -161,7 +161,8 @@ public class JimpleInjector {
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		
-		Unit assignThis = Jimple.v().newIdentityStmt(local1, Jimple.v().newThisRef(RefType.v("java.lang.Object")));
+		// Unit assignThis = Jimple.v().newIdentityStmt(local1, Jimple.v().newThisRef(RefType.v("java.lang.Object")));
+		Unit assignThis = units.getFirst();
 		
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
@@ -170,9 +171,10 @@ public class JimpleInjector {
 				local1);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
-		//units.addFirst(assignThis);
-		//unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
-		//unitStore.lastPos = assignExpr;
+		 // TODO: das Problem ist, dass es schon eine @this referenz gibt
+		
+		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		unitStore.lastPos = assignExpr;
 		
 	}
 	
@@ -183,6 +185,14 @@ public class JimpleInjector {
 	public static void makeFieldLow(Object o, String signature) {}
 	
 	public static void addLocal(String signature, SecurityLevel level) {}
+	
+	public static void assignArrayFieldToLocal() {
+		
+	}
+	
+	public static void assignLocalToArrayField() {
+		
+	}
 	
 	public static void setLocalLevel(String signature, SecurityLevel level) {}
 	
@@ -422,7 +432,7 @@ private static String getSignatureForField(SootField f) {
 }
 
 private static int getStartPos() {
-	int startPos;
+	int startPos = 0;
 	
 	// Jimple requires that @param-assignments statements 
 	//shall precede all non-identity statements
