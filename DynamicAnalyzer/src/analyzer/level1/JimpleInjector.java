@@ -37,6 +37,7 @@ import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
+import soot.jimple.ThisRef;
 import soot.util.Chain;
 
 public class JimpleInjector {
@@ -160,58 +161,69 @@ public class JimpleInjector {
 	public static void addObjectToObjectMap() {
 		
 		
-		if (!(units.getFirst() instanceof IdentityStmt)) {
+		if (!(units.getFirst() instanceof IdentityStmt) 
+				|| !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
 			new InternalAnalyzerException("Expected @this reference");
 		}
 
 		String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
 
-		LOGGER.log(Level.INFO, "Add object {0} to ObjectMap", thisObj);
+		LOGGER.log(Level.INFO, "Add object {0} to ObjectMap in method {1}",
+				new Object[] {thisObj, b.getMethod().getName()} );
 
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		
-
-		Value thisValue = (Value) units.getFirst().getDefBoxes().get(0).getValue();
-		
-		Unit assignThis = Jimple.v().newAssignStmt(local1, thisValue);
+		Local l = (Local) units.getFirst().getDefBoxes().get(0).getValue();
 		
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
 				parameterTypes, VoidType.v(), false), 
-				local1); // TODO: nicht die local1 nehmen
+				l); 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		 // TODO: das Problem ist, dass es schon eine @this referenz gibt
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
 		unitStore.lastPos = assignExpr;
 		
 	}
 	
-	public static void addFieldToObjectMap(Object o, String signature) {
+	public static void addFieldToObjectMap(SootField field) {
 		
-		LOGGER.log(Level.INFO, "Add field {0} to ObjectMap", signature);
+		if (!(units.getFirst() instanceof IdentityStmt) 
+				|| !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
+			new InternalAnalyzerException("Expected @this reference");
+		}
 		
-		/*
+
+		String f = getSignatureForField(field);
+		System.out.println(field.getDeclaration());
+		System.out.println(field.getDeclaringClass());
+		// TODO: Wie bekommt man das zugehörige Objekt?
+		
+		LOGGER.log(Level.INFO, "Add Field {0} to ObjectMap in method {1}",
+				new Object[] { f , b.getMethod().getName()});
+		
+		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
+		parameterTypes.add(RefType.v("Java.lang.String"));
 		
-		// Unit assignThis = Jimple.v().newIdentityStmt(local1, Jimple.v().newThisRef(RefType.v("java.lang.Object")));
-		Unit assignThis = units.getFirst();
+		Unit assignL = Jimple.v().newAssignStmt(local1, StringConstant.v(f));
+		
+		Local l = (Local) units.getFirst().getDefBoxes().get(0).getValue();
 		
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
+				Scene.v().getSootClass(HANDLE_CLASS), "addFieldToObjectMap", 
 				parameterTypes, VoidType.v(), false), 
-				local1);
+				l, local1);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		 // TODO: das Problem ist, dass es schon eine @this referenz gibt
-		
+	
+		unitStore.insertElement(unitStore.new Element(assignL, unitStore.lastPos));
+		unitStore.lastPos = assignL;
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
-		unitStore.lastPos = assignExpr;*/
+		unitStore.lastPos = assignExpr;
 	}
 	
 	public static void makeFieldHigh(Object o, String signature) {}
