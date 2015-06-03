@@ -32,3 +32,11 @@ Add fields
 SootField f = new SootField("field_name", IntType.v());
 Scene.v().getSootClass("main.Test").getFields().add(f);
 ```
+
+Create a reference to "this"
+-----------------------------
+
+```java
+Local local;
+Unit assignThis = Jimple.v().newIdentityStmt(local, Jimple.v().newThisRef(RefType.v("java.lang.Object")));
+```
