@@ -422,11 +422,21 @@ private static String getSignatureForField(SootField f) {
 }
 
 private static int getStartPos() {
+	int startPos;
+	
+	// Jimple requires that @param-assignments statements 
+	//shall precede all non-identity statements
 	if (b.getMethod().isConstructor()) {
-		return 1;
+		startPos = 1;
 	} else {
-		return b.getMethod().getParameterCount();
+		startPos = b.getMethod().getParameterCount();
 	}
+	
+	// At the beginning of every non-static method, the this-reference is assigned to a local.
+	// Jimple requires, that it's on the first position
+	if(!b.getMethod().isStatic()) startPos++;
+	
+	return startPos;
 }
 
 

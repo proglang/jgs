@@ -2,12 +2,9 @@ package analyzer.level2;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Formatter;
 import logging.L2Logger;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
@@ -296,6 +293,21 @@ public class HandleStmt {
 		}
 		setLocalLevel(local, om.getActualReturnLevel());
 	}
+	
+	
+	public void assignArrayFieldToLocal(String arrField, Object a,
+			String local) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	public void assignLocalsToArrayField(Object a, String arrField,
+			String... local) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 
 	public void returnConstant() {
 		LOGGER.log(Level.INFO, "Return a constant value");
@@ -313,6 +325,7 @@ public class HandleStmt {
 
 	
 	public void storeArgumentLevels(String... arguments) {
+		
 		ArrayList<SecurityLevel> levelArr = new ArrayList<SecurityLevel>();
 		for (String el : arguments) {
 			levelArr.add(lm.getLevel(el));

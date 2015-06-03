@@ -10,5 +10,4 @@ public class HandleStmtForTests extends HandleStmt {
 		throw new IllegalFlowException("System.exit because of illegal flow to " + sink);
 	}
 
-
 }

@@ -32,10 +32,11 @@ public class Test {
     	return c;
     }
     
-    /*// TODO note that every instanceMethod has a this reference at the beginning
-    public void d() {
+    // TODO note that every instanceMethod has a this reference at the beginning
+    public void d(int x) {
     	
     }
+    
     
     public void m2() {
     	
@@ -43,7 +44,7 @@ public class Test {
     	this.field = 3;
     	main.Test a = this;
     	
-    }*/
+    }
     
     
 }

@@ -65,6 +65,9 @@ public static synchronized ObjectMap getInstance() {
  */
 public ArrayList<SecurityLevel> setActualArguments(ArrayList<SecurityLevel> args) {
 	actualArguments = args;
+	if(actualArguments.size() != args.size()) {
+		new InternalAnalyzerException("Wrong number of Arguments");
+	}
 	return actualArguments;
 }
 
