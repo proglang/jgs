@@ -1,5 +1,9 @@
 package visitor;
 
+import java.util.List;
+import java.util.logging.Logger;
+
+import logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Unit;
@@ -27,6 +31,7 @@ import soot.jimple.ThrowStmt;
 public class AnnotationStmtSwitch implements StmtSwitch {
 	
 	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
+	Logger logger = L1Logger.getLogger();
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
@@ -36,8 +41,15 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
-		// TODO Auto-generated method stub
-
+		logger.info("Invoke Statement identified");
+		// es hat
+		System.out.println(stmt.getUseAndDefBoxes());
+		System.out.println(stmt.getInvokeExpr());
+		System.out.println(stmt.getInvokeExpr().getArgs());
+		List<Value> list = stmt.getInvokeExpr().getArgs();
+		for (Value e : list) {
+			System.out.println(e.getType());
+		}
 	}
 
 	@Override
@@ -88,6 +100,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
+		// TODO hier sind Parameter und this-Referenzen
 		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
 		System.out.println(stmt.getRightOp().getType());
 		stmt.getRightOp().apply(valueSwitch);

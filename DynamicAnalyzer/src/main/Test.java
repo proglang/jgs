@@ -21,6 +21,7 @@ public class Test {
     	
     	TestSubClass.sField = 2;
     	ts.sField = 3;
+    	ts.pField = 1;
 
     	sField = 2;
     	
@@ -33,7 +34,7 @@ public class Test {
     }
     
     // TODO note that every instanceMethod has a this reference at the beginning
-    public void d(int x) {
+    public void d(int x, int y , int z) {
     	
     }
     
@@ -43,6 +44,9 @@ public class Test {
     	this.field = 2;
     	this.field = 3;
     	main.Test a = this;
+    	int local = 5;
+
+    	d(2, field, local);
     	
     }
     

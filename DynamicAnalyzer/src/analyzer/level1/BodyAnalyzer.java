@@ -94,6 +94,12 @@ public class BodyAnalyzer extends BodyTransformer{
         while(fIt.hasNext()) {
         	SootField item = fIt.next();
         	if (!item.isStatic()) {
+        	System.out.println(item.getName());
+        	System.out.println(item.getNumber());
+        	System.out.println(item.getSignature());
+        	System.out.println(item.getSubSignature());
+        	System.out.println(item.getDeclaringClass());
+        	System.out.println(item.getType());
         	  JimpleInjector.addFieldToObjectMap(item);
         	} else {
         		//TODO

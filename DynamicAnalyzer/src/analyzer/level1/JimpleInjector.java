@@ -227,10 +227,10 @@ public class JimpleInjector {
 	}
 	
 	public static void makeFieldHigh(Object o, String signature) {}
-	
+	// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
 	public static void makeFieldLow(Object o, String signature) {}
 	
-	public static void addLocal(String signature, SecurityLevel level) {}
+	public static void addLocal(String signature, SecurityLevel level) {} // TODO Brauch ich das?
 	
 	public static void assignArrayFieldToLocal() {
 		
@@ -239,10 +239,6 @@ public class JimpleInjector {
 	public static void assignLocalToArrayField() {
 		
 	}
-	
-	public static void setLocalLevel(String signature, SecurityLevel level) {}
-	
-	public static void getLocalLevel(String signature) {}
 	
 	public static void makeLocalHigh(Local l) {
 		LOGGER.log(Level.INFO, "Make Local {0} high in method {1}",
@@ -438,7 +434,45 @@ public class JimpleInjector {
 		unitStore.lastPos = returnL;
 	}
 
-	public static void storeArgumentLevels(String... arguments) {}
+	public static void storeArgumentLevels(Local... lArguments) {
+		// String... arguments
+		
+		LOGGER.log(Level.INFO, "Store Arguments for next method in method {0}",
+				b.getMethod().getName());
+		
+		int length = lArguments.length;
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1));
+		
+	    Expr paramArray = Jimple.v().newNewArrayExpr(RefType.v("java.lang.String"), IntConstant.v(length));
+
+	    Unit assignNewStringArray = Jimple.v().newAssignStmt(local2, paramArray);
+	    
+	    Unit[] tmpUnitArray = new Unit[length];
+	    
+		for (int i = 0; i < length; i++) {
+			String signature = getSignatureForLocal(lArguments[i]);
+			tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local2, IntConstant.v(i)), StringConstant.v(signature));
+			
+		}
+		
+		Expr storeArgs = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "storeArguments", parameterTypes, 
+				VoidType.v(), false), local2);
+		Stmt invokeStoreArgs = Jimple.v().newInvokeStmt(storeArgs);
+		
+		
+		for (Unit el : tmpUnitArray) {
+			unitStore.insertElement(unitStore.new Element(el, unitStore.lastPos));
+			unitStore.lastPos = el;
+		}
+		unitStore.insertElement(unitStore.new Element(assignNewStringArray, unitStore.lastPos));
+		unitStore.lastPos = assignNewStringArray;
+		unitStore.insertElement(unitStore.new Element(invokeStoreArgs, unitStore.lastPos));
+		unitStore.lastPos = invokeStoreArgs;
+		
+	}
 	
 	public static void checkCondition(String... args) {}
 	
