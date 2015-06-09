@@ -241,7 +241,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
 
-		logger.finer("Invoke expression is of type SpecialInvoke");
+		logger.fine("Invoke expression is of type SpecialInvoke");
+		logger.finest(v.toString());
 		
 		Local[] args = vh.getArgumentsForInvokedMethod(v);
 		JimpleInjector.storeArgumentLevels(args);
@@ -251,16 +252,23 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
 
-		logger.finer("Invoke expression is of type StaticInvoke");	
+		logger.fine("Invoke expression is of type StaticInvoke");
+		logger.finest(v.toString());	
+		
+		Local[] args = vh.getArgumentsForInvokedMethod(v);
+		JimpleInjector.storeArgumentLevels(args);
 
 	}
 
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
 
-		logger.finer("Invoke expression is of type VirtualInvoke");
+		logger.fine("Invoke expression is of type VirtualInvoke");
+		logger.finest(v.toString());
 		
-
+		Local[] args = vh.getArgumentsForInvokedMethod(v);
+		JimpleInjector.storeArgumentLevels(args);
+		
 	}
 
 	@Override

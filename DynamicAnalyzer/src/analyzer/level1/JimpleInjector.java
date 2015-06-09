@@ -452,9 +452,15 @@ public class JimpleInjector {
 	    Unit[] tmpUnitArray = new Unit[length];
 	    
 		for (int i = 0; i < length; i++) {
-			String signature = getSignatureForLocal(lArguments[i]);
-			tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local2, IntConstant.v(i)), StringConstant.v(signature));
 			
+			// It's possible to get a null vector as an argument. This happens,
+			// if a constant is set as argument. // TODO better explanation
+			if (lArguments[i] != null) {
+				String signature = getSignatureForLocal(lArguments[i]);
+				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local2, IntConstant.v(i)), StringConstant.v(signature));
+			} else {
+				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local2, IntConstant.v(i)), StringConstant.v(" "));
+			}
 		}
 		
 		Expr storeArgs = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
