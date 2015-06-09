@@ -42,6 +42,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	
 	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
 	Logger logger = L1Logger.getLogger();
+	protected enum Stmt {UNDEF, INVOKE, ASSIGN, IDENTITY, RETURN, GOTZO, IF, SWITCH, THROW}
+	protected Stmt actualContext = Stmt.UNDEF;
+	
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
@@ -54,37 +57,24 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseInvokeStmt(InvokeStmt stmt) {
 		
 		InvokeStmt iStmt = (InvokeStmt) stmt;
+		actualContext = Stmt.INVOKE;
 		
 		logger.fine(" > > > Invoke Statement identified < < <");
 		
 		InvokeExpr invokeExpr = iStmt.getInvokeExpr();
 		
-		if (invokeExpr instanceof SpecialInvokeExpr) {
-			logger.finer("Invoke expression is of type SpecialInvoke");
-		} else if (invokeExpr instanceof VirtualInvokeExpr) {
-			logger.finer("Invoke expression is of type VirtualInvoke");
-		} else if (invokeExpr instanceof StaticInvokeExpr) {
-			logger.finer("Invoke expression is of type StaticInvoke");	
-		} else if (invokeExpr instanceof DynamicInvokeExpr) {
-			logger.severe("Invoke expression is of type DynamicInvoke");
-			// TODO What is that?
-		} else {
-			logger.severe("Invoke expression is of type" + invokeExpr);	
-			// TODO
-		}
-		
+		invokeExpr.apply(valueSwitch);
+
+		// TODO das ist eher interessant bei AssignStmt
 		logger.finer("Method has return type: " + invokeExpr.getType());
 		
-		logger.finer("Arguments of invoked method: " + invokeExpr.getArgs());
-		List<Value> list = invokeExpr.getArgs();
-		for (Value e : list) {
-			logger.finer("Type of argument: " + e.getType());
-		}
+		actualContext = Stmt.UNDEF;
 	}
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
 		
+		actualContext = Stmt.ASSIGN;
 		AssignStmt aStmt = (AssignStmt) stmt;
 		
 		logger.fine(" > > > Assign statement identified < < <" );
@@ -163,10 +153,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				// TODO its unclear how to access r0 
 			}
 		}
+		
+		actualContext = Stmt.UNDEF;
 	}
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
+		
+		actualContext = Stmt.IDENTITY;
 		
 		IdentityStmt iStmt = (IdentityStmt) stmt;
 		
@@ -175,6 +169,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
 		System.out.println(stmt.getRightOp().getType());
 		stmt.getRightOp().apply(valueSwitch);
+		
+		actualContext = Stmt.UNDEF;
 	}
 
 	@Override

@@ -1,8 +1,14 @@
 package visitor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import analyzer.level2.HandleStmt;
 import soot.Local;
+import soot.Value;
 import soot.jimple.AddExpr;
 import soot.jimple.AndExpr;
 import soot.jimple.ArrayRef;
@@ -16,6 +22,7 @@ import soot.jimple.DivExpr;
 import soot.jimple.DoubleConstant;
 import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.EqExpr;
+import soot.jimple.Expr;
 import soot.jimple.FloatConstant;
 import soot.jimple.GeExpr;
 import soot.jimple.GtExpr;
@@ -23,6 +30,7 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.InstanceOfExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
+import soot.jimple.InvokeExpr;
 import soot.jimple.JimpleValueSwitch;
 import soot.jimple.LeExpr;
 import soot.jimple.LengthExpr;
@@ -51,6 +59,9 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
+	
+	Logger logger = L1Logger.getLogger();
+	VisitorHelper vh = new VisitorHelper();
 
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
@@ -222,31 +233,40 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-		// TODO Auto-generated method stub
 
+		logger.severe("Invoke expression is of type InterfaceInvoke"); // TODO change to fine
+		
 	}
 
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
-		// TODO Auto-generated method stub
+
+		logger.finer("Invoke expression is of type SpecialInvoke");
+		
+		Local[] args = vh.getArgumentsForInvokedMethod(v);
+		JimpleInjector.storeArgumentLevels(args);
 
 	}
 
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-		// TODO Auto-generated method stub
+
+		logger.finer("Invoke expression is of type StaticInvoke");	
 
 	}
 
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
-		// TODO Auto-generated method stub
+
+		logger.finer("Invoke expression is of type VirtualInvoke");
+		
 
 	}
 
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		// TODO Auto-generated method stub
+
+		logger.severe("Invoke expression is of type DynamicInvoke"); // TODO change to fine
 
 	}
 
@@ -323,7 +343,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseThisRef(ThisRef v) {
-		System.out.println("juhuu");
+		logger.finer("@This reference identified");
 
 	}
 
@@ -332,5 +352,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		//JimpleInjector.addLocalToMap(l);
 
 	}
+
 
 }

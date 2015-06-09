@@ -48,6 +48,8 @@ public class Test {
 
     	d(2, field, local);
     	
+    	local = m();
+    	System.out.println(local);
     }
     
     

@@ -435,7 +435,7 @@ public class JimpleInjector {
 	}
 
 	public static void storeArgumentLevels(Local... lArguments) {
-		// String... arguments
+		// TODO String... arguments
 		
 		LOGGER.log(Level.INFO, "Store Arguments for next method in method {0}",
 				b.getMethod().getName());
@@ -474,7 +474,10 @@ public class JimpleInjector {
 		
 	}
 	
-	public static void checkCondition(String... args) {}
+	public static void checkCondition(Local... args) {
+		
+		// TODO String... args
+	}
 	
 	public static void exitInnerScope() {}
 
