@@ -1,6 +1,7 @@
 package main;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import logging.L1Logger;
 import analyzer.level1.BodyAnalyzer;
@@ -11,6 +12,9 @@ import soot.*;
  * @version 0.6
  */
 public class Main {
+	
+	// TODO assign value as program argument
+	private static Level LOGGER_LEVEL = Level.ALL;
 
 
     public static void main(String[] args) {
@@ -24,8 +28,11 @@ public class Main {
      */
     private static void execute(String[] args) {
     	
+    	
+    	
     	try {
-			L1Logger.setup();
+    		System.out.println("Logger Init1");
+			L1Logger.setup(LOGGER_LEVEL);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -50,12 +50,20 @@ public class BodyAnalyzer extends BodyTransformer{
 	
 	@Override
 	protected void internalTransform(Body arg0, String arg1, Map arg2) {
-		try { // TODO gibt es beim BodyTransformer auch eine Init Klasse, in die ich das schieben kann?
-			L1Logger.setup();
+		
+		
+		try { 
+		// TODO gibt es beim BodyTransformer auch eine Init Klasse, in die ich das schieben kann?
+		// TODO Warum braucht man das an dieser Stelle auch, 
+		// wenn das Setup doch schon in main gemacht wird??	
+			System.out.println("Logger Init2");
+			L1Logger.setup(Level.ALL);
 		} catch (IOException e) {
 			LOGGER.log(Level.WARNING, "L1Logger couldn't be initialized properly");
 			e.printStackTrace();
 		}
+		
+		
 		LOGGER = L1Logger.getLogger();
 		LOGGER.log(Level.SEVERE, "BodyTransform started: {0}", arg0.getMethod().getName());
 		

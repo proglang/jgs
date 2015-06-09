@@ -38,19 +38,22 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		logger.fine("Breakpoint statement identified");
+		logger.severe("Breakpoint statement identified"); // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
+		
+		InvokeStmt iStmt = (InvokeStmt) stmt;
+		
 		logger.fine("Invoke Statement identified");
-		// es hat
-		System.out.println(stmt.getUseAndDefBoxes());
-		System.out.println(stmt.getInvokeExpr());
-		System.out.println(stmt.getInvokeExpr().getArgs());
-		List<Value> list = stmt.getInvokeExpr().getArgs();
+		
+		System.out.println(iStmt.getUseAndDefBoxes());
+		System.out.println(iStmt.getInvokeExpr());
+		System.out.println(iStmt.getInvokeExpr().getArgs());
+		List<Value> list = iStmt.getInvokeExpr().getArgs();
 		for (Value e : list) {
 			System.out.println(e.getType());
 		}
@@ -111,12 +114,16 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			if(field.getUseBoxes().size() > 0) {
 				logger.finer(" Declaring object " + field.getUseBoxes().toString());
 				logger.finer("Local " + field.getUseBoxes().get(0).getClass());
+				// TODO its unclear how to access r0 
 			}
 		}
 	}
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
+		
+		IdentityStmt iStmt = (IdentityStmt) stmt;
+		
 		logger.fine("Identity statement identified");
 		// TODO hier sind Parameter und this-Referenzen
 		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
@@ -126,55 +133,58 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		logger.fine("Enter monitor statement identified");
+		logger.severe("Enter monitor statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		logger.fine("Exit monitor statement identified");
+		logger.severe("Exit monitor statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
-		logger.fine("Goto statement identified");
+		logger.severe("Goto statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
-		logger.fine("If statement identified");
+		logger.severe("If statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		logger.fine("Lookup switch statement identified");
+		logger.severe("Lookup switch statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
-		logger.fine("Nop statement identified");
+		logger.severe("Nop statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		logger.fine("Ret statement identified");
+		logger.severe("Ret statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
+		
+		ReturnStmt rStmt = (ReturnStmt) stmt;
+		
 		logger.fine("Return statement identified");
 		
 		System.out.println(stmt.getUseBoxes().toString());
@@ -189,28 +199,28 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		logger.fine("Return void statement identified");
+		logger.severe("Return void statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		logger.fine("Table switch statement identified");
+		logger.severe("Table switch statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		logger.fine("IThrow statement identified");
+		logger.severe("IThrow statement identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void defaultCase(Object obj) {
-		logger.fine("Default case of statements identified");
+		logger.severe("Default case of statements identified");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
