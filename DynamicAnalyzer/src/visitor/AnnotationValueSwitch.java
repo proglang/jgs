@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import exceptions.InternalAnalyzerException;
 import logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import analyzer.level2.HandleStmt;
@@ -62,6 +63,9 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
 	Logger logger = L1Logger.getLogger();
 	VisitorHelper vh = new VisitorHelper();
+	
+	protected enum Stmt {UNDEF, INVOKE, ASSIGN, IDENTITY, RETURN, GOTZO, IF, SWITCH, THROW}
+	protected Stmt actualContext = Stmt.UNDEF;
 
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
@@ -244,8 +248,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.fine("Invoke expression is of type SpecialInvoke");
 		logger.finest(v.toString());
 		
-		Local[] args = vh.getArgumentsForInvokedMethod(v);
-		JimpleInjector.storeArgumentLevels(args);
+		if (actualContext == Stmt.INVOKE || actualContext == Stmt.ASSIGN ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			JimpleInjector.storeArgumentLevels(args);
+		} else {
+			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+		}
 
 	}
 
@@ -255,8 +263,13 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.fine("Invoke expression is of type StaticInvoke");
 		logger.finest(v.toString());	
 		
-		Local[] args = vh.getArgumentsForInvokedMethod(v);
-		JimpleInjector.storeArgumentLevels(args);
+		
+		if (actualContext == Stmt.INVOKE || actualContext == Stmt.ASSIGN ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			JimpleInjector.storeArgumentLevels(args);
+		} else {
+			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+		}
 
 	}
 
@@ -266,8 +279,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.fine("Invoke expression is of type VirtualInvoke");
 		logger.finest(v.toString());
 		
-		Local[] args = vh.getArgumentsForInvokedMethod(v);
-		JimpleInjector.storeArgumentLevels(args);
+		if (actualContext == Stmt.INVOKE || actualContext == Stmt.ASSIGN ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			JimpleInjector.storeArgumentLevels(args);
+		} else {
+			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+		}
 		
 	}
 
@@ -322,23 +339,31 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseArrayRef(ArrayRef v) {
+
+		logger.finest("Array reference identified " + v.toString());
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
+		
+		logger.finest("Static field reference identified " + v.toString());
 		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {
+		
+		logger.finest("Instance field reference identified " + v.toString());
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseParameterRef(ParameterRef v) {
+
+		logger.finest("Parameter reference identified " + v.toString());
 		// TODO Auto-generated method stub
 
 	}
@@ -351,13 +376,15 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseThisRef(ThisRef v) {
-		logger.finer("@This reference identified");
+		
+		logger.finer("@This reference identified " + v.toString());
 
 	}
 
 	@Override
-	public void caseLocal(Local l) {
-		//JimpleInjector.addLocalToMap(l);
+	public void caseLocal(Local l) {	
+
+		logger.finest("Local identified " + l.toString());
 
 	}
 

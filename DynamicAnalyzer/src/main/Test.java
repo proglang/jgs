@@ -35,7 +35,9 @@ public class Test {
     
     // TODO note that every instanceMethod has a this reference at the beginning
     public void d(int x, int y , int z) {
-    	
+    	Integer[] a = new Integer[3];
+    	a[0] = 1;
+    	a[1] = x;
     }
     
     

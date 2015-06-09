@@ -229,6 +229,7 @@ public class JimpleInjector {
 	public static void makeFieldHigh(Object o, String signature) {}
 	// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
 	public static void makeFieldLow(Object o, String signature) {}
+	// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
 	
 	public static void addLocal(String signature, SecurityLevel level) {} // TODO Brauch ich das?
 	
@@ -285,7 +286,9 @@ public class JimpleInjector {
 	}
 
 	public static void assignLocalsToField(Object o, String field, String... locals) {
+		// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
 	}
+	
 	
 	public static void assignLocalsToLocal(Local leftOp, Local right1, Local right2,
 			Unit pos) {
@@ -397,7 +400,9 @@ public class JimpleInjector {
 		unitStore.lastPos = pos;
 	}
 	
-	public static void assignFieldToLocal(Object o, String local, String field) {}
+	public static void assignFieldToLocal(Object o, String local, String field) {
+		// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
+		}
 	
 	public static void assignArgumentToLocal(int pos, String local) {}
 	
@@ -485,7 +490,19 @@ public class JimpleInjector {
 		// TODO String... args
 	}
 	
-	public static void exitInnerScope() {}
+	public static void exitInnerScope() {
+		LOGGER.log(Level.INFO, "Exit inner scope in method {0}", b.getMethod().getName());
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		
+		Expr specialIn = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "exitInnerScope", paramTypes, null, false));
+		
+		Unit inv = Jimple.v().newInvokeStmt(specialIn);
+		
+		unitStore.insertElement(unitStore.new Element(inv, unitStore.lastPos));
+		unitStore.lastPos = inv;
+	}
 
 	
 public static void addUnitsToChain() {	

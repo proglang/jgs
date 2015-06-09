@@ -1,49 +1,41 @@
 package visitor;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import exceptions.InternalAnalyzerException;
 import logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
-import soot.SootField;
-import soot.Unit;
 import soot.Value;
-import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
 import soot.jimple.Constant;
-import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
-import soot.jimple.Expr;
 import soot.jimple.FieldRef;
 import soot.jimple.GotoStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
-import soot.jimple.Jimple;
 import soot.jimple.LookupSwitchStmt;
 import soot.jimple.NopStmt;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
-import soot.jimple.SpecialInvokeExpr;
-import soot.jimple.StaticInvokeExpr;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
-import soot.jimple.VirtualInvokeExpr;
-import soot.jimple.internal.JimpleLocalBox;
+import visitor.AnnotationValueSwitch.Stmt;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
 	
 	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
 	Logger logger = L1Logger.getLogger();
-	protected enum Stmt {UNDEF, INVOKE, ASSIGN, IDENTITY, RETURN, GOTZO, IF, SWITCH, THROW}
-	protected Stmt actualContext = Stmt.UNDEF;
+
+	
+	ArrayList<Value> DefBox = new ArrayList<Value>();
 	
 
 	@Override
@@ -57,7 +49,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseInvokeStmt(InvokeStmt stmt) {
 		
 		InvokeStmt iStmt = (InvokeStmt) stmt;
-		actualContext = Stmt.INVOKE;
+		valueSwitch.actualContext = Stmt.INVOKE;
 		
 		logger.fine(" > > > Invoke Statement identified < < <");
 		
@@ -68,13 +60,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		// TODO das ist eher interessant bei AssignStmt
 		logger.finer("Method has return type: " + invokeExpr.getType());
 		
-		actualContext = Stmt.UNDEF;
+		valueSwitch.actualContext = Stmt.UNDEF;
 	}
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
 		
-		actualContext = Stmt.ASSIGN;
+		valueSwitch.actualContext = Stmt.ASSIGN;
 		AssignStmt aStmt = (AssignStmt) stmt;
 		
 		logger.fine(" > > > Assign statement identified < < <" );
@@ -86,7 +78,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		logger.finer("Number of arguments :" + numOfArgs);
 		
 		Value leftValue = aStmt.getDefBoxes().get(0).getValue();
-
+		leftValue.apply(valueSwitch);
 
 		if(leftValue instanceof Local) {
 		logger.finer("Left value is a Local");
@@ -154,13 +146,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			}
 		}
 		
-		actualContext = Stmt.UNDEF;
+		valueSwitch.actualContext = Stmt.UNDEF;
 	}
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
 		
-		actualContext = Stmt.IDENTITY;
+		valueSwitch.actualContext = Stmt.IDENTITY;
 		
 		IdentityStmt iStmt = (IdentityStmt) stmt;
 		
@@ -170,7 +162,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		System.out.println(stmt.getRightOp().getType());
 		stmt.getRightOp().apply(valueSwitch);
 		
-		actualContext = Stmt.UNDEF;
+		valueSwitch.actualContext = Stmt.UNDEF;
 	}
 
 	@Override
@@ -241,9 +233,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		logger.severe(" > > > Return void statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
-
+		logger.fine(" > > > Return void statement identified < < <");
 	}
 
 	@Override

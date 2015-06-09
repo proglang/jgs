@@ -1,20 +1,17 @@
 package visitor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import exceptions.InternalAnalyzerException;
 import logging.L1Logger;
 import soot.Local;
 import soot.Value;
-import soot.jimple.FieldRef;
 import soot.jimple.InvokeExpr;
 
 public class VisitorHelper {
 
 	Logger logger = L1Logger.getLogger();
-	
+
 	
 	protected Local[] getArgumentsForInvokedMethod(InvokeExpr invokeExpr) {
 		logger.finer("Arguments of invoked method: " + invokeExpr.getArgs());
