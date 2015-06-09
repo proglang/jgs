@@ -3,6 +3,7 @@ package visitor;
 import java.util.List;
 import java.util.logging.Logger;
 
+import exceptions.InternalAnalyzerException;
 import logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
@@ -13,12 +14,15 @@ import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
 import soot.jimple.Constant;
+import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
+import soot.jimple.Expr;
 import soot.jimple.FieldRef;
 import soot.jimple.GotoStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
+import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.LookupSwitchStmt;
@@ -26,9 +30,12 @@ import soot.jimple.NopStmt;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
+import soot.jimple.SpecialInvokeExpr;
+import soot.jimple.StaticInvokeExpr;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
+import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.internal.JimpleLocalBox;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
@@ -38,7 +45,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		logger.severe("Breakpoint statement identified"); // TODO Change to fine
+		logger.severe("> > > Breakpoint statement identified < < <"); // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
@@ -48,14 +55,30 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		InvokeStmt iStmt = (InvokeStmt) stmt;
 		
-		logger.fine("Invoke Statement identified");
+		logger.fine(" > > > Invoke Statement identified < < <");
 		
-		System.out.println(iStmt.getUseAndDefBoxes());
-		System.out.println(iStmt.getInvokeExpr());
-		System.out.println(iStmt.getInvokeExpr().getArgs());
-		List<Value> list = iStmt.getInvokeExpr().getArgs();
+		InvokeExpr invokeExpr = iStmt.getInvokeExpr();
+		
+		if (invokeExpr instanceof SpecialInvokeExpr) {
+			logger.finer("Invoke expression is of type SpecialInvoke");
+		} else if (invokeExpr instanceof VirtualInvokeExpr) {
+			logger.finer("Invoke expression is of type VirtualInvoke");
+		} else if (invokeExpr instanceof StaticInvokeExpr) {
+			logger.finer("Invoke expression is of type StaticInvoke");	
+		} else if (invokeExpr instanceof DynamicInvokeExpr) {
+			logger.severe("Invoke expression is of type DynamicInvoke");
+			// TODO What is that?
+		} else {
+			logger.severe("Invoke expression is of type" + invokeExpr);	
+			// TODO
+		}
+		
+		logger.finer("Method has return type: " + invokeExpr.getType());
+		
+		logger.finer("Arguments of invoked method: " + invokeExpr.getArgs());
+		List<Value> list = invokeExpr.getArgs();
 		for (Value e : list) {
-			System.out.println(e.getType());
+			logger.finer("Type of argument: " + e.getType());
 		}
 	}
 
@@ -64,7 +87,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		AssignStmt aStmt = (AssignStmt) stmt;
 		
-		logger.fine("Assign statement identified" );
+		logger.fine(" > > > Assign statement identified < < <" );
 		logger.finer("left side: " + aStmt.getDefBoxes().toString());
 		logger.finer("right side: " + aStmt.getUseBoxes().toString());
 
@@ -84,7 +107,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 				
 				if (rightValue instanceof Local) {
-			    System.out.println("Local on the right side");
+			    logger.finer("Local on the right side");
 
 			    Local right = (Local) rightValue;
 			    JimpleInjector.assignLocalToLocal(left, right, aStmt);
@@ -93,17 +116,40 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				    // TODO: kann man hier was mit dem ValueSwitch machen? 
 					// ZB rausfinden, welchen Typ die Argumente habe
 					} 
+			} else if (numOfArgs == 2) {
+				logger.finer("Field on the right side");
+				
+				// TODO
+				
+				logger.finer("AHJASHGASDJH" + aStmt.getUseBoxes().toString());
+				logger.finer(aStmt.getUseBoxes().get(0).toString());
+				logger.finer(aStmt.getUseBoxes().get(1).toString());
+				logger.finer(aStmt.getUseBoxes().get(1).getValue().toString());
+				logger.finer(aStmt.getUseBoxes().get(1).getValue().getType().toString());
+				logger.finer(aStmt.getUseBoxes().get(1).getValue().getUseBoxes().toString());
+				
+				
 			} else if (numOfArgs == 3) {
-				System.out.println("2 Locals on the right side");
+				logger.finer("2 Locals on the right side");
 				
 
 				Value rightValue1 = aStmt.getUseBoxes().get(0).getValue();
-				Local right1 = (Local) rightValue1;
 				
 				Value rightValue2 = aStmt.getUseBoxes().get(1).getValue();
+				
+				if (!(rightValue1 instanceof Local) || !(rightValue2 instanceof Local)) {
+					new InternalAnalyzerException("Expected Local as "
+							+ "argument but got unknown type instead");
+				}
+				
+				Local right1 = (Local) rightValue1;
 				Local right2 = (Local) rightValue2;
 				
 				JimpleInjector.assignLocalsToLocal(left, right1, right2, aStmt);
+			} else {
+				System.out.println(numOfArgs);
+				new InternalAnalyzerException("unexpected number of "
+						+ "arguments in assign statement");
 			}
 			
 		} else if (leftValue instanceof FieldRef) {
@@ -124,7 +170,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		IdentityStmt iStmt = (IdentityStmt) stmt;
 		
-		logger.fine("Identity statement identified");
+		logger.fine(" > > > Identity statement identified < < <");
 		// TODO hier sind Parameter und this-Referenzen
 		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
 		System.out.println(stmt.getRightOp().getType());
@@ -133,49 +179,49 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		logger.severe("Enter monitor statement identified");  // TODO Change to fine
+		logger.severe(" > > > Enter monitor statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		logger.severe("Exit monitor statement identified");  // TODO Change to fine
+		logger.severe(" > > > Exit monitor statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
-		logger.severe("Goto statement identified");  // TODO Change to fine
+		logger.severe(" > > > Goto statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
-		logger.severe("If statement identified");  // TODO Change to fine
+		logger.severe(" > > > If statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		logger.severe("Lookup switch statement identified");  // TODO Change to fine
+		logger.severe(" > > > Lookup switch statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
-		logger.severe("Nop statement identified");  // TODO Change to fine
+		logger.severe(" > > > Nop statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		logger.severe("Ret statement identified");  // TODO Change to fine
+		logger.severe(" > > > Ret statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
@@ -185,7 +231,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		ReturnStmt rStmt = (ReturnStmt) stmt;
 		
-		logger.fine("Return statement identified");
+		logger.fine(" > > > Return statement identified < < <");
 		
 		System.out.println(stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
@@ -199,28 +245,28 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		logger.severe("Return void statement identified");  // TODO Change to fine
+		logger.severe(" > > > Return void statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		logger.severe("Table switch statement identified");  // TODO Change to fine
+		logger.severe(" > > > Table switch statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		logger.severe("IThrow statement identified");  // TODO Change to fine
+		logger.severe(" > > > Throw statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void defaultCase(Object obj) {
-		logger.severe("Default case of statements identified");  // TODO Change to fine
+		logger.severe(" > > > Default case of statements identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}

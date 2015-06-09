@@ -14,7 +14,6 @@ public class InternalAnalyzerException extends RuntimeException {
         super(message);
         System.out.println(globalMessage);
         printMessage();
-        printStackTrace();
         System.exit(0);
     }
 
