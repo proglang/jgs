@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
+import soot.SootField;
 import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
@@ -28,6 +29,7 @@ import soot.jimple.ReturnVoidStmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
+import soot.jimple.internal.JimpleLocalBox;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
 	
@@ -101,6 +103,15 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				JimpleInjector.assignLocalsToLocal(left, right1, right2, aStmt);
 			}
 			
+		} else if (leftValue instanceof FieldRef) {
+			logger.finer("Left value is a field");
+			FieldRef field = (FieldRef) leftValue;
+			logger.finer("Declaring class " + field.getField().getDeclaringClass());
+			
+			if(field.getUseBoxes().size() > 0) {
+				logger.finer(" Declaring object " + field.getUseBoxes().toString());
+				logger.finer("Local " + field.getUseBoxes().get(0).getClass());
+			}
 		}
 	}
 
