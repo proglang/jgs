@@ -168,7 +168,7 @@ public SecurityLevel getActualReturnLevel() {
    */ 
 public SecurityLevel getFieldLevel(Object o, String f) {
 	if (!innerMap.containsKey(o)) {
-		logger.log(Level.SEVERE, "Missing Object", new InternalAnalyzerException());
+		new InternalAnalyzerException("Missing Object" + o);
 		System.exit(0);
 	}
 	if (!innerMap.get(o).containsKey(f)) {

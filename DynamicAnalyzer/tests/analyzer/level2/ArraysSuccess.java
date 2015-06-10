@@ -7,11 +7,17 @@ import java.util.logging.Logger;
 
 import logging.L2Logger;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ArraysSuccess {
 	
 	Logger LOGGER = L2Logger.getLogger();
+	
+	@Before
+	public void init() {
+		HandleStmtForTests.init();
+	}
 
 	@Test
 	public void createArrayTest() {
@@ -20,12 +26,9 @@ public class ArraysSuccess {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
-		hs.addLocal("String[] a");
+		hs.addLocal("String[]_a");
 		String[] a = new String[] {"asd", "", ""};
-		hs.addObjectToObjectMap(a);
-		for(int i = 0; i < a.length ; i++) {
-			hs.addFieldToObjectMap(a, Integer.toString(i));
-		}
+		hs.addArrayToObjectMap(a);
 		
 		assertEquals(3, hs.getNumberOfFields(a));
 		
@@ -42,14 +45,17 @@ public class ArraysSuccess {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		String[] a = new String[] {"asd", "", ""};
+		hs.addArrayToObjectMap(a);
+		
+		assertTrue(hs.containsObjectInObjectMap(a));
 		
 		/*
-		 * x = Join(i,a, pgc)
+		 * x = Join(i,a, gpc, a_i)
 		 */
 		hs.assignArrayFieldToLocal("String_x", a , Integer.toString(2));
 		String x = a[2];
 		
-		int i = 3;
+		int i = 1;
 		hs.assignArrayFieldToLocal("String_x", a , Integer.toString(2));
 		x = a[i];
 		
@@ -66,18 +72,23 @@ public class ArraysSuccess {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
-		String[] a = new String[] {"asd", "", ""};
+		String[] a = new String[] {"asd", "v", "v"};
+		assertEquals(3, a.length);
+		hs.addArrayToObjectMap(a);
+		assertTrue(hs.containsObjectInObjectMap(a));
+		assertEquals(3, hs.getNumberOfFields(a));
 		
 		/*
-		 * check(pgc)
+		 * check(a_t >= pgc)
 		 * level(a) = join(gpc,local, ??i??)
+		 * level(a_i) = join(gpc,local, ??i??)
 		 * i = ??
 		 */
-		hs.assignLocalsToArrayField(a, Integer.toString(2), "int_3");
+		hs.assignLocalsToArrayField(a, Integer.toString(2));
 		a[2] = "3";
 		
-		int i = 4;
-		hs.assignLocalsToArrayField(a, Integer.toString(2), "int_3");
+		int i = 2;
+		hs.assignLocalsToArrayField(a, Integer.toString(2));
 		a[i] = "3";
 		
 		hs.close();

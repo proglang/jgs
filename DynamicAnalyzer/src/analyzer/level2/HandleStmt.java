@@ -2,6 +2,7 @@ package analyzer.level2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,6 +94,20 @@ public class HandleStmt {
 	public SecurityLevel addFieldToObjectMap(Object o, String signature) {
 		LOGGER.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {signature, o});
 		return om.setField(o, signature);
+	}
+	
+	public void addArrayToObjectMap(Object[] a) {
+		
+		LOGGER.log(Level.INFO, "Add Array {0} to ObjectMap", a.toString());
+		
+		addObjectToObjectMap(a);
+		for(int i = 0; i < a.length ; i++) {
+			addFieldToObjectMap(a, Integer.toString(i));
+		}
+		
+		if (!containsObjectInObjectMap(a)) {
+			new InternalAnalyzerException("Adding Object " + a + " to ObjectMap failed");
+		}
 	}
 	
 	protected boolean containsObjectInObjectMap(Object o) {
@@ -295,16 +310,26 @@ public class HandleStmt {
 	}
 	
 	
-	public void assignArrayFieldToLocal(String arrField, Object a,
-			String local) {
-		// TODO Auto-generated method stub
+	public void assignArrayFieldToLocal(String local, Object a,
+			String arrField) {
+		if (!checkLocalPC(local)) {
+			abort(local);
+		}
+		
+		System.out.println(containsObjectInObjectMap(a));
+		
+		setLocalLevel(local, om.getFieldLevel(a, arrField));
 		
 	}
 	
 
 	public void assignLocalsToArrayField(Object a, String arrField,
-			String... local) {
-		// TODO Auto-generated method stub
+			String... locals) {
+		if (!checkGlobalPC(a, arrField)) {
+			abort(a.toString() + arrField);
+		}
+		
+		om.setField(a, arrField, joinWithGPC(joinLocals(locals)) );
 		
 	}
 	
