@@ -1,6 +1,7 @@
 package visitor;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import exceptions.InternalAnalyzerException;
@@ -8,6 +9,7 @@ import logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Value;
+import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
 import soot.jimple.Constant;
@@ -48,7 +50,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
 		
-		InvokeStmt iStmt = (InvokeStmt) stmt;
+		InvokeStmt iStmt = stmt;
 		valueSwitch.actualContext = Stmt.INVOKE;
 		
 		logger.fine(" > > > Invoke Statement identified < < <");
@@ -67,7 +69,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseAssignStmt(AssignStmt stmt) {
 		
 		valueSwitch.actualContext = Stmt.ASSIGN;
-		AssignStmt aStmt = (AssignStmt) stmt;
+		AssignStmt aStmt = stmt;
 		
 		logger.fine(" > > > Assign statement identified < < <" );
 		logger.finer("left side: " + aStmt.getDefBoxes().toString());
@@ -154,7 +156,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		valueSwitch.actualContext = Stmt.IDENTITY;
 		
-		IdentityStmt iStmt = (IdentityStmt) stmt;
+		IdentityStmt iStmt = stmt;
 		
 		logger.fine(" > > > Identity statement identified < < <");
 		// TODO hier sind Parameter und this-Referenzen
@@ -188,8 +190,30 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
-		logger.severe(" > > > If statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine(" > > > If statement identified < < <");  
+		
+		System.out.println(stmt.getUseAndDefBoxes());
+		List<ValueBox> valueList = stmt.getUseBoxes();
+		ArrayList<Local> localList = new ArrayList<Local>();
+		for (ValueBox v : valueList) {
+			
+			Value val = v.getValue();
+			
+			if (val instanceof Local) {
+				localList.add((Local) val );
+				System.out.println(val);
+			}
+		}
+		
+		int localListLength = localList.size();
+		
+		Local[] arguments = new Local[localListLength];
+		
+		for (int i = 0; i < localListLength; i++) {
+			arguments[i] = localList.get(i);
+		}
+
+		JimpleInjector.checkCondition(stmt, arguments);
 
 	}
 
@@ -217,7 +241,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
 		
-		ReturnStmt rStmt = (ReturnStmt) stmt;
+		ReturnStmt rStmt = stmt;
 		
 		logger.fine(" > > > Return statement identified < < <");
 		

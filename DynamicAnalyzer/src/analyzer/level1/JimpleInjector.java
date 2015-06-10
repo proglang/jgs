@@ -30,6 +30,7 @@ import soot.Value;
 import soot.ValueBox;
 import soot.VoidType;
 import soot.jimple.AddExpr;
+import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.Expr;
 import soot.jimple.IdentityStmt;
@@ -234,11 +235,13 @@ public class JimpleInjector {
 	public static void addLocal(String signature, SecurityLevel level) {} // TODO Brauch ich das?
 	
 	public static void assignArrayFieldToLocal() {
-		
+
+		// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
 	}
 	
 	public static void assignLocalToArrayField() {
-		
+
+		// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
 	}
 	
 	public static void makeLocalHigh(Local l) {
@@ -317,7 +320,8 @@ public class JimpleInjector {
 		
 		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"assignLocalsToLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),  false), local1, local2);
+						"assignLocalsToLocal", paramTypes, 
+						RefType.v("analyzer.level2.SecurityLevel"),  false), local1, local2);
 		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
 		
 
@@ -440,7 +444,7 @@ public class JimpleInjector {
 	}
 
 	public static void storeArgumentLevels(Local... lArguments) {
-		// TODO String... arguments
+		// TODO check if its ok
 		
 		LOGGER.log(Level.INFO, "Store Arguments for next method in method {0}",
 				b.getMethod().getName());
@@ -485,9 +489,42 @@ public class JimpleInjector {
 		
 	}
 	
-	public static void checkCondition(Local... args) {
-		
+	public static void checkCondition(Unit pos, Local... locals) {
 		// TODO String... args
+		LOGGER.log(Level.INFO, "Check condition in method {0}", b.getMethod());
+		
+		int numberOfLocals = locals.length;
+		ArrayList<Type>	paramTypes = new ArrayList<Type>();
+		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
+		
+		Expr newStringArray = Jimple.v().newNewArrayExpr(
+				RefType.v("java.lang.String"), IntConstant.v(numberOfLocals));
+		
+		Unit assignNewArray = Jimple.v().newAssignStmt(local2, newStringArray);
+		
+		ArrayList<Unit> tmpUnitList = new ArrayList<Unit>();
+		
+		for (int i = 0; i < numberOfLocals; i ++) {
+			Unit assignSignature = Jimple.v().newAssignStmt(
+					Jimple.v().newArrayRef(local2, IntConstant.v(i)), 
+					StringConstant.v(getSignatureForLocal(locals[i])));
+			tmpUnitList.add(assignSignature);
+		}
+		
+		Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"checkCondition", paramTypes, VoidType.v(), false), local2);
+		Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
+		
+		unitStore.insertElement(unitStore.new Element(assignNewArray, pos));
+		unitStore.lastPos = assignNewArray;
+		for (Unit u : tmpUnitList) {
+			unitStore.insertElement(unitStore.new Element(u, unitStore.lastPos));
+			unitStore.lastPos = u;
+		}
+		unitStore.insertElement(unitStore.new Element(invokeCC, unitStore.lastPos));
+		unitStore.lastPos = invokeCC;
+		
 	}
 	
 	public static void exitInnerScope() {
@@ -503,9 +540,37 @@ public class JimpleInjector {
 		unitStore.insertElement(unitStore.new Element(inv, unitStore.lastPos));
 		unitStore.lastPos = inv;
 	}
+	
+	public void addArrayToObjectMap(Object[] a) { // TODO ArrayRef?
+		LOGGER.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
+				new Object[] {a, b.getMethod().getName()} );
+
+		int length = a.length;
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(ArrayType.v(
+				RefType.v("java.lang.Object"), length));
+		
+	/*	Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "addArrayToObjectMap", 
+				parameterTypes, VoidType.v(), false), 
+				l);  // TODO
+		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		unitStore.lastPos = assignExpr;*/
+		
+	} 
+	
+	public void assignArrayFieldToLocal(String local, Object a,
+			String arrField) {}  // TODO
+	
+	public void assignLocalsToArrayField(Object a, String arrField,
+			String... locals) {}  // TODO
 
 	
-public static void addUnitsToChain() {	
+protected static void addUnitsToChain() {	
 	Iterator<Element> UIt = unitStore.getElements().iterator();
 	while(UIt.hasNext()) {
 		Element item = (Element) UIt.next();
@@ -520,7 +585,7 @@ public static void addUnitsToChain() {
 	b.validate();
 }
 
-public static void addNeededLocals() {
+protected static void addNeededLocals() {
 	locals.add(local1);
 	locals.add(local2);
 	locals.add(local3);
@@ -535,6 +600,10 @@ private static String getSignatureForLocal(Local l) {
 
 private static String getSignatureForField(SootField f) {
 	return f.getType() + "_" + f.getName();
+}
+
+private static String getSignatureForArrayField(Object o) { // TODO
+	return " ";
 }
 
 private static int getStartPos() {

@@ -54,5 +54,27 @@ public class Test {
     	System.out.println(local);
     }
     
+    public void ifMethod(int x, int y) {
+    	
+    	int a;
+    	int b;
+    	
+    	if (x > 0) {
+    		x = 2;
+    	}
+    	
+    	if (x == y && y < 0) {
+    		y = 0;
+    	}
+    	
+    	if (boolMethod()) {
+    		b = 1;
+    	}
+    	
+    }
+    
+    public boolean boolMethod() {
+    	return true;
+    }
     
 }
