@@ -50,7 +50,8 @@ public class ArraysSuccess {
 		assertTrue(hs.containsObjectInObjectMap(a));
 		
 		/*
-		 * x = Join(i,a, gpc, a_i)
+		 * check ( x >= lpc)
+		 * x = Join(i,a, lpc, a_i)
 		 */
 		hs.assignArrayFieldToLocal("String_x", a , Integer.toString(2));
 		String x = a[2];
@@ -61,7 +62,7 @@ public class ArraysSuccess {
 		
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "READ AARRAY SUCCESS TEST FINISHED");
+		LOGGER.log(Level.INFO, "READ ARRAY SUCCESS TEST FINISHED");
 		
 	}
 	

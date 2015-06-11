@@ -143,7 +143,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			
 			if(field.getUseBoxes().size() > 0) {
 				logger.finer(" Declaring object " + field.getUseBoxes().toString());
-				logger.finer("Local " + field.getUseBoxes().get(0).getClass());
+				logger.finer("Local " + field.getUseBoxes());
 				// TODO its unclear how to access r0 
 			}
 		}
