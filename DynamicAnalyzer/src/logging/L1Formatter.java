@@ -12,10 +12,11 @@ public class L1Formatter extends Formatter{
 	    StringBuffer buf = new StringBuffer(1000);
 
 	    // TODO
-	    
-	    buf.append(rec.getLevel());
-	    buf.append(": ");
+
 	    buf.append(formatMessage(rec));
+	    buf.append(" (");
+	    buf.append(rec.getLevel());
+	    buf.append(" )");
 	    buf.append("\n");
 
 	    

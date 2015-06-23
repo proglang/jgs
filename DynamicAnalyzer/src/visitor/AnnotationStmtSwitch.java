@@ -12,6 +12,7 @@ import soot.Value;
 import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
+import soot.jimple.ClassConstant;
 import soot.jimple.Constant;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
@@ -19,6 +20,7 @@ import soot.jimple.FieldRef;
 import soot.jimple.GotoStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
+import soot.jimple.InstanceFieldRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.LookupSwitchStmt;
@@ -26,6 +28,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
+import soot.jimple.StaticFieldRef;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
@@ -71,9 +74,20 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		valueSwitch.actualContext = Stmt.ASSIGN;
 		AssignStmt aStmt = stmt;
 		
-		logger.fine(" > > > Assign statement identified < < <" );
-		logger.finer("left side: " + aStmt.getDefBoxes().toString());
-		logger.finer("right side: " + aStmt.getUseBoxes().toString());
+		logger.fine("\n > > > Assign statement identified < < <" );
+		logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() + " < < <");
+		logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() + " < < <");
+		
+		// Das ist im Moment nur zum Ausgeben, was vorkommt
+		// Vielleicht kann man das aber noch irgendwie verwenden
+		for (int i = 0; i < aStmt.getDefBoxes().size(); i++) {
+			aStmt.getDefBoxes().get(i).getValue().apply(valueSwitch);
+		}
+		for (int i = 0; i < aStmt.getUseBoxes().size(); i++) {
+			aStmt.getUseBoxes().get(i).getValue().apply(valueSwitch);
+		}
+
+		
 
 		int numOfArgs = aStmt.getUseBoxes().size();
 		
@@ -81,6 +95,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		Value leftValue = aStmt.getDefBoxes().get(0).getValue();
 		leftValue.apply(valueSwitch);
+		
 
 		if(leftValue instanceof Local) {
 		logger.finer("Left value is a Local");
@@ -95,22 +110,18 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 			    Local right = (Local) rightValue;
 			    JimpleInjector.assignLocalToLocal(left, right, aStmt);
-				} else {
+				} else if (rightValue instanceof ClassConstant) { // TODO wieder entfernen
+					ClassConstant cc = (ClassConstant) rightValue;
+					System.out.println(rightValue);
+				} else 
+				{
 					JimpleInjector.assignConstantToLocal(left, aStmt); 
 				    // TODO: kann man hier was mit dem ValueSwitch machen? 
 					// ZB rausfinden, welchen Typ die Argumente habe
 					} 
+				
 			} else if (numOfArgs == 2) {
-				logger.finer("Field on the right side");
-				
-				// TODO
-				
-				logger.finer("AHJASHGASDJH" + aStmt.getUseBoxes().toString());
-				logger.finer(aStmt.getUseBoxes().get(0).toString());
-				logger.finer(aStmt.getUseBoxes().get(1).toString());
-				logger.finer(aStmt.getUseBoxes().get(1).getValue().toString());
-				logger.finer(aStmt.getUseBoxes().get(1).getValue().getType().toString());
-				logger.finer(aStmt.getUseBoxes().get(1).getValue().getUseBoxes().toString());
+				logger.finer("Field or Array on the right side");
 				
 				
 			} else if (numOfArgs == 3) {
@@ -136,16 +147,18 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 						+ "arguments in assign statement");
 			}
 			
-		} else if (leftValue instanceof FieldRef) {
-			logger.finer("Left value is a field");
-			FieldRef field = (FieldRef) leftValue;
-			logger.finer("Declaring class " + field.getField().getDeclaringClass());
+		} else if (leftValue instanceof InstanceFieldRef) {
+			logger.finer("Left value is an instance field");
 			
-			if(field.getUseBoxes().size() > 0) {
-				logger.finer(" Declaring object " + field.getUseBoxes().toString());
-				logger.finer("Local " + field.getUseBoxes().get(0).getClass());
-				// TODO its unclear how to access r0 
-			}
+			System.out.println(((InstanceFieldRef) leftValue).getBase());
+			Local base = (Local) ((InstanceFieldRef) leftValue).getBase();
+			System.out.println(((InstanceFieldRef) leftValue).getField().getDeclaration());
+			
+		} else if (leftValue instanceof StaticFieldRef ) {
+			logger.finer("Left value is a static field");
+			
+
+			System.out.println(((StaticFieldRef) leftValue).getField().getDeclaringClass());
 		}
 		
 		valueSwitch.actualContext = Stmt.UNDEF;

@@ -106,6 +106,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseClassConstant(ClassConstant v) {
 		// TODO Auto-generated method stub
+		System.out.println(v);
 
 	}
 
@@ -309,7 +310,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
-		// TODO Auto-generated method stub
+		logger.finest("New Array expression identified");
 
 	}
 

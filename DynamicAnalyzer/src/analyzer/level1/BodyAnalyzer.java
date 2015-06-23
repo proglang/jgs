@@ -16,6 +16,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.Jimple;
 import soot.util.Chain;
 import visitor.AnnotationStmtSwitch;
 import visitor.AnnotationValueSwitch;
@@ -93,34 +94,29 @@ public class BodyAnalyzer extends BodyTransformer{
          * has to be added to the ObjectMap and its fields are added to the
          * new object
          */
-        if (method.isConstructor() && !method.isStatic()) { // TODO: wie kommt man an clinit?
-            // TODO: wenn init(), dann add Fields to Map
-        LOGGER.log(Level.INFO, "Entering <init>");
-        JimpleInjector.addObjectToObjectMap();
+        if (method.getName().equals("<init>")) {
+        		LOGGER.log(Level.INFO, "Entering <init>");
+        		JimpleInjector.addInstanceObjectToObjectMap();
         
-        Iterator<SootField> fIt = fields.iterator();
-        while(fIt.hasNext()) {
-        	SootField item = fIt.next();
-        	if (!item.isStatic()) {
-        	System.out.println(item.getName());
-        	System.out.println(item.getNumber());
-        	System.out.println(item.getSignature());
-        	System.out.println(item.getSubSignature());
-        	System.out.println(item.getDeclaringClass());
-        	System.out.println(item.getType());
-        	  JimpleInjector.addFieldToObjectMap(item);
-        	} else {
-        		//TODO
-        	}
-        }
+        		Iterator<SootField> fIt = fields.iterator();
+        		while(fIt.hasNext()) {
+        			SootField item = fIt.next();
+        			JimpleInjector.addFieldToObjectMap(item);
+
+        		}
+        } else if (method.getName().equals("<clinit>")) {
+        		LOGGER.log(Level.INFO, "Entering <clinit>");
+        		SootClass sc = method.getDeclaringClass();
+        		JimpleInjector.addClassObjectToObjectMap(sc);
+        		// TODO Add static fields
         }
        
 
         Iterator<Local> lit = locals.iterator();
         while(lit.hasNext()) {
         	Local item = lit.next();
-        	if (!(item.getName() == "local_name1")&& !(item.getName() == "local_name2")
-        			&&!(item.getName() == "local_name3")&&!(item.getName() == "local_level")
+        	if (!(item.getName() == "local_for_Strings")&& !(item.getName() == "local_for_String_Arrays")
+        			&&!(item.getName() == "local_for_Objects")&&!(item.getName() == "local_level")
         			&& !(item.getName() == "hs")) {
         	  JimpleInjector.addLocal(item);
         	}
