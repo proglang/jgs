@@ -150,6 +150,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		} else if (leftValue instanceof InstanceFieldRef) {
 			logger.finer("Left value is an instance field");
 			
+<<<<<<< HEAD
 			System.out.println(((InstanceFieldRef) leftValue).getBase());
 			Local base = (Local) ((InstanceFieldRef) leftValue).getBase();
 			System.out.println(((InstanceFieldRef) leftValue).getField().getDeclaration());
@@ -159,6 +160,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			
 
 			System.out.println(((StaticFieldRef) leftValue).getField().getDeclaringClass());
+=======
+			if(field.getUseBoxes().size() > 0) {
+				logger.finer(" Declaring object " + field.getUseBoxes().toString());
+				logger.finer("Local " + field.getUseBoxes());
+				// TODO its unclear how to access r0 
+			}
+>>>>>>> 726edb0e7c60d660122d6d6c3c90f89f7766ab69
 		}
 		
 		valueSwitch.actualContext = Stmt.UNDEF;
