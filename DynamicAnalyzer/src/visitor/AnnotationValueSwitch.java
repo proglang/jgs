@@ -24,6 +24,7 @@ import soot.jimple.DoubleConstant;
 import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.EqExpr;
 import soot.jimple.Expr;
+import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
 import soot.jimple.GeExpr;
 import soot.jimple.GtExpr;
@@ -311,7 +312,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
 		logger.finest("New Array expression identified");
-
+		System.out.println(v.getBaseType());
+		System.out.println(v.getClass());
+		System.out.println(v.getSize());
+		System.out.println(v.getSizeBox());
+		System.out.println(v.getType());
+		System.out.println(v.getUseBoxes());
 	}
 
 	@Override
@@ -351,6 +357,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		
 		logger.finest("Static field reference identified " + v.toString());
 		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

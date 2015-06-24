@@ -575,32 +575,35 @@ public class JimpleInjector {
 	 */
 	
 	
-	public void addArrayToObjectMap(Object[] a) { // TODO ArrayRef?
+	public static void addArrayToObjectMap(Local a, int length) {
 		LOGGER.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
 				new Object[] {a, b.getMethod().getName()} );
-
-		int length = a.length;
+		
+		System.out.println("Object type: " + a.getType() + " and type " + a.getClass());
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(ArrayType.v(
 				RefType.v("java.lang.Object"), length));
 		
-	/*	Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+	/*
+		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addArrayToObjectMap", 
 				parameterTypes, VoidType.v(), false), 
-				l);  // TODO
+				a); 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
+		
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
-		unitStore.lastPos = assignExpr;*/
+		unitStore.lastPos = assignExpr;
+		*/
 		
 	} 
 	
-	public void assignArrayFieldToLocal(String local, Object a,
+	public static void assignArrayFieldToLocal(String local, Object a,
 			String arrField) {}  // TODO
 	
-	public void assignLocalsToArrayField(Object a, String arrField,
+	public static void assignLocalsToArrayField(Object a, String arrField,
 			String... locals) {}  // TODO
 	
 

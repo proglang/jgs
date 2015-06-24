@@ -98,6 +98,8 @@ public class HandleStmt {
 	
 	public void addArrayToObjectMap(Object[] a) {
 		
+		System.out.println("Array length " + a.length);
+		
 		LOGGER.log(Level.INFO, "Add Array {0} to ObjectMap", a.toString());
 		
 		addObjectToObjectMap(a);

@@ -24,6 +24,7 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.LookupSwitchStmt;
+import soot.jimple.NewArrayExpr;
 import soot.jimple.NopStmt;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
@@ -74,7 +75,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		valueSwitch.actualContext = Stmt.ASSIGN;
 		AssignStmt aStmt = stmt;
 		
-		logger.fine("\n > > > Assign statement identified < < <" );
+		logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
 		logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() + " < < <");
 		logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() + " < < <");
 		
@@ -122,6 +123,12 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				
 			} else if (numOfArgs == 2) {
 				logger.finer("Field or Array on the right side");
+				Value rightValue = aStmt.getUseBoxes().get(1).getValue();
+				if (rightValue instanceof NewArrayExpr) {
+					System.out.println("new Array created");
+					int length = Integer.parseInt(aStmt.getUseBoxes().get(0).getValue().toString());
+					JimpleInjector.addArrayToObjectMap((Local) leftValue, length);
+				}
 				
 				
 			} else if (numOfArgs == 3) {
@@ -150,7 +157,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		} else if (leftValue instanceof InstanceFieldRef) {
 			logger.finer("Left value is an instance field");
 			
-<<<<<<< HEAD
+
 			System.out.println(((InstanceFieldRef) leftValue).getBase());
 			Local base = (Local) ((InstanceFieldRef) leftValue).getBase();
 			System.out.println(((InstanceFieldRef) leftValue).getField().getDeclaration());
@@ -160,13 +167,12 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			
 
 			System.out.println(((StaticFieldRef) leftValue).getField().getDeclaringClass());
-=======
-			if(field.getUseBoxes().size() > 0) {
-				logger.finer(" Declaring object " + field.getUseBoxes().toString());
-				logger.finer("Local " + field.getUseBoxes());
+
+			if(leftValue.getUseBoxes().size() > 0) {
+				logger.finer(" Declaring object " + leftValue.getUseBoxes().toString());
+				logger.finer("Class " + leftValue.getClass());
 				// TODO its unclear how to access r0 
 			}
->>>>>>> 726edb0e7c60d660122d6d6c3c90f89f7766ab69
 		}
 		
 		valueSwitch.actualContext = Stmt.UNDEF;
