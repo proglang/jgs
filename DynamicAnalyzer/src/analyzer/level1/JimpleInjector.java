@@ -585,7 +585,7 @@ public class JimpleInjector {
 		parameterTypes.add(ArrayType.v(
 				RefType.v("java.lang.Object"), length));
 		
-	/*
+	
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addArrayToObjectMap", 
@@ -596,7 +596,7 @@ public class JimpleInjector {
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
 		unitStore.lastPos = assignExpr;
-		*/
+		
 		
 	} 
 	
