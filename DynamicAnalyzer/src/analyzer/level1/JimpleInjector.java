@@ -180,6 +180,7 @@ public class JimpleInjector {
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		
 		// TODO funktioniert das hier oder muss ich eher mit assign Statement arbeiten?
+		// Im Moment muesste hier der etwas anderes in der Local gespeichert sein.
 		// va muss die Local auch gespeichert werden.
 		local_for_Objects = (Local) units.getFirst().getDefBoxes().get(0).getValue();
 		
@@ -575,15 +576,17 @@ public class JimpleInjector {
 	 */
 	
 	
-	public static void addArrayToObjectMap(Local a, int length) {
+	public static void addArrayToObjectMap(Local a, Unit position) {
 		LOGGER.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
 				new Object[] {a, b.getMethod().getName()} );
 		
 		System.out.println("Object type: " + a.getType() + " and type " + a.getClass());
 		
+		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(ArrayType.v(
-				RefType.v("java.lang.Object"), length));
+				RefType.v("java.lang.Object"), 1));
+				
 		
 	
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
@@ -594,14 +597,16 @@ public class JimpleInjector {
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
 		
-		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		unitStore.insertElement(unitStore.new Element(assignExpr, position));
 		unitStore.lastPos = assignExpr;
 		
 		
 	} 
-	
-	public static void assignArrayFieldToLocal(String local, Object a,
-			String arrField) {}  // TODO
+
+	// Wenn die Arrays Felder sind, werden sie zuerst in eine lokale Variable gespeichert
+	public static void assignArrayFieldToLocal(Local local, Local ArrayField) {
+		// String local, Object a, String arrField
+	}
 	
 	public static void assignLocalsToArrayField(Object a, String arrField,
 			String... locals) {}  // TODO

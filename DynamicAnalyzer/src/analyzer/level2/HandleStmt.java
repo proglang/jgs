@@ -96,6 +96,7 @@ public class HandleStmt {
 		return om.setField(o, signature);
 	}
 	
+
 	public void addArrayToObjectMap(Object[] a) {
 		
 		System.out.println("Array length " + a.length);
@@ -111,6 +112,7 @@ public class HandleStmt {
 			new InternalAnalyzerException("Adding Object " + a + " to ObjectMap failed");
 		}
 	}
+	
 	
 	protected boolean containsObjectInObjectMap(Object o) {
 		return om.containsObject(o);

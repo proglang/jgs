@@ -127,7 +127,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				if (rightValue instanceof NewArrayExpr) {
 					System.out.println("new Array created");
 					int length = Integer.parseInt(aStmt.getUseBoxes().get(0).getValue().toString());
-					JimpleInjector.addArrayToObjectMap((Local) leftValue, length);
+					JimpleInjector.addArrayToObjectMap((Local) leftValue,  aStmt);
 				}
 				
 				
