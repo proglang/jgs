@@ -348,7 +348,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseArrayRef(ArrayRef v) {
 
 		logger.finest("Array reference identified " + v.toString());
-		v
 		// TODO Auto-generated method stub
 
 	}
