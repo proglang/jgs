@@ -14,10 +14,13 @@ public class GenerateTest {
     @Test
     public void test() {
         Jimple j = Jimple.v();
-        Value dest = j.newLocal("x", IntType.v());
-        Stmt s = j.newAssignStmt(dest, dest);
+        Value localX = j.newLocal("x", IntType.v());
+
+        /* x = x */
+        Stmt s = j.newAssignStmt(localX, localX);
         Generate g = new Generate();
         s.apply(g);
+        /* TODO: trivial placeholder test */
         assertTrue(g.getResult() == g.getResult());
     }
 
