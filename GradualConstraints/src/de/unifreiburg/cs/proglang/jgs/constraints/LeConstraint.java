@@ -4,10 +4,10 @@ import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 
 public class LeConstraint<Level> implements Constraint<Level> {
     
-    public final CTypeDomain<Level> lhs;
-    public final CTypeDomain<Level> rhs;
+    public final CTypeDomain<Level>.CType lhs;
+    public final CTypeDomain<Level>.CType rhs;
     
-    public LeConstraint(CTypeDomain<Level> lhs, CTypeDomain<Level> rhs) {
+    public LeConstraint(CTypeDomain<Level>.CType lhs, CTypeDomain<Level>.CType rhs) {
         super();
         this.lhs = lhs;
         this.rhs = rhs;

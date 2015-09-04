@@ -19,7 +19,7 @@ public class TypeVarTest {
     }
 
     @Test
-    public void test() {
+    public void testCreate() {
         TypeVar x = tvars.fresh("x");
         TypeVar x2 = tvars.fresh("x");
         TypeVar y = tvars.fresh("y");
@@ -29,12 +29,13 @@ public class TypeVarTest {
         assertNotEquals(x2, y);
         assertEquals(x, x);
 
-        Optional<TypeVar> alsoX = tvars.get("x");
+        Optional<TypeVar> alsoX = tvars.tryGet("x");
 
         assertTrue("Cannot find `x' even though it was created", alsoX.isPresent());
         assertEquals(alsoX.get(), x);
         
-        assertFalse("Found `z' even though it was not created", tvars.get("z").isPresent());
+        assertFalse("Found `z' even though it was not created", tvars.tryGet("z").isPresent());
     }
+    
 
 }

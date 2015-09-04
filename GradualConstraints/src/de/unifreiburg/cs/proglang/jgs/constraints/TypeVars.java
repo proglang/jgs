@@ -42,9 +42,18 @@ public class TypeVars {
      * @return Just the variable if it was created with <code>fresh<code>,
      *         Nothing otherwise.
      */
-    public Optional<TypeVar> get(String name) {
+    public Optional<TypeVar> tryGet(String name) {
         return names.containsKey(name) ? Optional.of(new TypeVar(name))
                                        : Optional.empty();
+    }
+
+    /**
+     * Unsafe version of <code>tryGet</code>.
+     */
+    public TypeVar get(String name) {
+        return tryGet(name).orElseThrow(() -> new RuntimeException("Variable "
+                                                                   + name
+                                                                   + " does not exist!"));
     }
 
     public static class TypeVar {
