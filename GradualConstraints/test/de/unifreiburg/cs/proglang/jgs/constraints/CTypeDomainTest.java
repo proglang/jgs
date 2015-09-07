@@ -19,32 +19,39 @@ public class CTypeDomainTest {
     private TypeVars tvars;
     private Assignment<LH.Level> a1;
     private CTypeDomain<LH.Level> ctypes;
+    private TypeVar vh1, vh2, vl, vd, vb;
     private CTypeDomain<LH.Level>.CType h1, h2, l, d, b;
     
     @Before
     public void setUp() {
-       this.tvars = new TypeVars(); 
+       this.tvars = new TypeVars("x"); 
        this.ctypes = new CTypeDomain<>();
        Map<TypeVar, TypeDomain<LH.Level>.Type> m = new HashMap<>();
-       m.put(this.tvars.fresh("h1"), THIGH);
-       m.put(this.tvars.fresh("h2"), THIGH);
-       m.put(this.tvars.fresh("l"), TLOW);
-       m.put(this.tvars.fresh("d"), DYN);
-       m.put(this.tvars.fresh("b"), PUB);
-       this.h1 = ctypes.variable(tvars.get("h1"));
-       this.h2 = ctypes.variable(tvars.get("h2"));
-       this.l = ctypes.variable(tvars.get("l"));
-       this.d = ctypes.variable(tvars.get("d"));
-       this.b = ctypes.variable(tvars.get("b"));
+       vh1 = tvars.fresh();
+       vh2 = tvars.fresh();
+       vl = tvars.fresh();
+       vd = tvars.fresh();
+       vb = tvars.fresh();
+
+       h1 = ctypes.variable(vh1);
+       h2 = ctypes.variable(vh2);
+       l = ctypes.variable(vl);
+       d = ctypes.variable(vd);
+       b = ctypes.variable(vb);
+
+       m.put(vh1, THIGH);
+       m.put(vh2, THIGH);
+       m.put(vl, TLOW);
+       m.put(vd, DYN);
+       m.put(vb, PUB);
        this.a1 = new Assignment<LH.Level>(m);
-       this.ctypes = new CTypeDomain<>();
     }
 
     @Test
     public void test() {
         
         assertEquals(h1.apply(a1), THIGH);
-        assertEquals(h1, ctypes.variable(tvars.get("h1")));
+        assertEquals(h1, ctypes.variable(vh1));
         assertNotEquals(h1, h2);
         assertEquals(h1.apply(a1), h2.apply(a1));
 

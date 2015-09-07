@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
@@ -33,9 +34,19 @@ public class Assignment<Level> {
      * @param t The constraint element
      * @return The type after applying the assignment.
      */
-    public TypeDomain<Level>.Type applyTo(CTypeDomain<Level> t) {
+    public TypeDomain<Level>.Type applyTo(CTypeDomain<Level>.CType t) {
         throw new NotImplemented("Assignment.applyTo");
     }
+    
+    @Override
+    public String toString() {
+        return ass.toString();
+    }
+    
+    public Set<TypeVar> mappedVariables() {
+        return ass.keySet();
+    }
+    
     
     
     

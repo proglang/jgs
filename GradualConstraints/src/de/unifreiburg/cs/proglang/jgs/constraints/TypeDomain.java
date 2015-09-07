@@ -79,7 +79,7 @@ public class TypeDomain<Level> {
         });
     }
 
-    public boolean le(Type t1, Type t2) {
+    public boolean le(TypeDomain<Level>.Type t1, Type t2) {
         return t1.accept(new TypeSwitch<Boolean>() {
 
             @Override

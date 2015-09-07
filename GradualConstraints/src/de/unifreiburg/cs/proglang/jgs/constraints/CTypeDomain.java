@@ -20,7 +20,17 @@ public class CTypeDomain<Level> {
 
         public final TypeDomain<Level>.Type apply(Assignment<Level> a) {
             return tryApply(a).orElseThrow(() -> new RuntimeException("Unknown variable: "
-                                                                      + this.toString()));
+                                                                      + this.toString()
+                                                                      + " Ass.: "
+                                                                      + a.mappedVariables().toString()));
+        }
+
+        protected boolean contextEquals(CType other) {
+            return this.getOuterType().equals(other.getOuterType());
+        }
+
+        private CTypeDomain<Level> getOuterType() {
+            return CTypeDomain.this;
         }
     }
 
@@ -55,7 +65,7 @@ public class CTypeDomain<Level> {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
+            result = prime * result + super.getOuterType().hashCode();
             result = prime * result + ((t == null) ? 0 : t.hashCode());
             return result;
         }
@@ -69,8 +79,9 @@ public class CTypeDomain<Level> {
             if (getClass() != obj.getClass())
                 return false;
             Literal other = (Literal) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
+            if (!contextEquals(other)) {
+                throw new RuntimeException("Compairing constraints from different contexts");
+            }
             if (t == null) {
                 if (other.t != null)
                     return false;
@@ -79,10 +90,6 @@ public class CTypeDomain<Level> {
             return true;
         }
 
-        private CTypeDomain getOuterType() {
-            return CTypeDomain.this;
-        }
-        
     }
 
     public class Variable extends CType {
@@ -122,8 +129,9 @@ public class CTypeDomain<Level> {
             if (getClass() != obj.getClass())
                 return false;
             Variable other = (Variable) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
+            if (!contextEquals(other)) {
+                throw new RuntimeException("Compairing constraints from different contexts");
+            }
             if (v == null) {
                 if (other.v != null)
                     return false;
@@ -136,7 +144,6 @@ public class CTypeDomain<Level> {
             return CTypeDomain.this;
         }
 
-        
     }
 
 }
