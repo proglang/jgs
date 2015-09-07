@@ -30,4 +30,4 @@ JGS is developed with the [Eclipse IDE][1] using Java8. Eclipse version "Luna" o
 [1]: http://www.eclipse.org/downloads/ "Eclipse Downloads"
 [2]: https://www.sable.mcgill.ca/soot/soot_download.html "Download Soot Framework"
 [3]: http://www.sable.mcgill.ca/soot/eclipse/updates/index.html "Download Soot Eclipse plugin"
-[4]: https://commons.apache.org/proper/commons-collections/javadocs/api-release/index.html "Download Apache Commons Collections 4.0"
+[4]: http://commons.apache.org/proper/commons-collections/download_collections.cgi "Download Apache Commons Collections 4.0"
