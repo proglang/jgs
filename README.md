@@ -22,8 +22,7 @@ JGS is developed with the [Eclipse IDE][1] using Java8. Eclipse version "Luna" o
 2. Create a classpath variable called `JGS_DEPS` that points to a folder where you want to put the dependencies
 3. Download and unpack [Soot framework (version 2.5.0)][2] into the folder pointed to by `JGS_DEPS`
 4. Download and unpack [Apache Commons Collections 4.0][4] into the folder pointed to by `JGS_DEPS`
-5. Optional: install the [Soot Eclipse Plugin][3]
-6. Import the projects from this repository
+5. Import the projects from this repository
 
 -----
 
