@@ -35,6 +35,16 @@ public class TestDomain {
         return cstrs.le(lhs, rhs);
     }
 
+    public static Constraint<LH.Level> compC(CTypeDomain<LH.Level>.CType lhs,
+                                           CTypeDomain<LH.Level>.CType rhs) {
+        return cstrs.comp(lhs, rhs);
+    }
+
+    public static Constraint<LH.Level> dimplC(CTypeDomain<LH.Level>.CType lhs,
+                                           CTypeDomain<LH.Level>.CType rhs) {
+        return cstrs.dimpl(lhs, rhs);
+    }
+
     public static final LH.Level HIGH = levels.top();
     public static final LH.Level LOW = levels.bottom();
     public static final TypeDomain<LH.Level>.Type THIGH = types.level(HIGH);
