@@ -1,9 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 /**
  * A context for (anonymous) type variables. Allows to create fresh variables and to lookup
  * existing ones.

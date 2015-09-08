@@ -8,7 +8,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
  * The domain of constraint elements. We have type variables and literal
  * security types.
  * 
- * @author Luminous Fennell <fennell@informatik.uni-freiburg.de>
+ * @author Luminous Fennell
  *
  * @param <Level>
  */
@@ -22,7 +22,8 @@ public class CTypeDomain<Level> {
             return tryApply(a).orElseThrow(() -> new RuntimeException("Unknown variable: "
                                                                       + this.toString()
                                                                       + " Ass.: "
-                                                                      + a.mappedVariables().toString()));
+                                                                      + a.mappedVariables()
+                                                                         .toString()));
         }
 
         protected boolean contextEquals(CType other) {
@@ -78,6 +79,7 @@ public class CTypeDomain<Level> {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
+            @SuppressWarnings("unchecked")
             Literal other = (Literal) obj;
             if (!contextEquals(other)) {
                 throw new RuntimeException("Compairing constraints from different contexts");
@@ -128,6 +130,7 @@ public class CTypeDomain<Level> {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
+            @SuppressWarnings("unchecked")
             Variable other = (Variable) obj;
             if (!contextEquals(other)) {
                 throw new RuntimeException("Compairing constraints from different contexts");
@@ -140,6 +143,7 @@ public class CTypeDomain<Level> {
             return true;
         }
 
+        @SuppressWarnings("rawtypes")
         private CTypeDomain getOuterType() {
             return CTypeDomain.this;
         }
