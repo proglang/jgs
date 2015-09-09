@@ -5,9 +5,9 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
 
 import org.junit.Test;
 
-public class LHTest {
+public class LowHighTest {
     
-    private final LH levels = new LH();
+    private final LowHigh levels = new LowHigh();
 
     @Test
     public void test() {

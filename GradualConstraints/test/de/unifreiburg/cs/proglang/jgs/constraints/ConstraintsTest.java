@@ -10,19 +10,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LH;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LH.Level;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
 import static org.junit.Assert.*;
 
 public class ConstraintsTest {
 
-    private CTypeDomain<LH.Level> ctypes;
+    private CTypeDomain<Level> ctypes;
     private TypeVars tvars;
     private TypeVar h1, h2, l1, l2, d1, d2, p1, p2;
-    private CTypeDomain<LH.Level>.CType ch1, ch2, cl1, cl2, cd1, cd2, cp1, cp2;
-    private Map<TypeVar, TypeDomain<LH.Level>.Type> ass;
+    private CTypeDomain<Level>.CType ch1, ch2, cl1, cl2, cd1, cd2, cp1, cp2;
+    private Map<TypeVar, TypeDomain<Level>.Type> ass;
 
     // Particular Sets of variables Variable
     private Set<CTypeDomain<Level>.CType> allVariables;
