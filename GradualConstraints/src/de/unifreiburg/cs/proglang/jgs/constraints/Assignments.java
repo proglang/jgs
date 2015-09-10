@@ -3,7 +3,6 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 

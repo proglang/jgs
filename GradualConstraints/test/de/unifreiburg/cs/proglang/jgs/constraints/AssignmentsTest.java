@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,14 +21,13 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.Assignments.*;
 public class AssignmentsTest {
 
     private TypeVars tvars;
-    private TypeVar x, y, z;
+    private TypeVar x, y;
 
     @Before
     public void setUp() {
         tvars = new TypeVars("x");
         x = tvars.fresh();
         y = tvars.fresh();
-        z = tvars.fresh();
     }
 
     @Test
