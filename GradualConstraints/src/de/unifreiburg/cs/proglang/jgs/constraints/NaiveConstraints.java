@@ -21,9 +21,10 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
         super(types);
         this.cs = new HashSet<>(cs);
     }
+    
 
     @Override
-    public boolean isSatisfied(Assignment<Level> a) {
+    public boolean isSatisfiedFor(Assignment<Level> a) {
         return this.cs.stream().allMatch(c -> c.isSatisfied(a));
     }
 

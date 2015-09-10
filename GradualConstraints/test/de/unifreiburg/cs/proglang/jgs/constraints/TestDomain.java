@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import java.util.Collection;
+
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
@@ -58,6 +60,12 @@ public class TestDomain {
     public static Constraint<Level> dimplC(CTypeDomain<Level>.CType lhs,
                                            CTypeDomain<Level>.CType rhs) {
         return cstrs.dimpl(lhs, rhs);
+    }
+    
+    //////////////
+    // Constraint sets
+    public static ConstraintSet<Level> makeNaive(Collection<Constraint<Level>> cs) {
+        return new NaiveConstraints<>(types, cs);
     }
     
     ///////

@@ -16,14 +16,14 @@ public abstract class ConstraintSet<Level> implements Iterable<Constraint<Level>
         super();
         this.types = types;
     }
-
+    
     /**
      * Check if an assignment satisfies this constraint set.
      * 
      * @param a
      * @return
      */
-    abstract public boolean isSatisfied(Assignment<Level> a);
+    abstract public boolean isSatisfiedFor(Assignment<Level> a);
 
     /**
      * Return a new set with the given constraint <code>c</code> added. 
