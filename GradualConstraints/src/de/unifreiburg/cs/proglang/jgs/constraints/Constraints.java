@@ -1,5 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import java.util.stream.Stream;
+
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+
 /**
  * A context for constraints.
  * 
@@ -38,6 +42,11 @@ public class Constraints<Level> {
             super();
             this.lhs = lhs;
             this.rhs = rhs;
+        }
+        
+        @Override
+        public Stream<TypeVar> variables() {
+            return Stream.concat(lhs.variables(), rhs.variables());
         }
         
         

@@ -45,7 +45,7 @@ public class TypeVars {
 
         @Override
         public String toString() {
-            return "TypeVar [name=" + name + "]";
+            return "$" + name;
         }
 
         @Override

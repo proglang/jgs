@@ -46,9 +46,31 @@ public class Assignment<Level> {
     public Set<TypeVar> mappedVariables() {
         return ass.keySet();
     }
-    
-    
-    
-    
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((ass == null) ? 0 : ass.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        @SuppressWarnings("rawtypes")
+        Assignment other = (Assignment) obj;
+        if (ass == null) {
+            if (other.ass != null)
+                return false;
+        } else if (!ass.equals(other.ass))
+            return false;
+        return true;
+    }
+    
 }

@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
@@ -17,6 +18,7 @@ public class CTypeDomain<Level> {
     public abstract class CType {
 
         public abstract Optional<TypeDomain<Level>.Type> tryApply(Assignment<Level> a);
+        public abstract Stream<TypeVar> variables();
 
         public final TypeDomain<Level>.Type apply(Assignment<Level> a) {
             return tryApply(a).orElseThrow(() -> new RuntimeException("Unknown variable: "
@@ -92,6 +94,11 @@ public class CTypeDomain<Level> {
             return true;
         }
 
+        @Override
+        public Stream<TypeVar> variables() {
+            return Stream.empty();
+        }
+
     }
 
     public class Variable extends CType {
@@ -146,6 +153,11 @@ public class CTypeDomain<Level> {
         @SuppressWarnings("rawtypes")
         private CTypeDomain getOuterType() {
             return CTypeDomain.this;
+        }
+
+        @Override
+        public Stream<TypeVar> variables() {
+            return Stream.of(this.v);
         }
 
     }

@@ -5,9 +5,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
 public class TestDomain {
 
-    private static final LowHigh levels = new LowHigh();
-    private static final TypeDomain<Level> types = new TypeDomain<>(levels);
-    private static final Constraints<Level> cstrs = new Constraints<>(types);
+    public static final LowHigh levels = new LowHigh();
+    public static final TypeDomain<Level> types = new TypeDomain<>(levels);
+    public static final Constraints<Level> cstrs = new Constraints<>(types);
 
     //////
     // Levels

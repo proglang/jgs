@@ -1,6 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * The domain of security types.
@@ -33,6 +35,16 @@ public class TypeDomain<Level> {
 
     public Type level(Level level) {
         return new SecLevel(level);
+    }
+
+    /**
+     * Enumerates all types by prepending "pub" and "dyn" to the security
+     * domain. Thus, this method only works if the security domain is also
+     * enumerable.
+     */
+    public Stream<Type> enumerate() {
+        return Stream.concat(Arrays.asList(this.pub(), this.dyn()).stream(),
+                             this.secDomain.enumerate().map(l -> this.level(l)));
     }
 
     private Optional<Level> tryGetLevel(Type t) {
@@ -85,7 +97,8 @@ public class TypeDomain<Level> {
             @Override
             Boolean caseLevel(TypeDomain<Level>.SecLevel level) {
                 Level l1 = level.getLevel();
-                return tryGetLevel(t2).map(l2 -> secDomain.le(l1, l2)).orElse(false);
+                return tryGetLevel(t2).map(l2 -> secDomain.le(l1, l2))
+                                      .orElse(false);
             }
 
             @Override
@@ -138,6 +151,11 @@ public class TypeDomain<Level> {
         }
 
         @Override
+        public String toString() {
+            return String.format("[%s]", level.toString());
+        }
+
+        @Override
         public <T> T accept(TypeSwitch<T> sw) {
             return sw.caseLevel(this);
         }
@@ -180,6 +198,12 @@ public class TypeDomain<Level> {
             return sw.caseDyn(this);
         }
 
+        @Override
+        public String toString() {
+            return "?";
+        }
+        
+
     }
 
     class Public extends Type {
@@ -187,6 +211,11 @@ public class TypeDomain<Level> {
         @Override
         public <T> T accept(TypeSwitch<T> sw) {
             return sw.casePublic(this);
+        }
+
+        @Override
+        public String toString() {
+            return "PUB";
         }
 
     }

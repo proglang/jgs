@@ -1,5 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 /**
@@ -37,6 +40,11 @@ public class LowHigh implements SecDomain<LowHigh.Level> {
     @Override
     public boolean le(Level l1, Level l2) {
         return l1.equals(Level.LOW) || l1.equals(l2);
+    }
+
+    @Override
+    public Stream<Level> enumerate() {
+        return Arrays.asList(Level.values()).stream();
     }
     
     
