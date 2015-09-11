@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
@@ -15,12 +16,13 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
  */
 public class CTypeDomain<Level> {
 
-    public abstract class CType {
+    public static abstract class CType<Level> {
 
-        public abstract Optional<TypeDomain<Level>.Type> tryApply(Assignment<Level> a);
+        public abstract Optional<Type<Level>> tryApply(Assignment<Level> a);
+
         public abstract Stream<TypeVar> variables();
 
-        public final TypeDomain<Level>.Type apply(Assignment<Level> a) {
+        public final Type<Level> apply(Assignment<Level> a) {
             return tryApply(a).orElseThrow(() -> new RuntimeException("Unknown variable: "
                                                                       + this.toString()
                                                                       + " Ass.: "
@@ -28,39 +30,33 @@ public class CTypeDomain<Level> {
                                                                          .toString()));
         }
 
-        protected boolean contextEquals(CType other) {
-            return this.getOuterType().equals(other.getOuterType());
-        }
 
-        private CTypeDomain<Level> getOuterType() {
-            return CTypeDomain.this;
-        }
     }
 
-    public CType literal(TypeDomain<Level>.Type t) {
-        return new Literal(t);
+    public CType<Level> literal(Type<Level> t) {
+        return new Literal<>(t);
     }
 
-    public CType variable(TypeVar v) {
-        return new Variable(v);
+    public CType<Level> variable(TypeVar v) {
+        return new Variable<>(v);
     }
 
-    public class Literal extends CType {
+    public static class Literal<Level> extends CType<Level> {
 
         @Override
         public String toString() {
             return "Literal [t=" + t + "]";
         }
 
-        public final TypeDomain<Level>.Type t;
+        public final Type<Level> t;
 
-        private Literal(TypeDomain<Level>.Type t) {
+        private Literal(Type<Level> t) {
             super();
             this.t = t;
         }
 
         @Override
-        public Optional<TypeDomain<Level>.Type> tryApply(Assignment<Level> a) {
+        public Optional<Type<Level>> tryApply(Assignment<Level> a) {
             return Optional.of(this.t);
         }
 
@@ -68,7 +64,6 @@ public class CTypeDomain<Level> {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + super.getOuterType().hashCode();
             result = prime * result + ((t == null) ? 0 : t.hashCode());
             return result;
         }
@@ -81,11 +76,8 @@ public class CTypeDomain<Level> {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("rawtypes")
             Literal other = (Literal) obj;
-            if (!contextEquals(other)) {
-                throw new RuntimeException("Compairing constraints from different contexts");
-            }
             if (t == null) {
                 if (other.t != null)
                     return false;
@@ -99,9 +91,10 @@ public class CTypeDomain<Level> {
             return Stream.empty();
         }
 
+
     }
 
-    public class Variable extends CType {
+    public static class Variable<Level> extends CType<Level> {
 
         public final TypeVar v;
 
@@ -111,7 +104,7 @@ public class CTypeDomain<Level> {
         }
 
         @Override
-        public Optional<TypeDomain<Level>.Type> tryApply(Assignment<Level> a) {
+        public Optional<Type<Level>> tryApply(Assignment<Level> a) {
             return Optional.ofNullable(a.get().get(v));
         }
 
@@ -124,7 +117,6 @@ public class CTypeDomain<Level> {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
             result = prime * result + ((v == null) ? 0 : v.hashCode());
             return result;
         }
@@ -137,11 +129,8 @@ public class CTypeDomain<Level> {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("rawtypes")
             Variable other = (Variable) obj;
-            if (!contextEquals(other)) {
-                throw new RuntimeException("Compairing constraints from different contexts");
-            }
             if (v == null) {
                 if (other.v != null)
                     return false;
@@ -150,10 +139,6 @@ public class CTypeDomain<Level> {
             return true;
         }
 
-        @SuppressWarnings("rawtypes")
-        private CTypeDomain getOuterType() {
-            return CTypeDomain.this;
-        }
 
         @Override
         public Stream<TypeVar> variables() {

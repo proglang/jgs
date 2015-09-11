@@ -1,27 +1,28 @@
-package de.unifreiburg.cs.proglang.jgs.constraints;
+        package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import java.util.Optional;
+        import java.util.Optional;
+        import java.util.stream.Stream;
 
-/**
- * An immutable set of constraints.
- * @author fennell
- *
- * @param <Level>
- */
-public abstract class ConstraintSet<Level> implements Iterable<Constraint<Level>>{
+        /**
+         * An immutable set of constraints.
+         * @author fennell
+         *
+         * @param <Level>
+         */
+        public abstract class ConstraintSet<Level> {
 
-    protected final TypeDomain<Level> types;
+            protected final TypeDomain<Level> types;
 
-    public ConstraintSet(TypeDomain<Level> types) {
-        super();
-        this.types = types;
-    }
-    
-    /**
-     * Check if an assignment satisfies this constraint set.
-     * 
-     * @param a
-     * @return
+            public ConstraintSet(TypeDomain<Level> types) {
+                super();
+                this.types = types;
+            }
+            
+            /**
+             * Check if an assignment satisfies this constraint set.
+             * 
+             * @param a
+             * @return
      */
     abstract public boolean isSatisfiedFor(Assignment<Level> a);
 
@@ -48,6 +49,8 @@ public abstract class ConstraintSet<Level> implements Iterable<Constraint<Level>
     public Optional<Assignment<Level>> satisfyingAssignment() {
         throw new RuntimeException("sat() operation not supported");
     }
+    
+    public abstract Stream<Constraint<Level>> stream();
     
     
 }

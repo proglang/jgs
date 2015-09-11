@@ -6,6 +6,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
@@ -18,13 +20,13 @@ public class CTypeDomainTest {
     private Assignment<Level> a1;
     private CTypeDomain<Level> ctypes;
     private TypeVar vh1, vh2, vl, vd, vb;
-    private CTypeDomain<Level>.CType h1, h2;
+    private CType<Level> h1, h2;
     
     @Before
     public void setUp() {
        this.tvars = new TypeVars("x"); 
        this.ctypes = new CTypeDomain<>();
-       Map<TypeVar, TypeDomain<Level>.Type> m = new HashMap<>();
+       Map<TypeVar, Type<Level>> m = new HashMap<>();
        vh1 = tvars.fresh();
        vh2 = tvars.fresh();
        vl = tvars.fresh();

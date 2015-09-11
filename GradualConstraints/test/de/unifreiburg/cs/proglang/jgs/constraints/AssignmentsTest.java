@@ -17,6 +17,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.Assignments.*;
+import static java.util.Arrays.asList;
 
 public class AssignmentsTest {
 
@@ -42,10 +43,10 @@ public class AssignmentsTest {
     @Test
     public void testOneVar() {
         Set<Assignment<Level>> expected, result;
-        expected = new HashSet<>(Arrays.asList(builder(x, PUB).build(),
-                                               builder(x, TLOW).build(),
-                                               builder(x, THIGH).build(),
-                                               builder(x, DYN).build()));
+        expected = new HashSet<>(asList(builder(x, PUB).build(),
+                                        builder(x, TLOW).build(),
+                                        builder(x, THIGH).build(),
+                                        builder(x, DYN).build()));
         result =
             enumerateAll(types,
                          new LinkedList<>(Arrays.asList(x))).collect(Collectors.toSet());

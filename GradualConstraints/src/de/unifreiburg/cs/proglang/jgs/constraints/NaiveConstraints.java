@@ -2,7 +2,6 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -43,15 +42,13 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public ConstraintSet<Level> add(ConstraintSet<Level> other) {
-        HashSet<Constraint<Level>> newCs = new HashSet<>(this.cs);
-        other.forEach(c -> newCs.add(c));
-        return new NaiveConstraints<>(types, newCs);
+        return new NaiveConstraints<>(types, other.stream().collect(Collectors.toList()));
     }
 
+
     @Override
-    public Iterator<Constraint<Level>> iterator() {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("NOT IMPLEMENTED");
+    public Stream<Constraint<Level>> stream() {
+        return this.cs.stream();
     }
 
     @Override

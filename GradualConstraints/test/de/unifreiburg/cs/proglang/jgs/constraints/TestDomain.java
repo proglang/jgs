@@ -2,6 +2,8 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.typing.Typing;
@@ -31,35 +33,35 @@ public class TestDomain {
 
     ///////
     // Types
-    public static final TypeDomain<Level>.Type THIGH = types.level(HIGH);
-    public static final TypeDomain<Level>.Type TLOW = types.level(LOW);
-    public static final TypeDomain<Level>.Type DYN = types.dyn();
-    public static final TypeDomain<Level>.Type PUB = types.pub();
+    public static final Type<Level> THIGH = types.level(HIGH);
+    public static final Type<Level> TLOW = types.level(LOW);
+    public static final Type<Level> DYN = types.dyn();
+    public static final Type<Level> PUB = types.pub();
 
-    public static TypeDomain<Level>.Type tglb(TypeDomain<Level>.Type l1,
-                                                 TypeDomain<Level>.Type l2) {
+    public static Type<Level> tglb(Type<Level> l1,
+                                                 Type<Level> l2) {
         return types.glb(l1, l2);
     }
 
-    public static boolean tle(TypeDomain<Level>.Type l1,
-                              TypeDomain<Level>.Type l2) {
+    public static boolean tle(Type<Level> l1,
+                              Type<Level> l2) {
         return types.le(l1, l2);
     }
 
     ////////////
     // Constraints
-    public static Constraint<Level> leC(CTypeDomain<Level>.CType lhs,
-                                           CTypeDomain<Level>.CType rhs) {
+    public static Constraint<Level> leC(CType<Level> lhs,
+                                           CType<Level> rhs) {
         return cstrs.le(lhs, rhs);
     }
 
-    public static Constraint<Level> compC(CTypeDomain<Level>.CType lhs,
-                                           CTypeDomain<Level>.CType rhs) {
+    public static Constraint<Level> compC(CType<Level> lhs,
+                                           CType<Level> rhs) {
         return cstrs.comp(lhs, rhs);
     }
 
-    public static Constraint<Level> dimplC(CTypeDomain<Level>.CType lhs,
-                                           CTypeDomain<Level>.CType rhs) {
+    public static Constraint<Level> dimplC(CType<Level> lhs,
+                                           CType<Level> rhs) {
         return cstrs.dimpl(lhs, rhs);
     }
     

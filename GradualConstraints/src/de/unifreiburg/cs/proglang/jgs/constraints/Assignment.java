@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 
@@ -15,9 +17,9 @@ import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
  */
 public class Assignment<Level> {
     
-    private final Map<TypeVar, TypeDomain<Level>.Type> ass;
+    private final Map<TypeVar, Type<Level>> ass;
 
-    public Assignment(Map<TypeVar, TypeDomain<Level>.Type> ass) {
+    public Assignment(Map<TypeVar, Type<Level>> ass) {
         super();
         this.ass = ass;
     }
@@ -25,7 +27,7 @@ public class Assignment<Level> {
     /**
      * @return An immutable reference to the map that represents the assignment.
      */
-    public Map<TypeVar, TypeDomain<Level>.Type> get() {
+    public Map<TypeVar, Type<Level>> get() {
         return Collections.unmodifiableMap(this.ass);
     }
     
@@ -34,7 +36,7 @@ public class Assignment<Level> {
      * @param t The constraint element
      * @return The type after applying the assignment.
      */
-    public TypeDomain<Level>.Type applyTo(CTypeDomain<Level>.CType t) {
+    public Type<Level> applyTo(CType<Level> t) {
         throw new NotImplemented("Assignment.applyTo");
     }
     

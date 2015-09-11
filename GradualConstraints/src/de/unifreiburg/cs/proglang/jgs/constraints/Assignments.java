@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
@@ -35,7 +36,7 @@ public class Assignments {
             // TODO: can we be a bit more efficient by memoizing this stream?
             Supplier<Stream<Assignment<Level>>> rest = () -> enumerateAll(types, variableRest);
             return types.enumerate().flatMap(t -> rest.get().map(ass -> {
-                Map<TypeVar, TypeDomain<Level>.Type> m =
+                Map<TypeVar, Type<Level>> m =
                     new HashMap<>(ass.get());
                 m.put(v, t);
                 return new Assignment<Level>(m);
@@ -45,12 +46,12 @@ public class Assignments {
 
 
     public static <Level> Builder<Level> builder(TypeVar v,
-                                                 TypeDomain<Level>.Type t) {
+                                                 Type<Level> t) {
         return new Builder<Level>().add(v, t);
     }
 
     public static class Builder<Level> {
-        private final Map<TypeVar, TypeDomain<Level>.Type> ass =
+        private final Map<TypeVar, Type<Level>> ass =
             new HashMap<>();
 
         private Builder() {
@@ -60,7 +61,7 @@ public class Assignments {
             return new Assignment<>(this.ass);
         }
 
-        public Builder<Level> add(TypeVar v, TypeDomain<Level>.Type t) {
+        public Builder<Level> add(TypeVar v, Type<Level> t) {
             this.ass.put(v, t);
             return this;
         }

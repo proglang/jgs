@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 /**
  * The domain of security types.
  * 
- * @author Luminous Fennell <fennell@informatik.uni-freiburg.de>
+ * @author Luminous Fennell 
  * 
  * @param <Level>
  *            The type of security levels.
@@ -15,26 +15,26 @@ import java.util.stream.Stream;
 public class TypeDomain<Level> {
 
     private final SecDomain<Level> secDomain;
-    private final Type dyn;
-    private final Type pub;
+    private final Type<Level> dyn;
+    private final Type<Level> pub;
 
     public TypeDomain(SecDomain<Level> secDomain) {
         super();
         this.secDomain = secDomain;
-        this.dyn = new Dyn();
-        this.pub = new Public();
+        this.dyn = new Dyn<>();
+        this.pub = new Public<>();
     }
 
-    public Type dyn() {
+    public Type<Level> dyn() {
         return this.dyn;
     }
 
-    public Type pub() {
+    public Type<Level> pub() {
         return this.pub;
     }
 
-    public Type level(Level level) {
-        return new SecLevel(level);
+    public Type<Level> level(Level level) {
+        return new SecLevel<>(level);
     }
 
     /**
@@ -42,72 +42,72 @@ public class TypeDomain<Level> {
      * domain. Thus, this method only works if the security domain is also
      * enumerable.
      */
-    public Stream<Type> enumerate() {
+    public Stream<Type<Level>> enumerate() {
         return Stream.concat(Arrays.asList(this.pub(), this.dyn()).stream(),
                              this.secDomain.enumerate().map(l -> this.level(l)));
     }
 
-    private Optional<Level> tryGetLevel(Type t) {
-        return t.accept(new TypeSwitch<Optional<Level>>() {
+    private Optional<Level> tryGetLevel(Type<Level> t) {
+        return t.accept(new TypeSwitch<Level,Optional<Level>>() {
 
             @Override
-            public Optional<Level> caseLevel(SecLevel level) {
+            public Optional<Level> caseLevel(SecLevel<Level> level) {
                 return Optional.of(level.getLevel());
             }
 
             @Override
-            public Optional<Level> caseDyn(Dyn dyn) {
+            public Optional<Level> caseDyn(Dyn<Level> dyn) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<Level> casePublic(Public pub) {
+            public Optional<Level> casePublic(Public<Level> pub) {
                 return Optional.empty();
             }
         });
     }
 
-    public Type glb(Type t1, Type t2) {
-        return t1.accept(new TypeSwitch<Type>() {
+    public Type<Level> glb(Type<Level> t1, Type<Level> t2) {
+        return t1.accept(new TypeSwitch<Level,Type<Level>>() {
 
             @Override
-            public Type caseLevel(SecLevel level) {
+            public Type<Level> caseLevel(SecLevel<Level> level) {
                 Level l1 = level.getLevel();
-                Optional<Type> maybeType =
+                Optional<Type<Level>> maybeType =
                     tryGetLevel(t2).map(l2 -> level(secDomain.glb(l1, l2)));
                 return maybeType.orElse(pub());
             }
 
             @Override
-            public Type caseDyn(Dyn dyn) {
+            public Type<Level> caseDyn(Dyn<Level> dyn) {
                 return t2.equals(dyn) ? dyn : pub();
             }
 
             @Override
-            public Type casePublic(Public pub) {
+            public Type<Level> casePublic(Public<Level> pub) {
                 return pub;
             }
 
         });
     }
 
-    public boolean le(TypeDomain<Level>.Type t1, Type t2) {
-        return t1.accept(new TypeSwitch<Boolean>() {
+    public boolean le(Type<Level> t1, Type<Level> t2) {
+        return t1.accept(new TypeSwitch<Level,Boolean>() {
 
             @Override
-            Boolean caseLevel(TypeDomain<Level>.SecLevel level) {
+            Boolean caseLevel(SecLevel<Level> level) {
                 Level l1 = level.getLevel();
                 return tryGetLevel(t2).map(l2 -> secDomain.le(l1, l2))
                                       .orElse(false);
             }
 
             @Override
-            Boolean caseDyn(TypeDomain<Level>.Dyn dyn) {
+            Boolean caseDyn(Dyn<Level> dyn) {
                 return t2.equals(dyn);
             }
 
             @Override
-            Boolean casePublic(TypeDomain<Level>.Public pub) {
+            Boolean casePublic(Public<Level> pub) {
                 return true;
             }
         });
@@ -121,12 +121,12 @@ public class TypeDomain<Level> {
      * @param <Level>
      * @param <T>
      */
-    abstract class TypeSwitch<T> {
-        abstract T caseLevel(SecLevel level);
+    static abstract class TypeSwitch<Level, T> {
+        abstract T caseLevel(SecLevel<Level> level);
 
-        abstract T caseDyn(Dyn dyn);
+        abstract T caseDyn(Dyn<Level> dyn);
 
-        abstract T casePublic(Public pub);
+        abstract T casePublic(Public<Level> pub);
     }
 
     /**
@@ -137,11 +137,11 @@ public class TypeDomain<Level> {
      * @param <Level>
      *            concrete security level
      */
-    abstract class Type {
-        abstract <T> T accept(TypeSwitch<T> sw);
+    static abstract class Type<Level> {
+        abstract <T> T accept(TypeSwitch<Level, T> sw);
     }
 
-    class SecLevel extends Type {
+    static class SecLevel<Level> extends Type<Level> {
 
         private final Level level;
 
@@ -156,7 +156,7 @@ public class TypeDomain<Level> {
         }
 
         @Override
-        public <T> T accept(TypeSwitch<T> sw) {
+        public <T> T accept(TypeSwitch<Level, T> sw) {
             return sw.caseLevel(this);
         }
 
@@ -180,7 +180,7 @@ public class TypeDomain<Level> {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("rawtypes")
             SecLevel other = (SecLevel) obj;
             if (level == null) {
                 if (other.level != null)
@@ -191,10 +191,10 @@ public class TypeDomain<Level> {
         }
     }
 
-    class Dyn extends Type {
+    static class Dyn<Level> extends Type<Level> {
 
         @Override
-        public <T> T accept(TypeSwitch<T> sw) {
+        public <T> T accept(TypeSwitch<Level,T> sw) {
             return sw.caseDyn(this);
         }
 
@@ -206,10 +206,10 @@ public class TypeDomain<Level> {
 
     }
 
-    class Public extends Type {
+    static class Public<Level> extends Type<Level> {
 
         @Override
-        public <T> T accept(TypeSwitch<T> sw) {
+        public <T> T accept(TypeSwitch<Level,T> sw) {
             return sw.casePublic(this);
         }
 

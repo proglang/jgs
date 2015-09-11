@@ -9,6 +9,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
@@ -20,13 +22,13 @@ public class ConstraintsTest {
     private CTypeDomain<Level> ctypes;
     private TypeVars tvars;
     private TypeVar h1, h2, l1, l2, d1, d2, p1, p2;
-    private CTypeDomain<Level>.CType ch1, ch2, cl1, cl2, cd1, cd2, cp1, cp2;
-    private Map<TypeVar, TypeDomain<Level>.Type> ass;
+    private CType<Level> ch1, ch2, cl1, cl2, cd1, cd2, cp1, cp2;
+    private Map<TypeVar, Type<Level>> ass;
 
     // Particular Sets of variables Variable
-    private Set<CTypeDomain<Level>.CType> allVariables;
-    private Set<CTypeDomain<Level>.CType> nonDyn;
-    private Set<CTypeDomain<Level>.CType> allStatic;
+    private Set<CType<Level>> allVariables;
+    private Set<CType<Level>> nonDyn;
+    private Set<CType<Level>> allStatic;
 
     @Before
     public void setUp() {
@@ -88,19 +90,19 @@ public class ConstraintsTest {
         Constraint<Level> HleHigh = leC(ch1, ctypes.literal(THIGH));
         assertTrue("h <= HIGH", HleHigh.isSatisfied(a));
 
-        for (CTypeDomain<Level>.CType t : allVariables) {
+        for (CType<Level> t : allVariables) {
             Constraint<Level> c = leC(ctypes.literal(PUB), t);
             assertTrue("all: pub <= " + t.toString(), c.isSatisfied(a));
         }
 
-        for (CTypeDomain<Level>.CType t : nonDyn) {
+        for (CType<Level> t : nonDyn) {
             Constraint<Level> c = leC(ctypes.literal(DYN), t);
             assertFalse("nonDyn: ? /<= " + t.toString(), c.isSatisfied(a));
         }
 
-        Set<CTypeDomain<Level>.CType> allStatic = new HashSet<>(nonDyn);
+        Set<CType<Level>> allStatic = new HashSet<>(nonDyn);
         allStatic.removeAll(Arrays.asList(cp1, cp2));
-        for (CTypeDomain<Level>.CType t : nonDyn) {
+        for (CType<Level> t : nonDyn) {
             Constraint<Level> c = leC(ctypes.literal(DYN), t);
             assertFalse(String.format("static %s /<= t", t.toString()),
                         c.isSatisfied(a));
@@ -111,7 +113,7 @@ public class ConstraintsTest {
     public void testComp() {
 
         Assignment<Level> a = new Assignment<>(ass);
-        for (CTypeDomain<Level>.CType t : allVariables) {
+        for (CType<Level> t : allVariables) {
             Constraint<Level> c = compC(ctypes.literal(PUB), t);
             assertTrue("all: pub ~ " + t.toString(), c.isSatisfied(a));
             c = compC(t, ctypes.literal(PUB));
@@ -119,8 +121,8 @@ public class ConstraintsTest {
                        c.isSatisfied(a));
         }
 
-        for (CTypeDomain<Level>.CType t1 : allStatic) {
-            for (CTypeDomain<Level>.CType t2 : allStatic) {
+        for (CType<Level> t1 : allStatic) {
+            for (CType<Level> t2 : allStatic) {
                 Constraint<Level> c = compC(t1, t2);
                 assertTrue(String.format("static: %s ~ %s",
                                          t1.toString(),
@@ -134,7 +136,7 @@ public class ConstraintsTest {
             }
         }
 
-        for (CTypeDomain<Level>.CType t : allStatic) {
+        for (CType<Level> t : allStatic) {
             assertFalse(String.format("%s /~ ?", t.toString()),
                         compC(t, cd1).isSatisfied(a));
             assertFalse(String.format("? /~ %s", t.toString()),
@@ -150,8 +152,8 @@ public class ConstraintsTest {
     public void testDImpl() {
         Assignment<Level> a = new Assignment<>(ass);
 
-        for (CTypeDomain<Level>.CType t1 : nonDyn) {
-            for (CTypeDomain<Level>.CType t2 : allVariables) {
+        for (CType<Level> t1 : nonDyn) {
+            for (CType<Level> t2 : allVariables) {
                 assertTrue(String.format("%s -->? %s",
                                          t1.toString(),
                                          t2.toString()),
@@ -159,7 +161,7 @@ public class ConstraintsTest {
             }
         }
 
-        for (CTypeDomain<Level>.CType t1 : allStatic) {
+        for (CType<Level> t1 : allStatic) {
             assertFalse(String.format("static: ? /-->? %s",
                                      t1.toString()),
                        dimplC(cd1, t1).isSatisfied(a));

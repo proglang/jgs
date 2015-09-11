@@ -1,9 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import java.util.Collections;
-import java.util.Set;
-
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.Transition;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
@@ -44,18 +42,18 @@ public class Typing<LevelT> {
      *
      */
     public class Result {
-        private final Set<CTypeDomain<LevelT>.CType> constraints;
+        private final ConstraintSet<LevelT> constraints;
         private final Transition transition;
 
-        public Result(Set<CTypeDomain<LevelT>.CType> constraints,
+        public Result(ConstraintSet<LevelT> constraints,
                 Transition transition) {
             super();
             this.constraints = constraints;
             this.transition = transition;
         }
         
-        public Set<CTypeDomain<LevelT>.CType> getConstraints() {
-            return Collections.unmodifiableSet(this.constraints);
+        public ConstraintSet<LevelT> getConstraints() {
+            return this.constraints;
         }
 
         public Transition getTransition() {

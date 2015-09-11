@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
@@ -20,7 +21,7 @@ public class NaiveConstraintsTest {
     private TypeVar v0, v1, v2, v3;
 
     private CTypeDomain<Level> ctypes;
-    private CTypeDomain<Level>.CType x0, x1, x2, x3;
+    private CType<Level> x0, x1, x2, x3;
 
     @Before
     public void setUp() {
