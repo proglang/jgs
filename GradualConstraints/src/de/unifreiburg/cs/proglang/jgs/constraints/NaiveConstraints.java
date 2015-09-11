@@ -3,6 +3,13 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
  * A naive implementation of a constraint set. It is based on
@@ -21,7 +28,6 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
         super(types);
         this.cs = new HashSet<>(cs);
     }
-    
 
     @Override
     public boolean isSatisfiedFor(Assignment<Level> a) {
@@ -43,21 +49,31 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
     }
 
     @Override
+    public Iterator<Constraint<Level>> iterator() {
+        // TODO Auto-generated method stub
+        throw new RuntimeException("NOT IMPLEMENTED");
+    }
+
+    @Override
     public boolean implies(ConstraintSet<Level> other) {
         // TODO Auto-generated method stub
-        return false;
+        throw new RuntimeException("NOT IMPLEMENTED");
     }
 
     @Override
     public boolean isSat() {
-        // TODO Auto-generated method stub
-        return false;
+        return this.satisfyingAssignment().isPresent();
     }
 
     @Override
-    public Iterator<Constraint<Level>> iterator() {
-        return cs.iterator();
+    public Optional<Assignment<Level>> satisfyingAssignment() {
+        List<TypeVar> variables =
+            cs.stream()
+              .flatMap(c -> c.variables())
+              .collect(Collectors.toList());
+        return Assignments.enumerateAll(types, new LinkedList<>(variables))
+                          .filter(a -> this.isSatisfiedFor(a))
+                          .findAny();
     }
-
 
 }

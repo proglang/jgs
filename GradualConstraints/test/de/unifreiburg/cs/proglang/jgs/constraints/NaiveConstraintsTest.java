@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,9 +48,10 @@ public class NaiveConstraintsTest {
                    makeNaive(Arrays.asList(leC(x1, ctypes.literal(THIGH)),
                                            leC(ctypes.literal(THIGH), x2),
                                            leC(x1, x2))).isSat());
+        Optional<Assignment<Level>> ass = makeNaive(Arrays.asList(leC(ctypes.literal(THIGH),
+                                                ctypes.literal(TLOW)))).satisfyingAssignment();
         assertFalse("~SAT(HIGH < LOW)",
-                    makeNaive(Arrays.asList(leC(ctypes.literal(THIGH),
-                                                ctypes.literal(TLOW)))).isSat());
+                    ass.isPresent());
         assertFalse("~SAT(HIGH < x, x < y , y < LOW)",
                     makeNaive(Arrays.asList(leC(ctypes.literal(THIGH), x1),
                                             leC(x1, x2),

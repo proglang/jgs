@@ -45,7 +45,7 @@ public abstract class ConstraintSet<Level> implements Iterable<Constraint<Level>
     /**
      * Find a satisfying assignment for this constraint set. (Optional)
      */
-    public Optional<Assignment<Level>> sat() {
+    public Optional<Assignment<Level>> satisfyingAssignment() {
         throw new RuntimeException("sat() operation not supported");
     }
     
