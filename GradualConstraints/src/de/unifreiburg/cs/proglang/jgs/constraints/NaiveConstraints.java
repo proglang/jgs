@@ -56,8 +56,9 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public boolean implies(ConstraintSet<Level> other) {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("NOT IMPLEMENTED");
+        return this.enumerateSatisfyingAssignments()
+                   .allMatch(ass -> other.isSatisfiedFor(ass));
+
     }
 
     @Override
@@ -65,15 +66,18 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return this.satisfyingAssignment().isPresent();
     }
 
-    @Override
-    public Optional<Assignment<Level>> satisfyingAssignment() {
+    public Stream<Assignment<Level>> enumerateSatisfyingAssignments() {
         List<TypeVar> variables =
             cs.stream()
               .flatMap(c -> c.variables())
               .collect(Collectors.toList());
         return Assignments.enumerateAll(types, new LinkedList<>(variables))
-                          .filter(a -> this.isSatisfiedFor(a))
-                          .findAny();
+                          .filter(a -> this.isSatisfiedFor(a));
+    }
+
+    @Override
+    public Optional<Assignment<Level>> satisfyingAssignment() {
+        return this.enumerateSatisfyingAssignments().findAny();
     }
 
 }

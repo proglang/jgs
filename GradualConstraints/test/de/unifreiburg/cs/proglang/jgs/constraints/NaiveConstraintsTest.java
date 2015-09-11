@@ -12,6 +12,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static java.util.Arrays.asList;
 
 public class NaiveConstraintsTest {
 
@@ -48,33 +49,87 @@ public class NaiveConstraintsTest {
                    makeNaive(Arrays.asList(leC(x1, ctypes.literal(THIGH)),
                                            leC(ctypes.literal(THIGH), x2),
                                            leC(x1, x2))).isSat());
-        Optional<Assignment<Level>> ass = makeNaive(Arrays.asList(leC(ctypes.literal(THIGH),
-                                                ctypes.literal(TLOW)))).satisfyingAssignment();
+        assertTrue("SAT(PUB < x, x < ?",
+                   makeNaive(Arrays.asList(leC(x1, ctypes.literal(DYN)),
+                                           leC(ctypes.literal(PUB),
+                                               x1))).isSat());
+        assertTrue("SAT(x < HIGH, x < ?)",
+                   makeNaive(Arrays.asList(leC(x1, ctypes.literal(DYN)),
+                                           leC(x1,
+                                               ctypes.literal(THIGH)))).isSat());
+
         assertFalse("~SAT(HIGH < LOW)",
-                    ass.isPresent());
+                    makeNaive(Arrays.asList(leC(ctypes.literal(THIGH),
+                                                ctypes.literal(TLOW)))).isSat());
         assertFalse("~SAT(HIGH < x, x < y , y < LOW)",
                     makeNaive(Arrays.asList(leC(ctypes.literal(THIGH), x1),
                                             leC(x1, x2),
                                             leC(x2,
                                                 ctypes.literal(TLOW)))).isSat());
+        assertFalse("SAT(LOW < x, x < ?)",
+                    makeNaive(Arrays.asList(leC(x1, ctypes.literal(DYN)),
+                                            leC(ctypes.literal(TLOW),
+                                                x1))).isSat());
     }
 
     @Test
     public void testSatAssignments() {
-        // TODO test something:
-        /*
-         * - constraints that pull all variables to TLOW - ... transitively -
-         * unsatisfiable constraints have no solutions
-         */
+        Optional<Assignment<Level>> result, expected;
+        result = makeNaive(Arrays.asList(leC(x1, ctypes.literal(THIGH)),
+                                         leC(ctypes.literal(THIGH), x2),
+                                         leC(x2, x1))).satisfyingAssignment();
+        expected =
+            Optional.of(Assignments.builder(v1, THIGH).add(v2, THIGH).build());
+        assertEquals("x1 = x2 = HIGH", expected, result);
+
+        result =
+            makeNaive(Arrays.asList(leC(x1, ctypes.literal(DYN)),
+                                    leC(x1,
+                                        ctypes.literal(THIGH)))).satisfyingAssignment();
+        expected = Optional.of(Assignments.builder(v1, PUB).build());
+        assertEquals("x = pub", expected, result);
     }
 
     @Test
     public void testImplications() {
-        // TODO test something:
         /*
-         * - more constraints imply less constraints - unsat constraints imply
-         * arbitrary constraints - < LOW constraints imply < High constraints
+         * - more constraints imply less constraints 
          */
+        ConstraintSet<Level> more =
+            makeNaive(asList(leC(x1, ctypes.literal(THIGH)),
+                             leC(ctypes.literal(THIGH), x2),
+                             leC(x2, x1)));
+        ConstraintSet<Level> less =
+            makeNaive(asList(leC(x1, ctypes.literal(THIGH)),
+                             leC(ctypes.literal(THIGH), x2)));
+        assertTrue("more => less", more.implies(less));
+        assertFalse("less /=> (significant) more", less.implies(more));
+
+        assertTrue("more => more+trivial",
+                   more.implies(more.add(leC(x1, x1))
+                                    .add(leC(ctypes.literal(PUB), x2))));
+
+        /*
+         * - < LOW constraints imply < High constraints
+         */
+        ConstraintSet<Level> lowerLess =
+            makeNaive(asList(leC(x1, ctypes.literal(TLOW)),
+                             leC(ctypes.literal(THIGH), x2),
+                             leC(x1, x2)));
+        assertTrue("lowLess => less", lowerLess.implies(less));
+        assertFalse("loweLess => less", less.implies(lowerLess));
+
+        /*
+         * - unsat constraints imply arbitrary constraints 
+         */
+        ConstraintSet<Level> unsat = makeNaive(Arrays.asList(leC(ctypes.literal(THIGH), x1),
+                                            leC(x1, x2),
+                                            leC(x2,
+                                                ctypes.literal(TLOW))));
+        assertTrue("unsat => more", unsat.implies(more));
+        assertTrue("unsat => less", unsat.implies(less));
+        assertTrue("unsat => lowerLess", unsat.implies(lowerLess));
+        assertTrue("unsat => unsat", unsat.implies(unsat));
     }
 
 }
