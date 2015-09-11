@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 
 public interface Transition {
 

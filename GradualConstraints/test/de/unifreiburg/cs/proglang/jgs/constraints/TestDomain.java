@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.typing.Typing;
 
 public class TestDomain {
 

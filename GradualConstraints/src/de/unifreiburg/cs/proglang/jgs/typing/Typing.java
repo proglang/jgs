@@ -1,8 +1,11 @@
-package de.unifreiburg.cs.proglang.jgs.constraints;
+package de.unifreiburg.cs.proglang.jgs.typing;
 
 import java.util.Collections;
 import java.util.Set;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.Transition;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AssignStmt;

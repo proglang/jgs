@@ -1,10 +1,12 @@
-package de.unifreiburg.cs.proglang.jgs.constraints;
+package de.unifreiburg.cs.proglang.jgs.typing;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.typing.Typing;
 import soot.IntType;
 import soot.Value;
 import soot.jimple.Jimple;
