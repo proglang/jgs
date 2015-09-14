@@ -1,10 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.Transition;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
+import soot.Local;
+import soot.Value;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AssignStmt;
 import soot.jimple.IdentityStmt;
@@ -59,6 +63,15 @@ public class Typing<LevelT> {
         public Transition getTransition() {
             return transition;
         }
+
+        public CType<Level> initialTypeVariableOf(Local local) {
+            return this.transition.getInit().get(local);
+        }
+
+        public CType<Level> finalTypeVariableOf(Local local) {
+            return this.transition.getFinal().get(local);
+        }
+
         
     }
 

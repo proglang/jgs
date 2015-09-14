@@ -37,7 +37,7 @@ public class CTypeDomain<Level> {
         return new Literal<>(t);
     }
 
-    public CType<Level> variable(TypeVar v) {
+    public static <Level> CType<Level> variable(TypeVar v) {
         return new Variable<>(v);
     }
 
