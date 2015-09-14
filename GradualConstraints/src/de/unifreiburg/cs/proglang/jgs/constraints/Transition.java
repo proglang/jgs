@@ -29,7 +29,7 @@ public interface Transition {
         public final Environment init;
         public final Environment fin;
 
-        public Atom(Environment init, Environment fin) {
+        Atom(Environment init, Environment fin) {
             super();
             this.init = init;
             this.fin = fin;
@@ -59,10 +59,10 @@ public interface Transition {
         public final TypeVar innerCx;
         public final List<Transition> branches;
 
-        public Branch(Environment init,
-                      Environment fin,
-                      TypeVar innerCx,
-                      List<Transition> branches) {
+        Branch(Environment init,
+               Environment fin,
+               TypeVar innerCx,
+               List<Transition> branches) {
             super();
             this.init = init;
             this.fin = fin;
@@ -82,11 +82,11 @@ public interface Transition {
     }
 
     public static class Seq implements Transition {
-        
+
         public final Transition first;
         public final Transition second;
-        
-        public Seq(Transition first, Transition second) {
+
+        Seq(Transition first, Transition second) {
             super();
             this.first = first;
             this.second = second;

@@ -74,7 +74,7 @@ public class TestDomain {
     ///////
     // Typing
     public static Typing<Level> mkTyping(CTypeDomain<Level> ctypes) {
-        return new Typing<>(ctypes, types);
+        throw new RuntimeException("NOT IMPLEMENTED");
     }
     
 }

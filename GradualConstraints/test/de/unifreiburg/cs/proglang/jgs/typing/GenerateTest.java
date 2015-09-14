@@ -32,7 +32,7 @@ public class GenerateTest {
         Local localX = j.newLocal("x", IntType.v());
 
         Stmt s;
-        Typing<Level>.Result r;
+        Typing.Result<Level> r;
 
         /* x = x */
         s = j.newAssignStmt(localX, localX);

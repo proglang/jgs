@@ -3,16 +3,18 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
 import de.unifreiburg.cs.proglang.jgs.constraints.Transition;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import soot.Local;
-import soot.Value;
 import soot.jimple.AbstractStmtSwitch;
 import soot.jimple.AssignStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.Stmt;
+
+import de.unifreiburg.cs.proglang.jgs.constraints.Transitions;
 
 /**
  * A context for typing statements.
@@ -25,31 +27,33 @@ import soot.jimple.Stmt;
 public class Typing<LevelT> {
 
     final public CTypeDomain<LevelT> ctypes;
+    final public ConstraintSetFactory<LevelT> csets;
     final public TypeDomain<LevelT> types;
 
-    public Typing(CTypeDomain<LevelT> ctypes, TypeDomain<LevelT> types) {
+    public Typing(CTypeDomain<LevelT> ctypes, ConstraintSetFactory<LevelT> csets, TypeDomain<LevelT> types) {
         super();
         this.ctypes = ctypes;
+        this.csets = csets;
         this.types = types;
     }
-    
+
     // TODO: how to deal with type errors?
     public Result generate(Stmt s) {
-       Gen g = new Gen();
-       s.apply(g);
-       return g.getResult();
+        Gen g = new Gen();
+        s.apply(g);
+        return g.getResult();
     }
-    
+
     /**
      * The result of a typing derivation: a set of constraints and an "environment transition".
      * @author fennell
      *
      */
-    public class Result {
+    public static class Result<LevelT> {
         private final ConstraintSet<LevelT> constraints;
         private final Transition transition;
 
-        public Result(ConstraintSet<LevelT> constraints,
+        Result(ConstraintSet<LevelT> constraints,
                 Transition transition) {
             super();
             this.constraints = constraints;
@@ -75,6 +79,16 @@ public class Typing<LevelT> {
         
     }
 
+    private Result makeResult(ConstraintSet<LevelT> constraints,
+                Transition transition) {
+        return new Result(constraints, transition);
+    }
+    
+    private Result makeResult() {
+        return new Result(csets.empty(), Transitions.makeId(Environments.makeEmpty()));
+    }
+
+
     /**
      * A statement switch that generates typing constraints.
      * 
@@ -83,6 +97,7 @@ public class Typing<LevelT> {
      */
     public class Gen extends AbstractStmtSwitch {
         
+        private Result result;
 
         @Override
         public void caseAssignStmt(AssignStmt stmt) {
