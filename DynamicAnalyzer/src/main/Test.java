@@ -4,8 +4,9 @@ package main;
 public class Test {
    
     public static void main(String[] args) {
-    	String[] x = new String[] {"abc", "def"};
-    	//x[0] = "ghi";
-    	//String res = x[1];
+    	int x = 0;
+    	if (x < 3) {
+    		x = 2*x;
+    	}
     }
 }
