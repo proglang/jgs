@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 
-import exceptions.InternalAnalyzerException;
+import utils.exceptions.InternalAnalyzerException;
 import analyzer.level2.SecurityLevel;
 
 /**

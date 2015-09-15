@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L1Logger;
-import logging.L2Logger;
-import exceptions.IllegalFlowException;
-import exceptions.InternalAnalyzerException;
+import utils.logging.L1Logger;
+import utils.logging.L2Logger;
+import utils.exceptions.IllegalFlowException;
+import utils.exceptions.InternalAnalyzerException;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.LocalStore;
 import analyzer.level1.storage.UnitStore.Element;

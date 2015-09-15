@@ -1,6 +1,6 @@
 package analyzer.level2;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 public class HandleStmtForTests extends HandleStmt {
 

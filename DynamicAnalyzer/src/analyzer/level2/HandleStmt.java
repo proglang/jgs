@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
-import exceptions.IllegalFlowException;
-import exceptions.InternalAnalyzerException;
+import utils.exceptions.IllegalFlowException;
+import utils.exceptions.InternalAnalyzerException;
 
 /**
  * 

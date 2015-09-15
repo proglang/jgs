@@ -1,11 +1,11 @@
-package visitor;
+package utils.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import exceptions.InternalAnalyzerException;
-import logging.L1Logger;
+import utils.exceptions.InternalAnalyzerException;
+import utils.logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import analyzer.level2.HandleStmt;
 import soot.Local;
@@ -65,8 +65,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	Logger logger = L1Logger.getLogger();
 	VisitorHelper vh = new VisitorHelper();
 	
-	protected enum Stmt {UNDEF, INVOKE, ASSIGN, IDENTITY, RETURN, GOTZO, IF, SWITCH, THROW}
-	protected Stmt actualContext = Stmt.UNDEF;
+	protected enum StmtContext {UNDEF, INVOKE, ASSIGN, IDENTITY, RETURN, GOTZO, IF, SWITCH, THROW}
+	protected StmtContext actualContext = StmtContext.UNDEF;
 
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
@@ -250,7 +250,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.fine("Invoke expression is of type SpecialInvoke");
 		logger.finest(v.toString());
 		
-		if (actualContext == Stmt.INVOKE || actualContext == Stmt.ASSIGN ) {
+		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGN ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			JimpleInjector.storeArgumentLevels(args);
 		} else {
@@ -266,7 +266,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.finest(v.toString());	
 		
 		
-		if (actualContext == Stmt.INVOKE || actualContext == Stmt.ASSIGN ) {
+		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGN ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			JimpleInjector.storeArgumentLevels(args);
 		} else {
@@ -281,7 +281,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.fine("Invoke expression is of type VirtualInvoke");
 		logger.finest(v.toString());
 		
-		if (actualContext == Stmt.INVOKE || actualContext == Stmt.ASSIGN ) {
+		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGN ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			JimpleInjector.storeArgumentLevels(args);
 		} else {

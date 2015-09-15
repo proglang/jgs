@@ -1,4 +1,4 @@
-package exceptions;
+package utils.exceptions;
 
 public class InternalAnalyzerException extends RuntimeException {
 

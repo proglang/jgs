@@ -1,11 +1,12 @@
-package visitor;
+package utils.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import exceptions.InternalAnalyzerException;
-import logging.L1Logger;
+import utils.exceptions.InternalAnalyzerException;
+import utils.logging.L1Logger;
+import utils.visitor.AnnotationValueSwitch.StmtContext;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Value;
@@ -30,10 +31,10 @@ import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
-import visitor.AnnotationValueSwitch.Stmt;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
 	
@@ -55,7 +56,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseInvokeStmt(InvokeStmt stmt) {
 		
 		InvokeStmt iStmt = stmt;
-		valueSwitch.actualContext = Stmt.INVOKE;
+		valueSwitch.actualContext = StmtContext.INVOKE;
 		
 		logger.fine(" > > > Invoke Statement identified < < <");
 		
@@ -66,13 +67,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		// TODO das ist eher interessant bei AssignStmt
 		logger.finer("Method has return type: " + invokeExpr.getType());
 		
-		valueSwitch.actualContext = Stmt.UNDEF;
+		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
 		
-		valueSwitch.actualContext = Stmt.ASSIGN;
+		valueSwitch.actualContext = StmtContext.ASSIGN;
 		AssignStmt aStmt = stmt;
 		
 		logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
@@ -175,13 +176,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			}
 		}
 		
-		valueSwitch.actualContext = Stmt.UNDEF;
+		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
 		
-		valueSwitch.actualContext = Stmt.IDENTITY;
+		valueSwitch.actualContext = StmtContext.IDENTITY;
 		
 		IdentityStmt iStmt = stmt;
 		
@@ -191,7 +192,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		System.out.println(stmt.getRightOp().getType());
 		stmt.getRightOp().apply(valueSwitch);
 		
-		valueSwitch.actualContext = Stmt.UNDEF;
+		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override

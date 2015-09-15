@@ -7,8 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L1Logger;
-import annotationExtractor.Extractor;
+import utils.logging.L1Logger;
 import soot.Body;
 import soot.BodyTransformer;
 import soot.Local;
@@ -18,8 +17,8 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Jimple;
 import soot.util.Chain;
-import visitor.AnnotationStmtSwitch;
-import visitor.AnnotationValueSwitch;
+import utils.visitor.AnnotationStmtSwitch;
+import utils.visitor.AnnotationValueSwitch;
 
 /**
  * This Analyzer is applied to every method.
@@ -34,8 +33,6 @@ import visitor.AnnotationValueSwitch;
  */
 public class BodyAnalyzer extends BodyTransformer{
 	
-
-	Extractor annotationExtractor;
 	// TODO die Datei die untersucht werden soll, aus den Soot Argumenten holen
     SootClass sootClass;
     SootMethod method;
@@ -70,7 +67,6 @@ public class BodyAnalyzer extends BodyTransformer{
 		
 		stmtSwitch = new AnnotationStmtSwitch();
     	valueSwitch = new AnnotationValueSwitch();	
-		annotationExtractor = new Extractor();
 		
         body = arg0;
         method = body.getMethod();
