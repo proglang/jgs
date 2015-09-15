@@ -3,9 +3,11 @@ package main;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import soot.PackManager;
+import soot.Scene;
+import soot.Transform;
 import logging.L1Logger;
 import analyzer.level1.BodyAnalyzer;
-import soot.*;
 
 /**
  * @author Regina Koenig
