@@ -33,6 +33,7 @@ private static ObjectMap instance = null;
 private static SecurityLevel actualReturnLevel;
 private static ArrayList<SecurityLevel> actualArguments;
 private static Logger logger;
+private static SecurityLevel assignStmtLevel = SecurityLevel.UNDEF;
 
 
 /**

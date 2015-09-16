@@ -48,10 +48,10 @@ public class Main {
         
         BodyAnalyzer banalyzer = new BodyAnalyzer();
         
-        /*
+        
         PackManager.v()
         		   .getPack("jtp")
-        		   .add(new Transform("jtp.analyzer", banalyzer));  */
+        		   .add(new Transform("jtp.analyzer", banalyzer)); 
         		   
 
         // TODO ich kann den Classpath auch als Argument übergeben

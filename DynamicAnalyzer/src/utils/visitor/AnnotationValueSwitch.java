@@ -1,15 +1,11 @@
 package utils.visitor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import analyzer.level1.JimpleInjector;
-import analyzer.level2.HandleStmt;
 import soot.Local;
-import soot.Value;
 import soot.jimple.AddExpr;
 import soot.jimple.AndExpr;
 import soot.jimple.ArrayRef;
@@ -23,8 +19,6 @@ import soot.jimple.DivExpr;
 import soot.jimple.DoubleConstant;
 import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.EqExpr;
-import soot.jimple.Expr;
-import soot.jimple.FieldRef;
 import soot.jimple.FloatConstant;
 import soot.jimple.GeExpr;
 import soot.jimple.GtExpr;
@@ -32,7 +26,6 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.InstanceOfExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
-import soot.jimple.InvokeExpr;
 import soot.jimple.JimpleValueSwitch;
 import soot.jimple.LeExpr;
 import soot.jimple.LengthExpr;
@@ -53,6 +46,7 @@ import soot.jimple.ShrExpr;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.StaticInvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.SubExpr;
 import soot.jimple.ThisRef;
@@ -65,183 +59,197 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	Logger logger = L1Logger.getLogger();
 	VisitorHelper vh = new VisitorHelper();
 	
-	protected enum StmtContext {UNDEF, INVOKE, ASSIGN, IDENTITY, RETURN, GOTZO, IF, SWITCH, THROW}
+	protected enum StmtContext {UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, RETURN, GOTO, IF, SWITCH, THROW}
 	protected StmtContext actualContext = StmtContext.UNDEF;
+	protected Stmt callingStmt;
 
 	@Override
-	public void caseDoubleConstant(DoubleConstant v) {
-		// TODO Auto-generated method stub
-
+	public void caseDoubleConstant(DoubleConstant v) {		
 	}
 
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void caseIntConstant(IntConstant v) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void caseLongConstant(LongConstant v) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void caseNullConstant(NullConstant v) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void caseStringConstant(StringConstant v) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void caseClassConstant(ClassConstant v) {
-		// TODO Auto-generated method stub
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 		System.out.println(v);
 
 	}
 
 	@Override
 	public void defaultCase(Object object) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseAddExpr(AddExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseAndExpr(AndExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseDivExpr(DivExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseEqExpr(EqExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseNeExpr(NeExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseGeExpr(GeExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseGtExpr(GtExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseLeExpr(LeExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseLtExpr(LtExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseMulExpr(MulExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseOrExpr(OrExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseRemExpr(RemExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseShlExpr(ShlExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseShrExpr(ShrExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseSubExpr(SubExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseXorExpr(XorExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
 
 		logger.severe("Invoke expression is of type InterfaceInvoke"); // TODO change to fine
-		
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
@@ -250,7 +258,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.fine("Invoke expression is of type SpecialInvoke");
 		logger.finest(v.toString());
 		
-		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGN ) {
+		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			JimpleInjector.storeArgumentLevels(args);
 		} else {
@@ -266,7 +274,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.finest(v.toString());	
 		
 		
-		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGN ) {
+		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			JimpleInjector.storeArgumentLevels(args);
 		} else {
@@ -281,7 +289,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.fine("Invoke expression is of type VirtualInvoke");
 		logger.finest(v.toString());
 		
-		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGN ) {
+		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			JimpleInjector.storeArgumentLevels(args);
 		} else {
@@ -294,19 +302,23 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
 
 		logger.severe("Invoke expression is of type DynamicInvoke"); // TODO change to fine
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseCastExpr(CastExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
@@ -318,82 +330,114 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		System.out.println(v.getSizeBox());
 		System.out.println(v.getType());
 		System.out.println(v.getUseBoxes());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseNewExpr(NewExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			//new InternalAnalyzerException("new Expr");
+		}
 	}
 
 	@Override
 	public void caseLengthExpr(LengthExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseNegExpr(NegExpr v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseArrayRef(ArrayRef v) {
-
 		logger.finest("Array reference identified " + v.toString());
-		// TODO Auto-generated method stub
-
+		
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(v);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
 	}
 
 	@Override
-	public void caseStaticFieldRef(StaticFieldRef v) {
-		
+	public void caseStaticFieldRef(StaticFieldRef v) {	
 		logger.finest("Static field reference identified " + v.toString());
-		// TODO Auto-generated method stub
-		
+		System.out.println(		v.getField().getDeclaringClass());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(v);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
 	}
 
 	@Override
-	public void caseInstanceFieldRef(InstanceFieldRef v) {
-		
-		logger.finest("Instance field reference identified " + v.toString());
-		// TODO Auto-generated method stub
-
+	public void caseInstanceFieldRef(InstanceFieldRef v) {	
+		logger.finest("Instance field reference identified " + v.toString());	
+		System.out.println("kh" + v.getBase().toString());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(v);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
 	}
 
 	@Override
 	public void caseParameterRef(ParameterRef v) {
 
 		logger.finest("Parameter reference identified " + v.toString());
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		// TODO Auto-generated method stub
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseThisRef(ThisRef v) {
 		
 		logger.finer("@This reference identified " + v.toString());
-
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
 	}
 
 	@Override
 	public void caseLocal(Local l) {	
-
 		logger.finest("Local identified " + l.toString());
-
+		
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(l);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(l, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
 	}
 
 

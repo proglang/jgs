@@ -72,110 +72,30 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
-		
-		valueSwitch.actualContext = StmtContext.ASSIGN;
+
 		AssignStmt aStmt = stmt;
+		valueSwitch.callingStmt = aStmt;
+		
+		valueSwitch.actualContext = StmtContext.ASSIGNRIGHT;
+		
+		
+		if (aStmt.getDefBoxes().size() != 1) {
+			new InternalAnalyzerException("Unexpected number of elements on the left "
+					+ "side of assign statement");
+		}
 		
 		logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
 		logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() + " < < <");
 		logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() + " < < <");
-		
-		// Das ist im Moment nur zum Ausgeben, was vorkommt
-		// Vielleicht kann man das aber noch irgendwie verwenden
-		for (int i = 0; i < aStmt.getDefBoxes().size(); i++) {
-			aStmt.getDefBoxes().get(i).getValue().apply(valueSwitch);
-		}
+
 		for (int i = 0; i < aStmt.getUseBoxes().size(); i++) {
 			aStmt.getUseBoxes().get(i).getValue().apply(valueSwitch);
 		}
-
 		
-
-		int numOfArgs = aStmt.getUseBoxes().size();
+		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
 		
-		logger.finer("Number of arguments :" + numOfArgs);
-		
-		Value leftValue = aStmt.getDefBoxes().get(0).getValue();
-		leftValue.apply(valueSwitch);
-		
+		aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
 
-		if(leftValue instanceof Local) {
-		logger.finer("Left value is a Local");
-			Local left = (Local) leftValue;
-
-			if (numOfArgs == 1) {
-				Value rightValue = aStmt.getUseBoxes().get(0).getValue();
-
-				
-				if (rightValue instanceof Local) {
-			    logger.finer("Local on the right side");
-
-			    Local right = (Local) rightValue;
-			    JimpleInjector.assignLocalToLocal(left, right, aStmt);
-				} else if (rightValue instanceof ClassConstant) { // TODO wieder entfernen
-					ClassConstant cc = (ClassConstant) rightValue;
-					System.out.println(rightValue);
-				} else 
-				{
-					JimpleInjector.assignConstantToLocal(left, aStmt); 
-				    // TODO: kann man hier was mit dem ValueSwitch machen? 
-					// ZB rausfinden, welchen Typ die Argumente habe
-					} 
-				
-			} else if (numOfArgs == 2) {
-				logger.finer("Field or Array on the right side");
-				Value rightValue = aStmt.getUseBoxes().get(1).getValue();
-				if (rightValue instanceof NewArrayExpr) {
-					System.out.println("new Array created");
-					int length = Integer.parseInt(aStmt.getUseBoxes().get(0).getValue().toString());
-					JimpleInjector.addArrayToObjectMap((Local) leftValue,  aStmt);
-				}
-				
-				
-			} else if (numOfArgs == 3) {
-				logger.finer("2 Locals on the right side");
-				
-
-				Value rightValue1 = aStmt.getUseBoxes().get(0).getValue();
-				
-				Value rightValue2 = aStmt.getUseBoxes().get(1).getValue();
-				
-				if (!(rightValue1 instanceof Local) || !(rightValue2 instanceof Local)) {
-					new InternalAnalyzerException("Expected Local as "
-							+ "argument but got unknown type instead");
-				}
-				
-				Local right1 = (Local) rightValue1;
-				Local right2 = (Local) rightValue2;
-				
-				JimpleInjector.assignLocalsToLocal(left, right1, right2, aStmt);
-			} else {
-				System.out.println(numOfArgs);
-				new InternalAnalyzerException("unexpected number of "
-						+ "arguments in assign statement");
-			}
-			
-		} else if (leftValue instanceof InstanceFieldRef) {
-			logger.finer("Left value is an instance field");
-			
-
-			System.out.println(((InstanceFieldRef) leftValue).getBase());
-			Local base = (Local) ((InstanceFieldRef) leftValue).getBase();
-			System.out.println(((InstanceFieldRef) leftValue).getField().getDeclaration());
-			
-		} else if (leftValue instanceof StaticFieldRef ) {
-			logger.finer("Left value is a static field");
-			
-
-			System.out.println(((StaticFieldRef) leftValue).getField().getDeclaringClass());
-
-			if(leftValue.getUseBoxes().size() > 0) {
-				logger.finer(" Declaring object " + leftValue.getUseBoxes().toString());
-				logger.finer("Class " + leftValue.getClass());
-				// TODO its unclear how to access r0 
-			}
-		}
-		
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
@@ -308,5 +228,4 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		// TODO Auto-generated method stub
 
 	}
-
 }
