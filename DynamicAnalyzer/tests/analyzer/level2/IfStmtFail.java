@@ -2,7 +2,7 @@ package analyzer.level2;
 
 import static org.junit.Assert.*;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 import org.junit.Before;
 import org.junit.Test;

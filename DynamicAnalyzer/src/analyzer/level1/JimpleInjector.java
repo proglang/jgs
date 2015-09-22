@@ -388,18 +388,21 @@ public class JimpleInjector {
 		parameterTypes.add(RefType.v("java.lang.String"));
 		
 		// units.getFirst is already a reference to @this
-		Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+		// Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+		Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
+		System.out.println("Base "+f.getBase());
 		
 		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(fieldSignature));
 		
 		
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "addLevelOfInstanceField", 
+				Scene.v().getSootClass(HANDLE_CLASS), "addLevelOfField", 
 				parameterTypes, VoidType.v(), false), 
-				tmpLocal, local_for_Strings);
+				local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
+		unitStore.insertElement(unitStore.new Element(assignBase, unitStore.lastPos));
 		unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
 		unitStore.lastPos = assignSignature;
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
@@ -425,7 +428,7 @@ public class JimpleInjector {
 		
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"addLevelOfInstanceField", parameterTypes, VoidType.v(), false),
+						"addLevelOfField", parameterTypes, VoidType.v(), false),
 						local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
@@ -437,7 +440,9 @@ public class JimpleInjector {
 		unitStore.lastPos = assignExpr;
 	}
 	
-	public static void addLevelInAssignStmt(ArrayRef a) {}
+	public static void addLevelInAssignStmt(ArrayRef a) {
+		// TOTO
+	}
 	
 	public static void setLevelOfAssignStmt(Local l, Unit pos) {
 		LOGGER.info("Setting level in assign statement");
@@ -484,7 +489,7 @@ public class JimpleInjector {
 		
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfInstanceField", 
+				Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField", 
 				parameterTypes, VoidType.v(), false), 
 				tmpLocal, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
@@ -515,7 +520,7 @@ public class JimpleInjector {
 		
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"setLevelOfInstanceField", parameterTypes, VoidType.v(), false),
+						"setLevelOfField", parameterTypes, VoidType.v(), false),
 						local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
@@ -527,7 +532,9 @@ public class JimpleInjector {
 		unitStore.lastPos = assignExpr;
 	}
 	
-	public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {}
+	public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
+		// TODO
+	}
 	
 	public static void assignReturnLevelToLocal(Local l) {
 		LOGGER.log(Level.INFO, "Assign return level of invoked method to local {0}", 

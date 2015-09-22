@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
 

@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import tests.testClasses.TestSubClass;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 public class AssignLocalsFail {
 	

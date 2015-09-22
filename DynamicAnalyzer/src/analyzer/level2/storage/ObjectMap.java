@@ -235,8 +235,17 @@ public int getNumberOfFields(Object o) {
 	return innerMap.get(o).size();
 }
   
-  
+public void setAssignmentLevel(SecurityLevel l) {
+	assignStmtLevel = l;
+}
 
+public SecurityLevel getAssignmentLevel() {
+	return assignStmtLevel;
+}
+
+public void clearAssignmentLevel() {
+	assignStmtLevel = SecurityLevel.LOW;
+}
   
 }
 
