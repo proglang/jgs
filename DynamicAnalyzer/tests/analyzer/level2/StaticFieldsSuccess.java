@@ -34,7 +34,7 @@ public class StaticFieldsSuccess {
 		hs.addObjectToObjectMap(this.getClass());
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
 		
-		hs.assignConstantToField(this.getClass(), "int_field");
+		hs.setLevelOfField(this.getClass(), "int_field");
 			
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST STARTED");
 		
@@ -56,8 +56,8 @@ public class StaticFieldsSuccess {
 		assertTrue(hs.containsFieldInObjectMap(TestSubClass.class, "int_sField"));
 		assertTrue(hs.containsFieldInObjectMap(tsc.getClass(), "int_sField"));
 		
-		hs.assignConstantToField(tsc.getClass(), "int_sField");
-		hs.assignConstantToField(TestSubClass.class, "int_sField");
+		hs.setLevelOfField(tsc.getClass(), "int_sField");
+		hs.setLevelOfField(TestSubClass.class, "int_sField");
 		TestSubClass.sField = 2;
 		tsc.sField = 3;
 			

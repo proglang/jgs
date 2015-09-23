@@ -28,7 +28,7 @@ public class ExampleFailScenarios {
 		hs.checkCondition("int_high");
 		if(high == 0) {
 			
-			hs.assignLocalsToLocal("int_x");
+			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
 			hs.exitInnerScope();
@@ -37,9 +37,5 @@ public class ExampleFailScenarios {
 		hs.close();
 	}
 	
-	@Test
-	public void test() {
-		fail();
-	}
 
 }

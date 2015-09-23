@@ -30,7 +30,7 @@ public class WhileStmtSuccess {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		hs.addLocal("int_x");
-		hs.assignConstantToLocal("int_x");
+		hs.setLevelOfLocal("int_x");
 		int x = 0;
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
@@ -40,7 +40,7 @@ public class WhileStmtSuccess {
 			
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 			
-			hs.assignConstantToLocal("int_x");
+			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
 		hs.exitInnerScope();
@@ -68,7 +68,7 @@ public class WhileStmtSuccess {
 			
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 			
-			hs.assignConstantToLocal("int_x");
+			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
 		hs.exitInnerScope();

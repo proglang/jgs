@@ -41,7 +41,7 @@ public class TestSubClass {
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_result");
 		
-		hs.assignLocalsToLocal("int_result");
+		hs.setLevelOfLocal("int_result");
 		int result = 0;
 		
 		hs.returnLocal("int_result");
@@ -60,8 +60,12 @@ public class TestSubClass {
 		hs.assignArgumentToLocal(0, "int_a1");
 		hs.assignArgumentToLocal(1, "int_b1");
 		hs.assignArgumentToLocal(2, "int_c1");
-		hs.assignLocalsToLocal("int_tmp", "int_b1", "int_c1");
-		hs.assignLocalsToLocal("int_tmp2", "int_tmp", "int_a1");
+		hs.addLevelOfLocal("int_b1");
+		hs.addLevelOfLocal("int_c1");
+		hs.setLevelOfLocal("int_tmp");
+		hs.addLevelOfLocal("int_tmp");
+		hs.addLevelOfLocal("int_a1");
+		hs.setLevelOfLocal("int_tmp2");
 		
 		hs.returnLocal("int_tmp2");
 		hs.close();
@@ -72,7 +76,7 @@ public class TestSubClass {
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_result");
 		
-		hs.assignLocalsToLocal("int_result");
+		hs.setLevelOfLocal("int_result");
 		int result = 0;
 		hs.makeLocalHigh("int_result");
 		

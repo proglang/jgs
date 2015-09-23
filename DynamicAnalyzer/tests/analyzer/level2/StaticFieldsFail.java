@@ -37,7 +37,7 @@ public class StaticFieldsFail {
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
 		
 		hs.pushGlobalPC(SecurityLevel.HIGH);
-		hs.assignConstantToField(this.getClass(), "int_field");
+		hs.setLevelOfField(this.getClass(), "int_field");
 			
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD FAIL TEST STARTED");
 		
@@ -61,7 +61,7 @@ public class StaticFieldsFail {
 		
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		
-		hs.assignConstantToField(tsc.getClass(), "int_sField");
+		hs.setLevelOfField(tsc.getClass(), "int_sField");
 		TestSubClass.sField = 2;
 		tsc.sField = 3;
 			

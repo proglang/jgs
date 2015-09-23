@@ -93,8 +93,8 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_z"));
 		assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
-		assertEquals(SecurityLevel.HIGH, hs.addLevelOfLocal("int_y"));
-		assertEquals(SecurityLevel.HIGH, hs.addLevelOfLocal("int_z"));
+		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_y"));
+		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_z"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfLocal("int_x"));
 		
 	    hs.close();	

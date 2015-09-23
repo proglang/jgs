@@ -45,7 +45,7 @@ public class SwitchStmtFail {
 		case 0: 
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
 			
-			hs.assignConstantToLocal("int_y");
+			hs.setLevelOfLocal("int_y");
 			x += 2;
 			
 			hs.exitInnerScope();

@@ -118,10 +118,6 @@ public class ObjectMapTest {
 		
 		System.out.println("MULTIPLE OBJECTS TEST FINISHED");
 	}
-	
-	@Test
-	public void test() {
-		fail();
-	}
+
 
 }
