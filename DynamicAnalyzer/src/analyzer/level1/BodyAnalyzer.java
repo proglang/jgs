@@ -94,14 +94,11 @@ public class BodyAnalyzer extends BodyTransformer{
         		LOGGER.log(Level.INFO, "Entering <init>");
         		JimpleInjector.addInstanceObjectToObjectMap();
         		
-                // Adding static and instance fields to object map
-        		// TODO Gibt es den Fall, dass ein Object gar keinen Konstruktor hat?
+                // Add all instance fields to ObjectMap
         		Iterator<SootField> fIt = fields.iterator();
         		while(fIt.hasNext()) {
         			SootField item = fIt.next();
-        			if (item.isStatic()) {
-        				JimpleInjector.addStaticFieldToObjectMap(item);
-        			} else {
+        			if (!item.isStatic()) {
         				JimpleInjector.addInstanceFieldToObjectMap(item);
         			}
         		}
@@ -110,6 +107,15 @@ public class BodyAnalyzer extends BodyTransformer{
         		LOGGER.log(Level.INFO, "Entering <clinit>");
         		SootClass sc = method.getDeclaringClass();
         		JimpleInjector.addClassObjectToObjectMap(sc);
+        		
+        		// Add all static fields to ObjectMap
+        		Iterator<SootField> fIt = fields.iterator();
+        		while(fIt.hasNext()) {
+        			SootField item = fIt.next();
+        			if (item.isStatic()) {
+        				JimpleInjector.addStaticFieldToObjectMap(item);
+        			} 
+        		}
         }
         
 

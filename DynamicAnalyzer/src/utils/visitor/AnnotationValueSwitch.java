@@ -324,21 +324,28 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
 		logger.finest("New Array expression identified");
-		System.out.println(v.getBaseType());
-		System.out.println(v.getClass());
-		System.out.println(v.getSize());
-		System.out.println(v.getSizeBox());
-		System.out.println(v.getType());
-		System.out.println(v.getUseBoxes());
+		System.out.println("Base Type " + v.getBaseType());
+		System.out.println("Class " + v.getClass());
+		System.out.println("Size " + v.getSize());
+		System.out.println("SizeBox " + v.getSizeBox());
+		System.out.println("Type " + v.getType());
+		System.out.println("UseBox " + v.getUseBoxes());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+		//	new InternalAnalyzerException();
 		}
 	}
 
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
+		logger.finest("New Multiarray expression identified");
+		System.out.println("Size count " + v.getSizeCount());
+		System.out.println("Base Type " + v.getBaseType().toString());
+		System.out.println("Class " + v.getClass().toString());
+		System.out.println("Sizes " + v.getSizes().toString());
+		System.out.println("Type " + v.getType().toString());
+		System.out.println("Use Boxes " + v.getUseBoxes().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+			//new InternalAnalyzerException();
 		}
 	}
 
@@ -366,7 +373,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseArrayRef(ArrayRef v) {
 		logger.finest("Array reference identified " + v.toString());
-		
+		System.out.println("Base " + v.getBase());
+		System.out.println("Index " + v.getIndex());
+		System.out.println("IndexBox " + v.getIndexBox().toString());
+		System.out.println("Type " + v.getType());
+		System.out.println("Use Box " + v.getUseBoxes().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			JimpleInjector.addLevelInAssignStmt(v);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {

@@ -55,6 +55,7 @@ public class HandleStmt {
 			om = ObjectMap.getInstance();
 		}
 		om.flush();
+		om.clearAssignmentLevel();
 	}
 	
 	/**
@@ -305,8 +306,15 @@ public class HandleStmt {
 	}
 	
 
-	// This method is for Instancefields, Staticfields and Arrays
+	// This method is for Instancefields, Staticfields
 	public SecurityLevel addLevelOfField(Object o, String field) {
+		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
+		om.setAssignmentLevel(joinLevels(om.getAssignmentLevel(), fieldLevel));
+		return om.getAssignmentLevel();
+	}
+	
+	public SecurityLevel addLevelOfArray(Object o, String field) {
+		// TODO
 		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
 		om.setAssignmentLevel(joinLevels(om.getAssignmentLevel(), fieldLevel));
 		return om.getAssignmentLevel();
@@ -322,8 +330,18 @@ public class HandleStmt {
 		return lm.getLevel(local);
 	}
 	
-	// This method is for Instancefields, Staticfields and Arrays
+	// This method is for Instancefields, Staticfields
 	public SecurityLevel setLevelOfField(Object o, String field) {
+		if(!checkGlobalPC(o, field)) {
+			abort(o.toString() + field);
+		}
+		om.setField(o, field, joinWithGPC(om.getAssignmentLevel()));
+		om.clearAssignmentLevel();
+		return om.getFieldLevel(o, field);
+	}
+	
+	public SecurityLevel setLevelOfArray(Object o, String field) {
+		// TODO 
 		if(!checkGlobalPC(o, field)) {
 			abort(o.toString() + field);
 		}
