@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
 import soot.Body;
 import soot.BodyTransformer;
@@ -129,6 +130,10 @@ public class BodyAnalyzer extends BodyTransformer{
         	  JimpleInjector.addLocal(item);
         	}
         }
+        
+        // TESTSECTION
+        DominatorFinder df = new DominatorFinder(body);
+        
         
         Iterator<Unit> uit = units.iterator();
         while(uit.hasNext()) {
