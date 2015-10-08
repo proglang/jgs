@@ -16,6 +16,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.IfStmt;
 import soot.jimple.Jimple;
 import soot.util.Chain;
 import utils.visitor.AnnotationStmtSwitch;
@@ -44,7 +45,8 @@ public class BodyAnalyzer extends BodyTransformer{
     AnnotationValueSwitch valueSwitch;
     Chain<SootField> fields;
     Logger LOGGER;
-    
+
+    DominatorFinder df;
     
 	
 	@Override
@@ -62,16 +64,17 @@ public class BodyAnalyzer extends BodyTransformer{
 			e.printStackTrace();
 		}
 		
-		
 		LOGGER = L1Logger.getLogger();
 		LOGGER.log(Level.SEVERE, "BodyTransform started: {0}", arg0.getMethod().getName());
 		
 		stmtSwitch = new AnnotationStmtSwitch();
     	valueSwitch = new AnnotationValueSwitch();	
-		
+    	
         body = arg0;
         method = body.getMethod();
-        fields = method.getDeclaringClass().getFields();
+        fields = method.getDeclaringClass().getFields();  
+
+        df = new DominatorFinder(body);
         
         JimpleInjector.setBody(body);
 
@@ -130,15 +133,20 @@ public class BodyAnalyzer extends BodyTransformer{
         	  JimpleInjector.addLocal(item);
         	}
         }
-        
-        // TESTSECTION
-        DominatorFinder df = new DominatorFinder(body);
+
         
         
         Iterator<Unit> uit = units.iterator();
         while(uit.hasNext()) {
         	Unit item = uit.next();
 			item.apply(stmtSwitch);
+			if (item instanceof IfStmt) {
+				System.out.println("HIER ==>> " + item.toString());
+				df.getImmediateDominator(item);
+			}
+			while (df.containsStmt(item)) {
+				JimpleInjector.exitInnerScope();
+			}
         }
         JimpleInjector.addUnitsToChain();      
         
