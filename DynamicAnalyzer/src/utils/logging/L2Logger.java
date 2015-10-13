@@ -1,4 +1,4 @@
-package logging;
+package utils.logging;
 
 import java.io.IOException;
 import java.util.logging.ConsoleHandler;
@@ -8,12 +8,12 @@ import java.util.logging.Logger;
 
 import analyzer.level2.HandleStmt;
 
-public class L1Logger {
+public class L2Logger {
 	  static private ConsoleHandler handler;
-	  static private L1Formatter formatter;
+	  static private L2Formatter formatter;
 	  private static final String LOGGER_NAME = HandleStmt.class.getName();
 
-	  static public void setup(Level LOGGER_LEVEL) throws IOException {
+	  static public void setup() throws IOException {
 
 	    // get the global logger to configure it
 	    Logger logger = Logger.getLogger(LOGGER_NAME);
@@ -27,12 +27,12 @@ public class L1Logger {
 	    	}
 	    }
 
-	    logger.setLevel(LOGGER_LEVEL);
+	    logger.setLevel(Level.ALL);
 	    handler = new ConsoleHandler();
 	    handler.setLevel(Level.ALL);
 
 	    // create a formatter
-	    formatter = new L1Formatter();
+	    formatter = new L2Formatter();
 	    handler.setFormatter(formatter);
 	    logger.addHandler(handler);
 	    

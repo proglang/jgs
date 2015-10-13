@@ -1,9 +1,11 @@
 package analyzer.level2;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +13,7 @@ import org.junit.Test;
 import tests.testClasses.TestSubClass;
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 public class AssignFieldsFail {
 	
@@ -40,7 +42,7 @@ public class AssignFieldsFail {
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
 		hs.pushGlobalPC(SecurityLevel.HIGH);
-		hs.assignLocalsToField(this, "int_field");
+		hs.setLevelOfField(this, "int_field");
 		
 	    hs.close();	
 	}
@@ -64,7 +66,7 @@ public class AssignFieldsFail {
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
 		hs.pushGlobalPC(SecurityLevel.HIGH);
-		hs.assignLocalsToField(this, "int_field");
+		hs.setLevelOfField(this, "int_field");
 		
 	    hs.close();	
 	}
@@ -77,7 +79,7 @@ public class AssignFieldsFail {
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_local");
-		hs.assignConstantToLocal("int_local");
+		hs.setLevelOfLocal("int_local");
 		int local = 2;
 		
 		hs.addLocal("TestSubClass_o");
@@ -94,7 +96,8 @@ public class AssignFieldsFail {
 		hs.makeFieldLow(o, "int_pField");
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		
-		hs.assignLocalsToField(o, "int_pField", "int_local");
+		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_local"));
+		hs.setLevelOfField(o, "int_pField");
 		o.pField = local;
 		
 	    hs.close();	

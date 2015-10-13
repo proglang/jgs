@@ -2,12 +2,12 @@ package analyzer.level2;
 
 import static org.junit.Assert.*;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class StaticFieldsFail {
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
 		
 		hs.pushGlobalPC(SecurityLevel.HIGH);
-		hs.assignConstantToField(this.getClass(), "int_field");
+		hs.setLevelOfField(this.getClass(), "int_field");
 			
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD FAIL TEST STARTED");
 		
@@ -61,7 +61,7 @@ public class StaticFieldsFail {
 		
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		
-		hs.assignConstantToField(tsc.getClass(), "int_sField");
+		hs.setLevelOfField(tsc.getClass(), "int_sField");
 		TestSubClass.sField = 2;
 		tsc.sField = 3;
 			

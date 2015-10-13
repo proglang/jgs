@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 
-import exceptions.InternalAnalyzerException;
+import utils.exceptions.InternalAnalyzerException;
 import analyzer.level2.SecurityLevel;
 
 /**
@@ -33,6 +33,7 @@ private static ObjectMap instance = null;
 private static SecurityLevel actualReturnLevel;
 private static ArrayList<SecurityLevel> actualArguments;
 private static Logger logger;
+private static SecurityLevel assignStmtLevel = SecurityLevel.UNDEF;
 
 
 /**
@@ -234,8 +235,17 @@ public int getNumberOfFields(Object o) {
 	return innerMap.get(o).size();
 }
   
-  
+public void setAssignmentLevel(SecurityLevel l) {
+	assignStmtLevel = l;
+}
 
+public SecurityLevel getAssignmentLevel() {
+	return assignStmtLevel;
+}
+
+public void clearAssignmentLevel() {
+	assignStmtLevel = SecurityLevel.LOW;
+}
   
 }
 

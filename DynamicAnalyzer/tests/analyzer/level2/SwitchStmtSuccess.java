@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +75,7 @@ public class SwitchStmtSuccess {
 		case 0: 
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
 			
-			hs.assignConstantToLocal("int_x");
+			hs.setLevelOfLocal("int_x");
 			
 			hs.exitInnerScope();
 			break;

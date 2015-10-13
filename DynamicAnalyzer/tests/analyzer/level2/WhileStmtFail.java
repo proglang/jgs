@@ -3,14 +3,14 @@ package analyzer.level2;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 public class WhileStmtFail {
 	
@@ -29,7 +29,7 @@ public class WhileStmtFail {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		hs.addLocal("int_x");
-		hs.assignConstantToLocal("int_x");
+		hs.setLevelOfLocal("int_x");
 		@SuppressWarnings("unused")
 		int x = 0;
 		
@@ -39,9 +39,11 @@ public class WhileStmtFail {
 		hs.checkCondition("int_y");
 		while (y == 0) {
 			
-			hs.assignLocalsToLocal("int_x", "int_x");
+			hs.addLevelOfLocal("int_x");
+			hs.setLevelOfLocal("int_x");
 			x += 1;
-			hs.assignLocalsToLocal("int_y", "int_y");
+			hs.addLevelOfLocal("int_y");
+			hs.setLevelOfLocal("int_y");
 			y += 1;
 			
 		hs.exitInnerScope();

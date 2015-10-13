@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import tests.testClasses.TestSubClass;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 public class AssignLocalsFail {
 	
@@ -34,7 +34,7 @@ public class AssignLocalsFail {
 		hs.addLocal("int_x", SecurityLevel.LOW);
 		hs.setLocalPC(SecurityLevel.HIGH);
 		// x = LOW, lpc = HIGH
-		hs.assignLocalsToLocal("int_x");
+		hs.setLevelOfLocal("int_x");
 		hs.close();
 		
 		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
@@ -63,7 +63,9 @@ public class AssignLocalsFail {
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
 		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_z"));
 		assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
-		hs.assignLocalsToLocal("int_x", "int_y", "int_z");
+		hs.addLevelOfLocal("int_y");
+		hs.addLevelOfLocal("int_z");
+		hs.setLevelOfLocal("int_x");
 		
 		
 	}
@@ -81,7 +83,7 @@ public class AssignLocalsFail {
 		
 		hs.setLocalPC(SecurityLevel.HIGH);
 		
-		hs.assignConstantToLocal("TestSubClass_xy");
+		hs.setLevelOfLocal("TestSubClass_xy");
 		xy = new TestSubClass();
 		
 		
@@ -109,7 +111,8 @@ public class AssignLocalsFail {
 		hs.checkCondition("int_high");
 		if (high == 0) {
 		
-			hs.assignLocalsToLocal("int_res", "TestSubClass_ts");
+			hs.addLevelOfLocal("TestSubClass_ts");
+			hs.setLevelOfLocal("int_res");
 			res = ts.methodWithConstReturn();
 			hs.assignReturnLevelToLocal("int_res");
 			
@@ -136,7 +139,8 @@ public class AssignLocalsFail {
 		
 		hs.addLocal("int_x");
 		hs.setLocalPC(SecurityLevel.HIGH);
-		hs.assignLocalsToLocal("int_x", "int_x"); // Just ignore the constants
+		hs.addLevelOfLocal("int_x");
+		hs.setLevelOfLocal("int_x"); // Just ignore the constants
 		
 		hs.close();
 				

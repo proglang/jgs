@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class StaticFieldsSuccess {
 		hs.addObjectToObjectMap(this.getClass());
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
 		
-		hs.assignConstantToField(this.getClass(), "int_field");
+		hs.setLevelOfField(this.getClass(), "int_field");
 			
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST STARTED");
 		
@@ -56,8 +56,8 @@ public class StaticFieldsSuccess {
 		assertTrue(hs.containsFieldInObjectMap(TestSubClass.class, "int_sField"));
 		assertTrue(hs.containsFieldInObjectMap(tsc.getClass(), "int_sField"));
 		
-		hs.assignConstantToField(tsc.getClass(), "int_sField");
-		hs.assignConstantToField(TestSubClass.class, "int_sField");
+		hs.setLevelOfField(tsc.getClass(), "int_sField");
+		hs.setLevelOfField(TestSubClass.class, "int_sField");
 		TestSubClass.sField = 2;
 		tsc.sField = 3;
 			

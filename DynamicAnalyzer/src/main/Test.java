@@ -1,14 +1,22 @@
 package main;
 
 import tests.testClasses.TestSubClass;
-import analyzer.level2.HandleStmt;
 
 
 public class Test {
    
     public static void main(String[] args) {
-    	String[] x = new String[] {"abc", "def"};
-    	//x[0] = "ghi";
-    	//String res = x[1];
+    	
+    }
+    
+    int m(int x){
+    	if (x > 5) {
+    		x = 1;
+    	if (x > 2) {
+    		x = 4;
+    	}}
+    	int z = 2;
+    	int y = 3;
+    	return x;
     }
 }

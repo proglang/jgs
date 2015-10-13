@@ -39,11 +39,6 @@ public class LocalMapTest {
 	}
 
 	@Test
-	public void testSetLevel() {
-		fail();
-	}
-
-	@Test
 	public void testPrintElements() {
 		LocalMap lm = new LocalMap();
 		lm.printElements();

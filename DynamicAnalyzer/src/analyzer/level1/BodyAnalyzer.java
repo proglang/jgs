@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L1Logger;
-import annotationExtractor.Extractor;
+import utils.dominator.DominatorFinder;
+import utils.logging.L1Logger;
 import soot.Body;
 import soot.BodyTransformer;
 import soot.Local;
@@ -16,10 +16,11 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.IfStmt;
 import soot.jimple.Jimple;
 import soot.util.Chain;
-import visitor.AnnotationStmtSwitch;
-import visitor.AnnotationValueSwitch;
+import utils.visitor.AnnotationStmtSwitch;
+import utils.visitor.AnnotationValueSwitch;
 
 /**
  * This Analyzer is applied to every method.
@@ -34,8 +35,6 @@ import visitor.AnnotationValueSwitch;
  */
 public class BodyAnalyzer extends BodyTransformer{
 	
-
-	Extractor annotationExtractor;
 	// TODO die Datei die untersucht werden soll, aus den Soot Argumenten holen
     SootClass sootClass;
     SootMethod method;
@@ -46,7 +45,8 @@ public class BodyAnalyzer extends BodyTransformer{
     AnnotationValueSwitch valueSwitch;
     Chain<SootField> fields;
     Logger LOGGER;
-    
+
+    DominatorFinder df;
     
 	
 	@Override
@@ -64,17 +64,17 @@ public class BodyAnalyzer extends BodyTransformer{
 			e.printStackTrace();
 		}
 		
-		
 		LOGGER = L1Logger.getLogger();
 		LOGGER.log(Level.SEVERE, "BodyTransform started: {0}", arg0.getMethod().getName());
 		
 		stmtSwitch = new AnnotationStmtSwitch();
     	valueSwitch = new AnnotationValueSwitch();	
-		annotationExtractor = new Extractor();
-		
+    	
         body = arg0;
         method = body.getMethod();
-        fields = method.getDeclaringClass().getFields();
+        fields = method.getDeclaringClass().getFields();  
+
+        df = new DominatorFinder(body);
         
         JimpleInjector.setBody(body);
 
@@ -97,20 +97,32 @@ public class BodyAnalyzer extends BodyTransformer{
         if (method.getName().equals("<init>")) {
         		LOGGER.log(Level.INFO, "Entering <init>");
         		JimpleInjector.addInstanceObjectToObjectMap();
-        
+        		
+                // Add all instance fields to ObjectMap
         		Iterator<SootField> fIt = fields.iterator();
         		while(fIt.hasNext()) {
         			SootField item = fIt.next();
-        			JimpleInjector.addFieldToObjectMap(item);
-
+        			if (!item.isStatic()) {
+        				JimpleInjector.addInstanceFieldToObjectMap(item);
+        			}
         		}
+        		
         } else if (method.getName().equals("<clinit>")) {
         		LOGGER.log(Level.INFO, "Entering <clinit>");
         		SootClass sc = method.getDeclaringClass();
         		JimpleInjector.addClassObjectToObjectMap(sc);
-        		// TODO Add static fields
+        		
+        		// Add all static fields to ObjectMap
+        		Iterator<SootField> fIt = fields.iterator();
+        		while(fIt.hasNext()) {
+        			SootField item = fIt.next();
+        			if (item.isStatic()) {
+        				JimpleInjector.addStaticFieldToObjectMap(item);
+        			} 
+        		}
         }
-       
+        
+
 
         Iterator<Local> lit = locals.iterator();
         while(lit.hasNext()) {
@@ -121,11 +133,20 @@ public class BodyAnalyzer extends BodyTransformer{
         	  JimpleInjector.addLocal(item);
         	}
         }
+
+        
         
         Iterator<Unit> uit = units.iterator();
         while(uit.hasNext()) {
         	Unit item = uit.next();
 			item.apply(stmtSwitch);
+			if (item instanceof IfStmt) {
+				System.out.println("HIER ==>> " + item.toString());
+				df.getImmediateDominator(item);
+			}
+			while (df.containsStmt(item)) {
+				JimpleInjector.exitInnerScope();
+			}
         }
         JimpleInjector.addUnitsToChain();      
         

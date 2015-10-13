@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class WhileStmtSuccess {
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		hs.addLocal("int_x");
-		hs.assignConstantToLocal("int_x");
+		hs.setLevelOfLocal("int_x");
 		int x = 0;
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
@@ -40,7 +40,7 @@ public class WhileStmtSuccess {
 			
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 			
-			hs.assignConstantToLocal("int_x");
+			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
 		hs.exitInnerScope();
@@ -68,7 +68,7 @@ public class WhileStmtSuccess {
 			
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 			
-			hs.assignConstantToLocal("int_x");
+			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
 		hs.exitInnerScope();

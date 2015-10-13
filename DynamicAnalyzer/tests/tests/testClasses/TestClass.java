@@ -1,7 +1,6 @@
 package tests.testClasses;
 
 import analyzer.level2.HandleStmt;
-import annotations.*;
 
 public class TestClass {
 
@@ -33,7 +32,6 @@ public class TestClass {
     }
     
     
-    @MyAnnotation
     public static void main(String[] args) {
     	HandleStmt hs = new HandleStmt();
     	hs.addLocal("int_a1");

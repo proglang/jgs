@@ -1,9 +1,9 @@
-package visitor;
+package utils.visitor;
 
 import java.util.List;
 import java.util.logging.Logger;
 
-import logging.L1Logger;
+import utils.logging.L1Logger;
 import soot.Local;
 import soot.Value;
 import soot.jimple.InvokeExpr;

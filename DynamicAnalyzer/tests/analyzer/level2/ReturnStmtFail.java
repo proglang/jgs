@@ -2,12 +2,12 @@ package analyzer.level2;
 
 import static org.junit.Assert.*;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;

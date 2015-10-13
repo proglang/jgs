@@ -2,12 +2,12 @@ package analyzer.level2;
 
 import static org.junit.Assert.*;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,11 +54,13 @@ public class ArraysFail {
 		/*
 		 * x = Join(i,a, gpc, a_i)
 		 */
-		hs.assignArrayFieldToLocal("String_x", a , Integer.toString(2));
+		hs.addLevelOfField(a, Integer.toString(2));
+		hs.setLevelOfLocal("String_x");
 		String x = a[2];
 		
 		int i = 1;
-		hs.assignArrayFieldToLocal("String_x", a , Integer.toString(2));
+		hs.addLevelOfField(a, Integer.toString(2));
+		hs.setLevelOfLocal("String_x");
 		x = a[i];
 		
 		hs.close();
@@ -86,11 +88,11 @@ public class ArraysFail {
 		 * level(a_i) = join(gpc,local, ??i??)
 		 * i = ??
 		 */
-		hs.assignLocalsToArrayField(a, Integer.toString(2));
+		hs.setLevelOfArray(a, Integer.toString(2));
 		a[2] = "3";
 		
 		int i = 2;
-		hs.assignLocalsToArrayField(a, Integer.toString(2));
+		hs.setLevelOfArray(a, Integer.toString(2));
 		a[i] = "3";
 		
 		hs.close();

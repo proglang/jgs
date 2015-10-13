@@ -3,9 +3,11 @@ package main;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import logging.L1Logger;
+import soot.PackManager;
+import soot.Scene;
+import soot.Transform;
+import utils.logging.L1Logger;
 import analyzer.level1.BodyAnalyzer;
-import soot.*;
 
 /**
  * @author Regina Koenig
@@ -49,11 +51,11 @@ public class Main {
         
         PackManager.v()
         		   .getPack("jtp")
-        		   .add(new Transform("jtp.analyzer", banalyzer));  
+        		   .add(new Transform("jtp.analyzer", banalyzer)); 
         		   
 
         // TODO ich kann den Classpath auch als Argument übergeben
-       soot.Main.main(new String[]{"-f","c", "-main-class", "main.Test", "main.Test"});
+       soot.Main.main(new String[]{"-f","J", "-main-class", "main.Test", "main.Test"});
 
     }
 

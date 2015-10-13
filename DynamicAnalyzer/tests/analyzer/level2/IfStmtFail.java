@@ -2,7 +2,7 @@ package analyzer.level2;
 
 import static org.junit.Assert.*;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,13 +26,13 @@ public class IfStmtFail {
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_x");
-		hs.assignLocalsToLocal("int_x");
+		hs.setLevelOfLocal("int_x");
 		int x = 1;
 		hs.makeLocalHigh("int_x");
 		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_x"));
 		
 		hs.addLocal("int_y");
-		hs.assignLocalsToLocal("int_y");
+		hs.setLevelOfLocal("int_y");
 		@SuppressWarnings("unused")
 		int y = 1;
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
@@ -45,7 +45,7 @@ public class IfStmtFail {
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 			assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
 			
-			hs.assignConstantToLocal("int_y");
+			hs.setLevelOfLocal("int_y");
 			y = 2;
 			
 			hs.exitInnerScope();

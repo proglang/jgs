@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 import tests.testClasses.TestSubClass;
 
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class InvokeSuccess {
 		 * 2. Add Fields to ObjectMap
 		 */
 		
-		hs.assignConstantToLocal("TestSubClass_xy");
+		hs.setLevelOfLocal("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(2, hs.getNumberOfFields(xy)); // The third fiel is static

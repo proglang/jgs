@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logging.L2Logger;
+import utils.logging.L2Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
 
-import exceptions.IllegalFlowException;
+import utils.exceptions.IllegalFlowException;
 
 public class SwitchStmtFail {
 	
@@ -45,7 +45,7 @@ public class SwitchStmtFail {
 		case 0: 
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
 			
-			hs.assignConstantToLocal("int_y");
+			hs.setLevelOfLocal("int_y");
 			x += 2;
 			
 			hs.exitInnerScope();
