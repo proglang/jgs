@@ -1,19 +1,15 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import java.util.Collections;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.variable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.Variable;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
-import soot.Local;
-import soot.Value;
-
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.*;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 
 /**
  * Environments: immutable maps from Locals to type variables.
@@ -23,28 +19,33 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.*;
  */
 public class Environment {
 
-    private final Map<Local, TypeVar> env;
+    /**
+     * The domain of environments "Var"s which are soot.Local and soot.jimple.ThisRef
+     * (and perhaps soot.jimple.ParameterRef). (Hopefully) Their only purpose is to
+     * have an identity
+     */
+    private final Map<Var<?>, TypeVar> env;
 
-    public Environment(Map<Local, TypeVar> env) {
+    public Environment(Map<Var<?>, TypeVar> env) {
         this.env = new HashMap<>(env);
     }
 
-    private Environment(Map<Local, TypeVar> env, Local k, TypeVar v) {
+    private Environment(Map<Var<?>, TypeVar> env, Var<?> k, TypeVar v) {
         this(env);
         env.put(k, v);
     }
 
-    public Environment add(Local k, TypeVar v) {
+    public Environment add(Var<?> k, TypeVar v) {
         return new Environment(this.env, k, v);
     }
 
-    public CType<Level> get(Local local) {
+    public TypeVar get(Var<?> local) {
         return this.tryGet(local)
                    .orElseThrow(() -> new NoSuchElementException(local.toString()));
     }
 
-    public Optional<CType<Level>> tryGet(Local local) {
-        return Optional.ofNullable(this.env.get(local)).map(t -> variable(t));
+    public Optional<TypeVar> tryGet(Var<?> local) {
+        return Optional.ofNullable(this.env.get(local));
     }
 
     @Override

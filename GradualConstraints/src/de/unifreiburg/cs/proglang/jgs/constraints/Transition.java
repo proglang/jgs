@@ -1,30 +1,58 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.List;
-import java.util.Optional;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 
-public interface Transition {
-
-    Environment getInit();
-
-    Environment getFinal();
-
-    default Optional<Atom> asAtom() {
-        return Optional.empty();
+/**
+ * A structure for tracking typing environments (the mapping from local
+ * variables to types, or rather type-variables) in a statement. A Transition is
+ * either an atomic change of the environment (like an assignment), a sequence
+ * of changes or a branch that contains two transitions which are merged to a
+ * final environment at the end.
+ * 
+ * @author fennell
+ *
+ */
+public abstract class Transition {
+    
+    // Factory methods:
+    public static Transition makeAtom(Environment init, Environment fin) {
+        return new Atom(init, fin);
     }
 
-    default Optional<Branch> asBranch() {
-        return Optional.empty();
+    public static Transition makeBranch(Environment init,
+                                        Environment fin,
+                                        TypeVar innerCx,
+                                        List<Transition> branches) {
+        return new Branch(init, fin, innerCx, branches);
+    }
+    
+    public static Transition makeSeq(Transition fst, Transition snd) {
+        return new Seq(fst, snd);
     }
 
-    default Optional<Seq> asSeq() {
-        return Optional.empty();
+    public static Transition makeId(Environment env) {
+        return makeAtom(env, env);
     }
+    
+    
+    // Interface:
+    
+    /**
+     * All transitions start with an initial environment.
+     */
+    public abstract Environment getInit();
 
-    public static class Atom implements Transition {
+    /**
+     * All transitions end with a final environment.
+     */
+    public abstract Environment getFinal();
+    
+
+    public static class Atom extends Transition {
+
 
         public final Environment init;
         public final Environment fin;
@@ -44,15 +72,9 @@ public interface Transition {
         public Environment getFinal() {
             return fin;
         }
-
-        @Override
-        public Optional<Atom> asAtom() {
-            return Optional.of(this);
-        }
-
     }
 
-    public static class Branch implements Transition {
+    public static class Branch extends Transition {
 
         public final Environment init;
         public final Environment fin;
@@ -81,7 +103,7 @@ public interface Transition {
         }
     }
 
-    public static class Seq implements Transition {
+    public static class Seq extends Transition {
 
         public final Transition first;
         public final Transition second;

@@ -7,7 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
- * A context for constraints.
+ * A context for constraints, i.e. constraints for a particular type domain. 
  * 
  * @author Luminous Fennell <fennell@informatik.uni-freiburg.de>
  *
