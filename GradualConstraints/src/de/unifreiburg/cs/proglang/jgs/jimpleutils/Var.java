@@ -118,4 +118,9 @@ public class Var<T> {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Var [me=" + me + "]";
+    }
+
 }

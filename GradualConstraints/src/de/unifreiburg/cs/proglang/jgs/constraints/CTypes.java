@@ -14,7 +14,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
  *
  * @param <Level>
  */
-public class CTypeDomain<Level> {
+public class CTypes {
 
     public static abstract class CType<Level> {
 
@@ -33,7 +33,7 @@ public class CTypeDomain<Level> {
 
     }
 
-    public CType<Level> literal(Type<Level> t) {
+    public static <Level> CType<Level> literal(Type<Level> t) {
         return new Literal<>(t);
     }
 

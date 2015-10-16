@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
@@ -83,19 +83,16 @@ import soot.jimple.XorExpr;
  */
 public class Typing<LevelT> {
 
-    final public CTypeDomain<LevelT> ctypes;
     final public ConstraintSetFactory<LevelT> csets;
     final public Constraints<LevelT> cstrs;
     final public TypeDomain<LevelT> types;
     final public TypeVars tvars;
 
-    public Typing(CTypeDomain<LevelT> ctypes,
-                  ConstraintSetFactory<LevelT> csets,
+    public Typing(ConstraintSetFactory<LevelT> csets,
                   TypeDomain<LevelT> types,
                   TypeVars tvars,
                   Constraints<LevelT> cstrs) {
         super();
-        this.ctypes = ctypes;
         this.csets = csets;
         this.types = types;
         this.tvars = tvars;
@@ -194,9 +191,9 @@ public class Typing<LevelT> {
             List<Var<?>> readVars = Var.getAll(stmt.getUseBoxes());
 
             TypeVar destTVar = tvars.fresh();
-            CType<LevelT> destCType = CTypeDomain.variable(destTVar);
+            CType<LevelT> destCType = CTypes.variable(destTVar);
             constraints.addAll(readVars.stream().map(v -> {
-                CType<LevelT> tv = CTypeDomain.variable(env.get(v));
+                CType<LevelT> tv = CTypes.variable(env.get(v));
                 return cstrs.le(tv, destCType);
             }).collect(Collectors.toSet()));
 
@@ -213,6 +210,7 @@ public class Typing<LevelT> {
             Environment fin = env.add(writeVar, destTVar);
             Transition transition = Transition.makeAtom(env, fin);
 
+            // .. and the result
             this.result =
                 makeResult(csets.fromCollection(constraints), transition);
         }

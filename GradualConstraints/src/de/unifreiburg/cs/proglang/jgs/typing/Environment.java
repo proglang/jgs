@@ -1,13 +1,13 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.variable;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 
@@ -32,7 +32,7 @@ public class Environment {
 
     private Environment(Map<Var<?>, TypeVar> env, Var<?> k, TypeVar v) {
         this(env);
-        env.put(k, v);
+        this.env.put(k, v);
     }
 
     public Environment add(Var<?> k, TypeVar v) {

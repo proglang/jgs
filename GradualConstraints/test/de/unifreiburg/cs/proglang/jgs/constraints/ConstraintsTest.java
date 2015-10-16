@@ -9,17 +9,17 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
 import static org.junit.Assert.*;
 
 public class ConstraintsTest {
 
-    private CTypeDomain<Level> ctypes;
     private TypeVars tvars;
     private TypeVar h1, h2, l1, l2, d1, d2, p1, p2;
     private CType<Level> ch1, ch2, cl1, cl2, cd1, cd2, cp1, cp2;
@@ -32,7 +32,6 @@ public class ConstraintsTest {
 
     @Before
     public void setUp() {
-        ctypes = new CTypeDomain<>();
         tvars = new TypeVars("x");
         h1 = tvars.fresh();
         h2 = tvars.fresh();
@@ -52,14 +51,14 @@ public class ConstraintsTest {
         ass.put(p1, PUB);
         ass.put(p2, PUB);
 
-        cl1 = ctypes.variable(l1);
-        ch1 = ctypes.variable(h1);
-        cl2 = ctypes.variable(l2);
-        ch2 = ctypes.variable(h2);
-        cd1 = ctypes.variable(d1);
-        cd2 = ctypes.variable(d2);
-        cp1 = ctypes.variable(p1);
-        cp2 = ctypes.variable(p2);
+        cl1 = variable(l1);
+        ch1 = variable(h1);
+        cl2 = variable(l2);
+        ch2 = variable(h2);
+        cd1 = variable(d1);
+        cd2 = variable(d2);
+        cp1 = variable(p1);
+        cp2 = variable(p2);
 
         allVariables =
             new HashSet<>(Arrays.asList(cl1,
@@ -87,23 +86,23 @@ public class ConstraintsTest {
         Constraint<Level> HleL = leC(ch1, cl1);
         assertFalse("h /<= l", HleL.isSatisfied(a));
 
-        Constraint<Level> HleHigh = leC(ch1, ctypes.literal(THIGH));
+        Constraint<Level> HleHigh = leC(ch1, literal(THIGH));
         assertTrue("h <= HIGH", HleHigh.isSatisfied(a));
 
         for (CType<Level> t : allVariables) {
-            Constraint<Level> c = leC(ctypes.literal(PUB), t);
+            Constraint<Level> c = leC(literal(PUB), t);
             assertTrue("all: pub <= " + t.toString(), c.isSatisfied(a));
         }
 
         for (CType<Level> t : nonDyn) {
-            Constraint<Level> c = leC(ctypes.literal(DYN), t);
+            Constraint<Level> c = leC(literal(DYN), t);
             assertFalse("nonDyn: ? /<= " + t.toString(), c.isSatisfied(a));
         }
 
         Set<CType<Level>> allStatic = new HashSet<>(nonDyn);
         allStatic.removeAll(Arrays.asList(cp1, cp2));
         for (CType<Level> t : nonDyn) {
-            Constraint<Level> c = leC(ctypes.literal(DYN), t);
+            Constraint<Level> c = leC(literal(DYN), t);
             assertFalse(String.format("static %s /<= t", t.toString()),
                         c.isSatisfied(a));
         }
@@ -114,9 +113,9 @@ public class ConstraintsTest {
 
         Assignment<Level> a = new Assignment<>(ass);
         for (CType<Level> t : allVariables) {
-            Constraint<Level> c = compC(ctypes.literal(PUB), t);
+            Constraint<Level> c = compC(literal(PUB), t);
             assertTrue("all: pub ~ " + t.toString(), c.isSatisfied(a));
-            c = compC(t, ctypes.literal(PUB));
+            c = compC(t, literal(PUB));
             assertTrue(String.format("all: %s ~ pub", t.toString()),
                        c.isSatisfied(a));
         }

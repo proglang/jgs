@@ -1,7 +1,10 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
  * An immutable set of constraints.
@@ -47,11 +50,25 @@ public abstract class ConstraintSet<Level> {
 
     /**
      * Find a satisfying assignment for this constraint set. (Optional)
+     * 
+     * @param requiredVariables
+     *            The minimal set of variables that should be bound by a
+     *            satisfying assignment. The actual assignments may bind more
+     *            variables.
      */
-    public Optional<Assignment<Level>> satisfyingAssignment() {
+    public Optional<Assignment<Level>> satisfyingAssignment(Collection<TypeVar> requiredVariables) {
         throw new RuntimeException("sat() operation not supported");
     }
 
     public abstract Stream<Constraint<Level>> stream();
+
+    /**
+     * 
+     * @return The stream of variables contained in this set.
+     */
+    public Stream<TypeVar> variables() {
+        return this.stream().flatMap(c -> c.variables());
+    }
+   
 
 }

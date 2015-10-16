@@ -1,10 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,9 +44,10 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public ConstraintSet<Level> add(ConstraintSet<Level> other) {
-        return new NaiveConstraints<>(types, other.stream().collect(Collectors.toList()));
+        return new NaiveConstraints<>(types,
+                                      other.stream()
+                                           .collect(Collectors.toList()));
     }
-
 
     @Override
     public Stream<Constraint<Level>> stream() {
@@ -53,28 +56,37 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public boolean implies(ConstraintSet<Level> other) {
-        return this.enumerateSatisfyingAssignments()
+        return this.enumerateSatisfyingAssignments(other.variables().collect(Collectors.toSet()))
                    .allMatch(ass -> other.isSatisfiedFor(ass));
 
     }
 
     @Override
     public boolean isSat() {
-        return this.satisfyingAssignment().isPresent();
+        return this.satisfyingAssignment(Collections.emptyList()).isPresent();
     }
 
-    public Stream<Assignment<Level>> enumerateSatisfyingAssignments() {
-        List<TypeVar> variables =
+    /**
+     * Enumerate all assignments that satisfy this constraint set.
+     * 
+     * @param requiredVariables
+     *            The minimal set of variables that should be bound by a
+     *            satisfying assignment. The actual assignments may bind more
+     *            variables.
+     */
+    public Stream<Assignment<Level>> enumerateSatisfyingAssignments(Collection<TypeVar> requiredVariables) {
+        Set<TypeVar> variables =
             cs.stream()
               .flatMap(c -> c.variables())
-              .collect(Collectors.toList());
+              .collect(Collectors.toSet());
+        variables.addAll(requiredVariables);
         return Assignments.enumerateAll(types, new LinkedList<>(variables))
                           .filter(a -> this.isSatisfiedFor(a));
     }
 
     @Override
-    public Optional<Assignment<Level>> satisfyingAssignment() {
-        return this.enumerateSatisfyingAssignments().findAny();
+    public Optional<Assignment<Level>> satisfyingAssignment(Collection<TypeVar> requiredVariables) {
+        return this.enumerateSatisfyingAssignments(requiredVariables).findAny();
     }
 
 }

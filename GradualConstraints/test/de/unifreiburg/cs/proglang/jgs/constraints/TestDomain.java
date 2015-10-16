@@ -2,8 +2,9 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeDomain.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.typing.Typing;
@@ -55,6 +56,11 @@ public class TestDomain {
         return cstrs.le(lhs, rhs);
     }
 
+    public static Constraint<Level> leC(TypeVar lhs,
+                                        TypeVar rhs) {
+        return cstrs.le( CTypes.variable(lhs), CTypes.variable(rhs));
+    }
+
     public static Constraint<Level> compC(CType<Level> lhs,
                                            CType<Level> rhs) {
         return cstrs.comp(lhs, rhs);
@@ -73,8 +79,9 @@ public class TestDomain {
     
     ///////
     // Typing
-    public static Typing<Level> mkTyping(CTypeDomain<Level> ctypes) {
-        throw new RuntimeException("NOT IMPLEMENTED");
+    public static Typing<Level> mkTyping(TypeVars tvars) {
+        return new Typing<>(new NaiveConstraintsFactory<>(types), types, tvars, cstrs);
+        
     }
     
 }
