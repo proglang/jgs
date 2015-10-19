@@ -27,9 +27,10 @@ public class MultiArraySuccess {
 
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
-		hs.addFieldToObjectMap(twoD, "1");
-		hs.addFieldToObjectMap(twoD, "2");
 
+		assertEquals(1, hs.getNumberOfElements());
+		assertEquals(2, hs.getNumberOfFields(twoD));
+		
 		/*
 		 * The following is the Jimple representation of:
 	     * String[][][] threeD = new String[][][] {{{"e"}},{{"f"}},{{"g"}}};
@@ -50,9 +51,10 @@ public class MultiArraySuccess {
 		
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
-		hs.addFieldToObjectMap(twoD, "1");
-		hs.addFieldToObjectMap(twoD, "2");
 
+		assertEquals(1, hs.getNumberOfElements());
+		assertEquals(2, hs.getNumberOfFields(twoD));
+		
 		/*
 		 * The following is the Jimple representation of:
 		 * twoD[0][0] = "first element";		

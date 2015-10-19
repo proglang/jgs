@@ -39,7 +39,7 @@ public class ArraysFail {
 		LOGGER.log(Level.INFO, "CREATE ARRAY FAIL TEST FINISHED");
 	}
 	
-	@Test
+	@Test(expected = IllegalFlowException.class)
 	public void readArray() {
 		
 		LOGGER.log(Level.INFO, "READ ARRAY FAIL TEST STARTED");
@@ -48,6 +48,9 @@ public class ArraysFail {
 		
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
+		hs.addLocal("String[]_a");
+		int i = 2;
+		hs.addLocal("int_i");
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
 		
@@ -55,8 +58,10 @@ public class ArraysFail {
 		 * x = Join(i,a, gpc, a_i)
 		 */
 		hs.addLevelOfField(a, Integer.toString(2));
+		hs.addLevelOfLocal("int_i");
+		hs.addLevelOfLocal("String[]_a");
 		hs.setLevelOfLocal("String_x");
-		String x = a[2];
+		String x = a[i];
 		
 		int i = 1;
 		hs.addLevelOfField(a, Integer.toString(2));
@@ -69,7 +74,7 @@ public class ArraysFail {
 		
 	}
 	
-	@Test
+	@Test(expected = IllegalFlowException.class)
 	public void writeArray() {
 
 		LOGGER.log(Level.INFO, "WRITE ARRAY FAIL TEST STARTED");
@@ -88,11 +93,11 @@ public class ArraysFail {
 		 * level(a_i) = join(gpc,local, ??i??)
 		 * i = ??
 		 */
-		hs.setLevelOfArray(a, Integer.toString(2));
+		hs.setLevelOfArrayField(a, Integer.toString(2));
 		a[2] = "3";
 		
 		int i = 2;
-		hs.setLevelOfArray(a, Integer.toString(2));
+		hs.setLevelOfArrayField(a, Integer.toString(2));
 		a[i] = "3";
 		
 		hs.close();

@@ -313,7 +313,7 @@ public class HandleStmt {
 		return om.getAssignmentLevel();
 	}
 	
-	public SecurityLevel addLevelOfArray(Object o, String field) {
+	public SecurityLevel addLevelOfArrayField(Object o, String field) {
 		// TODO
 		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
 		om.setAssignmentLevel(joinLevels(om.getAssignmentLevel(), fieldLevel));
@@ -340,7 +340,7 @@ public class HandleStmt {
 		return om.getFieldLevel(o, field);
 	}
 	
-	public SecurityLevel setLevelOfArray(Object o, String field) {
+	public SecurityLevel setLevelOfArrayField(Object o, String field) {
 		// TODO 
 		if(!checkGlobalPC(o, field)) {
 			abort(o.toString() + field);

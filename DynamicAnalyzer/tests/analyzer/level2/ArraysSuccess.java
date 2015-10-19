@@ -48,18 +48,19 @@ public class ArraysSuccess {
 		hs.addArrayToObjectMap(a);
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
+		assertEquals(3, hs.getNumberOfFields(a));
 		
 		/*
 		 * check ( x >= lpc)
 		 * x = Join(i,a, lpc, a_i)
 		 */
-		hs.addLevelOfArray(a, Integer.toString(2));
+		hs.addLevelOfArrayField(a, Integer.toString(2));
 		hs.setLevelOfLocal("String_x");
 		String x = a[2];
 		 
 		fail(); //TODO stimmt das überhaupt mit dem Level von a_i?
 		int i = 1;
-		hs.addLevelOfArray(a, Integer.toString(i));
+		hs.addLevelOfArrayField(a, Integer.toString(i));
 		hs.setLevelOfLocal("String_x");
 		x = a[i];
 		
@@ -88,11 +89,12 @@ public class ArraysSuccess {
 		 * level(a_i) = join(gpc,local, ??i??)
 		 * i = ??
 		 */
-		hs.setLevelOfArray(a, Integer.toString(2));
+		fail(); // TODO stimmt das überhaupt?
+		hs.setLevelOfArrayField(a, Integer.toString(2));
 		a[2] = "3";
 		
 		int i = 2;
-		hs.setLevelOfArray(a, Integer.toString(2));
+		hs.setLevelOfArrayField(a, Integer.toString(2));
 		a[i] = "3";
 		
 		hs.close();
