@@ -65,7 +65,7 @@ public class BodyAnalyzer extends BodyTransformer{
 		}
 		
 		LOGGER = L1Logger.getLogger();
-		LOGGER.log(Level.SEVERE, "BodyTransform started: {0}", arg0.getMethod().getName());
+		LOGGER.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}", arg0.getMethod().getName());
 		
 		stmtSwitch = new AnnotationStmtSwitch();
     	valueSwitch = new AnnotationValueSwitch();	
