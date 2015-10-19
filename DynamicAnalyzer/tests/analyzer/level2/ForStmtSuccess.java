@@ -32,7 +32,7 @@ public class ForStmtSuccess {
 		hs.checkCondition("int_i");
 		for(int i = 0;i < 1; i++){
 			
-			hs.assignConstantToLocal("int_res");
+			hs.setLevelOfLocal("int_res");
 			res = 2;
 			
 			hs.exitInnerScope();
@@ -60,7 +60,7 @@ public class ForStmtSuccess {
 		hs.checkCondition("int_i");
 		for(i = 0;i < 1; i++){
 			
-			hs.assignConstantToField(this, "int_res");
+			hs.setLevelOfField(this, "int_res");
 			res = 2;
 			
 			hs.exitInnerScope();
