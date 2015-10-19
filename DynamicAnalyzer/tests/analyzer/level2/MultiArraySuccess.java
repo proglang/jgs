@@ -24,12 +24,17 @@ public class MultiArraySuccess {
 		logger.info("createArray success test started");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
-		
+
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
 		hs.addFieldToObjectMap(twoD, "1");
 		hs.addFieldToObjectMap(twoD, "2");
 
+		/*
+		 * The following is the Jimple representation of:
+	     * String[][][] threeD = new String[][][] {{{"e"}},{{"f"}},{{"g"}}};
+		 */
+		
 		// TODO
 		
 		hs.close();
@@ -48,9 +53,30 @@ public class MultiArraySuccess {
 		hs.addFieldToObjectMap(twoD, "1");
 		hs.addFieldToObjectMap(twoD, "2");
 
-		twoD[0][0] = "first element";		
-		twoD[0][1] = "second element";		
-		twoD[1] = {"third element", "fourth element"};		
+		/*
+		 * The following is the Jimple representation of:
+		 * twoD[0][0] = "first element";		
+		 * twoD[0][1] = "second element";	
+		 */
+		
+		String[] tmp1 = new String[1];
+		tmp1[0] = "first element";
+		String[] tmp2 = new String[1];
+		tmp1[0] = "second element";
+		twoD[0] = tmp1;
+		twoD[1] = tmp2;
+		// TODO
+		
+		/*
+		 * The following is the Jimple representation of:
+		 *twoD[1] = new String[] {"third element", "fourth element"};		
+		 */
+		String[] tmp = new String[2];
+		tmp[0] = "third element";
+		tmp[1] = "fourth element";
+		twoD[1] = tmp;
+		// TODO
+		
 		hs.close();
 		
 		logger.info("createArray success test finished");
@@ -61,7 +87,28 @@ public class MultiArraySuccess {
 		
 		logger.info("readArray success test started");
 		
-		fail("Not yet implemented");
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+		/*
+		 * x = a[i]
+		 * check x >= lpc
+		 * level(x) = (i, a, gpc, a_i)
+		 * 
+		 * The following is the Jimple representation of: 
+		 * String[][] arr = new String[][]{{"a"},{"b"}};
+		 * String x = arr[1][0];
+		 */ 
+		String[][] arr = new String[2][];
+		String [] inner1 = new String[1];
+		String[] inner2 = new String[1];
+		inner1[0] = "a";
+		inner2[0] = "b";
+		arr[0] = inner1;
+		arr[1] = inner2;
+		String[] tmp = arr[1];
+		String x = tmp[0];
+		
+		hs.close();
 		
 		logger.info("readArray success test finished");
 	}
@@ -70,8 +117,31 @@ public class MultiArraySuccess {
 	public void writeArray() {
 
 		logger.info("writeArray success test started");
+
+		HandleStmtForTests hs = new HandleStmtForTests();
 		
-		fail("Not yet implemented");
+		/*
+		 * a[i] = x;
+		 * check a_i >= join(gpc, a, i)
+		 * level(a[i]) = join(a,i,x)
+		 * 
+		 * The following is the Jimple representation of: 
+		 * String[][] arr = new String[][]{{"a"},{"b"}};
+		 * String x = arr[1][0];
+		 */ 
+		String[][] arr = new String[2][];
+		String [] inner1 = new String[1];
+		String[] inner2 = new String[1];
+		inner1[0] = "a";
+		inner2[0] = "b";
+		arr[0] = inner1;
+		arr[1] = inner2;
+		String[] tmp = arr[0];
+		tmp[0] = "a";
+		
+		assertEquals("a", arr[0][0]);
+		
+		hs.close();
 		
 		logger.info("writeArray success test finished");
 	}

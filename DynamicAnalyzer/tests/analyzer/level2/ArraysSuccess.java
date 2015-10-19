@@ -56,7 +56,8 @@ public class ArraysSuccess {
 		hs.addLevelOfArray(a, Integer.toString(2));
 		hs.setLevelOfLocal("String_x");
 		String x = a[2];
-		
+		 
+		fail(); //TODO stimmt das überhaupt mit dem Level von a_i?
 		int i = 1;
 		hs.addLevelOfArray(a, Integer.toString(i));
 		hs.setLevelOfLocal("String_x");

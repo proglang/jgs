@@ -23,22 +23,26 @@ public class MultiArrayFail {
 		
 		logger.info("createArray fail test started");
 		
-		fail("Not yet implemented");
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+
+		
+		hs.close();
 		
 		logger.info("createArray fail test finished");
 	}
-	
-	@Test
-	public void findNewInstancesOfElements() {
-		
-	}
+
 
 	@Test
 	public void readArray() {
 		
 		logger.info("readArray fail test started");
 		
-		fail("Not yet implemented");
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+
+		
+		hs.close();
 		
 		logger.info("readArray fail test finished");
 	}
@@ -48,7 +52,11 @@ public class MultiArrayFail {
 
 		logger.info("writeArray fail test started");
 		
-		fail("Not yet implemented");
+		HandleStmtForTests hs = new HandleStmtForTests();
+		
+
+		
+		hs.close();
 		
 		logger.info("writeArray fail test finished");
 	}
