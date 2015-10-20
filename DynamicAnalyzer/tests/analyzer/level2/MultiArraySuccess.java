@@ -35,6 +35,23 @@ public class MultiArraySuccess {
 		 * The following is the Jimple representation of:
 	     * String[][][] threeD = new String[][][] {{{"e"}},{{"f"}},{{"g"}}};
 		 */
+		String[][][] threeD = new String[3][][]; 
+		String[][] tmp1 = new String[1][];
+		String[][] tmp2 = new String[1][];
+		String[][] tmp3 = new String[1][];
+		String[] tmp4 = new String[1];
+		String[] tmp5 = new String[1];
+		String[] tmp6 = new String[1];
+		tmp4[0] = "e";
+		tmp1[0] = tmp4;
+		threeD[0] = tmp1;
+		tmp5[0] = "f";
+		tmp2[0] = tmp5;
+		threeD[1] = tmp2;
+		tmp6[0] = "g";
+		tmp3[0] = tmp6;
+		threeD[2] = tmp3;
+		
 		
 		// TODO
 		

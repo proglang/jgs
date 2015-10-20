@@ -10,7 +10,6 @@ public class Test {
     }
     
     void m(int x){
-		String[][] arr = new String[][]{{"a"},{"b"}};
-		arr[0][0] = "a";
+    	String[][][] threeD = new String[][][] {{{"e"}},{{"f"}},{{"g"}}};
     }
 }
