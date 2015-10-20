@@ -46,6 +46,7 @@ public class ArraysSuccess {
 		
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
+		hs.addLocal("String[]_a");
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
 		assertEquals(3, hs.getNumberOfFields(a));
@@ -54,15 +55,13 @@ public class ArraysSuccess {
 		 * check ( x >= lpc)
 		 * x = Join(i,a, lpc, a_i)
 		 */
+		int i = 2;
 		hs.addLevelOfArrayField(a, Integer.toString(2));
+		hs.addLevelOfLocal("int_i");
+		hs.addLevelOfLocal("String[]_a");
+		hs.addLocal("String_x");
 		hs.setLevelOfLocal("String_x");
-		String x = a[2];
-		 
-		fail(); //TODO stimmt das überhaupt mit dem Level von a_i?
-		int i = 1;
-		hs.addLevelOfArrayField(a, Integer.toString(i));
-		hs.setLevelOfLocal("String_x");
-		x = a[i];
+		String x = a[i];
 		
 		hs.close();
 		
@@ -84,18 +83,15 @@ public class ArraysSuccess {
 		assertEquals(3, hs.getNumberOfFields(a));
 		
 		/*
-		 * check(a_t >= pgc)
-		 * level(a) = join(gpc,local, ??i??)
-		 * level(a_i) = join(gpc,local, ??i??)
+		 * check(a_i >= join(gpc, a, i))
+		 * level(a_i) = join(gpc,local, i)
 		 * i = ??
 		 */
-		fail(); // TODO stimmt das überhaupt?
-		hs.setLevelOfArrayField(a, Integer.toString(2));
-		a[2] = "3";
-		
+		fail(); // TODO
 		int i = 2;
 		hs.setLevelOfArrayField(a, Integer.toString(2));
 		a[i] = "3";
+		
 		
 		hs.close();
 		

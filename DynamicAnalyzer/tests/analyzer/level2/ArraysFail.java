@@ -63,14 +63,10 @@ public class ArraysFail {
 		hs.setLevelOfLocal("String_x");
 		String x = a[i];
 		
-		int i = 1;
-		hs.addLevelOfField(a, Integer.toString(2));
-		hs.setLevelOfLocal("String_x");
-		x = a[i];
 		
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "READ AARRAY FAIL TEST FINISHED");
+		LOGGER.log(Level.INFO, "READ ARRAY FAIL TEST FINISHED");
 		
 	}
 	
@@ -96,9 +92,6 @@ public class ArraysFail {
 		hs.setLevelOfArrayField(a, Integer.toString(2));
 		a[2] = "3";
 		
-		int i = 2;
-		hs.setLevelOfArrayField(a, Integer.toString(2));
-		a[i] = "3";
 		
 		hs.close();
 		
