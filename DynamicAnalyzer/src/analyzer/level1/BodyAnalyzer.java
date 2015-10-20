@@ -2,7 +2,6 @@ package analyzer.level1;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +16,6 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IfStmt;
-import soot.jimple.Jimple;
 import soot.util.Chain;
 import utils.visitor.AnnotationStmtSwitch;
 import utils.visitor.AnnotationValueSwitch;
@@ -50,7 +48,7 @@ public class BodyAnalyzer extends BodyTransformer{
     
 	
 	@Override
-	protected void internalTransform(Body arg0, String arg1, Map arg2) {
+	protected void internalTransform(Body arg0, String arg1,  Map arg2) {
 		
 		
 		try { 

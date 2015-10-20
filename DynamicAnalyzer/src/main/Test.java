@@ -1,6 +1,5 @@
 package main;
 
-import tests.testClasses.TestSubClass;
 
 
 public class Test {
@@ -9,7 +8,8 @@ public class Test {
     	
     }
     
-    void m(int x){
+    @SuppressWarnings("unused")
+	void m(int x){
     	String[][][] threeD = new String[][][] {{{"e"}},{{"f"}},{{"g"}}};
     }
 }

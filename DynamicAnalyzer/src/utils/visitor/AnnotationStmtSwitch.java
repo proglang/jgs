@@ -13,25 +13,19 @@ import soot.Value;
 import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
-import soot.jimple.ClassConstant;
 import soot.jimple.Constant;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
-import soot.jimple.FieldRef;
 import soot.jimple.GotoStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
-import soot.jimple.InstanceFieldRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.LookupSwitchStmt;
-import soot.jimple.NewArrayExpr;
 import soot.jimple.NopStmt;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
-import soot.jimple.StaticFieldRef;
-import soot.jimple.Stmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
@@ -103,8 +97,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseIdentityStmt(IdentityStmt stmt) {
 		
 		valueSwitch.actualContext = StmtContext.IDENTITY;
-		
-		IdentityStmt iStmt = stmt;
 		
 		logger.fine("\n > > > Identity statement identified < < <");
 		// TODO hier sind Parameter und this-Referenzen
@@ -188,8 +180,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
-		
-		ReturnStmt rStmt = stmt;
 		
 		logger.fine("\n > > > Return statement identified < < <");
 		

@@ -1,6 +1,5 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
 
 import java.util.logging.Logger;
 

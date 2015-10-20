@@ -1,22 +1,15 @@
 package analyzer.level1;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utils.logging.L1Logger;
-import utils.logging.L2Logger;
-import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.LocalStore;
 import analyzer.level1.storage.UnitStore.Element;
-import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 import soot.ArrayType;
 import soot.Body;
 import soot.Local;
@@ -24,15 +17,10 @@ import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
-import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
-import soot.Value;
-import soot.ValueBox;
 import soot.VoidType;
-import soot.jimple.AddExpr;
 import soot.jimple.ArrayRef;
-import soot.jimple.AssignStmt;
 import soot.jimple.ClassConstant;
 import soot.jimple.Expr;
 import soot.jimple.IdentityStmt;
