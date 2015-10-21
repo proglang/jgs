@@ -67,6 +67,17 @@ public class HandleStmtUtils {
 		return res;		
 	}
 	
+	public boolean checkArrayWithGlobalPC(String[] o, String field,
+			String localForObject) {
+		boolean res = true;
+		SecurityLevel localsAndGPC = joinWithGPC(lm.getLevel(localForObject));
+		if (om.getFieldLevel(o, field) == SecurityLevel.LOW && localsAndGPC == SecurityLevel.HIGH) {
+			res = false;
+		}
+		return res;	
+	}
+
+	
 	//
 	// Join operations
 	//
@@ -123,4 +134,6 @@ public class HandleStmtUtils {
 		}
 		return res;
 	}
+
+
 }

@@ -288,13 +288,22 @@ public class HandleStmt {
 	}
 	
 	public SecurityLevel setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex) {
-		// TODO 
 		if(!hsu.checkArrayWithGlobalPC(o, field, localForObject, localForIndex)) {
 			abort(o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
+	}
+	
+	public SecurityLevel setLevelOfArrayField(String[] o, String field, String localForObject) {
+		if(!hsu.checkArrayWithGlobalPC(o, field, localForObject)) {
+			abort(o.toString() + field);
+		}
+		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
+		om.clearAssignmentLevel();
+		return om.getFieldLevel(o, field);
+		
 	}
 
 
