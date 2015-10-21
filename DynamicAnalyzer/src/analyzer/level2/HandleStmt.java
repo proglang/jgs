@@ -23,6 +23,7 @@ public class HandleStmt {
 	
 	private LocalMap lm;
 	private static ObjectMap om;
+	private HandleStmtUtils hsu;
 	
 
 	
@@ -35,7 +36,7 @@ public class HandleStmt {
 		LOGGER.log(Level.INFO, "invoke new HandleStmt");
 		lm = new LocalMap();
 		om = ObjectMap.getInstance();
-		om.pushGlobalPC(joinLevels(om.getGlobalPC(), lm.getLocalPC()));
+		om.pushGlobalPC(hsu.joinLevels(om.getGlobalPC(), lm.getLocalPC()));
 	}
 	
 	/**
@@ -173,36 +174,7 @@ public class HandleStmt {
 
 
 
-	/**
-	 * Joins the Levels of the given locals and the local pc
-	 * @param stringList 
-	 * @return
-	 */
-	protected SecurityLevel joinLocals(String... stringList) {
-		SecurityLevel result = SecurityLevel.LOW;
-		for(String op: stringList) {
-			if (lm.getLevel(op) == SecurityLevel.HIGH) {
-				result = SecurityLevel.HIGH;
-			}
-		}
-		return result;
-	}
-	
-	protected SecurityLevel joinWithLPC(SecurityLevel l) {
-		SecurityLevel result = SecurityLevel.LOW;
-		if (lm.getLocalPC() == SecurityLevel.HIGH || l == SecurityLevel.HIGH) {
-			result = SecurityLevel.HIGH;
-		}
-		return result;
-	}
-	
-	protected SecurityLevel joinWithGPC(SecurityLevel l) {
-		SecurityLevel result = SecurityLevel.LOW;
-		if (om.getGlobalPC() == SecurityLevel.HIGH || l == SecurityLevel.HIGH) {
-			result = SecurityLevel.HIGH;
-		}
-		return result;
-	}
+
 	
 	protected SecurityLevel setLocalPC(SecurityLevel l) {
 		lm.setLocalPC(l);
@@ -227,31 +199,15 @@ public class HandleStmt {
 		return om.popGlobalPC();
 	}
 
-	protected boolean checkLocalPC(String signature) {
-		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {lm.getLevel(signature), lm.getLocalPC()  });
-		boolean res = true;
-		if (lm.getLevel(signature) == SecurityLevel.LOW && lm.getLocalPC() == SecurityLevel.HIGH) {
-			res = false;
-		}
-		return res;		
-	}
-	
-	protected boolean checkGlobalPC(Object o, String signature) {
-		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {om.getFieldLevel(o, signature), om.getGlobalPC()  });
-		boolean res = true;
-		if (om.getFieldLevel(o, signature) == SecurityLevel.LOW && om.getGlobalPC() == SecurityLevel.HIGH) {
-			res = false;
-		}
-		return res;		
-	}
+
 	
 	public SecurityLevel assignArgumentToLocal(int pos, String local) {
-		lm.setLevel(local, joinWithLPC(om.getArgLevelAt(pos)));
+		lm.setLevel(local, hsu.joinWithLPC(om.getArgLevelAt(pos)));
 		return lm.getLevel(local);
 	}
 	
 	public void assignReturnLevelToLocal(String local) {
-		if (!checkLocalPC(local)) {
+		if (!hsu.checkLocalPC(local)) {
 			abort(local);
 		}
 		setLocalLevel(local, om.getActualReturnLevel());
@@ -278,19 +234,11 @@ public class HandleStmt {
 		om.setActualArguments(levelArr);
 	}
 	
-	protected SecurityLevel joinLevels(SecurityLevel... levels) {
-		SecurityLevel res = SecurityLevel.LOW;
-		for (SecurityLevel l: levels) {
-			if ( l == SecurityLevel.HIGH) {
-				res = SecurityLevel.HIGH;
-			}
-		}
-		return res;
-	}
+
 	
 	public void checkCondition(String... args) {
-		lm.pushLocalPC(joinWithLPC(joinLocals(args)));
-		om.pushGlobalPC(joinWithGPC(lm.getLocalPC()));
+		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)));
+		om.pushGlobalPC(hsu.joinWithGPC(lm.getLocalPC()));
 	}
 	
 	public void exitInnerScope() {
@@ -300,7 +248,7 @@ public class HandleStmt {
 	
 	public SecurityLevel addLevelOfLocal(String local) {
 		SecurityLevel localLevel = lm.getLevel(local);
-		om.setAssignmentLevel(joinLevels(om.getAssignmentLevel(), localLevel));
+		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), localLevel));
 		return om.getAssignmentLevel();
 	}
 	
@@ -308,44 +256,46 @@ public class HandleStmt {
 	// This method is for Instancefields, Staticfields
 	public SecurityLevel addLevelOfField(Object o, String field) {
 		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
-		om.setAssignmentLevel(joinLevels(om.getAssignmentLevel(), fieldLevel));
+		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), fieldLevel));
 		return om.getAssignmentLevel();
 	}
 	
 	public SecurityLevel addLevelOfArrayField(Object o, String field) {
 		// TODO
 		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
-		om.setAssignmentLevel(joinLevels(om.getAssignmentLevel(), fieldLevel));
+		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), fieldLevel));
 		return om.getAssignmentLevel();
 	}
 	
 	public SecurityLevel setLevelOfLocal(String local) {
 		
-		if (!checkLocalPC(local)) {
+		if (!hsu.checkLocalPC(local)) {
 			abort(local);
 		}
-		lm.setLevel(local, joinWithLPC(om.getAssignmentLevel()));
+		lm.setLevel(local, hsu.joinWithLPC(om.getAssignmentLevel()));
 		om.clearAssignmentLevel();
 		return lm.getLevel(local);
 	}
 	
 	// This method is for Instancefields, Staticfields
 	public SecurityLevel setLevelOfField(Object o, String field) {
-		if(!checkGlobalPC(o, field)) {
+		if(!hsu.checkGlobalPC(o, field)) {
 			abort(o.toString() + field);
 		}
-		om.setField(o, field, joinWithGPC(om.getAssignmentLevel()));
+		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
 	}
 	
-	public SecurityLevel setLevelOfArrayField(Object o, String field) {
+	public SecurityLevel setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex) {
 		// TODO 
-		if(!checkGlobalPC(o, field)) {
+		if(!hsu.checkArrayWithGlobalPC(o, field, localForObject, localForIndex)) {
 			abort(o.toString() + field);
 		}
-		om.setField(o, field, joinWithGPC(om.getAssignmentLevel()));
+		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
 	}
+
+
 }
