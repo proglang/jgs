@@ -165,7 +165,7 @@ public class AssignLocalsSuccess {
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("TestSubClass_xy"));
 		
-		hs.setLocalLevel("TestSubClass_xy", SecurityLevel.HIGH);
+		hs.setLevelOfLocal("TestSubClass_xy", SecurityLevel.HIGH);
 		hs.setLevelOfLocal("TestSubClass_xy");
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("TestSubClass_xy"));
 		

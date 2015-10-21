@@ -36,6 +36,8 @@ public class HandleStmt {
 		LOGGER.log(Level.INFO, "invoke new HandleStmt");
 		lm = new LocalMap();
 		om = ObjectMap.getInstance();
+		hsu = new HandleStmtUtils(lm, om);
+		
 		om.pushGlobalPC(hsu.joinLevels(om.getGlobalPC(), lm.getLocalPC()));
 	}
 	
@@ -155,7 +157,7 @@ public class HandleStmt {
 		lm.insertElement(signature, SecurityLevel.LOW); 
 	}
 	
-	protected SecurityLevel setLocalLevel(String signature, SecurityLevel level) {
+	protected SecurityLevel setLevelOfLocal(String signature, SecurityLevel level) {
 		lm.setLevel(signature, level);
 		return lm.getLevel(signature);
 	}
@@ -210,7 +212,7 @@ public class HandleStmt {
 		if (!hsu.checkLocalPC(local)) {
 			abort(local);
 		}
-		setLocalLevel(local, om.getActualReturnLevel());
+		setLevelOfLocal(local, om.getActualReturnLevel());
 	}
 	
 
@@ -296,7 +298,13 @@ public class HandleStmt {
 		return om.getFieldLevel(o, field);
 	}
 	
-	public SecurityLevel setLevelOfArrayField(String[] o, String field, String localForObject) {
+	/**
+	 * @param o - Object - The array object
+	 * @param field - String - the signature of the field (array element)
+	 * @param localForObject - String - the signature of the Object
+	 * @return Returns the new SecurityLevel of the array-element
+	 */
+	public SecurityLevel setLevelOfArrayField(Object o, String field, String localForObject) {
 		if(!hsu.checkArrayWithGlobalPC(o, field, localForObject)) {
 			abort(o.toString() + field);
 		}

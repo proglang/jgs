@@ -23,6 +23,10 @@ public class HandleStmtUtils {
 	// PC check operations
 	//
 	
+	public HandleStmtUtils() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * @param signature
 	 * @return
@@ -67,7 +71,7 @@ public class HandleStmtUtils {
 		return res;		
 	}
 	
-	public boolean checkArrayWithGlobalPC(String[] o, String field,
+	public boolean checkArrayWithGlobalPC(Object o, String field,
 			String localForObject) {
 		boolean res = true;
 		SecurityLevel localsAndGPC = joinWithGPC(lm.getLevel(localForObject));

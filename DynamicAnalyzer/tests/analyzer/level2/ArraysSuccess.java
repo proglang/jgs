@@ -29,6 +29,7 @@ public class ArraysSuccess {
 		hs.addLocal("String[]_a");
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
+		hs.addLocal("String[]_a");
 		
 		assertEquals(3, hs.getNumberOfFields(a));
 		
@@ -47,6 +48,7 @@ public class ArraysSuccess {
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
 		hs.addLocal("String[]_a");
+		hs.addLocal("int_i");
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
 		assertEquals(3, hs.getNumberOfFields(a));
@@ -63,6 +65,8 @@ public class ArraysSuccess {
 		hs.setLevelOfLocal("String_x");
 		String x = a[i];
 		
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("String_x"));
+		
 		hs.close();
 		
 		LOGGER.log(Level.INFO, "READ ARRAY SUCCESS TEST FINISHED");
@@ -76,22 +80,24 @@ public class ArraysSuccess {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
-		String[] a = new String[] {"asd", "v", "v"};
+		String[] a = new String[] {"a", "b", "c"};
 		assertEquals(3, a.length);
 		hs.addArrayToObjectMap(a);
 		assertTrue(hs.containsObjectInObjectMap(a));
 		assertEquals(3, hs.getNumberOfFields(a));
 		
+		hs.addLocal("String[]_a");
+		hs.addLocal("int_i");
+		
 		/*
 		 * check(a_i >= join(gpc, a, i))
 		 * level(a_i) = join(gpc,local, i)
-		 * i = ??
 		 */
-		fail(); // TODO
 		int i = 2;
-		hs.setLevelOfArrayField(a, Integer.toString(2));
+		hs.setLevelOfArrayField(a, Integer.toString(2), "String[]_a", "int_i");
 		a[i] = "3";
 		
+		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(a, Integer.toString(i)));
 		
 		hs.close();
 		

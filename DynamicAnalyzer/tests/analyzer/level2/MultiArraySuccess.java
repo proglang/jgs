@@ -68,6 +68,7 @@ public class MultiArraySuccess {
 		
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
+		hs.addLocal("String[][]_twoD");
 
 		assertEquals(1, hs.getNumberOfElements());
 		assertEquals(2, hs.getNumberOfFields(twoD));
@@ -78,23 +79,30 @@ public class MultiArraySuccess {
 		 * twoD[0][1] = "second element";	
 		 */
 		
-		String[] tmp1 = new String[1];
-		tmp1[0] = "first element";
-		String[] tmp2 = new String[1];
-		tmp1[0] = "second element";
-		twoD[0] = tmp1;
-		twoD[1] = tmp2;
-		// TODO
 		
-		/*
-		 * The following is the Jimple representation of:
-		 *twoD[1] = new String[] {"third element", "fourth element"};		
-		 */
-		String[] tmp = new String[2];
-		tmp[0] = "third element";
-		tmp[1] = "fourth element";
-		twoD[1] = tmp;
-		// TODO
+		hs.addLocal("String[]_tmp1");
+		String[] tmp1 = new String[1];
+		hs.addArrayToObjectMap(tmp1);
+		
+		hs.setLevelOfArrayField(tmp1, Integer.toString(0), "String[]_tmp");
+		tmp1[0] = "first element";
+		
+		hs.addLocal("String[]_tmp2");
+		String[] tmp2 = new String[1];
+		hs.addArrayToObjectMap(tmp2);
+		
+		hs.setLevelOfArrayField(tmp1, Integer.toString(0), "String[]_tmp");
+		tmp2[0] = "second element";
+		
+		hs.addLevelOfLocal("String[]_tmp1");
+		hs.setLevelOfArrayField(twoD, Integer.toString(0),  "String[][]_twoD" );
+		twoD[0] = tmp1;
+		
+		hs.addLevelOfLocal("String[]_tmp2");
+		hs.setLevelOfArrayField(twoD, Integer.toString(1), "String[][]_twoD");
+		twoD[1] = tmp2;
+
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("String[][]_twoD"));
 		
 		hs.close();
 		
@@ -117,14 +125,40 @@ public class MultiArraySuccess {
 		 * String[][] arr = new String[][]{{"a"},{"b"}};
 		 * String x = arr[1][0];
 		 */ 
+		
 		String[][] arr = new String[2][];
-		String [] inner1 = new String[1];
+		hs.addArrayToObjectMap(arr);
+		hs.addLocal("String[][]_arr");
+		
+		
+		String[] inner1 = new String[1];
+		hs.addArrayToObjectMap(inner1);
+		hs.addLocal("String[]_inner1");
+		
 		String[] inner2 = new String[1];
+		hs.addArrayToObjectMap(inner2);
+		hs.addLocal("String[]_inner2");
+		
+		hs.setLevelOfArrayField(inner1, Integer.toString(0), "String[]_inner1");
 		inner1[0] = "a";
+		
+		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
+		
+		hs.addLevelOfLocal("String[]_inner1");
+		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[]_arr");
 		arr[0] = inner1;
+		
+		hs.addLevelOfLocal("String[]_inner2");
+		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[]_arr");
 		arr[1] = inner2;
+		
+		hs.addLevelOfArrayField(arr, Integer.toString(1));
+		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[1];
+		
+		hs.addLevelOfArrayField(tmp, Integer.toString(0));
+		hs.setLevelOfLocal("String_x");
 		String x = tmp[0];
 		
 		hs.close();
@@ -148,14 +182,39 @@ public class MultiArraySuccess {
 		 * String[][] arr = new String[][]{{"a"},{"b"}};
 		 * String x = arr[1][0];
 		 */ 
+		
 		String[][] arr = new String[2][];
-		String [] inner1 = new String[1];
+		hs.addLocal("String[][]_arr");
+		hs.addArrayToObjectMap(arr);
+		
+		String[] inner1 = new String[1];
+		hs.addLocal("String[][]_inner1");
+		hs.addArrayToObjectMap(inner1);
+		
 		String[] inner2 = new String[1];
+		hs.addLocal("String[][]_inner2");
+		hs.addArrayToObjectMap(inner2);
+		
+		hs.setLevelOfArrayField(inner1, Integer.toString(0), "String[]_inner1");
 		inner1[0] = "a";
+		
+		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
+		
+		hs.addLevelOfLocal("String[]_inner1");
+		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[][]_arr");
 		arr[0] = inner1;
+		
+		hs.addLevelOfLocal("String[]_inner2");
+		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;
+		
+		hs.addLevelOfArrayField(arr, Integer.toString(0));
+		hs.addLocal("String[]_tmp");
+		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[0];
+		
+		hs.setLevelOfArrayField(tmp, Integer.toString(0), "String[]_tmp");
 		tmp[0] = "a";
 		
 		assertEquals("a", arr[0][0]);
