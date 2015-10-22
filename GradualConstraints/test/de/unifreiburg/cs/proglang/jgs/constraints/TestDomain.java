@@ -51,6 +51,11 @@ public class TestDomain {
 
     ////////////
     // Constraints
+    public static final CType<Level> CHIGH = CTypes.literal(THIGH);
+    public static final CType<Level> CLOW = CTypes.literal(TLOW);
+    public static final CType<Level> CDYN = CTypes.literal(DYN);
+    public static final CType<Level> CPUB = CTypes.literal(PUB);
+
     public static Constraint<Level> leC(CType<Level> lhs,
                                            CType<Level> rhs) {
         return cstrs.le(lhs, rhs);

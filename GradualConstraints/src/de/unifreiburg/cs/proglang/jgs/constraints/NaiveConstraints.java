@@ -35,18 +35,20 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return this.cs.stream().allMatch(c -> c.isSatisfied(a));
     }
 
-    @Override
-    public ConstraintSet<Level> add(Constraint<Level> c) {
+    public ConstraintSet<Level> add(Collection<Constraint<Level>> other) {
         HashSet<Constraint<Level>> newCs = new HashSet<>(this.cs);
-        newCs.add(c);
+        newCs.addAll(other);
         return new NaiveConstraints<>(types, newCs);
     }
 
     @Override
+    public ConstraintSet<Level> add(Constraint<Level> c) {
+        return this.add(Collections.singleton(c));
+    }
+
+    @Override
     public ConstraintSet<Level> add(ConstraintSet<Level> other) {
-        return new NaiveConstraints<>(types,
-                                      other.stream()
-                                           .collect(Collectors.toList()));
+        return this.add(other.stream().collect(Collectors.toList()));
     }
 
     @Override
@@ -56,7 +58,8 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public boolean implies(ConstraintSet<Level> other) {
-        return this.enumerateSatisfyingAssignments(other.variables().collect(Collectors.toSet()))
+        return this.enumerateSatisfyingAssignments(other.variables()
+                                                        .collect(Collectors.toSet()))
                    .allMatch(ass -> other.isSatisfiedFor(ass));
 
     }
@@ -76,9 +79,7 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
      */
     public Stream<Assignment<Level>> enumerateSatisfyingAssignments(Collection<TypeVar> requiredVariables) {
         Set<TypeVar> variables =
-            cs.stream()
-              .flatMap(c -> c.variables())
-              .collect(Collectors.toSet());
+            cs.stream().flatMap(c -> c.variables()).collect(Collectors.toSet());
         variables.addAll(requiredVariables);
         return Assignments.enumerateAll(types, new LinkedList<>(variables))
                           .filter(a -> this.isSatisfiedFor(a));
@@ -87,6 +88,11 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
     @Override
     public Optional<Assignment<Level>> satisfyingAssignment(Collection<TypeVar> requiredVariables) {
         return this.enumerateSatisfyingAssignments(requiredVariables).findAny();
+    }
+
+    @Override
+    public String toString() {
+        return "{" + cs + "}";
     }
 
 }

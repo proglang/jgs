@@ -196,6 +196,7 @@ public class Typing<LevelT> {
                 CType<LevelT> tv = CTypes.variable(env.get(v));
                 return cstrs.le(tv, destCType);
             }).collect(Collectors.toSet()));
+            constraints.add(cstrs.le(CTypes.variable(this.pc), destCType));
 
             // transition (for now only local assignments)
             List<Var<?>> writeVars = Var.getAll(stmt.getDefBoxes());

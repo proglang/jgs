@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -77,7 +78,7 @@ public class NaiveConstraintsTest {
         Optional<Assignment<Level>> result, expected;
         result = makeNaive(Arrays.asList(leC(x1, literal(THIGH)),
                                          leC(literal(THIGH), x2),
-                                         leC(x2, x1))).satisfyingAssignment();
+                                         leC(x2, x1))).satisfyingAssignment(Collections.emptySet());
         expected =
             Optional.of(Assignments.builder(v1, THIGH).add(v2, THIGH).build());
         assertEquals("x1 = x2 = HIGH", expected, result);
@@ -85,7 +86,7 @@ public class NaiveConstraintsTest {
         result =
             makeNaive(Arrays.asList(leC(x1, literal(DYN)),
                                     leC(x1,
-                                        literal(THIGH)))).satisfyingAssignment();
+                                        literal(THIGH)))).satisfyingAssignment(Collections.emptySet());
         expected = Optional.of(Assignments.builder(v1, PUB).build());
         assertEquals("x = pub", expected, result);
     }

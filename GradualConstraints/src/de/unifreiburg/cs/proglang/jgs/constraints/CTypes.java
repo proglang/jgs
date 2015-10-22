@@ -45,7 +45,7 @@ public class CTypes {
 
         @Override
         public String toString() {
-            return "Literal [t=" + t + "]";
+            return t.toString();
         }
 
         public final Type<Level> t;
@@ -110,7 +110,7 @@ public class CTypes {
 
         @Override
         public String toString() {
-            return "Variable [v=" + v + "]";
+            return v.toString();
         }
 
         @Override
