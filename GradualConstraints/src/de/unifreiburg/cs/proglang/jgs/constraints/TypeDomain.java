@@ -137,7 +137,7 @@ public class TypeDomain<Level> {
      * @param <Level>
      *            concrete security level
      */
-    static abstract class Type<Level> {
+    public static abstract class Type<Level> {
         abstract <T> T accept(TypeSwitch<Level, T> sw);
     }
 
