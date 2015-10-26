@@ -36,7 +36,6 @@ public class MethodSig<Level> {
         }
         return new Effects<>(result);
     }
-    
 
     public final static class Effects<Level> {
         private final HashSet<Type<Level>> effectSet;
@@ -54,8 +53,6 @@ public class MethodSig<Level> {
     }
     
     
-    /* Signature constraints */
-    
-    
+    /*  */
 
 }
