@@ -261,7 +261,7 @@ public class JimpleInjector {
 		LOGGER.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
 				new Object[] {a, b.getMethod().getName()} );
 		
-		System.out.println("Object type: " + a.getType() + " and type " + a.getClass());
+		LOGGER.log(Level.INFO, "Object type of array: " + a.getType() + " and type " + a.getClass());
 		
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
@@ -546,6 +546,10 @@ public class JimpleInjector {
 	public static void assignArgumentToLocal(int pos, String local) {// TODO
 		
 	}
+	
+	/*
+	 *  Inter-scope
+	 */
 	
 	public static void returnConstant() {
 		LOGGER.log(Level.INFO, "Return a constant value");

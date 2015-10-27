@@ -1,8 +1,8 @@
-package main;
+package main.testclasses;
 
 
 
-public class Test {
+public class MulArray {
    
     public static void main(String[] args) {
     	

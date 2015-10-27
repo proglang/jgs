@@ -91,10 +91,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
 		
 		switch(valueSwitch.newExprContext) {
-		case NOT: break;
-		case NEW_ARRAY: break;
-		case NEW_UNDEF_OBJECT: break;
-		default: new InternalAnalyzerException("Unexpected newExprContext");
+			case NOT: break;
+			case NEW_ARRAY: 
+				System.out.println(stmt.getLeftOp());
+				JimpleInjector.addArrayToObjectMap((Local) stmt.getLeftOp(), stmt);
+				break;
+			case NEW_UNDEF_OBJECT: break;
+			default: new InternalAnalyzerException("Unexpected newExprContext");
 		}
 
 		valueSwitch.actualContext = StmtContext.UNDEF;
