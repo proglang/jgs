@@ -1,5 +1,6 @@
 package utils.visitor;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utils.exceptions.InternalAnalyzerException;
@@ -354,6 +355,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 		logger.fine("Invoke expression is of type VirtualInvoke");
 		logger.finest(v.toString());
+		logger.finest(v.getMethod().toString());
+		logger.finest(v.getClass().toString());
 		
 		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
@@ -428,8 +431,13 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseNewExpr(NewExpr v) {
 		  newExprContext = NewExprContext.NEW_UNDEF_OBJECT;
 		  
+		  logger.finest("NewExpr identified " + v.toString());
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("new Expr");
+			// new InternalAnalyzerException("new Expr");
+			if (!ExternalClasses.classMap.containsKey(v.toString())) {
+				// TODO
+			}
 		}
 	}
 

@@ -693,17 +693,11 @@ protected static void addUnitsToChain() {
 	Iterator<Element> UIt = unitStore.getElements().iterator();
 	while(UIt.hasNext()) {
 		Element item = (Element) UIt.next();
-		System.out.println(item.getUnit().toString());
 		if (item.getPosition() == null) {
 			units.addFirst(item.getUnit());
 		} else {
 		    units.insertAfter(item.getUnit(), item.getPosition()); 
 		}
-	}
-	
-	System.out.println("UNIT CHAIN");
-	for (Unit unit : units) {
-		System.out.println(unit.toString());
 	}
 	
 	unitStore.flush();
