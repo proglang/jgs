@@ -88,8 +88,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
 		
-		aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
-		
 		switch(valueSwitch.newExprContext) {
 			case NOT: break;
 			case NEW_ARRAY: 
@@ -99,6 +97,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			case NEW_UNDEF_OBJECT: break;
 			default: new InternalAnalyzerException("Unexpected newExprContext");
 		}
+		
+
+		aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
 
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}

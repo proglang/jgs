@@ -66,31 +66,45 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	protected Stmt callingStmt;
 
 	@Override
-	public void caseDoubleConstant(DoubleConstant v) {		
+	public void caseDoubleConstant(DoubleConstant v) {	
+
+		  newExprContext = NewExprContext.NOT;
 	}
 
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
+
+		  newExprContext = NewExprContext.NOT;
 	}
 
 	@Override
 	public void caseIntConstant(IntConstant v) {
+
+		  newExprContext = NewExprContext.NOT;
 	}
 
 	@Override
 	public void caseLongConstant(LongConstant v) {
+
+		  newExprContext = NewExprContext.NOT;
 	}
 
 	@Override
 	public void caseNullConstant(NullConstant v) {
+
+		  newExprContext = NewExprContext.NOT;
 	}
 
 	@Override
+
 	public void caseStringConstant(StringConstant v) {
+		  newExprContext = NewExprContext.NOT;
 	}
 
 	@Override
 	public void caseClassConstant(ClassConstant v) {
+
+		  newExprContext = NewExprContext.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -100,6 +114,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void defaultCase(Object object) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -107,6 +123,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseAddExpr(AddExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -114,6 +132,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseAndExpr(AndExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -121,6 +141,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -128,6 +150,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -135,6 +159,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -142,6 +168,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseDivExpr(DivExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -149,6 +177,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseEqExpr(EqExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -156,6 +186,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNeExpr(NeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -163,6 +195,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseGeExpr(GeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -170,6 +204,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseGtExpr(GtExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -177,6 +213,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLeExpr(LeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -184,6 +222,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLtExpr(LtExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -191,6 +231,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseMulExpr(MulExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -198,6 +240,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseOrExpr(OrExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -205,6 +249,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseRemExpr(RemExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -212,6 +258,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseShlExpr(ShlExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -219,6 +267,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseShrExpr(ShrExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -226,6 +276,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -233,6 +285,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseSubExpr(SubExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -240,6 +294,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseXorExpr(XorExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -247,6 +303,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 
 		logger.severe("Invoke expression is of type InterfaceInvoke"); // TODO change to fine
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -256,6 +314,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 
 		logger.fine("Invoke expression is of type SpecialInvoke");
 		logger.finest(v.toString());
@@ -271,6 +331,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 
 		logger.fine("Invoke expression is of type StaticInvoke");
 		logger.finest(v.toString());	
@@ -287,6 +349,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 
 		logger.fine("Invoke expression is of type VirtualInvoke");
 		logger.finest(v.toString());
@@ -302,6 +366,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 
 		logger.severe("Invoke expression is of type DynamicInvoke"); // TODO change to fine
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -311,6 +377,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCastExpr(CastExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -318,6 +386,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -325,6 +395,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
+		  newExprContext = NewExprContext.NEW_ARRAY;
+		  
 		logger.finest("New Array expression identified");
 		System.out.println("Base Type " + v.getBaseType());
 		System.out.println("Class " + v.getClass());
@@ -333,12 +405,13 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		System.out.println("Type " + v.getType());
 		System.out.println("UseBox " + v.getUseBoxes());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-		  newExprContext = NewExprContext.NEW_ARRAY;
 		}
 	}
 
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
+		newExprContext = NewExprContext.NEW_ARRAY;
+		
 		logger.finest("New Multiarray expression identified");
 		System.out.println("Size count " + v.getSizeCount());
 		System.out.println("Base Type " + v.getBaseType().toString());
@@ -353,6 +426,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNewExpr(NewExpr v) {
+		  newExprContext = NewExprContext.NEW_UNDEF_OBJECT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException("new Expr");
 		}
@@ -360,6 +435,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLengthExpr(LengthExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -367,6 +444,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNegExpr(NegExpr v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -391,6 +470,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {	
+		  newExprContext = NewExprContext.NOT;
+		  
 		logger.finest("Static field reference identified " + v.toString());
 		System.out.println(		v.getField().getDeclaringClass());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -404,6 +485,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {	
+		  newExprContext = NewExprContext.NOT;
+		  
 		logger.finest("Instance field reference identified " + v.toString());	
 		System.out.println("kh" + v.getBase().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -417,6 +500,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseParameterRef(ParameterRef v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 
 		logger.finest("Parameter reference identified " + v.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -426,6 +511,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -433,6 +520,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseThisRef(ThisRef v) {
+		  newExprContext = NewExprContext.NOT;
+		  
 		
 		logger.finer("@This reference identified " + v.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -442,6 +531,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLocal(Local l) {	
+		  newExprContext = NewExprContext.NOT;
+		  
 		logger.finest("Local identified " + l.toString());
 		
 		if (actualContext == StmtContext.ASSIGNRIGHT) {

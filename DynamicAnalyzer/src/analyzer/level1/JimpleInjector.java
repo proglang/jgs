@@ -262,7 +262,7 @@ public class JimpleInjector {
 				new Object[] {a, b.getMethod().getName()} );
 		
 		LOGGER.log(Level.INFO, "Object type of array: " + a.getType() + " and type " + a.getClass());
-		
+		LOGGER.log(Level.FINEST, "at position {0}", position.toString());
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(ArrayType.v(
@@ -277,6 +277,9 @@ public class JimpleInjector {
 				a); 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
+		System.out.println(unitStore.lastPos.toString());
+		System.out.println(assignExpr.toString());
+		System.out.println(position.toString());
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, position));
 		unitStore.lastPos = assignExpr;		
@@ -690,11 +693,17 @@ protected static void addUnitsToChain() {
 	Iterator<Element> UIt = unitStore.getElements().iterator();
 	while(UIt.hasNext()) {
 		Element item = (Element) UIt.next();
+		System.out.println(item.getUnit().toString());
 		if (item.getPosition() == null) {
 			units.addFirst(item.getUnit());
 		} else {
 		    units.insertAfter(item.getUnit(), item.getPosition()); 
 		}
+	}
+	
+	System.out.println("UNIT CHAIN");
+	for (Unit unit : units) {
+		System.out.println(unit.toString());
 	}
 	
 	unitStore.flush();
