@@ -10,6 +10,6 @@ public class Test {
     
     @SuppressWarnings("unused")
 	void m(int x){
-    	String[][][] threeD = new String[][][] {{{"e"}},{{"f"}},{{"g"}}};
+    	String[][] twoD = new String[][] {{"e"},{"f"},{"g"}};
     }
 }

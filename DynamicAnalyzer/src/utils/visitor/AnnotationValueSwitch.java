@@ -61,6 +61,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
 	protected enum StmtContext {UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, RETURN, GOTO, IF, SWITCH, THROW}
 	protected StmtContext actualContext = StmtContext.UNDEF;
+	protected enum NewExprContext {NOT, NEW_ARRAY, NEW_UNDEF_OBJECT};
+	protected NewExprContext newExprContext = NewExprContext.NOT;
 	protected Stmt callingStmt;
 
 	@Override
@@ -331,7 +333,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		System.out.println("Type " + v.getType());
 		System.out.println("UseBox " + v.getUseBoxes());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-		//	new InternalAnalyzerException();
+		  newExprContext = NewExprContext.NEW_ARRAY;
 		}
 	}
 
@@ -345,14 +347,14 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		System.out.println("Type " + v.getType().toString());
 		System.out.println("Use Boxes " + v.getUseBoxes().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			//new InternalAnalyzerException();
+			new InternalAnalyzerException();
 		}
 	}
 
 	@Override
 	public void caseNewExpr(NewExpr v) {
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			//new InternalAnalyzerException("new Expr");
+			new InternalAnalyzerException("new Expr");
 		}
 	}
 
