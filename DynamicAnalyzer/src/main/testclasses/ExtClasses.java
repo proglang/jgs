@@ -6,7 +6,7 @@ public class ExtClasses {
     
     void m(String arg1, String arg2) {
 
-    	String result = arg1 + arg2;
+    	String result = arg1.substring(0, 2);
     }
     
     

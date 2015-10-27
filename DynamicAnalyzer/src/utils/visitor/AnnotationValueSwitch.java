@@ -431,11 +431,13 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseNewExpr(NewExpr v) {
 		  newExprContext = NewExprContext.NEW_UNDEF_OBJECT;
 		  
-		  logger.finest("NewExpr identified " + v.toString());
+		  logger.finest("NewExpr identified " + v.getBaseType());
 		  
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			// new InternalAnalyzerException("new Expr");
-			if (!ExternalClasses.classMap.containsKey(v.toString())) {
+			if (!ExternalClasses.classMap.contains(v.toString())) {
+				// TODO
+			} else {
 				// TODO
 			}
 		}
