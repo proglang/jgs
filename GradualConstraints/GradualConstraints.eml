@@ -3,7 +3,6 @@
 	<exclude-output/>
 	<contentEntry url="file://$MODULE_DIR$">
 		<testFolder url="file://$MODULE_DIR$/test"/>
-		<testFolder url="file://$MODULE_DIR$"/>
 	</contentEntry>
 	<lib name="soot-2.5.0.jar" scope="COMPILE">
 		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/"/>

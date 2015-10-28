@@ -9,3 +9,6 @@ generatedJimple/
 
 Testcases/src/Scratch.java
 /GradualConstraints/bin/
+
+# For IDEA 
+/.idea/workspace.xml

@@ -1,21 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import static org.junit.Assert.*;
-
-import java.util.Collections;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.typing.Typing;
 import de.unifreiburg.cs.proglang.jgs.typing.Typing.TypeError;
+import org.junit.Before;
+import org.junit.Test;
 import soot.IntType;
 import soot.Local;
 import soot.SootClass;
@@ -23,8 +16,12 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
 
 public class GenerateTest {
 
@@ -166,7 +163,6 @@ public class GenerateTest {
                 
         expected = makeNaive(asList(leC(initY, finalX), leC(this.pc, finalX)));
         assertEquiv(r.getConstraints(), expected);
-
     }
 
 }
