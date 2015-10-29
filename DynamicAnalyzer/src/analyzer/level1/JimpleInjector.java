@@ -52,7 +52,6 @@ public class JimpleInjector {
 	static Local local_for_Strings = Jimple.v().newLocal("local_for_Strings", RefType.v("java.lang.String"));
 	static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 	static Local local_for_Objects = Jimple.v().newLocal("local_for_Objects", RefType.v("java.lang.Object"));
-	static Local level = Jimple.v().newLocal("local_level", RefType.v("java.lang.String")); // TODO brauch ich das?
 	
 	static Logger LOGGER = L1Logger.getLogger();
 	
@@ -150,16 +149,11 @@ public class JimpleInjector {
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		
-		// TODO funktioniert das hier oder muss ich eher mit assign Statement arbeiten?
-		// Im Moment muesste hier der etwas anderes in der Local gespeichert sein.
-		// va muss die Local auch gespeichert werden.
-		local_for_Objects = (Local) units.getFirst().getDefBoxes().get(0).getValue();
-		
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
 				parameterTypes, VoidType.v(), false), 
-				local_for_Objects); 
+				(Local) units.getFirst().getDefBoxes().get(0).getValue()); 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
@@ -337,7 +331,7 @@ public class JimpleInjector {
 		unitStore.lastPos = ass;
 	}
 
-	public static void addLevelInAssignStmt(Local l) {
+	public static void addLevelInAssignStmt(Unit pos, Local l) {
 		LOGGER.info("Adding level in assign statement");
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
@@ -524,7 +518,36 @@ public class JimpleInjector {
 	}
 	
 	public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
-		// TODO
+	LOGGER.info( "Set Level of Array " + a.toString() + " in assign stmt");
+	// Es geht darum, dass ein Feld des Arrays angesprochen wird.
+		
+		Local array = (Local) a.getBase(); // TODO stimmt das???
+
+		String signature = getSignatureForField(field);
+		System.out.println("Signature of static field in jimple injector " + signature);
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(RefType.v("java.lang.Object"));
+		parameterTypes.add(RefType.v("java.lang.String"));
+		
+		SootClass sc = field.getDeclaringClass();
+		
+		Unit assignDeclaringClass  = Jimple.v().newAssignStmt(local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
+		
+		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+		
+		Expr addObj = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+						"setLevelOfField", parameterTypes, VoidType.v(), false),
+						local_for_Objects, local_for_Strings);
+		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+		unitStore.insertElement(unitStore.new Element(assignDeclaringClass, unitStore.lastPos));
+		unitStore.lastPos = assignDeclaringClass;
+		unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
+		unitStore.lastPos = assignSignature;
+		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		unitStore.lastPos = assignExpr;
 	}
 	
 	public static void assignReturnLevelToLocal(Local l) {
@@ -730,7 +753,6 @@ protected static void addNeededLocals() {
 	locals.add(local_for_Strings);
 	locals.add(local_for_String_Arrays);
 	locals.add(local_for_Objects);
-	locals.add(level);	
 	
 	b.validate();
 }

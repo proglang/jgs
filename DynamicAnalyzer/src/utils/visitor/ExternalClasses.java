@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import soot.Local;
+import soot.Unit;
 import analyzer.level1.JimpleInjector;
 
 public class ExternalClasses {
@@ -20,27 +21,27 @@ public class ExternalClasses {
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", new NoHighLevelAllowed());
 	}
 	
-	void receiveCommand(String command, Local params[]) {
-	    methodMap.get(command).execute(params);
+	void receiveCommand(String command,Unit pos, Local params[]) {
+	    methodMap.get(command).execute(pos, params);
 	}
 	
 	
 	interface Command {
-		void execute(Local params[]);
+		void execute(Unit pos, Local params[]);
 	}
 	
 	static class JoinLevels implements Command {
-		public void execute(Local params[]) {
+		public void execute(Unit pos, Local params[]) {
 			for (Local param : params) {
-				JimpleInjector.addLevelInAssignStmt(param);
+				JimpleInjector.addLevelInAssignStmt(pos, param);
 			}
 		}
 	}
 	
 	static class NoHighLevelAllowed implements Command {
-		public void execute(Local params[]) {
+		public void execute(Unit pos, Local params[]) {
 			for (Local param: params) {
-				JimpleInjector.checkThatNotHigh(param);
+				JimpleInjector.checkThatNotHigh(pos, param);
 			}
 		}
 	}
