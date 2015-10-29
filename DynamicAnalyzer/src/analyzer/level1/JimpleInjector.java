@@ -331,7 +331,7 @@ public class JimpleInjector {
 		unitStore.lastPos = ass;
 	}
 
-	public static void addLevelInAssignStmt(Unit pos, Local l) {
+	public static void addLevelInAssignStmt(Local l) {
 		LOGGER.info("Adding level in assign statement");
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
@@ -519,10 +519,11 @@ public class JimpleInjector {
 	
 	public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
 	LOGGER.info( "Set Level of Array " + a.toString() + " in assign stmt");
-	// Es geht darum, dass ein Feld des Arrays angesprochen wird.
+	// setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
 		
 		Local array = (Local) a.getBase(); // TODO stimmt das???
-
+		System.out.println(getSignatureForArrayField(a));
+/*
 		String signature = getSignatureForField(field);
 		System.out.println("Signature of static field in jimple injector " + signature);
 		
@@ -547,7 +548,7 @@ public class JimpleInjector {
 		unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
 		unitStore.lastPos = assignSignature;
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
-		unitStore.lastPos = assignExpr;
+		unitStore.lastPos = assignExpr;*/
 	}
 	
 	public static void assignReturnLevelToLocal(Local l) {
@@ -765,8 +766,22 @@ private static String getSignatureForField(SootField f) {
 	return f.getSignature();
 }
 
-private static String getSignatureForArrayField(Object o) { // TODO
-	return " ";
+private static String getSignatureForArrayField(ArrayRef a) {
+	System.out.println("Type of index: " + a.getIndex().getType()); 
+	String result = "";
+	if (a.getIndex().getType().toString() == "int") {
+		System.out.println("Int Index");
+		result = a.getIndex().toString();
+	} else if (a.getIndex().getType().toString() == "byte") {
+		System.out.println("Byte Index");
+		System.out.println(a.getIndexBox().getValue().g);
+		result = a.getIndex().getUseBoxes().get(0).toString();
+	} else {
+		LOGGER.log(Level.SEVERE, "Unexpected type of index",
+				new InternalAnalyzerException("Unexpected type of index")); 
+		System.exit(0);
+	}
+	return 	result; // TODO manchmal ist es eine Zahl, und manchmal eine Local
 }
 
 private static int getStartPos() {
