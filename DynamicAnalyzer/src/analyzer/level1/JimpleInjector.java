@@ -633,6 +633,28 @@ public class JimpleInjector {
 		
 	}
 	
+	public static void checkThatNotHigh(Unit pos, Local l) {
+		LOGGER.info("Check that " + l + " is not high");
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		String signature = getSignatureForLocal(l);
+		
+		Stmt assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+		
+		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"checkThatNotHigh", paramTypes, VoidType.v(),  false), local_for_Strings);
+		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
+		
+
+	    unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
+	    unitStore.lastPos = assignSignature;
+	    unitStore.insertElement(unitStore.new Element(invoke, unitStore.lastPos));
+	    unitStore.lastPos = pos;
+	}
+	
 	public static void checkCondition(Unit pos, Local... locals) {
 		// TODO String... args
 		LOGGER.log(Level.INFO, "Check condition in method {0}", b.getMethod());
@@ -743,8 +765,5 @@ private static int getStartPos() {
 	return startPos;
 }
 
-public static void checkThatNotHigh(Local param) {
-	// TODO Auto-generated method stub
-	
-}
+
 }
