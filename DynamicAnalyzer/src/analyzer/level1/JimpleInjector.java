@@ -742,4 +742,9 @@ private static int getStartPos() {
 	
 	return startPos;
 }
+
+public static void checkThatNotHigh(Local param) {
+	// TODO Auto-generated method stub
+	
+}
 }

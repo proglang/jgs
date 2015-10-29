@@ -88,7 +88,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
 		
-		switch(valueSwitch.newExprContext) {
+		switch(valueSwitch.rightElement) {
 			case NOT: break;
 			case NEW_ARRAY: 
 				System.out.println(stmt.getLeftOp());

@@ -314,5 +314,11 @@ public class HandleStmt {
 		
 	}
 
+	public void checkThatNotHigh(String local) {
+		if (lm.getLevel(local) == SecurityLevel.HIGH) {
+			new IllegalFlowException("Passed argument " 
+		+ local + " with a high security level to a method which doesn't allow it.");
+		}
+	}
 
 }
