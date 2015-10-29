@@ -16,6 +16,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
 
 public class ConstraintsTest {
@@ -77,17 +78,18 @@ public class ConstraintsTest {
         allStatic.removeAll(Arrays.asList(cp1, cp2));
     }
 
+
     @Test
     public void testLe() {
         Constraint<Level> LleH = leC(cl1, ch1);
         Assignment<Level> a = new Assignment<>(ass);
-        assertTrue("l <= h", LleH.isSatisfied(a));
+        assertThat(a, satisfies(LleH));
 
         Constraint<Level> HleL = leC(ch1, cl1);
-        assertFalse("h /<= l", HleL.isSatisfied(a));
+        assertThat(a, not(satisfies(HleL)));
 
         Constraint<Level> HleHigh = leC(ch1, literal(THIGH));
-        assertTrue("h <= HIGH", HleHigh.isSatisfied(a));
+        assertThat(a,satisfies(HleHigh));
 
         for (CType<Level> t : allVariables) {
             Constraint<Level> c = leC(literal(PUB), t);

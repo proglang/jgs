@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class GenerateTest {
@@ -34,24 +35,11 @@ public class GenerateTest {
     private TypeVar tvarX, tvarY;
 
     // classes and methods for tests
-    private Map<SootMethod, MethodSig<Level>> signatures;
+    private Map<SootMethod, MethodSignatures<Level>> signatures;
     private SootClass testClass;
     private SootMethod testCallee__int;
 
     private Environment init; // initial environment for the testcases
-
-    private static boolean equivalent(ConstraintSet<Level> cs1,
-                                      ConstraintSet<Level> cs2) {
-        return cs1.implies(cs2) && cs2.implies(cs1);
-    }
-
-    private void assertEquiv(ConstraintSet<Level> cs1,
-                             ConstraintSet<Level> cs2) {
-        assertTrue(String.format("Not equivalent\n%s\n%s",
-                                 cs1.toString(),
-                                 cs2.toString()),
-                   equivalent(cs1, cs2));
-    }
 
     private void assertUnsat(ConstraintSet<Level> unsatConstraints) {
         assertFalse(String.format("Should not be SAT: %s\nassignment: %s",
@@ -105,7 +93,7 @@ public class GenerateTest {
                                     leC(r.initialTypeVariableOf(varX),
                                         r.finalTypeVariableOf(varX)),
                                     leC(this.pc, tvarXFinal)));
-        assertEquiv(r.getConstraints(), expected);
+        assertThat(r.getConstraints(), is(equivalent(expected)));
         assertTrue(r.getConstraints().isSat());
 
         assertUnsat(r.getConstraints().add(pc_HIGH_finalX_LOW));
@@ -125,7 +113,7 @@ public class GenerateTest {
                                     leC(r.initialTypeVariableOf(varY),
                                         r.finalTypeVariableOf(varX)),
                                     leC(this.pc, tvarXFinal)));
-        assertEquiv(r.getConstraints(), expected);
+        assertThat(r.getConstraints(), is(equivalent(expected)));
         assertTrue(r.getConstraints().isSat());
 
         assertUnsat(r.getConstraints().add(pc_HIGH_finalX_LOW));
@@ -162,7 +150,7 @@ public class GenerateTest {
         finalX = r.finalTypeVariableOf(varX);
                 
         expected = makeNaive(asList(leC(initY, finalX), leC(this.pc, finalX)));
-        assertEquiv(r.getConstraints(), expected);
+        assertThat(r.getConstraints(), is(equivalent(expected)));
     }
 
 }

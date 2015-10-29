@@ -7,13 +7,21 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.typing.Typing;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+
+import static de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures.*;
 
 public class TestDomain {
 
     public static final LowHigh levels = new LowHigh();
     public static final TypeDomain<Level> types = new TypeDomain<>(levels);
     public static final Constraints<Level> cstrs = new Constraints<>(types);
+    public static final MethodSignatures<Level> sigs = new MethodSignatures<>(cstrs);
 
     //////
     // Levels
@@ -75,6 +83,10 @@ public class TestDomain {
                                            CType<Level> rhs) {
         return cstrs.dimpl(lhs, rhs);
     }
+
+    public static SigConstraint<Level> leS(Symbol<Level> sc1, Symbol<Level> sc2) {
+        return sigs.le(sc1, sc2);
+    }
     
     //////////////
     // Constraint sets
@@ -86,7 +98,63 @@ public class TestDomain {
     // Typing
     public static Typing<Level> mkTyping(TypeVars tvars) {
         return new Typing<>(new NaiveConstraintsFactory<>(types), types, tvars, cstrs);
-        
     }
-    
+
+    /////
+    // JUnit matcher
+
+    public static Matcher<Assignment<Level>> satisfies(Constraint<Level> cstr) {
+        return new Satisfies(cstr);
+    }
+
+    private static class Satisfies extends TypeSafeMatcher<Assignment<Level>> {
+        public final Constraint<Level> cstr;
+
+        public Satisfies(Constraint<Level> cstr) {
+            this.cstr = cstr;
+        }
+
+        @Override
+        protected boolean matchesSafely(Assignment<Level> levelAssignment) {
+            return cstr.isSatisfied(levelAssignment);
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("satisfies ").appendValue(cstr);
+        }
+    }
+
+    public static Matcher<ConstraintSet<Level>> sat() {
+        return new Sat();
+    }
+
+    private static class Sat extends TypeSafeMatcher<ConstraintSet<Level>> {
+
+        @Override
+        protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
+            return levelConstraintSet.isSat();
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("SAT");
+        }
+
+    }
+
+    public static Matcher<ConstraintSet<Level>> equivalent(final ConstraintSet<Level> other) {
+        return new TypeSafeMatcher<ConstraintSet<Level>>() {
+            @Override
+            protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
+                return levelConstraintSet.implies(other) && other.implies(levelConstraintSet);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" equivalent to ").appendValue(other);
+            }
+        };
+    }
+
 }

@@ -10,5 +10,19 @@ generatedJimple/
 Testcases/src/Scratch.java
 /GradualConstraints/bin/
 
-# For IDEA 
-/.idea/workspace.xml
+# For IDEA
+
+## user specific files
+.idea/workspace.xml
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/shelf
+
+## Sensitive or high-churn files: 
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+
