@@ -5,7 +5,6 @@ import java.util.List;
 
 import soot.Body;
 import soot.Unit;
-import soot.jimple.Stmt;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;

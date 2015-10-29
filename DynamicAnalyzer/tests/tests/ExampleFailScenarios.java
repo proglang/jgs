@@ -1,6 +1,5 @@
 package tests;
 
-import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +16,7 @@ public class ExampleFailScenarios {
 	}
 	
 
+	@SuppressWarnings("unused")
 	@Test(expected = IllegalFlowException.class)
 	public void highIfStmt() {
 		HandleStmtForTests hs = new HandleStmtForTests();

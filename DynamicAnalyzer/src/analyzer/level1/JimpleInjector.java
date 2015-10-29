@@ -1,22 +1,15 @@
 package analyzer.level1;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utils.logging.L1Logger;
-import utils.logging.L2Logger;
-import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.LocalStore;
 import analyzer.level1.storage.UnitStore.Element;
-import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 import soot.ArrayType;
 import soot.Body;
 import soot.Local;
@@ -24,15 +17,10 @@ import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
-import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
-import soot.Value;
-import soot.ValueBox;
 import soot.VoidType;
-import soot.jimple.AddExpr;
 import soot.jimple.ArrayRef;
-import soot.jimple.AssignStmt;
 import soot.jimple.ClassConstant;
 import soot.jimple.Expr;
 import soot.jimple.IdentityStmt;
@@ -64,7 +52,6 @@ public class JimpleInjector {
 	static Local local_for_Strings = Jimple.v().newLocal("local_for_Strings", RefType.v("java.lang.String"));
 	static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 	static Local local_for_Objects = Jimple.v().newLocal("local_for_Objects", RefType.v("java.lang.Object"));
-	static Local level = Jimple.v().newLocal("local_level", RefType.v("java.lang.String")); // TODO brauch ich das?
 	
 	static Logger LOGGER = L1Logger.getLogger();
 	
@@ -162,16 +149,11 @@ public class JimpleInjector {
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		
-		// TODO funktioniert das hier oder muss ich eher mit assign Statement arbeiten?
-		// Im Moment muesste hier der etwas anderes in der Local gespeichert sein.
-		// va muss die Local auch gespeichert werden.
-		local_for_Objects = (Local) units.getFirst().getDefBoxes().get(0).getValue();
-		
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
 				parameterTypes, VoidType.v(), false), 
-				local_for_Objects); 
+				(Local) units.getFirst().getDefBoxes().get(0).getValue()); 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
@@ -273,8 +255,8 @@ public class JimpleInjector {
 		LOGGER.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
 				new Object[] {a, b.getMethod().getName()} );
 		
-		System.out.println("Object type: " + a.getType() + " and type " + a.getClass());
-		
+		LOGGER.log(Level.INFO, "Object type of array: " + a.getType() + " and type " + a.getClass());
+		LOGGER.log(Level.FINEST, "at position {0}", position.toString());
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(ArrayType.v(
@@ -289,6 +271,9 @@ public class JimpleInjector {
 				a); 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
+		System.out.println(unitStore.lastPos.toString());
+		System.out.println(assignExpr.toString());
+		System.out.println(position.toString());
 		
 		unitStore.insertElement(unitStore.new Element(assignExpr, position));
 		unitStore.lastPos = assignExpr;		
@@ -533,7 +518,37 @@ public class JimpleInjector {
 	}
 	
 	public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
-		// TODO
+	LOGGER.info( "Set Level of Array " + a.toString() + " in assign stmt");
+	// setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
+		
+		Local array = (Local) a.getBase(); // TODO stimmt das???
+		System.out.println(getSignatureForArrayField(a));
+/*
+		String signature = getSignatureForField(field);
+		System.out.println("Signature of static field in jimple injector " + signature);
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(RefType.v("java.lang.Object"));
+		parameterTypes.add(RefType.v("java.lang.String"));
+		
+		SootClass sc = field.getDeclaringClass();
+		
+		Unit assignDeclaringClass  = Jimple.v().newAssignStmt(local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
+		
+		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+		
+		Expr addObj = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+						"setLevelOfField", parameterTypes, VoidType.v(), false),
+						local_for_Objects, local_for_Strings);
+		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+		unitStore.insertElement(unitStore.new Element(assignDeclaringClass, unitStore.lastPos));
+		unitStore.lastPos = assignDeclaringClass;
+		unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
+		unitStore.lastPos = assignSignature;
+		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+		unitStore.lastPos = assignExpr;*/
 	}
 	
 	public static void assignReturnLevelToLocal(Local l) {
@@ -555,7 +570,13 @@ public class JimpleInjector {
 		unitStore.lastPos = assignExpr;
 	}
 	
-	public static void assignArgumentToLocal(int pos, String local) {}
+	public static void assignArgumentToLocal(int pos, String local) {// TODO
+		
+	}
+	
+	/*
+	 *  Inter-scope
+	 */
 	
 	public static void returnConstant() {
 		LOGGER.log(Level.INFO, "Return a constant value");
@@ -636,6 +657,28 @@ public class JimpleInjector {
 		
 	}
 	
+	public static void checkThatNotHigh(Unit pos, Local l) {
+		LOGGER.info("Check that " + l + " is not high");
+		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		String signature = getSignatureForLocal(l);
+		
+		Stmt assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+		
+		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+						"checkThatNotHigh", paramTypes, VoidType.v(),  false), local_for_Strings);
+		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
+		
+
+	    unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
+	    unitStore.lastPos = assignSignature;
+	    unitStore.insertElement(unitStore.new Element(invoke, unitStore.lastPos));
+	    unitStore.lastPos = pos;
+	}
+	
 	public static void checkCondition(Unit pos, Local... locals) {
 		// TODO String... args
 		LOGGER.log(Level.INFO, "Check condition in method {0}", b.getMethod());
@@ -711,7 +754,6 @@ protected static void addNeededLocals() {
 	locals.add(local_for_Strings);
 	locals.add(local_for_String_Arrays);
 	locals.add(local_for_Objects);
-	locals.add(level);	
 	
 	b.validate();
 }
@@ -724,8 +766,22 @@ private static String getSignatureForField(SootField f) {
 	return f.getSignature();
 }
 
-private static String getSignatureForArrayField(Object o) { // TODO
-	return " ";
+private static String getSignatureForArrayField(ArrayRef a) {
+	System.out.println("Type of index: " + a.getIndex().getType()); 
+	String result = "";
+	if (a.getIndex().getType().toString() == "int") {
+		System.out.println("Int Index");
+		result = a.getIndex().toString();
+	} else if (a.getIndex().getType().toString() == "byte") {
+		System.out.println("Byte Index");
+		System.out.println(a.getIndexBox().getValue().g);
+		result = a.getIndex().getUseBoxes().get(0).toString();
+	} else {
+		LOGGER.log(Level.SEVERE, "Unexpected type of index",
+				new InternalAnalyzerException("Unexpected type of index")); 
+		System.exit(0);
+	}
+	return 	result; // TODO manchmal ist es eine Zahl, und manchmal eine Local
 }
 
 private static int getStartPos() {
@@ -745,4 +801,6 @@ private static int getStartPos() {
 	
 	return startPos;
 }
+
+
 }

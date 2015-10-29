@@ -1,8 +1,6 @@
 package tests.testClasses;
 
-import static org.junit.Assert.assertEquals;
 import analyzer.level2.HandleStmt;
-import analyzer.level2.storage.ObjectMap;
 
 public class TestSubClass {
 	
@@ -33,6 +31,7 @@ public class TestSubClass {
 		return 2;
 	}
 	
+	@SuppressWarnings("static-access")
 	public void writeToCallerField(TestClass ts) {
 		ts.intField = 4;
 	}

@@ -3,7 +3,6 @@ package analyzer.level2.storage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utils.logging.L2Logger;
@@ -32,8 +31,8 @@ private static LinkedList<SecurityLevel> globalPC;
 private static ObjectMap instance = null;
 private static SecurityLevel actualReturnLevel;
 private static ArrayList<SecurityLevel> actualArguments;
-private static Logger logger;
 private static SecurityLevel assignStmtLevel = SecurityLevel.UNDEF;
+
 
 
 /**
@@ -45,7 +44,7 @@ private ObjectMap() {
 	actualReturnLevel = SecurityLevel.LOW;
 	actualArguments = new ArrayList<SecurityLevel>();
 	innerMap = new ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>>(AbstractReferenceMap.ReferenceStrength.WEAK, AbstractReferenceMap.ReferenceStrength.WEAK);
-	logger = L2Logger.getLogger();
+
 }
 
 /**

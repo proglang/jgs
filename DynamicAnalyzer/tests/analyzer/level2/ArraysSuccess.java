@@ -29,6 +29,7 @@ public class ArraysSuccess {
 		hs.addLocal("String[]_a");
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
+		hs.addLocal("String[]_a");
 		
 		assertEquals(3, hs.getNumberOfFields(a));
 		
@@ -46,21 +47,25 @@ public class ArraysSuccess {
 		
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
+		hs.addLocal("String[]_a");
+		hs.addLocal("int_i");
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
+		assertEquals(3, hs.getNumberOfFields(a));
 		
 		/*
 		 * check ( x >= lpc)
 		 * x = Join(i,a, lpc, a_i)
 		 */
-		hs.addLevelOfArray(a, Integer.toString(2));
+		int i = 2;
+		hs.addLevelOfArrayField(a, Integer.toString(2));
+		hs.addLevelOfLocal("int_i");
+		hs.addLevelOfLocal("String[]_a");
+		hs.addLocal("String_x");
 		hs.setLevelOfLocal("String_x");
-		String x = a[2];
+		String x = a[i];
 		
-		int i = 1;
-		hs.addLevelOfArray(a, Integer.toString(i));
-		hs.setLevelOfLocal("String_x");
-		x = a[i];
+		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("String_x"));
 		
 		hs.close();
 		
@@ -75,24 +80,24 @@ public class ArraysSuccess {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
-		String[] a = new String[] {"asd", "v", "v"};
+		String[] a = new String[] {"a", "b", "c"};
 		assertEquals(3, a.length);
 		hs.addArrayToObjectMap(a);
 		assertTrue(hs.containsObjectInObjectMap(a));
 		assertEquals(3, hs.getNumberOfFields(a));
 		
-		/*
-		 * check(a_t >= pgc)
-		 * level(a) = join(gpc,local, ??i??)
-		 * level(a_i) = join(gpc,local, ??i??)
-		 * i = ??
-		 */
-		hs.setLevelOfArray(a, Integer.toString(2));
-		a[2] = "3";
+		hs.addLocal("String[]_a");
+		hs.addLocal("int_i");
 		
+		/*
+		 * check(a_i >= join(gpc, a, i))
+		 * level(a_i) = join(gpc,local, i)
+		 */
 		int i = 2;
-		hs.setLevelOfArray(a, Integer.toString(2));
+		hs.setLevelOfArrayField(a, Integer.toString(2), "String[]_a", "int_i");
 		a[i] = "3";
+		
+		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(a, Integer.toString(i)));
 		
 		hs.close();
 		

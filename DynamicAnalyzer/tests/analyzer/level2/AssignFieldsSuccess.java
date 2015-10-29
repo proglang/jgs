@@ -85,7 +85,7 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_var2"));
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfField(this, "int_field"));
 		
-		hs.setLocalLevel("int_var2", SecurityLevel.HIGH);
+		hs.setLevelOfLocal("int_var2", SecurityLevel.HIGH);
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_var1"));
 		assertEquals(SecurityLevel.HIGH, hs.addLevelOfLocal("int_var2"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfField(this, "int_field"));

@@ -20,26 +20,8 @@ public class ArraysFail {
 	public void init() {
 		HandleStmtForTests.init();
 	}
-
-	@Test(expected = IllegalFlowException.class)
-	public void createArrayTest() {
-
-		LOGGER.log(Level.INFO, "CREATE ARRAY FAIL TEST STARTED");
-		
-		HandleStmtForTests hs = new HandleStmtForTests();
-		
-		hs.addLocal("String[]_a");
-		String[] a = new String[] {"asd", "", ""};
-		hs.addArrayToObjectMap(a);
-		
-		assertEquals(3, hs.getNumberOfFields(a));
-		
-		hs.close();
-
-		LOGGER.log(Level.INFO, "CREATE ARRAY FAIL TEST FINISHED");
-	}
 	
-	@Test
+	@Test(expected = IllegalFlowException.class)
 	public void readArray() {
 		
 		LOGGER.log(Level.INFO, "READ ARRAY FAIL TEST STARTED");
@@ -48,28 +30,33 @@ public class ArraysFail {
 		
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
+		hs.addLocal("String[]_a");
+		int i = 2;
+		hs.addLocal("int_i");
+		hs.setLocalPC(SecurityLevel.HIGH);
+		
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
 		
 		/*
-		 * x = Join(i,a, gpc, a_i)
+		 * x = a[i]
+		 * check x >= lpc
+		 * level(x) = (i, a, gpc, a_i)
 		 */
 		hs.addLevelOfField(a, Integer.toString(2));
+		hs.addLevelOfLocal("int_i");
+		hs.addLevelOfLocal("String[]_a");
 		hs.setLevelOfLocal("String_x");
-		String x = a[2];
+		String x = a[i];
 		
-		int i = 1;
-		hs.addLevelOfField(a, Integer.toString(2));
-		hs.setLevelOfLocal("String_x");
-		x = a[i];
 		
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "READ AARRAY FAIL TEST FINISHED");
+		LOGGER.log(Level.INFO, "READ ARRAY FAIL TEST FINISHED");
 		
 	}
 	
-	@Test
+	@Test(expected = IllegalFlowException.class)
 	public void writeArray() {
 
 		LOGGER.log(Level.INFO, "WRITE ARRAY FAIL TEST STARTED");
@@ -81,19 +68,17 @@ public class ArraysFail {
 		hs.addArrayToObjectMap(a);
 		assertTrue(hs.containsObjectInObjectMap(a));
 		assertEquals(3, hs.getNumberOfFields(a));
+		hs.setLevelOfLocal("String[]_a", SecurityLevel.HIGH);
+		
 		
 		/*
-		 * check(a_t >= pgc)
-		 * level(a) = join(gpc,local, ??i??)
-		 * level(a_i) = join(gpc,local, ??i??)
-		 * i = ??
+		 * check(a_i >= join(gpc, a, i))
+		 * level(a_i) = join(gpc,local, i)
 		 */
-		hs.setLevelOfArray(a, Integer.toString(2));
+		hs.setLevelOfArrayField(a, Integer.toString(2), "String[]_a");
 		a[2] = "3";
 		
-		int i = 2;
-		hs.setLevelOfArray(a, Integer.toString(2));
-		a[i] = "3";
+		
 		
 		hs.close();
 		

@@ -55,7 +55,7 @@ public class Main {
         		   
 
         // TODO ich kann den Classpath auch als Argument übergeben
-       soot.Main.main(new String[]{"-f","J", "-main-class", "main.Test", "main.Test"});
+       soot.Main.main(new String[]{"-f","J", "-main-class", "main.testclasses.ArrayRef", "main.testclasses.ArrayRef"});
 
     }
 

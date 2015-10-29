@@ -13,25 +13,19 @@ import soot.Value;
 import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
-import soot.jimple.ClassConstant;
 import soot.jimple.Constant;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
-import soot.jimple.FieldRef;
 import soot.jimple.GotoStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
-import soot.jimple.InstanceFieldRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.LookupSwitchStmt;
-import soot.jimple.NewArrayExpr;
 import soot.jimple.NopStmt;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
-import soot.jimple.StaticFieldRef;
-import soot.jimple.Stmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThrowStmt;
@@ -47,7 +41,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		logger.severe("> > > Breakpoint statement identified < < <"); // TODO Change to fine
+		logger.severe("\n > > > Breakpoint statement identified < < <"); // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
@@ -58,7 +52,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		InvokeStmt iStmt = stmt;
 		valueSwitch.actualContext = StmtContext.INVOKE;
 		
-		logger.fine(" > > > Invoke Statement identified < < <");
+		logger.fine("\n > > > Invoke Statement identified < < <");
 		
 		InvokeExpr invokeExpr = iStmt.getInvokeExpr();
 		
@@ -94,6 +88,17 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
 		
+		switch(valueSwitch.rightElement) {
+			case NOT: break;
+			case NEW_ARRAY: 
+				System.out.println(stmt.getLeftOp());
+				JimpleInjector.addArrayToObjectMap((Local) stmt.getLeftOp(), stmt);
+				break;
+			case NEW_UNDEF_OBJECT: break;
+			default: new InternalAnalyzerException("Unexpected newExprContext");
+		}
+		
+
 		aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
 
 		valueSwitch.actualContext = StmtContext.UNDEF;
@@ -104,9 +109,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		valueSwitch.actualContext = StmtContext.IDENTITY;
 		
-		IdentityStmt iStmt = stmt;
-		
-		logger.fine(" > > > Identity statement identified < < <");
+		logger.fine("\n > > > Identity statement identified < < <");
 		// TODO hier sind Parameter und this-Referenzen
 		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
 		System.out.println(stmt.getRightOp().getType());
@@ -117,28 +120,28 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		logger.severe(" > > > Enter monitor statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Enter monitor statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		logger.severe(" > > > Exit monitor statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Exit monitor statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
-		logger.severe(" > > > Goto statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Goto statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
-		logger.fine(" > > > If statement identified < < <");  
+		logger.fine("\n > > > If statement identified < < <");  
 		
 		System.out.println(stmt.getUseAndDefBoxes());
 		List<ValueBox> valueList = stmt.getUseBoxes();
@@ -167,21 +170,21 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		logger.severe(" > > > Lookup switch statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Lookup switch statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
-		logger.severe(" > > > Nop statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Nop statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		logger.severe(" > > > Ret statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Ret statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
@@ -189,9 +192,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
 		
-		ReturnStmt rStmt = stmt;
-		
-		logger.fine(" > > > Return statement identified < < <");
+		logger.fine("\n > > > Return statement identified < < <");
 		
 		System.out.println(stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
@@ -205,26 +206,26 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		logger.fine(" > > > Return void statement identified < < <");
+		logger.fine("\n > > > Return void statement identified < < <");
 	}
 
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		logger.severe(" > > > Table switch statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Table switch statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		logger.severe(" > > > Throw statement identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Throw statement identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void defaultCase(Object obj) {
-		logger.severe(" > > > Default case of statements identified < < <");  // TODO Change to fine
+		logger.severe("\n > > > Default case of statements identified < < <");  // TODO Change to fine
 		// TODO Auto-generated method stub
 
 	}

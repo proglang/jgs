@@ -28,6 +28,7 @@ public class InternalMethods {
 		LOGGER.log(Level.INFO, "LOCAL PC TEST STARTED");
 
 		HandleStmtForTests hs = new HandleStmtForTests();
+		
 		hs.addLocal("int_x");
 		
 		// Level(x) = LOW, Level(lpc) = LOW
