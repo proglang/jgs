@@ -10,9 +10,8 @@ public class ArrayRef {
 		
 	}
 	
-	public void writeWithIndexAsLocal() {
+	public void writeWithIndexAsLocal(int i) {
 		String[] wr = {"a","b"};
-		int i = 1;
 		wr[i] = "c";
 	}
 	

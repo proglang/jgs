@@ -12,6 +12,7 @@ import analyzer.level1.storage.LocalStore;
 import analyzer.level1.storage.UnitStore.Element;
 import soot.ArrayType;
 import soot.Body;
+import soot.IntType;
 import soot.Local;
 import soot.RefType;
 import soot.Scene;
@@ -19,6 +20,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.Type;
 import soot.Unit;
+import soot.Value;
 import soot.VoidType;
 import soot.jimple.ArrayRef;
 import soot.jimple.ClassConstant;
@@ -426,7 +428,60 @@ public class JimpleInjector {
 	}
 	
 	public static void addLevelInAssignStmt(ArrayRef a) {
-		// TOTO
+		LOGGER.info( "Add Level of Array " + a.toString() + " in assign stmt");
+		// setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
+
+		System.out.println("HIER " +  a.getIndex());
+		System.out.println("HIER " +  a.getIndex().getType());
+		System.out.println("HIER " +  a.getIndex().getUseBoxes());
+		System.out.println(a.getIndex() instanceof Local);
+			
+			Expr addObj = null;
+			
+			if (!(a.getIndex() instanceof Local)) {
+				String signature = getSignatureForArrayField(a);
+				LOGGER.info("Signature of array field in jimple injector is" + signature);
+				Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+				
+				unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
+				unitStore.lastPos = assignSignature;
+
+				ArrayList<Type> parameterTypes = new ArrayList<Type>();
+				parameterTypes.add(RefType.v("java.lang.Object"));
+				parameterTypes.add(RefType.v("java.lang.String"));
+				
+				addObj = Jimple.v().newVirtualInvokeExpr(
+						hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+								"addLevelOfArrayField", parameterTypes, VoidType.v(), false),
+								a.getBase(), local_for_Strings);
+				
+			} else if (a.getIndex() instanceof Local) {
+				Value fieldIndex = a.getIndex();
+				LOGGER.info("Signature of array field in jimple injector is stored in " + fieldIndex.toString());
+				
+
+				ArrayList<Type> parameterTypes = new ArrayList<Type>();
+				parameterTypes.add(RefType.v("java.lang.Object"));
+				parameterTypes.add(IntType.v());
+				
+				addObj = Jimple.v().newVirtualInvokeExpr(
+						hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+								"addLevelOfArrayField", parameterTypes, VoidType.v(), false),
+								a.getBase(), fieldIndex);
+				
+			} else {
+				LOGGER.log(Level.SEVERE, "Unexpected type of index",
+						new InternalAnalyzerException("Unexpected type of index")); 
+				System.exit(0);
+			}
+
+
+			
+			Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+
+
+			unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
+			unitStore.lastPos = assignExpr;
 	}
 	
 	public static void setLevelOfAssignStmt(Local l, Unit pos) {
@@ -520,35 +575,58 @@ public class JimpleInjector {
 	public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
 	LOGGER.info( "Set Level of Array " + a.toString() + " in assign stmt");
 	// setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
+
+	System.out.println("HIER " +  a.getIndex());
+	System.out.println("HIER " +  a.getIndex().getType());
+	System.out.println("HIER " +  a.getIndex().getUseBoxes());
+	System.out.println(a.getIndex() instanceof Local);
 		
-		Local array = (Local) a.getBase(); // TODO stimmt das???
-		System.out.println(getSignatureForArrayField(a));
-/*
-		String signature = getSignatureForField(field);
-		System.out.println("Signature of static field in jimple injector " + signature);
+		Expr addObj = null;
 		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		parameterTypes.add(RefType.v("java.lang.String"));
+		if (!(a.getIndex() instanceof Local)) {
+			String signature = getSignatureForArrayField(a);
+			LOGGER.info("Signature of array field in jimple injector is" + signature);
+			Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+			
+			unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
+			unitStore.lastPos = assignSignature;
+
+			ArrayList<Type> parameterTypes = new ArrayList<Type>();
+			parameterTypes.add(RefType.v("java.lang.Object"));
+			parameterTypes.add(RefType.v("java.lang.String"));
+			
+			addObj = Jimple.v().newVirtualInvokeExpr(
+					hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+							"setLevelOfArrayField", parameterTypes, VoidType.v(), false),
+							a.getBase(), local_for_Strings);
+			
+		} else if (a.getIndex() instanceof Local) {
+			Value fieldIndex = a.getIndex();
+			LOGGER.info("Signature of array field in jimple injector is stored in " + fieldIndex.toString());
+			
+
+			ArrayList<Type> parameterTypes = new ArrayList<Type>();
+			parameterTypes.add(RefType.v("java.lang.Object"));
+			parameterTypes.add(IntType.v());
+			
+			addObj = Jimple.v().newVirtualInvokeExpr(
+					hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+							"setLevelOfArrayField", parameterTypes, VoidType.v(), false),
+							a.getBase(), fieldIndex);
+			
+		} else {
+			LOGGER.log(Level.SEVERE, "Unexpected type of index",
+					new InternalAnalyzerException("Unexpected type of index")); 
+			System.exit(0);
+		}
+
+
 		
-		SootClass sc = field.getDeclaringClass();
-		
-		Unit assignDeclaringClass  = Jimple.v().newAssignStmt(local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-		
-		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr addObj = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"setLevelOfField", parameterTypes, VoidType.v(), false),
-						local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		unitStore.insertElement(unitStore.new Element(assignDeclaringClass, unitStore.lastPos));
-		unitStore.lastPos = assignDeclaringClass;
-		unitStore.insertElement(unitStore.new Element(assignSignature, unitStore.lastPos));
-		unitStore.lastPos = assignSignature;
+
+
 		unitStore.insertElement(unitStore.new Element(assignExpr, unitStore.lastPos));
-		unitStore.lastPos = assignExpr;*/
+		unitStore.lastPos = assignExpr;
 	}
 	
 	public static void assignReturnLevelToLocal(Local l) {
@@ -772,16 +850,12 @@ private static String getSignatureForArrayField(ArrayRef a) {
 	if (a.getIndex().getType().toString() == "int") {
 		System.out.println("Int Index");
 		result = a.getIndex().toString();
-	} else if (a.getIndex().getType().toString() == "byte") {
-		System.out.println("Byte Index");
-		System.out.println(a.getIndexBox().getValue().g);
-		result = a.getIndex().getUseBoxes().get(0).toString();
 	} else {
 		LOGGER.log(Level.SEVERE, "Unexpected type of index",
 				new InternalAnalyzerException("Unexpected type of index")); 
 		System.exit(0);
 	}
-	return 	result; // TODO manchmal ist es eine Zahl, und manchmal eine Local
+	return 	result; 
 }
 
 private static int getStartPos() {
