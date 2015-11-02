@@ -41,9 +41,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		logger.severe("\n > > > Breakpoint statement identified < < <"); // TODO Change to fine
-		// TODO Auto-generated method stub
-
+		logger.fine("\n > > > Breakpoint statement identified < < <"); 
+		
 	}
 
 	@Override
@@ -157,6 +156,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		}
 		
 		int localListLength = localList.size();
+		
+		System.out.println(stmt.getTargetBox().toString());
+		
 		
 		Local[] arguments = new Local[localListLength];
 		
