@@ -218,7 +218,9 @@ public class HandleStmt {
 
 	public void returnConstant() {
 		LOGGER.log(Level.INFO, "Return a constant value");
-		om.setActualReturnLevel(lm.getLocalPC()); // ??
+		om.setActualReturnLevel(lm.getLocalPC()); // TODO ??
+		// TODO hier vielleicht eher auch addLevel? Dann kann man es nämlich weglassen...
+		// Das Problem ist aber, wenn der Returnwert nicht assigned wird...
 	}
 
 	public void returnLocal(String signature) {

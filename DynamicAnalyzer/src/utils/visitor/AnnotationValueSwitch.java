@@ -305,7 +305,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
 		  rightElement = RightElement.NOT;
-			// TODO Fälle unterscheiden  
+			// TODO Fï¿½lle unterscheiden  
 		  
 
 		logger.severe("Invoke expression is of type InterfaceInvoke"); // TODO change to fine
@@ -317,7 +317,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
 		  rightElement = RightElement.NOT;
-			// TODO Fälle unterscheiden  
+			// TODO Fï¿½lle unterscheiden  
 		  
 
 		logger.fine("Invoke expression is of type SpecialInvoke");
@@ -335,7 +335,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
 		rightElement = RightElement.NOT;
-		// TODO Fälle unterscheiden  
+		// TODO Fï¿½lle unterscheiden  
 
 		logger.fine("Invoke expression is of type StaticInvoke");
 		logger.finest(v.toString());	
@@ -353,7 +353,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
 		  rightElement = RightElement.NOT;
-			// TODO Fälle unterscheiden  
+			// TODO Fï¿½lle unterscheiden  
 		  
 
 		logger.fine("Invoke expression is of type VirtualInvoke");
@@ -373,7 +373,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
 		  rightElement = RightElement.NOT;
-			// TODO Fälle unterscheiden  
+			// TODO Fï¿½lle unterscheiden  
 		  
 
 		logger.severe("Invoke expression is of type DynamicInvoke"); // TODO change to fine
@@ -514,13 +514,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseParameterRef(ParameterRef v) {
-		  rightElement = RightElement.NOT;
-		  
 
 		logger.finest("Parameter reference identified " + v.toString());
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
+
+		new InternalAnalyzerException("Unhandled case of ParameterRef");
+
 	}
 
 	@Override
@@ -534,13 +532,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseThisRef(ThisRef v) {
-		  rightElement = RightElement.NOT;
-		  
-		
+
 		logger.finer("@This reference identified " + v.toString());
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
+
+		new InternalAnalyzerException("Unhandled case of ThisRef");
+
 	}
 
 	@Override

@@ -23,11 +23,13 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.LookupSwitchStmt;
 import soot.jimple.NopStmt;
+import soot.jimple.ParameterRef;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
+import soot.jimple.ThisRef;
 import soot.jimple.ThrowStmt;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
@@ -36,7 +38,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	Logger logger = L1Logger.getLogger();
 
 	
-	ArrayList<Value> DefBox = new ArrayList<Value>();
 	
 
 	@Override
@@ -109,32 +110,39 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		valueSwitch.actualContext = StmtContext.IDENTITY;
 		
 		logger.fine("\n > > > Identity statement identified < < <");
-		// TODO hier sind Parameter und this-Referenzen
-		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
-		System.out.println(stmt.getRightOp().getType());
-		stmt.getRightOp().apply(valueSwitch);
+
+		if (stmt.getRightOp() instanceof ParameterRef) {
+			int posInArgList = ((ParameterRef) stmt.getRightOp()).getIndex();
+			JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
+		} else if (stmt.getRightOp() instanceof ThisRef) {
+			// TODO im Grunde nicht nötig...
+		} else {
+			new InternalAnalyzerException("Unexpected type of right value in IdentityStmt");
+		}
 		
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		logger.severe("\n > > > Enter monitor statement identified < < <");  // TODO Change to fine
+		logger.fine("\n > > > Enter monitor statement identified < < <");
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		logger.severe("\n > > > Exit monitor statement identified < < <");  // TODO Change to fine
+		logger.fine("\n > > > Exit monitor statement identified < < <");
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
-		logger.severe("\n > > > Goto statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Goto statement identified < < <"); 
+		
+		System.out.println("GOTO: " + stmt.toString());
+		new InternalAnalyzerException("Goto stmt identified");
 
 	}
 
@@ -157,7 +165,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		int localListLength = localList.size();
 		
-		System.out.println(stmt.getTargetBox().toString());
+		System.out.println("Target box " + stmt.getTargetBox().getUnit().toString());
+		System.out.println("Target " + stmt.getTarget().toString());
 		
 		
 		Local[] arguments = new Local[localListLength];
@@ -199,9 +208,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		System.out.println(stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
 		if (val instanceof Constant) {
-			JimpleInjector.returnConstant();
+			JimpleInjector.returnConstant(stmt);
 		} else if (val instanceof Local) {
-			JimpleInjector.returnLocal((Local) val);
+			JimpleInjector.returnLocal((Local) val, stmt);
 		}
 
 	}

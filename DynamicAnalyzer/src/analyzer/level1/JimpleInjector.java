@@ -109,6 +109,7 @@ public class JimpleInjector {
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
 						"close", paramTypes, VoidType.v(), false));
 		units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
+		// TODO Abh�ngig davon, ob noch ein returnstmt kommt, oder nicht
 	}
 	
 	/*
@@ -311,6 +312,8 @@ public class JimpleInjector {
 		unitStore_After.insertElement(unitStore_After.new Element(ass, unitStore_After.lastPos));
 		unitStore_After.lastPos = ass;
 	}
+	
+	// TODO makeArrayFields HIGH and LOW
 	
 	public static void makeLocalLow(Local l) {
 		LOGGER.log(Level.INFO, "Make Local {0} low in method {1}",
@@ -649,7 +652,23 @@ public class JimpleInjector {
 		unitStore_After.lastPos = assignExpr;
 	}
 	
-	public static void assignArgumentToLocal(int pos, String local) {// TODO
+	public static void assignArgumentToLocal(int posInArgList, Local local) {
+		LOGGER.log(Level.INFO, "Assign argument level to local " + local.toString());
+		
+		ArrayList<Type> parameterTypes = new ArrayList<Type>();
+		parameterTypes.add(IntType.v());
+		parameterTypes.add(RefType.v("Java.lang.String"));
+		Expr assignArg = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(
+						Scene.v().getSootClass(HANDLE_CLASS), "assignArgumentToLocal",
+						parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
+				IntConstant.v(posInArgList), StringConstant.v(getSignatureForLocal(local))
+				);
+		
+		Unit assignExpr = Jimple.v().newInvokeStmt(assignArg);
+		
+		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, unitStore_After.lastPos));
+		unitStore_After.lastPos = assignExpr;
 		
 	}
 	
@@ -657,7 +676,7 @@ public class JimpleInjector {
 	 *  Inter-scope
 	 */
 	
-	public static void returnConstant() {
+	public static void returnConstant(Unit retStmt) {
 		LOGGER.log(Level.INFO, "Return a constant value");
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
@@ -670,7 +689,7 @@ public class JimpleInjector {
 				unitStore_After.lastPos)); // TODO es sollte genau vor HS.close stehen
 	}
 
-	public static void returnLocal(Local l) {
+	public static void returnLocal(Local l, Unit retStmt) {
 		LOGGER.log(Level.INFO, "Return Local {0}", getSignatureForLocal(l));
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
@@ -691,7 +710,7 @@ public class JimpleInjector {
 	}
 
 	public static void storeArgumentLevels(Local... lArguments) {
-		// TODO check if its ok
+		// TODO check if its ok. Add only Locals
 		
 		LOGGER.log(Level.INFO, "Store Arguments for next method in method {0}",
 				b.getMethod().getName());
@@ -715,7 +734,7 @@ public class JimpleInjector {
 				String signature = getSignatureForLocal(lArguments[i]);
 				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(signature));
 			} else {
-				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(" "));
+				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(" ")); // TOD unn�tig
 			}
 		}
 		
@@ -825,7 +844,18 @@ protected static void addUnitsToChain() {
 		}
 	}
 	
+	UIt = unitStore_Before.getElements().iterator();
+	while(UIt.hasNext()) {
+		Element item = (Element) UIt.next();
+		if (item.getPosition() == null) {
+			units.addFirst(item.getUnit());
+		} else {
+		    units.insertBefore(item.getUnit(), item.getPosition()); 
+		}
+	} // TODO Reihenfolge tauschen?
+	
 	unitStore_After.flush();
+	unitStore_Before.flush();
 	b.validate();
 }
 
