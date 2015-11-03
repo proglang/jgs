@@ -504,10 +504,9 @@ public class JimpleInjector {
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
 
-	    unitStore_After.insertElement(unitStore_After.new Element(assignSignature, unitStore_After.lastPos));
-	    unitStore_After.lastPos = assignSignature;
-	    unitStore_After.insertElement(unitStore_After.new Element(invoke, unitStore_After.lastPos));
-	    unitStore_After.lastPos = pos;
+	    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+	    unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+	    unitStore_Before.lastPos = pos;
 	}
 	
 	public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
@@ -689,7 +688,7 @@ public class JimpleInjector {
 				unitStore_After.lastPos)); // TODO es sollte genau vor HS.close stehen
 	}
 
-	public static void returnLocal(Local l, Unit retStmt) {
+	public static void returnLocal(Local l, Unit pos) {
 		LOGGER.log(Level.INFO, "Return Local {0}", getSignatureForLocal(l));
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
@@ -703,10 +702,9 @@ public class JimpleInjector {
 		
 		Stmt returnL = Jimple.v().newInvokeStmt(returnLocal);
 		
-		unitStore_After.insertElement(unitStore_After.new Element(sig, unitStore_After.lastPos));
-		unitStore_After.lastPos = sig;
-		unitStore_After.insertElement(unitStore_After.new Element(returnL, unitStore_After.lastPos));
-		unitStore_After.lastPos = returnL;
+		unitStore_Before.insertElement(unitStore_Before.new Element(sig, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(returnL, pos));
+		unitStore_Before.lastPos = returnL;
 	}
 
 	public static void storeArgumentLevels(Local... lArguments) {
@@ -815,7 +813,7 @@ public class JimpleInjector {
 		
 	}
 	
-	public static void exitInnerScope() {
+	public static void exitInnerScope(Unit pos) {
 		LOGGER.log(Level.INFO, "Exit inner scope in method {0}", b.getMethod().getName());
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
@@ -825,7 +823,12 @@ public class JimpleInjector {
 		
 		Unit inv = Jimple.v().newInvokeStmt(specialIn);
 		
-		unitStore_After.insertElement(unitStore_After.new Element(inv, unitStore_After.lastPos));
+		System.out.println("1 " + units.getPredOf(pos).toString());
+		System.out.println("2 " + pos.toString());
+		
+		Unit endOfScope = units.getPredOf(pos);
+		
+		unitStore_After.insertElement(unitStore_After.new Element(inv, endOfScope));
 		unitStore_After.lastPos = inv;
 	}
 	

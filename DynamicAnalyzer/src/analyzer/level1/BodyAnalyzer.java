@@ -143,7 +143,7 @@ public class BodyAnalyzer extends BodyTransformer{
 				df.getImmediateDominator(item);
 			}
 			while (df.containsStmt(item)) {
-				JimpleInjector.exitInnerScope();
+				// JimpleInjector.exitInnerScope();
 			}
         }
         JimpleInjector.addUnitsToChain();      

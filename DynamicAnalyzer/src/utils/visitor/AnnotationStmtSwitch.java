@@ -168,6 +168,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		System.out.println("Target box " + stmt.getTargetBox().getUnit().toString());
 		System.out.println("Target " + stmt.getTarget().toString());
 		
+		// TODO DAS IST NUR EINTEST
+		JimpleInjector.exitInnerScope(stmt.getTargetBox().getUnit());
 		
 		Local[] arguments = new Local[localListLength];
 		
