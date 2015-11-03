@@ -37,17 +37,16 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
 	Logger logger = L1Logger.getLogger();
 
-	
-	
-
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
 		logger.fine("\n > > > Breakpoint statement identified < < <"); 
-		
+		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
+
+		valueSwitch.callingStmt = stmt;
 		
 		InvokeStmt iStmt = stmt;
 		valueSwitch.actualContext = StmtContext.INVOKE;
@@ -106,6 +105,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
+
+		valueSwitch.callingStmt = stmt;
 		
 		valueSwitch.actualContext = StmtContext.IDENTITY;
 		
@@ -126,6 +127,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
 		logger.fine("\n > > > Enter monitor statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 		// TODO Auto-generated method stub
 
 	}
@@ -133,6 +135,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
 		logger.fine("\n > > > Exit monitor statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 		// TODO Auto-generated method stub
 
 	}
@@ -140,6 +143,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
 		logger.fine("\n > > > Goto statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
 		
 		System.out.println("GOTO: " + stmt.toString());
 		new InternalAnalyzerException("Goto stmt identified");
@@ -149,6 +153,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
 		logger.fine("\n > > > If statement identified < < <");  
+		valueSwitch.callingStmt = stmt;
 		
 		System.out.println(stmt.getUseAndDefBoxes());
 		List<ValueBox> valueList = stmt.getUseBoxes();
@@ -183,22 +188,25 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		logger.severe("\n > > > Lookup switch statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Lookup switch statement identified < < <");
+		valueSwitch.callingStmt = stmt; 
+		new InternalAnalyzerException("Lookup Switch Stmt");
 
 	}
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
-		logger.severe("\n > > > Nop statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Nop statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
+		new InternalAnalyzerException("NopStmt");
 
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		logger.severe("\n > > > Ret statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Ret statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
+		new InternalAnalyzerException("RetStmt");
 
 	}
 
@@ -206,6 +214,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseReturnStmt(ReturnStmt stmt) {
 		
 		logger.fine("\n > > > Return statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 		
 		System.out.println(stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
@@ -220,26 +229,27 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
 		logger.fine("\n > > > Return void statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		logger.severe("\n > > > Table switch statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Table switch statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
+		new InternalAnalyzerException("TableSwitchStmt");
 
 	}
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		logger.severe("\n > > > Throw statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
-
+		logger.fine("\n > > > Throw statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void defaultCase(Object obj) {
-		logger.severe("\n > > > Default case of statements identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
-
+		logger.fine("\n > > > Default case of statements identified < < <"); 
+		// valueSwitch.callingStmt = stmt;
+	
 	}
 }

@@ -7,7 +7,6 @@ public class UnitStore {
 	
 	ArrayList<Element> units = new ArrayList<Element>();
 
-	public Unit lastPos;
 	
 	public void insertElement(Element e) {
 		units.add(e);

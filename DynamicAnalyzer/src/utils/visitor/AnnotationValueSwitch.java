@@ -308,7 +308,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 			// TODO F�lle unterscheiden  
 		  
 
-		logger.severe("Invoke expression is of type InterfaceInvoke"); // TODO change to fine
+		logger.fine("Invoke expression is of type InterfaceInvoke");
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
@@ -325,7 +325,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		
 		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			JimpleInjector.storeArgumentLevels(args);
+			JimpleInjector.storeArgumentLevels(callingStmt, args);
 		} else {
 			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
 		}
@@ -343,7 +343,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		
 		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			JimpleInjector.storeArgumentLevels(args);
+			JimpleInjector.storeArgumentLevels(callingStmt, args);
 		} else {
 			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
 		}
@@ -363,7 +363,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		
 		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			JimpleInjector.storeArgumentLevels(args);
+			JimpleInjector.storeArgumentLevels(callingStmt, args);
 		} else {
 			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
 		}
@@ -474,7 +474,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		System.out.println("Type " + v.getType());
 		System.out.println("Use Box " + v.getUseBoxes().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			JimpleInjector.addLevelInAssignStmt(v);
+			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
 		} else {
@@ -489,7 +489,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.finest("Static field reference identified " + v.toString());
 		System.out.println(		v.getField().getDeclaringClass());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			JimpleInjector.addLevelInAssignStmt(v);
+			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
 		} else {
@@ -504,7 +504,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.finest("Instance field reference identified " + v.toString());	
 		System.out.println("kh" + v.getBase().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			JimpleInjector.addLevelInAssignStmt(v);
+			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
 		} else {
@@ -546,7 +546,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.finest("Local identified " + l.toString());
 		
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			JimpleInjector.addLevelInAssignStmt(l);
+			JimpleInjector.addLevelInAssignStmt(l, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(l, callingStmt);
 		} else {

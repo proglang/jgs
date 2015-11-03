@@ -7,7 +7,8 @@ public class ArrayRef {
 	}
 	
 	public void read() {
-		
+		String [] arr = {"b","a"};
+		String res = arr[0];
 	}
 	
 	public void writeWithIndexAsLocal(int i) {
