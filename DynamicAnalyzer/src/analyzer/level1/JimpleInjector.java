@@ -802,14 +802,14 @@ public class JimpleInjector {
 						"checkCondition", paramTypes, VoidType.v(), false), local_for_String_Arrays);
 		Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
 		
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignNewArray, pos));
-		unitStore_Before.lastPos = assignNewArray;
+		unitStore_After.insertElement(unitStore_After.new Element(assignNewArray, pos));
+		unitStore_After.lastPos = assignNewArray;
 		for (Unit u : tmpUnitList) {
-			unitStore_Before.insertElement(unitStore_Before.new Element(u, pos));
-			unitStore_Before.lastPos = u;
+			unitStore_After.insertElement(unitStore_After.new Element(u, pos));
+			unitStore_After.lastPos = u;
 		}
-		unitStore_Before.insertElement(unitStore_Before.new Element(invokeCC, pos));
-		unitStore_Before.lastPos = invokeCC;
+		unitStore_After.insertElement(unitStore_After.new Element(invokeCC, pos));
+		unitStore_After.lastPos = invokeCC;
 		
 	}
 	
