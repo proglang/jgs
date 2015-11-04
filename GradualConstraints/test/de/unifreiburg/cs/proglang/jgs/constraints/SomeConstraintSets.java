@@ -19,6 +19,7 @@ public class SomeConstraintSets {
     public final ConstraintSet<Level> x0_le_x1_le_x2_le_x3_le_x1;
     public final ConstraintSet<Level> x1_le_H_le_x2__x1_le_x2;
     public final ConstraintSet<Level> pub_le_x_le_dyn;
+    public final ConstraintSet<Level> x1_le_x3__x2_le_x3;
 
     public SomeConstraintSets(TypeVars tvars) {
         v0 = tvars.fresh();
@@ -38,6 +39,9 @@ public class SomeConstraintSets {
                                                    leC(x1, x2)));
         pub_le_x_le_dyn =
                 makeNaive(asList(leC(x1, literal(DYN)), leC(literal(PUB), x1)));
+
+        x1_le_x3__x2_le_x3 =
+                makeNaive(asList(leC(x1, x3), leC(x2, x3)));
     }
 
 }

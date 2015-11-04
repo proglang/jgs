@@ -3,17 +3,14 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import soot.jimple.ParameterRef;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
 import static java.util.Arrays.asList;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
-
 
 /**
  * Method signtures. Internal representation of method signatures of the form
@@ -43,8 +40,7 @@ public class MethodSignatures<Level> {
         return new Effects<>(new HashSet<>());
     }
 
-    @SafeVarargs
-    public static <Level> Effects<Level> union(Effects<Level>... effectSets) {
+    @SafeVarargs public static <Level> Effects<Level> union(Effects<Level>... effectSets) {
         HashSet<Type<Level>> result = new HashSet<>();
         for (Effects<Level> es : effectSets) {
             result.addAll(es.effectSet);
@@ -59,8 +55,7 @@ public class MethodSignatures<Level> {
             this.effectSet = effects;
         }
 
-        @SafeVarargs
-        public final Effects<Level> add(Type<Level>... types) {
+        @SafeVarargs public final Effects<Level> add(Type<Level>... types) {
             HashSet<Type<Level>> result = new HashSet<>(this.effectSet);
             result.addAll(asList(types));
             return new Effects<>(result);
@@ -68,6 +63,12 @@ public class MethodSignatures<Level> {
     }
 
     /* Signatures */
+    public static <Level> Set<Constraint<Level>> toTypingConstraints(Collection<SigConstraint<Level>> sig,
+                                                                     Map<Symbol<Level>, TypeVar> mapping) {
+        return sig.stream()
+                  .map(c -> c.toTypingConstraint(mapping))
+                  .collect(Collectors.toSet());
+    }
 
     public SigConstraint<Level> le(Symbol<Level> lhs, Symbol<Level> rhs) {
         return new SigConstraint<>(lhs, rhs, (ct1, ct2) -> cstrs.le(ct1, ct2));
@@ -99,7 +100,8 @@ public class MethodSignatures<Level> {
 
         private final Symbol<Level> lhs;
         private final Symbol<Level> rhs;
-        private final BiFunction<CType<Level>, CType<Level>, Constraint<Level>> toConstraint;
+        private final BiFunction<CType<Level>, CType<Level>, Constraint<Level>>
+                toConstraint;
 
         private SigConstraint(Symbol<Level> lhs,
                               Symbol<Level> rhs,
@@ -110,17 +112,16 @@ public class MethodSignatures<Level> {
             this.toConstraint = toConstraint;
         }
 
-        public Constraint<Level> toTypingConstraints(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        public Constraint<Level> toTypingConstraint(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return toConstraint.apply(lhs.toCType(tvarMapping),
-                    rhs.toCType(tvarMapping));
+                                      rhs.toCType(tvarMapping));
         }
     }
 
         /* Symbols: */
 
     public static abstract class Symbol<Level> {
-        @Override
-        public abstract String toString();
+        @Override public abstract String toString();
 
         public abstract CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping);
     }
@@ -128,45 +129,57 @@ public class MethodSignatures<Level> {
     public static class Param<Level> extends Symbol<Level> {
         private final ParameterRef me;
 
+        @Override public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+
+            Param<?> param = (Param<?>) o;
+
+            return !(me != null ? !me.equals(param.me) : param.me != null);
+
+        }
+
+        @Override public int hashCode() {
+            return me != null ? me.hashCode() : 0;
+        }
+
         private Param(ParameterRef me) {
             super();
             this.me = me;
         }
 
-
-        @Override
-        public String toString() {
+        @Override public String toString() {
             return String.format("@%s", this.me.toString());
         }
 
-        @Override
-        public CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        @Override public CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return Optional.ofNullable(tvarMapping.get(this))
-                    .map(CTypes::<Level>variable)
-                    .orElseThrow(() -> new NoSuchElementException(String.format("No mapping for %s: %s",
-                            this.me.toString(),
-                            tvarMapping.toString())));
+                           .map(CTypes::<Level>variable)
+                           .orElseThrow(() -> new NoSuchElementException(String.format(
+                                   "No mapping for %s: %s",
+                                   this.me.toString(),
+                                   tvarMapping.toString())));
         }
     }
-
 
     public static class Return<Level> extends Symbol<Level> {
 
         private Return() {
         }
 
-        @Override
-        public String toString() {
+        @Override public String toString() {
             return "@return";
         }
 
-        @Override
-        public CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        @Override public CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return Optional.ofNullable(tvarMapping.get(this))
-                    .map(CTypes::<Level>variable)
-                    .orElseThrow(() -> new NoSuchElementException(String.format("No mapping for %s: %s",
-                            this.toString(),
-                            tvarMapping.toString())));
+                           .map(CTypes::<Level>variable)
+                           .orElseThrow(() -> new NoSuchElementException(String.format(
+                                   "No mapping for %s: %s",
+                                   this.toString(),
+                                   tvarMapping.toString())));
         }
 
         @Override
@@ -175,8 +188,7 @@ public class MethodSignatures<Level> {
             return this.getClass().equals(other.getClass());
         }
 
-        @Override
-        public int hashCode() {
+        @Override public int hashCode() {
             return this.getClass().hashCode();
         }
 
@@ -190,26 +202,22 @@ public class MethodSignatures<Level> {
             this.me = me;
         }
 
-        @Override
-        public String toString() {
+        @Override public String toString() {
             return me.toString();
         }
 
-        @Override
-        public CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        @Override public CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return CTypes.literal(this.me);
         }
 
-        @Override
-        public int hashCode() {
+        @Override public int hashCode() {
             final int prime = 31;
             int result = 1;
             result = prime * result + ((me == null) ? 0 : me.hashCode());
             return result;
         }
 
-        @Override
-        public boolean equals(Object obj) {
+        @Override public boolean equals(Object obj) {
             if (this == obj)
                 return true;
             if (obj == null)
