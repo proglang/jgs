@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import soot.Local;
 import soot.Value;
@@ -39,16 +40,16 @@ public class Var<T> {
     }
     
     /**
-     * @see getAll(Value)
+     * see getAll(Value)
      */
-    public static List<Var<?>> getAll(Collection<ValueBox> bs) {
-        return bs.stream().flatMap((ValueBox b) -> getAll(b).stream()).collect(Collectors.toList());
+    public static Stream<Var<?>> getAll(Collection<ValueBox> bs) {
+        return bs.stream().flatMap((ValueBox b) -> getAll(b));
     }
     
-    /** 
-     * @see getAll(Value)
+    /**
+     * see getAll(Value)
      */
-    public static List<Var<?>> getAll(ValueBox b) {
+    public static Stream<Var<?>> getAll(ValueBox b) {
         return getAll(b.getValue());
     }
 
@@ -56,8 +57,8 @@ public class Var<T> {
     /**
      * Collect all variables from a jimple Value
      */
-    public static List<Var<?>> getAll(Value val) {
-        ArrayList<Var<?>> result = new ArrayList<>();
+    public static Stream<Var<?>> getAll(Value val) {
+        Stream.Builder<Var<?>> result = Stream.builder();
         val.apply(new AbstractJimpleValueSwitch() {
 
             @Override
@@ -85,7 +86,7 @@ public class Var<T> {
                 });
             }
         });
-        return result;
+        return result.build();
     }
 
     private Var(T me) {

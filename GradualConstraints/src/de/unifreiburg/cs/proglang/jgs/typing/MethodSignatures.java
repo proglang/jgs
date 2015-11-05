@@ -35,9 +35,25 @@ public class MethodSignatures<Level> {
     public MethodSignatures(Constraints<Level> cstrs) {
         this.cstrs = cstrs;
     }
+
+    /**
+     * Signatures: constraints + effects
+     */
+    public static <Level> Signature<Level> makeSignature(SigConstraintSet<Level> constraints, Effects<Level> effects) {
+        return new Signature<>(constraints, effects);
+    }
+
+    public static class Signature<Level> {
+        public final SigConstraintSet<Level> constraints;
+        public final Effects<Level> effects;
+
+        private Signature(SigConstraintSet<Level> constraints, Effects<Level> effects) {
+            this.constraints = constraints;
+            this.effects = effects;
+        }
+    }
     
     /* Effects */
-
     public static <Level> Effects<Level> emptyEffect() {
         return new Effects<>(new HashSet<>());
     }

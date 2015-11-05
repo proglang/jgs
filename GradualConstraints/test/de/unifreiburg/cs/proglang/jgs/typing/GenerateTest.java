@@ -72,7 +72,10 @@ public class GenerateTest {
         this.tvarY = tvars.fresh();
         this.tvarZ = tvars.fresh();
 
-        this.init = Environments.makeEmpty().add(varX, tvarX).add(varY, tvarY).add(varZ, tvarZ);
+        this.init = Environments.makeEmpty()
+                                .add(varX, tvarX)
+                                .add(varY, tvarY)
+                                .add(varZ, tvarZ);
 
         this.testClass = new SootClass("TestClass");
         this.testCallee__int = new SootMethod("testCallee",
@@ -85,8 +88,11 @@ public class GenerateTest {
         this.testClass.addMethod(testCallee__int);
         this.testClass.addMethod(testCallee_int_int__int);
 
-        Map<SootMethod, SigConstraintSet<Level>> sigMap = new HashMap<>();
-        sigMap.put(this.testCallee__int, signatureConstraints(Collections.singleton(leS(literal(PUB), ret()))));
+        Map<SootMethod, Signature<Level>> sigMap = new HashMap<>();
+        sigMap.put(this.testCallee__int,
+                   makeSignature(signatureConstraints(Collections.singleton(leS(
+                           literal(PUB),
+                           ret()))), emptyEffect()));
 
         this.signatures = makeTable(sigMap);
     }
@@ -103,7 +109,7 @@ public class GenerateTest {
         /* x = x */
         /*********/
         s = j.newAssignStmt(localX, localX);
-        r = typing.generate(s, init, this.pc,signatures);
+        r = typing.generate(s, init, this.pc, signatures);
         tvarXFinal = r.finalTypeVariableOf(varX);
         pc_HIGH_finalX_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(this.pc)),

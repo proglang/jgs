@@ -12,13 +12,13 @@ import java.util.Set;
  */
 public class SignatureTable<Level> {
 
-    public static <Level> SignatureTable<Level> makeTable(Map<SootMethod, SigConstraintSet<Level>> signatureMap) {
+    public static <Level> SignatureTable<Level> makeTable(Map<SootMethod, Signature<Level>> signatureMap) {
         return new SignatureTable<>(signatureMap);
     }
 
-    private final Map<SootMethod, SigConstraintSet<Level>> signatureMap;
+    private final Map<SootMethod, Signature<Level>> signatureMap;
 
-    private SignatureTable(Map<SootMethod, SigConstraintSet<Level>> signatureMap) {
+    private SignatureTable(Map<SootMethod, Signature<Level>> signatureMap) {
         this.signatureMap = signatureMap;
     }
 }

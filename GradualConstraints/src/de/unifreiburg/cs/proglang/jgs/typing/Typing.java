@@ -2,8 +2,11 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
@@ -15,67 +18,16 @@ import de.unifreiburg.cs.proglang.jgs.constraints.Transition;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
-import soot.Local;
-import soot.SootMethod;
-import soot.SootMethodRef;
-import soot.Value;
-import soot.jimple.AbstractJimpleValueSwitch;
-import soot.jimple.AbstractStmtSwitch;
-import soot.jimple.AddExpr;
-import soot.jimple.AndExpr;
-import soot.jimple.ArrayRef;
-import soot.jimple.AssignStmt;
-import soot.jimple.CastExpr;
-import soot.jimple.CaughtExceptionRef;
-import soot.jimple.ClassConstant;
-import soot.jimple.CmpExpr;
-import soot.jimple.CmpgExpr;
-import soot.jimple.CmplExpr;
-import soot.jimple.DivExpr;
-import soot.jimple.DoubleConstant;
-import soot.jimple.DynamicInvokeExpr;
-import soot.jimple.EqExpr;
-import soot.jimple.FloatConstant;
-import soot.jimple.GeExpr;
-import soot.jimple.GtExpr;
-import soot.jimple.IdentityStmt;
-import soot.jimple.InstanceFieldRef;
-import soot.jimple.InstanceOfExpr;
-import soot.jimple.IntConstant;
-import soot.jimple.InterfaceInvokeExpr;
-import soot.jimple.JimpleValueSwitch;
-import soot.jimple.LeExpr;
-import soot.jimple.LengthExpr;
-import soot.jimple.LongConstant;
-import soot.jimple.LtExpr;
-import soot.jimple.MulExpr;
-import soot.jimple.NeExpr;
-import soot.jimple.NegExpr;
-import soot.jimple.NewArrayExpr;
-import soot.jimple.NewExpr;
-import soot.jimple.NewMultiArrayExpr;
-import soot.jimple.NullConstant;
-import soot.jimple.OrExpr;
-import soot.jimple.ParameterRef;
-import soot.jimple.RemExpr;
-import soot.jimple.ShlExpr;
-import soot.jimple.ShrExpr;
-import soot.jimple.SpecialInvokeExpr;
-import soot.jimple.StaticFieldRef;
-import soot.jimple.StaticInvokeExpr;
-import soot.jimple.Stmt;
-import soot.jimple.StringConstant;
-import soot.jimple.SubExpr;
-import soot.jimple.ThisRef;
-import soot.jimple.UshrExpr;
-import soot.jimple.VirtualInvokeExpr;
-import soot.jimple.XorExpr;
+import soot.*;
+import soot.jimple.*;
+import sun.security.pkcs11.wrapper.Functions;
 
 /**
  * A context for typing statements.
- * 
+ *
  * @author fennell
  *
  * @param <LevelT>
@@ -123,7 +75,7 @@ public class Typing<LevelT> {
     /**
      * The result of a typing derivation: a set of constraints and an
      * "environment transition".
-     * 
+     *
      * @author fennell
      *
      */
@@ -167,7 +119,7 @@ public class Typing<LevelT> {
 
     /**
      * A statement switch that generates typing constraints.
-     * 
+     *
      * @author Luminous Fennell
      *
      */
@@ -187,23 +139,49 @@ public class Typing<LevelT> {
 
         private Result<LevelT> result;
 
+
         @Override
         public void caseAssignStmt(AssignStmt stmt) {
 
-            // constraints (for now only local assignments)
-            Set<Constraint<LevelT>> constraints = new HashSet<>();
-            List<Var<?>> readVars = Var.getAll(stmt.getUseBoxes());
+            //constraints
+            Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
 
+            // Type variable (and constraint-type) for destinations
             TypeVar destTVar = tvars.fresh();
             CType<LevelT> destCType = CTypes.variable(destTVar);
-            constraints.addAll(readVars.stream().map(v -> {
-                CType<LevelT> tv = CTypes.variable(env.get(v));
-                return cstrs.le(tv, destCType);
-            }).collect(Collectors.toSet()));
+
+            // Utility functions
+            Function<CType<LevelT>, Constraint<LevelT>> leDest = ct -> cstrs.le(ct, destCType);
+            Function<Var<?>, CType<LevelT>> toCType = v -> CTypes.variable(env.get(v));
+
+            // get reads from lhs.. they are definitively flowing into the destination
+            Var.getAll(stmt.getLeftOp().getUseBoxes()).map(toCType.andThen(leDest)).forEach(constraints);
+
+            // get constraints from rhs..
+            stmt.getRightOp().apply(new RhsSwitch() {
+                @Override public void caseLocalExpr(List<ValueBox> useBoxes) {
+                    // for local expressions all use boxes flow into the destination
+                    Var.getAll(useBoxes).map(toCType.andThen(leDest)).forEach(constraints);
+                }
+
+                @Override public void caseCall(SootMethod m,
+                                               Optional<Var<?>> thisPtr,
+                                               List<Var<?>> args) {
+
+                    throw new RuntimeException("NOT IMPLEMENTED");
+                }
+
+                @Override public void caseGetField(FieldRef field,
+                                                   Optional<Var<?>> thisPtr) {
+                    throw new RuntimeException("NOT IMPLEMENTED");
+                }
+            });
+
+            // finally the pc flows into the destination
             constraints.add(cstrs.le(CTypes.variable(this.pc), destCType));
 
             // transition (for now only local assignments)
-            List<Var<?>> writeVars = Var.getAll(stmt.getDefBoxes());
+            List<Var<?>> writeVars = Var.getAll(stmt.getDefBoxes()).collect(Collectors.toList());
             if (writeVars.size() != 1) {
                 throw new TypingAssertionFailure(String.format("Assignment should have "
                                                                + "exactly one destination variable. "
@@ -217,7 +195,7 @@ public class Typing<LevelT> {
 
             // .. and the result
             this.result =
-                makeResult(csets.fromCollection(constraints), transition);
+                makeResult(csets.fromCollection(constraints.build().collect(Collectors.toList())), transition);
         }
 
         @Override
