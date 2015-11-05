@@ -101,8 +101,9 @@ public class Typing<LevelT> {
 
     public Result<LevelT> generate(Stmt s,
                                    Environment env,
-                                   TypeVar pc) throws TypeError {
-        Gen g = new Gen(env, pc);
+                                   TypeVar pc,
+                                   SignatureTable signatures) throws TypeError {
+        Gen g = new Gen(env, pc, signatures);
         s.apply(g);
         return g.getResult();
     }
@@ -174,11 +175,14 @@ public class Typing<LevelT> {
 
         private final Environment env;
         private final TypeVar pc;
+        private final SignatureTable signatures;
 
-        public Gen(Environment env, TypeVar pc) {
+
+        public Gen(Environment env, TypeVar pc, SignatureTable signatures) {
             super();
             this.env = env;
             this.pc = pc;
+            this.signatures = signatures;
         }
 
         private Result<LevelT> result;

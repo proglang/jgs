@@ -48,7 +48,17 @@ public class Constraints<Level> {
         public Stream<TypeVar> variables() {
             return Stream.concat(lhs.variables(), rhs.variables());
         }
-        
+
+        @Override
+        public CType<Level> getLhs() {
+            return this.lhs;
+        }
+
+        @Override
+        public CType<Level> getRhs() {
+            return this.rhs;
+        }
+
         @Override
         public String toString() {
             return String.format("%s %s %s", this.lhs, this.getSymbol(), this.rhs);
@@ -114,7 +124,12 @@ public class Constraints<Level> {
         public boolean isSatisfied(Assignment<Level> a) {
             return types.le(this.lhs.apply(a), this.rhs.apply(a));
         }
-        
+
+        @Override
+        public ConstraintKind getConstraintKind() {
+            return ConstraintKind.LE;
+        }
+
 
     }
 
@@ -132,6 +147,11 @@ public class Constraints<Level> {
             trhs = this.rhs.apply(a);
             return types.le(tlhs, trhs) || types.le(trhs, tlhs);
 
+        }
+
+        @Override
+        public ConstraintKind getConstraintKind() {
+            return ConstraintKind.COMP;
         }
 
         @Override
@@ -153,6 +173,11 @@ public class Constraints<Level> {
             // lhs = ? --> rhs <= ?
             return (!this.lhs.apply(a).equals(types.dyn())
                     || types.le(this.rhs.apply(a), types.dyn()));
+        }
+
+        @Override
+        public ConstraintKind getConstraintKind() {
+            return ConstraintKind.DIMPL;
         }
 
         @Override

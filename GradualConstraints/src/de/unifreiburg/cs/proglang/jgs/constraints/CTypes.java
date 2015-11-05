@@ -12,7 +12,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
  * 
  * @author Luminous Fennell
  *
- * @param <Level>
  */
 public class CTypes {
 
@@ -30,6 +29,7 @@ public class CTypes {
                                                                          .toString()));
         }
 
+        public abstract <R> R accept(CTypeSwitch<Level, R> sw);
 
     }
 
@@ -39,6 +39,11 @@ public class CTypes {
 
     public static <Level> CType<Level> variable(TypeVar v) {
         return new Variable<>(v);
+    }
+
+    public static interface CTypeSwitch<Level, R> {
+        public R caseLiteral(Type<Level> l);
+        public R caseVariable(TypeVar v);
     }
 
     public static class Literal<Level> extends CType<Level> {
@@ -89,6 +94,11 @@ public class CTypes {
         @Override
         public Stream<TypeVar> variables() {
             return Stream.empty();
+        }
+
+        @Override
+        public <R> R accept(CTypeSwitch<Level, R> sw) {
+            return sw.caseLiteral(this.t);
         }
 
 
@@ -143,6 +153,11 @@ public class CTypes {
         @Override
         public Stream<TypeVar> variables() {
             return Stream.of(this.v);
+        }
+
+        @Override
+        public <R> R accept(CTypeSwitch<Level, R> sw) {
+            return sw.caseVariable(this.v);
         }
 
     }

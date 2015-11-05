@@ -17,10 +17,12 @@ import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.typing.SignatureTable.makeTable;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -37,7 +39,7 @@ public class GenerateTest {
     private TypeVar tvarX, tvarY, tvarZ;
 
     // classes and methods for tests
-    private Map<SootMethod, Set<SigConstraint<Level>>> signatures;
+    private SignatureTable<Level> signatures;
     private SootClass testClass;
     private SootMethod testCallee__int;
 
@@ -82,6 +84,11 @@ public class GenerateTest {
                                                       IntType.v());
         this.testClass.addMethod(testCallee__int);
         this.testClass.addMethod(testCallee_int_int__int);
+
+        Map<SootMethod, SigConstraintSet<Level>> sigMap = new HashMap<>();
+        sigMap.put(this.testCallee__int, signatureConstraints(Collections.singleton(leS(literal(PUB), ret()))));
+
+        this.signatures = makeTable(sigMap);
     }
 
     @Test public void testLocals() throws TypeError {
@@ -96,7 +103,7 @@ public class GenerateTest {
         /* x = x */
         /*********/
         s = j.newAssignStmt(localX, localX);
-        r = typing.generate(s, init, this.pc);
+        r = typing.generate(s, init, this.pc,signatures);
         tvarXFinal = r.finalTypeVariableOf(varX);
         pc_HIGH_finalX_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(this.pc)),
@@ -115,7 +122,7 @@ public class GenerateTest {
         /*********/
         // Actually this is very similar to x = x...
         s = j.newAssignStmt(localX, localY);
-        r = typing.generate(s, init, this.pc);
+        r = typing.generate(s, init, this.pc, signatures);
         tvarXFinal = r.finalTypeVariableOf(varX);
         pc_HIGH_finalX_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(this.pc)),
@@ -155,7 +162,7 @@ public class GenerateTest {
         s = j.newAssignStmt(localX,
                             j.newVirtualInvokeExpr(localY,
                                                    testCallee__int.makeRef()));
-        r = typing.generate(s, this.init, this.pc);
+        r = typing.generate(s, this.init, this.pc, signatures);
         initY = r.initialTypeVariableOf(varY);
         finalX = r.finalTypeVariableOf(varX);
 
@@ -167,11 +174,10 @@ public class GenerateTest {
                                                    testCallee_int_int__int.makeRef(),
                                                    asList(localX, localZ)));
 
-        r = typing.generate(s, this.init, this.pc);
+        r = typing.generate(s, this.init, this.pc, signatures);
         initY = r.initialTypeVariableOf(varY);
         finalX = r.finalTypeVariableOf(varX);
         expected = makeNaive(asList(leC(initY, finalX), leC(this.pc, finalX)));
-        assertThat(r.getConstraints(), is(equivalent(expected)));
+        assertThat(r.getConstraints(), equivalent(expected));
     }
-
 }

@@ -2,16 +2,16 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
  * An immutable set of constraints.
- * 
- * @author fennell
  *
  * @param <Level>
+ * @author fennell
  */
 public abstract class ConstraintSet<Level> {
 
@@ -24,7 +24,7 @@ public abstract class ConstraintSet<Level> {
 
     /**
      * Check if an assignment satisfies this constraint set.
-     * 
+     *
      * @param a
      * @return
      */
@@ -38,8 +38,7 @@ public abstract class ConstraintSet<Level> {
     abstract public ConstraintSet<Level> add(ConstraintSet<Level> other);
 
     /**
-     * @return True if the constraints of this set imply those of
-     *         <code>other</code>
+     * @return True if the constraints of this set imply those of <code>other</code>
      */
     abstract public boolean implies(ConstraintSet<Level> other);
 
@@ -50,11 +49,9 @@ public abstract class ConstraintSet<Level> {
 
     /**
      * Find a satisfying assignment for this constraint set. (Optional)
-     * 
-     * @param requiredVariables
-     *            The minimal set of variables that should be bound by a
-     *            satisfying assignment. The actual assignments may bind more
-     *            variables.
+     *
+     * @param requiredVariables The minimal set of variables that should be bound by a satisfying assignment. The actual
+     *                          assignments may bind more variables.
      */
     public Optional<Assignment<Level>> satisfyingAssignment(Collection<TypeVar> requiredVariables) {
         throw new RuntimeException("sat() operation not supported");
@@ -63,12 +60,17 @@ public abstract class ConstraintSet<Level> {
     public abstract Stream<Constraint<Level>> stream();
 
     /**
-     * 
      * @return The stream of variables contained in this set.
      */
     public Stream<TypeVar> variables() {
         return this.stream().flatMap(c -> c.variables());
     }
-   
 
+
+    /**
+     * Create a set of constraints that only mentions the type variables in <code>typeVars</code>. The resulting set,
+     * interpreted as a ConstraintSet, should impose the same restrictions on the variables in <code>typeVars</code> as
+     * the original set.
+     */
+    public abstract Set<Constraint<Level>> projectTo(Set<TypeVar> typeVars);
 }

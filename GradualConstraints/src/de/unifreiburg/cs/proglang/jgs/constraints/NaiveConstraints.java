@@ -57,6 +57,12 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
     }
 
     @Override
+    public Set<Constraint<Level>> projectTo(Set<TypeVar> typeVars) {
+        //TODO: implement by defining the transisitve closure and erasing unwanted vars.
+        throw new RuntimeException("Not Implemented!");
+    }
+
+    @Override
     public boolean implies(ConstraintSet<Level> other) {
         return this.enumerateSatisfyingAssignments(other.variables()
                                                         .collect(Collectors.toSet()))
