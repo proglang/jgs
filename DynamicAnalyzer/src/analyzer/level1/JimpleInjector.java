@@ -633,7 +633,7 @@ public class JimpleInjector {
 		
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(IntType.v());
-		parameterTypes.add(RefType.v("Java.lang.String"));
+		parameterTypes.add(RefType.v("java.lang.String"));
 		Expr assignArg = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 						Scene.v().getSootClass(HANDLE_CLASS), "assignArgumentToLocal",
