@@ -5,6 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -20,5 +21,9 @@ public class SignatureTable<Level> {
 
     private SignatureTable(Map<SootMethod, Signature<Level>> signatureMap) {
         this.signatureMap = signatureMap;
+    }
+
+    public Optional<Signature<Level>> get(SootMethod m) {
+        return Optional.<Signature<Level>>ofNullable(signatureMap.get(m));
     }
 }

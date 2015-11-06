@@ -5,7 +5,6 @@ import soot.jimple.ParameterRef;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,7 +51,7 @@ public class MethodSignatures<Level> {
             this.effects = effects;
         }
     }
-    
+
     /* Effects */
     public static <Level> Effects<Level> emptyEffect() {
         return new Effects<>(new HashSet<>());
@@ -85,13 +84,6 @@ public class MethodSignatures<Level> {
     /* Signatures */
     public static <Level> SigConstraintSet<Level> signatureConstraints(Collection<SigConstraint<Level>> sigSet) {
         return new SigConstraintSet<>(sigSet);
-    }
-
-    public static <Level> Set<Constraint<Level>> toTypingConstraints(SigConstraintSet<Level> sig,
-                                                                     Map<Symbol<Level>, TypeVar> mapping) {
-        return sig.sigSet.stream()
-                .map(c -> c.toTypingConstraint(mapping))
-                .collect(Collectors.toSet());
     }
 
     public SigConstraintSet<Level> toSignatureConstraintSet(ConstraintSet<Level> constraints, Map<TypeVar, ParameterRef> params, TypeVar retVar) {
@@ -128,15 +120,15 @@ public class MethodSignatures<Level> {
 
 
     public SigConstraint<Level> le(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, (ct1, ct2) -> cstrs.le(ct1, ct2));
+        return new SigConstraint<>(lhs, rhs, cstrs::le);
     }
 
     public SigConstraint<Level> comp(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, (ct1, ct2) -> cstrs.le(ct1, ct2));
+        return new SigConstraint<>(lhs, rhs, cstrs::le);
     }
 
     public SigConstraint<Level> dimpl(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, (ct1, ct2) -> cstrs.le(ct1, ct2));
+        return new SigConstraint<>(lhs, rhs, cstrs::le);
     }
 
     public static <Level> Symbol<Level> param(ParameterRef me) {
@@ -158,6 +150,11 @@ public class MethodSignatures<Level> {
 
         private SigConstraintSet(Collection<SigConstraint<Level>> sigSet) {
             this.sigSet = new HashSet<>(sigSet);
+        }
+
+        public Stream<Constraint<Level>> toTypingConstraints(Map<Symbol<Level>, TypeVar> mapping) {
+            return this.sigSet.stream()
+                    .map(c -> c.toTypingConstraint(mapping));
         }
     }
 

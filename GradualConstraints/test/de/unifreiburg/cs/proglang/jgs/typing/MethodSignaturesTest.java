@@ -56,7 +56,7 @@ public class MethodSignaturesTest {
         List<SigConstraint<Level>> sig =
                 asList(leS(param(x), ret()), leS(param(y), ret()));
         ConstraintSet<Level> sigAsCSet =
-                makeNaive(toTypingConstraints(signatureConstraints(sig), mapping));
+                makeNaive((signatureConstraints(sig).toTypingConstraints(mapping)).collect(Collectors.toSet()));
         assertThat(sigAsCSet, (equivalent(cs.x1_le_x3__x2_le_x3)));
     }
 }

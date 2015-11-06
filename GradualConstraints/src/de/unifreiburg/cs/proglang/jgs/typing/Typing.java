@@ -1,11 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
@@ -23,7 +24,8 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import soot.*;
 import soot.jimple.*;
-import sun.security.pkcs11.wrapper.Functions;
+
+import static de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures.*;
 
 /**
  * A context for typing statements.
@@ -54,7 +56,7 @@ public class Typing<LevelT> {
     public Result<LevelT> generate(Stmt s,
                                    Environment env,
                                    TypeVar pc,
-                                   SignatureTable signatures) throws TypeError {
+                                   SignatureTable<LevelT> signatures) throws TypeError {
         Gen g = new Gen(env, pc, signatures);
         s.apply(g);
         return g.getResult();
@@ -127,7 +129,7 @@ public class Typing<LevelT> {
 
         private final Environment env;
         private final TypeVar pc;
-        private final SignatureTable signatures;
+        private final SignatureTable<LevelT> signatures;
 
 
         public Gen(Environment env, TypeVar pc, SignatureTable signatures) {
@@ -159,16 +161,45 @@ public class Typing<LevelT> {
 
             // get constraints from rhs..
             stmt.getRightOp().apply(new RhsSwitch() {
+
+                // for local expressions all use boxes flow into the destination
                 @Override public void caseLocalExpr(List<ValueBox> useBoxes) {
-                    // for local expressions all use boxes flow into the destination
                     Var.getAll(useBoxes).map(toCType.andThen(leDest)).forEach(constraints);
                 }
 
+                /* for method calls:
+                   - [ ] add return as lower bound to dest
+                   - [ ] add effect as upper bound to pc
+                 */
                 @Override public void caseCall(SootMethod m,
                                                Optional<Var<?>> thisPtr,
                                                List<Var<?>> args) {
+                    // check parameter count
+                    int argCount = args.size();
+                    int paramterCount = m.getParameterCount();
+                    if (argCount != paramterCount) {
+                        throw new TypingAssertionFailure(String.format("Argument count (%d) does not " +
+                                "equal parameter count (%d): %s", argCount, paramterCount, m.toString()));
+                    }
 
-                    throw new RuntimeException("NOT IMPLEMENTED");
+                    // Get signature, if possible
+                    Signature<LevelT> sig = signatures.get(m).orElseThrow(() -> new TypingAssertionFailure("No signature found for method " + m.toString()));
+
+                    // - [x] instantiate the signature with the parameters and destination variable and add corresponding constraints
+                    Map<Symbol<LevelT>, TypeVar> instantiation = new HashMap<>();
+                    Stream<TypeVar> argTypes = args.stream().map(env::get);
+                    IntStream.range(0, argCount).forEach(i -> {
+                                TypeVar at = argTypes.skip(i).findFirst().get();
+                                soot.Type pt = m.getParameterType(i);
+                                ParameterRef p = Jimple.v().newParameterRef(pt, i);
+                                instantiation.put(param(p), at);
+                            }
+                    ); // <- params
+                    instantiation.put(ret(), destTVar); // <- return
+                    sig.constraints.toTypingConstraints(instantiation).forEach(constraints);
+
+                    // - [x] add thisPtr as lower bound to dest
+                    thisPtr.map(toCType.andThen(leDest)).ifPresent(constraints);
                 }
 
                 @Override public void caseGetField(FieldRef field,
