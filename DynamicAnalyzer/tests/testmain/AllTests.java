@@ -1,8 +1,10 @@
-package tests;
+package testmain;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
+import tests.ExampleFailScenarios;
 
 import analyzer.level1.JimpleInjectorTest;
 import analyzer.level2.AssignFieldsFail;
