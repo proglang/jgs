@@ -33,7 +33,7 @@ public class ExternalClasses {
 	static class JoinLevels implements Command {
 		public void execute(Unit pos, Local params[]) {
 			for (Local param : params) {
-				JimpleInjector.addLevelInAssignStmt(pos, param);
+				JimpleInjector.addLevelInAssignStmt(param, pos);
 			}
 		}
 	}
