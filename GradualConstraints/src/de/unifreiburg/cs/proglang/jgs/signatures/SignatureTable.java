@@ -1,12 +1,10 @@
-package de.unifreiburg.cs.proglang.jgs.typing;
+package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import soot.SootMethod;
-import de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures.*;
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Created by fennell on 11/5/15.

@@ -1,18 +1,17 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
-import java.io.ObjectInputStream.GetField;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import soot.Local;
 import soot.Value;
 import soot.ValueBox;
 import soot.jimple.AbstractJimpleValueSwitch;
 import soot.jimple.ParameterRef;
 import soot.jimple.ThisRef;
+
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
 
 /**
  * JGS' variables are what Jimple calls "Local" "ThisRef" and "ParameterRef".
@@ -25,8 +24,9 @@ import soot.jimple.ThisRef;
 public class Var<T> {
     T me;
 
-    // factory methods
-
+    /*
+     ******************* factory methods ******************
+     */
     public static Var<Local> fromLocal(Local v) {
         return new Var<>(v);
     }
@@ -35,14 +35,20 @@ public class Var<T> {
         return new Var<>(v);
     }
 
-    public static Var<ParameterRef> fromParam(ParameterRef v) {
+    public static Var<Symbol.Param> fromParam(Symbol.Param v) {
         return new Var<>(v);
+    }
+    /**
+     * see getAll(Value)
+     */
+    public static Stream<Var<?>> getAllFromValues(Collection<Value> bs) {
+        return bs.stream().flatMap(Var::getAll);
     }
     
     /**
      * see getAll(Value)
      */
-    public static Stream<Var<?>> getAll(Collection<ValueBox> bs) {
+    public static Stream<Var<?>> getAllFromValueBoxes(Collection<ValueBox> bs) {
         return bs.stream().flatMap((ValueBox b) -> getAll(b));
     }
     
@@ -68,7 +74,7 @@ public class Var<T> {
 
             @Override
             public void caseParameterRef(ParameterRef v) {
-                result.add(Var.fromParam(v));
+                result.add(Var.fromParam(param(v.getType(), v.getIndex())));
             }
 
             @Override

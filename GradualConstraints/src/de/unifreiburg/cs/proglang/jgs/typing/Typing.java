@@ -1,11 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -20,12 +16,14 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
+import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import soot.*;
 import soot.jimple.*;
 
-import static de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures.*;
+import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
+import static java.util.stream.Collectors.toList;
 
 /**
  * A context for typing statements.
@@ -157,14 +155,14 @@ public class Typing<LevelT> {
             Function<Var<?>, CType<LevelT>> toCType = v -> CTypes.variable(env.get(v));
 
             // get reads from lhs.. they are definitively flowing into the destination
-            Var.getAll(stmt.getLeftOp().getUseBoxes()).map(toCType.andThen(leDest)).forEach(constraints);
+            Var.getAllFromValueBoxes(stmt.getLeftOp().getUseBoxes()).map(toCType.andThen(leDest)).forEach(constraints);
 
             // get constraints from rhs..
             stmt.getRightOp().apply(new RhsSwitch() {
 
                 // for local expressions all use boxes flow into the destination
-                @Override public void caseLocalExpr(List<ValueBox> useBoxes) {
-                    Var.getAll(useBoxes).map(toCType.andThen(leDest)).forEach(constraints);
+                @Override public void caseLocalExpr(Collection<Value> atoms) {
+                    Var.getAllFromValues(atoms).map(toCType.andThen(leDest)).forEach(constraints);
                 }
 
                 /* for method calls:
@@ -187,15 +185,14 @@ public class Typing<LevelT> {
 
                     // - [x] instantiate the signature with the parameters and destination variable and add corresponding constraints
                     Map<Symbol<LevelT>, TypeVar> instantiation = new HashMap<>();
-                    Stream<TypeVar> argTypes = args.stream().map(env::get);
+                    List<TypeVar> argTypes = args.stream().map(env::get).collect(toList());
                     IntStream.range(0, argCount).forEach(i -> {
-                                TypeVar at = argTypes.skip(i).findFirst().get();
+                                TypeVar at = argTypes.get(i);
                                 soot.Type pt = m.getParameterType(i);
-                                ParameterRef p = Jimple.v().newParameterRef(pt, i);
-                                instantiation.put(param(p), at);
+                                instantiation.put(Symbol.param(pt, i), at);
                             }
                     ); // <- params
-                    instantiation.put(ret(), destTVar); // <- return
+                    instantiation.put(Symbol.ret(), destTVar); // <- return
                     sig.constraints.toTypingConstraints(instantiation).forEach(constraints);
 
                     // - [x] add thisPtr as lower bound to dest
@@ -209,10 +206,11 @@ public class Typing<LevelT> {
             });
 
             // finally the pc flows into the destination
-            constraints.add(cstrs.le(CTypes.variable(this.pc), destCType));
+            constraints.add(leDest.apply(CTypes.variable(this.pc)));
 
             // transition (for now only local assignments)
-            List<Var<?>> writeVars = Var.getAll(stmt.getDefBoxes()).collect(Collectors.toList());
+            List<Var<?>> writeVars = Var.getAllFromValueBoxes(stmt.getDefBoxes()).collect(
+                    toList());
             if (writeVars.size() != 1) {
                 throw new TypingAssertionFailure(String.format("Assignment should have "
                                                                + "exactly one destination variable. "
@@ -226,7 +224,8 @@ public class Typing<LevelT> {
 
             // .. and the result
             this.result =
-                makeResult(csets.fromCollection(constraints.build().collect(Collectors.toList())), transition);
+                makeResult(csets.fromCollection(constraints.build().collect(
+                        toList())), transition);
         }
 
         @Override

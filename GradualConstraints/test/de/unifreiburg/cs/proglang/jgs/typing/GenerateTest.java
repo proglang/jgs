@@ -5,28 +5,28 @@ import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.typing.Typing.TypeError;
 import org.junit.Before;
 import org.junit.Test;
-import soot.IntType;
-import soot.Local;
-import soot.SootClass;
-import soot.SootMethod;
+import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
-import static de.unifreiburg.cs.proglang.jgs.typing.SignatureTable.makeTable;
+import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.makeTable;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
-import static de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures.*;
+import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 
 public class GenerateTest {
 
@@ -42,8 +42,11 @@ public class GenerateTest {
     private SignatureTable<Level> signatures;
     private SootClass testClass;
     private SootMethod testCallee__int;
+    private SootField testLowField_int;
 
     private SootMethod testCallee_int_int__int;
+    private SootMethod ignoreSnd_int_int__int;
+    private SootMethod writeToLowReturn0_int__int;
 
     // initial environment for the testcases
     private Environment init;
@@ -78,22 +81,54 @@ public class GenerateTest {
                                 .add(varZ, tvarZ);
 
         this.testClass = new SootClass("TestClass");
+        this.testLowField_int = new SootField("testLowField", IntType.v());
+        testClass.addField(this.testLowField_int);
+
+        Map<SootMethod, Signature<Level>> sigMap = new HashMap<>();
+        Symbol.Param<Level> param_x = param(IntType.v(), 0);
+        Symbol.Param<Level> param_y = param(IntType.v(), 1);
+
+        // Method:
         this.testCallee__int = new SootMethod("testCallee",
                                               Collections.emptyList(),
                                               IntType.v());
+        this.testClass.addMethod(testCallee__int);
+        sigMap.put(this.testCallee__int,
+                   makeSignature(signatureConstraints(Collections.singleton(leS(
+                           Symbol.literal(PUB),
+                           ret()))), emptyEffect()));
+
+        // Method:
         this.testCallee_int_int__int = new SootMethod("testCallee",
                                                       asList(IntType.v(),
                                                              IntType.v()),
                                                       IntType.v());
-        this.testClass.addMethod(testCallee__int);
         this.testClass.addMethod(testCallee_int_int__int);
+        SigConstraintSet<Level> sigCstrs =
+                signatureConstraints(asList(leS(param_x, ret()),
+                                            leS(param_y, ret())));
+        sigMap.put(this.testCallee_int_int__int,
+                   makeSignature(sigCstrs, emptyEffect()));
 
-        Map<SootMethod, Signature<Level>> sigMap = new HashMap<>();
-        sigMap.put(this.testCallee__int,
-                   makeSignature(signatureConstraints(Collections.singleton(leS(
-                           literal(PUB),
-                           ret()))), emptyEffect()));
+        // Method:
+        this.ignoreSnd_int_int__int = new SootMethod("ignoreSnd",
+                                                     asList(IntType.v(),
+                                                            IntType.v()),
+                                                     IntType.v());
+        this.testClass.addMethod(ignoreSnd_int_int__int);
+        sigCstrs = signatureConstraints(asList(leS(param_x, ret())));
+        sigMap.put(this.ignoreSnd_int_int__int,
+                   makeSignature(sigCstrs, emptyEffect()));
 
+        //Method:
+        this.writeToLowReturn0_int__int = new SootMethod("writeToLow",
+                                             singletonList(IntType.v()),
+                                             IntType.v());
+        this.testClass.addMethod(this.writeToLowReturn0_int__int);
+        sigCstrs = signatureConstraints(asList((leS(param_x, literal(TLOW)))));
+        sigMap.put(this.writeToLowReturn0_int__int, makeSignature(sigCstrs, effects(TLOW)));
+
+        // freeze signatures
         this.signatures = makeTable(sigMap);
     }
 
@@ -160,7 +195,9 @@ public class GenerateTest {
         Typing.Result<Level> r;
         ConstraintSet<Level> expected;
         TypeVar finalX;
+        TypeVar initX;
         TypeVar initY;
+        TypeVar initZ;
 
         /***********/
         /* int x = y.testCallee() */
@@ -175,15 +212,61 @@ public class GenerateTest {
         expected = makeNaive(asList(leC(initY, finalX), leC(this.pc, finalX)));
         assertThat(r.getConstraints(), is(equivalent(expected)));
 
+        /***********/
+        /* int x = y.testCallee(x, z) */
+        /**********/
+
         s = j.newAssignStmt(localX,
                             j.newVirtualInvokeExpr(localY,
                                                    testCallee_int_int__int.makeRef(),
                                                    asList(localX, localZ)));
 
         r = typing.generate(s, this.init, this.pc, signatures);
+        initX = r.initialTypeVariableOf(varX);
+        initY = r.initialTypeVariableOf(varY);
+        initZ = r.initialTypeVariableOf(varZ);
+        finalX = r.finalTypeVariableOf(varX);
+        expected = makeNaive(asList(leC(initX, finalX),
+                                    leC(initZ, finalX),
+                                    leC(initY, finalX),
+                                    leC(this.pc, finalX)));
+        assertThat(r.getConstraints(), equivalent(expected));
+
+        /***********/
+        /* int x = y.ignoreSnd(x, z) */
+        /**********/
+        s = j.newAssignStmt(localX,
+                            j.newVirtualInvokeExpr(localY,
+                                                   ignoreSnd_int_int__int.makeRef(),
+                                                   asList(localX, localZ)));
+
+        r = typing.generate(s, this.init, this.pc, signatures);
+        initX = r.initialTypeVariableOf(varX);
+        initY = r.initialTypeVariableOf(varY);
+        initZ = r.initialTypeVariableOf(varZ);
+        finalX = r.finalTypeVariableOf(varX);
+        expected = makeNaive(asList(leC(initX, finalX),
+                                    leC(initY, finalX),
+                                    leC(this.pc, finalX)));
+        assertThat(r.getConstraints(), equivalent(expected));
+
+        /***********/
+        /* int x = y.writeToLow(x) */
+        /**********/
+        s = j.newAssignStmt(localY,
+                            j.newVirtualInvokeExpr(localY,
+                                                   writeToLowReturn0_int__int.makeRef(),
+                                                   singletonList(localX)));
+        r = typing.generate(s, this.init, this.pc, signatures);
+        initX = r.initialTypeVariableOf(varX);
         initY = r.initialTypeVariableOf(varY);
         finalX = r.finalTypeVariableOf(varX);
-        expected = makeNaive(asList(leC(initY, finalX), leC(this.pc, finalX)));
+        expected = makeNaive(asList(leC(initY, finalX),
+                                    leC(initX, CLOW),
+                                    leC(this.pc, finalX),
+                                    leC(this.pc, CLOW)));
         assertThat(r.getConstraints(), equivalent(expected));
     }
+
+
 }

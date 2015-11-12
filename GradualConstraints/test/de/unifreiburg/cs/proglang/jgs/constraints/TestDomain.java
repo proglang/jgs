@@ -7,14 +7,14 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
-import de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures;
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.Typing;
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import static de.unifreiburg.cs.proglang.jgs.typing.MethodSignatures.*;
+import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 
 public class TestDomain {
 
@@ -72,6 +72,11 @@ public class TestDomain {
     public static Constraint<Level> leC(TypeVar lhs,
                                         TypeVar rhs) {
         return cstrs.le( CTypes.variable(lhs), CTypes.variable(rhs));
+    }
+
+    public static Constraint<Level> leC(TypeVar lhs,
+                                        CType<Level> rhs) {
+        return cstrs.le( CTypes.variable(lhs), rhs);
     }
 
     public static Constraint<Level> compC(CType<Level> lhs,
