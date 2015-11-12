@@ -14,6 +14,10 @@ import java.util.stream.Stream;
  */
 public class TypeDomain<Level> {
 
+    public SecDomain<Level> getSecDomain() {
+        return secDomain;
+    }
+
     private final SecDomain<Level> secDomain;
     private final Type<Level> dyn;
     private final Type<Level> pub;

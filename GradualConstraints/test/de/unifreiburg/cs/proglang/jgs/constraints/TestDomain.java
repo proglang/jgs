@@ -92,13 +92,13 @@ public class TestDomain {
     public static SigConstraint<Level> leS(Symbol<Level> sc1, Symbol<Level> sc2) {
         return sigs.le(sc1, sc2);
     }
-    
+
     //////////////
     // Constraint sets
     public static ConstraintSet<Level> makeNaive(Collection<Constraint<Level>> cs) {
         return new NaiveConstraints<>(types, cs);
     }
-    
+
     ///////
     // Typing
     public static Typing<Level> mkTyping(TypeVars tvars) {
@@ -148,6 +148,11 @@ public class TestDomain {
 
     }
 
+    /**
+     * Holds for constraint sets that are satisfied by the <b>same assignments</b>.
+     *
+     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1)) does not hold.
+     */
     public static Matcher<ConstraintSet<Level>> equivalent(final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
             @Override

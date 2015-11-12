@@ -253,7 +253,7 @@ public class GenerateTest {
         /***********/
         /* int x = y.writeToLow(x) */
         /**********/
-        s = j.newAssignStmt(localY,
+        s = j.newAssignStmt(localX,
                             j.newVirtualInvokeExpr(localY,
                                                    writeToLowReturn0_int__int.makeRef(),
                                                    singletonList(localX)));
@@ -265,7 +265,7 @@ public class GenerateTest {
                                     leC(initX, CLOW),
                                     leC(this.pc, finalX),
                                     leC(this.pc, CLOW)));
-        assertThat(r.getConstraints(), equivalent(expected));
+        assertThat(r.getConstraints(), is(equivalent(expected)));
     }
 
 

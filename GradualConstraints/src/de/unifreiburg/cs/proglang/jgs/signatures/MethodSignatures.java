@@ -82,6 +82,10 @@ public class MethodSignatures<Level> {
             result.add(type); result.addAll(asList(types));
             return new Effects<>(result);
         }
+
+        public final Stream<Type<Level>> stream() {
+            return this.effectSet.stream();
+        }
     }
 
     /* Signatures */
