@@ -51,11 +51,11 @@ public class ClassRunner {
 		}
 	}
 	
-	private static void printByteCode() {
+	protected static void printByteCode() {
 
 			try {
 				
-				String[] cmd = {"/bin/sh", "-c", "cd sootOutput; javap -c " + fileName};
+				String[] cmd = {"/bin/sh", "-c", "cd sootOutput; javap -c " + "main.testclasses.Simple"};
 				Process p = Runtime.getRuntime().exec(cmd);
 				
 		        BufferedReader stdInput = new BufferedReader(new
@@ -84,9 +84,11 @@ public class ClassRunner {
 
 
 protected static void runClass2(String fileName) {
+	 
+	 ClassRunner.fileName = fileName;
 	
 	 try { 
-		    DAClassLoader classloader = new DAClassLoader(ClassRunner.class.getClassLoader());
+		    DAClassLoader classloader = new DAClassLoader(ClassRunner.class.getClassLoader(), fileName);
 		    Class aClass = classloader.loadClass();
 	        System.out.println("aClass.getName() = " + aClass.getName());
 	        String[] args = new String[0];

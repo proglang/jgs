@@ -9,16 +9,20 @@ import java.net.URLConnection;
 
 
 public class DAClassLoader extends ClassLoader{
-
-	public DAClassLoader(ClassLoader parent) {
+	
+	String path = "file:/home/koenigr/gradual-java/JGS/gradual-java/DynamicAnalyzer/sootOutput/main/testclasses/";
+	String file = "";
+	
+	public DAClassLoader(ClassLoader parent, String file) {
 	   super(parent);
+	   this.file = file;
 	}
 
 	public Class loadClass() throws ClassNotFoundException {
 
 
 	    try {
-	     String url = "file:/home/koenigr/gradual-java/JGS/gradual-java/DynamicAnalyzer/sootOutput/main/testclasses/Simple.class";
+	     String url = path + file;
 	     URL myUrl = new URL(url);
 	     URLConnection connection = myUrl.openConnection();
 	     InputStream input = connection.getInputStream();
