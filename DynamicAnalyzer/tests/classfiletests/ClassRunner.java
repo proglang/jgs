@@ -1,5 +1,7 @@
 package classfiletests;
 import java.io.BufferedReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -79,4 +81,35 @@ public class ClassRunner {
 					e.printStackTrace();
 				}
 	}
+
+
+protected static void runClass2(String fileName) {
+	
+	 try { 
+		    DAClassLoader classloader = new DAClassLoader(ClassRunner.class.getClassLoader());
+		    Class aClass = classloader.loadClass();
+	        System.out.println("aClass.getName() = " + aClass.getName());
+	        String[] args = new String[0];
+	        Method method = aClass.getMethod("main", String[].class);
+	        method.invoke(args);
+	    } catch (ClassNotFoundException e) {
+	        e.printStackTrace();
+	    } catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+}
+
 }
