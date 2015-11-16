@@ -15,34 +15,37 @@ import de.unifreiburg.cs.proglang.jgs.constraints.Transition;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import soot.*;
+import soot.SootMethod;
+import soot.Value;
 import soot.jimple.*;
-import soot.util.Switch;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 /**
- * A context for typing statements.
+ * A context for typing basic statements (assignments, method calls, instantiations... everything except branching and sequencing).
  *
  * @param <LevelT> The type of security levels.
  * @author fennell
  */
-public class Typing<LevelT> {
+public class BasicStatementTyping<LevelT> {
 
     final public ConstraintSetFactory<LevelT> csets;
     final public Constraints<LevelT> cstrs;
     final public TypeDomain<LevelT> types;
     final public TypeVars tvars;
 
-    public Typing(ConstraintSetFactory<LevelT> csets,
-                  TypeDomain<LevelT> types,
-                  TypeVars tvars,
-                  Constraints<LevelT> cstrs) {
+    public BasicStatementTyping(ConstraintSetFactory<LevelT> csets,
+                                TypeDomain<LevelT> types,
+                                TypeVars tvars,
+                                Constraints<LevelT> cstrs) {
         super();
         this.csets = csets;
         this.types = types;
@@ -53,74 +56,27 @@ public class Typing<LevelT> {
     public Result<LevelT> generate(Stmt s,
                                    Environment env,
                                    TypeVar pc,
-                                   SignatureTable<LevelT> signatures) throws
-                                                                      TypeError {
-        Gen g = new Gen(env, pc, signatures);
+                                   SignatureTable<LevelT> signatures,
+                                   Casts<LevelT> casts) throws TypeError {
+        Gen g = new Gen(env, pc, signatures, casts);
         s.apply(g);
+        // abort on any errors
+        if (!g.getErrorMsg().isEmpty()) {
+            throw new TypeError("There where errors during statement typing: \n"
+                                + g.getErrorMsg()
+                                   .stream()
+                                   .reduce((s1, s2) -> s1 + "\n" + s2));
+        }
         return g.getResult();
     }
 
-    // TODO: is this really a type error? What is in the case where we have
-    // unresolvable constraints.. how does this differ from TypeError?
-    public static class TypeError extends Exception {
-
-        private static final long serialVersionUID = 1L;
-
-        public TypeError(String arg0) {
-            super(arg0);
-        }
-
-    }
-
-    /**
-     * The result of a typing derivation: a set of constraints and an
-     * "environment transition".
-     *
-     * @author fennell
-     */
-    public static class Result<LevelT> {
-        private final ConstraintSet<LevelT> constraints;
-        private final Effects<LevelT> effects;
-        private final Transition transition;
-
-        Result(ConstraintSet<LevelT> constraints,
-               Effects<LevelT> effects,
-               Transition transition) {
-            super();
-            this.constraints = constraints;
-            this.effects = effects;
-            this.transition = transition;
-        }
-
-        public ConstraintSet<LevelT> getConstraints() {
-            return this.constraints;
-        }
-
-        public Transition getTransition() {
-            return transition;
-        }
-
-        public TypeVar initialTypeVariableOf(Var<?> local) {
-            return this.transition.getInit().get(local);
-        }
-
-        public TypeVar finalTypeVariableOf(Var<?> local) {
-            return this.transition.getFinal().get(local);
-        }
-
-    }
-
     private Result<LevelT> makeResult(ConstraintSet<LevelT> constraints,
-                                      Transition transition,
+                                      Environment env,
                                       Effects<LevelT> effects) {
-        return new Result<>(constraints, effects, transition);
+        return new Result<>(constraints, effects, env);
     }
 
-    private Result<LevelT> makeResult() {
-        return new Result<>(csets.empty(),
-                            emptyEffect(),
-                            Transition.makeId(Environments.makeEmpty()));
-    }
+    //
 
     /**
      * A statement switch that generates typing constraints.
@@ -132,18 +88,30 @@ public class Typing<LevelT> {
         private final Environment env;
         private final TypeVar pc;
         private final SignatureTable<LevelT> signatures;
+        private final Casts<LevelT> casts;
 
-        public Gen(Environment env, TypeVar pc, SignatureTable signatures) {
+        public List<String> getErrorMsg() {
+            return unmodifiableList(errorMsg);
+        }
+
+        private final ArrayList<String> errorMsg;
+
+        public Gen(Environment env,
+                   TypeVar pc,
+                   SignatureTable signatures,
+                   Casts<LevelT> casts) {
             super();
             this.env = env;
             this.pc = pc;
             this.signatures = signatures;
+            this.casts = casts;
+            this.errorMsg = new ArrayList<>();
         }
 
         private Result<LevelT> result;
 
         private Effects<LevelT> extractEffects(Value rhs) {
-            RhsSwitch effectCases = new RhsSwitch() {
+            RhsSwitch<LevelT> effectCases = new RhsSwitch<LevelT>(casts) {
                 @Override public void caseLocalExpr(Collection<Value> atoms) {
                     setResult(emptyEffect());
                 }
@@ -159,6 +127,11 @@ public class Typing<LevelT> {
                                                    Optional<Var<?>> thisPtr) {
                     setResult(emptyEffect());
                 }
+
+                @Override public void caseCast(Casts.Cast<LevelT> cast) {
+                    setResult(emptyEffect());
+                }
+
             };
             return (Effects<LevelT>) effectCases.getResult();
         }
@@ -172,7 +145,7 @@ public class Typing<LevelT> {
 
         @Override public void caseAssignStmt(AssignStmt stmt) {
 
-            //constraints and effects
+            //constraints and errors
             Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
 
             // Type variable (and constraint-type) for destinations
@@ -192,7 +165,7 @@ public class Typing<LevelT> {
 
             // get constraints from rhs..
             Value rhs = stmt.getRightOp();
-            rhs.apply(new RhsSwitch() {
+            rhs.apply(new RhsSwitch<LevelT>(casts) {
 
                 // for local expressions all use boxes flow into the destination
                 @Override public void caseLocalExpr(Collection<Value> atoms) {
@@ -250,6 +223,21 @@ public class Typing<LevelT> {
                                                    Optional<Var<?>> thisPtr) {
                     throw new RuntimeException("NOT IMPLEMENTED");
                 }
+
+                @Override public void caseCast(Casts.Cast<LevelT> cast) {
+                    if (!compatible(cast.sourceType, cast.destType)) {
+                        errorMsg.add(String.format(
+                                "Source type %s cannot be converted to destination type %s.",
+                                cast.sourceType,
+                                cast.destType));
+                        return;
+                    }
+                    asList(cstrs.le(toCType.apply(cast.value),
+                                    CTypes.literal(cast.sourceType)),
+                           cstrs.le(CTypes.literal(cast.destType),
+                                    destCType)).forEach(constraints);
+                }
+
             });
 
             // finally the pc flows into the destination
@@ -269,14 +257,19 @@ public class Typing<LevelT> {
             }
             Var<?> writeVar = writeVars.get(0); // cannot fail now
             Environment fin = env.add(writeVar, destTVar);
-            Transition transition = Transition.makeAtom(env, fin);
 
             // .. and the result
             this.result = makeResult(csets.fromCollection(constraints.build()
                                                                      .collect(
                                                                              toList())),
-                                     transition,
+                                     fin,
                                      extractEffects(rhs));
+        }
+
+        private boolean compatible(TypeDomain.Type<LevelT> sourceType,
+                                   TypeDomain.Type<LevelT> destType) {
+            return types.dyn().equals(destType) ^ types.dyn()
+                                                       .equals(sourceType);
         }
 
         @Override public void caseIdentityStmt(IdentityStmt stmt) {

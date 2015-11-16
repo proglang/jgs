@@ -3,24 +3,28 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 import soot.Local;
 import soot.SootMethod;
 import soot.Value;
-import soot.ValueBox;
 import soot.jimple.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
+import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
 
 /**
  * A Value-Switch that abstracts over the concrete expressions and is only
  * concerned with the differences of right-hand-sides that are relevant to
  * information flow. Created by fennell on 11/5/15.
  */
-public abstract class RhsSwitch extends AbstractJimpleValueSwitch {
+public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
+
+    public final Casts<Level> casts;
+
+    protected RhsSwitch(Casts<Level> casts) {
+        this.casts = casts;
+    }
 
     /**
      * Case of expressions based on local variables, parameters and constants.
@@ -47,6 +51,8 @@ public abstract class RhsSwitch extends AbstractJimpleValueSwitch {
      * @param thisPtr The object from which the field is read
      */
     public abstract void caseGetField(FieldRef field, Optional<Var<?>> thisPtr);
+
+    public abstract void caseCast(Cast<Level> cast);
 
 
     /*
@@ -122,7 +128,12 @@ public abstract class RhsSwitch extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-        caseCall(v, Optional.empty());
+        Optional<Cast<Level>> c = casts.detectFromCall(v);
+        if (c.isPresent()) {
+            caseCast(c.get());
+        } else {
+            caseCall(v, Optional.empty());
+        }
     }
 
     @Override

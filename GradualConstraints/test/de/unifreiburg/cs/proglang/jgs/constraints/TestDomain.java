@@ -1,18 +1,25 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.function.BiFunction;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import de.unifreiburg.cs.proglang.jgs.typing.Typing;
+import de.unifreiburg.cs.proglang.jgs.typing.BasicStatementTyping;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import soot.*;
+import soot.jimple.StaticInvokeExpr;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 
@@ -22,6 +29,42 @@ public class TestDomain {
     public static final TypeDomain<Level> types = new TypeDomain<>(levels);
     public static final Constraints<Level> cstrs = new Constraints<>(types);
     public static final MethodSignatures<Level> sigs = new MethodSignatures<>(cstrs);
+
+    ///////
+    // cases
+    public static final SootClass castClass = new SootClass("castClass");
+    public static final SootMethod castHighToDyn = makeCastMethod("castHighToDyn");
+    public static final SootMethod castLowToDyn = makeCastMethod("castLowToDyn");
+    public static final SootMethod castDynToLow = makeCastMethod("castDynToLow");
+    public static final SootMethod castDynToHigh = makeCastMethod("castDynToHigh");
+
+
+    private static SootMethod makeCastMethod(String name) {
+        SootMethod result = new SootMethod(name, Collections.singletonList(RefType.v()), RefType.v(), Modifier.STATIC);
+        castClass.addMethod(result);
+        return result;
+    }
+
+    public static final Casts<Level> casts = new Casts<Level>() {
+
+        @Override public Optional<Cast<Level>> detectFromCall(StaticInvokeExpr e) {
+            SootMethod m = e.getMethod();
+            BiFunction<Type<Level>,Type<Level>,Optional<Cast<Level>>> makeCast =
+                    (t1, t2) ->  Var.getAll(e.getArg(0)).findFirst().map(value -> makeCast(t1, t2,value));
+            if (m.equals(castHighToDyn)) {
+                return makeCast.apply(THIGH, DYN);
+            } else if (m.equals(castLowToDyn)) {
+                return makeCast.apply(TLOW, DYN);
+            } else if (m.equals(castDynToLow)) {
+                return makeCast.apply(DYN, TLOW);
+            } else if (m.equals(castDynToHigh)) {
+                return makeCast.apply(DYN, THIGH);
+            } else {
+                return Optional.empty();
+            }
+        }
+    };
+
 
     //////
     // Levels
@@ -69,6 +112,10 @@ public class TestDomain {
         return cstrs.le(lhs, rhs);
     }
 
+    public static Constraint<Level> leC(CType<Level> ct, TypeVar v) {
+       return leC(ct, CTypes.variable(v));
+    }
+
     public static Constraint<Level> leC(TypeVar lhs,
                                         TypeVar rhs) {
         return cstrs.le( CTypes.variable(lhs), CTypes.variable(rhs));
@@ -100,9 +147,9 @@ public class TestDomain {
     }
 
     ///////
-    // Typing
-    public static Typing<Level> mkTyping(TypeVars tvars) {
-        return new Typing<>(new NaiveConstraintsFactory<>(types), types, tvars, cstrs);
+    // BasicStatementTyping
+    public static BasicStatementTyping<Level> mkTyping(TypeVars tvars) {
+        return new BasicStatementTyping<>(new NaiveConstraintsFactory<>(types), types, tvars, cstrs);
     }
 
     /////

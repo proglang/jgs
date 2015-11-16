@@ -6,12 +6,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 
 /**
- * A structure for tracking typing environments (the mapping from local
- * variables to types, or rather type-variables) in a statement. A Transition is
- * either an atomic change of the environment (like an assignment), a sequence
- * of changes or a branch that contains two transitions which are merged to a
- * final environment at the end.
- * 
+ *
+ * A transition combines environments that are active before and after a statement (Pre- and Post-environments).
+ *
  * @author fennell
  *
  */
@@ -28,7 +25,7 @@ public abstract class Transition {
                                         List<Transition> branches) {
         return new Branch(init, fin, innerCx, branches);
     }
-    
+
     public static Transition makeSeq(Transition fst, Transition snd) {
         return new Seq(fst, snd);
     }
