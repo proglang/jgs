@@ -5,12 +5,19 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import soot.Unit;
+import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Context for generating typing constraints and environments for whole method bodies.
@@ -20,13 +27,15 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 public class MethodBodyTyping<Level> {
 
     final private BasicStatementTyping<Level> bsTyping;
+    final private Casts<Level> casts;
     final private ConstraintSetFactory<Level> csets;
     final private TypeVars tvars;
 
-    public MethodBodyTyping(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, TypeVars tvars, Constraints<Level> cstrs) {
+    public MethodBodyTyping(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, TypeVars tvars, Constraints<Level> cstrs, Casts<Level> casts) {
         bsTyping = new BasicStatementTyping<>(csets, types, tvars, cstrs);
         this.csets = csets;
         this.tvars = tvars;
+        this.casts = casts;
     }
 
     /**
@@ -41,6 +50,10 @@ public class MethodBodyTyping<Level> {
     }
 
     public static class ResultBox<Level> {
+        private Result<Level> result;
+        private final Map<Stmt, TypeVar> localContexts;
+        private final TypeVar topLevelContext;
+
         public Result<Level> getResult() {
             return result;
         }
@@ -48,11 +61,30 @@ public class MethodBodyTyping<Level> {
         public void setResult(Result<Level> result) {
             this.result = result;
         }
+        
+        public void addContext(Stmt s, TypeVar v) {
+            if (this.localContexts.containsKey(s)) {
+                throw new RuntimeException(String.format("There is already a local context for %s: %s", s, localContexts.get(s)));
+            }
+            this.localContexts.put(s, v);
+        }
+        
+        public void removeContext(Stmt s) {
+            if (!this.localContexts.containsKey(s)) {
+                throw new RuntimeException(String.format("There is no context recorded for %s", s));
+            }
+            this.localContexts.remove(s);
+        }
+        
+        public Set<TypeVar> getPcs() {
+            return Stream.concat(Stream.of(topLevelContext), localContexts.values().stream()).collect(toSet());
+        }
 
-        private Result<Level> result;
 
-        public ResultBox(Result<Level> result) {
+        public ResultBox(Result<Level> result, TypeVar topLevelContext) {
             this.result = result;
+            this.topLevelContext = topLevelContext;
+            this.localContexts = new HashMap<>();
         }
 
     }
@@ -62,14 +94,18 @@ public class MethodBodyTyping<Level> {
      */
     public class Gen extends ForwardFlowAnalysis<Unit, ResultBox<Level>> {
 
-        public Gen(DirectedGraph<Unit> graph) {
+        private final SignatureTable<Level> signatures;
+
+        public Gen(DirectedGraph<Unit> graph, SignatureTable<Level> signatures) {
             super(graph);
+            this.signatures = signatures;
             this.doAnalysis();
         }
 
         @Override
         protected void flowThrough(ResultBox<Level> in, Unit d, ResultBox<Level> out) {
 
+            d.apply(bsTyping.generate((Stmt)d, in.getResult().getFinalEnv(), in.getPcs(), signatures, casts));
             throw new RuntimeException("Not Implemented!");
         }
 
