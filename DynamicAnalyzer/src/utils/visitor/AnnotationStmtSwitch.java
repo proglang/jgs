@@ -23,11 +23,13 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.LookupSwitchStmt;
 import soot.jimple.NopStmt;
+import soot.jimple.ParameterRef;
 import soot.jimple.RetStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
+import soot.jimple.ThisRef;
 import soot.jimple.ThrowStmt;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
@@ -35,19 +37,16 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
 	Logger logger = L1Logger.getLogger();
 
-	
-	ArrayList<Value> DefBox = new ArrayList<Value>();
-	
-
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		logger.severe("\n > > > Breakpoint statement identified < < <"); // TODO Change to fine
-		// TODO Auto-generated method stub
-
+		logger.fine("\n > > > Breakpoint statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
+
+		valueSwitch.callingStmt = stmt;
 		
 		InvokeStmt iStmt = stmt;
 		valueSwitch.actualContext = StmtContext.INVOKE;
@@ -106,42 +105,55 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
+
+		valueSwitch.callingStmt = stmt;
 		
 		valueSwitch.actualContext = StmtContext.IDENTITY;
 		
 		logger.fine("\n > > > Identity statement identified < < <");
-		// TODO hier sind Parameter und this-Referenzen
-		System.out.println("Identity Stmt: "+ stmt.getUseBoxes().toString());	
-		System.out.println(stmt.getRightOp().getType());
-		stmt.getRightOp().apply(valueSwitch);
+
+		if (stmt.getRightOp() instanceof ParameterRef) {
+			int posInArgList = ((ParameterRef) stmt.getRightOp()).getIndex();
+			JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
+		} else if (stmt.getRightOp() instanceof ThisRef) {
+			// TODO im Grunde nicht nötig...
+		} else {
+			new InternalAnalyzerException("Unexpected type of right value in IdentityStmt");
+		}
 		
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		logger.severe("\n > > > Enter monitor statement identified < < <");  // TODO Change to fine
+		logger.fine("\n > > > Enter monitor statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		logger.severe("\n > > > Exit monitor statement identified < < <");  // TODO Change to fine
+		logger.fine("\n > > > Exit monitor statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
-		logger.severe("\n > > > Goto statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Goto statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
+		
+		System.out.println("GOTO: " + stmt.toString());
+		new InternalAnalyzerException("Goto stmt identified");
 
 	}
 
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
 		logger.fine("\n > > > If statement identified < < <");  
+		valueSwitch.callingStmt = stmt;
 		
 		System.out.println(stmt.getUseAndDefBoxes());
 		List<ValueBox> valueList = stmt.getUseBoxes();
@@ -158,6 +170,12 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		int localListLength = localList.size();
 		
+		System.out.println("Target box " + stmt.getTargetBox().getUnit().toString());
+		System.out.println("Target " + stmt.getTarget().toString());
+		
+		// TODO DAS IST NUR EINTEST
+		JimpleInjector.exitInnerScope(stmt.getTargetBox().getUnit());
+		
 		Local[] arguments = new Local[localListLength];
 		
 		for (int i = 0; i < localListLength; i++) {
@@ -170,22 +188,25 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		logger.severe("\n > > > Lookup switch statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Lookup switch statement identified < < <");
+		valueSwitch.callingStmt = stmt; 
+		new InternalAnalyzerException("Lookup Switch Stmt");
 
 	}
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
-		logger.severe("\n > > > Nop statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Nop statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
+		new InternalAnalyzerException("NopStmt");
 
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		logger.severe("\n > > > Ret statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Ret statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
+		new InternalAnalyzerException("RetStmt");
 
 	}
 
@@ -193,13 +214,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseReturnStmt(ReturnStmt stmt) {
 		
 		logger.fine("\n > > > Return statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 		
 		System.out.println(stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
 		if (val instanceof Constant) {
-			JimpleInjector.returnConstant();
+			JimpleInjector.returnConstant(stmt);
 		} else if (val instanceof Local) {
-			JimpleInjector.returnLocal((Local) val);
+			JimpleInjector.returnLocal((Local) val, stmt);
 		}
 
 	}
@@ -207,26 +229,27 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
 		logger.fine("\n > > > Return void statement identified < < <");
+		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		logger.severe("\n > > > Table switch statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
+		logger.fine("\n > > > Table switch statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
+		new InternalAnalyzerException("TableSwitchStmt");
 
 	}
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		logger.severe("\n > > > Throw statement identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
-
+		logger.fine("\n > > > Throw statement identified < < <"); 
+		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void defaultCase(Object obj) {
-		logger.severe("\n > > > Default case of statements identified < < <");  // TODO Change to fine
-		// TODO Auto-generated method stub
-
+		logger.fine("\n > > > Default case of statements identified < < <"); 
+		// valueSwitch.callingStmt = stmt;
+	
 	}
 }

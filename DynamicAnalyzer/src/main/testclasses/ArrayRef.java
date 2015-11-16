@@ -7,12 +7,12 @@ public class ArrayRef {
 	}
 	
 	public void read() {
-		
+		String [] arr = {"b","a"};
+		String res = arr[0];
 	}
 	
-	public void writeWithIndexAsLocal() {
+	public void writeWithIndexAsLocal(int i) {
 		String[] wr = {"a","b"};
-		int i = 1;
 		wr[i] = "c";
 	}
 	

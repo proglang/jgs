@@ -218,7 +218,9 @@ public class HandleStmt {
 
 	public void returnConstant() {
 		LOGGER.log(Level.INFO, "Return a constant value");
-		om.setActualReturnLevel(lm.getLocalPC()); // ??
+		om.setActualReturnLevel(lm.getLocalPC()); // TODO ??
+		// TODO hier vielleicht eher auch addLevel? Dann kann man es nämlich weglassen...
+		// Das Problem ist aber, wenn der Returnwert nicht assigned wird...
 	}
 
 	public void returnLocal(String signature) {
@@ -269,6 +271,13 @@ public class HandleStmt {
 		return om.getAssignmentLevel();
 	}
 	
+	public SecurityLevel addLevelOfArrayField(Object o, int field) {
+		// TODO
+		SecurityLevel fieldLevel = om.getFieldLevel(o, Integer.toString(field));
+		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), fieldLevel));
+		return om.getAssignmentLevel();
+	}
+	
 	public SecurityLevel setLevelOfLocal(String local) {
 		
 		if (!hsu.checkLocalPC(local)) {
@@ -289,13 +298,13 @@ public class HandleStmt {
 		return om.getFieldLevel(o, field);
 	}
 	
-	public SecurityLevel setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex) {
-		if(!hsu.checkArrayWithGlobalPC(o, field, localForObject, localForIndex)) {
-			abort(o.toString() + field);
+	public SecurityLevel setLevelOfArrayField(Object o, int field, String localForObject, String localForIndex) {
+		if(!hsu.checkArrayWithGlobalPC(o, Integer.toString(field), localForObject, localForIndex)) {
+			abort(o.toString() + Integer.toString(field));
 		}
-		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
+		om.setField(o, Integer.toString(field), hsu.joinWithGPC(om.getAssignmentLevel()));
 		om.clearAssignmentLevel();
-		return om.getFieldLevel(o, field);
+		return om.getFieldLevel(o, Integer.toString(field));
 	}
 	
 	/**
@@ -313,6 +322,7 @@ public class HandleStmt {
 		return om.getFieldLevel(o, field);
 		
 	}
+
 
 	public void checkThatNotHigh(String local) {
 		System.out.println(lm.getLevel(local));

@@ -43,7 +43,7 @@ public class ArraysFail {
 		 * check x >= lpc
 		 * level(x) = (i, a, gpc, a_i)
 		 */
-		hs.addLevelOfField(a, Integer.toString(2));
+		hs.addLevelOfArrayField(a, i);
 		hs.addLevelOfLocal("int_i");
 		hs.addLevelOfLocal("String[]_a");
 		hs.setLevelOfLocal("String_x");

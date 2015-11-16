@@ -7,6 +7,7 @@ import soot.PackManager;
 import soot.Scene;
 import soot.Transform;
 import utils.logging.L1Logger;
+import utils.parser.ArgumentParser;
 import analyzer.level1.BodyAnalyzer;
 
 /**
@@ -15,8 +16,9 @@ import analyzer.level1.BodyAnalyzer;
  */
 public class Main {
 	
-	// TODO assign value as program argument
-	private static Level LOGGER_LEVEL = Level.ALL;
+	private static Level LOGGER_LEVEL;
+	
+	private static ArgumentParser argparser;
 
 
     public static void main(String[] args) {
@@ -30,18 +32,19 @@ public class Main {
      */
     private static void execute(String[] args) {
     	
+    	argparser = new ArgumentParser(args);
     	
+    	LOGGER_LEVEL = argparser.getLoggerLevel();
+    	String[] soot_options = argparser.getSootOptions();
     	
     	try {
     		System.out.println("Logger Init1");
 			L1Logger.setup(LOGGER_LEVEL);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	
         Scene.v().setSootClassPath(Scene.v().getSootClassPath() + ":.:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar");
-        // Scene.v().setSootClassPath(Scene.v().getSootClassPath() + ":.:/home/koenigr/Eclipse/eclipse/jre/lib/jce.jar:/home/koenigr/Eclipse/eclipse/jre/lib/rt.jar");
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
         Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
@@ -54,8 +57,7 @@ public class Main {
         		   .add(new Transform("jtp.analyzer", banalyzer)); 
         		   
 
-        // TODO ich kann den Classpath auch als Argument übergeben
-       soot.Main.main(new String[]{"-f","J", "-main-class", "main.testclasses.ArrayRef", "main.testclasses.ArrayRef"});
+       soot.Main.main(soot_options);
 
     }
 
