@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 

@@ -6,15 +6,18 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.*;
 
 public class NaiveConstraintsTest {
 
@@ -32,39 +35,37 @@ public class NaiveConstraintsTest {
         assertThat(cs.x0_le_x1_le_x2_le_x3_le_x1, is(sat()));
         assertThat(cs.x1_le_H_le_x2__x1_le_x2, is(sat()));
         assertThat(cs.pub_le_x_le_dyn, is(sat()));
-        assertTrue("SAT(x < HIGH, x < ?)",
-                   makeNaive(Arrays.asList(leC(cs.x1, literal(DYN)),
-                                           leC(cs.x1,
-                                               literal(THIGH)))).isSat());
+        assertThat("SAT(x < HIGH, x < ?)",
+                makeNaive(Arrays.asList(leC(cs.x1, literal(DYN)),
+                        leC(cs.x1,
+                                literal(THIGH)))), is(sat()));
 
-        assertFalse("~SAT(HIGH < LOW)",
-                    makeNaive(Collections.singletonList(leC(literal(THIGH),
-                                                            literal(TLOW)))).isSat());
-        assertFalse("~SAT(HIGH < x, x < y , y < LOW)",
-                    makeNaive(asList(leC(literal(THIGH), cs.x1),
-                                     leC(cs.x1, cs.x2),
-                                     leC(cs.x2, literal(TLOW)))).isSat());
-        assertFalse("SAT(LOW < x, x < ?)",
-                    makeNaive(asList(leC(cs.x1, literal(DYN)),
-                                     leC(literal(TLOW), cs.x1))).isSat());
+        assertThat("~SAT(HIGH < LOW)",
+                makeNaive(Collections.singletonList(leC(literal(THIGH),
+                        literal(TLOW)))), not(is(sat())));
+        assertThat("~SAT(HIGH < x, x < y , y < LOW)",
+                makeNaive(asList(leC(literal(THIGH), cs.x1),
+                        leC(cs.x1, cs.x2),
+                        leC(cs.x2, literal(TLOW)))), not(is(sat())));
+        assertThat("SAT(LOW < x, x < ?)",
+                makeNaive(asList(leC(cs.x1, literal(DYN)),
+                        leC(literal(TLOW), cs.x1))), not(is(sat())));
     }
 
     @Test public void testSatAssignments() {
         Optional<Assignment<Level>> result, expected;
-        result = makeNaive(Arrays.asList(leC(cs.x1, literal(THIGH)),
+        result = cstrs.satisfyingAssignment(makeNaive(Arrays.asList(leC(cs.x1, literal(THIGH)),
                                          leC(literal(THIGH), cs.x2),
                                          leC(cs.x2,
-                                             cs.x1))).satisfyingAssignment(
-                Collections.emptySet());
+                                             cs.x1))),Collections.emptySet());
         expected = Optional.of(Assignments.builder(cs.v1, THIGH)
                                           .add(cs.v2, THIGH)
                                           .build());
         assertEquals("x1 = x2 = HIGH", expected, result);
 
-        result = makeNaive(Arrays.asList(leC(cs.x1, literal(DYN)),
+        result = cstrs.satisfyingAssignment(makeNaive(Arrays.asList(leC(cs.x1, literal(DYN)),
                                          leC(cs.x1,
-                                             literal(THIGH)))).satisfyingAssignment(
-                Collections.emptySet());
+                                             literal(THIGH)))), Collections.emptySet());
         expected = Optional.of(Assignments.builder(cs.v1, PUB).build());
         assertEquals("x = pub", expected, result);
     }
@@ -79,11 +80,11 @@ public class NaiveConstraintsTest {
         ConstraintSet<Level> less = makeNaive(asList(leC(cs.x1, literal(THIGH)),
                                                      leC(literal(THIGH),
                                                          cs.x2)));
-        assertTrue("more => less", more.implies(less));
-        assertFalse("less /=> (significant) more", less.implies(more));
+        assertThat("more => less", more, implies(less));
+        assertThat("less /=> (significant) more", less, not(implies(more)));
 
-        assertTrue("more => more+trivial",
-                   more.implies(more.add(leC(cs.x1, cs.x1))
+        assertThat("more => more+trivial",
+                   more, implies(more.add(leC(cs.x1, cs.x1))
                                     .add(leC(literal(PUB), cs.x2))));
 
         /*
@@ -93,8 +94,8 @@ public class NaiveConstraintsTest {
                 makeNaive(asList(leC(cs.x1, literal(TLOW)),
                                  leC(literal(THIGH), cs.x2),
                                  leC(cs.x1, cs.x2)));
-        assertTrue("lowLess => less", lowerLess.implies(less));
-        assertFalse("loweLess => less", less.implies(lowerLess));
+        assertThat("lowLess => less", lowerLess, implies(less));
+        assertThat("loweLess /=> less", less, not(implies(lowerLess)));
 
         /*
          * - unsat constraints imply arbitrary constraints 
@@ -103,10 +104,18 @@ public class NaiveConstraintsTest {
                 makeNaive(Arrays.asList(leC(literal(THIGH), cs.x1),
                                         leC(cs.x1, cs.x2),
                                         leC(cs.x2, literal(TLOW))));
-        assertTrue("unsat => more", unsat.implies(more));
-        assertTrue("unsat => less", unsat.implies(less));
-        assertTrue("unsat => lowerLess", unsat.implies(lowerLess));
-        assertTrue("unsat => unsat", unsat.implies(unsat));
+        assertThat("unsat => more", unsat,implies(more));
+        assertThat("unsat => less", unsat,implies(less));
+        assertThat("unsat => lowerLess", unsat,implies(lowerLess));
+        assertThat("unsat => unsat", unsat,implies(unsat));
+    }
+
+    @Test(timeout = 1000)
+    public void testClosure() {
+        Set<Constraint<Level>> tmp = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3))).stream().collect(toSet());
+        ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
+        ConstraintSet<Level> expected = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(cs.x1, cs.x3)));
+        assertThat(closed, is(equivalent(expected)));
     }
 
 }

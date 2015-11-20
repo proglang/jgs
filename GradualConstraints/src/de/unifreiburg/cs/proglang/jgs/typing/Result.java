@@ -1,8 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
+import com.sun.istack.internal.NotNull;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
+
+import java.util.stream.Collectors;
+import java.util.stream.Collectors.*;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
 
@@ -14,6 +18,8 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEf
  */
 public class Result<LevelT> {
     private final ConstraintSet<LevelT> constraints;
+
+    @NotNull
     private final MethodSignatures.Effects<LevelT> effects;
     private final Environment env;
 
@@ -24,13 +30,28 @@ public class Result<LevelT> {
                 Environments.makeEmpty());
     }
 
-    public static <Level> Result<Level> fromParameters(TypeVars tvars) {
-        throw new RuntimeException("Not Implemented!");
+    public static <Level> Result<Level> fromEnv(ConstraintSetFactory<Level> csets, Environment env) {
+        return new Result<>(csets.empty(), emptyEffect(), env);
+    }
+
+    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, TypeVars tvars) {
+        Result<Level> envJoin = Environment.join(r1.getFinalEnv(),r2.getFinalEnv(), tvars);
+        ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(envJoin.constraints);
+        return new Result<>(cs, r1.effects.add(r2.effects), envJoin.getFinalEnv()) ;
+    }
+
+    public static <Level> Result<Level> addConstraints(Result<Level> r, ConstraintSet<Level> constraints) {
+        return new Result<>(r.constraints.add(constraints), r.effects, r.env);
+    }
+
+    public static <Level> Result<Level> addEffects(Result<Level> r, MethodSignatures.Effects<Level> effects) {
+        return new Result<>(r.constraints, r.effects.add(effects), r.env);
     }
 
     // impl
 
     Result(ConstraintSet<LevelT> constraints,
+           @NotNull
            MethodSignatures.Effects<LevelT> effects,
            Environment env) {
         super();
@@ -45,6 +66,10 @@ public class Result<LevelT> {
 
     public Environment getFinalEnv() {
         return env;
+    }
+
+    public MethodSignatures.Effects<LevelT> getEffects() {
+        return effects;
     }
 
 //    public TypeVars.TypeVar initialTypeVariableOf(Var<?> local) {

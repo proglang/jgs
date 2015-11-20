@@ -3,11 +3,13 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 import soot.Local;
 import soot.SootMethod;
 import soot.Value;
+import soot.ValueBox;
 import soot.jimple.*;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
@@ -64,7 +66,8 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     private void caseCompoundExpr(Value v) {
         Value val = (Value) v;
-        this.caseLocalExpr(val.getUseBoxes());
+        Collection<Value> useValues = (Collection<Value>)val.getUseBoxes().stream().map(b-> ((ValueBox) b).getValue()).collect(Collectors.<Value>toList());
+        this.caseLocalExpr(useValues);
     }
 
     @Override public void defaultCase(Object v) {

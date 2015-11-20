@@ -11,7 +11,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
-import de.unifreiburg.cs.proglang.jgs.constraints.Transition;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
@@ -55,7 +54,7 @@ public class BasicStatementTyping<LevelT> {
 
     public Result<LevelT> generate(Stmt s,
                                    Environment env,
-                                   TypeVar pc,
+                                   Set<TypeVar> pc,
                                    SignatureTable<LevelT> signatures,
                                    Casts<LevelT> casts) throws TypeError {
         Gen g = new Gen(env, pc, signatures, casts);
@@ -63,9 +62,9 @@ public class BasicStatementTyping<LevelT> {
         // abort on any errors
         if (!g.getErrorMsg().isEmpty()) {
             throw new TypeError("There where errors during statement typing: \n"
-                                + g.getErrorMsg()
-                                   .stream()
-                                   .reduce((s1, s2) -> s1 + "\n" + s2));
+                    + g.getErrorMsg()
+                    .stream()
+                    .reduce((s1, s2) -> s1 + "\n" + s2));
         }
         return g.getResult();
     }
@@ -86,7 +85,7 @@ public class BasicStatementTyping<LevelT> {
     public class Gen extends AbstractStmtSwitch {
 
         private final Environment env;
-        private final TypeVar pc;
+        private final Set<TypeVar> pcs;
         private final SignatureTable<LevelT> signatures;
         private final Casts<LevelT> casts;
 
@@ -97,12 +96,12 @@ public class BasicStatementTyping<LevelT> {
         private final ArrayList<String> errorMsg;
 
         public Gen(Environment env,
-                   TypeVar pc,
+                   Set<TypeVar> pc,
                    SignatureTable signatures,
                    Casts<LevelT> casts) {
             super();
             this.env = env;
-            this.pc = pc;
+            this.pcs = pc;
             this.signatures = signatures;
             this.casts = casts;
             this.errorMsg = new ArrayList<>();
@@ -112,38 +111,44 @@ public class BasicStatementTyping<LevelT> {
 
         private Effects<LevelT> extractEffects(Value rhs) {
             RhsSwitch<LevelT> effectCases = new RhsSwitch<LevelT>(casts) {
-                @Override public void caseLocalExpr(Collection<Value> atoms) {
+                @Override
+                public void caseLocalExpr(Collection<Value> atoms) {
                     setResult(emptyEffect());
                 }
 
-                @Override public void caseCall(SootMethod m,
-                                               Optional<Var<?>> thisPtr,
-                                               List<Var<?>> args) {
+                @Override
+                public void caseCall(SootMethod m,
+                                     Optional<Var<?>> thisPtr,
+                                     List<Var<?>> args) {
                     setResult(getSignature(m).effects);
 
                 }
 
-                @Override public void caseGetField(FieldRef field,
-                                                   Optional<Var<?>> thisPtr) {
+                @Override
+                public void caseGetField(FieldRef field,
+                                         Optional<Var<?>> thisPtr) {
                     setResult(emptyEffect());
                 }
 
-                @Override public void caseCast(Casts.Cast<LevelT> cast) {
+                @Override
+                public void caseCast(Casts.Cast<LevelT> cast) {
                     setResult(emptyEffect());
                 }
 
             };
+            rhs.apply(effectCases);
             return (Effects<LevelT>) effectCases.getResult();
         }
 
         private Signature<LevelT> getSignature(SootMethod m) {
             return signatures.get(m)
-                             .orElseThrow(() -> new TypingAssertionFailure(
-                                     "No signature found for method "
-                                     + m.toString()));
+                    .orElseThrow(() -> new TypingAssertionFailure(
+                            "No signature found for method "
+                                    + m.toString()));
         }
 
-        @Override public void caseAssignStmt(AssignStmt stmt) {
+        @Override
+        public void caseAssignStmt(AssignStmt stmt) {
 
             //constraints and errors
             Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
@@ -160,33 +165,35 @@ public class BasicStatementTyping<LevelT> {
 
             // get reads from lhs.. they are definitively flowing into the destination
             Var.getAllFromValueBoxes(stmt.getLeftOp().getUseBoxes())
-               .map(toCType.andThen(leDest))
-               .forEach(constraints);
+                    .map(toCType.andThen(leDest))
+                    .forEach(constraints);
 
             // get constraints from rhs..
             Value rhs = stmt.getRightOp();
             rhs.apply(new RhsSwitch<LevelT>(casts) {
 
                 // for local expressions all use boxes flow into the destination
-                @Override public void caseLocalExpr(Collection<Value> atoms) {
+                @Override
+                public void caseLocalExpr(Collection<Value> atoms) {
                     Var.getAllFromValues(atoms)
-                       .map(toCType.andThen(leDest))
-                       .forEach(constraints);
+                            .map(toCType.andThen(leDest))
+                            .forEach(constraints);
                 }
 
                 /* for method calls:
                    - [ ] add return as lower bound to dest
                  */
-                @Override public void caseCall(SootMethod m,
-                                               Optional<Var<?>> thisPtr,
-                                               List<Var<?>> args) {
+                @Override
+                public void caseCall(SootMethod m,
+                                     Optional<Var<?>> thisPtr,
+                                     List<Var<?>> args) {
                     // check parameter count
                     int argCount = args.size();
                     int paramterCount = m.getParameterCount();
                     if (argCount != paramterCount) {
                         throw new TypingAssertionFailure(String.format(
                                 "Argument count (%d) does not "
-                                + "equal parameter count (%d): %s",
+                                        + "equal parameter count (%d): %s",
                                 argCount,
                                 paramterCount,
                                 m.toString()));
@@ -207,24 +214,28 @@ public class BasicStatementTyping<LevelT> {
                     }); // <- params
                     instantiation.put(Symbol.ret(), destTVar); // <- return
                     sig.constraints.toTypingConstraints(instantiation)
-                                   .forEach(constraints);
+                            .forEach(constraints);
 
                     // - [x] add thisPtr as lower bound to dest
                     thisPtr.map(toCType.andThen(leDest)).ifPresent(constraints);
 
-                    // - [x] add effect as upper bound to pc
+                    // - [x] add effect as upper bound to each pcs
                     sig.effects.stream().forEach(t -> {
-                        constraints.add(cstrs.le(CTypes.variable(pc),
-                                                 CTypes.literal(t)));
+                        pcs.forEach(pc -> {
+                            constraints.add(cstrs.le(CTypes.variable(pc),
+                                    CTypes.literal(t)));
+                        });
                     });
                 }
 
-                @Override public void caseGetField(FieldRef field,
-                                                   Optional<Var<?>> thisPtr) {
+                @Override
+                public void caseGetField(FieldRef field,
+                                         Optional<Var<?>> thisPtr) {
                     throw new RuntimeException("NOT IMPLEMENTED");
                 }
 
-                @Override public void caseCast(Casts.Cast<LevelT> cast) {
+                @Override
+                public void caseCast(Casts.Cast<LevelT> cast) {
                     if (!compatible(cast.sourceType, cast.destType)) {
                         errorMsg.add(String.format(
                                 "Source type %s cannot be converted to destination type %s.",
@@ -234,24 +245,26 @@ public class BasicStatementTyping<LevelT> {
                     }
                     asList(cstrs.le(toCType.apply(cast.value),
                                     CTypes.literal(cast.sourceType)),
-                           cstrs.le(CTypes.literal(cast.destType),
+                            cstrs.le(CTypes.literal(cast.destType),
                                     destCType)).forEach(constraints);
                 }
 
             });
 
-            // finally the pc flows into the destination
-            constraints.add(leDest.apply(CTypes.variable(this.pc)));
+            // finally the pcs flow into the destination
+            this.pcs.forEach(pc -> {
+                constraints.add(leDest.apply(CTypes.variable(pc)));
+            });
 
             // transition (for now only local assignments)
             List<Var<?>> writeVars =
                     Var.getAllFromValueBoxes(stmt.getDefBoxes())
-                       .collect(toList());
+                            .collect(toList());
             if (writeVars.size() != 1) {
                 throw new TypingAssertionFailure(String.format(
                         "Assignment should have "
-                        + "exactly one destination variable. "
-                        + "Found: %s. Statement was: %s.",
+                                + "exactly one destination variable. "
+                                + "Found: %s. Statement was: %s.",
                         writeVars.toString(),
                         stmt.toString()));
             }
@@ -260,24 +273,26 @@ public class BasicStatementTyping<LevelT> {
 
             // .. and the result
             this.result = makeResult(csets.fromCollection(constraints.build()
-                                                                     .collect(
-                                                                             toList())),
-                                     fin,
-                                     extractEffects(rhs));
+                            .collect(
+                                    toList())),
+                    fin,
+                    extractEffects(rhs));
         }
 
         private boolean compatible(TypeDomain.Type<LevelT> sourceType,
                                    TypeDomain.Type<LevelT> destType) {
             return types.dyn().equals(destType) ^ types.dyn()
-                                                       .equals(sourceType);
+                    .equals(sourceType);
         }
 
-        @Override public void caseIdentityStmt(IdentityStmt stmt) {
+        @Override
+        public void caseIdentityStmt(IdentityStmt stmt) {
             // TODO Auto-generated method stub
             super.caseIdentityStmt(stmt);
         }
 
-        @Override public Result<LevelT> getResult() {
+        @Override
+        public Result<LevelT> getResult() {
             return result;
         }
 

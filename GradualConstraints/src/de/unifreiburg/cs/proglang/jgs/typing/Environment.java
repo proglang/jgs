@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 
@@ -25,6 +26,16 @@ public class Environment {
      * have an identity
      */
     private final Map<Var<?>, TypeVar> env;
+
+
+    /**
+     * Joint two environments. Returns a <code>Result</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left empty) which is a bit of a hack...
+     * @param tvars A type variable generator for the fresh variables required for the constraints.
+     */
+    public static <Level> Result<Level> join(Environment r1, Environment r2, TypeVars tvars) {
+        // TODO: this could be more efficient
+        throw new RuntimeException("Not Implemented!");
+    }
 
     public Environment(Map<Var<?>, TypeVar> env) {
         this.env = new HashMap<>(env);

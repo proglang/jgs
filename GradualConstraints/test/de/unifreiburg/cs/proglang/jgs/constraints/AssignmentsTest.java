@@ -15,7 +15,7 @@ import org.junit.Test;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.Assignments.*;
 import static java.util.Arrays.asList;
 

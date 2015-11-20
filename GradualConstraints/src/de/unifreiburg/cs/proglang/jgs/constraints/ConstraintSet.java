@@ -28,7 +28,7 @@ public abstract class ConstraintSet<Level> {
      * @param a
      * @return
      */
-    abstract public boolean isSatisfiedFor(Assignment<Level> a);
+    abstract public boolean isSatisfiedFor(TypeDomain<Level> types, Assignment<Level> a);
 
     /**
      * Return a new set with the given constraint <code>c</code> added.
@@ -40,12 +40,12 @@ public abstract class ConstraintSet<Level> {
     /**
      * @return True if the constraints of this set imply those of <code>other</code>
      */
-    abstract public boolean implies(ConstraintSet<Level> other);
+    abstract public boolean implies(TypeDomain<Level> types, ConstraintSet<Level> other);
 
     /**
      * @return True if this set of constraints is satisfiable.
      */
-    abstract public boolean isSat();
+    abstract public boolean isSat(TypeDomain<Level> types);
 
     /**
      * Find a satisfying assignment for this constraint set. (Optional)
@@ -53,7 +53,7 @@ public abstract class ConstraintSet<Level> {
      * @param requiredVariables The minimal set of variables that should be bound by a satisfying assignment. The actual
      *                          assignments may bind more variables.
      */
-    public Optional<Assignment<Level>> satisfyingAssignment(Collection<TypeVar> requiredVariables) {
+    public Optional<Assignment<Level>> satisfyingAssignment(TypeDomain<Level> types, Collection<TypeVar> requiredVariables) {
         throw new RuntimeException("sat() operation not supported");
     }
 

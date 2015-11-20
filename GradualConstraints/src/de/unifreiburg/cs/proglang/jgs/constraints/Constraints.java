@@ -1,10 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 /**
  * A context for constraints, i.e. constraints for a particular type domain. 
@@ -15,175 +17,42 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
  */
 public class Constraints<Level> {
 
-    private final TypeDomain<Level> types;
+    public final TypeDomain<Level> types;
 
     public Constraints(TypeDomain<Level> types) {
         super();
         this.types = types;
     }
 
-    public Constraint<Level> le(CType<Level> lhs, CType<Level> rhs) {
-        return new LeConstraint(lhs, rhs);
+    public static <Level> Constraint<Level> le(CType<Level> lhs, CType<Level> rhs) {
+        return new Constraint(Constraint.Kind.LE, lhs, rhs);
     }
 
-    public Constraint<Level> comp(CType<Level> lhs, CType<Level> rhs) {
-        return new CompConstraint(lhs, rhs);
+    public static <Level> Constraint<Level> comp(CType<Level> lhs, CType<Level> rhs) {
+        return new Constraint(Constraint.Kind.COMP, lhs, rhs);
     }
 
-    public Constraint<Level> dimpl(CType<Level> lhs, CType<Level> rhs) {
-        return new DImplConstraint(lhs, rhs);
+    public static <Level> Constraint<Level> dimpl(CType<Level> lhs, CType<Level> rhs) {
+        return new Constraint(Constraint.Kind.DIMPL, lhs, rhs);
     }
 
-    private abstract class AConstraint implements Constraint<Level> {
-        public final CType<Level> lhs;
-        public final CType<Level> rhs;
-
-        public AConstraint(CType<Level> lhs, CType<Level> rhs) {
-            super();
-            this.lhs = lhs;
-            this.rhs = rhs;
-        }
-
-        @Override
-        public Stream<TypeVar> variables() {
-            return Stream.concat(lhs.variables(), rhs.variables());
-        }
-
-        @Override
-        public CType<Level> getLhs() {
-            return this.lhs;
-        }
-
-        @Override
-        public CType<Level> getRhs() {
-            return this.rhs;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s %s %s", this.lhs, this.getSymbol(), this.rhs);
-        }
-        
-        abstract protected String getSymbol();
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getOuterType().hashCode();
-            result = prime * result + ((lhs == null) ? 0 : lhs.hashCode());
-            result = prime * result + ((rhs == null) ? 0 : rhs.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            @SuppressWarnings("unchecked")
-            AConstraint other = (AConstraint) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
-            if (lhs == null) {
-                if (other.lhs != null)
-                    return false;
-            } else if (!lhs.equals(other.lhs))
-                return false;
-            if (rhs == null) {
-                if (other.rhs != null)
-                    return false;
-            } else if (!rhs.equals(other.rhs))
-                return false;
-            return true;
-        }
-
-        @SuppressWarnings("rawtypes")
-        private Constraints getOuterType() {
-            return Constraints.this;
-        }
-        
-        
+    public Optional<Assignment<Level>> satisfyingAssignment(ConstraintSet<Level> levelConstraintSet, Collection<TypeVar> vars) {
+        return levelConstraintSet.satisfyingAssignment(this.types, vars);
     }
 
-    private class LeConstraint extends AConstraint {
-
-        @Override
-        protected String getSymbol() {
-            return "<=";
-        }
-
-        public LeConstraint(CType<Level> lhs, CType<Level> rhs) {
-            super(lhs, rhs);
-        }
-
-        @Override
-        public boolean isSatisfied(Assignment<Level> a) {
-            return types.le(this.lhs.apply(a), this.rhs.apply(a));
-        }
-
-        @Override
-        public ConstraintKind getConstraintKind() {
-            return ConstraintKind.LE;
-        }
-
-
+    public boolean implies(ConstraintSet<Level> left, ConstraintSet<Level> right) {
+        return left.implies(types, right);
     }
 
-    private class CompConstraint extends AConstraint {
-
-        public CompConstraint(CType<Level> lhs,
-                              CType<Level> rhs) {
-            super(lhs, rhs);
-        }
-
-        @Override
-        public boolean isSatisfied(Assignment<Level> a) {
-            Type<Level> tlhs, trhs;
-            tlhs = this.lhs.apply(a);
-            trhs = this.rhs.apply(a);
-            return types.le(tlhs, trhs) || types.le(trhs, tlhs);
-
-        }
-
-        @Override
-        public ConstraintKind getConstraintKind() {
-            return ConstraintKind.COMP;
-        }
-
-        @Override
-        protected String getSymbol() {
-            return "~";
-        }
-
+    public boolean isSat(ConstraintSet<Level> cs) {
+        return cs.isSat(types);
     }
 
-    private class DImplConstraint extends AConstraint {
+    public boolean isSatisfyingAssignment(Constraint<Level> c, Assignment<Level> ass) {
+        return c.isSatisfied(types, ass);
+    }
 
-        public DImplConstraint(CType<Level> lhs,
-                               CType<Level> rhs) {
-            super(lhs, rhs);
-        }
-
-        @Override
-        public boolean isSatisfied(Assignment<Level> a) {
-            // lhs = ? --> rhs <= ?
-            return (!this.lhs.apply(a).equals(types.dyn())
-                    || types.le(this.rhs.apply(a), types.dyn()));
-        }
-
-        @Override
-        public ConstraintKind getConstraintKind() {
-            return ConstraintKind.DIMPL;
-        }
-
-        @Override
-        protected String getSymbol() {
-            return "?=>";
-        }
-
+    public boolean isSatisfyingAssignment(ConstraintSet<Level> cs, Assignment<Level> ass) {
+        return cs.isSatisfiedFor(types, ass);
     }
 }

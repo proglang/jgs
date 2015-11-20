@@ -1,11 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
-
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static java.util.Arrays.asList;
 
 /**

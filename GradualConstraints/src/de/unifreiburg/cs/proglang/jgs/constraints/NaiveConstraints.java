@@ -4,35 +4,35 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 
 /**
  * A naive implementation of a constraint set. It is based on
  * java.util.Set<Constraint<Level>> and checks satisfiability by enumerating all
  * assignments.
- * 
+ *
  * @author fennell
  *
  */
-class NaiveConstraints<Level> extends ConstraintSet<Level> {
+public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     private final HashSet<Constraint<Level>> cs;
 
-    NaiveConstraints(TypeDomain<Level> types,
+    public NaiveConstraints(TypeDomain<Level> types,
                      Collection<Constraint<Level>> cs) {
         super(types);
         this.cs = new HashSet<>(cs);
     }
 
     @Override
-    public boolean isSatisfiedFor(Assignment<Level> a) {
-        return this.cs.stream().allMatch(c -> c.isSatisfied(a));
+    public boolean isSatisfiedFor(TypeDomain<Level> types, Assignment<Level> a) {
+        return this.cs.stream().allMatch(c -> c.isSatisfied(types, a));
     }
 
     public ConstraintSet<Level> add(Collection<Constraint<Level>> other) {
@@ -56,44 +56,59 @@ class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return this.cs.stream();
     }
 
+    static <Level> HashSet<Constraint<Level>> close(Set<Constraint<Level>> cs) {
+        HashSet<Constraint<Level>> result = new HashSet<>(cs);
+        HashSet<Constraint<Level>> old = new HashSet<>();
+        do {
+            old.addAll(result);
+            old.stream().forEach(x_to_y -> {
+                Stream<CType<Level>> cands = old.stream().filter(c -> c.getLhs().equals(x_to_y.getRhs())).map(c -> c.getRhs());
+                cands.forEach(rhs -> result.add(Constraints.le(x_to_y.getLhs(), rhs)));
+            });
+        } while (!result.equals(old));
+        return result;
+    }
+
     @Override
     public Set<Constraint<Level>> projectTo(Set<TypeVar> typeVars) {
-        //TODO: implement by defining the transisitve closure and erasing unwanted vars.
-        throw new RuntimeException("Not Implemented!");
+        Set<Constraint<Level>> closure = close(this.cs);
+        return closure.stream().filter(c -> {
+            return typeVars.contains(c.getLhs()) || typeVars.contains(c.getRhs());
+        }).collect(Collectors.toSet());
     }
 
     @Override
-    public boolean implies(ConstraintSet<Level> other) {
-        return this.enumerateSatisfyingAssignments(other.variables()
+    public boolean implies(TypeDomain<Level> types, ConstraintSet<Level> other) {
+        return this.enumerateSatisfyingAssignments(types, other.variables()
                                                         .collect(Collectors.toSet()))
-                   .allMatch(ass -> other.isSatisfiedFor(ass));
+                   .allMatch(ass -> other.isSatisfiedFor(types, ass));
 
     }
 
     @Override
-    public boolean isSat() {
-        return this.satisfyingAssignment(Collections.emptyList()).isPresent();
+    public boolean isSat(TypeDomain<Level> types) {
+        return this.satisfyingAssignment(types, Collections.emptyList()).isPresent();
     }
 
     /**
      * Enumerate all assignments that satisfy this constraint set.
-     * 
+     *
      * @param requiredVariables
      *            The minimal set of variables that should be bound by a
      *            satisfying assignment. The actual assignments may bind more
      *            variables.
      */
-    public Stream<Assignment<Level>> enumerateSatisfyingAssignments(Collection<TypeVar> requiredVariables) {
+    public Stream<Assignment<Level>> enumerateSatisfyingAssignments(TypeDomain<Level> types, Collection<TypeVar> requiredVariables) {
         Set<TypeVar> variables =
             cs.stream().flatMap(c -> c.variables()).collect(Collectors.toSet());
         variables.addAll(requiredVariables);
         return Assignments.enumerateAll(types, new LinkedList<>(variables))
-                          .filter(a -> this.isSatisfiedFor(a));
+                          .filter(a -> this.isSatisfiedFor(types, a));
     }
 
     @Override
-    public Optional<Assignment<Level>> satisfyingAssignment(Collection<TypeVar> requiredVariables) {
-        return this.enumerateSatisfyingAssignments(requiredVariables).findAny();
+    public Optional<Assignment<Level>> satisfyingAssignment(TypeDomain<Level> types, Collection<TypeVar> requiredVariables) {
+        return this.enumerateSatisfyingAssignments(types, requiredVariables).findAny();
     }
 
     @Override

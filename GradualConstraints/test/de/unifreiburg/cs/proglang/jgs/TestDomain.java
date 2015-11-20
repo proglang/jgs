@@ -1,10 +1,11 @@
-package de.unifreiburg.cs.proglang.jgs.constraints;
+package de.unifreiburg.cs.proglang.jgs;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
@@ -15,6 +16,8 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.BasicStatementTyping;
+import de.unifreiburg.cs.proglang.jgs.typing.Environment;
+import de.unifreiburg.cs.proglang.jgs.typing.MethodBodyTyping;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -28,10 +31,10 @@ public class TestDomain {
     public static final LowHigh levels = new LowHigh();
     public static final TypeDomain<Level> types = new TypeDomain<>(levels);
     public static final Constraints<Level> cstrs = new Constraints<>(types);
-    public static final MethodSignatures<Level> sigs = new MethodSignatures<>(cstrs);
+    public static final MethodSignatures<Level> sigs = new MethodSignatures<>();
 
     ///////
-    // cases
+    // casts
     public static final SootClass castClass = new SootClass("castClass");
     public static final SootMethod castHighToDyn = makeCastMethod("castHighToDyn");
     public static final SootMethod castLowToDyn = makeCastMethod("castLowToDyn");
@@ -152,6 +155,11 @@ public class TestDomain {
         return new BasicStatementTyping<>(new NaiveConstraintsFactory<>(types), types, tvars, cstrs);
     }
 
+    ///////
+    // Method body typing
+    public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars) {
+        return new MethodBodyTyping<>(new NaiveConstraintsFactory<>(types), types, env, tvars, cstrs, casts);
+    }
     /////
     // JUnit matcher
 
@@ -168,7 +176,7 @@ public class TestDomain {
 
         @Override
         protected boolean matchesSafely(Assignment<Level> levelAssignment) {
-            return cstr.isSatisfied(levelAssignment);
+            return cstrs.isSatisfyingAssignment(cstr, levelAssignment);
         }
 
         @Override
@@ -185,7 +193,7 @@ public class TestDomain {
 
         @Override
         protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
-            return levelConstraintSet.isSat();
+            return cstrs.isSat(levelConstraintSet);
         }
 
         @Override
@@ -196,15 +204,47 @@ public class TestDomain {
     }
 
     /**
+     * Holds for constraint sets where each assignment satisfying the left set also satisfies the right set.
+     *
+     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), implies(v0 <= v1)) does not hold.
+     */
+    public static Matcher<ConstraintSet<Level>> implies(final ConstraintSet<Level> other) {
+        return new TypeSafeMatcher<ConstraintSet<Level>>() {
+            @Override
+            protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
+                return cstrs.implies(levelConstraintSet, other);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" implies ").appendValue(other);
+            }
+        };
+    }
+
+    public static Matcher<Constraint<Level>> satisfiedBy(final Assignment<Level> ass) {
+        return new TypeSafeMatcher<Constraint<Level>>() {
+            @Override
+            protected boolean matchesSafely(Constraint<Level> levelConstraint) {
+                return cstrs.isSatisfyingAssignment(levelConstraint, ass);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" satisfied by ").appendValue(ass);
+            }
+        };
+    }
+    /**
      * Holds for constraint sets that are satisfied by the <b>same assignments</b>.
      *
-     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1)) does not hold.
+     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
      */
     public static Matcher<ConstraintSet<Level>> equivalent(final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
-                return levelConstraintSet.implies(other) && other.implies(levelConstraintSet);
+                return cstrs.implies(levelConstraintSet, other) && cstrs.implies(other, levelConstraintSet);
             }
 
             @Override

@@ -1,0 +1,183 @@
+package de.unifreiburg.cs.proglang.jgs.jimpleutils;
+
+import soot.Unit;
+import soot.jimple.Expr;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.toolkits.graph.DirectedGraph;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
+/**
+ * Created by fennell on 11/16/15.
+ */
+// TODO: implement this more efficiently (i.e. imperatively)
+public class Graphs {
+
+    public static DirectedGraph<Unit> singleton(Unit u) {
+        return new DirectedGraph<Unit>() {
+            @Override
+            public List<Unit> getHeads() {
+                return Collections.singletonList(u);
+            }
+
+            @Override
+            public List<Unit> getTails() {
+                return Collections.singletonList(u);
+            }
+
+            @Override
+            public List<Unit> getPredsOf(Unit unit) {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public List<Unit> getSuccsOf(Unit unit) {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public int size() {
+                return 1;
+            }
+
+            @Override
+            public Iterator<Unit> iterator() {
+                return getHeads().iterator();
+            }
+        };
+    }
+
+    public static DirectedGraph<Unit> seq(DirectedGraph<Unit> first, DirectedGraph<Unit> second) {
+        return new DirectedGraph<Unit>() {
+            @Override
+            public List<Unit> getHeads() {
+                return first.getHeads();
+            }
+
+            @Override
+            public List<Unit> getTails() {
+                return second.getTails();
+            }
+
+            @Override
+            public List<Unit> getPredsOf(Unit unit) {
+                List<Unit> result = second.getPredsOf(unit);
+                if (result.isEmpty()) {
+                    if (second.getHeads().contains(unit)) {
+                        result = first.getTails();
+                    } else {
+                        result = first.getPredsOf(unit);
+                    }
+                }
+                return result;
+            }
+
+            @Override
+            public List<Unit> getSuccsOf(Unit unit) {
+                List<Unit> result = first.getSuccsOf(unit);
+                if (result.isEmpty()) {
+                    if (first.getTails().contains(unit)) {
+                        result = second.getHeads();
+                    } else {
+                        result = second.getSuccsOf(unit);
+                    }
+                }
+                return result;
+            }
+
+            @Override
+            public int size() {
+                return first.size() + second.size();
+            }
+
+            @Override
+            public Iterator<Unit> iterator() {
+                Iterator<Unit> firstIter = first.iterator();
+                Iterator<Unit> secondIter = second.iterator();
+                return new Iterator<Unit>() {
+                    @Override
+                    public boolean hasNext() {
+                        return firstIter.hasNext() || secondIter.hasNext();
+                    }
+
+                    @Override
+                    public Unit next() {
+                        if (firstIter.hasNext()) {
+                            return firstIter.next();
+                        } else {
+                            return secondIter.next();
+                        }
+                    }
+                };
+            }
+        };
+    }
+
+    public static DirectedGraph<Unit> seq(DirectedGraph<Unit> first, DirectedGraph<Unit>... rest) {
+        return asList(rest).stream().reduce(first, Graphs::seq);
+    }
+
+    public static DirectedGraph<Unit> seq(Unit first, Unit... rest) {
+        return asList(rest).stream().map(Graphs::singleton).reduce(singleton(first), Graphs::seq);
+    }
+
+    public static DirectedGraph<Unit> branchIf(Expr test,  DirectedGraph<Unit> then, DirectedGraph<Unit> els) {
+        if (then.getHeads().size() > 1 || els.getHeads().size() > 1) {
+            throw new RuntimeException("Only single-head graphs allowed for branchIf bodies!");
+        }
+        Unit ifTarget = then.getHeads().get(0);
+        Unit elseTarget = els.getHeads().get(0);
+        Stmt sIf = Jimple.v().newIfStmt(test,ifTarget);
+        Stmt sGoto = Jimple.v().newGotoStmt(elseTarget);
+        Stmt sEnd = Jimple.v().newNopStmt();
+        DirectedGraph<Unit> linear = seq(singleton(sIf), singleton(sGoto), els, then, singleton(sEnd));
+        return new DirectedGraph<Unit>() {
+            @Override
+            public List<Unit> getHeads() {
+                return linear.getHeads();
+            }
+
+            @Override
+            public List<Unit> getTails() {
+                return linear.getTails();
+            }
+
+            @Override
+            public List<Unit> getPredsOf(Unit unit) {
+                return Stream.concat(
+                        unit.equals(sEnd) ? els.getTails().stream() : Stream.empty(),
+                        linear.getPredsOf(unit).stream().map(p -> unit.equals(ifTarget) ? sIf : p)
+                ).collect(toList());
+            }
+
+            @Override
+            public List<Unit> getSuccsOf(Unit unit) {
+                return Stream.concat(
+                       unit.equals(sIf) ? then.getHeads().stream() : Stream.empty(),
+                        linear.getSuccsOf(unit).stream().map(s -> els.getTails().contains(unit)? sEnd : s)
+                ).collect(toList());
+            }
+
+            @Override
+            public int size() {
+                return linear.size();
+            }
+
+            @Override
+            public Iterator<Unit> iterator() {
+                return linear.iterator();
+            }
+        };
+    }
+
+    public Graphs branchWhile(Expr test,  DirectedGraph<Unit> body) {
+        throw new RuntimeException("Not implemented");
+    }
+}

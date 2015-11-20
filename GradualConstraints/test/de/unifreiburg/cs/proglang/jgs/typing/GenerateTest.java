@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
+import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
@@ -18,10 +19,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.makeTable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -30,109 +32,30 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 public class GenerateTest {
 
     private BasicStatementTyping<Level> typing;
-    private TypeVars tvars;
     private Jimple j;
+    private TypeVars tvars;
+    private Code code;
     private TypeVar pc;
-    private Local localX, localY, localZ;
-    private Var<?> varX, varY, varZ;
-    private TypeVar tvarX, tvarY, tvarZ;
 
-    // classes and methods for tests
-    private SignatureTable<Level> signatures;
-    private SootClass testClass;
-    private SootMethod testCallee__int;
-    private SootField testLowField_int;
-
-    private SootMethod testCallee_int_int__int;
-    private SootMethod ignoreSnd_int_int__int;
-    private SootMethod writeToLowReturn0_int__int;
 
     // casts:
     // TODO: continue
 
-    // initial environment for the testcases
-    private Environment init;
-
     private void assertUnsat(ConstraintSet<Level> unsatConstraints) {
-        assertFalse(String.format("Should not be SAT: %s\nassignment: %s",
+        assertThat(String.format("Should not be SAT: %s\nassignment: %s",
                                   unsatConstraints,
-                                  unsatConstraints.satisfyingAssignment(
+                                  cstrs.satisfyingAssignment(unsatConstraints,
                                           Collections.emptyList())),
-                    unsatConstraints.isSat());
+                    unsatConstraints,not(is(sat())));
     }
 
     @Before public void setUp() {
         this.tvars = new TypeVars("v");
         this.j = Jimple.v();
         this.pc = tvars.fresh();
+        this.code = new Code(tvars);
         this.typing = mkTyping(tvars);
 
-        this.localX = j.newLocal("x", IntType.v());
-        this.localY = j.newLocal("y", IntType.v());
-        this.localZ = j.newLocal("z", IntType.v());
-        this.varX = Var.fromLocal(localX);
-        this.varY = Var.fromLocal(localY);
-        this.varZ = Var.fromLocal(localZ);
-        this.tvarX = tvars.fresh();
-        this.tvarY = tvars.fresh();
-        this.tvarZ = tvars.fresh();
-
-        this.init = Environments.makeEmpty()
-                                .add(varX, tvarX)
-                                .add(varY, tvarY)
-                                .add(varZ, tvarZ);
-
-        this.testClass = new SootClass("TestClass");
-        this.testLowField_int = new SootField("testLowField", IntType.v());
-        testClass.addField(this.testLowField_int);
-
-        Map<SootMethod, Signature<Level>> sigMap = new HashMap<>();
-        Symbol.Param<Level> param_x = param(IntType.v(), 0);
-        Symbol.Param<Level> param_y = param(IntType.v(), 1);
-
-        // Method:
-        this.testCallee__int = new SootMethod("testCallee",
-                                              Collections.emptyList(),
-                                              IntType.v());
-        this.testClass.addMethod(testCallee__int);
-        sigMap.put(this.testCallee__int,
-                   makeSignature(signatureConstraints(Collections.singleton(leS(
-                           Symbol.literal(PUB),
-                           ret()))), emptyEffect()));
-
-        // Method:
-        this.testCallee_int_int__int = new SootMethod("testCallee",
-                                                      asList(IntType.v(),
-                                                             IntType.v()),
-                                                      IntType.v());
-        this.testClass.addMethod(testCallee_int_int__int);
-        SigConstraintSet<Level> sigCstrs =
-                signatureConstraints(asList(leS(param_x, ret()),
-                                            leS(param_y, ret())));
-        sigMap.put(this.testCallee_int_int__int,
-                   makeSignature(sigCstrs, emptyEffect()));
-
-        // Method:
-        this.ignoreSnd_int_int__int = new SootMethod("ignoreSnd",
-                                                     asList(IntType.v(),
-                                                            IntType.v()),
-                                                     IntType.v());
-        this.testClass.addMethod(ignoreSnd_int_int__int);
-        sigCstrs = signatureConstraints(asList(leS(param_x, ret())));
-        sigMap.put(this.ignoreSnd_int_int__int,
-                   makeSignature(sigCstrs, emptyEffect()));
-
-        //Method:
-        this.writeToLowReturn0_int__int = new SootMethod("writeToLow",
-                                                         singletonList(IntType.v()),
-                                                         IntType.v());
-        this.testClass.addMethod(this.writeToLowReturn0_int__int);
-        sigCstrs = signatureConstraints(asList((leS(param_x, literal(TLOW)))));
-        sigMap.put(this.writeToLowReturn0_int__int,
-                   makeSignature(sigCstrs, effects(TLOW)));
-
-        // freeze signatures
-        this.signatures = makeTable(sigMap);
     }
 
     @Test public void testLocals() throws TypeError {
@@ -146,18 +69,18 @@ public class GenerateTest {
         /*********/
         /* x = x */
         /*********/
-        s = j.newAssignStmt(localX, localX);
-        r = typing.generate(s, init, this.pc, signatures, casts);
-        tvarXFinal = r.finalTypeVariableOf(varX);
+        s = j.newAssignStmt(code.localX, code.localX);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        tvarXFinal = r.finalTypeVariableOf(code.varX);
         pc_HIGH_finalX_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(this.pc)),
                                  leC(CTypes.variable(tvarXFinal), CLOW)));
 
-        expected = makeNaive(asList(leC(init.get(varX),
-                                        r.finalTypeVariableOf(varX)),
+        expected = makeNaive(asList(leC(code.init.get(code.varX),
+                                        r.finalTypeVariableOf(code.varX)),
                                     leC(this.pc, tvarXFinal)));
         assertThat(r.getConstraints(), is(equivalent(expected)));
-        assertTrue(r.getConstraints().isSat());
+        assertThat(r.getConstraints(),is(sat()));
 
         assertUnsat(r.getConstraints().add(pc_HIGH_finalX_LOW));
 
@@ -165,26 +88,26 @@ public class GenerateTest {
         /* x = y */
         /*********/
         // Actually this is very similar to x = x...
-        s = j.newAssignStmt(localX, localY);
-        r = typing.generate(s, init, this.pc, signatures, casts);
-        tvarXFinal = r.finalTypeVariableOf(varX);
+        s = j.newAssignStmt(code.localX, code.localY);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        tvarXFinal = r.finalTypeVariableOf(code.varX);
         pc_HIGH_finalX_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(this.pc)),
                                  leC(CTypes.variable(tvarXFinal), CLOW)));
 
-        expected = makeNaive(asList(leC(init.get(varY),
-                                        r.finalTypeVariableOf(varX)),
+        expected = makeNaive(asList(leC(code.init.get(code.varY),
+                                        r.finalTypeVariableOf(code.varX)),
                                     leC(this.pc, tvarXFinal)));
         assertThat(r.getConstraints(), is(equivalent(expected)));
-        assertTrue(r.getConstraints().isSat());
+        assertThat(r.getConstraints(),is(sat()));
 
         assertUnsat(r.getConstraints().add(pc_HIGH_finalX_LOW));
 
         // final(y) and init(y) are the same
-        assertEquals(init.get(varY),
-                     r.finalTypeVariableOf(varY));
+        assertEquals(code.init.get(code.varY),
+                     r.finalTypeVariableOf(code.varY));
 
-        TypeVar tvarYInitial = init.get(varY);
+        TypeVar tvarYInitial = code.init.get(code.varY);
 
         ConstraintSet<Level> y_HIGH_x_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(tvarYInitial)),
@@ -205,12 +128,12 @@ public class GenerateTest {
         /***********/
         /* int x = y.testCallee() */
         /**********/
-        s = j.newAssignStmt(localX,
-                            j.newVirtualInvokeExpr(localY,
-                                                   testCallee__int.makeRef()));
-        r = typing.generate(s, this.init, this.pc, signatures, casts);
-        initY = init.get(varY);
-        finalX = r.finalTypeVariableOf(varX);
+        s = j.newAssignStmt(code.localX,
+                            j.newVirtualInvokeExpr(code.localY,
+                                                   code.testCallee__int.makeRef()));
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        initY = code.init.get(code.varY);
+        finalX = r.finalTypeVariableOf(code.varX);
 
         expected = makeNaive(asList(leC(initY, finalX), leC(this.pc, finalX)));
         assertThat(r.getConstraints(), is(equivalent(expected)));
@@ -219,16 +142,16 @@ public class GenerateTest {
         /* int x = y.testCallee(x, z) */
         /**********/
 
-        s = j.newAssignStmt(localX,
-                            j.newVirtualInvokeExpr(localY,
-                                                   testCallee_int_int__int.makeRef(),
-                                                   asList(localX, localZ)));
+        s = j.newAssignStmt(code.localX,
+                            j.newVirtualInvokeExpr(code.localY,
+                                                   code.testCallee_int_int__int.makeRef(),
+                                                   asList(code.localX, code.localZ)));
 
-        r = typing.generate(s, this.init, this.pc, signatures, casts);
-        initX = init.get(varX);
-        initY = init.get(varY);
-        initZ = init.get(varZ);
-        finalX = r.finalTypeVariableOf(varX);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        initX = code.init.get(code.varX);
+        initY = code.init.get(code.varY);
+        initZ = code.init.get(code.varZ);
+        finalX = r.finalTypeVariableOf(code.varX);
         expected = makeNaive(asList(leC(initX, finalX),
                                     leC(initZ, finalX),
                                     leC(initY, finalX),
@@ -238,16 +161,16 @@ public class GenerateTest {
         /***********/
         /* int x = y.ignoreSnd(x, z) */
         /**********/
-        s = j.newAssignStmt(localX,
-                            j.newVirtualInvokeExpr(localY,
-                                                   ignoreSnd_int_int__int.makeRef(),
-                                                   asList(localX, localZ)));
+        s = j.newAssignStmt(code.localX,
+                            j.newVirtualInvokeExpr(code.localY,
+                                                   code.ignoreSnd_int_int__int.makeRef(),
+                                                   asList(code.localX, code.localZ)));
 
-        r = typing.generate(s, this.init, this.pc, signatures, casts);
-        initX = init.get(varX);
-        initY = init.get(varY);
-        initZ = init.get(varZ);
-        finalX = r.finalTypeVariableOf(varX);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        initX = code.init.get(code.varX);
+        initY = code.init.get(code.varY);
+        initZ = code.init.get(code.varZ);
+        finalX = r.finalTypeVariableOf(code.varX);
         expected = makeNaive(asList(leC(initX, finalX),
                                     leC(initY, finalX),
                                     leC(this.pc, finalX)));
@@ -256,14 +179,14 @@ public class GenerateTest {
         /***********/
         /* int x = y.writeToLow(x) */
         /**********/
-        s = j.newAssignStmt(localX,
-                            j.newVirtualInvokeExpr(localY,
-                                                   writeToLowReturn0_int__int.makeRef(),
-                                                   singletonList(localX)));
-        r = typing.generate(s, this.init, this.pc, signatures, casts);
-        initX = init.get(varX);
-        initY = init.get(varY);
-        finalX = r.finalTypeVariableOf(varX);
+        s = j.newAssignStmt(code.localX,
+                            j.newVirtualInvokeExpr(code.localY,
+                                                   code.writeToLowReturn0_int__int.makeRef(),
+                                                   singletonList(code.localX)));
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        initX = code.init.get(code.varX);
+        initY = code.init.get(code.varY);
+        finalX = r.finalTypeVariableOf(code.varX);
         expected = makeNaive(asList(leC(initY, finalX),
                                     leC(initX, CLOW),
                                     leC(this.pc, finalX),
@@ -283,12 +206,12 @@ public class GenerateTest {
         /***********/
     /* int x = (? <- H)y */
         /**********/
-        s = j.newAssignStmt(localX,
+        s = j.newAssignStmt(code.localX,
                             j.newStaticInvokeExpr(castLowToDyn.makeRef(),
-                                                  asList(localY)));
-        r = typing.generate(s, this.init, this.pc, signatures, casts);
-        initY = init.get(varY);
-        finalX = r.finalTypeVariableOf(varX);
+                                                  asList(code.localY)));
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        initY = code.init.get(code.varY);
+        finalX = r.finalTypeVariableOf(code.varX);
         expected = makeNaive(asList(leC(initY, CLOW),
                                     leC(pc, finalX),
                                     leC(CDYN, finalX)));

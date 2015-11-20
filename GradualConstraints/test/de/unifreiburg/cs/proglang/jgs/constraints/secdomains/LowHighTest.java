@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains;
 
 import static org.junit.Assert.*;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 
 import org.junit.Test;
 

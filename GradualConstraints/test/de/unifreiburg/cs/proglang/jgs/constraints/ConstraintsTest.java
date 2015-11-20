@@ -15,8 +15,8 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TestDomain.*;
-import static org.hamcrest.CoreMatchers.not;
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class ConstraintsTest {
@@ -93,20 +93,20 @@ public class ConstraintsTest {
 
         for (CType<Level> t : allVariables) {
             Constraint<Level> c = leC(literal(PUB), t);
-            assertTrue("all: pub <= " + t.toString(), c.isSatisfied(a));
+            assertThat("all: pub <= " + t.toString(), c, is(satisfiedBy(a)));
         }
 
         for (CType<Level> t : nonDyn) {
             Constraint<Level> c = leC(literal(DYN), t);
-            assertFalse("nonDyn: ? /<= " + t.toString(), c.isSatisfied(a));
+            assertThat("nonDyn: ? /<= " + t.toString(), c, not(is(satisfiedBy(a))));
         }
 
         Set<CType<Level>> allStatic = new HashSet<>(nonDyn);
         allStatic.removeAll(Arrays.asList(cp1, cp2));
         for (CType<Level> t : nonDyn) {
             Constraint<Level> c = leC(literal(DYN), t);
-            assertFalse(String.format("static %s /<= t", t.toString()),
-                        c.isSatisfied(a));
+            assertThat(String.format("static %s /<= t", t.toString()),
+                    c, not(is(satisfiedBy(a))));
         }
     }
 
@@ -116,36 +116,36 @@ public class ConstraintsTest {
         Assignment<Level> a = new Assignment<>(ass);
         for (CType<Level> t : allVariables) {
             Constraint<Level> c = compC(literal(PUB), t);
-            assertTrue("all: pub ~ " + t.toString(), c.isSatisfied(a));
+            assertThat("all: pub ~ " + t.toString(), c, is(satisfiedBy(a)));
             c = compC(t, literal(PUB));
-            assertTrue(String.format("all: %s ~ pub", t.toString()),
-                       c.isSatisfied(a));
+            assertThat(String.format("all: %s ~ pub", t.toString()),
+                    c, is(satisfiedBy(a)));
         }
 
         for (CType<Level> t1 : allStatic) {
             for (CType<Level> t2 : allStatic) {
                 Constraint<Level> c = compC(t1, t2);
-                assertTrue(String.format("static: %s ~ %s",
-                                         t1.toString(),
-                                         t2.toString()),
-                           c.isSatisfied(a));
+                assertThat(String.format("static: %s ~ %s",
+                                t1.toString(),
+                                t2.toString()),
+                        c, is(satisfiedBy(a)));
                 c = compC(t2, t1);
-                assertTrue(String.format("static: %s ~ %s",
-                                         t2.toString(),
-                                         t1.toString()),
-                           c.isSatisfied(a));
+                assertThat(String.format("static: %s ~ %s",
+                                t2.toString(),
+                                t1.toString()),
+                        c, is(satisfiedBy(a)));
             }
         }
 
         for (CType<Level> t : allStatic) {
-            assertFalse(String.format("%s /~ ?", t.toString()),
-                        compC(t, cd1).isSatisfied(a));
-            assertFalse(String.format("? /~ %s", t.toString()),
-                        compC(cd1, t).isSatisfied(a));
+            assertThat(String.format("%s /~ ?", t.toString()),
+                    compC(t, cd1), not(is(satisfiedBy(a))));
+            assertThat(String.format("? /~ %s", t.toString()),
+                    compC(cd1, t), not(is(satisfiedBy(a))));
         }
 
-        assertTrue("d1 ~ d2", compC(cd1, cd2).isSatisfied(a));
-        assertTrue("d2 ~ d1", compC(cd2, cd1).isSatisfied(a));
+        assertThat("d1 ~ d2", compC(cd1, cd2), is(satisfiedBy(a)));
+        assertThat("d2 ~ d1", compC(cd2, cd1), is(satisfiedBy(a)));
 
     }
 
@@ -155,21 +155,21 @@ public class ConstraintsTest {
 
         for (CType<Level> t1 : nonDyn) {
             for (CType<Level> t2 : allVariables) {
-                assertTrue(String.format("%s -->? %s",
-                                         t1.toString(),
-                                         t2.toString()),
-                           dimplC(t1, t2).isSatisfied(a));
+                assertThat(String.format("%s -->? %s",
+                                t1.toString(),
+                                t2.toString()),
+                        dimplC(t1, t2), is(satisfiedBy(a)));
             }
         }
 
         for (CType<Level> t1 : allStatic) {
-            assertFalse(String.format("static: ? /-->? %s",
-                                     t1.toString()),
-                       dimplC(cd1, t1).isSatisfied(a));
+            assertThat(String.format("static: ? /-->? %s",
+                            t1.toString()),
+                    dimplC(cd1, t1), not(is(satisfiedBy(a))));
         }
         
-        assertTrue("? -->? ?", dimplC(cd1, cd2).isSatisfied(a));
-        assertTrue("? -->? pub", dimplC(cd1, cp2).isSatisfied(a));
+        assertThat("? -->? ?", dimplC(cd1, cd2), is(satisfiedBy(a)));
+        assertThat("? -->? pub", dimplC(cd1, cp2), is(satisfiedBy(a)));
 
     }
 

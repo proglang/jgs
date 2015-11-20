@@ -1,7 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -12,6 +11,7 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
 import static java.util.Arrays.asList;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Method signtures. Internal representation of method signatures of the form
@@ -29,10 +29,7 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
  */
 public class MethodSignatures<Level> {
 
-    private final Constraints<Level> cstrs;
-
-    public MethodSignatures(Constraints<Level> cstrs) {
-        this.cstrs = cstrs;
+    public MethodSignatures() {
     }
 
     /**
@@ -78,8 +75,16 @@ public class MethodSignatures<Level> {
         }
 
         public final Effects<Level> add(Type<Level> type, Type<Level>... types) {
+            return this.add(Stream.concat(Stream.of(type), asList(types).stream()).collect(toList()));
+        }
+
+        public final Effects<Level> add(Effects<Level> other) {
+            return this.add(other.stream().collect(toList()));
+        }
+
+        public final Effects<Level> add(Collection<Type<Level>> types) {
             HashSet<Type<Level>> result = new HashSet<>(this.effectSet);
-            result.add(type); result.addAll(asList(types));
+            result.addAll(types);
             return new Effects<>(result);
         }
 
@@ -112,7 +117,7 @@ public class MethodSignatures<Level> {
         return signatureConstraints(constraints.projectTo(params.keySet()).stream().map(c -> {
             Symbol<Level> lhs = c.getLhs().accept(toSymbol);
             Symbol<Level> rhs = c.getRhs().accept(toSymbol);
-            switch (c.getConstraintKind()) {
+            switch (c.kind) {
                 case LE:
                     return le(lhs, rhs);
                 case COMP:
@@ -127,15 +132,15 @@ public class MethodSignatures<Level> {
 
 
     public SigConstraint<Level> le(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, cstrs::le);
+        return new SigConstraint<>(lhs, rhs, Constraints::le);
     }
 
     public SigConstraint<Level> comp(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, cstrs::le);
+        return new SigConstraint<>(lhs, rhs, Constraints::le);
     }
 
     public SigConstraint<Level> dimpl(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, cstrs::le);
+        return new SigConstraint<>(lhs, rhs, Constraints::le);
     }
 
     /* Signature constraints */
