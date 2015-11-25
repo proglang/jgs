@@ -7,6 +7,10 @@ import utils.logging.L1Logger;
 import java.util.logging.Logger;
 
 
+/**
+ * @author koenigr
+ *
+ */
 public class ArrayRefTest {
 
   Logger logger = L1Logger.getLogger();
