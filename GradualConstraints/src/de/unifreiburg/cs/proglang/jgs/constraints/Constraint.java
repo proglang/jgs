@@ -63,5 +63,26 @@ public final class Constraint<Level> {
     public String toString() {
         return String.format("%s %s %s", this.lhs, this.kind.str, this.rhs);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Constraint<?> that = (Constraint<?>) o;
+
+        if (kind != that.kind) return false;
+        if (lhs != null ? !lhs.equals(that.lhs) : that.lhs != null) return false;
+        return !(rhs != null ? !rhs.equals(that.rhs) : that.rhs != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = kind != null ? kind.hashCode() : 0;
+        result = 31 * result + (lhs != null ? lhs.hashCode() : 0);
+        result = 31 * result + (rhs != null ? rhs.hashCode() : 0);
+        return result;
+    }
 }
 

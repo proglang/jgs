@@ -75,11 +75,11 @@ public class MethodBodyTypingTest {
                 leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                 leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
                 leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
-                leC(pc, finalResult.finalTypeVariableOf(code.varY))
-        ));
+                leC(pc, finalResult.finalTypeVariableOf(code.varY)) ));
 
-        Set<Constraint<Level>> projected = finalResult.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX))));
-        assertThat(expected, is(equivalent(makeNaive(projected))));
+        Set<TypeVars.TypeVar> varsToProject = new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)));
+        Set<Constraint<Level>> projected = finalResult.getConstraints().projectTo(varsToProject);
+        assertThat(String.format("The projection of %s to %s", finalResult.getConstraints(), varsToProject), makeNaive(projected), is(equivalent(expected)));
 
     }
 }

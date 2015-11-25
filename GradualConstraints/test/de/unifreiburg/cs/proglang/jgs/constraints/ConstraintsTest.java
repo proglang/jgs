@@ -173,4 +173,15 @@ public class ConstraintsTest {
 
     }
 
+    @Test
+    public void testEquals() {
+        Constraint<Level> c1 = leC(cd1, ch2);
+        Constraint<Level> c12 = leC(cd1, ch2);
+        Constraint<Level> c2 = leC(cd2, cl2);
+
+        assertThat(c1, is(c1));
+        assertThat(c1, is(c12));
+        assertThat(c1, not(is(c2)));
+    }
+
 }

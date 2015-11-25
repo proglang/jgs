@@ -24,6 +24,11 @@ public class Constraints<Level> {
         this.types = types;
     }
 
+    static <Level> Constraint<Level> make(Constraint.Kind kind, CType<Level> lhs, CType<Level> rhs) {
+        return new Constraint<>(kind, lhs, rhs);
+    }
+
+
     public static <Level> Constraint<Level> le(CType<Level> lhs, CType<Level> rhs) {
         return new Constraint(Constraint.Kind.LE, lhs, rhs);
     }
@@ -34,6 +39,35 @@ public class Constraints<Level> {
 
     public static <Level> Constraint<Level> dimpl(CType<Level> lhs, CType<Level> rhs) {
         return new Constraint(Constraint.Kind.DIMPL, lhs, rhs);
+    }
+
+    public static <Level> Constraint<Level> toKind(Constraint.Kind kind, Constraint<Level> c) {
+        return make(kind, c.getLhs(), c.getRhs());
+    }
+
+    /**
+     * Yields the symmetric constraint.
+     */
+    public static <Level> Constraint<Level> symmetricOf(Constraint<Level> c) {
+        return make(c.kind, c.getRhs(), c.getLhs());
+    }
+
+    public static <Level> Stream<Constraint<Level>> implicationsOf(Constraint<Level> c) {
+        switch (c.kind) {
+            case LE:
+                // x1 <= x2 implies x1 ~ x2
+                return Stream.concat(
+                        Stream.of(c),
+                        implicationsOf(toKind(Constraint.Kind.COMP, c)));
+            case COMP:
+                Constraint<Level> dimpl = toKind(Constraint.Kind.DIMPL, c);
+                // x1 ~ x2 implies x2 ~ x1 and x1 ?-> x2
+                return Stream.of(c, symmetricOf(c), dimpl, symmetricOf(dimpl));
+            case DIMPL:
+                return Stream.of(c);
+            default:
+                throw new RuntimeException("Impossible case");
+        }
     }
 
     public Optional<Assignment<Level>> satisfyingAssignment(ConstraintSet<Level> levelConstraintSet, Collection<TypeVar> vars) {

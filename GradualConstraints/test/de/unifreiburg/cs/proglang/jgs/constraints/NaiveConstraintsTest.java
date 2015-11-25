@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import static java.util.Arrays.equals;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
@@ -8,6 +9,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -110,11 +112,35 @@ public class NaiveConstraintsTest {
         assertThat("unsat => unsat", unsat,implies(unsat));
     }
 
+    @Test
+    public void testClosureCandidates() {
+        Constraint<Level> c = leC(cs.x1, cs.x2);
+        Set<Constraint<Level>> old = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), compC(cs.x3, cs.x1), dimplC(cs.x1, cs.x2))).stream().collect(toSet());
+        assertThat(NaiveConstraints.matchingRhs(c, old).collect(toSet()), is(Stream.of(cs.x3).collect(toSet())));
+
+    }
+
     @Test(timeout = 1000)
-    public void testClosure() {
+    public void testLeClosure() {
         Set<Constraint<Level>> tmp = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3))).stream().collect(toSet());
         ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
         ConstraintSet<Level> expected = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(cs.x1, cs.x3)));
+        assertThat(closed, is(equivalent(expected)));
+    }
+
+
+    @Test
+    public void testCompClosure() {
+        Set<Constraint<Level>> tmp = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3))).stream().collect(toSet());
+        ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
+        ConstraintSet<Level> expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3), compC(cs.x1, cs.x3)));
+
+        assertThat(closed, is(equivalent(expected)));
+
+        tmp = makeNaive(asList(compC(cs.x2, cs.x1) , compC(cs.x2, cs.x3))).stream().collect(toSet());
+        closed = makeNaive(NaiveConstraints.close(tmp));
+        expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3), compC(cs.x1, cs.x3)));
+
         assertThat(closed, is(equivalent(expected)));
     }
 
