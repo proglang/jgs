@@ -32,38 +32,38 @@ import utils.visitor.AnnotationValueSwitch;
  *
  */
 public class BodyAnalyzer extends BodyTransformer{
-	
-	// TODO die Datei die untersucht werden soll, aus den Soot Argumenten holen
-    SootClass sootClass;
-    SootMethod method;
-    Body body;  
-    Chain<Unit> units;
-    Chain<Local> locals;
-    AnnotationStmtSwitch stmtSwitch;
-    AnnotationValueSwitch valueSwitch;
-    Chain<SootField> fields;
-    Logger LOGGER;
 
-    DominatorFinder df;
+  SootClass sootClass;
+  SootMethod method;
+  Body body;  
+  Chain<Unit> units;
+  Chain<Local> locals;
+  AnnotationStmtSwitch stmtSwitch;
+  AnnotationValueSwitch valueSwitch;
+  Chain<SootField> fields;
+  Logger logger;
+
+  DominatorFinder df;
     
 	
-	@Override
-	protected void internalTransform(Body arg0, String arg1,  Map arg2) {
-		
-		
-		try { 
-		// TODO gibt es beim BodyTransformer auch eine Init Klasse, in die ich das schieben kann?
-		// TODO Warum braucht man das an dieser Stelle auch, 
-		// wenn das Setup doch schon in main gemacht wird??	
-			System.out.println("Logger Init2");
-			L1Logger.setup(Level.ALL);
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "L1Logger couldn't be initialized properly");
-			e.printStackTrace();
-		}
-		
-		LOGGER = L1Logger.getLogger();
-		LOGGER.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}", arg0.getMethod().getName());
+  /* (non-Javadoc)
+   * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
+   */
+  @Override
+  protected void internalTransform(Body arg0, String arg1,  Map arg2) {
+
+
+    try { 
+
+      System.out.println("Logger Init2");
+      L1Logger.setup(Level.ALL);
+    } catch (IOException e) {
+      logger.log(Level.WARNING, "L1Logger couldn't be initialized properly");
+      e.printStackTrace();
+    }
+
+		logger = L1Logger.getLogger();
+		logger.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}", arg0.getMethod().getName());
 		
 		stmtSwitch = new AnnotationStmtSwitch();
     	valueSwitch = new AnnotationValueSwitch();	
@@ -93,7 +93,7 @@ public class BodyAnalyzer extends BodyTransformer{
          * new object
          */
         if (method.getName().equals("<init>")) {
-        		LOGGER.log(Level.INFO, "Entering <init>");
+        		logger.log(Level.INFO, "Entering <init>");
         		JimpleInjector.addInstanceObjectToObjectMap();
         		
                 // Add all instance fields to ObjectMap
@@ -106,7 +106,7 @@ public class BodyAnalyzer extends BodyTransformer{
         		}
         		
         } else if (method.getName().equals("<clinit>")) {
-        		LOGGER.log(Level.INFO, "Entering <clinit>");
+        		logger.log(Level.INFO, "Entering <clinit>");
         		SootClass sc = method.getDeclaringClass();
         		JimpleInjector.addClassObjectToObjectMap(sc);
         		

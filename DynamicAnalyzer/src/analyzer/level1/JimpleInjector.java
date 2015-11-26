@@ -100,62 +100,67 @@ public class JimpleInjector {
 	 * 
 	 */
 	static Logger logger = L1Logger.getLogger();
-	
-	/**
-	 * 
-	 */
-	static Unit lastPos;
-	
-	/**
-	 * @param body
-	 */
-	public static void setBody(Body body) {
-		b = body;
-		units = b.getUnits();
-		locals = b.getLocals();
-	}
-	
-	/**
-	 * 
-	 */
-	public static void invokeHS() {
-		logger.log(Level.INFO, "Invoke HandleStmt in method {0}", b.getMethod().getName());
-		
-		locals.add(hs);
-		Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(RefType.v(HANDLE_CLASS)));
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		Expr specialIn = Jimple.v().newSpecialInvokeExpr(
-				hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
-		
-		Iterator<Unit> it = units.iterator();
-		Unit pos = null;
-		
-		int numOfArgs = getStartPos();
-		for(int i = 0; i < numOfArgs; i++) {
-			pos = it.next();
-		}
-		
-		Unit inv = Jimple.v().newInvokeStmt(specialIn);
-		
-		unitStore_After.insertElement(unitStore_After.new Element(in, pos)); 
-		unitStore_After.insertElement(unitStore_After.new Element(inv, in));
-		lastPos = inv;
-	}
-	
-	/**
-	 * 
-	 */
-	public static void initHS() {
-		logger.log(Level.INFO, "Initialize HandleStmt in method {0}", b.getMethod().getName());
-		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		Expr invokeInit = Jimple.v().newStaticInvokeExpr(
-				Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"init", paramTypes, VoidType.v(), true));
-		Unit init = Jimple.v().newInvokeStmt(invokeInit);
-		unitStore_After.insertElement(unitStore_After.new Element(init, lastPos));
-		lastPos = init;
-	}
+
+  /**
+   * Stores the position of the last unit which was analyzed in the unit chain or the last
+   * inserted unit. Is needed for further units, which have to be inserted after the last position.
+   */
+  static Unit lastPos;
+
+  /**
+   * @param body
+   */
+  public static void setBody(Body body) {
+    b = body;
+    units = b.getUnits();
+    locals = b.getLocals();
+    lastPos = units.getFirst();
+  }
+
+  /**
+   * 
+  */
+  public static void invokeHS() {
+    logger.log(Level.INFO, "Invoke HandleStmt in method {0}", b.getMethod().getName());
+
+    locals.add(hs);
+    Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(RefType.v(HANDLE_CLASS)));
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    Expr specialIn = Jimple.v().newSpecialInvokeExpr(
+        hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
+
+    Iterator<Unit> it = units.iterator();
+
+    int numOfArgs = getStartPos();
+    for (int i = 0; i < numOfArgs; i++) {
+      lastPos = it.next();
+    }
+    
+
+
+    System.out.println("LAST POSITION: " + lastPos.toString());
+
+    Unit inv = Jimple.v().newInvokeStmt(specialIn);
+
+    unitStore_After.insertElement(unitStore_After.new Element(in, lastPos)); 
+    unitStore_After.insertElement(unitStore_After.new Element(inv, in));
+    lastPos = inv;
+  }
+
+  /**
+   * Injects the constructor call of HandleStmt into the analyzed method.
+   */
+  public static void initHS() {
+    logger.log(Level.INFO, "Initialize HandleStmt in method {0}", b.getMethod().getName());
+    
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    Expr invokeInit = Jimple.v().newStaticInvokeExpr(
+        Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "init", paramTypes, VoidType.v(), true));
+    Unit init = Jimple.v().newInvokeStmt(invokeInit);
+    unitStore_After.insertElement(unitStore_After.new Element(init, lastPos));
+    lastPos = init;
+  }
 
   /**
    * Injects the HandleStmt.close() method. This method should be injected at the
@@ -801,9 +806,9 @@ public class JimpleInjector {
 		
 	}
 	
-	/**********************************************************************************************
-	 *  Inter-scope functions
-	 *********************************************************************************************/
+  /**********************************************************************************************
+   *  Inter-scope functions
+   *********************************************************************************************/
 	
 	/**
 	 * @param retStmt
@@ -844,53 +849,56 @@ public class JimpleInjector {
 		lastPos = pos;
 	}
 
-	/**
-	 * @param pos
-	 * @param lArguments
-	 */
-	public static void storeArgumentLevels(Unit pos, Local... lArguments) {
-		
-		logger.log(Level.INFO, "Store Arguments for next method in method {0}",
-				b.getMethod().getName());
-		
-		int length = lArguments.length;
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1));
-		
-	    Expr paramArray = Jimple.v().newNewArrayExpr(RefType.v("java.lang.String"), IntConstant.v(length));
+  /**
+   * @param pos
+   * @param lArguments
+   */
+  public static void storeArgumentLevels(Unit pos, Local... lArguments) {
 
-	    Unit assignNewStringArray = Jimple.v().newAssignStmt(local_for_String_Arrays, paramArray);
-	    
-	    Unit[] tmpUnitArray = new Unit[length];
-	    
-		for (int i = 0; i < length; i++) {
-			
-			// It's possible to get a null vector as an argument. This happens,
-			// if a constant is set as argument.
-			if (lArguments[i] != null) {
-				String signature = getSignatureForLocal(lArguments[i]);
-				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(signature));
-			} else {
-				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(" ")); // TOD unn�tig
-			}
-		}
-		
-		Expr storeArgs = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "storeArgumentLevels", parameterTypes, 
-				VoidType.v(), false), local_for_String_Arrays);
-		Stmt invokeStoreArgs = Jimple.v().newInvokeStmt(storeArgs);
-		
-		
-		for (Unit el : tmpUnitArray) {
-			unitStore_Before.insertElement(unitStore_Before.new Element(el, pos));
-		}
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignNewStringArray, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(invokeStoreArgs, pos));
-		lastPos = pos;
-		
-	}
-	
+    logger.log(Level.INFO, "Store Arguments for next method in method {0}",
+        b.getMethod().getName());
+
+    int length = lArguments.length;
+
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1));
+
+    Expr paramArray = Jimple.v().newNewArrayExpr(RefType.v(
+        "java.lang.String"), IntConstant.v(length));
+
+    Unit assignNewStringArray = Jimple.v().newAssignStmt(local_for_String_Arrays, paramArray);
+
+    Unit[] tmpUnitArray = new Unit[length];
+
+    for (int i = 0; i < length; i++) {
+
+      // It's possible to get a null vector as an argument. This happens,
+      // if a constant is set as argument.
+      if (lArguments[i] != null) {
+        String signature = getSignatureForLocal(lArguments[i]);
+        tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+            local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(signature));
+      } else {
+        tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+            local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(" ")); // TODO unnoetig
+      }
+    }
+
+    Expr storeArgs = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
+        Scene.v().getSootClass(HANDLE_CLASS), "storeArgumentLevels", parameterTypes, 
+        VoidType.v(), false), local_for_String_Arrays);
+    Stmt invokeStoreArgs = Jimple.v().newInvokeStmt(storeArgs);
+
+
+    for (Unit el : tmpUnitArray) {
+      unitStore_Before.insertElement(unitStore_Before.new Element(el, pos));
+    }
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignNewStringArray, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(invokeStoreArgs, pos));
+    lastPos = pos;
+
+  }
+
 	/**
 	 * @param pos
 	 * @param l
