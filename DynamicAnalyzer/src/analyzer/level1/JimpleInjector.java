@@ -157,20 +157,21 @@ public class JimpleInjector {
 		lastPos = init;
 	}
 
-	/**
-	 * 
-	 */
-	public static void closeHS() {
-		logger.log(Level.INFO, "Close HandleStmt in method {0} {1}", 
-				new Object[] {b.getMethod().getName(), System.getProperty("line.separator")});
-		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		Expr invokeClose = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"close", paramTypes, VoidType.v(), false));
-		units.insertAfter(Jimple.v().newInvokeStmt(invokeClose), lastPos);
-	}
-	
+  /**
+   * Injects the HandleStmt.close() method. This method should be injected at the
+   * end of every analyzed method.
+   */
+  public static void closeHS() {
+    logger.log(Level.INFO, "Close HandleStmt in method {0} {1}", 
+        new Object[] {b.getMethod().getName(), System.getProperty("line.separator")});
+
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    Expr invokeClose = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "close", paramTypes, VoidType.v(), false));
+    units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
+  }
+
 	/*
 	 * Adding Elements to map
 	 */
