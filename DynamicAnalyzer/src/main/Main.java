@@ -51,11 +51,11 @@ public class Main {
         
         BodyAnalyzer banalyzer = new BodyAnalyzer();
         
-        
+       
         PackManager.v()
         		   .getPack("jtp")
         		   .add(new Transform("jtp.analyzer", banalyzer)); 
-        		   
+        	   
 
        soot.Main.main(soot_options);
 

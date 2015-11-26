@@ -33,17 +33,7 @@ import utils.visitor.AnnotationValueSwitch;
  */
 public class BodyAnalyzer extends BodyTransformer{
 
-  SootClass sootClass;
-  SootMethod method;
-  Body body;  
-  Chain<Unit> units;
-  Chain<Local> locals;
-  AnnotationStmtSwitch stmtSwitch;
-  AnnotationValueSwitch valueSwitch;
-  Chain<SootField> fields;
-  Logger logger;
 
-  DominatorFinder df;
     
 	
   /* (non-Javadoc)
@@ -51,8 +41,19 @@ public class BodyAnalyzer extends BodyTransformer{
    */
   @Override
   protected void internalTransform(Body arg0, String arg1,  Map arg2) {
+	  SootClass sootClass;
+	  SootMethod method;
+	  Body body;  
+	  Chain<Unit> units;
+	  Chain<Local> locals;
+	  AnnotationStmtSwitch stmtSwitch;
+	  AnnotationValueSwitch valueSwitch;
+	  Chain<SootField> fields;
 
+	  DominatorFinder df;
 
+	  Logger logger = L1Logger.getLogger();
+	  
     try { 
 
       System.out.println("Logger Init2");
@@ -62,7 +63,6 @@ public class BodyAnalyzer extends BodyTransformer{
       e.printStackTrace();
     }
 
-		logger = L1Logger.getLogger();
 		logger.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}", arg0.getMethod().getName());
 		
 		stmtSwitch = new AnnotationStmtSwitch();
@@ -146,6 +146,7 @@ public class BodyAnalyzer extends BodyTransformer{
 				// JimpleInjector.exitInnerScope();
 			}
         }
+        
         JimpleInjector.addUnitsToChain();      
         
         JimpleInjector.closeHS();

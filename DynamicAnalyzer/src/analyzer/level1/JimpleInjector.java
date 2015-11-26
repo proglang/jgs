@@ -132,8 +132,10 @@ public class JimpleInjector {
     Iterator<Unit> it = units.iterator();
 
     int numOfArgs = getStartPos();
-    for (int i = 0; i < numOfArgs; i++) {
+    for (int i = 0; i < numOfArgs - 1; i++) {
+
       lastPos = it.next();
+      System.out.println("LAST POSITION in i: " + lastPos.toString());
     }
     
 
@@ -890,10 +892,11 @@ public class JimpleInjector {
     Stmt invokeStoreArgs = Jimple.v().newInvokeStmt(storeArgs);
 
 
+
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignNewStringArray, pos));    
     for (Unit el : tmpUnitArray) {
-      unitStore_Before.insertElement(unitStore_Before.new Element(el, pos));
-    }
-    unitStore_Before.insertElement(unitStore_Before.new Element(assignNewStringArray, pos));
+        unitStore_Before.insertElement(unitStore_Before.new Element(el, pos));
+      }
     unitStore_Before.insertElement(unitStore_Before.new Element(invokeStoreArgs, pos));
     lastPos = pos;
 
