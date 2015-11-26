@@ -122,7 +122,8 @@ public class MethodBodyTypingTest {
         assertConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
-                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)))),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
                 finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
     }
 

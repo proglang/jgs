@@ -5,10 +5,13 @@ import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Collectors.*;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The result of typing a statement: a set of constraints, an
@@ -34,10 +37,11 @@ public class Result<LevelT> {
         return new Result<>(csets.empty(), emptyEffect(), env);
     }
 
-    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, TypeVars tvars) {
-        Result<Level> envJoin = Environment.join(r1.getFinalEnv(),r2.getFinalEnv(), tvars);
-        ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(envJoin.constraints);
-        return new Result<>(cs, r1.effects.add(r2.effects), envJoin.getFinalEnv()) ;
+    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars) {
+        Environment.JoinResult<Level> envJoin = Environment.join(r1.getFinalEnv(),r2.getFinalEnv(), tvars);
+        List<Constraint<Level>> csList = envJoin.constraints.collect(Collectors.toList());
+        ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(csets.fromCollection(csList));
+        return new Result<>(cs, r1.effects.add(r2.effects), envJoin.env) ;
     }
 
     public static <Level> Result<Level> addConstraints(Result<Level> r, ConstraintSet<Level> constraints) {

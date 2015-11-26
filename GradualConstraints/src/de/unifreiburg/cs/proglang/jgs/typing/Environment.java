@@ -2,12 +2,13 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
+import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
@@ -20,6 +21,16 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
  */
 public class Environment {
 
+    public static class JoinResult<Level> {
+        public final Stream<Constraint<Level>> constraints;
+        public final Environment env;
+
+        public JoinResult(Stream<Constraint<Level>> constraints, Environment env) {
+            this.constraints = constraints;
+            this.env = env;
+        }
+    }
+
     /**
      * The domain of environments "Var"s which are soot.Local and soot.jimple.ThisRef
      * (and perhaps soot.jimple.ParameterRef). (Hopefully) Their only purpose is to
@@ -30,11 +41,33 @@ public class Environment {
 
     /**
      * Joint two environments. Returns a <code>Result</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left empty) which is a bit of a hack...
-     * @param tvars A type variable generator for the fresh variables required for the constraints.
      */
-    public static <Level> Result<Level> join(Environment r1, Environment r2, TypeVars tvars) {
-        // TODO: this could be more efficient
-        throw new RuntimeException("Not Implemented!");
+    public static <Level> JoinResult<Level> join(Environment r1, Environment r2, TypeVars tvars) {
+        Map<Var<?>, TypeVar> joinedEnv = new HashMap<>();
+        Stream.Builder cs = Stream.builder();
+        r1.env.entrySet().stream().forEach( e -> {
+            Var<?> k = e.getKey();
+            TypeVar v1 = e.getValue();
+            if (r2.env.containsKey(k)) {
+                TypeVar v2 = r2.get(k);
+                if (!v1.equals(v2)) {
+                    TypeVar vNew = tvars.fresh(k.toString());
+                    Stream.of(Constraints.le(variable(v1), variable(vNew)), Constraints.le(variable(v2), variable(vNew))).forEach(cs);
+                    joinedEnv.put(k, vNew);
+                } else {
+                    joinedEnv.put(k, v1);
+                }
+            } else {
+                joinedEnv.put(k, v1);
+            }
+        });
+        r2.env.entrySet().stream().forEach(e -> {
+            Var<?> k = e.getKey();
+            if (r1.env.containsKey(k)) {
+                joinedEnv.put(k, e.getValue());
+            }
+        });
+        return new JoinResult<>(cs.build(), Environments.fromMap(joinedEnv));
     }
 
     public Environment(Map<Var<?>, TypeVar> env) {

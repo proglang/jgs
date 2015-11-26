@@ -15,6 +15,7 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -166,21 +167,25 @@ public class MethodBodyTyping<Level> {
 
             Stmt s = (Stmt) d;
             Result<Level> r;
+
+            // generate a new pc when branching
+            Optional<TypeVar> newPc = s.branches()? Optional.of(tvars.fresh("pc")) : Optional.empty();
+
             try {
-                r = bsTyping.generate(s, in.getResult().getFinalEnv(), out.getPcs(), signatures, casts);
+                r = bsTyping.generate(s, in.getResult().getFinalEnv(), out.getPcs(), signatures, casts, newPc);
             } catch (TypeError e) {
                 throw new AnalysisException(e);
             }
             // include the constraints of "in"
             r = Result.addEffects(Result.addConstraints(r, in.getResult().getConstraints()), in.getResult().getEffects());
 
-            // set a result
-            out.setResult(r);
-
             // fix up the context in case we are branching
             if (s.branches()) {
                 out.addContext(s, tvars.fresh("pc"));
             }
+            // set a result
+            out.setResult(r);
+
         }
 
         @Override
@@ -195,7 +200,7 @@ public class MethodBodyTyping<Level> {
 
         @Override
         protected void merge(ResultBox<Level> in1, ResultBox<Level> in2, ResultBox<Level> out) {
-            out.setResult(Result.join(in1.getResult(), in2.getResult(), tvars));
+            out.setResult(Result.join(in1.getResult(), in2.getResult(), csets, tvars));
         }
 
         @Override
