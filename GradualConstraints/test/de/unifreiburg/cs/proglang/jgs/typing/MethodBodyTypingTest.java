@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
+import de.unifreiburg.cs.proglang.jgs.constraints.NaiveConstraints;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,6 +49,8 @@ public class MethodBodyTypingTest {
     public void testSequences() throws TypeError {
         Stmt first = j.newAssignStmt(code.localX, j.newAddExpr(code.localX, code.localY));
         Stmt last = j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localZ));
+        // x = x + y;
+        // y = x + z;
         DirectedGraph<Unit> g = seq(
                 first,
                 last
@@ -77,9 +80,11 @@ public class MethodBodyTypingTest {
                 leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
                 leC(pc, finalResult.finalTypeVariableOf(code.varY)) ));
 
-        Set<TypeVars.TypeVar> varsToProject = new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)));
-        Set<Constraint<Level>> projected = finalResult.getConstraints().projectTo(varsToProject);
-        assertThat(String.format("The projection of %s to %s", finalResult.getConstraints(), varsToProject), makeNaive(projected), is(equivalent(expected)));
+        Set<TypeVars.TypeVar> varsToProject = new HashSet<>(asList(pc, code.init.get(code.varX), code.init.get(code.varY),
+                code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)));
+        ConstraintSet<Level> projected = finalResult.getConstraints().projectTo(varsToProject);
+        assertThat(String.format("The projection of %s to %s", finalResult.getConstraints(), varsToProject), NaiveConstraints.minimize(projected), is(equivalent(expected)));
+        assertThat(String.format("The projection of %s to %s", finalResult.getConstraints(), varsToProject), projected, is(equivalent(expected)));
 
     }
 }

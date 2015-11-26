@@ -4,10 +4,7 @@ import static java.util.Arrays.equals;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,6 +17,7 @@ import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.*;
+import static java.util.Collections.*;
 
 public class NaiveConstraintsTest {
 
@@ -142,6 +140,26 @@ public class NaiveConstraintsTest {
         expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3), compC(cs.x1, cs.x3)));
 
         assertThat(closed, is(equivalent(expected)));
+    }
+
+    void assertProjection(Collection<Constraint<Level>> cs, Collection<TypeVars.TypeVar> vars, Collection<Constraint<Level>> expectedSet) {
+        ConstraintSet<Level> projected = makeNaive(cs).projectTo(new HashSet<>(vars));
+        ConstraintSet<Level> expected = makeNaive(expectedSet);
+        assertThat(String.format("%s projected to %s", cs, vars), projected
+                , is(equivalent(expected)));
+    }
+
+    @Test
+    public void testProjection1() {
+        Set<Constraint<Level>> tmp = Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3)).collect(toSet());
+        assertProjection(tmp, asList(cs.v1, cs.v3), asList(leC(cs.x1, cs.x3)));
+    }
+
+    @Test
+    public void testMinimize() {
+        Set<Constraint<Level>> tmp = Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), compC(cs.x3, cs.x2), dimplC(cs.x1, cs.x2)).collect(toSet());
+        Set<Constraint<Level>> expected = Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3)).collect(toSet());
+        assertThat(makeNaive(NaiveConstraints.minimize(tmp)), is(equivalent(makeNaive(expected))));
     }
 
 }

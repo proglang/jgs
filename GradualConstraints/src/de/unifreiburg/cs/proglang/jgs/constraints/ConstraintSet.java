@@ -72,5 +72,5 @@ public abstract class ConstraintSet<Level> {
      * interpreted as a ConstraintSet, should impose the same restrictions on the variables in <code>typeVars</code> as
      * the original set.
      */
-    public abstract Set<Constraint<Level>> projectTo(Set<TypeVar> typeVars);
+    public abstract ConstraintSet<Level> projectTo(Set<TypeVar> typeVars);
 }

@@ -2,7 +2,6 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
@@ -52,6 +51,14 @@ public class Constraints<Level> {
         return make(c.kind, c.getRhs(), c.getLhs());
     }
 
+    public static <Level> boolean equalComponents(Constraint<Level> c1, Constraint<Level> c2) {
+        return c1.getLhs().equals(c2.getLhs()) && c1.getRhs().equals(c2.getRhs());
+    }
+
+    /**
+     * Given the constraint <code>c</code>, return literally all the non-reflexive constraints that would be implied by <code>c</code>.
+     */
+    //TODO: write a property-based test for the soundness of the implementation (i.e., the result is equivalent to <code>c</code>)
     public static <Level> Stream<Constraint<Level>> implicationsOf(Constraint<Level> c) {
         switch (c.kind) {
             case LE:
@@ -61,7 +68,7 @@ public class Constraints<Level> {
                         implicationsOf(toKind(Constraint.Kind.COMP, c)));
             case COMP:
                 Constraint<Level> dimpl = toKind(Constraint.Kind.DIMPL, c);
-                // x1 ~ x2 implies x2 ~ x1 and x1 ?-> x2
+                // x1 ~ x2 implies x2 ~ x1 and x1 ?-> x2, and x2 ?~> x1
                 return Stream.of(c, symmetricOf(c), dimpl, symmetricOf(dimpl));
             case DIMPL:
                 return Stream.of(c);
