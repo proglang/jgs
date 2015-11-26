@@ -21,10 +21,10 @@ public class TypeVars {
      * 
      * @return A type variable which is unique for this context.
      */
-    public TypeVar fresh() {
+    public TypeVar fresh(String varprefix) {
         String suffix = Integer.toString(count);
         this.count++;
-        return new TypeVar(prefix + suffix);
+        return new TypeVar(prefix + varprefix + suffix);
     }
 
     public static class TypeVar {

@@ -149,12 +149,26 @@ public class BasicStatementTyping<LevelT> {
 
         @Override
         public void caseAssignStmt(AssignStmt stmt) {
+            // get the variables that we write to
+            List<Var<?>> writeVars =
+                    Var.getAllFromValueBoxes(stmt.getDefBoxes())
+                            .collect(toList());
+            if (writeVars.size() != 1) {
+                throw new TypingAssertionFailure(String.format(
+                        "Assignment should have "
+                                + "exactly one destination variable. "
+                                + "Found: %s. Statement was: %s.",
+                        writeVars.toString(),
+                        stmt.toString()));
+            }
+            Var<?> writeVar = writeVars.get(0); // cannot fail now
+
 
             //constraints and errors
             Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
 
             // Type variable (and constraint-type) for destinations
-            TypeVar destTVar = tvars.fresh();
+            TypeVar destTVar = tvars.fresh(writeVar.toString());
             CType<LevelT> destCType = CTypes.variable(destTVar);
 
             // Utility functions
@@ -257,18 +271,6 @@ public class BasicStatementTyping<LevelT> {
             });
 
             // transition (for now only local assignments)
-            List<Var<?>> writeVars =
-                    Var.getAllFromValueBoxes(stmt.getDefBoxes())
-                            .collect(toList());
-            if (writeVars.size() != 1) {
-                throw new TypingAssertionFailure(String.format(
-                        "Assignment should have "
-                                + "exactly one destination variable. "
-                                + "Found: %s. Statement was: %s.",
-                        writeVars.toString(),
-                        stmt.toString()));
-            }
-            Var<?> writeVar = writeVars.get(0); // cannot fail now
             Environment fin = env.add(writeVar, destTVar);
 
             // .. and the result
@@ -289,6 +291,11 @@ public class BasicStatementTyping<LevelT> {
         public void caseIdentityStmt(IdentityStmt stmt) {
             // TODO Auto-generated method stub
             super.caseIdentityStmt(stmt);
+        }
+
+        @Override
+        public void defaultCase(Object obj) {
+            throw new RuntimeException("Case not implemented!");
         }
 
         @Override

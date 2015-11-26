@@ -20,10 +20,10 @@ public class SomeConstraintSets {
     public final ConstraintSet<Level> x1_le_x3__x2_le_x3;
 
     public SomeConstraintSets(TypeVars tvars) {
-        v0 = tvars.fresh();
-        v1 = tvars.fresh();
-        v2 = tvars.fresh();
-        v3 = tvars.fresh();
+        v0 = tvars.fresh("v0");
+        v1 = tvars.fresh("v1");
+        v2 = tvars.fresh("v2");
+        v3 = tvars.fresh("v3");
 
         x0 = variable(v0);
         x1 = variable(v1);

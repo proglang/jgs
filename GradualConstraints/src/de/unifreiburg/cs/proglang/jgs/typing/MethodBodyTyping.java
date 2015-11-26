@@ -179,7 +179,7 @@ public class MethodBodyTyping<Level> {
 
             // fix up the context in case we are branching
             if (s.branches()) {
-                out.addContext(s, tvars.fresh());
+                out.addContext(s, tvars.fresh("pc"));
             }
         }
 

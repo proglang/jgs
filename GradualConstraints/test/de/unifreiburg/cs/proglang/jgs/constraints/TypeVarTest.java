@@ -18,9 +18,9 @@ public class TypeVarTest {
 
     @Test
     public void testCreate() {
-        TypeVar x = tvars.fresh();
-        TypeVar x2 = tvars.fresh();
-        TypeVar y = tvars.fresh();
+        TypeVar x = tvars.fresh("x");
+        TypeVar x2 = tvars.fresh("x2");
+        TypeVar y = tvars.fresh("y");
         
         assertNotEquals(x, x2);
         assertNotEquals(x, y);

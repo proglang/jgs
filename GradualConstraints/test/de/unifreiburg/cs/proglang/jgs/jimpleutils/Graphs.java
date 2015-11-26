@@ -9,9 +9,11 @@ import soot.toolkits.graph.DirectedGraph;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -125,7 +127,11 @@ public class Graphs {
     }
 
     public static DirectedGraph<Unit> seq(Unit first, Unit... rest) {
-        return asList(rest).stream().map(Graphs::singleton).reduce(singleton(first), Graphs::seq);
+        return seq(singleton(first), rest);
+    }
+
+    public static DirectedGraph<Unit> seq(DirectedGraph<Unit> first, Unit... rest) {
+        return asList(rest).stream().map(Graphs::singleton).reduce(first, Graphs::seq);
     }
 
     public static DirectedGraph<Unit> branchIf(Expr test,  DirectedGraph<Unit> then, DirectedGraph<Unit> els) {
@@ -179,5 +185,11 @@ public class Graphs {
 
     public Graphs branchWhile(Expr test,  DirectedGraph<Unit> body) {
         throw new RuntimeException("Not implemented");
+    }
+
+    public static String toString(DirectedGraph<Unit> g) {
+        Stream.Builder<Unit> units = Stream.builder();
+        g.forEach(units);
+        return units.build().map(Object::toString).collect(joining(", "));
     }
 }

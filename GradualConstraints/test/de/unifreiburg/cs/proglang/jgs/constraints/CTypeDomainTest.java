@@ -26,11 +26,11 @@ public class CTypeDomainTest {
     public void setUp() {
        this.tvars = new TypeVars("x"); 
        Map<TypeVar, Type<Level>> m = new HashMap<>();
-       vh1 = tvars.fresh();
-       vh2 = tvars.fresh();
-       vl = tvars.fresh();
-       vd = tvars.fresh();
-       vb = tvars.fresh();
+       vh1 = tvars.fresh("h1");
+       vh2 = tvars.fresh("h2");
+       vl = tvars.fresh("l");
+       vd = tvars.fresh("d");
+       vb = tvars.fresh("b");
 
        h1 = variable(vh1);
        h2 = variable(vh2);

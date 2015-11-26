@@ -33,15 +33,15 @@ public class ConstraintsTest {
 
     @Before
     public void setUp() {
-        tvars = new TypeVars("x");
-        h1 = tvars.fresh();
-        h2 = tvars.fresh();
-        l1 = tvars.fresh();
-        l2 = tvars.fresh();
-        d1 = tvars.fresh();
-        d2 = tvars.fresh();
-        p1 = tvars.fresh();
-        p2 = tvars.fresh();
+        tvars = new TypeVars("");
+        h1 = tvars.fresh("h1");
+        h2 = tvars.fresh("h2");
+        l1 = tvars.fresh("l1");
+        l2 = tvars.fresh("l2");
+        d1 = tvars.fresh("d1");
+        d2 = tvars.fresh("d2");
+        p1 = tvars.fresh("p1");
+        p2 = tvars.fresh("p2");
         ass = new HashMap<>();
         ass.put(h1, THIGH);
         ass.put(h2, THIGH);

@@ -24,17 +24,17 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
 
 /**
- *
  * Some example "code" data for unit testing
- *
+ * <p>
  * Created by fennell on 11/16/15.
  */
 public class Code {
 
     public final Jimple j;
     public final Local localX, localY, localZ;
-    public final Var<?> varX, varY, varZ;
-    public final TypeVars.TypeVar tvarX, tvarY, tvarZ;
+    public final Local localO;
+    public final Var<?> varX, varY, varZ, varO;
+    public final TypeVars.TypeVar tvarX, tvarY, tvarZ, tvarO;
 
     // classes and methods for tests
     public final SignatureTable<LowHigh.Level> signatures;
@@ -54,17 +54,22 @@ public class Code {
         this.localX = j.newLocal("x", IntType.v());
         this.localY = j.newLocal("y", IntType.v());
         this.localZ = j.newLocal("z", IntType.v());
+        this.localO = j.newLocal("o", RefType.v());
         this.varX = Var.fromLocal(localX);
         this.varY = Var.fromLocal(localY);
         this.varZ = Var.fromLocal(localZ);
-        this.tvarX = tvars.fresh();
-        this.tvarY = tvars.fresh();
-        this.tvarZ = tvars.fresh();
+        this.varO = Var.fromLocal(localO);
+        this.tvarX = tvars.fresh(varX.toString());
+        this.tvarY = tvars.fresh(varY.toString());
+        this.tvarZ = tvars.fresh(varZ.toString());
+        this.tvarO = tvars.fresh(varO.toString());
 
         this.init = Environments.makeEmpty()
                 .add(varX, tvarX)
                 .add(varY, tvarY)
-                .add(varZ, tvarZ);
+                .add(varZ, tvarZ)
+                .add(varO, tvarO)
+        ;
 
         this.testClass = new SootClass("TestClass");
         this.testLowField_int = new SootField("testLowField", IntType.v());

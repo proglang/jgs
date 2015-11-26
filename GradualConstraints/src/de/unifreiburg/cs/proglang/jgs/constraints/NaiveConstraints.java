@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -165,7 +166,13 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public String toString() {
-        return "{" + cs + "}";
+        StringBuilder result = new StringBuilder("{");
+        Predicate<Constraint<Level>> isLe = c -> c.kind.equals(Constraint.Kind.LE);
+        Consumer<Constraint<Level>> append = c -> {result.append(c.toString()); result.append(", "); };
+        cs.stream().filter(isLe).forEach(append);
+        cs.stream().filter(isLe.negate()).forEach(append);
+        result.append("}");
+        return result.toString();
     }
 
 }

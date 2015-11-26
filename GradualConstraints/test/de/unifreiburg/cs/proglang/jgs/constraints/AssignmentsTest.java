@@ -27,8 +27,8 @@ public class AssignmentsTest {
     @Before
     public void setUp() {
         tvars = new TypeVars("x");
-        x = tvars.fresh();
-        y = tvars.fresh();
+        x = tvars.fresh("x");
+        y = tvars.fresh("y");
     }
 
     @Test

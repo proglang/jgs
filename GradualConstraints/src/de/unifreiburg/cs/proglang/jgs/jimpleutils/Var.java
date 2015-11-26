@@ -127,7 +127,7 @@ public class Var<T> {
 
     @Override
     public String toString() {
-        return "Var [me=" + me + "]";
+        return  me.toString();
     }
 
 }
