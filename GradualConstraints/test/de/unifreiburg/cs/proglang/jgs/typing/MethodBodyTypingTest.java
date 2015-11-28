@@ -9,6 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs;
 import org.junit.Before;
 import org.junit.Test;
 import soot.Unit;
+import soot.jimple.Expr;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
@@ -119,6 +120,41 @@ public class MethodBodyTypingTest {
                 singleton(j.newAssignStmt(code.localY, code.localZ)),
                 singleton(j.newNopStmt()));
 
+
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
+                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+        /* if (x = y) {  } { y = z};
+        */
+        Stmt els = j.newAssignStmt(code.localY, code.localZ);
+        g = branchIf(j.newEqExpr(code.localX, code.localY),
+                singleton(j.newNopStmt()),
+                singleton(els)
+        );
+
+        // TODO: put into individual tests
+        assertThat((g.getPredsOf(g.getTails().get(0))), hasItem(els));
+        assertThat(code.init.get(code.varY), not(is(analyze(g).finalTypeVariableOf(code.varY))));
+
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
+                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+        /* if (y = y) { y = z } { y = x};
+        */
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt thn =  j.newAssignStmt(code.localY, code.localZ);
+        els = j.newAssignStmt(code.localY, code.localX);
+        g = branchIf(cond,
+                singleton(thn),
+                singleton(els));
         assertConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
@@ -127,17 +163,26 @@ public class MethodBodyTypingTest {
                 finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
     }
 
-    private void assertConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypeError {
+    private Result<Level> analyze(DirectedGraph<Unit> g) throws TypeError {
         ForwardFlowAnalysis<Unit, MethodBodyTyping.ResultBox<Level>> gen = mbTyping.generate(g, pc, code.signatures);
         List<Unit> tails = g.getTails();
         if (tails.size() != 1) {
             throw new RuntimeException("Unit graph does not have a single tail: " + g.toString());
         }
         Unit last = g.getTails().get(0);
-        Result<Level> finalResult = gen.getFlowAfter(last).getResult();
+        return gen.getFlowAfter(last).getResult();
+    }
+
+    private void assertConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypeError {
+        Result<Level> finalResult = analyze(g);
         Set<TypeVars.TypeVar> varsToProject = getVarsToProject.apply(finalResult);
         ConstraintSet<Level> expected = getExpected.apply(finalResult);
         assertThat(String.format("The constraints of %s projected to %s", Graphs.toString(g), varsToProject),
                 NaiveConstraints.minimize(finalResult.getConstraints().projectTo(varsToProject)), is(equivalent(expected)));
     }
+
+    private void assertConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected) throws TypeError {
+        assertConstraints(g, getExpected, finalResult -> finalResult.getConstraints().variables().collect(toSet()));
+    }
+
 }

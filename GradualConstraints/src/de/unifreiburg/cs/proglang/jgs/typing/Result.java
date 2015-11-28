@@ -27,7 +27,7 @@ public class Result<LevelT> {
     private final Environment env;
 
     // factory methods
-    public static <Level> Result<Level> empty(ConstraintSetFactory<Level> csets) {
+    public static <Level> Result<Level> trivialCase(ConstraintSetFactory<Level> csets) {
         return new Result<>(csets.empty(),
                 emptyEffect(),
                 Environments.makeEmpty());
@@ -36,6 +36,8 @@ public class Result<LevelT> {
     public static <Level> Result<Level> fromEnv(ConstraintSetFactory<Level> csets, Environment env) {
         return new Result<>(csets.empty(), emptyEffect(), env);
     }
+
+
 
     public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars) {
         Environment.JoinResult<Level> envJoin = Environment.join(r1.getFinalEnv(),r2.getFinalEnv(), tvars);

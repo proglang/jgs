@@ -17,10 +17,41 @@ import static java.util.stream.Collectors.*;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Created by fennell on 11/16/15.
+ * Easily constructable Unit-Graphs, for testing
  */
-// TODO: implement this more efficiently (i.e. imperatively)
+// TODO: could be implemented more efficiently (i.e. imperatively)
 public class Graphs {
+
+    /**
+     * Modify the edges in a graph by overrding preds and succs .
+     */
+    private static abstract class Modified implements DirectedGraph<Unit> {
+        private final DirectedGraph<Unit> linear;
+
+        protected Modified(DirectedGraph<Unit> linear) {
+            this.linear = linear;
+        }
+
+        @Override
+        public final List<Unit> getHeads() {
+            return linear.getHeads();
+        }
+
+        @Override
+        public final List<Unit> getTails() {
+            return linear.getTails();
+        }
+
+        @Override
+        public final int size() {
+            return  linear.size();
+        }
+
+        @Override
+        public final Iterator<Unit> iterator() {
+            return linear.iterator();
+        }
+    }
 
     public static DirectedGraph<Unit> singleton(Unit u) {
         return new DirectedGraph<Unit>() {
@@ -122,6 +153,7 @@ public class Graphs {
         };
     }
 
+    @SafeVarargs
     public static DirectedGraph<Unit> seq(DirectedGraph<Unit> first, DirectedGraph<Unit>... rest) {
         return asList(rest).stream().reduce(first, Graphs::seq);
     }
@@ -144,16 +176,7 @@ public class Graphs {
         Stmt sGoto = Jimple.v().newGotoStmt(elseTarget);
         Stmt sEnd = Jimple.v().newNopStmt();
         DirectedGraph<Unit> linear = seq(singleton(sIf), singleton(sGoto), els, then, singleton(sEnd));
-        return new DirectedGraph<Unit>() {
-            @Override
-            public List<Unit> getHeads() {
-                return linear.getHeads();
-            }
-
-            @Override
-            public List<Unit> getTails() {
-                return linear.getTails();
-            }
+        return new Modified(linear) {
 
             @Override
             public List<Unit> getPredsOf(Unit unit) {
@@ -170,21 +193,30 @@ public class Graphs {
                         linear.getSuccsOf(unit).stream().map(s -> els.getTails().contains(unit)? sEnd : s)
                 ).collect(toList());
             }
-
-            @Override
-            public int size() {
-                return linear.size();
-            }
-
-            @Override
-            public Iterator<Unit> iterator() {
-                return linear.iterator();
-            }
         };
     }
 
-    public Graphs branchWhile(Expr test,  DirectedGraph<Unit> body) {
-        throw new RuntimeException("Not implemented");
+    public DirectedGraph<Unit> branchWhile(Expr test,  DirectedGraph<Unit> body) {
+        if (body.getHeads().size() > 1) {
+            throw new RuntimeException("Only single-head graphs allowed for branchWhile bodies!");
+        }
+        Unit doTarget = body.getHeads().get(0);
+        Stmt sIf = Jimple.v().newIfStmt(test,doTarget);
+        Stmt sEnd = Jimple.v().newNopStmt();
+        Stmt sGoto = Jimple.v().newGotoStmt(sEnd);
+        DirectedGraph<Unit> linear = seq(singleton(sIf), singleton(sGoto), body, singleton(sEnd));
+        return new Modified(linear) {
+
+            @Override
+            public List<Unit> getPredsOf(Unit unit) {
+                throw new RuntimeException("Not Implemented!");
+            }
+
+            @Override
+            public List<Unit> getSuccsOf(Unit unit) {
+                throw new RuntimeException("Not Implemented!");
+            }
+        };
     }
 
     public static String toString(DirectedGraph<Unit> g) {

@@ -26,6 +26,8 @@ import soot.jimple.*;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
+import static de.unifreiburg.cs.proglang.jgs.typing.Result.fromEnv;
+import static de.unifreiburg.cs.proglang.jgs.typing.Result.trivialCase;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
@@ -59,15 +61,7 @@ public class BasicStatementTyping<LevelT> {
                                    Set<TypeVar> pc,
                                    SignatureTable<LevelT> signatures,
                                    Casts<LevelT> casts) throws TypeError {
-        return generate(s, env, pc, signatures, casts, Optional.<TypeVar>empty());
-    }
-    public Result<LevelT> generate(Stmt s,
-                                   Environment env,
-                                   Set<TypeVar> pc,
-                                   SignatureTable<LevelT> signatures,
-                                   Casts<LevelT> casts,
-                                   Optional<TypeVar> newPc) throws TypeError {
-        Gen g = new Gen(env, pc, signatures, casts, newPc);
+        Gen g = new Gen(env, pc, signatures, casts);
         s.apply(g);
         // abort on any errors
         if (!g.getErrorMsg().isEmpty()) {
@@ -98,7 +92,6 @@ public class BasicStatementTyping<LevelT> {
         private final Set<TypeVar> pcs;
         private final SignatureTable<LevelT> signatures;
         private final Casts<LevelT> casts;
-        private final Optional<TypeVar> newPc;
 
         public List<String> getErrorMsg() {
             return unmodifiableList(errorMsg);
@@ -109,14 +102,13 @@ public class BasicStatementTyping<LevelT> {
         public Gen(Environment env,
                    Set<TypeVar> pc,
                    SignatureTable signatures,
-                   Casts<LevelT> casts, Optional<TypeVar> newPc) {
+                   Casts<LevelT> casts) {
             super();
             this.env = env;
             this.pcs = pc;
             this.signatures = signatures;
             this.casts = casts;
             this.errorMsg = new ArrayList<>();
-            this.newPc = newPc;
         }
 
         private Result<LevelT> result;
@@ -305,44 +297,13 @@ public class BasicStatementTyping<LevelT> {
             super.caseIdentityStmt(stmt);
         }
 
-        @Override
-        public void caseIfStmt(IfStmt stmt) {
 
-            Stream.Builder<Constraint<LevelT>> cs = Stream.builder();
-
-            if (!newPc.isPresent()) {
-                throw new RuntimeException("If case without assigning a new pc");
-            }
-
-            CType<LevelT> nPc = CTypes.variable(newPc.get());
-            // add new pc as upper bound to old pc
-            this.pcs.forEach(pc -> {
-                cs.add(cstrs.le(variable(pc), nPc));
-            });
-
-            Var.getAllFromValueBoxes(stmt.getUseBoxes()).forEach(v ->
-                    cs.add(Constraints.le(variable(env.get(v)), nPc)));
-
-            ConstraintSet<LevelT> cset = csets.fromCollection(cs.build().collect(toList()));
-            Result<LevelT> result = makeResult(cset, env, MethodSignatures.<LevelT>emptyEffect());
-
-            this.result = result;
-        }
-
-        private Result<LevelT> trivialCase() {
-            return makeResult(csets.empty(), env, emptyEffect());
-        }
 
         @Override
         public void caseNopStmt(NopStmt stmt) {
-            this.result = trivialCase();
+            this.result = fromEnv(csets, env);
         }
 
-        @Override
-        public void caseGotoStmt(GotoStmt stmt) {
-            // nothing interesting here
-            this.result = trivialCase();
-        }
 
         @Override
         public void defaultCase(Object obj) {

@@ -2,15 +2,17 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import soot.Unit;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.DominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.toolkits.graph.UnitGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
 
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 import java.util.HashMap;
@@ -19,6 +21,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static de.unifreiburg.cs.proglang.jgs.typing.Result.fromEnv;
+import static de.unifreiburg.cs.proglang.jgs.typing.Result.trivialCase;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -40,6 +45,49 @@ public class MethodBodyTyping<Level> {
         this.csets = csets;
         this.tvars = tvars;
         this.casts = casts;
+    }
+
+    Result<Level> generateForBranches(Unit s,
+                                      Environment env,
+                                      Set<TypeVar> pcs,
+                                      SignatureTable<Level> signatures, Casts<Level> casts, TypeVar newPc) throws TypeError {
+        AbstractStmtSwitch g = new AbstractStmtSwitch() {
+
+            @Override
+            public void defaultCase(Object obj) {
+                throw new RuntimeException("Not implemented!");
+            }
+
+            @Override
+            public void caseIfStmt(IfStmt stmt) {
+
+                Stream.Builder<Constraint<Level>> cs = Stream.builder();
+
+                CTypes.CType<Level> nPc = variable(newPc);
+                // add new pc as upper bound to old pc
+                pcs.forEach(pc -> {
+                    cs.add(Constraints.le(variable(pc), nPc));
+                });
+
+                Var.getAllFromValueBoxes(stmt.getUseBoxes()).forEach(v ->
+                        cs.add(Constraints.le(variable(env.get(v)), nPc)));
+
+                ConstraintSet<Level> cset = csets.fromCollection(cs.build().collect(toList()));
+                Result<Level> result = new Result<>(cset,  MethodSignatures.<Level>emptyEffect(), env);
+
+                setResult(result);
+            }
+
+
+            @Override
+            public void caseGotoStmt(GotoStmt stmt) {
+                // nothing interesting here
+                setResult(fromEnv(csets, env));
+            }
+        };
+        s.apply(g);
+        //noinspection unchecked
+        return (Result<Level>) g.getResult();
     }
 
     /**
@@ -99,6 +147,10 @@ public class MethodBodyTyping<Level> {
             this.localContexts.put(s, v);
         }
 
+        public Optional<TypeVar> contextVariableFor(Stmt s) {
+            return Optional.ofNullable(this.localContexts.get(s));
+        }
+
         /**
          * Remove the context variable of a (if-)statement from the contexts, if possible. Ignores statements that are not recorded to have a contexts.
          */
@@ -140,6 +192,12 @@ public class MethodBodyTyping<Level> {
         }
     }
 
+
+//    @Override
+//    public void caseIfStmt(IfStmt stmt) {
+//
+//    }
+
     /**
      * Forward analysis for generating constraints, transitions, and effects. When completed, the typing.Result _after_ each statement describes the pre/post-environments, constraints and effects for that particular statement.
      */
@@ -168,21 +226,24 @@ public class MethodBodyTyping<Level> {
             Stmt s = (Stmt) d;
             Result<Level> r;
 
-            // generate a new pc when branching
-            Optional<TypeVar> newPc = s.branches()? Optional.of(tvars.fresh("pc")) : Optional.empty();
-
             try {
-                r = bsTyping.generate(s, in.getResult().getFinalEnv(), out.getPcs(), signatures, casts, newPc);
+                if (s.branches()) {
+                    // generate a new pc when branching
+                    TypeVar newPc = out.contextVariableFor(s).orElseGet(() -> {
+                        TypeVar frsh = tvars.fresh("pc");
+                        out.addContext(s, frsh);
+                        return frsh;
+                    });
+                    r = generateForBranches(s, in.getResult().getFinalEnv(), out.getPcs(), signatures, casts, newPc);
+                } else {
+                    r = bsTyping.generate(s, in.getResult().getFinalEnv(), out.getPcs(), signatures, casts);
+                }
             } catch (TypeError e) {
                 throw new AnalysisException(e);
             }
             // include the constraints of "in"
             r = Result.addEffects(Result.addConstraints(r, in.getResult().getConstraints()), in.getResult().getEffects());
 
-            // fix up the context in case we are branching
-            if (s.branches()) {
-                out.addContext(s, tvars.fresh("pc"));
-            }
             // set a result
             out.setResult(r);
 
@@ -190,7 +251,7 @@ public class MethodBodyTyping<Level> {
 
         @Override
         protected ResultBox<Level> newInitialFlow() {
-            return new ResultBox<>(Result.empty(csets), topLevelContext);
+            return new ResultBox<>(trivialCase(csets), topLevelContext);
         }
 
         @Override

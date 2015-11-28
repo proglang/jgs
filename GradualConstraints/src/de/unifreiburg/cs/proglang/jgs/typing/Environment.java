@@ -40,11 +40,11 @@ public class Environment {
 
 
     /**
-     * Joint two environments. Returns a <code>Result</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left empty) which is a bit of a hack...
+     * Joint two environments. Returns a <code>Result</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left trivialCase) which is a bit of a hack...
      */
     public static <Level> JoinResult<Level> join(Environment r1, Environment r2, TypeVars tvars) {
         Map<Var<?>, TypeVar> joinedEnv = new HashMap<>();
-        Stream.Builder cs = Stream.builder();
+        Stream.Builder<Constraint<Level>> cs = Stream.builder();
         r1.env.entrySet().stream().forEach( e -> {
             Var<?> k = e.getKey();
             TypeVar v1 = e.getValue();
@@ -52,7 +52,7 @@ public class Environment {
                 TypeVar v2 = r2.get(k);
                 if (!v1.equals(v2)) {
                     TypeVar vNew = tvars.fresh(k.toString());
-                    Stream.of(Constraints.le(variable(v1), variable(vNew)), Constraints.le(variable(v2), variable(vNew))).forEach(cs);
+                    Stream.<Constraint<Level>>of(Constraints.le(variable(v1), variable(vNew)), Constraints.le(variable(v2), variable(vNew))).forEach(cs);
                     joinedEnv.put(k, vNew);
                 } else {
                     joinedEnv.put(k, v1);
@@ -63,7 +63,7 @@ public class Environment {
         });
         r2.env.entrySet().stream().forEach(e -> {
             Var<?> k = e.getKey();
-            if (r1.env.containsKey(k)) {
+            if (!r1.env.containsKey(k)) {
                 joinedEnv.put(k, e.getValue());
             }
         });
