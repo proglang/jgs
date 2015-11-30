@@ -196,25 +196,42 @@ public class Graphs {
         };
     }
 
-    public DirectedGraph<Unit> branchWhile(Expr test,  DirectedGraph<Unit> body) {
+    public static DirectedGraph<Unit> branchWhile(Expr test,  DirectedGraph<Unit> body) {
         if (body.getHeads().size() > 1) {
             throw new RuntimeException("Only single-head graphs allowed for branchWhile bodies!");
         }
         Unit doTarget = body.getHeads().get(0);
         Stmt sIf = Jimple.v().newIfStmt(test,doTarget);
         Stmt sEnd = Jimple.v().newNopStmt();
-        Stmt sGoto = Jimple.v().newGotoStmt(sEnd);
-        DirectedGraph<Unit> linear = seq(singleton(sIf), singleton(sGoto), body, singleton(sEnd));
+        Stmt sGotoLoop = Jimple.v().newGotoStmt(sIf);
+        Stmt sGotoEnd = Jimple.v().newGotoStmt(sEnd);
+        DirectedGraph<Unit> linear = seq(singleton(sIf), singleton(sGotoEnd), body, singleton(sGotoLoop), singleton(sEnd));
         return new Modified(linear) {
 
             @Override
             public List<Unit> getPredsOf(Unit unit) {
-                throw new RuntimeException("Not Implemented!");
+                if (unit.equals(sIf)) {
+                    return Collections.singletonList(sGotoLoop);
+                } else if (unit.equals(doTarget)) {
+                    return Collections.singletonList(sIf);
+                } else if (unit.equals(sEnd)) {
+                    return Collections.singletonList(sGotoEnd);
+                } else {
+                    return linear.getPredsOf(unit);
+                }
             }
 
             @Override
             public List<Unit> getSuccsOf(Unit unit) {
-                throw new RuntimeException("Not Implemented!");
+                if (unit.equals(sIf)) {
+                    return asList(sGotoEnd, doTarget);
+                } else if (unit.equals(sGotoEnd)) {
+                    return Collections.singletonList(sEnd);
+                } else if (unit.equals(sGotoLoop)) {
+                    return Collections.singletonList(sIf);
+                } else {
+                    return linear.getSuccsOf(unit);
+                }
             }
         };
     }

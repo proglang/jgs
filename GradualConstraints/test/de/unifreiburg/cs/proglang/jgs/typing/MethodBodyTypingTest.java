@@ -111,7 +111,7 @@ public class MethodBodyTypingTest {
     }
 
     @Test
-    public void testBranches() throws TypeError {
+    public void testIfBranches() throws TypeError {
         DirectedGraph<Unit> g;
 
         /* if (x = y) { y = z };
@@ -161,6 +161,21 @@ public class MethodBodyTypingTest {
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
                 finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+    }
+
+    @Test(timeout = 3000)
+    public void testWhile() throws TypeError {
+        /* while (y = y) { y = z };
+        */
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt body =  j.newAssignStmt(code.localY, code.localZ);
+        DirectedGraph<Unit> g = branchWhile(cond, singleton(body));
+        assertConstraints(g,
+                finalResult -> makeNaive(asList (
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))
+                )));
     }
 
     private Result<Level> analyze(DirectedGraph<Unit> g) throws TypeError {
