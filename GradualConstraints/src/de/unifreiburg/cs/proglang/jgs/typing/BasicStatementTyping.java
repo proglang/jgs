@@ -306,8 +306,15 @@ public class BasicStatementTyping<LevelT> {
 
 
         @Override
+        public void caseGotoStmt(GotoStmt stmt) {
+            // nothing interesting here
+            this.result = fromEnv(csets, env);
+        }
+
+
+        @Override
         public void defaultCase(Object obj) {
-            throw new RuntimeException("Case not implemented!");
+            throw new RuntimeException("Case not implemented: " + obj);
         }
 
         @Override

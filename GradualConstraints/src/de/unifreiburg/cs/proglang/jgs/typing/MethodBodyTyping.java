@@ -3,27 +3,21 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import soot.Unit;
 import soot.jimple.*;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.DominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.toolkits.scalar.ForwardFlowAnalysis;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
-import static de.unifreiburg.cs.proglang.jgs.typing.Result.fromEnv;
+import static de.unifreiburg.cs.proglang.jgs.typing.Result.addConstraints;
 import static de.unifreiburg.cs.proglang.jgs.typing.Result.trivialCase;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -33,29 +27,28 @@ import static java.util.stream.Collectors.toSet;
  */
 public class MethodBodyTyping<Level> {
 
-    final private BasicStatementTyping<Level> bsTyping;
     final private Casts<Level> casts;
     final private ConstraintSetFactory<Level> csets;
-    final private TypeVars tvars;
-    final private Environment env;
+    // TODO: the following two could moved somewhere else (?)
+    final private Constraints<Level> cstrs;
+    final private TypeDomain<Level> types;
 
-    public MethodBodyTyping(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, Environment env, TypeVars tvars, Constraints<Level> cstrs, Casts<Level> casts) {
-        this.env = env;
-        bsTyping = new BasicStatementTyping<>(csets, types, tvars, cstrs);
+    public MethodBodyTyping(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, Constraints<Level> cstrs, Casts<Level> casts) {
         this.csets = csets;
-        this.tvars = tvars;
         this.casts = casts;
+        this.types = types;
+        this.cstrs = cstrs;
     }
 
-    Result<Level> generateForBranches(Unit s,
+    Set<Constraint<Level>> constraintsForBranches(Unit s,
                                       Environment env,
-                                      Set<TypeVar> pcs,
-                                      SignatureTable<Level> signatures, Casts<Level> casts, TypeVar newPc) throws TypeError {
+                                      TypeVar oldPc,
+                                      TypeVar newPc) throws TypeError {
         AbstractStmtSwitch g = new AbstractStmtSwitch() {
 
             @Override
             public void defaultCase(Object obj) {
-                throw new RuntimeException("Not implemented!");
+                throw new RuntimeException("Case not implemented: " + obj);
             }
 
             @Override
@@ -63,211 +56,85 @@ public class MethodBodyTyping<Level> {
 
                 Stream.Builder<Constraint<Level>> cs = Stream.builder();
 
-                CTypes.CType<Level> nPc = variable(newPc);
                 // add new pc as upper bound to old pc
-                pcs.forEach(pc -> {
-                    cs.add(Constraints.le(variable(pc), nPc));
-                });
+                cs.add(Constraints.le(variable(oldPc), variable(newPc)));
 
                 Var.getAllFromValueBoxes(stmt.getUseBoxes()).forEach(v ->
-                        cs.add(Constraints.le(variable(env.get(v)), nPc)));
+                        cs.add(Constraints.le(variable(env.get(v)), variable(newPc))));
 
-                ConstraintSet<Level> cset = csets.fromCollection(cs.build().collect(toList()));
-                Result<Level> result = new Result<>(cset,  MethodSignatures.<Level>emptyEffect(), env);
-
-                setResult(result);
+                setResult(cs.build().collect(toSet()));
             }
 
-
-            @Override
-            public void caseGotoStmt(GotoStmt stmt) {
-                // nothing interesting here
-                setResult(fromEnv(csets, env));
-            }
         };
         s.apply(g);
         //noinspection unchecked
-        return (Result<Level>) g.getResult();
+        return (Set<Constraint<Level>>) g.getResult();
     }
 
-    /**
-     * Generate typing constraints.
-     *
-     * @return A ForwardAnalysis result that contains typing Results for every statement in <code>body</code>
-     */
-    public Gen generate(DirectedGraph<Unit> body,
-                        TypeVar pc,
-                        SignatureTable<Level> signatures) throws TypeError {
-        Gen g;
-        try {
-            g = new Gen(body, signatures, pc);
-        } catch (AnalysisException e) {
-            throw e.error;
+
+
+    public Result<Level> generateResult(DirectedGraph<Unit> g, TypeVar pc, Environment env,
+                                        SignatureTable<Level> signatures) throws TypeError {
+        List<Unit> heads = g.getHeads();
+        if (heads.size() != 1) {
+            throw new TypeError("Analyzing graphs with more than a single head is not supported");
         }
-        return g;
+
+        Stmt s = (Stmt) heads.get(0);
+
+        @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
+
+        return generateResult(g, postdoms, s, Result.fromEnv(csets, env), signatures, pc, Collections.emptySet(), Optional.empty());
     }
 
-    /**
-     * Package a TypeError into a RuntimeException to allow to throw it from an soot.Analysis.
-     */
-    private static class AnalysisException extends RuntimeException {
 
-        public final TypeError error;
 
-        public AnalysisException(TypeError error) {
-            this.error = error;
+    private Result<Level> generateResult(DirectedGraph<Unit> g, DominatorsFinder<Unit> postdoms, Stmt s, Result<Level> previous, SignatureTable<Level> signatures, TypeVar topLevelContext, Set<Unit> visited, Optional<Unit> until) throws TypeError {
+        TypeVars sTvars = new TypeVars("{" + s.toString() + "}");
+        Result<Level> r;
+
+        List<Unit> successors = g.getSuccsOf(s);
+        if (until.map(s::equals).orElse(false)) {
+            return previous;
         }
 
-    }
-
-    public static class ResultBox<Level> {
-        private Result<Level> result;
-        private Map<Unit, TypeVar> localContexts;
-        private final TypeVar topLevelContext;
-
-        public Result<Level> getResult() {
-            return result;
-        }
-
-        public void setResult(Result<Level> result) {
-            this.result = result;
-        }
-
-        public void setLocalContexts(ResultBox<Level> other) {
-            this.localContexts = new HashMap<>(other.localContexts);
-        }
-
-        /**
-         * Add a new pc (variable <code>v</code>) for a context-opening statement <code>s</code> to the set of active contexts. Throws an exception if there is already a context recorded for <code>s</code>.
-         */
-        public void addContext(Stmt s, TypeVar v) {
-            if (this.localContexts.containsKey(s)) {
-                throw new RuntimeException(String.format("There is already a local context for %s: %s", s, localContexts.get(s)));
+        // a basic statement
+        if (successors.size() <= 1) {
+            BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, types, sTvars, cstrs);
+            Result<Level> atomic = bsTyping.generate(s, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, casts);
+            r = Result.addEffects(Result.addConstraints(atomic, previous.getConstraints()), previous.getEffects());
+            if (successors.isEmpty()) {
+                return r;
+            } else{
+                Stmt next = (Stmt) successors.get(0);
+                // TODO: this is a tailcall
+                return generateResult(g, postdoms, next, r, signatures, topLevelContext, visited, until);
             }
-            this.localContexts.put(s, v);
-        }
-
-        public Optional<TypeVar> contextVariableFor(Stmt s) {
-            return Optional.ofNullable(this.localContexts.get(s));
-        }
-
-        /**
-         * Remove the context variable of a (if-)statement from the contexts, if possible. Ignores statements that are not recorded to have a contexts.
-         */
-        public void removeContext(Unit s) {
-            this.localContexts.remove(s);
-        }
-
-        public Set<TypeVar> getPcs() {
-            return Stream.concat(Stream.of(topLevelContext), localContexts.values().stream()).collect(toSet());
-        }
-
-
-        public ResultBox(Result<Level> result, TypeVar topLevelContext) {
-            this.result = result;
-            this.topLevelContext = topLevelContext;
-            this.localContexts = new HashMap<>();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            ResultBox<?> resultBox = (ResultBox<?>) o;
-
-            if (result != null ? !result.equals(resultBox.result) : resultBox.result != null) return false;
-            if (localContexts != null ? !localContexts.equals(resultBox.localContexts) : resultBox.localContexts != null)
-                return false;
-            return !(topLevelContext != null ? !topLevelContext.equals(resultBox.topLevelContext) : resultBox.topLevelContext != null);
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result1 = result != null ? result.hashCode() : 0;
-            result1 = 31 * result1 + (localContexts != null ? localContexts.hashCode() : 0);
-            result1 = 31 * result1 + (topLevelContext != null ? topLevelContext.hashCode() : 0);
-            return result1;
-        }
-    }
-
-
-//    @Override
-//    public void caseIfStmt(IfStmt stmt) {
-//
-//    }
-
-    /**
-     * Forward analysis for generating constraints, transitions, and effects. When completed, the typing.Result _after_ each statement describes the pre/post-environments, constraints and effects for that particular statement.
-     */
-    public class Gen extends ForwardFlowAnalysis<Unit, ResultBox<Level>> {
-
-        private final SignatureTable<Level> signatures;
-        private final TypeVar topLevelContext;
-        private final DominatorsFinder<Unit> postdoms;
-
-        public Gen(DirectedGraph<Unit> graph, SignatureTable<Level> signatures, TypeVar topLevelContext) {
-            super(graph);
-            this.signatures = signatures;
-            this.topLevelContext = topLevelContext;
-            //noinspection unchecked
-            this.postdoms = new MHGPostDominatorsFinder(graph);
-            this.doAnalysis();
-        }
-
-        @Override
-        protected void flowThrough(ResultBox<Level> in, Unit d, ResultBox<Level> out) {
-
-            // fix up the contexts (in case we are at a join point)
-            out.setLocalContexts(in);
-            out.removeContext(postdoms.getImmediateDominator(d));
-
-            Stmt s = (Stmt) d;
-            Result<Level> r;
-
-            try {
-                if (s.branches()) {
-                    // generate a new pc when branching
-                    TypeVar newPc = out.contextVariableFor(s).orElseGet(() -> {
-                        TypeVar frsh = tvars.fresh("pc");
-                        out.addContext(s, frsh);
-                        return frsh;
-                    });
-                    r = generateForBranches(s, in.getResult().getFinalEnv(), out.getPcs(), signatures, casts, newPc);
-                } else {
-                    r = bsTyping.generate(s, in.getResult().getFinalEnv(), out.getPcs(), signatures, casts);
+        } else {
+            // a branching statement
+            Unit end = postdoms.getImmediateDominator(s);
+            if (s.equals(end)) {
+                throw new RuntimeException("Branching statement is its own postdominator: " + s);
+            }
+            // get condition constrains and the new context
+            TypeVar newPc = sTvars.fresh("pc");
+            Set<Constraint<Level>> conditionConstraints = constraintsForBranches(s, previous.getFinalEnv(), topLevelContext, newPc);
+            Result<Level> conditionResult = addConstraints(previous,csets.fromCollection(conditionConstraints));
+            // generate results for each branch and join to final results
+            r = trivialCase(csets);
+            for (Unit uBranch : successors) {
+                // do not recurse into visited branches again
+                // TODO: not sure if this is correct for spaghetti code!
+                if (visited.contains(uBranch)) {
+                    return previous;
                 }
-            } catch (TypeError e) {
-                throw new AnalysisException(e);
+                Set<Unit> newVisited = Stream.concat(Stream.of(uBranch), visited.stream()).collect(toSet());
+                Result<Level> branchResult = generateResult(g, postdoms, (Stmt)uBranch, conditionResult, signatures, newPc, newVisited, Optional.of(end));
+                r = Result.join(r, branchResult, csets);
             }
-            // include the constraints of "in"
-            r = Result.addEffects(Result.addConstraints(r, in.getResult().getConstraints()), in.getResult().getEffects());
-
-            // set a result
-            out.setResult(r);
-
-        }
-
-        @Override
-        protected ResultBox<Level> newInitialFlow() {
-            return new ResultBox<>(trivialCase(csets), topLevelContext);
-        }
-
-        @Override
-        protected ResultBox<Level> entryInitialFlow() {
-            return new ResultBox<>(Result.fromEnv(csets, env), topLevelContext);
-        }
-
-        @Override
-        protected void merge(ResultBox<Level> in1, ResultBox<Level> in2, ResultBox<Level> out) {
-            out.setResult(Result.join(in1.getResult(), in2.getResult(), csets, tvars));
-        }
-
-        @Override
-        protected void copy(ResultBox<Level> source, ResultBox<Level> dest) {
-            dest.setResult(source.getResult());
-            dest.setLocalContexts(source);
+            // continue after join point
+            // TODO: this is a tailcall
+            return generateResult(g, postdoms, (Stmt)end, r, signatures, topLevelContext, visited, until);
         }
     }
 }

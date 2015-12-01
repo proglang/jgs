@@ -158,7 +158,7 @@ public class TestDomain {
     ///////
     // Method body typing
     public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars) {
-        return new MethodBodyTyping<>(new NaiveConstraintsFactory<>(types), types, env, tvars, cstrs, casts);
+        return new MethodBodyTyping<>(new NaiveConstraintsFactory<>(types), types, cstrs, casts);
     }
     /////
     // JUnit matcher

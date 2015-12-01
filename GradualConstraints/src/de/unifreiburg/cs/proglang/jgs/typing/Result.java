@@ -20,10 +20,11 @@ import static java.util.stream.Collectors.toList;
  * @author fennell
  */
 public class Result<LevelT> {
+    @NotNull
     private final ConstraintSet<LevelT> constraints;
-
     @NotNull
     private final MethodSignatures.Effects<LevelT> effects;
+    @NotNull
     private final Environment env;
 
     // factory methods
@@ -39,8 +40,8 @@ public class Result<LevelT> {
 
 
 
-    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars) {
-        Environment.JoinResult<Level> envJoin = Environment.join(r1.getFinalEnv(),r2.getFinalEnv(), tvars);
+    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, ConstraintSetFactory<Level> csets) {
+        Environment.JoinResult<Level> envJoin = Environment.join(r1.getFinalEnv(),r2.getFinalEnv());
         List<Constraint<Level>> csList = envJoin.constraints.collect(Collectors.toList());
         ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(csets.fromCollection(csList));
         return new Result<>(cs, r1.effects.add(r2.effects), envJoin.env) ;
@@ -57,7 +58,6 @@ public class Result<LevelT> {
     // impl
 
     Result(ConstraintSet<LevelT> constraints,
-           @NotNull
            MethodSignatures.Effects<LevelT> effects,
            Environment env) {
         super();
@@ -78,12 +78,37 @@ public class Result<LevelT> {
         return effects;
     }
 
-//    public TypeVars.TypeVar initialTypeVariableOf(Var<?> local) {
-//        return this.transition.getInit().get(local);
-//    }
-//
     public TypeVars.TypeVar finalTypeVariableOf(Var<?> local) {
         return this.env.get(local);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Result<?> result = (Result<?>) o;
+
+        if (constraints != null ? !constraints.equals(result.constraints) : result.constraints != null) return false;
+        if (effects != null ? !effects.equals(result.effects) : result.effects != null) return false;
+        return !(env != null ? !env.equals(result.env) : result.env != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = constraints != null ? constraints.hashCode() : 0;
+        result = 31 * result + (effects != null ? effects.hashCode() : 0);
+        result = 31 * result + (env != null ? env.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Result{" +
+                "constraints=" + constraints +
+                ", effects=" + effects +
+                ", env=" + env +
+                '}';
+    }
 }

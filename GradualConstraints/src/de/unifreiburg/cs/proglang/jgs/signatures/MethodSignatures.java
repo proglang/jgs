@@ -91,6 +91,29 @@ public class MethodSignatures<Level> {
         public final Stream<Type<Level>> stream() {
             return this.effectSet.stream();
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Effects<?> effects = (Effects<?>) o;
+
+            return !(effectSet != null ? !effectSet.equals(effects.effectSet) : effects.effectSet != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return effectSet != null ? effectSet.hashCode() : 0;
+        }
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "" + effectSet +
+                    '}';
+        }
     }
 
     /* Signatures */

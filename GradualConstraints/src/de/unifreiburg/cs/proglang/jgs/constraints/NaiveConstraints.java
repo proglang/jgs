@@ -175,4 +175,19 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return result.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NaiveConstraints<?> that = (NaiveConstraints<?>) o;
+
+        return !(cs != null ? !cs.equals(that.cs) : that.cs != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return cs != null ? cs.hashCode() : 0;
+    }
 }

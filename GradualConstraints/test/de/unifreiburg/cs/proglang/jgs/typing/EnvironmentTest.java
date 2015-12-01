@@ -39,7 +39,8 @@ public class EnvironmentTest {
         Environment first = before.add(v, tv1);
         Environment second = before.add(v, tv2);
 
-        Environment.JoinResult<Level> joinResult = Environment.join(first, second, tvars);
+        // join (v1, v2);
+        Environment.JoinResult<Level> joinResult = Environment.join(first, second);
         Environment newEnv = joinResult.env;
         ConstraintSet<Level> cs = makeNaive(joinResult.constraints.collect(toList()));
         TypeVar freshTv = joinResult.env.get(v);

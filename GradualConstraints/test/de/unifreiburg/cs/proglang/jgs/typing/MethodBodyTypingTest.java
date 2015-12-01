@@ -6,17 +6,23 @@ import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.NaiveConstraints;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
+import soot.JastAddJ.Opt;
 import soot.Unit;
 import soot.jimple.Expr;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
+import soot.toolkits.graph.DominatorsFinder;
+import soot.toolkits.graph.MHGPostDominatorsFinder;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -51,7 +57,7 @@ public class MethodBodyTypingTest {
         this.mbTyping = mkMbTyping(code.init, tvars);
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void testSequences() throws TypeError {
         Stmt first = j.newAssignStmt(code.localX, j.newAddExpr(code.localX, code.localY));
         Stmt last = j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localZ));
@@ -116,11 +122,20 @@ public class MethodBodyTypingTest {
 
         /* if (x = y) { y = z };
         */
+        Stmt assignment = j.newAssignStmt(code.localY, code.localZ);
         g = branchIf(j.newEqExpr(code.localX, code.localY),
-                singleton(j.newAssignStmt(code.localY, code.localZ)),
+                singleton(assignment),
                 singleton(j.newNopStmt()));
 
 
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
+                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+        // should finish in a few iterations
         assertConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
@@ -150,7 +165,7 @@ public class MethodBodyTypingTest {
         /* if (y = y) { y = z } { y = x};
         */
         Expr cond = j.newEqExpr(code.localY, code.localY);
-        Stmt thn =  j.newAssignStmt(code.localY, code.localZ);
+        Stmt thn = j.newAssignStmt(code.localY, code.localZ);
         els = j.newAssignStmt(code.localY, code.localX);
         g = branchIf(cond,
                 singleton(thn),
@@ -164,28 +179,74 @@ public class MethodBodyTypingTest {
 
     }
 
-    @Test(timeout = 3000)
+    @Test
+    public void testPostDom() {
+        /*
+        if (y == y) { x = y } { x = z }; z = x; y = x
+                                           ^ immediate postdom?
+         */
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt thn = j.newAssignStmt(code.localX, code.localY);
+        Stmt els = j.newAssignStmt(code.localX, code.localZ);
+
+        Stmt remotePostdom1 = j.newAssignStmt(code.localX, code.localZ);
+        Stmt remotePostdom2 = j.newAssignStmt(code.localY, code.localX);
+
+        DirectedGraph<Unit> g = seq(branchIf(cond, singleton(thn), singleton(els)), singleton(remotePostdom1), singleton(remotePostdom2));
+        @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
+
+        assertThat(g.getHeads().size(), is(1));
+        assertThat(g.getPredsOf(remotePostdom1).size(), is(1));
+
+        Unit sIf = g.getHeads().get(0);
+        Unit immediatePostdom = g.getPredsOf(remotePostdom1).get(0);
+
+        assertThat(postdoms.getImmediateDominator(sIf), is(immediatePostdom));
+        assertThat(postdoms.getImmediateDominator(sIf), not(is(remotePostdom2)));
+        assertThat(postdoms.isDominatedBy(sIf, remotePostdom1), is(true));
+        assertThat(postdoms.isDominatedBy(sIf, remotePostdom2), is(true));
+        assertThat(postdoms.isDominatedBy(sIf, els), is(false));
+    }
+
+    @Test
+    //@Test(timeout = 3000)
     public void testWhile() throws TypeError {
         /* while (y = y) { y = z };
         */
         Expr cond = j.newEqExpr(code.localY, code.localY);
-        Stmt body =  j.newAssignStmt(code.localY, code.localZ);
+        Stmt body = j.newAssignStmt(code.localY, code.localZ);
         DirectedGraph<Unit> g = branchWhile(cond, singleton(body));
         assertConstraints(g,
-                finalResult -> makeNaive(asList (
+                finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))
-                )));
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))));
+
+        /* while (y = y) { y = z }; x = y;
+        */
+        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
+        g = seq(branchWhile(cond, singleton(body)), singleton(afterLoop));
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX))));
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(finalResult.finalTypeVariableOf(code.varY), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY))
+                        )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varY))));
     }
 
+
     private Result<Level> analyze(DirectedGraph<Unit> g) throws TypeError {
-        ForwardFlowAnalysis<Unit, MethodBodyTyping.ResultBox<Level>> gen = mbTyping.generate(g, pc, code.signatures);
-        List<Unit> tails = g.getTails();
-        if (tails.size() != 1) {
-            throw new RuntimeException("Unit graph does not have a single tail: " + g.toString());
-        }
-        Unit last = g.getTails().get(0);
-        return gen.getFlowAfter(last).getResult();
+        return mbTyping.generateResult(g, pc, code.init, code.signatures);
     }
 
     private void assertConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypeError {
