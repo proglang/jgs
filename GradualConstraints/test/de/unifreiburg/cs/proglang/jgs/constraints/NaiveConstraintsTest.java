@@ -1,10 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import static de.unifreiburg.cs.proglang.jgs.TestDomain.types;
 import static java.util.Arrays.equals;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import soot.jimple.spark.ondemand.EverythingHeuristic;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
@@ -162,4 +165,24 @@ public class NaiveConstraintsTest {
         assertThat(makeNaive(NaiveConstraints.minimize(tmp)), is(equivalent(makeNaive(expected))));
     }
 
+    @Test
+    public void testEquivalences() {
+        ConstraintSet<Level> cs11 = makeNaive(asList(leC(cs.x0, cs.x1), leC(cs.x2, cs.x1), compC(cs.x2, cs.x0)));
+        ConstraintSet<Level> cs22 = makeNaive(asList(leC(cs.x0, cs.x1), leC(cs.x2, cs.x1)));
+
+        assertThat(cs11, is(equivalent(cs22)));
+
+        ConstraintSet<Level> cs1 = makeNaive(asList(leC(cs.x0, cs.x1), compC(cs.x0, cs.x2)));
+        ConstraintSet<Level> cs2 = makeNaive(asList(leC(cs.x0, cs.x1), compC(cs.x1, cs.x2)));
+
+        assertThat(cs1, is(not(equivalent(cs2))));
+//        Supplier<Stream<TypeDomain.Type<Level>>> allTypes = () -> Stream.of(TLOW, THIGH, DYN, PUB);
+        // TODO: factor this out to a reusable assertion
+//        allTypes.get().forEach(t1 -> allTypes.get().forEach( t2 -> allTypes.get().forEach(t3 -> {
+//            Assignment<Level> ass = Assignments.<Level>builder(cs.v0, t1).add(cs.v1, t2).add(cs.v2, t3).build();
+//            boolean cs1Sat = cs1.isSatisfiedFor(types, ass);
+//            boolean cs2Sat = cs2.isSatisfiedFor(types, ass);
+//            assertThat(String.format("cs1 (%s: %s) does not match cs2 (%s: %s): %s", cs1, cs1Sat, cs2, cs2Sat, ass), cs1Sat , is(cs2Sat));
+//        })));
+    }
 }

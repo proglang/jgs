@@ -139,6 +139,15 @@ public class BasicStatementTyping<LevelT> {
                     setResult(emptyEffect());
                 }
 
+                @Override
+                public void caseConstant(Value v) {
+                    setResult(emptyEffect());
+                }
+
+                @Override
+                public void defaultCase(Object v) {
+                    throw new RuntimeException("Effect extraction not implemented for case: " + v.toString());
+                }
             };
             rhs.apply(effectCases);
             return (Effects<LevelT>) effectCases.getResult();
@@ -265,6 +274,11 @@ public class BasicStatementTyping<LevelT> {
                                     CTypes.literal(cast.sourceType)),
                             cstrs.le(CTypes.literal(cast.destType),
                                     destCType)).forEach(constraints);
+                }
+
+                @Override
+                public void caseConstant(Value v) {
+                    // do nothing
                 }
 
             });

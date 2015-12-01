@@ -57,10 +57,13 @@ public class Result<LevelT> {
 
     // impl
 
-    Result(ConstraintSet<LevelT> constraints,
-           MethodSignatures.Effects<LevelT> effects,
-           Environment env) {
+    Result(@NotNull ConstraintSet<LevelT> constraints,
+           @NotNull MethodSignatures.Effects<LevelT> effects,
+           @NotNull Environment env) {
         super();
+        if (constraints == null || effects == null || env == null) {
+            throw new NullPointerException("when instantiating results");
+        }
         this.constraints = constraints;
         this.effects = effects;
         this.env = env;

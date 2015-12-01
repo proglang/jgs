@@ -133,6 +133,10 @@ public class TestDomain {
                                            CType<Level> rhs) {
         return cstrs.comp(lhs, rhs);
     }
+    public static Constraint<Level> compC(TypeVar lhs,
+                                        TypeVar rhs) {
+        return compC(CTypes.variable(lhs), CTypes.variable(rhs));
+    }
 
     public static Constraint<Level> dimplC(CType<Level> lhs,
                                            CType<Level> rhs) {

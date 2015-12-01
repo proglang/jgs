@@ -1,31 +1,24 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.Code;
-import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.NaiveConstraints;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
-import soot.JastAddJ.Opt;
 import soot.Unit;
 import soot.jimple.Expr;
+import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.DominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.toolkits.scalar.ForwardFlowAnalysis;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.function.Supplier;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs.*;
@@ -114,6 +107,7 @@ public class MethodBodyTypingTest {
 
                 finalResult -> new HashSet<>(asList(pc, code.init.get(code.varX), code.init.get(code.varY),
                         code.init.get(code.varZ), code.init.get(code.varO), finalResult.finalTypeVariableOf(code.varY))));
+
     }
 
     @Test
@@ -177,6 +171,53 @@ public class MethodBodyTypingTest {
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
                 finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
 
+
+        /* if (y = y) { x = 1}; x = 1*/
+        cond = j.newEqExpr(code.localY, code.localY);
+        g = seq(branchIf(cond, singleton(j.newAssignStmt(code.localX, IntConstant.v(1))), singleton(j.newNopStmt())), j.newAssignStmt(code.localX, IntConstant.v(1)));
+        assertConstraints(g,
+                finalResult -> makeNaive(Collections.emptyList()),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX))));
+
+
+    }
+
+    @Test
+    public void testNestedBranches() throws TypeError {
+
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt body = j.newAssignStmt(code.localY, code.localZ);
+        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
+        Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
+
+ /* if (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
+        DirectedGraph<Unit> g = seq(branchIf(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get()), singleton(j.newNopStmt())), afterLoop, incZ.get());
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
+
+        /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
+        g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
+
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)),
+                        compC(code.init.get(code.varX), code.init.get(code.varZ)),
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varZ))));
     }
 
     @Test
@@ -242,8 +283,20 @@ public class MethodBodyTypingTest {
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY))
                         )),
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varY))));
-    }
 
+        /* while (y = y) { y = z }; x = y; z = z + 1;
+        */
+        Stmt incZ = j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
+        g = seq(g, incZ);
+        assertConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                        compC(finalResult.finalTypeVariableOf(code.varZ), code.init.get(code.varY))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
+
+
+    }
 
     private Result<Level> analyze(DirectedGraph<Unit> g) throws TypeError {
         return mbTyping.generateResult(g, pc, code.init, code.signatures);

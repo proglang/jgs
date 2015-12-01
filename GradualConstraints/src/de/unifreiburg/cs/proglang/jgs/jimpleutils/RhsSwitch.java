@@ -58,11 +58,9 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
 
     /*
-     * Utility methods for constants and compound expressions.
+     * constants and compound expressions.
      */
-    private void caseConstant(Value v) {
-        // do nothing
-    }
+    public abstract void caseConstant(Value v);
 
     private void caseCompoundExpr(Value v) {
         Value val = (Value) v;
