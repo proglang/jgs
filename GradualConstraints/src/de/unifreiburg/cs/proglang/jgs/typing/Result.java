@@ -40,8 +40,8 @@ public class Result<LevelT> {
 
 
 
-    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, ConstraintSetFactory<Level> csets) {
-        Environment.JoinResult<Level> envJoin = Environment.join(r1.getFinalEnv(),r2.getFinalEnv());
+    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars) {
+        Environment.JoinResult<Level> envJoin = Environment.join(tvars, r1.getFinalEnv(),r2.getFinalEnv());
         List<Constraint<Level>> csList = envJoin.constraints.collect(Collectors.toList());
         ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(csets.fromCollection(csList));
         return new Result<>(cs, r1.effects.add(r2.effects), envJoin.env) ;

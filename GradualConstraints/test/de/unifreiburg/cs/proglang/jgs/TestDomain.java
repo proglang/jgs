@@ -155,14 +155,14 @@ public class TestDomain {
 
     ///////
     // BasicStatementTyping
-    public static BasicStatementTyping<Level> mkTyping(TypeVars tvars) {
+    public static BasicStatementTyping<Level> mkTyping(TypeVars.MethodTypeVars tvars) {
         return new BasicStatementTyping<>(new NaiveConstraintsFactory<>(types), types, tvars, cstrs);
     }
 
     ///////
     // Method body typing
     public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars) {
-        return new MethodBodyTyping<>(new NaiveConstraintsFactory<>(types), types, cstrs, casts);
+        return new MethodBodyTyping<>(tvars, new NaiveConstraintsFactory<>(types), types, cstrs, casts);
     }
     /////
     // JUnit matcher

@@ -50,11 +50,11 @@ public class GenerateTest {
     }
 
     @Before public void setUp() {
-        this.tvars = new TypeVars("v");
+        this.tvars = new TypeVars();
         this.j = Jimple.v();
-        this.pc = tvars.fresh("pc");
+        this.pc = tvars.topLevelContext();
         this.code = new Code(tvars);
-        this.typing = mkTyping(tvars);
+        this.typing = mkTyping(tvars.forTestingSingleStatements());
 
     }
 

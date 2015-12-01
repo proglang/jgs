@@ -1,68 +1,239 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import soot.Unit;
+import soot.jimple.Stmt;
+import soot.toolkits.graph.DirectedGraph;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
 /**
  * A context for (anonymous) type variables. Allows to create fresh variables and to lookup
  * existing ones.
- * 
+ *
+ *
  * @author Luminous Fennell <fennell@informatik.uni-freiburg.de>
  *
  */
 public class TypeVars {
-    private final String prefix;
-    private int count = 0;
-    
-    public TypeVars(String prefix) {
-        super();
-        this.prefix = prefix;
+
+
+    public TypeVars() {
     }
 
-    /**
-     * Create a fresh type variable.
-     * 
-     * @return A type variable which is unique for this context.
-     */
-    public TypeVar fresh(String varprefix) {
-        String suffix = Integer.toString(count);
-        this.count++;
-        return new TypeVar(prefix + varprefix + suffix);
+
+    public MethodTypeVars forMethod(DirectedGraph<Unit> g) {
+        return new MethodTypeVars(g);
     }
 
-    public static class TypeVar {
-        public final String name;
+    public MethodTypeVars forTestingSingleStatements() {
+      return new MethodTypeVars();
+    }
 
-        private TypeVar(String name) {
-            super();
-            this.name = name;
+    public static class MethodTypeVars extends TypeVars {
+        private final Function<Stmt, String> stmtToString;
+
+        private MethodTypeVars() {
+            this.stmtToString = s -> s.toString();
+        }
+        private MethodTypeVars(DirectedGraph<Unit> g) {
+            Map<Stmt, Integer> stmtNumbers = new HashMap<>();
+            int count = 0;
+            for (Unit u : g) {
+                stmtNumbers.put((Stmt)u, count);
+                count++;
+            }
+            this.stmtToString = s -> String.format("%d:%s", stmtNumbers.get(s), s);
+        }
+        /**
+         * Create a fresh type variable.
+         *
+         * @return A type variable which is unique for this context.
+         */
+        public TypeVar forLocal(Var<?> local, Stmt s) {
+            return new ForLocal(local, s);
         }
 
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((name == null) ? 0 : name.hashCode());
-            return result;
+        public TypeVar forContext(Stmt s) {
+            return new ForContext(s);
+        }
+
+        private class ForLocal implements TypeVar {
+            private final Var<?> local;
+            private final Stmt stmt;
+
+            private ForLocal (Var<?> local, Stmt stmt) {
+                this.local = local;
+                this.stmt = stmt;
+            }
+
+            @Override
+            public String toString() {
+                return String.format("%s[%s]", local, stmtToString.apply(stmt));
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                ForLocal forLocal = (ForLocal) o;
+
+                if (local != null ? !local.equals(forLocal.local) : forLocal.local != null) return false;
+                return !(stmt != null ? !stmt.equals(forLocal.stmt) : forLocal.stmt != null);
+
+            }
+
+            @Override
+            public int hashCode() {
+                int result = local != null ? local.hashCode() : 0;
+                result = 31 * result + (stmt != null ? stmt.hashCode() : 0);
+                return result;
+            }
+        }
+
+        private class ForContext implements TypeVar {
+            private final Stmt s;
+
+            private ForContext(Stmt s) {
+                this.s = s;
+            }
+
+            @Override
+            public String toString() {
+                return "cx[" + stmtToString.apply(s) + "]";
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                ForContext that = (ForContext) o;
+
+                return !(s != null ? !s.equals(that.s) : that.s != null);
+
+            }
+
+            @Override
+            public int hashCode() {
+                return s != null ? s.hashCode() : 0;
+            }
+        }
+
+    }
+
+    public TypeVar join(TypeVar v1, TypeVar v2) {
+        return new Join(v1, v2);
+    }
+
+    public TypeVar testParam(Var<?> param, String id) {
+        return new TestParam(param, id);
+    }
+
+    public TypeVar topLevelContext() {
+        return new TopLevelContext();
+    }
+
+    public interface TypeVar{}
+
+    private class TopLevelContext implements  TypeVar {
+        private final String name;
+
+        private TopLevelContext() {
+            this.name = "cx";
         }
 
         @Override
         public String toString() {
-            return "$" + name;
+            return this.name;
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            TypeVar other = (TypeVar) obj;
-            if (name == null) {
-                if (other.name != null)
-                    return false;
-            } else if (!name.equals(other.name))
-                return false;
-            return true;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TopLevelContext that = (TopLevelContext) o;
+
+            return !(name != null ? !name.equals(that.name) : that.name != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return name != null ? name.hashCode() : 0;
+        }
+    }
+
+
+    private class TestParam implements  TypeVar {
+        private final Var<?> param;
+        private final String id;
+
+        private TestParam(Var<?> param, String id) {
+            this.param = param;
+            this.id = id;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s%s", param, id);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TestParam testParam = (TestParam) o;
+
+            if (param != null ? !param.equals(testParam.param) : testParam.param != null) return false;
+            return !(id != null ? !id.equals(testParam.id) : testParam.id != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = param != null ? param.hashCode() : 0;
+            result = 31 * result + (id != null ? id.hashCode() : 0);
+            return result;
+        }
+    }
+
+    private class Join implements TypeVar {
+        private final TypeVar v1;
+        private final TypeVar v2;
+
+        private Join(TypeVar v1, TypeVar v2) {
+            this.v1 = v1;
+            this.v2 = v2;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("join(%s,%s)", v1, v2);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Join join = (Join) o;
+
+            if (v1 != null ? !v1.equals(join.v1) : join.v1 != null) return false;
+            return !(v2 != null ? !v2.equals(join.v2) : join.v2 != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = v1 != null ? v1.hashCode() : 0;
+            result = 31 * result + (v2 != null ? v2.hashCode() : 0);
+            return result;
         }
     }
 

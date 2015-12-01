@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.unifreiburg.cs.proglang.jgs.Code;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.Code.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.Assignments.*;
 import static java.util.Arrays.asList;
 
@@ -26,9 +28,10 @@ public class AssignmentsTest {
 
     @Before
     public void setUp() {
-        tvars = new TypeVars("x");
-        x = tvars.fresh("x");
-        y = tvars.fresh("y");
+        tvars = new TypeVars();
+        Code code = new Code(tvars);
+        x = tvars.testParam(code.varX, "");
+        y = tvars.testParam(code.varY, "");
     }
 
     @Test

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,6 +14,8 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import soot.IntType;
+import soot.jimple.Jimple;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
@@ -33,15 +36,27 @@ public class ConstraintsTest {
 
     @Before
     public void setUp() {
-        tvars = new TypeVars("");
-        h1 = tvars.fresh("h1");
-        h2 = tvars.fresh("h2");
-        l1 = tvars.fresh("l1");
-        l2 = tvars.fresh("l2");
-        d1 = tvars.fresh("d1");
-        d2 = tvars.fresh("d2");
-        p1 = tvars.fresh("p1");
-        p2 = tvars.fresh("p2");
+        Var<?> vh1, vh2, vl1, vl2, vd1, vd2, vp1, vp2;
+
+        tvars = new TypeVars();
+        vh1 = Var.fromLocal(Jimple.v().newLocal("h1", IntType.v()));
+        vh2 = Var.fromLocal(Jimple.v().newLocal("h2", IntType.v()));
+        vl1 = Var.fromLocal(Jimple.v().newLocal("l1", IntType.v()));
+        vl2 = Var.fromLocal(Jimple.v().newLocal("l2", IntType.v()));
+        vd1 = Var.fromLocal(Jimple.v().newLocal("d1", IntType.v()));
+        vd2 = Var.fromLocal(Jimple.v().newLocal("d2", IntType.v()));
+        vp1 = Var.fromLocal(Jimple.v().newLocal("p1", IntType.v()));
+        vp2 = Var.fromLocal(Jimple.v().newLocal("p2", IntType.v()));
+
+
+        h1 = tvars.testParam(vh1,"");
+        h2 = tvars.testParam(vh2,"");
+        l1 = tvars.testParam(vl1,"");
+        l2 = tvars.testParam(vl2,"");
+        d1 = tvars.testParam(vd1,"");
+        d2 = tvars.testParam(vd2,"");
+        p1 = tvars.testParam(vp1,"");
+        p2 = tvars.testParam(vp2,"");
         ass = new HashMap<>();
         ass.put(h1, THIGH);
         ass.put(h2, THIGH);

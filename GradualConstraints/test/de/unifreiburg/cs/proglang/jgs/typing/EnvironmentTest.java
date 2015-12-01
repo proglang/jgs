@@ -25,7 +25,7 @@ public class EnvironmentTest {
 
     @Before
     public void setUp() {
-        this.tvars = new TypeVars("");
+        this.tvars = new TypeVars();
         this.j = Jimple.v();
         this.code = new Code(tvars);
     }
@@ -34,13 +34,13 @@ public class EnvironmentTest {
     public void testJoin () {
         Environment before = code.init;
         Var<?> v = Var.fromLocal(j.newLocal("v", IntType.v()));
-        TypeVars.TypeVar tv1 = tvars.fresh("v");
-        TypeVars.TypeVar tv2 = tvars.fresh("v");
+        TypeVars.TypeVar tv1 = tvars.testParam(v, "1");
+        TypeVars.TypeVar tv2 = tvars.testParam(v, "2");
         Environment first = before.add(v, tv1);
         Environment second = before.add(v, tv2);
 
         // join (v1, v2);
-        Environment.JoinResult<Level> joinResult = Environment.join(first, second);
+        Environment.JoinResult<Level> joinResult = Environment.join(tvars, first, second);
         Environment newEnv = joinResult.env;
         ConstraintSet<Level> cs = makeNaive(joinResult.constraints.collect(toList()));
         TypeVar freshTv = joinResult.env.get(v);

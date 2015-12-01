@@ -29,7 +29,7 @@ public class NaiveConstraintsTest {
 
     @Before public void setUp() {
 
-        tvars = new TypeVars("x");
+        tvars = new TypeVars();
         cs = new SomeConstraintSets(tvars);
     }
 

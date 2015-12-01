@@ -43,11 +43,11 @@ public class BasicStatementTyping<LevelT> {
     final public ConstraintSetFactory<LevelT> csets;
     final public Constraints<LevelT> cstrs;
     final public TypeDomain<LevelT> types;
-    final public TypeVars tvars;
+    final public TypeVars.MethodTypeVars tvars;
 
     public BasicStatementTyping(ConstraintSetFactory<LevelT> csets,
                                 TypeDomain<LevelT> types,
-                                TypeVars tvars,
+                                TypeVars.MethodTypeVars tvars,
                                 Constraints<LevelT> cstrs) {
         super();
         this.csets = csets;
@@ -181,7 +181,7 @@ public class BasicStatementTyping<LevelT> {
             Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
 
             // Type variable (and constraint-type) for destinations
-            TypeVar destTVar = tvars.fresh(writeVar.toString());
+            TypeVar destTVar = tvars.forLocal(writeVar, stmt);
             CType<LevelT> destCType = variable(destTVar);
 
             // Utility functions

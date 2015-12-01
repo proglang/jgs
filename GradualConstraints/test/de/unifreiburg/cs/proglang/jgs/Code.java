@@ -59,10 +59,10 @@ public class Code {
         this.varY = Var.fromLocal(localY);
         this.varZ = Var.fromLocal(localZ);
         this.varO = Var.fromLocal(localO);
-        this.tvarX = tvars.fresh(varX.toString());
-        this.tvarY = tvars.fresh(varY.toString());
-        this.tvarZ = tvars.fresh(varZ.toString());
-        this.tvarO = tvars.fresh(varO.toString());
+        this.tvarX = tvars.testParam(varX, "");
+        this.tvarY = tvars.testParam(varY, "");
+        this.tvarZ = tvars.testParam(varZ,"");
+        this.tvarO = tvars.testParam(varO, "");
 
         this.init = Environments.makeEmpty()
                 .add(varX, tvarX)

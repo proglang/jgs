@@ -38,15 +38,10 @@ public class Environment {
      */
     private final Map<Var<?>, TypeVar> env;
 
-    public static TypeVar joinVar(Var<?> k, TypeVar v1, TypeVar v2) {
-        TypeVars tvars = new TypeVars("");
-        return tvars.fresh(String.format("%s(%s+%s)", k.toString(), v1.toString(), v2.toString()));
-    }
-
     /**
      * Joint two environments. Returns a <code>Result</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left trivialCase) which is a bit of a hack...
      */
-    public static <Level> JoinResult<Level> join(Environment r1, Environment r2) {
+    public static <Level> JoinResult<Level> join(TypeVars tvars, Environment r1, Environment r2) {
         Map<Var<?>, TypeVar> joinedEnv = new HashMap<>();
         Stream.Builder<Constraint<Level>> cs = Stream.builder();
         r1.env.entrySet().stream().forEach( e -> {
@@ -55,7 +50,7 @@ public class Environment {
             if (r2.env.containsKey(k)) {
                 TypeVar v2 = r2.get(k);
                 if (!v1.equals(v2)) {
-                    TypeVar vNew = joinVar(k, v1, v2);
+                    TypeVar vNew = tvars.join(v1, v2);
                     Stream.<Constraint<Level>>of(Constraints.le(variable(v1), variable(vNew)), Constraints.le(variable(v2), variable(vNew))).forEach(cs);
                     joinedEnv.put(k, vNew);
                 } else {

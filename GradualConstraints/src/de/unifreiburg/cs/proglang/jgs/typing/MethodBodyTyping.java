@@ -32,12 +32,14 @@ public class MethodBodyTyping<Level> {
     // TODO: the following two could moved somewhere else (?)
     final private Constraints<Level> cstrs;
     final private TypeDomain<Level> types;
+    final private TypeVars tvars;
 
-    public MethodBodyTyping(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, Constraints<Level> cstrs, Casts<Level> casts) {
+    public MethodBodyTyping(TypeVars tvars, ConstraintSetFactory<Level> csets, TypeDomain<Level> types, Constraints<Level> cstrs, Casts<Level> casts) {
         this.csets = csets;
         this.casts = casts;
         this.types = types;
         this.cstrs = cstrs;
+        this.tvars = tvars;
     }
 
     Set<Constraint<Level>> constraintsForBranches(Unit s,
@@ -84,13 +86,13 @@ public class MethodBodyTyping<Level> {
 
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
 
-        return generateResult(g, postdoms, s, Result.fromEnv(csets, env), signatures, pc, Collections.emptySet(), Optional.empty());
+        // TODO: not using tvars here but tvars.forMethod is important.. make this more typesafe, as it is a mistake waiting to happen
+        return generateResult(tvars.forMethod(g), g, postdoms, s, Result.fromEnv(csets, env), signatures, pc, Collections.emptySet(), Optional.empty());
     }
 
 
 
-    private Result<Level> generateResult(DirectedGraph<Unit> g, DominatorsFinder<Unit> postdoms, Stmt s, Result<Level> previous, SignatureTable<Level> signatures, TypeVar topLevelContext, Set<Unit> visited, Optional<Unit> until) throws TypeError {
-        TypeVars sTvars = new TypeVars("{" + s.toString() + "}");
+    private Result<Level> generateResult(MethodTypeVars sTvars, DirectedGraph<Unit> g, DominatorsFinder<Unit> postdoms, Stmt s, Result<Level> previous, SignatureTable<Level> signatures, TypeVar topLevelContext, Set<Unit> visited, Optional<Unit> until) throws TypeError {
         Result<Level> r;
 
         List<Unit> successors = g.getSuccsOf(s);
@@ -108,7 +110,7 @@ public class MethodBodyTyping<Level> {
             } else{
                 Stmt next = (Stmt) successors.get(0);
                 // TODO: this is a tailcall
-                return generateResult(g, postdoms, next, r, signatures, topLevelContext, visited, until);
+                return generateResult(sTvars, g, postdoms, next, r, signatures, topLevelContext, visited, until);
             }
         } else {
             // a branching statement
@@ -117,7 +119,7 @@ public class MethodBodyTyping<Level> {
                 throw new RuntimeException("Branching statement is its own postdominator: " + s);
             }
             // get condition constrains and the new context
-            TypeVar newPc = sTvars.fresh("pc");
+            TypeVar newPc = sTvars.forContext(s);
             Set<Constraint<Level>> conditionConstraints = constraintsForBranches(s, previous.getFinalEnv(), topLevelContext, newPc);
             Result<Level> conditionResult = addConstraints(previous,csets.fromCollection(conditionConstraints));
             // generate results for each branch and join to final results
@@ -129,12 +131,12 @@ public class MethodBodyTyping<Level> {
                     return previous;
                 }
                 Set<Unit> newVisited = Stream.concat(Stream.of(uBranch), visited.stream()).collect(toSet());
-                Result<Level> branchResult = generateResult(g, postdoms, (Stmt)uBranch, conditionResult, signatures, newPc, newVisited, Optional.of(end));
-                r = Result.join(r, branchResult, csets);
+                Result<Level> branchResult = generateResult(sTvars, g, postdoms, (Stmt)uBranch, conditionResult, signatures, newPc, newVisited, Optional.of(end));
+                r = Result.join(r, branchResult, csets, sTvars);
             }
             // continue after join point
             // TODO: this is a tailcall
-            return generateResult(g, postdoms, (Stmt)end, r, signatures, topLevelContext, visited, until);
+            return generateResult(sTvars, g, postdoms, (Stmt)end, r, signatures, topLevelContext, visited, until);
         }
     }
 }

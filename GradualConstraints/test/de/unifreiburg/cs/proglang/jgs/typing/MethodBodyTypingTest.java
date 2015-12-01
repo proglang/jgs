@@ -43,9 +43,9 @@ public class MethodBodyTypingTest {
 
     @Before
     public void setUp() {
-        this.tvars = new TypeVars("");
+        this.tvars = new TypeVars();
         this.j = Jimple.v();
-        this.pc = tvars.fresh("pc");
+        this.pc = tvars.topLevelContext();
         this.code = new Code(tvars);
         this.mbTyping = mkMbTyping(code.init, tvars);
     }

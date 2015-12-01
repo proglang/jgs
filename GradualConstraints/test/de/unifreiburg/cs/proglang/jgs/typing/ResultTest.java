@@ -33,7 +33,7 @@ public class ResultTest {
 
     @Before
     public void setUp() {
-        this.tvars = new TypeVars("");
+        this.tvars = new TypeVars();
         this.j = Jimple.v();
         this.code = new Code(tvars);
         this.csets = new NaiveConstraintsFactory<>(types);
@@ -43,25 +43,25 @@ public class ResultTest {
     public void joinTest() {
         Environment before = code.init;
         Var<?> v = Var.fromLocal(j.newLocal("v", IntType.v()));
-        TypeVars.TypeVar tv1 = tvars.fresh("v");
-        TypeVars.TypeVar tv2 = tvars.fresh("v");
+        TypeVars.TypeVar tv1 = tvars.testParam(v, "1");
+        TypeVars.TypeVar tv2 = tvars.testParam(v, "2");
         Environment first = before.add(v, tv1);
         Environment second = before.add(v, tv2);
         ConstraintSet<Level> cs1 = csets.fromCollection(Collections.singletonList(leC(code.tvarX, tv1)));
         ConstraintSet<Level> cs2 = csets.fromCollection(Collections.singletonList(leC(code.tvarY, tv2)));
         Result<Level> r1 = Result.addConstraints(Result.fromEnv(csets, first), cs1);
         Result<Level> result = Result.join(r1,
-                Result.addConstraints(Result.fromEnv(csets, second), cs2), csets
+                Result.addConstraints(Result.fromEnv(csets, second), cs2), csets, tvars
         );
 
-        TypeVar freshV = Environment.joinVar(v, tv1, tv2);
+        TypeVar freshV = tvars.join(tv1, tv2);
         ConstraintSet<Level> cs = cs1.add(cs2).add(leC(tv1, freshV)).add(leC(tv2, freshV));
         Result<Level> expected = Result.addConstraints(Result.fromEnv(csets, before.add(v, freshV)), cs);
 
 
         assertThat(result, is(equalTo(expected)));
 
-        assertThat(Result.join(Result.trivialCase(csets), r1, csets), is(r1));
-        assertThat(Result.join(r1, Result.trivialCase(csets), csets), is(r1));
+        assertThat(Result.join(Result.trivialCase(csets), r1, csets, tvars), is(r1));
+        assertThat(Result.join(r1, Result.trivialCase(csets), csets, tvars), is(r1));
     }
 }

@@ -32,7 +32,7 @@ public class MethodSignaturesTest {
 
     @Before public void setUp() throws Exception {
         this.j = Jimple.v();
-        tvars = new TypeVars("x");
+        tvars = new TypeVars();
         this.cs = new SomeConstraintSets(tvars);
     }
 

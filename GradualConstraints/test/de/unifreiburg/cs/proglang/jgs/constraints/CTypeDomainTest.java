@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,6 +11,8 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import soot.IntType;
+import soot.jimple.Jimple;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static org.junit.Assert.*;
@@ -24,13 +27,20 @@ public class CTypeDomainTest {
     
     @Before
     public void setUp() {
-       this.tvars = new TypeVars("x"); 
+       this.tvars = new TypeVars();
        Map<TypeVar, Type<Level>> m = new HashMap<>();
-       vh1 = tvars.fresh("h1");
-       vh2 = tvars.fresh("h2");
-       vl = tvars.fresh("l");
-       vd = tvars.fresh("d");
-       vb = tvars.fresh("b");
+       Var<?> lh1, lh2, ll, ld, lb;
+       lh1 = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       lh2 = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       ll  = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       ld  = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       lb  = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
+
+       vh1 = tvars.testParam(lh1, "");
+       vh2 = tvars.testParam(lh2, "");
+       vl =  tvars.testParam(ll, "");
+       vd =  tvars.testParam(ld, "");
+       vb =  tvars.testParam(lb, "");
 
        h1 = variable(vh1);
        h2 = variable(vh2);
