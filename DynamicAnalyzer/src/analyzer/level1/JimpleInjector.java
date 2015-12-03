@@ -209,10 +209,11 @@ public class JimpleInjector {
 	}
   
 	/**
-	 * 
+	 * Add the instance of the actual class-object to the object map. This is only done in <init>.
 	 */
 	public static void addInstanceObjectToObjectMap() {
 		
+		// Check if the first unit is a reference to the actual object
 		if (!(units.getFirst() instanceof IdentityStmt) 
 				|| !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
 			new InternalAnalyzerException("Expected @this reference");
@@ -230,7 +231,7 @@ public class JimpleInjector {
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
 				parameterTypes, VoidType.v(), false), 
-				(Local) units.getFirst().getDefBoxes().get(0).getValue()); 
+				units.getFirst().getDefBoxes().get(0).getValue()); 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
 		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));

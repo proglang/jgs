@@ -87,7 +87,8 @@ public ArrayList<SecurityLevel> getActualArguments() {
  */
 public SecurityLevel getArgLevelAt(int i) {
 	if (actualArguments.size() <= i ) {
-		new InternalAnalyzerException();	
+		new InternalAnalyzerException("You are trying to get argument level at position " + i 
+				+" but the arguments have only size " + actualArguments.size() );	
 	}
 	  
 	return actualArguments.get(i);	

@@ -79,7 +79,7 @@ public class BodyAnalyzer extends BodyTransformer{
         units = body.getUnits();
         locals = body.getLocals();
         
-        // invokeHS should be at the beginning of every methodbody. It creates a map for locals.
+        // invokeHS should be at the beginning of every method-body. It creates a map for locals.
         JimpleInjector.invokeHS();
         JimpleInjector.addNeededLocals();
         
