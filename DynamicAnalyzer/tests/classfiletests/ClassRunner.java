@@ -51,65 +51,58 @@ public class ClassRunner {
 
   protected static void printByteCode() {
 
-			try {
-				
-				String[] cmd = {"/bin/sh", "-c", "cd sootOutput; javap -c " + "main.testclasses.Simple"};
-				Process p = Runtime.getRuntime().exec(cmd);
-				
-		        BufferedReader stdInput = new BufferedReader(new
-		        InputStreamReader(p.getInputStream()));
+    try {
 
-		        BufferedReader stdError = new BufferedReader(new
-		        InputStreamReader(p.getErrorStream()));
-		        
+      String[] cmd = {"/bin/sh", "-c", "cd sootOutput; javap -c " + "main.testclasses.Simple"};
+      Process process = Runtime.getRuntime().exec(cmd);
 
-		        // read the output from the command
-		        System.out.println("Here is the standard output of the command:\n");
-		        while ((s = stdInput.readLine()) != null) {
-		           System.out.println(s);
-		        }
-		            
-		        // read any errors from the attempted command
-		        System.out.println("Here is the standard error of the command (if any):\n");
-		        while ((s = stdError.readLine()) != null) {
-		          System.out.println(s);
-		        }
-		        
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-	}
+      BufferedReader stdInput = new BufferedReader(new
+          InputStreamReader(process.getInputStream()));
+
+      // read the output from the command
+      System.out.println("Here is the standard output of the command:\n");
+      while ((s = stdInput.readLine()) != null) {
+        System.out.println(s);
+      }
+
+      BufferedReader stdError = new BufferedReader(new
+              InputStreamReader(process.getErrorStream()));
+      
+      // read any errors from the attempted command
+      System.out.println("Here is the standard error of the command (if any):\n");
+      while ((s = stdError.readLine()) != null) {
+        System.out.println(s);
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
 
-protected static void runClass2(String fileName) {
-	 
-	 ClassRunner.fileName = fileName;
-	
-	 try { 
-		    DAClassLoader classloader = new DAClassLoader(ClassRunner.class.getClassLoader(), fileName);
-		    Class<?> aClass = classloader.loadClass();
-	        System.out.println("aClass.getName() = " + aClass.getName());
-	        String[] args = new String[0];
-	        Method method = aClass.getMethod("main", String[].class);
-	        method.invoke(args);
-	    } catch (ClassNotFoundException e) {
-	        e.printStackTrace();
-	    } catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-}
+  protected static void runClass2(String fileName) {
 
+    ClassRunner.fileName = fileName;
+
+    try { 
+      DaClassLoader classloader = new DaClassLoader(ClassRunner.class.getClassLoader(), fileName);
+      Class<?> loadedClass = classloader.loadClass();
+      System.out.println("aClass.getName() = " + loadedClass.getName());
+      String[] args = new String[0];
+      Method method = loadedClass.getMethod("main", String[].class);
+      method.invoke(args);
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    } catch (SecurityException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+    }
+  }
 }

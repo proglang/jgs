@@ -16,7 +16,7 @@ then
 
 	echo "Execute file \"$1\""
 
-	java -cp .:../bin/  $1
+	java -cp .:../bin/:../../../dependencies/commons-collections4-4.0/commons-collections4-4.0.jar  $1
 
 	echo "Execution completed"
 
