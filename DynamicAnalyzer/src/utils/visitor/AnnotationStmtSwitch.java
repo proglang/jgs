@@ -8,6 +8,7 @@ import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationValueSwitch.StmtContext;
 import analyzer.level1.JimpleInjector;
+import soot.Body;
 import soot.Local;
 import soot.Value;
 import soot.ValueBox;
@@ -36,8 +37,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	
   AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
   Logger logger = L1Logger.getLogger();
+  Body body;
 
-  @Override
+  public AnnotationStmtSwitch(Body body) {
+    this.body = body;
+  }
+
+@Override
   public void caseBreakpointStmt(BreakpointStmt stmt) {
     logger.fine("\n > > > Breakpoint statement identified < < <"); 
     valueSwitch.callingStmt = stmt;
@@ -103,26 +109,28 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
-	@Override
-	public void caseIdentityStmt(IdentityStmt stmt) {
+  @Override
+  public void caseIdentityStmt(IdentityStmt stmt) {
 
-		valueSwitch.callingStmt = stmt;
+    valueSwitch.callingStmt = stmt;
 		
-		valueSwitch.actualContext = StmtContext.IDENTITY;
+    valueSwitch.actualContext = StmtContext.IDENTITY;
 		
-		logger.fine("\n > > > Identity statement identified < < <");
+    logger.fine("\n > > > Identity statement identified < < <");
 
-		if (stmt.getRightOp() instanceof ParameterRef) {
-			int posInArgList = ((ParameterRef) stmt.getRightOp()).getIndex();
-			JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
-		} else if (stmt.getRightOp() instanceof ThisRef) {
-			// TODO im Grunde nicht nötig...
-		} else {
-			new InternalAnalyzerException("Unexpected type of right value in IdentityStmt");
-		}
+    if (stmt.getRightOp() instanceof ParameterRef) {
+      if (!body.getMethod().isMain()) {
+        int posInArgList = ((ParameterRef) stmt.getRightOp()).getIndex();
+        JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
+      }
+    } else if (stmt.getRightOp() instanceof ThisRef) {
+      // TODO im Grunde nicht nötig...
+    } else {
+      new InternalAnalyzerException("Unexpected type of right value in IdentityStmt");
+    }
 		
-		valueSwitch.actualContext = StmtContext.UNDEF;
-	}
+    valueSwitch.actualContext = StmtContext.UNDEF;
+  }
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {

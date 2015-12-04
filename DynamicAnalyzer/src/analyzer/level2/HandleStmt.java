@@ -219,7 +219,7 @@ public class HandleStmt {
 	public void returnConstant() {
 		LOGGER.log(Level.INFO, "Return a constant value");
 		om.setActualReturnLevel(lm.getLocalPC()); // TODO ??
-		// TODO hier vielleicht eher auch addLevel? Dann kann man es nämlich weglassen...
+		// TODO hier vielleicht eher auch addLevel? Dann kann man es nï¿½mlich weglassen...
 		// Das Problem ist aber, wenn der Returnwert nicht assigned wird...
 	}
 
@@ -257,12 +257,18 @@ public class HandleStmt {
 	}
 	
 
-	// This method is for Instancefields, Staticfields
-	public SecurityLevel addLevelOfField(Object o, String field) {
-		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
-		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), fieldLevel));
-		return om.getAssignmentLevel();
-	}
+
+  /**
+   * This method is for instance fields and for static fields.
+   * @param o
+   * @param field
+   * @return
+   */
+  public SecurityLevel addLevelOfField(Object o, String field) {
+    SecurityLevel fieldLevel = om.getFieldLevel(o, field);
+    om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), fieldLevel));
+    return om.getAssignmentLevel();
+  }
 	
 	public SecurityLevel addLevelOfArrayField(Object o, String field) {
 		// TODO

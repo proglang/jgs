@@ -63,13 +63,13 @@ public class BodyAnalyzer extends BodyTransformer{
     }
 
     logger.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}", arg0.getMethod().getName());
-		
-    stmtSwitch = new AnnotationStmtSwitch();
-    	
+	
     body = arg0;
     method = body.getMethod();
     fields = method.getDeclaringClass().getFields();  
 
+    stmtSwitch = new AnnotationStmtSwitch(body);
+    
     df = new DominatorFinder(body);
         
     JimpleInjector.setBody(body);
