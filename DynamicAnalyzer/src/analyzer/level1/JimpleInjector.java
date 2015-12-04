@@ -75,10 +75,10 @@ public class JimpleInjector {
      */
     static LocalStore localStore = new LocalStore();
 
-	/**
-	 * 
-	 */
-	static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
+  /**
+   * 
+   */
+  static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 
 	
 	/**
@@ -108,6 +108,7 @@ public class JimpleInjector {
   static Unit lastPos;
 
   /**
+   * Initialization of JimpleInjector.
    * @param body
    */
   public static void setBody(Body body) {
@@ -118,8 +119,8 @@ public class JimpleInjector {
   }
 
   /**
-   * 
-  */
+   * Add "hs = new HandleStmt()" expression to Jimplecode.
+   */
   public static void invokeHS() {
     logger.log(Level.INFO, "Invoke HandleStmt in method {0}", b.getMethod().getName());
 
