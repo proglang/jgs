@@ -10,27 +10,28 @@ import soot.jimple.InvokeExpr;
 
 public class VisitorHelper {
 
-	Logger logger = L1Logger.getLogger();
+  Logger logger = L1Logger.getLogger();
 
 	
-	protected Local[] getArgumentsForInvokedMethod(InvokeExpr invokeExpr) {
-		logger.finer("Arguments of invoked method: " + invokeExpr.getArgs());
+  /**
+   * @param invokeExpr
+   * @return
+   */
+  protected Local[] getArgumentsForInvokedMethod(InvokeExpr invokeExpr) {
+    logger.finer("Arguments of invoked method: " + invokeExpr.getArgs());
 		
-		List<Value> list = invokeExpr.getArgs();
-		int sizeOfList = list.size();
+    List<Value> list = invokeExpr.getArgs();
+    int sizeOfList = list.size();
 
-		Local[] retList = new Local[sizeOfList];
+    Local[] retList = new Local[sizeOfList];
 		
-		for (int i = 0; i < sizeOfList; i++) {
-			Value e = list.get(i);
-			if (e instanceof Local) {
-			  retList[i] = (Local) e;
-			}
-			logger.finer("Type of argument: " + e.getType());
-		}
-		
-
-		
-		return retList;
-	}
+    for (int i = 0; i < sizeOfList; i++) {
+      Value argument = list.get(i);
+      if (argument instanceof Local) {
+        retList[i] = (Local) argument;
+      }
+    logger.finer("Type of argument: " + argument.getType());
+    }
+    return retList;
+  }
 }

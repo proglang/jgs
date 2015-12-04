@@ -1,4 +1,4 @@
 >> Define sootClassPath for rt.jar in Main which works globally
 >> Dominator or PointsTo
->> 
+>> Remove all System.outs
 

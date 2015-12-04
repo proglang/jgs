@@ -913,29 +913,29 @@ public class JimpleInjector {
    * @param l
    */
   public static void checkThatNotHigh(Unit pos, Local l) {
-		logger.info("Check that " + l + " is not high");
+    logger.info("Check that " + l + " is not high");
 		
-		if (l == null)  {
-			new InternalAnalyzerException("Argument is null");
-		}
+    if (l == null)  {
+      new InternalAnalyzerException("Argument is null");
+    }
 		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		paramTypes.add(RefType.v("java.lang.String"));
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    paramTypes.add(RefType.v("java.lang.String"));
 		
-		String signature = getSignatureForLocal(l);
+    String signature = getSignatureForLocal(l);
 		
-		Stmt assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+    Stmt assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
 		
-		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"checkThatNotHigh", paramTypes, VoidType.v(),  false), local_for_Strings);
-		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
+    Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "checkThatNotHigh", paramTypes, VoidType.v(),  false), local_for_Strings);
+    Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
 
-	    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-	    unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
-	    lastPos = pos;
-	}
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+    lastPos = pos;
+  }
 	
 	/**
 	 * @param pos

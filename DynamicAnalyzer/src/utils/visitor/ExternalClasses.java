@@ -52,7 +52,7 @@ public class ExternalClasses {
     public void execute(Unit pos, Local[] params) {
       logger.fine("Check that external class has no high argument");
       for (Local param: params) {
-        JimpleInjector.checkThatNotHigh(pos, param);
+        if (param != null) JimpleInjector.checkThatNotHigh(pos, param);
       }
     }
   }
