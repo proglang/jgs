@@ -1,14 +1,7 @@
 package analyzer.level1;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import utils.logging.L1Logger;
-import utils.exceptions.InternalAnalyzerException;
-import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.LocalStore;
+import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
 import soot.ArrayType;
 import soot.Body;
@@ -28,12 +21,22 @@ import soot.jimple.Expr;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.IntConstant;
+import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
+import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.ThisRef;
 import soot.util.Chain;
+import utils.exceptions.InternalAnalyzerException;
+import utils.logging.L1Logger;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author koenigr
@@ -41,39 +44,41 @@ import soot.util.Chain;
  */
 public class JimpleInjector {
 	
-	/**
-	 * 
-	 */
-	private final static String HANDLE_CLASS = "analyzer.level2.HandleStmt";
+  /**
+   * 
+   */
+  private final static String HANDLE_CLASS = "analyzer.level2.HandleStmt";
 
 
-	/**
-	 * 
-	 */
-	static Body b = Jimple.v().newBody();
+  /**
+   * 
+   */
+  static Body b = Jimple.v().newBody();
 
-    /**
-     * 
-     */
-    static Chain<Unit> units = b.getUnits();
+  /**
+   * 
+   */
+  static Chain<Unit> units = b.getUnits();
 
-    /**
-     * 
-     */
-    static Chain<Local> locals = b.getLocals();
+  /**
+   * 
+   */
+  static Chain<Local> locals = b.getLocals();
 
-    /**
-     * 
-     */
-    static UnitStore unitStore_After = new UnitStore();
-    /**
-     * 
-     */
-    static UnitStore unitStore_Before = new UnitStore();
-    /**
-     * 
-     */
-    static LocalStore localStore = new LocalStore();
+  /**
+   * 
+   */
+  static UnitStore unitStore_After = new UnitStore();
+
+  /**
+   * 
+   */
+  static UnitStore unitStore_Before = new UnitStore();
+
+  /**
+   * 
+   */
+  static LocalStore localStore = new LocalStore();
 
   /**
    * 
@@ -81,25 +86,25 @@ public class JimpleInjector {
   static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 
 	
-	/**
-	 * 
-	 */
-	static Local local_for_Strings = Jimple.v().newLocal("local_for_Strings", RefType.v("java.lang.String"));
+  /**
+   * 
+   */
+  static Local local_for_Strings = Jimple.v().newLocal("local_for_Strings", RefType.v("java.lang.String"));
 
-	/**
-	 * 
-	 */
-	static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
+  /**
+   * 
+   */
+  static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 
-	/**
-	 * 
-	 */
-	static Local local_for_Objects = Jimple.v().newLocal("local_for_Objects", RefType.v("java.lang.Object"));
+  /**
+   * 
+   */
+  static Local local_for_Objects = Jimple.v().newLocal("local_for_Objects", RefType.v("java.lang.Object"));
 	
-	/**
-	 * 
-	 */
-	static Logger logger = L1Logger.getLogger();
+  /**
+   * 
+   */
+  static Logger logger = L1Logger.getLogger();
 
   /**
    * Stores the position of the last unit which was analyzed in the unit chain or the last
@@ -116,6 +121,18 @@ public class JimpleInjector {
     units = b.getUnits();
     locals = b.getLocals();
     lastPos = units.getFirst();
+    
+    Iterator<Unit> it = units.iterator();
+    
+    // Insert after the setting of all arguments since Jimple would otherwise complain.
+    int numOfArgs = getStartPos();
+    for (int i = 0; i < numOfArgs - 1; i++) {
+      lastPos = it.next();
+    }
+    
+    if (b.getMethod().getName().equals("<init>")) {
+      lastPos = it.next();
+    }
   }
 
   /**
@@ -129,19 +146,6 @@ public class JimpleInjector {
     ArrayList<Type> paramTypes = new ArrayList<Type>();
     Expr specialIn = Jimple.v().newSpecialInvokeExpr(
         hs, Scene.v().makeConstructorRef(Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
-
-    Iterator<Unit> it = units.iterator();
-
-    int numOfArgs = getStartPos();
-    for (int i = 0; i < numOfArgs - 1; i++) {
-
-      lastPos = it.next();
-      System.out.println("LAST POSITION in i: " + lastPos.toString());
-    }
-    
-
-
-    System.out.println("LAST POSITION: " + lastPos.toString());
 
     Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
@@ -904,12 +908,16 @@ public class JimpleInjector {
 
   }
 
-	/**
-	 * @param pos
-	 * @param l
-	 */
-	public static void checkThatNotHigh(Unit pos, Local l) {
+  /**
+   * @param pos
+   * @param l
+   */
+  public static void checkThatNotHigh(Unit pos, Local l) {
 		logger.info("Check that " + l + " is not high");
+		
+		if (l == null)  {
+			new InternalAnalyzerException("Argument is null");
+		}
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
@@ -1032,13 +1040,13 @@ protected static void addNeededLocals() {
 	b.validate();
 }
 
-/**
- * @param l
- * @return
- */
-private static String getSignatureForLocal(Local l) {
-	return l.getType() + "_" + l.getName();
-}
+  /**
+   * @param l
+   * @return
+   */
+  private static String getSignatureForLocal(Local l) {
+    return l.getType() + "_" + l.getName();
+  }
 
 /**
  * @param f

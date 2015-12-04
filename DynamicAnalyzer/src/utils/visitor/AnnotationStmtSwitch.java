@@ -34,34 +34,34 @@ import soot.jimple.ThrowStmt;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
 	
-	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
-	Logger logger = L1Logger.getLogger();
+  AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
+  Logger logger = L1Logger.getLogger();
 
-	@Override
-	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		logger.fine("\n > > > Breakpoint statement identified < < <"); 
-		valueSwitch.callingStmt = stmt;
-	}
+  @Override
+  public void caseBreakpointStmt(BreakpointStmt stmt) {
+    logger.fine("\n > > > Breakpoint statement identified < < <"); 
+    valueSwitch.callingStmt = stmt;
+  }
 
-	@Override
-	public void caseInvokeStmt(InvokeStmt stmt) {
+  @Override
+  public void caseInvokeStmt(InvokeStmt stmt) {
 
-		valueSwitch.callingStmt = stmt;
+    valueSwitch.callingStmt = stmt;
 		
-		InvokeStmt iStmt = stmt;
-		valueSwitch.actualContext = StmtContext.INVOKE;
+    InvokeStmt iStmt = stmt;
+    valueSwitch.actualContext = StmtContext.INVOKE;
 		
-		logger.fine("\n > > > Invoke Statement identified < < <");
+    logger.fine("\n > > > Invoke Statement identified < < <");
 		
-		InvokeExpr invokeExpr = iStmt.getInvokeExpr();
+    InvokeExpr invokeExpr = iStmt.getInvokeExpr();
 		
-		invokeExpr.apply(valueSwitch);
+    invokeExpr.apply(valueSwitch);
 
-		// TODO das ist eher interessant bei AssignStmt
-		logger.finer("Method has return type: " + invokeExpr.getType());
+    // TODO das ist eher interessant bei AssignStmt
+    logger.finer("Method has return type: " + invokeExpr.getType());
 		
-		valueSwitch.actualContext = StmtContext.UNDEF;
-	}
+    valueSwitch.actualContext = StmtContext.UNDEF;
+  }
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {

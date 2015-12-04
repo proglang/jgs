@@ -1,10 +1,5 @@
 package utils.visitor;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import utils.exceptions.InternalAnalyzerException;
-import utils.logging.L1Logger;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.jimple.AddExpr;
@@ -54,29 +49,31 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
+import utils.exceptions.InternalAnalyzerException;
+import utils.logging.L1Logger;
+
+import java.util.logging.Logger;
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
-	Logger logger = L1Logger.getLogger();
-	VisitorHelper vh = new VisitorHelper();
+  Logger logger = L1Logger.getLogger();
+  VisitorHelper vh = new VisitorHelper();
 	
-	protected enum StmtContext {UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, RETURN, GOTO, IF, SWITCH, THROW}
-	protected StmtContext actualContext = StmtContext.UNDEF;
-	protected enum RightElement {NOT, NEW_ARRAY, NEW_UNDEF_OBJECT, INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD};
-	protected RightElement rightElement = RightElement.NOT;
-	protected Stmt callingStmt;
+  protected enum StmtContext {UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, RETURN, GOTO, IF, SWITCH, THROW}
+  protected StmtContext actualContext = StmtContext.UNDEF;
+  protected enum RightElement {NOT, NEW_ARRAY, NEW_UNDEF_OBJECT, INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD};
+  protected RightElement rightElement = RightElement.NOT;
+  protected Stmt callingStmt;
 
-	@Override
-	public void caseDoubleConstant(DoubleConstant v) {	
+  @Override
+  public void caseDoubleConstant(DoubleConstant v) {
+    rightElement = RightElement.NOT;
+  }
 
-		  rightElement = RightElement.NOT;
-	}
-
-	@Override
-	public void caseFloatConstant(FloatConstant v) {
-
-		  rightElement = RightElement.NOT;
-	}
+  @Override
+  public void caseFloatConstant(FloatConstant v) {
+     rightElement = RightElement.NOT;
+  }
 
 	@Override
 	public void caseIntConstant(IntConstant v) {
@@ -302,94 +299,95 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		}
 	}
 
-	@Override
-	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-		  rightElement = RightElement.NOT;
-			// TODO F�lle unterscheiden  
+  @Override
+  public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
+    rightElement = RightElement.NOT;
+    logger.fine("Invoke expression is of type InterfaceInvoke");
+    if (actualContext == StmtContext.ASSIGNRIGHT) {
+      new InternalAnalyzerException("Unexpected InterfaceInvokeExpression");
+    }
+  }
+
+  @Override
+  public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
+    logger.fine("Invoke expression is of type SpecialInvoke");
+    logger.finest(v.toString());
+    rightElement = RightElement.NOT;
+	
+    if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
+      Local[] args = vh.getArgumentsForInvokedMethod(v);
+      String method = v.getMethod().toString();
+
+      if (ExternalClasses.methodMap.containsKey(method)) {
+        logger.fine("Found an external class " + method);
+        ExternalClasses.receiveCommand(method, callingStmt, args);
+      } else {
+        JimpleInjector.storeArgumentLevels(callingStmt, args);
+      }
+    } else {
+      new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+    }
+  }
+
+  @Override
+  public void caseStaticInvokeExpr(StaticInvokeExpr v) {
+    logger.fine("Invoke expression is of type StaticInvoke");
+    logger.finest(v.toString());
+    rightElement = RightElement.NOT;
+	
+    if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
+      Local[] args = vh.getArgumentsForInvokedMethod(v);
+      String method = v.getMethod().toString();
+
+      if (ExternalClasses.methodMap.containsKey(method)) {
+        logger.fine("Found an external class " + method);
+        ExternalClasses.receiveCommand(method, callingStmt, args);
+      } else {
+        JimpleInjector.storeArgumentLevels(callingStmt, args);
+      }
+    } else {
+      new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+    }
+  }
+
+  @Override
+  public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
+    logger.fine("Invoke expression is of type VirtualInvoke");
+    logger.finest(v.toString());
+    rightElement = RightElement.NOT;
+	
+    if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
+      Local[] args = vh.getArgumentsForInvokedMethod(v);
+      String method = v.getMethod().toString();
+
+      if (ExternalClasses.methodMap.containsKey(method)) {
+        logger.fine("Found an external class " + method);
+        ExternalClasses.receiveCommand(method, callingStmt, args);
+      } else {
+        JimpleInjector.storeArgumentLevels(callingStmt, args);
+      }
+    } else {
+      new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+    }		
+  }
+
+  @Override
+  public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
+    rightElement = RightElement.NOT;
+    logger.fine("Invoke expression is of type DynamicInvoke");
+    if (actualContext == StmtContext.ASSIGNRIGHT) {
+      new InternalAnalyzerException();
+    }
+  }
+
+  @Override
+  public void caseCastExpr(CastExpr v) {
+    rightElement = RightElement.NOT;
 		  
-
-		logger.fine("Invoke expression is of type InterfaceInvoke");
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
-	}
-
-	@Override
-	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
-		  rightElement = RightElement.NOT;
-			// TODO F�lle unterscheiden  
-		  
-
-		logger.fine("Invoke expression is of type SpecialInvoke");
-		logger.finest(v.toString());
-		
-		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
-			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			JimpleInjector.storeArgumentLevels(callingStmt, args);
-		} else {
-			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
-		}
-
-	}
-
-	@Override
-	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-		rightElement = RightElement.NOT;
-		// TODO F�lle unterscheiden  
-
-		logger.fine("Invoke expression is of type StaticInvoke");
-		logger.finest(v.toString());	
-		
-		
-		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
-			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			JimpleInjector.storeArgumentLevels(callingStmt, args);
-		} else {
-			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
-		}
-
-	}
-
-	@Override
-	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
-		  rightElement = RightElement.NOT;
-			// TODO F�lle unterscheiden  
-		  
-
-		logger.fine("Invoke expression is of type VirtualInvoke");
-		logger.finest(v.toString());
-		logger.finest(v.getMethod().toString());
-		logger.finest(v.getClass().toString());
-		
-		if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
-			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			JimpleInjector.storeArgumentLevels(callingStmt, args);
-		} else {
-			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
-		}
-		
-	}
-
-	@Override
-	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		  rightElement = RightElement.NOT;
-			// TODO F�lle unterscheiden  
-		  
-
-		logger.severe("Invoke expression is of type DynamicInvoke"); // TODO change to fine
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
-	}
-
-	@Override
-	public void caseCastExpr(CastExpr v) {
-		  rightElement = RightElement.NOT;
-		  
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
-	}
+    if (actualContext == StmtContext.ASSIGNRIGHT) {
+      new InternalAnalyzerException();
+    }
+ }
 
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {

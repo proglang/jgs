@@ -12,7 +12,6 @@ import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationStmtSwitch;
-import utils.visitor.AnnotationValueSwitch;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -41,14 +40,13 @@ public class BodyAnalyzer extends BodyTransformer{
    * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
    */
   @Override
-  protected void internalTransform(Body arg0, String arg1,  Map arg2) {
-    SootClass sootClass;
+  protected void internalTransform(Body arg0, String arg1,
+	      @SuppressWarnings("rawtypes") Map arg2) {
     SootMethod method;
     Body body;  
     Chain<Unit> units;
     Chain<Local> locals;
     AnnotationStmtSwitch stmtSwitch;
-    AnnotationValueSwitch valueSwitch;
     Chain<SootField> fields;
 
     DominatorFinder df;
@@ -67,7 +65,6 @@ public class BodyAnalyzer extends BodyTransformer{
     logger.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}", arg0.getMethod().getName());
 		
     stmtSwitch = new AnnotationStmtSwitch();
-    valueSwitch = new AnnotationValueSwitch();	
     	
     body = arg0;
     method = body.getMethod();
@@ -99,7 +96,7 @@ public class BodyAnalyzer extends BodyTransformer{
         		
       // Add all instance fields to ObjectMap
       Iterator<SootField> fIt = fields.iterator();
-      while(fIt.hasNext()) {
+      while (fIt.hasNext()) {
         SootField item = fIt.next();
         if (!item.isStatic()) {
           JimpleInjector.addInstanceFieldToObjectMap(item);
@@ -113,7 +110,7 @@ public class BodyAnalyzer extends BodyTransformer{
         		
       // Add all static fields to ObjectMap
       Iterator<SootField> fIt = fields.iterator();
-      while(fIt.hasNext()) {
+      while (fIt.hasNext()) {
         SootField item = fIt.next();
         if (item.isStatic()) {
           JimpleInjector.addStaticFieldToObjectMap(item);
@@ -124,11 +121,11 @@ public class BodyAnalyzer extends BodyTransformer{
 
 
     Iterator<Local> lit = locals.iterator();
-    while(lit.hasNext()) {
+    while (lit.hasNext()) {
       Local item = lit.next();
-      if (!(item.getName() == "local_for_Strings")&& !(item.getName() == "local_for_String_Arrays")
-    	  &&!(item.getName() == "local_for_Objects")&&!(item.getName() == "local_level")
-          && !(item.getName() == "hs")) {
+      if (!(item.getName() == "local_for_Strings") && !(item.getName() == "local_for_String_Arrays")
+    	     && !(item.getName() == "local_for_Objects") && !(item.getName() == "local_level")
+             && !(item.getName() == "hs")) {
         JimpleInjector.addLocal(item);
       }
     }
@@ -136,15 +133,14 @@ public class BodyAnalyzer extends BodyTransformer{
         
         
     Iterator<Unit> uit = units.iterator();
-    while(uit.hasNext()) {
+    while (uit.hasNext()) {
       Unit item = uit.next();
       item.apply(stmtSwitch);
       if (item instanceof IfStmt) {
-        System.out.println("HIER ==>> " + item.toString());
         df.getImmediateDominator(item);
       }
       while (df.containsStmt(item)) {
-        // JimpleInjector.exitInnerScope();
+        // JimpleInjector.exitInnerScope(); TODO
       }
     }
         
