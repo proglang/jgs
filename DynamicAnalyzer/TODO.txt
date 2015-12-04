@@ -2,3 +2,10 @@
 >> Dominator or PointsTo
 >> Remove all System.outs
 
+
+
+
+
+Fragen:
+<< Ein Superkonstruktor kann auch Argumente haben. Allerdings kann man sie nicht rechtzeitig testen, weil alle Aktionen erst hinterher ausgeführt werden dürfen. Ist das eine mögliche Sicherheitslücke?
+
