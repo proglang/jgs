@@ -39,7 +39,7 @@ public class AssignmentsTest {
         Set<Assignment<Level>> expected, result;
         expected = Collections.singleton(Assignments.empty());
         result =
-            enumerateAll(types, new LinkedList<>()).collect(Collectors.toSet());
+            enumerateAll(types, Collections.<TypeVar>emptySet()).collect(Collectors.toSet());
         assertEquals(expected, result);
     }
 
@@ -52,7 +52,7 @@ public class AssignmentsTest {
                                         builder(x, DYN).build()));
         result =
             enumerateAll(types,
-                         new LinkedList<>(Arrays.asList(x))).collect(Collectors.toSet());
+                         Collections.singleton(x)).collect(Collectors.toSet());
         assertEquals(expected, result);
     }
 
@@ -78,8 +78,7 @@ public class AssignmentsTest {
                                         builder(x, DYN).add(y, DYN).build()));
         Set<Assignment<Level>> result = Assignments
                                                    .enumerateAll(types,
-                                                                 new LinkedList<>(Arrays.asList(x,
-                                                                                                y)))
+                                                                 new HashSet<>(Arrays.asList(x, y)))
                                                    .collect(Collectors.toSet());
         assertEquals(expected, result);
     }

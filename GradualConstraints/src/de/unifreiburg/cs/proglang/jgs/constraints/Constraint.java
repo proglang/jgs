@@ -1,9 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import polyglot.ast.Assign;
 
 public final class Constraint<Level> {
 
@@ -45,6 +48,13 @@ public final class Constraint<Level> {
                         || types.le(this.rhs.apply(a), types.dyn()));
             default: throw new RuntimeException("Impossible case!");
         }
+    }
+
+
+    public Constraint<Level> apply(Assignment<Level> a) {
+        CType<Level> newLhs = this.lhs.applyWhenPossible(a);
+        CType<Level> newRhs = this.rhs.applyWhenPossible(a);
+        return Constraints.make(this.kind, newLhs, newRhs);
     }
     
     public Stream<TypeVar> variables() {

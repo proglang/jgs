@@ -3,7 +3,9 @@ package de.unifreiburg.cs.proglang.jgs;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
@@ -25,6 +27,7 @@ import soot.*;
 import soot.jimple.StaticInvokeExpr;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
+import static java.util.stream.Collectors.toSet;
 
 public class TestDomain {
 
@@ -258,4 +261,59 @@ public class TestDomain {
         };
     }
 
+    /**
+     * Holds for constraint sets that subsume each other
+     *
+     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
+     */
+    //TODO: change that name
+    public static Matcher<ConstraintSet<Level>> minimallySubsumes(final ConstraintSet<Level> other) {
+        return new TypeSafeMatcher<ConstraintSet<Level>>() {
+            @Override
+            protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
+                return cstrs.subsubmes(levelConstraintSet, other) && cstrs.subsubmes(other, levelConstraintSet);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" minimally subsumes ").appendValue(other);
+            }
+        };
+    }
+
+    public static Matcher<ConstraintSet<Level>> subsumes(final ConstraintSet<Level> other) {
+        return new TypeSafeMatcher<ConstraintSet<Level>>() {
+            @Override
+            protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
+                return cstrs.subsubmes(levelConstraintSet, other);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" subsumes ").appendValue(other);
+            }
+        };
+    }
+
+    public static Matcher<ConstraintSet<Level>> refines(TypeVars tvars, final ConstraintSet<Level> other) {
+        return new TypeSafeMatcher<ConstraintSet<Level>>() {
+            @Override
+            protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
+                return other.isSignatureOf(tvars, levelConstraintSet);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" refines ").appendValue(other);
+            }
+
+            @Override
+            protected void describeMismatchSafely(ConstraintSet<Level> item, Description mismatchDescription) {
+                ConstraintSet<Level> projected = item.projectForSignature(tvars,other);
+                Assignment<Level> counterExample = other.subsumptionCounterExample(item).get();
+                Set<Constraint<Level>> applied = projected.stream().filter(c -> !Constraints.isTrivial(types, c.apply(counterExample))).collect(toSet());
+                mismatchDescription.appendText(String.format("was (projected to sig) %s\n Counterexample: %s\n Conflicting: %s", projected, counterExample, applied));
+            }
+        };
+    }
 }

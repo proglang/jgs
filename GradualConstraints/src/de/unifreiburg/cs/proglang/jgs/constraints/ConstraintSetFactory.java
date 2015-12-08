@@ -6,5 +6,4 @@ public interface ConstraintSetFactory<Level> {
     
     ConstraintSet<Level> empty();
     ConstraintSet<Level> fromCollection(Collection<Constraint<Level>> cs);
-
 }

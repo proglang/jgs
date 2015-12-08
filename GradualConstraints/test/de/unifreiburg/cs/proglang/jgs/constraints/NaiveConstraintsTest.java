@@ -156,6 +156,17 @@ public class NaiveConstraintsTest {
     public void testProjection1() {
         Set<Constraint<Level>> tmp = Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3)).collect(toSet());
         assertProjection(tmp, asList(cs.v1, cs.v3), asList(leC(cs.x1, cs.x3)));
+
+        tmp = Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3)).collect(toSet());
+        assertProjection(tmp, asList(cs.v1), Collections.<Constraint<Level>>emptySet());
+
+        tmp = Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3)).collect(toSet());
+        assertProjection(tmp, asList(cs.v1, cs.v0), Collections.<Constraint<Level>>emptySet());
+
+        tmp = Stream.of(leC(cs.x1, cs.x2), leC(cs.x0, cs.x3), leC(cs.x1, cs.x3)).collect(toSet());
+        assertProjection(tmp, asList(cs.v1, cs.v0), Stream.of(compC(cs.x0, cs.x1)).collect(toSet()));
+
+        assertProjection(tmp, asList(cs.v1, cs.v0), Stream.of(compC(cs.x1, cs.x0)).collect(toSet()));
     }
 
     @Test
@@ -184,5 +195,14 @@ public class NaiveConstraintsTest {
 //            boolean cs2Sat = cs2.isSatisfiedFor(types, ass);
 //            assertThat(String.format("cs1 (%s: %s) does not match cs2 (%s: %s): %s", cs1, cs1Sat, cs2, cs2Sat, ass), cs1Sat , is(cs2Sat));
 //        })));
+    }
+
+    @Test
+    public void testSubsumption() {
+        assertThat(makeNaive(singletonList(leC(CHIGH, CTypes.variable(tvars.ret())))), subsumes(makeNaive(singletonList(leC(CLOW, CTypes.variable(tvars.ret()))))));
+        assertThat(makeNaive(singletonList(leC(CLOW, CTypes.variable(tvars.ret())))), subsumes(makeNaive(asList(leC(CLOW, cs.x1), leC(cs.x1, tvars.ret()), leC(CHIGH, cs.x2)))));
+        assertThat(makeNaive(singletonList(leC(CLOW, CTypes.variable(tvars.ret())))), minimallySubsumes(makeNaive(singletonList(leC(CLOW, CTypes.variable(tvars.ret()))))));
+        assertThat(makeNaive(singletonList(leC(CLOW, CTypes.variable(tvars.ret())))), minimallySubsumes(makeNaive(asList(leC(CLOW, cs.x1), leC(cs.x1, tvars.ret()), leC(CHIGH, cs.x2)))));
+        assertThat(makeNaive(singletonList(leC(CHIGH, CTypes.variable(tvars.ret())))), not(minimallySubsumes(makeNaive(singletonList(leC(CLOW, CTypes.variable(tvars.ret())))))));
     }
 }

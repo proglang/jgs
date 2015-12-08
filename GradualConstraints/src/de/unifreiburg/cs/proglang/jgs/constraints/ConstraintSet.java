@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
+import static java.util.stream.Collectors.toSet;
+
 /**
  * An immutable set of constraints.
  *
@@ -48,6 +50,11 @@ public abstract class ConstraintSet<Level> {
     abstract public boolean isSat(TypeDomain<Level> types);
 
     /**
+     * @return A counterexample why <code>this</code> does not subsume <code>other</code>
+     */
+    abstract public Optional<Assignment<Level>> subsumptionCounterExample(ConstraintSet<Level> other);
+
+    /**
      * Find a satisfying assignment for this constraint set. (Optional)
      *
      * @param requiredVariables The minimal set of variables that should be bound by a satisfying assignment. The actual
@@ -66,6 +73,32 @@ public abstract class ConstraintSet<Level> {
         return this.stream().flatMap(c -> c.variables());
     }
 
+    /**
+     * @return the stream of constriants where assignement <code>a</code> is applied where possible.
+     */
+    public Stream<Constraint<Level>> apply(Assignment<Level> a) {
+        return this.stream().map(c -> c.apply(a));
+    }
+
+
+    /**
+     * @return True if <code>other</code> is satisfiable for all of the satisfying assignments of <code>this</code>.
+     */
+    public boolean subsumes(ConstraintSet<Level> other) {
+        return !this.subsumptionCounterExample(other).isPresent();
+    }
+
+    /**
+     * @return true if <code>this</code> is a suitable signature for <code>other</code>
+     */
+    public boolean isSignatureOf(TypeVars tvars, ConstraintSet<Level> other) {
+        return this.subsumes(other.projectForSignature(tvars, this));
+    }
+
+    public ConstraintSet<Level> projectForSignature(TypeVars tvars, ConstraintSet<Level> sig) {
+        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext()), sig.variables()).collect(toSet());
+        return this.projectTo(vars);
+    }
 
     /**
      * Create a set of constraints that only mentions the type variables in <code>typeVars</code>. The resulting set,

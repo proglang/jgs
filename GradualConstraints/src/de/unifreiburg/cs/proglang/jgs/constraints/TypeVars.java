@@ -133,17 +133,50 @@ public class TypeVars {
         return new TestParam(param, id);
     }
 
+    public TypeVar param(Var<?> param) {
+        return new Param(param);
+    }
+
     public TypeVar topLevelContext() {
-        return new TopLevelContext();
+        return new InternalConstant("cx");
+    }
+
+    public TypeVar ret() {
+        return new InternalConstant("ret");
     }
 
     public interface TypeVar{}
 
-    private class TopLevelContext implements  TypeVar {
+
+    private class Param implements TypeVar {
+        private final Var<?> param;
+
+        private Param(Var<?> param) {
+            this.param = param;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Param param1 = (Param) o;
+
+            return !(param != null ? !param.equals(param1.param) : param1.param != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return param != null ? param.hashCode() : 0;
+        }
+    }
+
+    private class InternalConstant implements  TypeVar {
         private final String name;
 
-        private TopLevelContext() {
-            this.name = "cx";
+        private InternalConstant(String name) {
+            this.name = name;
         }
 
         @Override
@@ -156,7 +189,7 @@ public class TypeVars {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            TopLevelContext that = (TopLevelContext) o;
+            InternalConstant that = (InternalConstant) o;
 
             return !(name != null ? !name.equals(that.name) : that.name != null);
 

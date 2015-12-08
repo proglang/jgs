@@ -1,9 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.Code;
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
-import de.unifreiburg.cs.proglang.jgs.constraints.NaiveConstraints;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +21,7 @@ import java.util.function.Supplier;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs.*;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -61,7 +60,7 @@ public class MethodBodyTypingTest {
                 last
         );
 
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 (Result<Level> finalResult) -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
@@ -78,7 +77,7 @@ public class MethodBodyTypingTest {
                 j.newAssignStmt(code.localY, j.newVirtualInvokeExpr(code.localO, code.ignoreSnd_int_int__int.makeRef(), asList(code.localX, code.localZ))),
                 j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localY))
         );
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
@@ -97,7 +96,7 @@ public class MethodBodyTypingTest {
                 j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localY))
         );
 
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
@@ -122,7 +121,7 @@ public class MethodBodyTypingTest {
                 singleton(j.newNopStmt()));
 
 
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
@@ -130,7 +129,7 @@ public class MethodBodyTypingTest {
                 finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
 
         // should finish in a few iterations
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
@@ -149,7 +148,7 @@ public class MethodBodyTypingTest {
         assertThat((g.getPredsOf(g.getTails().get(0))), hasItem(els));
         assertThat(code.init.get(code.varY), not(is(analyze(g).finalTypeVariableOf(code.varY))));
 
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
@@ -164,7 +163,7 @@ public class MethodBodyTypingTest {
         g = branchIf(cond,
                 singleton(thn),
                 singleton(els));
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
@@ -175,9 +174,15 @@ public class MethodBodyTypingTest {
         /* if (y = y) { x = 1}; x = 1*/
         cond = j.newEqExpr(code.localY, code.localY);
         g = seq(branchIf(cond, singleton(j.newAssignStmt(code.localX, IntConstant.v(1))), singleton(j.newNopStmt())), j.newAssignStmt(code.localX, IntConstant.v(1)));
-        assertConstraints(g,
-                finalResult -> makeNaive(Collections.emptyList()),
-                finalResult -> new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX))));
+        Result<Level> r = analyze(g);
+        //TODO: write some tests that check minimallySubsumes is not trivial!!!
+        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY)))), is(minimallySubsumes(makeNaive(asList(compC(code.init.get(code.varX), code.init.get(code.varY)))))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(Collections.singletonList(code.init.get(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints(), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(Collections.singletonList(r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertMinimalSubsumption(g,
+                finalResult -> makeNaive(asList(compC(code.init.get(code.varY), code.init.get(code.varX)))));
 
 
     }
@@ -192,34 +197,48 @@ public class MethodBodyTypingTest {
 
  /* if (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
         DirectedGraph<Unit> g = seq(branchIf(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get()), singleton(j.newNopStmt())), afterLoop, incZ.get());
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
                 )),
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
 
-        /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
-        g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
-        assertConstraints(g,
-                finalResult -> makeNaive(asList(
-                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
-                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
-                )),
-                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
-
-        assertConstraints(g,
-                finalResult -> makeNaive(asList(
-                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
-                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ)),
-                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
-                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)),
-                        compC(code.init.get(code.varX), code.init.get(code.varZ)),
-                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX))
-                )),
-                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varZ))));
     }
 
+    @Test
+    public void testNestedBranches2() throws TypeError {
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt body = j.newAssignStmt(code.localY, code.localZ);
+        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
+        Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
+
+        /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
+        DirectedGraph<Unit> g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
+
+        assertEquivalentConstraints(g,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
+
+        Result<Level> r = analyze(g);
+//        // TODO: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
+        ConstraintSet<Level> sig = makeNaive(asList(
+                        leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)),
+                        compC(code.init.get(code.varX), code.init.get(code.varZ))));
+        assertThat(sig.isSatisfiedFor(types, Assignments.builder(code.init.get(code.varX), DYN)
+                        .add(r.finalTypeVariableOf(code.varX), PUB)
+                        .add(code.init.get(code.varY), PUB)
+                        .add(r.finalTypeVariableOf(code.varZ), PUB)
+                        .add(code.init.get(code.varZ), PUB).build())
+                        , is(true));
+        assertThat(r.getConstraints(), refines(tvars,sig));
+    }
     @Test
     public void testPostDom() {
         /*
@@ -257,7 +276,7 @@ public class MethodBodyTypingTest {
         Expr cond = j.newEqExpr(code.localY, code.localY);
         Stmt body = j.newAssignStmt(code.localY, code.localZ);
         DirectedGraph<Unit> g = branchWhile(cond, singleton(body));
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))
@@ -268,27 +287,27 @@ public class MethodBodyTypingTest {
         */
         Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
         g = seq(branchWhile(cond, singleton(body)), singleton(afterLoop));
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX))
                 )),
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX))));
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)),
                         leC(finalResult.finalTypeVariableOf(code.varY), finalResult.finalTypeVariableOf(code.varX)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY))
-                        )),
+                )),
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varY))));
 
         /* while (y = y) { y = z }; x = y; z = z + 1;
         */
         Stmt incZ = j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
         g = seq(g, incZ);
-        assertConstraints(g,
+        assertEquivalentConstraints(g,
                 finalResult -> makeNaive(asList(
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
                         compC(finalResult.finalTypeVariableOf(code.varZ), code.init.get(code.varY))
@@ -302,7 +321,7 @@ public class MethodBodyTypingTest {
         return mbTyping.generateResult(g, pc, code.init, code.signatures);
     }
 
-    private void assertConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypeError {
+    private void assertEquivalentConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypeError {
         Result<Level> finalResult = analyze(g);
         Set<TypeVars.TypeVar> varsToProject = getVarsToProject.apply(finalResult);
         ConstraintSet<Level> expected = getExpected.apply(finalResult);
@@ -310,8 +329,12 @@ public class MethodBodyTypingTest {
                 NaiveConstraints.minimize(finalResult.getConstraints().projectTo(varsToProject)), is(equivalent(expected)));
     }
 
-    private void assertConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected) throws TypeError {
-        assertConstraints(g, getExpected, finalResult -> finalResult.getConstraints().variables().collect(toSet()));
+    private void assertMinimalSubsumption(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected) throws TypeError {
+        Result<Level> finalResult = analyze(g);
+        ConstraintSet<Level> expected = getExpected.apply(finalResult);
+        assertThat(String.format("The constraints of %s", Graphs.toString(g)),
+                NaiveConstraints.minimize(finalResult.getConstraints()),minimallySubsumes(expected));
+
     }
 
 }

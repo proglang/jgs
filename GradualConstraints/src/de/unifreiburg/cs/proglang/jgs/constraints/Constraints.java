@@ -55,6 +55,11 @@ public class Constraints<Level> {
         return c1.getLhs().equals(c2.getLhs()) && c1.getRhs().equals(c2.getRhs());
     }
 
+    public static <Level> boolean isTrivial(TypeDomain<Level> types, Constraint<Level> c) {
+        Assignment<Level> a = Assignments.empty();
+        return c.getLhs().tryApply(a).isPresent() && c.getRhs().tryApply(a).isPresent() && c.isSatisfied(types, Assignments.empty());
+    }
+
     /**
      * Given the constraint <code>c</code>, return literally all the non-reflexive constraints that would be implied by <code>c</code>.
      */
@@ -67,9 +72,11 @@ public class Constraints<Level> {
                         Stream.of(c),
                         implicationsOf(toKind(Constraint.Kind.COMP, c)));
             case COMP:
-                Constraint<Level> dimpl = toKind(Constraint.Kind.DIMPL, c);
+                //TODO: fix this for NSU support... dimpl is needed
+//                Constraint<Level> dimpl = toKind(Constraint.Kind.DIMPL, c);
                 // x1 ~ x2 implies x2 ~ x1 and x1 ?-> x2, and x2 ?~> x1
-                return Stream.of(c, symmetricOf(c), dimpl, symmetricOf(dimpl));
+//                return Stream.of(c, symmetricOf(c), dimpl, symmetricOf(dimpl));
+                return Stream.of(c, symmetricOf(c));
             case DIMPL:
                 return Stream.of(c);
             default:
@@ -84,6 +91,11 @@ public class Constraints<Level> {
     public boolean implies(ConstraintSet<Level> left, ConstraintSet<Level> right) {
         return left.implies(types, right);
     }
+
+    public boolean subsubmes(ConstraintSet<Level> left, ConstraintSet<Level> right) {
+        return left.subsumes(right);
+    }
+
 
     public boolean isSat(ConstraintSet<Level> cs) {
         return cs.isSat(types);

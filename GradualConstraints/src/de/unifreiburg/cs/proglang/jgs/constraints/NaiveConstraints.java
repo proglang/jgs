@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -67,14 +68,14 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
             old.addAll(result);
             old.stream().forEach(x_to_y -> {
                 Stream<CType<Level>> cands;
-                        cands = matchingRhs(x_to_y, old);
-                        cands.forEach(rhs -> {
-                            CType lhs = x_to_y.getLhs();
-                            if (!lhs.equals(rhs)) {
-                                result.add(Constraints.make(x_to_y.kind, lhs, rhs));
-                            }
-                        });
+                cands = matchingRhs(x_to_y, old);
+                cands.forEach(rhs -> {
+                    CType lhs = x_to_y.getLhs();
+                    if (!lhs.equals(rhs)) {
+                        result.add(Constraints.make(x_to_y.kind, lhs, rhs));
+                    }
                 });
+            });
         } while (!result.equals(old));
         return result;
     }
@@ -83,6 +84,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     public static <Level> ConstraintSet<Level> minimize(ConstraintSet<Level> cs) {
         return new NaiveConstraints<>(cs.types, minimize(cs.stream().collect(toSet())));
     }
+
     /**
      * Try minimize to <code>cs</code>. Currently checks if the le constraints cover any other kinds of constraints.
      */
@@ -144,6 +146,15 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return this.satisfyingAssignment(types, Collections.emptyList()).isPresent();
     }
 
+    public Optional<Assignment<Level>> subsumptionCounterExample(ConstraintSet<Level> other) {
+        return this.enumerateSatisfyingAssignments(types, Collections.<TypeVar>emptyList()).filter((Assignment<Level> a) -> {
+            Stream<Constraint<Level>> cStream = other.apply(a);
+            List<Constraint<Level>> cs = cStream.collect(toList());
+            return !(new NaiveConstraints<>(types, cs).isSat(types));
+        }).findFirst();
+
+    }
+
     /**
      * Enumerate all assignments that satisfy this constraint set.
      *
@@ -153,9 +164,9 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
      */
     public Stream<Assignment<Level>> enumerateSatisfyingAssignments(TypeDomain<Level> types, Collection<TypeVar> requiredVariables) {
         Set<TypeVar> variables =
-                cs.stream().flatMap(c -> c.variables()).collect(toSet());
+                cs.stream().flatMap(Constraint::variables).collect(toSet());
         variables.addAll(requiredVariables);
-        return Assignments.enumerateAll(types, new LinkedList<>(variables))
+        return Assignments.enumerateAll(types, variables)
                 .filter(a -> this.isSatisfiedFor(types, a));
     }
 
@@ -168,7 +179,10 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     public String toString() {
         StringBuilder result = new StringBuilder("{");
         Predicate<Constraint<Level>> isLe = c -> c.kind.equals(Constraint.Kind.LE);
-        Consumer<Constraint<Level>> append = c -> {result.append(c.toString()); result.append(", "); };
+        Consumer<Constraint<Level>> append = c -> {
+            result.append(c.toString());
+            result.append(", ");
+        };
         cs.stream().filter(isLe).forEach(append);
         cs.stream().filter(isLe.negate()).forEach(append);
         result.append("}");

@@ -29,6 +29,10 @@ public class CTypes {
                                                                          .toString()));
         }
 
+        public final CType<Level> applyWhenPossible(Assignment<Level> a) {
+            return this.tryApply(a).map(CTypes::literal).orElse(this);
+        }
+
         public abstract <R> R accept(CTypeSwitch<Level, R> sw);
 
     }
