@@ -169,11 +169,13 @@ public SecurityLevel getActualReturnLevel() {
    */ 
 public SecurityLevel getFieldLevel(Object o, String f) {
 	if (!innerMap.containsKey(o)) {
-		new InternalAnalyzerException("Missing Object" + o);
-		System.exit(0);
+		// new InternalAnalyzerException("Missing Object in ObjectMap: " + o);
+		//System.exit(0);
+		insertNewObject(o);
 	}
 	if (!innerMap.get(o).containsKey(f)) {
-		new InternalAnalyzerException("Missing field " + f);
+		// new InternalAnalyzerException("Missing field in FieldMap: " + f);
+		setField(o, f);
 	}
 	return innerMap.get(o).get(f);
 }
