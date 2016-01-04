@@ -28,6 +28,8 @@ public class ExternalClasses {
     methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
     	   new NoHighLevelAllowed());
     methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
+    methodMap.put("", new MakeHigh());
+    methodMap.put("", new MakeLow());
   }
 	
   static void receiveCommand(String method,Unit pos, Local[] params) {
@@ -52,7 +54,9 @@ public class ExternalClasses {
     public void execute(Unit pos, Local[] params) {
       logger.fine("Check that external class has no high argument");
       for (Local param: params) {
-        if (param != null) JimpleInjector.checkThatNotHigh(pos, param);
+        if (param != null) {
+          JimpleInjector.checkThatNotHigh(pos, param);
+        }
       }
     }
   }
@@ -62,5 +66,19 @@ public class ExternalClasses {
     public void execute(Unit pos, Local[] params) {
       logger.fine("Do nothing for external class");
     }  
+  }
+  
+  static class MakeHigh implements Command {
+	  @Override
+	  public void execute(Unit pos, Local[] params) {
+		  
+	  }
+  }
+  
+  static class MakeLow implements Command {
+	  @Override
+	  public void execute(Unit pos, Local[] params) {
+		  
+	  }
   }
 }

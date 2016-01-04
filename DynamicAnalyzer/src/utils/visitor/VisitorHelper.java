@@ -14,8 +14,11 @@ public class VisitorHelper {
 
 	
   /**
-   * @param invokeExpr
-   * @return
+   * This Method returns a list of the arguments for an invoked method
+   * for further proceedings. If an argument is a constant the returned
+   * list has a null-value at the respective position.
+   * @param invokeExpr The expression to invoke a method
+   * @return list containing all non-constant arguments
    */
   protected Local[] getArgumentsForInvokedMethod(InvokeExpr invokeExpr) {
     logger.finer("Arguments of invoked method: " + invokeExpr.getArgs());
@@ -30,8 +33,9 @@ public class VisitorHelper {
       if (argument instanceof Local) {
         retList[i] = (Local) argument;
       }
-    logger.finer("Type of argument: " + argument.getType());
+      logger.finer("Type of argument: " + argument.getType());
     }
     return retList;
   }
+  
 }

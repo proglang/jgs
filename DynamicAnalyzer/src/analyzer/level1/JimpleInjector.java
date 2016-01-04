@@ -47,7 +47,7 @@ public class JimpleInjector {
   /**
    * 
    */
-  private final static String HANDLE_CLASS = "analyzer.level2.HandleStmt";
+  private static final String HANDLE_CLASS = "analyzer.level2.HandleStmt";
 
 
   /**
