@@ -28,8 +28,8 @@ public class ExternalClasses {
     methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
     	   new NoHighLevelAllowed());
     methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
-    methodMap.put("", new MakeHigh());
-    methodMap.put("", new MakeLow());
+    methodMap.put("<utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>", new MakeHigh());
+    methodMap.put("<utils.analyzer.HelperClass: java.lang.Object makeLow(java.lang.Object)>", new MakeLow());
   }
 	
   static void receiveCommand(String method,Unit pos, Local[] params) {
@@ -69,16 +69,16 @@ public class ExternalClasses {
   }
   
   static class MakeHigh implements Command {
-	  @Override
-	  public void execute(Unit pos, Local[] params) {
-		  
-	  }
+    @Override
+    public void execute(Unit pos, Local[] params) {
+      logger.fine("Variable is set to high"); 
+    }
   }
   
   static class MakeLow implements Command {
-	  @Override
-	  public void execute(Unit pos, Local[] params) {
-		  
-	  }
+    @Override
+    public void execute(Unit pos, Local[] params) {
+ 
+    }
   }
 }

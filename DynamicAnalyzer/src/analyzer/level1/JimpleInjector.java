@@ -51,7 +51,7 @@ public class JimpleInjector {
 
 
   /**
-   * 
+   * The body of the actually analyzed method.
    */
   static Body b = Jimple.v().newBody();
 
@@ -66,12 +66,14 @@ public class JimpleInjector {
   static Chain<Local> locals = b.getLocals();
 
   /**
-   * 
+   * Chain containing all new units which have to be set
+   * after a given position.
    */
   static UnitStore unitStore_After = new UnitStore();
 
   /**
-   * 
+   * Chain containing all new units which have to be set
+   * before a given position. 
    */
   static UnitStore unitStore_Before = new UnitStore();
 
@@ -89,17 +91,20 @@ public class JimpleInjector {
   /**
    * 
    */
-  static Local local_for_Strings = Jimple.v().newLocal("local_for_Strings", RefType.v("java.lang.String"));
+  static Local local_for_Strings = Jimple.v().newLocal(
+      "local_for_Strings", RefType.v("java.lang.String"));
 
   /**
    * 
    */
-  static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
+  static Local local_for_String_Arrays = Jimple.v().newLocal(
+      "local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 
   /**
    * 
    */
-  static Local local_for_Objects = Jimple.v().newLocal("local_for_Objects", RefType.v("java.lang.Object"));
+  static Local local_for_Objects = Jimple.v().newLocal(
+      "local_for_Objects", RefType.v("java.lang.Object"));
 	
   /**
    * 
@@ -192,26 +197,26 @@ public class JimpleInjector {
 	/**
 	 * @param l
 	 */
-	public static void addLocal(Local l) {
-		logger.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
-				getSignatureForLocal(l), b.getMethod().getName()});
+  public static void addLocal(Local l) {
+    logger.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
+        getSignatureForLocal(l), b.getMethod().getName()});
 		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		paramTypes.add(RefType.v("java.lang.String"));
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    paramTypes.add(RefType.v("java.lang.String"));
+
+    String signature = getSignatureForLocal(l);
+    Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
 		
-		String signature = getSignatureForLocal(l);
-	    Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"addLocal", paramTypes, VoidType.v(),  false), local_for_Strings);
-		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+    Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "addLocal", paramTypes, VoidType.v(),  false), local_for_Strings);
+    Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
 		
 
-	    unitStore_After.insertElement(unitStore_After.new Element(sig, lastPos));
-		unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
-		lastPos = ass;
-	}
+    unitStore_After.insertElement(unitStore_After.new Element(sig, lastPos));
+    unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
+    lastPos = ass;
+ }
   
 	/**
 	 * Add the instance of the actual class-object to the object map. This is only done in <init>.
