@@ -71,7 +71,9 @@ public class ExternalClasses {
   static class MakeHigh implements Command {
     @Override
     public void execute(Unit pos, Local[] params) {
-      logger.fine("Variable is set to high"); 
+      assert(params.length == 1);
+      logger.fine("Variable" + params[0].toString() + " is going to be set to high");
+      JimpleInjector.makeLocalHigh(params[0], pos);
     }
   }
   

@@ -1,14 +1,21 @@
 >> Define sootClassPath for rt.jar in Main which works globally
->> Dominator or PointsTo
+>> Dominator or PointsTo in if else
 >> Remove all System.outs
+>> Check all TODOs
 >> One Exception with System.out and one without
+>> Exit Code not 0
 >> All Unit test should be correct
 >> 	public static void makeFieldHigh(Object o, String signature, Unit pos) {}
 	public static void makeFieldLow(Object o, String signature, Unit pos) {}
 	public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
 	public static void makeArrayFieldLow(Object o, String index, Unit pos) {
->> 
-
+>> makeHigh
+>> Benchmarktests
+>> URL = classLoader.getSystemResource
+>> Standard von Return sollte High sein, bei Return const auf Low setzen
+>> Klassen zum Laufen bringen
+>> main(arg) arg = low
+>> Wenn alle Argumente erst in einer Local gespeichert werden,ist makeFieldHigh... wahrscheinlich gar nicht nötig??
 
 
 
