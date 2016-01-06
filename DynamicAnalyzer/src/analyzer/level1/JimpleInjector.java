@@ -942,64 +942,65 @@ public class JimpleInjector {
     lastPos = pos;
   }
 	
-	/**
-	 * @param pos
-	 * @param locals
-	 */
-	public static void checkCondition(Unit pos, Local... locals) {
+  /**
+   * @param pos
+   * @param locals
+   */
+  public static void checkCondition(Unit pos, Local... locals) {
 
-		logger.log(Level.INFO, "Check condition in method {0}", b.getMethod());
+    logger.log(Level.INFO, "Check condition in method {0}", b.getMethod());
 		
-		int numberOfLocals = locals.length;
-		ArrayList<Type>	paramTypes = new ArrayList<Type>();
-		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
+    int numberOfLocals = locals.length;
+    ArrayList<Type>	paramTypes = new ArrayList<Type>();
+    paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
 		
-		Expr newStringArray = Jimple.v().newNewArrayExpr(
-				RefType.v("java.lang.String"), IntConstant.v(numberOfLocals));
+    Expr newStringArray = Jimple.v().newNewArrayExpr(
+       RefType.v("java.lang.String"), IntConstant.v(numberOfLocals));
 		
-		Unit assignNewArray = Jimple.v().newAssignStmt(local_for_String_Arrays, newStringArray);
+    Unit assignNewArray = Jimple.v().newAssignStmt(local_for_String_Arrays, newStringArray);
 		
-		ArrayList<Unit> tmpUnitList = new ArrayList<Unit>();
+    ArrayList<Unit> tmpUnitList = new ArrayList<Unit>();
 		
-		for (int i = 0; i < numberOfLocals; i ++) {
-			Unit assignSignature = Jimple.v().newAssignStmt(
-					Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(i)), 
-					StringConstant.v(getSignatureForLocal(locals[i])));
-			tmpUnitList.add(assignSignature);
-		}
+    for (int i = 0; i < numberOfLocals; i ++) {
+      Unit assignSignature = Jimple.v().newAssignStmt(
+          Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(i)), 
+          StringConstant.v(getSignatureForLocal(locals[i])));
+      tmpUnitList.add(assignSignature);
+    }
 		
-		Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"checkCondition", paramTypes, VoidType.v(), false), local_for_String_Arrays);
-		Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
+    Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "checkCondition", paramTypes, VoidType.v(), false), local_for_String_Arrays);
+   Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
 		
-		unitStore_After.insertElement(unitStore_After.new Element(assignNewArray, pos));
-		for (Unit u : tmpUnitList) {
-			unitStore_After.insertElement(unitStore_After.new Element(u, pos));
-		}
-		unitStore_After.insertElement(unitStore_After.new Element(invokeCC, pos));
-		lastPos = invokeCC;
+    unitStore_After.insertElement(unitStore_After.new Element(assignNewArray, pos));
+    for (Unit u : tmpUnitList) {
+      unitStore_After.insertElement(unitStore_After.new Element(u, pos));
+    }
+    unitStore_After.insertElement(unitStore_After.new Element(invokeCC, pos));
+    lastPos = invokeCC;
 		
-	}
+  }
 	
-	/**
-	 * @param pos
-	 */
-	public static void exitInnerScope(Unit pos) {
-		logger.log(Level.INFO, "Exit inner scope in method {0}", b.getMethod().getName());
+  /**
+   * @param pos
+   */
+  public static void exitInnerScope(Unit pos) {
+    logger.log(Level.INFO, "Exit inner scope in method {0}", b.getMethod().getName());
 		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
 		
-		Expr specialIn = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), "exitInnerScope", paramTypes, VoidType.v(), false));
+    Expr specialIn = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+            "exitInnerScope", paramTypes, VoidType.v(), false));
 		
-		Unit inv = Jimple.v().newInvokeStmt(specialIn);
+    Unit inv = Jimple.v().newInvokeStmt(specialIn);
 		
-		Unit endOfScope = units.getPredOf(pos);
+    Unit endOfScope = units.getPredOf(pos);
 		
-		unitStore_After.insertElement(unitStore_After.new Element(inv, endOfScope));
-		lastPos = inv;
-	}
+    unitStore_After.insertElement(unitStore_After.new Element(inv, endOfScope));
+    lastPos = inv;
+  }
 	
 /*
  * Internal methods
@@ -1008,42 +1009,42 @@ public class JimpleInjector {
 /**
  * 
  */
-protected static void addUnitsToChain() {	
-	Iterator<Element> UIt = unitStore_After.getElements().iterator();
-	while(UIt.hasNext()) {
-		Element item = (Element) UIt.next();
-		if (item.getPosition() == null) {
-			units.addFirst(item.getUnit());
-		} else {
-		    units.insertAfter(item.getUnit(), item.getPosition()); 
-		}
-	}
+  protected static void addUnitsToChain() {	
+    Iterator<Element> UIt = unitStore_After.getElements().iterator();
+    while(UIt.hasNext()) {
+      Element item = (Element) UIt.next();
+      if (item.getPosition() == null) {
+        units.addFirst(item.getUnit());
+      } else {
+        units.insertAfter(item.getUnit(), item.getPosition()); 
+      }
+    }
 	
-	UIt = unitStore_Before.getElements().iterator();
+    UIt = unitStore_Before.getElements().iterator();
 	while(UIt.hasNext()) {
-		Element item = (Element) UIt.next();
-		if (item.getPosition() == null) {
-			units.addFirst(item.getUnit());
-		} else {
-		    units.insertBefore(item.getUnit(), item.getPosition()); 
-		}
-	} 
+      Element item = (Element) UIt.next();
+      if (item.getPosition() == null) {
+        units.addFirst(item.getUnit());
+      } else {
+      units.insertBefore(item.getUnit(), item.getPosition()); 
+      }
+    } 
 	
 	unitStore_After.flush();
 	unitStore_Before.flush();
 	b.validate();
-}
+  }
 
-/**
- * 
- */
-protected static void addNeededLocals() {
-	locals.add(local_for_Strings);
-	locals.add(local_for_String_Arrays);
-	locals.add(local_for_Objects);
+  /**
+   * 
+   */
+  protected static void addNeededLocals() {
+    locals.add(local_for_Strings);
+    locals.add(local_for_String_Arrays);
+    locals.add(local_for_Objects);
 	
-	b.validate();
-}
+    b.validate();
+  }
 
   /**
    * @param l
@@ -1053,52 +1054,51 @@ protected static void addNeededLocals() {
     return l.getType() + "_" + l.getName();
   }
 
-/**
- * @param f
- * @return
- */
-private static String getSignatureForField(SootField f) {
-	return f.getSignature();
-}
+  /**
+   * @param f
+   * @return
+   */
+  private static String getSignatureForField(SootField f) {
+    return f.getSignature();
+  }
 
-/**
- * @param a
- * @return
- */
-private static String getSignatureForArrayField(ArrayRef a) {
-	System.out.println("Type of index: " + a.getIndex().getType()); 
-	String result = "";
-	if (a.getIndex().getType().toString() == "int") {
-		System.out.println("Int Index");
-		result = a.getIndex().toString();
-	} else {
-		logger.log(Level.SEVERE, "Unexpected type of index",
-				new InternalAnalyzerException("Unexpected type of index")); 
-		System.exit(0);
-	}
-	return 	result; 
-}
+  /**
+   * @param a
+   * @return
+   */
+  private static String getSignatureForArrayField(ArrayRef a) {
+    System.out.println("Type of index: " + a.getIndex().getType()); 
+    String result = "";
+    if (a.getIndex().getType().toString() == "int") {
+      System.out.println("Int Index");
+      result = a.getIndex().toString();
+    } else {
+      logger.log(Level.SEVERE, "Unexpected type of index",
+          new InternalAnalyzerException("Unexpected type of index")); 
+      System.exit(0);
+    }
+    return result; 
+  }
 
-/**
- * @return
- */
-private static int getStartPos() {
-	int startPos = 0;
+  /**
+   * @return
+   */
+  private static int getStartPos() {
+    int startPos = 0;
 	
-	// Jimple requires that @param-assignments statements 
-	//shall precede all non-identity statements
-	if (b.getMethod().isConstructor()) {
-		startPos = 1;
-	} else {
-		startPos = b.getMethod().getParameterCount();
-	}
+    // Jimple requires that @param-assignments statements 
+    //shall precede all non-identity statements
+    if (b.getMethod().isConstructor()) {
+      startPos = 1;
+    } else {
+      startPos = b.getMethod().getParameterCount();
+    }
 	
-	// At the beginning of every non-static method, the this-reference is assigned to a local.
-	// Jimple requires, that it's on the first position
-	if(!b.getMethod().isStatic()) startPos++;
-	
-	return startPos;
-}
-
-
+    // At the beginning of every non-static method, the this-reference is assigned to a local.
+    // Jimple requires, that it's on the first position
+    if (!b.getMethod().isStatic()) {
+      startPos++;
+    }	
+    return startPos;
+  }
 }

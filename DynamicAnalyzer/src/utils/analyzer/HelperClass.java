@@ -7,6 +7,6 @@ public class HelperClass {
   }
   
   public static <T> T makeLow(T value) {
-	return value;
+    return value;
   }
 }

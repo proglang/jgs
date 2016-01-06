@@ -14,6 +14,7 @@ import soot.Value;
 import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
+import soot.jimple.CaughtExceptionRef;
 import soot.jimple.Constant;
 import soot.jimple.EnterMonitorStmt;
 import soot.jimple.ExitMonitorStmt;
@@ -125,114 +126,104 @@ public class AnnotationStmtSwitch implements StmtSwitch {
       }
     } else if (stmt.getRightOp() instanceof ThisRef) {
       // TODO im Grunde nicht nötig...
+    } else if (stmt.getRightOp() instanceof CaughtExceptionRef) {
+      System.out.println("CAUGHT EXCEPTION");
     } else {
-      new InternalAnalyzerException("Unexpected type of right value in IdentityStmt");
+      new InternalAnalyzerException("Unexpected type of right value "
+          + stmt.getRightOp().toString() + " in IdentityStmt");
     }
 		
     valueSwitch.actualContext = StmtContext.UNDEF;
   }
 
-	@Override
-	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		logger.fine("\n > > > Enter monitor statement identified < < <");
-		valueSwitch.callingStmt = stmt;
-		// TODO Auto-generated method stub
+  @Override
+  public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
+    logger.fine("\n > > > Enter monitor statement identified < < <");
+    valueSwitch.callingStmt = stmt;
+    // TODO Auto-generated method stub
+  }
 
-	}
+  @Override
+  public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
+    logger.fine("\n > > > Exit monitor statement identified < < <");
+    valueSwitch.callingStmt = stmt;
+    // TODO Auto-generated method stub
+  }
 
-	@Override
-	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		logger.fine("\n > > > Exit monitor statement identified < < <");
-		valueSwitch.callingStmt = stmt;
-		// TODO Auto-generated method stub
+  @Override
+  public void caseGotoStmt(GotoStmt stmt) {
+    logger.fine("\n > > > Goto statement identified < < <"); 
+    valueSwitch.callingStmt = stmt;
+    System.out.println("GOTO: " + stmt.toString());
+    // new InternalAnalyzerException("Goto stmt identified");
+  }
 
-	}
-
-	@Override
-	public void caseGotoStmt(GotoStmt stmt) {
-		logger.fine("\n > > > Goto statement identified < < <"); 
-		valueSwitch.callingStmt = stmt;
+  @Override
+  public void caseIfStmt(IfStmt stmt) {
+    logger.fine("\n > > > If statement identified < < <");  
+    valueSwitch.callingStmt = stmt;
+    System.out.println(stmt.getUseAndDefBoxes());
+    List<ValueBox> valueList = stmt.getUseBoxes();
+    ArrayList<Local> localList = new ArrayList<Local>();
+    for (ValueBox v : valueList) {
+      Value val = v.getValue();
+      if (val instanceof Local) {
+        localList.add((Local) val );
+        System.out.println(val);
+      }
+    }
 		
-		System.out.println("GOTO: " + stmt.toString());
-		new InternalAnalyzerException("Goto stmt identified");
-
-	}
-
-	@Override
-	public void caseIfStmt(IfStmt stmt) {
-		logger.fine("\n > > > If statement identified < < <");  
-		valueSwitch.callingStmt = stmt;
+    int localListLength = localList.size();
 		
-		System.out.println(stmt.getUseAndDefBoxes());
-		List<ValueBox> valueList = stmt.getUseBoxes();
-		ArrayList<Local> localList = new ArrayList<Local>();
-		for (ValueBox v : valueList) {
-			
-			Value val = v.getValue();
-			
-			if (val instanceof Local) {
-				localList.add((Local) val );
-				System.out.println(val);
-			}
-		}
+    System.out.println("Target box " + stmt.getTargetBox().getUnit().toString());
+    System.out.println("Target " + stmt.getTarget().toString());
 		
-		int localListLength = localList.size();
+    // TODO DAS IST NUR EINTEST
+    JimpleInjector.exitInnerScope(stmt.getTargetBox().getUnit());
 		
-		System.out.println("Target box " + stmt.getTargetBox().getUnit().toString());
-		System.out.println("Target " + stmt.getTarget().toString());
+    Local[] arguments = new Local[localListLength];
 		
-		// TODO DAS IST NUR EINTEST
-		JimpleInjector.exitInnerScope(stmt.getTargetBox().getUnit());
-		
-		Local[] arguments = new Local[localListLength];
-		
-		for (int i = 0; i < localListLength; i++) {
-			arguments[i] = localList.get(i);
-		}
+    for (int i = 0; i < localListLength; i++) {
+      arguments[i] = localList.get(i);
+    }
 
-		JimpleInjector.checkCondition(stmt, arguments);
+    JimpleInjector.checkCondition(stmt, arguments);
 
-	}
+  }
 
-	@Override
-	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		logger.fine("\n > > > Lookup switch statement identified < < <");
-		valueSwitch.callingStmt = stmt; 
-		new InternalAnalyzerException("Lookup Switch Stmt");
+  @Override
+  public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
+    logger.fine("\n > > > Lookup switch statement identified < < <");
+    valueSwitch.callingStmt = stmt; 
+    new InternalAnalyzerException("Lookup Switch Stmt");
+  }
 
-	}
+  @Override
+  public void caseNopStmt(NopStmt stmt) {
+    logger.fine("\n > > > Nop statement identified < < <"); 
+    valueSwitch.callingStmt = stmt;
+    new InternalAnalyzerException("NopStmt");
+  }
 
-	@Override
-	public void caseNopStmt(NopStmt stmt) {
-		logger.fine("\n > > > Nop statement identified < < <"); 
-		valueSwitch.callingStmt = stmt;
-		new InternalAnalyzerException("NopStmt");
+  @Override
+  public void caseRetStmt(RetStmt stmt) {
+    logger.fine("\n > > > Ret statement identified < < <"); 
+    valueSwitch.callingStmt = stmt;
+    new InternalAnalyzerException("RetStmt");
+  }
 
-	}
-
-	@Override
-	public void caseRetStmt(RetStmt stmt) {
-		logger.fine("\n > > > Ret statement identified < < <"); 
-		valueSwitch.callingStmt = stmt;
-		new InternalAnalyzerException("RetStmt");
-
-	}
-
-	@Override
-	public void caseReturnStmt(ReturnStmt stmt) {
-		
-		logger.fine("\n > > > Return statement identified < < <");
-		valueSwitch.callingStmt = stmt;
-		
-		System.out.println(stmt.getUseBoxes().toString());
-		Value val = stmt.getUseBoxes().get(0).getValue();
-		if (val instanceof Constant) {
-			JimpleInjector.returnConstant(stmt);
-		} else if (val instanceof Local) {
-			JimpleInjector.returnLocal((Local) val, stmt);
-		}
-
-	}
+  @Override
+  public void caseReturnStmt(ReturnStmt stmt) {
+    logger.fine("\n > > > Return statement identified < < <");
+    valueSwitch.callingStmt = stmt;
+    System.out.println(stmt.getUseBoxes().toString());
+    Value val = stmt.getUseBoxes().get(0).getValue();
+    if (val instanceof Constant) {
+      JimpleInjector.returnConstant(stmt);
+    } else if (val instanceof Local) {
+     JimpleInjector.returnLocal((Local) val, stmt);
+   }
+  }
 
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
