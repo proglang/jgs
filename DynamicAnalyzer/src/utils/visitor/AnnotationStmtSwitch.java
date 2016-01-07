@@ -44,7 +44,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
     this.body = body;
   }
 
-@Override
+  @Override
   public void caseBreakpointStmt(BreakpointStmt stmt) {
     logger.fine("\n > > > Breakpoint statement identified < < <"); 
     valueSwitch.callingStmt = stmt;
@@ -70,45 +70,45 @@ public class AnnotationStmtSwitch implements StmtSwitch {
     valueSwitch.actualContext = StmtContext.UNDEF;
   }
 
-	@Override
-	public void caseAssignStmt(AssignStmt stmt) {
+  @Override
+  public void caseAssignStmt(AssignStmt stmt) {
 
-		AssignStmt aStmt = stmt;
-		valueSwitch.callingStmt = aStmt;
+    AssignStmt aStmt = stmt;
+    valueSwitch.callingStmt = aStmt;
 		
-		valueSwitch.actualContext = StmtContext.ASSIGNRIGHT;
+    valueSwitch.actualContext = StmtContext.ASSIGNRIGHT;
 		
 		
-		if (aStmt.getDefBoxes().size() != 1) {
-			new InternalAnalyzerException("Unexpected number of elements on the left "
-					+ "side of assign statement");
-		}
+    if (aStmt.getDefBoxes().size() != 1) {
+      new InternalAnalyzerException("Unexpected number of elements on the left "
+          + "side of assign statement");
+    }
 		
-		logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
-		logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() + " < < <");
-		logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() + " < < <");
+    logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
+    logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() + " < < <");
+    logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() + " < < <");
+ 
+    for (int i = 0; i < aStmt.getUseBoxes().size(); i++) {
+      aStmt.getUseBoxes().get(i).getValue().apply(valueSwitch);
+    }
+		
+    valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
 
-		for (int i = 0; i < aStmt.getUseBoxes().size(); i++) {
-			aStmt.getUseBoxes().get(i).getValue().apply(valueSwitch);
-		}
-		
-		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
-		
-		switch(valueSwitch.rightElement) {
-			case NOT: break;
-			case NEW_ARRAY: 
-				System.out.println(stmt.getLeftOp());
-				JimpleInjector.addArrayToObjectMap((Local) stmt.getLeftOp(), stmt);
-				break;
-			case NEW_UNDEF_OBJECT: break;
-			default: new InternalAnalyzerException("Unexpected newExprContext");
-		}
+    switch(valueSwitch.rightElement) {
+      case NOT: break;
+      case NEW_ARRAY: 
+        System.out.println(stmt.getLeftOp());
+        JimpleInjector.addArrayToObjectMap((Local) stmt.getLeftOp(), stmt);
+        break;
+      case NEW_UNDEF_OBJECT: break;
+      default: new InternalAnalyzerException("Unexpected newExprContext");
+    }
 		
 
-		aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
+    aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
 
-		valueSwitch.actualContext = StmtContext.UNDEF;
-	}
+    valueSwitch.actualContext = StmtContext.UNDEF;
+  }
 
   @Override
   public void caseIdentityStmt(IdentityStmt stmt) {
@@ -122,7 +122,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
     if (stmt.getRightOp() instanceof ParameterRef) {
       if (!body.getMethod().isMain()) {
         int posInArgList = ((ParameterRef) stmt.getRightOp()).getIndex();
-        JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp());
+        JimpleInjector.assignArgumentToLocal(posInArgList, (Local) stmt.getLeftOp(), stmt);
       }
     } else if (stmt.getRightOp() instanceof ThisRef) {
       // TODO im Grunde nicht nötig...

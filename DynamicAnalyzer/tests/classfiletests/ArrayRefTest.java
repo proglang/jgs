@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 
 
 /**
+ * 
  * @author koenigr
- *
  */
 public class ArrayRefTest {
 
@@ -25,8 +25,8 @@ public class ArrayRefTest {
     try {
       ClassRunner.runClass2("ArrayRef");
     } catch (Exception e) {
-        assertEquals(e.getCause().getClass(), IllegalFlowException.class);
-        logger.info("Successfully found an illegal flow");
+      assertEquals(e.getCause().getClass(), IllegalFlowException.class);
+      logger.info("Successfully found an illegal flow");
     }
     logger.info("Finished executing main.testclasses.ArrayRef");
   }
