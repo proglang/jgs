@@ -134,13 +134,21 @@ public class NaiveConstraintsTest {
     public void testCompClosure() {
         Set<Constraint<Level>> tmp = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3))).stream().collect(toSet());
         ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
-        ConstraintSet<Level> expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3), compC(cs.x1, cs.x3)));
+        // closing compatibility constraints does not have an effect
+        ConstraintSet<Level> expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3)));
 
         assertThat(closed, is(equivalent(expected)));
 
+        // closing compatibility constraints does not have an effect. This is the same test as above
         tmp = makeNaive(asList(compC(cs.x2, cs.x1) , compC(cs.x2, cs.x3))).stream().collect(toSet());
         closed = makeNaive(NaiveConstraints.close(tmp));
-        expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3), compC(cs.x1, cs.x3)));
+        expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3)));
+
+        assertThat(closed, is(equivalent(expected)));
+
+        tmp = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2))).stream().collect(Collectors.toSet());
+        closed = makeNaive(NaiveConstraints.close(tmp));
+        expected = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2), compC(cs.x1, cs.x3)));
 
         assertThat(closed, is(equivalent(expected)));
     }

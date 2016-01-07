@@ -310,7 +310,7 @@ public class TestDomain {
             @Override
             protected void describeMismatchSafely(ConstraintSet<Level> item, Description mismatchDescription) {
                 ConstraintSet<Level> projected = item.projectForSignature(tvars,other);
-                Assignment<Level> counterExample = other.subsumptionCounterExample(item).get();
+                Assignment<Level> counterExample = other.subsumptionCounterExample(projected).get();
                 Set<Constraint<Level>> applied = projected.stream().filter(c -> !Constraints.isTrivial(types, c.apply(counterExample))).collect(toSet());
                 mismatchDescription.appendText(String.format("was (projected to sig) %s\n Counterexample: %s\n Conflicting: %s", projected, counterExample, applied));
             }

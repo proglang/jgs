@@ -17,6 +17,7 @@ import soot.toolkits.graph.MHGPostDominatorsFinder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs.*;
@@ -214,6 +215,7 @@ public class MethodBodyTypingTest {
         Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
 
         /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
+        /*  signature: {y, z, x} <= x* ; {z,y} <= z** */
         DirectedGraph<Unit> g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
 
         assertEquivalentConstraints(g,
@@ -226,15 +228,20 @@ public class MethodBodyTypingTest {
         Result<Level> r = analyze(g);
 //        // TODO: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
         ConstraintSet<Level> sig = makeNaive(asList(
+                        /* {z,y} <= z** */
                         leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
                         leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varZ)),
-                        leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
+
+                        /* {y, z, x} <= x* */
                         leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)),
-                        compC(code.init.get(code.varX), code.init.get(code.varZ))));
-        assertThat(sig.isSatisfiedFor(types, Assignments.builder(code.init.get(code.varX), DYN)
-                        .add(r.finalTypeVariableOf(code.varX), PUB)
+                        leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varX))));
+
+        // TODO: syntax for assignments would be convenient
+        assertThat(sig.isSatisfiedFor(types, Assignments.builder(code.init.get(code.varX), PUB)
+                        .add(r.finalTypeVariableOf(code.varX), DYN)
                         .add(code.init.get(code.varY), PUB)
-                        .add(r.finalTypeVariableOf(code.varZ), PUB)
+                        .add(r.finalTypeVariableOf(code.varZ), TLOW)
                         .add(code.init.get(code.varZ), PUB).build())
                         , is(true));
         assertThat(r.getConstraints(), refines(tvars,sig));
@@ -304,14 +311,43 @@ public class MethodBodyTypingTest {
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varY))));
 
         /* while (y = y) { y = z }; x = y; z = z + 1;
-        */
+             sig = { z <= z*, z ~ y }
+             cset = { z <= y*, y <= y*, y* <= x*, z <= z* }
+
+             unsat for sig: {z:LOW, y:?, z*:LOW}
+             sat for {z <= z*}: {z:LOW, y:?, z*:LOW}
+         */
         Stmt incZ = j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
         g = seq(g, incZ);
-        assertEquivalentConstraints(g,
-                finalResult -> makeNaive(asList(
-                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
-                        compC(finalResult.finalTypeVariableOf(code.varZ), code.init.get(code.varY))
-                )),
+
+        Result<Level> result = analyze(g);
+        Function<Result<Level>,ConstraintSet<Level>> getConstraints = finalResult -> makeNaive(asList(
+                leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                compC(code.init.get(code.varZ), code.init.get(code.varY))));
+
+        assertThat(makeNaive(getConstraints.apply(result).apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+
+        assertThat(makeNaive(result.getConstraints().apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+
+        assertThat("Unsat projected fewer",makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+        assertThat("Unsat projected",makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+
+        assertThat("Unsat projected for sig", makeNaive(result.getConstraints().projectForSignature(tvars, getConstraints.apply(result)).apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+//        assertThat(makeNaive(getConstraints.apply(result).proapply(
+//                Assignments.builder(code.init.get(code.varZ), TLOW)
+//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+
+        assertEquivalentConstraints(g, getConstraints,
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
 
 

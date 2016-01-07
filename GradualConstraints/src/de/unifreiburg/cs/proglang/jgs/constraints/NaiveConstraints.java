@@ -56,23 +56,30 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return this.cs.stream();
     }
 
+    /// close constraints cs transitively and by compatibility. Will not generate reflexive constraints.
     static <Level> HashSet<Constraint<Level>> close(Set<Constraint<Level>> cs) {
-        return closeTransitively(withImplications(cs.stream()).collect(toSet()));
-    }
+        Predicate<Constraint<Level>>  isLeConstraint = c -> c.kind.equals(Constraint.Kind.LE);
 
-    /// close constraints cs transitively. The set is effectively partitioned by constraint-kind and then closed. Does not add reflexive constraints.
-    static <Level> HashSet<Constraint<Level>> closeTransitively(Set<Constraint<Level>> cs) {
         HashSet<Constraint<Level>> result = new HashSet<>(cs);
         HashSet<Constraint<Level>> old = new HashSet<>();
         do {
             old.addAll(result);
-            old.stream().forEach(x_to_y -> {
-                Stream<CType<Level>> cands;
-                cands = matchingRhs(x_to_y, old);
-                cands.forEach(rhs -> {
+            Set<Constraint<Level>> oldLes = old.stream().filter(isLeConstraint).collect(Collectors.toSet());
+            oldLes.stream().forEach(x_to_y -> {
+                // first the transitive le constraints
+                Stream<CType<Level>> transCands = oldLes.stream().filter(c -> c.getLhs().equals(x_to_y.getRhs())).map(Constraint::getRhs);
+                transCands.forEach(rhs -> {
                     CType lhs = x_to_y.getLhs();
                     if (!lhs.equals(rhs)) {
-                        result.add(Constraints.make(x_to_y.kind, lhs, rhs));
+                        result.add(Constraints.le(lhs, rhs));
+                    }
+                });
+                // then the compatibility constraints
+                Stream<CType<Level>> compCands = oldLes.stream().filter(c -> c.getRhs().equals(x_to_y.getRhs())).map(Constraint::getLhs);
+                compCands.forEach(lhs1 -> {
+                    CType lhs2 = x_to_y.getLhs();
+                    if (!lhs1.equals(lhs2)) {
+                        result.add(Constraints.comp(lhs1, lhs2));
                     }
                 });
             });
@@ -113,10 +120,28 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     }
 
     // TODO: what happens when { x1 <= x2, x2 ~ x3, x3 <= x4} ... nothing in particular.. what is the lemma? .. I need a test for this, e.g. is everything still equivalent when removing x3
+    // Only Le-constrains trigger the addition of the transitive constraint. So, try to match the rhs of "left" with the lhs of the le-constraints in old
+    @Deprecated
     static <Level> Stream<CType<Level>> matchingRhs(Constraint<Level> left, Set<Constraint<Level>> old) {
-        return old.stream().filter(c -> {
-            return c.getLhs().equals(left.getRhs()) && c.kind == left.kind;
-        }).map(c -> c.getRhs());
+        Stream<Constraint<Level>> oldLes = old.stream().filter(c -> c.kind.equals(Constraint.Kind.LE));
+        Set<TypeVar> leftVariables = left.variables().collect(Collectors.toSet());
+
+        Predicate<Constraint<Level>> mentionsLeftVariables = c -> {
+            Set<TypeVar> leVariables = c.variables().collect(Collectors.toSet());
+            return leftVariables.stream().anyMatch(v -> leVariables.contains(v));
+        };
+
+        Predicate<Constraint<Level>> lhsMatchesLeftRhs = c -> left.getRhs().equals(c.getLhs());
+        switch (left.kind) {
+            case LE:
+                return oldLes.filter(lhsMatchesLeftRhs).map(Constraint::getRhs);
+            case COMP:
+                return oldLes.filter(mentionsLeftVariables).flatMap(c -> Stream.of(c.getRhs(), c.getLhs()));
+            case DIMPL:
+                throw new RuntimeException("DIMPL CASE NOT IMPLEMENTED");
+            default:
+                throw new RuntimeException("UNEXPECTED DEFAULT CASE");
+        }
     }
 
     public static <Level> Stream<Constraint<Level>> projectTo(Set<Constraint<Level>> cs, Collection<TypeVar> typeVarCol) {
