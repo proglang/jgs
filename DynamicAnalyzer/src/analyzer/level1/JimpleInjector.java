@@ -216,590 +216,593 @@ public class JimpleInjector {
     unitStore_After.insertElement(unitStore_After.new Element(sig, lastPos));
     unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
     lastPos = ass;
- }
+  }
   
-	/**
-	 * Add the instance of the actual class-object to the object map. This is only done in <init>.
-	 */
-	public static void addInstanceObjectToObjectMap() {
+  /**
+   * Add the instance of the actual class-object to the object map. This is only done in <init>.
+   */
+  public static void addInstanceObjectToObjectMap() {
 		
-		// Check if the first unit is a reference to the actual object
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
-		}
+    // Check if the first unit is a reference to the actual object
+    if (!(units.getFirst() instanceof IdentityStmt) 
+        || !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
+            new InternalAnalyzerException("Expected @this reference");
+    }
 
-		String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
+    String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
 
-		logger.log(Level.INFO, "Add object {0} to ObjectMap in method {1}",
-				new Object[] {thisObj, b.getMethod().getName()} );
+    logger.log(Level.INFO, "Add object {0} to ObjectMap in method {1}",
+        new Object[] {thisObj, b.getMethod().getName()} );
 
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		
-		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
-				parameterTypes, VoidType.v(), false), 
-				units.getFirst().getDefBoxes().get(0).getValue()); 
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
-		lastPos = assignExpr;
-		
-	}
-	
-	/**
-	 * @param sc
-	 */
-	public static void addClassObjectToObjectMap(SootClass sc) {
-	
-		logger.log(Level.INFO, "Add object {0} to ObjectMap in method {1}",
-				new Object[] {sc.getName(), b.getMethod().getName()} );
-
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		
-		System.out.println("Adding class Object:" + sc.getName().replace(".", "/"));	
-		ClassConstant cc = ClassConstant.v(sc.getName().replace(".", "/"));
- 		System.out.println("Value: " + cc.value); 
-		
-		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
-				parameterTypes, VoidType.v(), false), 
-				ClassConstant.v(sc.getName().replace(".", "/"))); 
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
-		lastPos = assignExpr;
-	
-	}
-	
-	/**
-	 * @param field
-	 */
-	public static void addInstanceFieldToObjectMap(SootField field) {
-		logger.log(Level.INFO, "Adding field {0} to ObjectMap in method {1}", 
-				new Object[] { field.getSignature() ,b.getMethod().getName()});
-		
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
-		}
-		
-		String fieldSignature = getSignatureForField(field);
-		
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
-		
-		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(fieldSignature));
-		
-		
-		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "addFieldToObjectMap", 
-				parameterTypes, VoidType.v(), false), 
-				tmpLocal, local_for_Strings);
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-	
-		unitStore_After.insertElement(unitStore_After.new Element(assignSignature, lastPos));
-		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, assignSignature));
-		lastPos = assignExpr;
-	}
-	
-	/**
-	 * @param field
-	 */
-	public static void addStaticFieldToObjectMap(SootField field) {
-		logger.info( "Adding static Field " + field.toString() + " to Object Map");
-		
-		String signature = getSignatureForField(field);
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		SootClass sc = field.getDeclaringClass();
-		
-		Unit assignDeclaringClass  = Jimple.v().newAssignStmt(local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-		
-		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr addObj = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"addFieldToObjectMap", parameterTypes, VoidType.v(), false),
-						local_for_Objects, local_for_Strings);
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		unitStore_After.insertElement(unitStore_After.new Element(assignDeclaringClass, lastPos));
-		unitStore_After.insertElement(unitStore_After.new Element(assignSignature, assignDeclaringClass));
-		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, assignSignature));
-		lastPos = assignExpr;
-		
-	}
-	
-	/**
-	 * @param a
-	 * @param pos
-	 */
-	public static void addArrayToObjectMap(Local a, Unit pos) {
-		logger.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
-				new Object[] {a, b.getMethod().getName()} );
-		
-		logger.log(Level.INFO, "Object type of array: " + a.getType() + " and type " + a.getClass());
-		logger.log(Level.FINEST, "at position {0}", pos.toString());
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(ArrayType.v(
-				RefType.v("java.lang.Object"), 1));
-				
-		
-	
-		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "addArrayToObjectMap", 
-				parameterTypes, VoidType.v(), false), 
-				a); 
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, pos));
-		lastPos = assignExpr;		
-	} 
-	
-	/*
-	 * Change level of elements
-	 */
-	
-	
-	/**
-	 * @param o
-	 * @param signature
-	 * @param pos
-	 */
-	public static void makeFieldHigh(Object o, String signature, Unit pos) {}
-	// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
-	
-	/**
-	 * @param o
-	 * @param signature
-	 * @param pos
-	 */
-	public static void makeFieldLow(Object o, String signature, Unit pos) {}
-	// TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
-	
-	/**
-	 * @param o
-	 * @param index
-	 * @param pos
-	 */
-	public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
-		// TODO
-	}
-	
-	/**
-	 * @param o
-	 * @param index
-	 * @param pos
-	 */
-	public static void makeArrayFieldLow(Object o, String index, Unit pos) {
-		// TODO
-	}
-	
-	/**
-	 * @param l
-	 * @param pos
-	 */
-	public static void makeLocalHigh(Local l, Unit pos) {
-		logger.log(Level.INFO, "Make Local {0} high in method {1}",
-				new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
-		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		paramTypes.add(RefType.v("java.lang.String"));
-		
-		String signature = getSignatureForLocal(l);
-	    Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"makeLocalHigh", paramTypes, VoidType.v(),  false), local_for_Strings);
-		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
-		
-
-	    unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
-		unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
-		lastPos = ass;
-	}
-	
-	/**
-	 * @param l
-	 * @param pos
-	 */
-	public static void makeLocalLow(Local l, Unit pos) {
-		logger.log(Level.INFO, "Make Local {0} low in method {1}",
-				new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
-		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		paramTypes.add(RefType.v("java.lang.String"));
-		
-		String signature = getSignatureForLocal(l);
-	    Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"makeLocalLow", paramTypes, VoidType.v(),  false), local_for_Strings);
-		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
-		
-
-	    unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
-		unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
-		lastPos = ass;
-	}
-
-	/**
-	 * @param l
-	 * @param pos
-	 */
-	public static void addLevelInAssignStmt(Local l, Unit pos) {
-		logger.info("Adding level in assign statement");
-		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		paramTypes.add(RefType.v("java.lang.String"));
-		
-		String signature = getSignatureForLocal(l);
-		
-		Stmt assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr invokeAddLevel = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"addLevelOfLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),  false), local_for_Strings);
-		Unit invoke = Jimple.v().newInvokeStmt(invokeAddLevel);
-		
-
-	    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-	    unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
-	    lastPos = pos;
-	}
-	
-	
-	/**********************************************************************************************
-	 * AssignStmt Functions
-     **********************************************************************************************/
-	
-	
-	/**
-	 * @param f
-	 * @param pos
-	 */
-	public static void addLevelInAssignStmt(InstanceFieldRef f, Unit pos) {
-		logger.log(Level.INFO, "Adding level of field {0} in assignStmt in method {1}", 
-				new Object[] { f.getField().getSignature() ,b.getMethod().getName()});
-		
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
-		}
-		
-		String fieldSignature = getSignatureForField(f.getField());
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		// units.getFirst is already a reference to @this
-		// Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
-		Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
-		System.out.println("Base "+f.getBase());
-		
-		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(fieldSignature));
-		
-		
-		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "addLevelOfField", 
-				parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false), 
-				local_for_Objects, local_for_Strings);
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-	
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignBase, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-		lastPos = pos;
-	}
-	
-	/**
-	 * @param f
-	 * @param pos
-	 */
-	public static void addLevelInAssignStmt(StaticFieldRef f, Unit pos) {
-		logger.info( "Adding Level of static Field " + f.toString() + " in assign stmt");
-		
-		SootField field = f.getField();
-
-		String signature = getSignatureForField(field);
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		SootClass sc = field.getDeclaringClass();
-		
-		Unit assignDeclaringClass  = Jimple.v().newAssignStmt(local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-		
-		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr addObj = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"addLevelOfField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
-						local_for_Objects, local_for_Strings);
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignDeclaringClass, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-		lastPos = pos;
-	}
-	
-	/**
-	 * @param a
-	 * @param pos
-	 */
-	public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
-		logger.info( "Add Level of Array " + a.toString() + " in assign stmt");
-		// setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
-	
-		Expr addObj = null;
-			
-			if (!(a.getIndex() instanceof Local)) {
-				String signature = getSignatureForArrayField(a);
-				logger.info("Signature of array field in jimple injector is" + signature);
-				Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-				
-				unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-				lastPos = assignSignature;
-
-				ArrayList<Type> parameterTypes = new ArrayList<Type>();
-				parameterTypes.add(RefType.v("java.lang.Object"));
-				parameterTypes.add(RefType.v("java.lang.String"));
-				
-				addObj = Jimple.v().newVirtualInvokeExpr(
-						hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-								"addLevelOfArrayField", parameterTypes, VoidType.v(), false),
-								a.getBase(), local_for_Strings);
-				
-			} else if (a.getIndex() instanceof Local) {
-				Value fieldIndex = a.getIndex();
-				logger.info("Signature of array field in jimple injector is stored in " + fieldIndex.toString());
-				
-
-				ArrayList<Type> parameterTypes = new ArrayList<Type>();
-				parameterTypes.add(RefType.v("java.lang.Object"));
-				parameterTypes.add(IntType.v());
-				
-				addObj = Jimple.v().newVirtualInvokeExpr(
-						hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-								"addLevelOfArrayField", parameterTypes, VoidType.v(), false),
-								a.getBase(), fieldIndex);
-				
-			} else {
-				logger.log(Level.SEVERE, "Unexpected type of index",
-						new InternalAnalyzerException("Unexpected type of index")); 
-				System.exit(0);
-			}
-
-
-			
-			Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-
-
-			unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-			lastPos = pos;
-	}
-	
-	/**
-	 * @param l
-	 * @param pos
-	 */
-	public static void setLevelOfAssignStmt(Local l, Unit pos) {
-		logger.info("Setting level in assign statement");
-		
-		ArrayList<Type> paramTypes = new ArrayList<Type>();
-		paramTypes.add(RefType.v("java.lang.String"));
-		
-		String signature = getSignatureForLocal(l);
-		
-		Stmt assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-						"setLevelOfLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),  false), local_for_Strings);
-		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
-		
-
-	    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-	    unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
-	    lastPos = pos;
-	}
-	
-	/**
-	 * @param f
-	 * @param pos
-	 */
-	public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
-		logger.log(Level.INFO, "Set level to field {0} in assignStmt in method {1}", 
-				new Object[] { f.getField().getSignature() ,b.getMethod().getName()});
-		
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
-		}
-		
-		String fieldSignature = getSignatureForField(f.getField());
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		// units.getFirst is already a reference to @this
-		Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
-		
-		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(fieldSignature));
-		
-		
-		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(
-				Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField", 
-				parameterTypes, VoidType.v(), false), 
-				tmpLocal, local_for_Strings);
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-	
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
-		lastPos = pos;
-	}
-	
-	/**
-	 * @param f
-	 * @param pos
-	 */
-	public static void setLevelOfAssignStmt(StaticFieldRef f, Unit pos) {
-		logger.info( "Set Level of static Field " + f.toString() + " in assign stmt");
-		
-		SootField field = f.getField();
-
-		String signature = getSignatureForField(field);
-		System.out.println("Signature of static field in jimple injector " + signature);
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.Object"));
-		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		SootClass sc = field.getDeclaringClass();
-		
-		Unit assignDeclaringClass  = Jimple.v().newAssignStmt(local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-		
-		Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-		
-		Expr addObj = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"setLevelOfField", parameterTypes, VoidType.v(), false),
-						local_for_Objects, local_for_Strings);
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-		
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignDeclaringClass, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-		lastPos = pos;
-	}
-	
-	/**
-	 * @param a
-	 * @param pos
-	 */
-	public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
-	logger.info( "Set Level of Array " + a.toString() + " in assign stmt");
-	// setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
-		
-	Expr addObj = null;
-		
-		if (!(a.getIndex() instanceof Local)) {
-			String signature = getSignatureForArrayField(a);
-			logger.info("Signature of array field in jimple injector is" + signature);
-			Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-			
-			unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-			lastPos = assignSignature;
-
-			ArrayList<Type> parameterTypes = new ArrayList<Type>();
-			parameterTypes.add(RefType.v("java.lang.Object"));
-			parameterTypes.add(RefType.v("java.lang.String"));
-			
-			addObj = Jimple.v().newVirtualInvokeExpr(
-					hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-							"setLevelOfArrayField", parameterTypes, VoidType.v(), false),
-							a.getBase(), local_for_Strings);
-			
-		} else if (a.getIndex() instanceof Local) {
-			Value fieldIndex = a.getIndex();
-			logger.info("Signature of array field in jimple injector is stored in " + fieldIndex.toString());
-			
-
-			ArrayList<Type> parameterTypes = new ArrayList<Type>();
-			parameterTypes.add(RefType.v("java.lang.Object"));
-			parameterTypes.add(IntType.v());
-			
-			addObj = Jimple.v().newVirtualInvokeExpr(
-					hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-							"setLevelOfArrayField", parameterTypes, VoidType.v(), false),
-							a.getBase(), fieldIndex);
-			
-		} else {
-			logger.log(Level.SEVERE, "Unexpected type of index",
-					new InternalAnalyzerException("Unexpected type of index")); 
-			System.exit(0);
-		}
-
-
-		
-		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-
-
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-		lastPos = pos;
-	}
-	
-	/**
-	 * @param l
-	 * @param pos
-	 */
-	public static void assignReturnLevelToLocal(Local l, Unit pos) {
-		logger.log(Level.INFO, "Assign return level of invoked method to local {0}", 
-				getSignatureForLocal(l));
-		
-		
-		ArrayList<Type> parameterTypes = new ArrayList<Type>();
-		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		Expr assignRet = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(
-						Scene.v().getSootClass(HANDLE_CLASS), "assignReturnLevelToLocal", 
-						parameterTypes , VoidType.v(), false), 
-						StringConstant.v(getSignatureForLocal(l)));
-		Unit assignExpr = Jimple.v().newInvokeStmt(assignRet);
-		
-		unitStore_After.insertElement(unitStore_After.new Element(assignExpr, pos));
-		lastPos = assignExpr;
-	}
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+		
+    Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(
+            Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
+            parameterTypes, VoidType.v(), false), 
+            units.getFirst().getDefBoxes().get(0).getValue()); 
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
+    lastPos = assignExpr;
+		
+  }
 	
   /**
-    * @param posInArgList
-    * @param local
-    * @param actualPos
-    */
+   * @param sc
+   */
+  public static void addClassObjectToObjectMap(SootClass sc) {
+	
+    logger.log(Level.INFO, "Add object {0} to ObjectMap in method {1}",
+        new Object[] {sc.getName(), b.getMethod().getName()} );
+
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+		
+    System.out.println("Adding class Object:" + sc.getName().replace(".", "/"));	
+    ClassConstant cc = ClassConstant.v(sc.getName().replace(".", "/"));
+    System.out.println("Value: " + cc.value); 
+		
+    Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(
+            Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap", 
+            parameterTypes, VoidType.v(), false), 
+            ClassConstant.v(sc.getName().replace(".", "/"))); 
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
+    lastPos = assignExpr;
+  }
+	
+  /**
+   * @param field
+   */
+  public static void addInstanceFieldToObjectMap(SootField field) {
+    logger.log(Level.INFO, "Adding field {0} to ObjectMap in method {1}", 
+        new Object[] { field.getSignature() ,b.getMethod().getName()});
+		
+    if (!(units.getFirst() instanceof IdentityStmt) 
+        || !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
+      new InternalAnalyzerException("Expected @this reference");
+    }
+		
+    String fieldSignature = getSignatureForField(field);
+		
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+    parameterTypes.add(RefType.v("java.lang.String"));
+		
+    Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+		
+    Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings,
+        StringConstant.v(fieldSignature));
+		
+		
+    Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(
+            Scene.v().getSootClass(HANDLE_CLASS), "addFieldToObjectMap", 
+            parameterTypes, VoidType.v(), false), 
+            tmpLocal, local_for_Strings);
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+	
+    unitStore_After.insertElement(unitStore_After.new Element(assignSignature, lastPos));
+    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, assignSignature));
+    lastPos = assignExpr;
+  }
+	
+  /**
+   * @param field
+   */
+  public static void addStaticFieldToObjectMap(SootField field) {
+    logger.info( "Adding static Field " + field.toString() + " to Object Map");
+		
+    String signature = getSignatureForField(field);
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+    parameterTypes.add(RefType.v("java.lang.String"));
+		
+    SootClass sc = field.getDeclaringClass();
+		
+    Unit assignDeclaringClass  = Jimple.v().newAssignStmt(
+        local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
+		
+    Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+
+    Expr addObj = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+        "addFieldToObjectMap", parameterTypes, VoidType.v(), false),
+        local_for_Objects, local_for_Strings);
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+    unitStore_After.insertElement(unitStore_After.new Element(assignDeclaringClass, lastPos));
+    unitStore_After.insertElement(
+        unitStore_After.new Element(assignSignature, assignDeclaringClass));
+    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, assignSignature));
+    lastPos = assignExpr;
+		
+  }
+	
+  /**
+   * @param a
+   * @param pos
+   */
+  public static void addArrayToObjectMap(Local a, Unit pos) {
+    logger.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
+        new Object[] {a, b.getMethod().getName()} );
+		
+    logger.log(Level.INFO, "Object type of array: " + a.getType() + " and type " + a.getClass());
+    logger.log(Level.FINEST, "at position {0}", pos.toString());
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(ArrayType.v(
+        RefType.v("java.lang.Object"), 1));
+				
+		
+	
+    Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(
+           Scene.v().getSootClass(HANDLE_CLASS), "addArrayToObjectMap", 
+           parameterTypes, VoidType.v(), false), a); 
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, pos));
+    lastPos = assignExpr;		
+  } 
+	
+  /*
+   * Change level of elements
+   */
+	
+	
+  /**
+   * @param o
+   * @param signature
+   * @param pos
+   */
+  public static void makeFieldHigh(Object o, String signature, Unit pos) {}
+  // TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
+	
+  /**
+   * @param o
+   * @param signature
+   * @param pos
+   */
+  public static void makeFieldLow(Object o, String signature, Unit pos) {}
+  // TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
+	
+  /**
+   * @param o
+   * @param index
+   * @param pos
+   */
+  public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
+		// TODO
+  }
+	
+  /**
+   * @param o
+   * @param index
+   * @param pos
+	 */
+  public static void makeArrayFieldLow(Object o, String index, Unit pos) {
+		// TODO
+  }
+	
+  /**
+   * @param l
+   * @param pos
+   */
+  public static void makeLocalHigh(Local l, Unit pos) {
+    logger.log(Level.INFO, "Make Local {0} high in method {1}",
+        new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+		
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    paramTypes.add(RefType.v("java.lang.String"));
+		
+    String signature = getSignatureForLocal(l);
+    Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+		
+    Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "makeLocalHigh", paramTypes, VoidType.v(),  false), local_for_Strings);
+    Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
+
+    unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
+    unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
+    lastPos = ass;
+  }
+	
+  /**
+   * @param l
+   * @param pos
+   */
+  public static void makeLocalLow(Local l, Unit pos) {
+    logger.log(Level.INFO, "Make Local {0} low in method {1}",
+        new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+		
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    paramTypes.add(RefType.v("java.lang.String"));
+		
+    String signature = getSignatureForLocal(l);
+    Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+		
+    Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "makeLocalLow", paramTypes, VoidType.v(),  false), local_for_Strings);
+    Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
+		
+
+    unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
+    unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
+    lastPos = ass;
+  }
+
+  /**
+   * @param l
+   * @param pos
+   */
+  public static void addLevelInAssignStmt(Local l, Unit pos) {
+    logger.info("Adding level in assign statement");
+		
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    paramTypes.add(RefType.v("java.lang.String"));
+		
+    String signature = getSignatureForLocal(l);
+		
+    Stmt assignSignature = Jimple.v().newAssignStmt(
+        local_for_Strings, StringConstant.v(signature));
+		
+    Expr invokeAddLevel = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+        "addLevelOfLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),
+        false), local_for_Strings);
+    Unit invoke = Jimple.v().newInvokeStmt(invokeAddLevel);
+		
+
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+    lastPos = pos;
+  }
+	
+	
+  /**********************************************************************************************
+   * AssignStmt Functions.
+   **********************************************************************************************/
+	
+	
+  /**
+   * @param f
+   * @param pos
+   */
+  public static void addLevelInAssignStmt(InstanceFieldRef f, Unit pos) {
+    logger.log(Level.INFO, "Adding level of field {0} in assignStmt in method {1}", 
+        new Object[] { f.getField().getSignature() ,b.getMethod().getName()});
+		
+    if (!(units.getFirst() instanceof IdentityStmt) 
+        || !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
+      new InternalAnalyzerException("Expected @this reference");
+    }
+		
+    String fieldSignature = getSignatureForField(f.getField());
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+    parameterTypes.add(RefType.v("java.lang.String"));
+		
+    // units.getFirst is already a reference to @this
+    // Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+    Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
+    System.out.println("Base "+f.getBase());
+		
+    Unit assignSignature = Jimple.v().newAssignStmt(
+        local_for_Strings, StringConstant.v(fieldSignature));
+		
+    Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(
+            Scene.v().getSootClass(HANDLE_CLASS), "addLevelOfField", 
+            parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false), 
+            local_for_Objects, local_for_Strings);
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+	
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignBase, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+    lastPos = pos;
+  }
+	
+  /**
+   * @param f
+   * @param pos
+   */
+  public static void addLevelInAssignStmt(StaticFieldRef f, Unit pos) {
+    logger.info( "Adding Level of static Field " + f.toString() + " in assign stmt");
+		
+    SootField field = f.getField();
+
+    String signature = getSignatureForField(field);
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+    parameterTypes.add(RefType.v("java.lang.String"));
+		
+    SootClass sc = field.getDeclaringClass();
+		
+    Unit assignDeclaringClass  = Jimple.v().newAssignStmt(
+        local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
+		
+    Unit assignSignature = Jimple.v().newAssignStmt(
+        local_for_Strings, StringConstant.v(signature));
+		
+    Expr addObj = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+        "addLevelOfField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
+        local_for_Objects, local_for_Strings);
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignDeclaringClass, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+    lastPos = pos;
+  }
+	
+  /**
+   * @param a
+   * @param pos
+   */
+  public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
+    logger.info( "Add Level of Array " + a.toString() + " in assign stmt");
+    // setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
+	
+    Expr addObj = null;
+			
+    if (!(a.getIndex() instanceof Local)) {
+      String signature = getSignatureForArrayField(a);
+      logger.info("Signature of array field in jimple injector is" + signature);
+      Unit assignSignature = Jimple.v().newAssignStmt(
+          local_for_Strings, StringConstant.v(signature));
+				
+      unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+      lastPos = assignSignature;
+
+      ArrayList<Type> parameterTypes = new ArrayList<Type>();
+      parameterTypes.add(RefType.v("java.lang.Object"));
+      parameterTypes.add(RefType.v("java.lang.String"));
+				
+      addObj = Jimple.v().newVirtualInvokeExpr(
+          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+          "addLevelOfArrayField", parameterTypes, VoidType.v(), false),
+           a.getBase(), local_for_Strings);
+				
+    } else if (a.getIndex() instanceof Local) {
+      Value fieldIndex = a.getIndex();
+      logger.info("Signature of array field in jimple injector is stored in "
+          + fieldIndex.toString());
+				
+
+      ArrayList<Type> parameterTypes = new ArrayList<Type>();
+      parameterTypes.add(RefType.v("java.lang.Object"));
+      parameterTypes.add(IntType.v());
+				
+      addObj = Jimple.v().newVirtualInvokeExpr(
+          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+          "addLevelOfArrayField", parameterTypes, VoidType.v(), false),
+          a.getBase(), fieldIndex);
+				
+    } else {
+      logger.log(Level.SEVERE, "Unexpected type of index",
+          new InternalAnalyzerException("Unexpected type of index")); 
+      System.exit(0);
+    }
+
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+    lastPos = pos;
+  }
+	
+  /**
+   * @param l
+   * @param pos
+   */
+  public static void setLevelOfAssignStmt(Local l, Unit pos) {
+    logger.info("Setting level in assign statement");
+		
+    ArrayList<Type> paramTypes = new ArrayList<Type>();
+    paramTypes.add(RefType.v("java.lang.String"));
+		
+    String signature = getSignatureForLocal(l);
+		
+    Stmt assignSignature = Jimple.v().newAssignStmt(
+        local_for_Strings, StringConstant.v(signature));
+		
+    Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+       "setLevelOfLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),
+       false), local_for_Strings);
+    Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
+		
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+    lastPos = pos;
+  }
+	
+  /**
+   * @param f
+   * @param pos
+   */
+  public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
+    logger.log(Level.INFO, "Set level to field {0} in assignStmt in method {1}", 
+        new Object[] { f.getField().getSignature() ,b.getMethod().getName()});
+		
+    if (!(units.getFirst() instanceof IdentityStmt) 
+        || !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
+      new InternalAnalyzerException("Expected @this reference");
+    }
+		
+    String fieldSignature = getSignatureForField(f.getField());
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+    parameterTypes.add(RefType.v("java.lang.String"));
+		
+    // units.getFirst is already a reference to @this
+    Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+    Unit assignSignature = Jimple.v().newAssignStmt(
+        local_for_Strings, StringConstant.v(fieldSignature));
+		
+    Expr addObj	= Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(
+            Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField", 
+            parameterTypes, VoidType.v(), false), 
+            tmpLocal, local_for_Strings);
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+	
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
+    lastPos = pos;
+  }
+	
+  /**
+   * @param f
+   * @param pos
+   */
+  public static void setLevelOfAssignStmt(StaticFieldRef f, Unit pos) {
+    logger.info( "Set Level of static Field " + f.toString() + " in assign stmt");
+		
+    SootField field = f.getField();
+
+    String signature = getSignatureForField(field);
+    System.out.println("Signature of static field in jimple injector " + signature);
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+    parameterTypes.add(RefType.v("java.lang.String"));
+		
+    SootClass sc = field.getDeclaringClass();
+		
+    Unit assignDeclaringClass  = Jimple.v().newAssignStmt(
+        local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
+		
+    Unit assignSignature = Jimple.v().newAssignStmt(
+        local_for_Strings, StringConstant.v(signature));
+		
+    Expr addObj = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+        "setLevelOfField", parameterTypes, VoidType.v(), false),
+        local_for_Objects, local_for_Strings);
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignDeclaringClass, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+    lastPos = pos;
+  }
+	
+  /**
+   * @param a
+   * @param pos
+   */
+  public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
+    logger.info( "Set Level of Array " + a.toString() + " in assign stmt");
+    // setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
+		
+    Expr addObj = null;
+		
+    if (!(a.getIndex() instanceof Local)) {
+      String signature = getSignatureForArrayField(a);
+      logger.info("Signature of array field in jimple injector is" + signature);
+      Unit assignSignature = Jimple.v().newAssignStmt(
+          local_for_Strings, StringConstant.v(signature));
+			
+      unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+      lastPos = assignSignature;
+
+       ArrayList<Type> parameterTypes = new ArrayList<Type>();
+       parameterTypes.add(RefType.v("java.lang.Object"));
+       parameterTypes.add(RefType.v("java.lang.String"));
+			
+       addObj = Jimple.v().newVirtualInvokeExpr(
+           hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+           "setLevelOfArrayField", parameterTypes, VoidType.v(), false),
+           a.getBase(), local_for_Strings);
+			
+     } else if (a.getIndex() instanceof Local) {
+       Value fieldIndex = a.getIndex();
+       logger.info("Signature of array field in jimple injector is stored in "
+           + fieldIndex.toString());
+			
+       ArrayList<Type> parameterTypes = new ArrayList<Type>();
+       parameterTypes.add(RefType.v("java.lang.Object"));
+       parameterTypes.add(IntType.v());
+			
+       addObj = Jimple.v().newVirtualInvokeExpr(
+           hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+           "setLevelOfArrayField", parameterTypes, VoidType.v(), false),
+           a.getBase(), fieldIndex);
+			
+    } else {
+        logger.log(Level.SEVERE, "Unexpected type of index",
+            new InternalAnalyzerException("Unexpected type of index")); 
+        System.exit(0);
+    }
+
+    Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+    lastPos = pos;
+  }
+	
+  /**
+   * @param l
+   * @param pos
+   */
+  public static void assignReturnLevelToLocal(Local l, Unit pos) {
+    logger.log(Level.INFO, "Assign return level of invoked method to local {0}", 
+        getSignatureForLocal(l));
+		
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.String"));
+		
+    Expr assignRet = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(
+            Scene.v().getSootClass(HANDLE_CLASS), "assignReturnLevelToLocal", 
+            parameterTypes , VoidType.v(), false), 
+            StringConstant.v(getSignatureForLocal(l)));
+    Unit assignExpr = Jimple.v().newInvokeStmt(assignRet);
+		
+    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, pos));
+    lastPos = assignExpr;
+  }
+	
+  /**
+   * @param posInArgList
+   * @param local
+   * @param actualPos
+   */
   public static void assignArgumentToLocal(int posInArgList, Local local, Unit actualPos) {
     logger.log(Level.INFO, "Assign argument level to local " + local.toString());
 		
@@ -1012,7 +1015,7 @@ public class JimpleInjector {
  */
   protected static void addUnitsToChain() {	
     Iterator<Element> uIt = unitStore_After.getElements().iterator();
-    while(uIt.hasNext()) {
+    while (uIt.hasNext()) {
       Element item = (Element) uIt.next();
       if (item.getPosition() == null) {
         units.addFirst(item.getUnit());
@@ -1022,12 +1025,12 @@ public class JimpleInjector {
     }
 	
     uIt = unitStore_Before.getElements().iterator();
-    while(uIt.hasNext()) {
+    while (uIt.hasNext()) {
       Element item = (Element) uIt.next();
       if (item.getPosition() == null) {
         units.addFirst(item.getUnit());
       } else {
-    units.insertBefore(item.getUnit(), item.getPosition()); 
+        units.insertBefore(item.getUnit(), item.getPosition()); 
       }
     } 
 	
