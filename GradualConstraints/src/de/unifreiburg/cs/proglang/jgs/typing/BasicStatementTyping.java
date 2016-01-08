@@ -305,6 +305,10 @@ public class BasicStatementTyping<LevelT> {
                     .equals(sourceType);
         }
 
+        private void noRestrictions() {
+            this.result = fromEnv(csets, env);
+        }
+
         @Override
         public void caseIdentityStmt(IdentityStmt stmt) {
             super.caseIdentityStmt(stmt);
@@ -314,19 +318,24 @@ public class BasicStatementTyping<LevelT> {
 
         @Override
         public void caseNopStmt(NopStmt stmt) {
-            this.result = fromEnv(csets, env);
+            noRestrictions();
         }
 
 
         @Override
         public void caseGotoStmt(GotoStmt stmt) {
-            // nothing interesting here
-            this.result = fromEnv(csets, env);
+            noRestrictions();
         }
 
         @Override
         public void caseReturnStmt(ReturnStmt stmt) {
-           this.result = fromEnv(csets, env);
+            noRestrictions();
+        }
+
+        @Override
+        public void caseIfStmt(IfStmt stmt) {
+           // note that this is the case where an if statement only has a single successor. I.e. it degenerates to a noop.
+           noRestrictions();
         }
 
         @Override

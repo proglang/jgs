@@ -295,7 +295,13 @@ public class MethodBodyTypingTest {
         thrown.expect(TypeError.class);
         thrown.expectMessage(containsString("Branching statement is an exit node"));
         analyze(g);
+    }
 
+    @Test
+    public void testTrivialIf() throws TypeError {
+        Code.TrivialIf g  = code.new TrivialIf();
+        Result<Level> r = analyze(g);
+        assertThat(r, is(Result.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
     }
 
     @Test

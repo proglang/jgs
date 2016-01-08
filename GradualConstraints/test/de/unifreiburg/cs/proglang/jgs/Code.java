@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs;
 
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
@@ -125,7 +126,22 @@ public class Code {
         this.signatures = makeTable(sigMap);
     }
 
-    public class LoopWithReflexivePostdom implements DirectedGraph<Unit> {
+    public abstract class AdHocUnitGraph implements DirectedGraph<Unit> {
+        protected abstract List<Unit> getUnits();
+
+        @Override
+        public final int size() {
+            return getUnits().size();
+        }
+
+        @Override
+        public final Iterator<Unit> iterator() {
+            return getUnits().iterator();
+        }
+
+    }
+
+    public class LoopWithReflexivePostdom extends AdHocUnitGraph {
         /*
         *     +-----------+
         *     v           |
@@ -137,7 +153,10 @@ public class Code {
         public final Unit nIf = j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), nExit);
         public final Unit n = j.newGotoStmt(nIf);
 
-        private List<Unit> units = Arrays.asList(nIf, n, nExit);
+        @Override
+        protected List<Unit> getUnits() {
+            return Arrays.asList(nIf, n, nExit);
+        }
 
         @Override
         public List<Unit> getHeads() {
@@ -176,18 +195,9 @@ public class Code {
             }
         }
 
-        @Override
-        public int size() {
-            return units.size();
-        }
-
-        @Override
-        public Iterator<Unit> iterator() {
-            return units.iterator();
-        }
     }
 
-    public class LoopWhereIfIsExitNode implements DirectedGraph<Unit> {
+    public class LoopWhereIfIsExitNode extends AdHocUnitGraph {
         /*
         *     +------+----+
         *     v      |    |
@@ -204,7 +214,10 @@ public class Code {
             ((GotoStmt)n2).setTarget(nIf);
         }
 
-        private List<Unit> units = Arrays.asList(nIf, n1, n2);
+        @Override
+        protected List<Unit> getUnits() {
+            return Arrays.asList(nIf, n1, n2);
+        }
 
         @Override
         public List<Unit> getHeads() {
@@ -242,15 +255,51 @@ public class Code {
                 throw new RuntimeException("UNEXPECTED CASE");
             }
         }
+    }
+
+    /*
+    *  -> if -> nExit
+    * */
+    public class TrivialIf extends AdHocUnitGraph {
+
+        public final Unit nExit = j.newReturnStmt(IntConstant.v(42));
+        public final Unit nIf = j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), nExit);
 
         @Override
-        public int size() {
-            return units.size();
+        protected List<Unit> getUnits() {
+            return asList(nIf, nExit);
         }
 
         @Override
-        public Iterator<Unit> iterator() {
-            return units.iterator();
+        public List<Unit> getHeads() {
+            return singletonList(nIf);
+        }
+
+        @Override
+        public List<Unit> getTails() {
+            return singletonList(nExit);
+        }
+
+        @Override
+        public List<Unit> getPredsOf(Unit s) {
+            if (s.equals(nIf)) {
+                return emptyList();
+            } else if (s.equals(nExit)) {
+                return singletonList(nIf);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public List<Unit> getSuccsOf(Unit s) {
+            if (s.equals(nIf)) {
+                return singletonList(nExit);
+            } else if (s.equals(nExit)) {
+                return emptyList();
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
         }
     }
 
