@@ -9,11 +9,12 @@ import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 import de.unifreiburg.cs.proglang.jgs.typing.Environments;
 import soot.*;
+import soot.jimple.GotoStmt;
+import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
+import soot.toolkits.graph.DirectedGraph;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
@@ -122,6 +123,135 @@ public class Code {
 
         // freeze signatures
         this.signatures = makeTable(sigMap);
+    }
+
+    public class LoopWithReflexivePostdom implements DirectedGraph<Unit> {
+        /*
+        *     +-----------+
+        *     v           |
+        *  -> if -> exit  |
+        *     +---------> n
+        * */
+
+        public final Unit nExit = j.newReturnStmt(IntConstant.v(42));
+        public final Unit nIf = j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), nExit);
+        public final Unit n = j.newGotoStmt(nIf);
+
+        private List<Unit> units = Arrays.asList(nIf, n, nExit);
+
+        @Override
+        public List<Unit> getHeads() {
+            return Collections.singletonList(nIf);
+        }
+
+        @Override
+        public List<Unit> getTails() {
+            return Collections.singletonList(nExit);
+        }
+
+        @Override
+        public List<Unit> getPredsOf(Unit unit) {
+            if (unit.equals(nIf)) {
+                return Collections.emptyList();
+            } else if (unit.equals(nExit)) {
+                return Collections.singletonList(nIf);
+            } else if (unit.equals(n)) {
+                return Collections.singletonList(nIf);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public List<Unit> getSuccsOf(Unit unit) {
+
+            if (unit.equals(nIf)) {
+                return asList(nExit, n);
+            } else if (unit.equals(nExit)) {
+                return Collections.emptyList();
+            } else if (unit.equals(n)) {
+                return Collections.singletonList(nIf);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public int size() {
+            return units.size();
+        }
+
+        @Override
+        public Iterator<Unit> iterator() {
+            return units.iterator();
+        }
+    }
+
+    public class LoopWhereIfIsExitNode implements DirectedGraph<Unit> {
+        /*
+        *     +------+----+
+        *     v      |    |
+        *  -> if -> n2    |
+        *     +---------> n1
+        * */
+
+        public final Unit n1 = j.newGotoStmt((Unit)null);
+        public final Unit n2 = j.newGotoStmt((Unit)null);
+        public final Unit nIf = j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), n1);
+
+        public LoopWhereIfIsExitNode() {
+            ((GotoStmt)n1).setTarget(nIf);
+            ((GotoStmt)n2).setTarget(nIf);
+        }
+
+        private List<Unit> units = Arrays.asList(nIf, n1, n2);
+
+        @Override
+        public List<Unit> getHeads() {
+            return Collections.singletonList(nIf);
+        }
+
+        @Override
+        public List<Unit> getTails() {
+            return Collections.singletonList(nIf);
+        }
+
+        @Override
+        public List<Unit> getPredsOf(Unit unit) {
+            if (unit.equals(nIf)) {
+                return Collections.emptyList();
+            } else if (unit.equals(n1)) {
+                return Collections.singletonList(nIf);
+            } else if (unit.equals(n2)) {
+                return Collections.singletonList(nIf);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public List<Unit> getSuccsOf(Unit unit) {
+
+            if (unit.equals(nIf)) {
+                return asList(n1, n2);
+            } else if (unit.equals(n1)) {
+                return Collections.singletonList(nIf);
+            } else if (unit.equals(n2)) {
+                return Collections.singletonList(nIf);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public int size() {
+            return units.size();
+        }
+
+        @Override
+        public Iterator<Unit> iterator() {
+            return units.iterator();
+        }
     }
 
 }

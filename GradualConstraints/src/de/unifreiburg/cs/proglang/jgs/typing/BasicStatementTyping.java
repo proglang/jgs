@@ -27,7 +27,6 @@ import soot.jimple.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.typing.Result.fromEnv;
-import static de.unifreiburg.cs.proglang.jgs.typing.Result.trivialCase;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
@@ -325,6 +324,10 @@ public class BasicStatementTyping<LevelT> {
             this.result = fromEnv(csets, env);
         }
 
+        @Override
+        public void caseReturnStmt(ReturnStmt stmt) {
+           this.result = fromEnv(csets, env);
+        }
 
         @Override
         public void defaultCase(Object obj) {

@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
@@ -77,6 +78,11 @@ public class MethodBodyTyping<Level> {
 
     public Result<Level> generateResult(DirectedGraph<Unit> g, TypeVar pc, Environment env,
                                         SignatureTable<Level> signatures) throws TypeError {
+        try {
+            Assumptions.validUnitGraph(g);
+        } catch (Assumptions.Violation e) {
+            throw new TypeError("Unexpected unit graph: " + e.getMessage());
+        }
         List<Unit> heads = g.getHeads();
         if (heads.size() != 1) {
             throw new TypeError("Analyzing graphs with more than a single head is not supported");
@@ -92,32 +98,46 @@ public class MethodBodyTyping<Level> {
 
 
 
-    private Result<Level> generateResult(MethodTypeVars sTvars, DirectedGraph<Unit> g, DominatorsFinder<Unit> postdoms, Stmt s, Result<Level> previous, SignatureTable<Level> signatures, TypeVar topLevelContext, Set<Unit> visited, Optional<Unit> until) throws TypeError {
-        Result<Level> r;
+    private Result<Level> generateResult(MethodTypeVars sTvars,
+                                         DirectedGraph<Unit> g,
+                                         DominatorsFinder<Unit> postdoms,
+                                         Stmt s,
+                                         // previous: the previous result
+                                         Result<Level> previous,
+                                         SignatureTable<Level> signatures,
+                                         TypeVar topLevelContext,
+                                         Set<Unit> visited,
+                                         // until: a unit where result generation should stop
+                                         Optional<Unit> until) throws TypeError {
 
-        List<Unit> successors = g.getSuccsOf(s);
+        // when there is an "until" unit and we reached it, stop
         if (until.map(s::equals).orElse(false)) {
             return previous;
         }
+        // otherwise calculate the result
 
-        // a basic statement
+        Result<Level> r;
+        List<Unit> successors = g.getSuccsOf(s);
+
+        // a basic (non-branching) unit in a straight-line sequence
         if (successors.size() <= 1) {
             BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, types, sTvars, cstrs);
             Result<Level> atomic = bsTyping.generate(s, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, casts);
             r = Result.addEffects(Result.addConstraints(atomic, previous.getConstraints()), previous.getEffects());
+            // if the unit is the end of a sequence, stop
             if (successors.isEmpty()) {
                 return r;
             } else{
+                // otherwise continue with the rest of the sequence
                 Stmt next = (Stmt) successors.get(0);
                 // TODO: this is a tailcall
                 return generateResult(sTvars, g, postdoms, next, r, signatures, topLevelContext, visited, until);
             }
         } else {
-            // a branching statement
+            // a branching statement. When the graph is checked with Assumptions.validUnitGraph then result should never be null
             Unit end = postdoms.getImmediateDominator(s);
-            if (s.equals(end)) {
-                throw new RuntimeException("Branching statement is its own postdominator: " + s);
-            }
+
+
             // get condition constrains and the new context
             TypeVar newPc = sTvars.forContext(s);
             Set<Constraint<Level>> conditionConstraints = constraintsForBranches(s, previous.getFinalEnv(), topLevelContext, newPc);

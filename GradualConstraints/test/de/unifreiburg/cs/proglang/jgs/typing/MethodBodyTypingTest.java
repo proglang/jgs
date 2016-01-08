@@ -4,7 +4,9 @@ import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import soot.Unit;
 import soot.jimple.Expr;
 import soot.jimple.IntConstant;
@@ -273,6 +275,27 @@ public class MethodBodyTypingTest {
         assertThat(postdoms.isDominatedBy(sIf, remotePostdom1), is(true));
         assertThat(postdoms.isDominatedBy(sIf, remotePostdom2), is(true));
         assertThat(postdoms.isDominatedBy(sIf, els), is(false));
+    }
+
+    @Test
+    public void testReflexivePostDom() throws TypeError {
+        Code.LoopWithReflexivePostdom g = code.new LoopWithReflexivePostdom();
+        @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
+        // In Soot the immediate dominator is not the reflexive one
+        assertThat(postdoms.getImmediateDominator(g.nIf), not(is(g.nIf)));
+        assertThat(postdoms.getImmediateDominator(g.nIf), is(g.nExit));
+    }
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Test
+    public void testIllegalExitNode() throws  TypeError {
+        Code.LoopWhereIfIsExitNode g = code.new LoopWhereIfIsExitNode();
+        thrown.expect(TypeError.class);
+        thrown.expectMessage(containsString("Branching statement is an exit node"));
+        analyze(g);
+
     }
 
     @Test
