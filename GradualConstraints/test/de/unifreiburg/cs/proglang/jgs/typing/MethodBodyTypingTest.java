@@ -31,9 +31,6 @@ import static org.junit.Assert.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
 
 
-/**
- * Created by fennell on 11/16/15.
- */
 public class MethodBodyTypingTest {
 
 
@@ -49,11 +46,11 @@ public class MethodBodyTypingTest {
         this.j = Jimple.v();
         this.pc = tvars.topLevelContext();
         this.code = new Code(tvars);
-        this.mbTyping = mkMbTyping(code.init, tvars);
+        this.mbTyping = mkMbTyping(code.init, tvars, code.signatures);
     }
 
     @Test
-    public void testSequences() throws TypeError {
+    public void testSequences() throws TypingException {
         Stmt first = j.newAssignStmt(code.localX, j.newAddExpr(code.localX, code.localY));
         Stmt last = j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localZ));
         // x = x + y;
@@ -113,7 +110,7 @@ public class MethodBodyTypingTest {
     }
 
     @Test
-    public void testIfBranches() throws TypeError {
+    public void testIfBranches() throws TypingException {
         DirectedGraph<Unit> g;
 
         /* if (x = y) { y = z };
@@ -147,7 +144,7 @@ public class MethodBodyTypingTest {
                 singleton(els)
         );
 
-        // TODO: put into individual tests
+        // misc assertions, to be sure
         assertThat((g.getPredsOf(g.getTails().get(0))), hasItem(els));
         assertThat(code.init.get(code.varY), not(is(analyze(g).finalTypeVariableOf(code.varY))));
 
@@ -178,20 +175,20 @@ public class MethodBodyTypingTest {
         cond = j.newEqExpr(code.localY, code.localY);
         g = seq(branchIf(cond, singleton(j.newAssignStmt(code.localX, IntConstant.v(1))), singleton(j.newNopStmt())), j.newAssignStmt(code.localX, IntConstant.v(1)));
         Result<Level> r = analyze(g);
-        //TODO: write some tests that check minimallySubsumes is not trivial!!!
-        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY)))), is(minimallySubsumes(makeNaive(asList(compC(code.init.get(code.varX), code.init.get(code.varY)))))));
+        //TODO-needs-test: write some tests that check minimallySubsumes is not trivial!!!
+        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY)))), is(minimallySubsumes(makeNaive(Collections.singletonList(compC(code.init.get(code.varX), code.init.get(code.varY)))))));
         assertThat(r.getConstraints().projectTo(new HashSet<>(Collections.singletonList(code.init.get(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
         assertThat(r.getConstraints(), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
         assertThat(r.getConstraints().projectTo(new HashSet<>(Collections.singletonList(r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
         assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
         assertMinimalSubsumption(g,
-                finalResult -> makeNaive(asList(compC(code.init.get(code.varY), code.init.get(code.varX)))));
+                finalResult -> makeNaive(Collections.singletonList(compC(code.init.get(code.varY), code.init.get(code.varX)))));
 
 
     }
 
     @Test
-    public void testNestedBranches() throws TypeError {
+    public void testNestedBranches() throws TypingException {
 
         Expr cond = j.newEqExpr(code.localY, code.localY);
         Stmt body = j.newAssignStmt(code.localY, code.localZ);
@@ -210,7 +207,7 @@ public class MethodBodyTypingTest {
     }
 
     @Test
-    public void testNestedBranches2() throws TypeError {
+    public void testNestedBranches2() throws TypingException {
         Expr cond = j.newEqExpr(code.localY, code.localY);
         Stmt body = j.newAssignStmt(code.localY, code.localZ);
         Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
@@ -229,7 +226,7 @@ public class MethodBodyTypingTest {
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
 
         Result<Level> r = analyze(g);
-//        // TODO: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
+//        // TODO-performance: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
         ConstraintSet<Level> sig = makeNaive(asList(
                         /* {z,y,x} <= z** */
                         leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
@@ -241,7 +238,6 @@ public class MethodBodyTypingTest {
                         leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
                         leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varX))));
 
-        // TODO: syntax for assignments would be convenient
         assertThat(sig.isSatisfiedFor(types, Assignments.builder(code.init.get(code.varX), PUB)
                         .add(r.finalTypeVariableOf(code.varX), DYN)
                         .add(code.init.get(code.varY), PUB)
@@ -280,7 +276,7 @@ public class MethodBodyTypingTest {
     }
 
     @Test
-    public void testReflexivePostDom() throws TypeError {
+    public void testReflexivePostDom() throws TypingException {
         Code.LoopWithReflexivePostdom g = code.new LoopWithReflexivePostdom();
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
         // In Soot the immediate dominator is not the reflexive one
@@ -292,22 +288,22 @@ public class MethodBodyTypingTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testIllegalExitNode() throws  TypeError {
+    public void testIllegalExitNode() throws TypingException {
         Code.LoopWhereIfIsExitNode g = code.new LoopWhereIfIsExitNode();
-        thrown.expect(TypeError.class);
+        thrown.expect(TypingException.class);
         thrown.expectMessage(containsString("Branching statement is an exit node"));
         analyze(g);
     }
 
     @Test
-    public void testTrivialIf() throws TypeError {
+    public void testTrivialIf() throws TypingException {
         Code.TrivialIf g  = code.new TrivialIf();
         Result<Level> r = analyze(g);
         assertThat(r, is(Result.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
     }
 
     @Test
-    public void testDoWhileLoop() throws TypeError {
+    public void testDoWhileLoop() throws TypingException {
         Code.SimpleDoWhile g = code.new SimpleDoWhile();
         assertEquivalentConstraints(g,
                 r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
@@ -315,7 +311,7 @@ public class MethodBodyTypingTest {
     }
 
     @Test
-    public void testIncreasingLoop() throws TypeError {
+    public void testIncreasingLoop() throws TypingException {
         Code.LoopIncrease g = code.new LoopIncrease();
         assertEquivalentConstraints(g,
                 r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
@@ -323,7 +319,7 @@ public class MethodBodyTypingTest {
     }
 
     @Test
-    public void testSpaghetti1() throws TypeError {
+    public void testSpaghetti1() throws TypingException {
         Code.Spaghetti1 g = code.new Spaghetti1();
         assertEquivalentConstraints(g,
                 r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
@@ -335,7 +331,7 @@ public class MethodBodyTypingTest {
 
     @Test
     //@Test(timeout = 3000)
-    public void testWhile() throws TypeError {
+    public void testWhile() throws TypingException {
         /* while (y = y) { y = z };
         */
         Expr cond = j.newEqExpr(code.localY, code.localY);
@@ -411,11 +407,11 @@ public class MethodBodyTypingTest {
 
     }
 
-    private Result<Level> analyze(DirectedGraph<Unit> g) throws TypeError {
-        return mbTyping.generateResult(g, pc, code.init, code.signatures);
+    private Result<Level> analyze(DirectedGraph<Unit> g) throws TypingException {
+        return mbTyping.generateResult(g, pc, code.init);
     }
 
-    private void assertEquivalentConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypeError {
+    private void assertEquivalentConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypingException {
         Result<Level> finalResult = analyze(g);
         Set<TypeVars.TypeVar> varsToProject = getVarsToProject.apply(finalResult);
         ConstraintSet<Level> expected = getExpected.apply(finalResult);
@@ -423,7 +419,7 @@ public class MethodBodyTypingTest {
                 NaiveConstraints.minimize(finalResult.getConstraints().projectTo(varsToProject)), is(equivalent(expected)));
     }
 
-    private void assertMinimalSubsumption(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected) throws TypeError {
+    private void assertMinimalSubsumption(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected) throws TypingException {
         Result<Level> finalResult = analyze(g);
         ConstraintSet<Level> expected = getExpected.apply(finalResult);
         assertThat(String.format("The constraints of %s", Graphs.toString(g)),

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
@@ -16,6 +15,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
+import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.BasicStatementTyping;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
@@ -115,7 +115,7 @@ public class TestDomain {
 
     public static Constraint<Level> leC(CType<Level> lhs,
                                            CType<Level> rhs) {
-        return cstrs.le(lhs, rhs);
+        return Constraints.le(lhs, rhs);
     }
 
     public static Constraint<Level> leC(CType<Level> ct, TypeVar v) {
@@ -124,17 +124,17 @@ public class TestDomain {
 
     public static Constraint<Level> leC(TypeVar lhs,
                                         TypeVar rhs) {
-        return cstrs.le( CTypes.variable(lhs), CTypes.variable(rhs));
+        return Constraints.le( CTypes.variable(lhs), CTypes.variable(rhs));
     }
 
     public static Constraint<Level> leC(TypeVar lhs,
                                         CType<Level> rhs) {
-        return cstrs.le( CTypes.variable(lhs), rhs);
+        return Constraints.le( CTypes.variable(lhs), rhs);
     }
 
     public static Constraint<Level> compC(CType<Level> lhs,
                                            CType<Level> rhs) {
-        return cstrs.comp(lhs, rhs);
+        return Constraints.comp(lhs, rhs);
     }
     public static Constraint<Level> compC(TypeVar lhs,
                                         TypeVar rhs) {
@@ -143,7 +143,7 @@ public class TestDomain {
 
     public static Constraint<Level> dimplC(CType<Level> lhs,
                                            CType<Level> rhs) {
-        return cstrs.dimpl(lhs, rhs);
+        return Constraints.dimpl(lhs, rhs);
     }
 
     public static SigConstraint<Level> leS(Symbol<Level> sc1, Symbol<Level> sc2) {
@@ -159,13 +159,13 @@ public class TestDomain {
     ///////
     // BasicStatementTyping
     public static BasicStatementTyping<Level> mkTyping(TypeVars.MethodTypeVars tvars) {
-        return new BasicStatementTyping<>(new NaiveConstraintsFactory<>(types), types, tvars, cstrs);
+        return new BasicStatementTyping<>(new NaiveConstraintsFactory<>(types), tvars, cstrs);
     }
 
     ///////
     // Method body typing
-    public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars) {
-        return new MethodBodyTyping<>(tvars, new NaiveConstraintsFactory<>(types), types, cstrs, casts);
+    public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars, SignatureTable<Level> signatures) {
+        return new MethodBodyTyping<>(tvars, new NaiveConstraintsFactory<>(types), cstrs, casts, signatures);
     }
     /////
     // JUnit matcher
@@ -262,11 +262,10 @@ public class TestDomain {
     }
 
     /**
-     * Holds for constraint sets that subsume each other
+     * Holds for constraint sets that subsume each other. In contrast to equivalent sets, constraint sets that subsume each other may contain different sets of variables. Only the assignments of the common variables needs to be consistent.
      *
      * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
      */
-    //TODO: change that name
     public static Matcher<ConstraintSet<Level>> minimallySubsumes(final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
             @Override

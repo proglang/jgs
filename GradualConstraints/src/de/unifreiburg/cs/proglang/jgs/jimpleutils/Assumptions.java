@@ -3,6 +3,8 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 import soot.Unit;
 import soot.toolkits.graph.DirectedGraph;
 
+import java.util.List;
+
 /**
  * Contains methods to assert some assumptions that JGS has about UnitGraphs/method bodies
  * Created by fennell on 1/8/16.
@@ -17,6 +19,12 @@ public class Assumptions {
 
     public static void validUnitGraph(DirectedGraph<Unit> g) throws Violation {
 
+        /* The unit graph should have a single entry point */
+        List<Unit> heads = g.getHeads();
+        if (heads.size() != 1) {
+            throw new Violation("Analyzing graphs with more than a single head is not supported");
+        }
+
         /* Branching statements should not be exit nodes.
         This restriction ensures that we always get a non-null immediatePostdominator */
         for (Unit u : g) {
@@ -25,5 +33,6 @@ public class Assumptions {
                         "\n in graph %s", u, g));
             }
         }
+
     }
 }

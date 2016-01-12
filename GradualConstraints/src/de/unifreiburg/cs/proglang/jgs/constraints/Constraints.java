@@ -63,7 +63,7 @@ public class Constraints<Level> {
     /**
      * Given the constraint <code>c</code>, return literally all the non-reflexive constraints that would be implied by <code>c</code>.
      */
-    //TODO: write a property-based test for the soundness of the implementation (i.e., the result is equivalent to <code>c</code>)
+    //TODO-needs-test: write a property-based test for the soundness of the implementation (i.e., the result is equivalent to <code>c</code>)
     public static <Level> Stream<Constraint<Level>> implicationsOf(Constraint<Level> c) {
         switch (c.kind) {
             case LE:
@@ -72,7 +72,7 @@ public class Constraints<Level> {
                         Stream.of(c),
                         implicationsOf(toKind(Constraint.Kind.COMP, c)));
             case COMP:
-                //TODO: fix this for NSU support... dimpl is needed
+                //TODO-nsu-support: fix this for NSU support... dimpl is needed
 //                Constraint<Level> dimpl = toKind(Constraint.Kind.DIMPL, c);
                 // x1 ~ x2 implies x2 ~ x1 and x1 ?-> x2, and x2 ?~> x1
 //                return Stream.of(c, symmetricOf(c), dimpl, symmetricOf(dimpl));

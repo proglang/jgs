@@ -92,6 +92,10 @@ public abstract class ConstraintSet<Level> {
      * @return true if <code>this</code> is a suitable signature for <code>other</code>
      */
     public boolean isSignatureOf(TypeVars tvars, ConstraintSet<Level> other) {
+        /* TODO-needs-test: cs1.subsumes(cs2) === cs1.subsumes(cs2.projectForSignature(tvars, cs1))
+                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2)
+                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2.projectForSignature(tvars, cs1)) */
+        // the projection is just an optimization to keep the number of variables small
         return this.subsumes(other.projectForSignature(tvars, this));
     }
 

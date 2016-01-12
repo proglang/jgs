@@ -23,7 +23,7 @@ public abstract class Symbol<Level> {
         return new Param<>(new EquivalentValue(Jimple.v().newParameterRef(t, pos)));
     }
 
-    // TODO: make a singleton out of this
+    // TODO-performance: make a singleton out of this
     public static <Level> Symbol<Level> ret() {
         return new Return<>();
     }
@@ -97,7 +97,7 @@ public abstract class Symbol<Level> {
         }
 
         @Override
-        // TODO: should be a singleton
+        // TODO-performance: should be a singleton
         public boolean equals(Object other) {
             return this.getClass().equals(other.getClass());
         }

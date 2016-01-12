@@ -31,23 +31,29 @@ public class MethodBodyTyping<Level> {
 
     final private Casts<Level> casts;
     final private ConstraintSetFactory<Level> csets;
-    // TODO: the following two could moved somewhere else (?)
     final private Constraints<Level> cstrs;
-    final private TypeDomain<Level> types;
     final private TypeVars tvars;
+    final private SignatureTable<Level> signatures;
 
-    public MethodBodyTyping(TypeVars tvars, ConstraintSetFactory<Level> csets, TypeDomain<Level> types, Constraints<Level> cstrs, Casts<Level> casts) {
+    /**
+     * @param tvars Factory for generating type variables
+     * @param csets Factory for constraint sets
+     * @param cstrs The domain of constraints
+     * @param casts Specification of cast methods
+     * @param signatures
+     */
+    public MethodBodyTyping(TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts, SignatureTable<Level> signatures) {
         this.csets = csets;
         this.casts = casts;
-        this.types = types;
         this.cstrs = cstrs;
         this.tvars = tvars;
+        this.signatures = signatures;
     }
 
     Set<Constraint<Level>> constraintsForBranches(Unit s,
                                       Environment env,
                                       TypeVar oldPc,
-                                      TypeVar newPc) throws TypeError {
+                                      TypeVar newPc) throws TypingException {
         AbstractStmtSwitch g = new AbstractStmtSwitch() {
 
             @Override
@@ -77,23 +83,18 @@ public class MethodBodyTyping<Level> {
 
 
 
-    public Result<Level> generateResult(DirectedGraph<Unit> g, TypeVar pc, Environment env,
-                                        SignatureTable<Level> signatures) throws TypeError {
+    public Result<Level> generateResult(DirectedGraph<Unit> g, TypeVar pc, Environment env) throws TypingException {
         try {
             Assumptions.validUnitGraph(g);
         } catch (Assumptions.Violation e) {
-            throw new TypeError("Unexpected unit graph: " + e.getMessage());
-        }
-        List<Unit> heads = g.getHeads();
-        if (heads.size() != 1) {
-            throw new TypeError("Analyzing graphs with more than a single head is not supported");
+            throw new TypingException("Unexpected unit graph: " + e.getMessage());
         }
 
-        Stmt s = (Stmt) heads.get(0);
+        // valid unit graphs have exactly one head
+        Stmt s = (Stmt) g.getHeads().get(0);
 
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
 
-        // TODO: not using tvars here but tvars.forMethod is important.. make this more typesafe, as it is a mistake waiting to happen
         return generateResult(tvars.forMethod(g), g, postdoms, s, Result.fromEnv(csets, env), signatures, pc, Collections.emptySet(), Optional.empty());
     }
 
@@ -110,7 +111,7 @@ public class MethodBodyTyping<Level> {
                                          // visited: branches that were already in the current context visited, identified by their first statement
                                          Set<Pair<TypeVar,Unit>> visited,
                                          // until: a unit where result generation should stop
-                                         Optional<Unit> until) throws TypeError {
+                                         Optional<Unit> until) throws TypingException {
 
         // when there is an "until" unit and we reached it, stop
         if (until.map(s::equals).orElse(false)) {
@@ -123,7 +124,7 @@ public class MethodBodyTyping<Level> {
 
         // a basic (non-branching) unit in a straight-line sequence
         if (successors.size() <= 1) {
-            BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, types, sTvars, cstrs);
+            BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, sTvars, cstrs);
             Result<Level> atomic = bsTyping.generate(s, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, casts);
             r = Result.addEffects(Result.addConstraints(atomic, previous.getConstraints()), previous.getEffects());
             // if the unit is the end of a sequence, stop
@@ -132,7 +133,7 @@ public class MethodBodyTyping<Level> {
             } else{
                 // otherwise continue with the rest of the sequence
                 Stmt next = (Stmt) successors.get(0);
-                // TODO: this is a tailcall
+                // TODO-performance: this is a tailcall
                 return generateResult(sTvars, g, postdoms, next, r, signatures, topLevelContext, visited, until);
             }
         } else {
@@ -148,7 +149,6 @@ public class MethodBodyTyping<Level> {
             r = trivialCase(csets);
             for (Unit uBranch : successors) {
                 // do not recurse into visited branches again
-                // TODO: not sure if this is correct for spaghetti code!
                 if (visited.contains(Pair.of(newPc, uBranch))) {
                     return conditionResult;
                 }
@@ -157,7 +157,7 @@ public class MethodBodyTyping<Level> {
                 r = Result.join(r, branchResult, csets, sTvars);
             }
             // continue after join point
-            // TODO: this is a tailcall
+            // TODO-performance: this is a tailcall
             return generateResult(sTvars, g, postdoms, (Stmt)end, r, signatures, topLevelContext, visited, until);
         }
     }

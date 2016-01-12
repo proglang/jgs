@@ -40,7 +40,7 @@ public class Assignments {
         } else {
             LinkedList<TypeVar> variableRest = new LinkedList<>(variables);
             TypeVar v = variableRest.remove();
-            // TODO: can we be a bit more efficient by memoizing this stream?
+            // TODO-performance: can we be a bit more efficient by memoizing this stream?
             Supplier<Stream<Assignment<Level>>> rest = () -> enumerateAll(types, variableRest);
             return types.enumerate().flatMap(t -> rest.get().map(ass -> {
                 Map<TypeVar, Type<Level>> m =

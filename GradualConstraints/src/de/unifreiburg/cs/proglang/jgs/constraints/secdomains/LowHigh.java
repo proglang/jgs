@@ -28,7 +28,6 @@ public class LowHigh implements SecDomain<LowHigh.Level> {
 
     @Override
     public Level lub(Level l1, Level l2) {
-        // TODO Auto-generated method stub
         return l1.equals(Level.LOW) ? l2 : Level.HIGH;
     }
 

@@ -119,31 +119,6 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return cs.flatMap(Constraints::implicationsOf);
     }
 
-    // TODO: what happens when { x1 <= x2, x2 ~ x3, x3 <= x4} ... nothing in particular.. what is the lemma? .. I need a test for this, e.g. is everything still equivalent when removing x3
-    // Only Le-constrains trigger the addition of the transitive constraint. So, try to match the rhs of "left" with the lhs of the le-constraints in old
-    @Deprecated
-    static <Level> Stream<CType<Level>> matchingRhs(Constraint<Level> left, Set<Constraint<Level>> old) {
-        Stream<Constraint<Level>> oldLes = old.stream().filter(c -> c.kind.equals(Constraint.Kind.LE));
-        Set<TypeVar> leftVariables = left.variables().collect(Collectors.toSet());
-
-        Predicate<Constraint<Level>> mentionsLeftVariables = c -> {
-            Set<TypeVar> leVariables = c.variables().collect(Collectors.toSet());
-            return leftVariables.stream().anyMatch(v -> leVariables.contains(v));
-        };
-
-        Predicate<Constraint<Level>> lhsMatchesLeftRhs = c -> left.getRhs().equals(c.getLhs());
-        switch (left.kind) {
-            case LE:
-                return oldLes.filter(lhsMatchesLeftRhs).map(Constraint::getRhs);
-            case COMP:
-                return oldLes.filter(mentionsLeftVariables).flatMap(c -> Stream.of(c.getRhs(), c.getLhs()));
-            case DIMPL:
-                throw new RuntimeException("DIMPL CASE NOT IMPLEMENTED");
-            default:
-                throw new RuntimeException("UNEXPECTED DEFAULT CASE");
-        }
-    }
-
     public static <Level> Stream<Constraint<Level>> projectTo(Set<Constraint<Level>> cs, Collection<TypeVar> typeVarCol) {
         Set<Constraint<Level>> closure = close(cs);
         Set<CType<Level>> typeVars = typeVarCol.stream().map(CTypes::<Level>variable).collect(Collectors.<CType<Level>>toSet());

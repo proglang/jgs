@@ -16,7 +16,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
@@ -41,16 +40,13 @@ public class BasicStatementTyping<LevelT> {
 
     final public ConstraintSetFactory<LevelT> csets;
     final public Constraints<LevelT> cstrs;
-    final public TypeDomain<LevelT> types;
     final public TypeVars.MethodTypeVars tvars;
 
     public BasicStatementTyping(ConstraintSetFactory<LevelT> csets,
-                                TypeDomain<LevelT> types,
                                 TypeVars.MethodTypeVars tvars,
                                 Constraints<LevelT> cstrs) {
         super();
         this.csets = csets;
-        this.types = types;
         this.tvars = tvars;
         this.cstrs = cstrs;
     }
@@ -59,12 +55,12 @@ public class BasicStatementTyping<LevelT> {
                                    Environment env,
                                    Set<TypeVar> pc,
                                    SignatureTable<LevelT> signatures,
-                                   Casts<LevelT> casts) throws TypeError {
+                                   Casts<LevelT> casts) throws TypingException {
         Gen g = new Gen(env, pc, signatures, casts);
         s.apply(g);
         // abort on any errors
         if (!g.getErrorMsg().isEmpty()) {
-            throw new TypeError("There where errors during statement typing: \n"
+            throw new TypingException("There where errors during statement typing: \n"
                     + g.getErrorMsg()
                     .stream()
                     .reduce((s1, s2) -> s1 + "\n" + s2));
@@ -301,7 +297,7 @@ public class BasicStatementTyping<LevelT> {
 
         private boolean compatible(TypeDomain.Type<LevelT> sourceType,
                                    TypeDomain.Type<LevelT> destType) {
-            return types.dyn().equals(destType) ^ types.dyn()
+            return cstrs.types.dyn().equals(destType) ^ cstrs.types.dyn()
                     .equals(sourceType);
         }
 

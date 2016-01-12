@@ -6,28 +6,19 @@ import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
-import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import org.junit.Before;
 import org.junit.Test;
-import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.makeTable;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 
 public class GenerateTest {
 
@@ -38,8 +29,6 @@ public class GenerateTest {
     private TypeVar pc;
 
 
-    // casts:
-    // TODO: continue
 
     private void assertUnsat(ConstraintSet<Level> unsatConstraints) {
         assertThat(String.format("Should not be SAT: %s\nassignment: %s",
@@ -58,7 +47,7 @@ public class GenerateTest {
 
     }
 
-    @Test public void testLocals() throws TypeError {
+    @Test public void testLocals() throws TypingException {
 
         Stmt s;
         Result<Level> r;
@@ -116,7 +105,7 @@ public class GenerateTest {
 
     }
 
-    @Test public void testCall() throws TypeError {
+    @Test public void testCall() throws TypingException {
         Stmt s;
         Result<Level> r;
         ConstraintSet<Level> expected;
@@ -194,7 +183,7 @@ public class GenerateTest {
         assertThat(r.getConstraints(), is(equivalent(expected)));
     }
 
-    @Test public void testCast() throws TypeError {
+    @Test public void testCast() throws TypingException {
         Stmt s;
         Result<Level> r;
         ConstraintSet<Level> expected;

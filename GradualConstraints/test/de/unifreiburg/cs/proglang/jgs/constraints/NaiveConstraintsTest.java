@@ -113,14 +113,6 @@ public class NaiveConstraintsTest {
         assertThat("unsat => unsat", unsat,implies(unsat));
     }
 
-    @Test
-    public void testClosureCandidates() {
-        Constraint<Level> c = leC(cs.x1, cs.x2);
-        Set<Constraint<Level>> old = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), compC(cs.x3, cs.x1), dimplC(cs.x1, cs.x2))).stream().collect(toSet());
-        assertThat(NaiveConstraints.matchingRhs(c, old).collect(toSet()), is(Stream.of(cs.x3).collect(toSet())));
-
-    }
-
     @Test(timeout = 1000)
     public void testLeClosure() {
         Set<Constraint<Level>> tmp = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3))).stream().collect(toSet());
@@ -195,14 +187,6 @@ public class NaiveConstraintsTest {
         ConstraintSet<Level> cs2 = makeNaive(asList(leC(cs.x0, cs.x1), compC(cs.x1, cs.x2)));
 
         assertThat(cs1, is(not(equivalent(cs2))));
-//        Supplier<Stream<TypeDomain.Type<Level>>> allTypes = () -> Stream.of(TLOW, THIGH, DYN, PUB);
-        // TODO: factor this out to a reusable assertion
-//        allTypes.get().forEach(t1 -> allTypes.get().forEach( t2 -> allTypes.get().forEach(t3 -> {
-//            Assignment<Level> ass = Assignments.<Level>builder(cs.v0, t1).add(cs.v1, t2).add(cs.v2, t3).build();
-//            boolean cs1Sat = cs1.isSatisfiedFor(types, ass);
-//            boolean cs2Sat = cs2.isSatisfiedFor(types, ass);
-//            assertThat(String.format("cs1 (%s: %s) does not match cs2 (%s: %s): %s", cs1, cs1Sat, cs2, cs2Sat, ass), cs1Sat , is(cs2Sat));
-//        })));
     }
 
     @Test

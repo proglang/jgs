@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Easily constructable Unit-Graphs, for testing
  */
-// TODO: could be implemented more efficiently (i.e. imperatively)
+// TODO-performance: could be implemented more efficiently (i.e. imperatively)
 public class Graphs {
 
     /**
