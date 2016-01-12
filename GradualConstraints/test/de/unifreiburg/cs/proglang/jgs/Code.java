@@ -303,4 +303,172 @@ public class Code {
         }
     }
 
+    public class SimpleDoWhile extends AdHocUnitGraph {
+        public final Unit nSet = j.newAssignStmt(localX, localY);
+        public final Unit nIf = j.newIfStmt(j.newEqExpr(localZ, IntConstant.v(0)), nSet);
+        public final Unit nExit = j.newReturnStmt(IntConstant.v(42));
+
+
+        @Override
+        protected List<Unit> getUnits() {
+            return asList(nSet, nIf, nExit);
+        }
+
+        @Override
+        public List<Unit> getHeads() {
+            return singletonList(nSet);
+        }
+
+        @Override
+        public List<Unit> getTails() {
+            return singletonList(nExit);
+        }
+
+        @Override
+        public List<Unit> getPredsOf(Unit s) {
+            if (s.equals(nSet)) {
+                return singletonList(nIf);
+            } else if (s.equals(nIf)) {
+                return singletonList(nSet);
+            } else if (s.equals(nExit)) {
+                return singletonList(nIf);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public List<Unit> getSuccsOf(Unit s) {
+            if (s.equals(nSet)) {
+                return singletonList(nIf);
+            } else if (s.equals(nIf)) {
+                return asList(nSet, nExit);
+            } else if (s.equals(nExit)) {
+                return emptyList();
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+    }
+
+    public class LoopIncrease extends AdHocUnitGraph {
+        public final Unit nExit = j.newReturnStmt(IntConstant.v(42));
+        public final Unit nSetZ = j.newAssignStmt(localZ, localY);
+        public final Unit nSetX = j.newAssignStmt(localX, IntConstant.v(0));
+        public final Unit nIf = j.newIfStmt(j.newEqExpr(localZ, IntConstant.v(0)), nSetZ);
+        public final Unit gotoIf = j.newGotoStmt(nIf);
+
+        @Override
+        protected List<Unit> getUnits() {
+            return asList(nIf, nSetZ, nSetX, gotoIf, nExit);
+        }
+
+        @Override
+        public List<Unit> getHeads() {
+            return singletonList(nIf);
+        }
+
+        @Override
+        public List<Unit> getTails() {
+            return singletonList(nExit);
+        }
+
+        @Override
+        public List<Unit> getPredsOf(Unit s) {
+            if (s.equals(nIf)) {
+                return singletonList(gotoIf);
+            } else if (s.equals(nSetZ)) {
+                return singletonList(nIf);
+            } else if (s.equals(nSetX)) {
+                return singletonList(nSetZ);
+            } else if (s.equals(gotoIf)) {
+                return singletonList(nSetX);
+            } else if (s.equals(nExit)) {
+                return singletonList(nIf);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public List<Unit> getSuccsOf(Unit s) {
+            if (s.equals(nIf)) {
+                return asList(nSetZ, nExit);
+            } else if (s.equals(nSetZ)) {
+                return singletonList(nSetX);
+            } else if (s.equals(nSetX)) {
+                return singletonList(gotoIf);
+            } else if (s.equals(gotoIf)) {
+                return singletonList(nIf);
+            } else if (s.equals(nExit)) {
+                return emptyList();
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+    }
+
+    public class Spaghetti1 extends AdHocUnitGraph {
+        public final Unit setX = j.newAssignStmt(localX, IntConstant.v(0));
+        public final Unit if1 = j.newIfStmt(j.newEqExpr(localY, localY), setX);
+        public final Unit if2= j.newIfStmt(j.newEqExpr(localZ, localZ), setX);
+        public final Unit gotoIf2 = j.newGotoStmt(if2);
+        public final Unit exit = j.newReturnStmt(IntConstant.v(42));
+        public final Unit gotoEnd = j.newGotoStmt(exit);
+
+
+        @Override
+        protected List<Unit> getUnits() {
+            return asList(if1, if2, setX, gotoIf2, gotoEnd, exit);
+        }
+
+        @Override
+        public List<Unit> getHeads() {
+            return singletonList(if1);
+        }
+
+        @Override
+        public List<Unit> getTails() {
+            return singletonList(exit);
+        }
+
+        @Override
+        public List<Unit> getPredsOf(Unit s) {
+            if (s.equals(if1)) {
+                return emptyList();
+            } else if (s.equals(if2)) {
+                return singletonList(gotoIf2);
+            } else if (s.equals(setX)) {
+                return asList(if1, if2);
+            } else if (s.equals(gotoIf2)) {
+                return singletonList(setX);
+            } else if (s.equals(exit)) {
+                return asList(if1, gotoEnd);
+            } else if (s.equals(gotoEnd)) {
+                return singletonList(if2);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+
+        @Override
+        public List<Unit> getSuccsOf(Unit s) {
+            if (s.equals(if1)) {
+                return asList(setX, exit);
+            } else if (s.equals(if2)) {
+                return asList(setX, gotoEnd);
+            } else if (s.equals(setX)) {
+                return singletonList(gotoIf2);
+            } else if (s.equals(gotoIf2)) {
+                return singletonList(if2);
+            } else if (s.equals(exit)) {
+                return emptyList();
+            } else if (s.equals(gotoEnd)) {
+                return singletonList(exit);
+            } else {
+                throw new RuntimeException("UNEXPECTED CASE");
+            }
+        }
+    }
+
 }

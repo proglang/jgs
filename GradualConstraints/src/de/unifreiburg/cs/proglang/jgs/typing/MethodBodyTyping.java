@@ -5,6 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import org.apache.commons.lang3.tuple.Pair;
 import soot.Unit;
 import soot.jimple.*;
 import soot.toolkits.graph.DirectedGraph;
@@ -106,7 +107,8 @@ public class MethodBodyTyping<Level> {
                                          Result<Level> previous,
                                          SignatureTable<Level> signatures,
                                          TypeVar topLevelContext,
-                                         Set<Unit> visited,
+                                         // visited: branches that were already in the current context visited, identified by their first statement
+                                         Set<Pair<TypeVar,Unit>> visited,
                                          // until: a unit where result generation should stop
                                          Optional<Unit> until) throws TypeError {
 
@@ -147,10 +149,10 @@ public class MethodBodyTyping<Level> {
             for (Unit uBranch : successors) {
                 // do not recurse into visited branches again
                 // TODO: not sure if this is correct for spaghetti code!
-                if (visited.contains(uBranch)) {
-                    return previous;
+                if (visited.contains(Pair.of(newPc, uBranch))) {
+                    return conditionResult;
                 }
-                Set<Unit> newVisited = Stream.concat(Stream.of(uBranch), visited.stream()).collect(toSet());
+                Set<Pair<TypeVar, Unit>> newVisited = Stream.concat(Stream.of(Pair.of(newPc, uBranch)), visited.stream()).collect(toSet());
                 Result<Level> branchResult = generateResult(sTvars, g, postdoms, (Stmt)uBranch, conditionResult, signatures, newPc, newVisited, Optional.of(end));
                 r = Result.join(r, branchResult, csets, sTvars);
             }

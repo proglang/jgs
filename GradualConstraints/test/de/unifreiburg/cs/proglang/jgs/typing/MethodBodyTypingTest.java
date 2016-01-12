@@ -19,12 +19,12 @@ import soot.toolkits.graph.MHGPostDominatorsFinder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs.*;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -217,7 +217,8 @@ public class MethodBodyTypingTest {
         Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
 
         /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
-        /*  signature: {y, z, x} <= x* ; {z,y} <= z** */
+        /*  signature: {y, z, x} <= x* ; {x, z,y} <= z** */
+        /*  ( x <= z* through the loop and the indirect flow from x to y) */
         DirectedGraph<Unit> g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
 
         assertEquivalentConstraints(g,
@@ -230,9 +231,10 @@ public class MethodBodyTypingTest {
         Result<Level> r = analyze(g);
 //        // TODO: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
         ConstraintSet<Level> sig = makeNaive(asList(
-                        /* {z,y} <= z** */
+                        /* {z,y,x} <= z** */
                         leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
                         leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varZ)),
 
                         /* {y, z, x} <= x* */
                         leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)),
@@ -303,6 +305,33 @@ public class MethodBodyTypingTest {
         Result<Level> r = analyze(g);
         assertThat(r, is(Result.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
     }
+
+    @Test
+    public void testDoWhileLoop() throws TypeError {
+        Code.SimpleDoWhile g = code.new SimpleDoWhile();
+        assertEquivalentConstraints(g,
+                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
+                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void testIncreasingLoop() throws TypeError {
+        Code.LoopIncrease g = code.new LoopIncrease();
+        assertEquivalentConstraints(g,
+                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
+                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void testSpaghetti1() throws TypeError {
+        Code.Spaghetti1 g = code.new Spaghetti1();
+        assertEquivalentConstraints(g,
+                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
+                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
+
+    }
+
+
 
     @Test
     //@Test(timeout = 3000)
