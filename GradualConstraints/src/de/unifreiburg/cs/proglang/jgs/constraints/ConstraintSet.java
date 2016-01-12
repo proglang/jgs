@@ -54,6 +54,43 @@ public abstract class ConstraintSet<Level> {
      */
     abstract public Optional<Assignment<Level>> subsumptionCounterExample(ConstraintSet<Level> other);
 
+    public class RefinementError {
+
+        private final ConstraintSet<Level> concrete;
+        private final ConstraintSet<Level> projected ;
+        private final Assignment<Level> counterExample;
+
+        private RefinementError(ConstraintSet<Level> concrete, ConstraintSet<Level> projected, Assignment<Level> counterExample) {
+            this.concrete = concrete;
+            this.projected = projected;
+            this.counterExample = counterExample;
+        }
+
+        public ConstraintSet<Level> getProjected() {
+            return projected;
+        }
+
+        public Assignment<Level> getCounterExample() {
+            return counterExample;
+        }
+
+        public Set<Constraint<Level>> getApplied() {
+            return projected.stream().filter(c -> !Constraints.isTrivial(types, c.apply(counterExample))).collect(toSet());
+        }
+    }
+
+    public  Optional<RefinementError> signatureCounterExample(TypeVars tvars, ConstraintSet<Level> other) {
+        /* TODO-needs-test: cs1.subsumes(cs2) === cs1.subsumes(cs2.projectForSignature(tvars, cs1))
+                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2)
+                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2.projectForSignature(tvars, cs1)) */
+
+        // the projection is just an optimization to keep the number of variables small
+        ConstraintSet<Level> projected = other.projectForSignature(tvars,other);
+        Optional<Assignment<Level>> counterExample = this.subsumptionCounterExample(projected);
+
+        return counterExample.map(ce -> new RefinementError(other, projected, ce));
+    }
+
     /**
      * Find a satisfying assignment for this constraint set. (Optional)
      *
@@ -92,12 +129,9 @@ public abstract class ConstraintSet<Level> {
      * @return true if <code>this</code> is a suitable signature for <code>other</code>
      */
     public boolean isSignatureOf(TypeVars tvars, ConstraintSet<Level> other) {
-        /* TODO-needs-test: cs1.subsumes(cs2) === cs1.subsumes(cs2.projectForSignature(tvars, cs1))
-                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2)
-                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2.projectForSignature(tvars, cs1)) */
-        // the projection is just an optimization to keep the number of variables small
-        return this.subsumes(other.projectForSignature(tvars, this));
+        return !this.signatureCounterExample(tvars, other).isPresent();
     }
+
 
     public ConstraintSet<Level> projectForSignature(TypeVars tvars, ConstraintSet<Level> sig) {
         Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext()), sig.variables()).collect(toSet());

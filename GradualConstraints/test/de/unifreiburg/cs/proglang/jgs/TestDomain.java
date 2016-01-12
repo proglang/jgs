@@ -296,9 +296,11 @@ public class TestDomain {
 
     public static Matcher<ConstraintSet<Level>> refines(TypeVars tvars, final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
+            Optional<ConstraintSet<Level>.RefinementError> maybeError;
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
-                return other.isSignatureOf(tvars, levelConstraintSet);
+                maybeError = other.signatureCounterExample(tvars, levelConstraintSet);
+                return !maybeError.isPresent();
             }
 
             @Override
@@ -308,10 +310,8 @@ public class TestDomain {
 
             @Override
             protected void describeMismatchSafely(ConstraintSet<Level> item, Description mismatchDescription) {
-                ConstraintSet<Level> projected = item.projectForSignature(tvars,other);
-                Assignment<Level> counterExample = other.subsumptionCounterExample(projected).get();
-                Set<Constraint<Level>> applied = projected.stream().filter(c -> !Constraints.isTrivial(types, c.apply(counterExample))).collect(toSet());
-                mismatchDescription.appendText(String.format("was (projected to sig) %s\n Counterexample: %s\n Conflicting: %s", projected, counterExample, applied));
+                ConstraintSet<Level>.RefinementError error = maybeError.get();
+                mismatchDescription.appendText(String.format("was (projected to sig) %s\n Counterexample: %s\n Conflicting: %s", error.getProjected(), error.getCounterExample(), error.getApplied()));
             }
         };
     }

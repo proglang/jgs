@@ -1,10 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import soot.SootMethod;
+
+import java.util.Optional;
 
 /**
  * Context for typing methods
@@ -32,5 +36,7 @@ public class MethodTyping<Level> {
         this.signatures = signatures;
     }
 
-
+    public Optional<ConstraintSet<Level>.RefinementError> check(SootMethod method) {
+      throw new RuntimeException("NOT IMPLEMENTED");
+    }
 }
