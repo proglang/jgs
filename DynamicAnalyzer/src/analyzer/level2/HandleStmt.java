@@ -347,11 +347,15 @@ public class HandleStmt {
   }
 	
   /**
-   * @param o
-   * @param field
-   * @param localForObject
-   * @param localForIndex
-   * @return
+   * Check the array-field and the local-level of the object against the gpc,
+   * and read the level stored as Assignmentlevel. This level - joined with the gpc -
+   * is set as the new level for given array-field. This method is needed if the index
+   * is a local and so must be checked against the gpc.
+   * @param o - Object - The array object
+   * @param field - String - the signature of the field (array element)
+   * @param localForObject - String - the signature of the local where the object is stored
+   * @param localForIndex - String - the signatur of the local where the index is stored
+   * @return Returns the new SecurityLevel of the array-element
    */
   public SecurityLevel setLevelOfArrayField(
       Object o, int field, String localForObject, String localForIndex) {
@@ -365,9 +369,13 @@ public class HandleStmt {
   }
 	
   /**
+   * Check the array-field and the local-level of the object against the gpc,
+   * and read the level stored as Assignmentlevel. This level - joined with the gpc -
+   * is set as the new level for given array-field. This method is needed if the index
+   * is a constant and so is not needed to be checked against the gpc.
    * @param o - Object - The array object
    * @param field - String - the signature of the field (array element)
-   * @param localForObject - String - the signature of the Object
+   * @param localForObject - String - the signature of the local where the object is stored
    * @return Returns the new SecurityLevel of the array-element
    */
   public SecurityLevel setLevelOfArrayField(Object o, String field, String localForObject) {

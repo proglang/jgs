@@ -156,8 +156,8 @@ public class JimpleInjector {
 
     Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
-    unitStore_Before.insertElement(unitStore_After.new Element(in, lastPos)); 
-    unitStore_Before.insertElement(unitStore_After.new Element(inv, in));
+    unitStore_Before.insertElement(unitStore_Before.new Element(inv, lastPos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(in, inv));
     lastPos = inv;
   }
 
@@ -577,7 +577,6 @@ public class JimpleInjector {
    */
   public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
     logger.info( "Add Level of Array " + a.toString() + " in assign stmt");
-    // setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
 	
     Expr addObj = null;
 			
@@ -643,8 +642,8 @@ public class JimpleInjector {
 		
     Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
         hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-       "setLevelOfLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),
-       false), local_for_Strings);
+        "setLevelOfLocal", paramTypes, RefType.v("analyzer.level2.SecurityLevel"),
+        false), local_for_Strings);
     Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
     unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
@@ -743,33 +742,33 @@ public class JimpleInjector {
       unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
       lastPos = assignSignature;
 
-       ArrayList<Type> parameterTypes = new ArrayList<Type>();
-       parameterTypes.add(RefType.v("java.lang.Object"));
-       parameterTypes.add(RefType.v("java.lang.String"));
+      ArrayList<Type> parameterTypes = new ArrayList<Type>();
+      parameterTypes.add(RefType.v("java.lang.Object"));
+      parameterTypes.add(RefType.v("java.lang.String"));
 			
-       addObj = Jimple.v().newVirtualInvokeExpr(
-           hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-           "setLevelOfArrayField", parameterTypes, VoidType.v(), false),
-           a.getBase(), local_for_Strings);
+      addObj = Jimple.v().newVirtualInvokeExpr(
+          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+          "setLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"),
+          false), a.getBase(), local_for_Strings);
 			
-     } else if (a.getIndex() instanceof Local) {
-       Value fieldIndex = a.getIndex();
-       logger.info("Signature of array field in jimple injector is stored in "
-           + fieldIndex.toString());
+    } else if (a.getIndex() instanceof Local) {
+      Value fieldIndex = a.getIndex();
+      logger.info("Signature of array field in jimple injector is stored in "
+          + fieldIndex.toString());
 			
-       ArrayList<Type> parameterTypes = new ArrayList<Type>();
-       parameterTypes.add(RefType.v("java.lang.Object"));
-       parameterTypes.add(IntType.v());
+      ArrayList<Type> parameterTypes = new ArrayList<Type>();
+      parameterTypes.add(RefType.v("java.lang.Object"));
+      parameterTypes.add(IntType.v());
 			
-       addObj = Jimple.v().newVirtualInvokeExpr(
-           hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-           "setLevelOfArrayField", parameterTypes, VoidType.v(), false),
-           a.getBase(), fieldIndex);
+      addObj = Jimple.v().newVirtualInvokeExpr(
+          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+          "setLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"),
+          false), a.getBase(), fieldIndex);
 			
     } else {
-        logger.log(Level.SEVERE, "Unexpected type of index",
-            new InternalAnalyzerException("Unexpected type of index")); 
-        System.exit(0);
+      logger.log(Level.SEVERE, "Unexpected type of index",
+          new InternalAnalyzerException("Unexpected type of index")); 
+      System.exit(0);
     }
 
     Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
@@ -820,7 +819,7 @@ public class JimpleInjector {
 		
     Unit assignExpr = Jimple.v().newInvokeStmt(assignArg);
 		
-    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, actualPos));
+    unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
     lastPos = assignExpr;
   }
 	
@@ -1122,6 +1121,10 @@ public class JimpleInjector {
     
     // If the method is not static the @this reference must be skipped. 
     if (!m.isStatic()) {
+      startPos++;
+    }
+    
+    if (m.isConstructor()) {
       startPos++;
     }
     

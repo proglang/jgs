@@ -1,5 +1,6 @@
 Start with:
 Try to run ArrayRefTest successfully
+--- understand why there are two HandleStmt setLevelOfArrayField
 
 >> Define sootClassPath for rt.jar in Main which works globally
 >> Dominator or PointsTo in if else
