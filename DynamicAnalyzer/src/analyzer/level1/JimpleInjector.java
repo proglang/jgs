@@ -11,6 +11,7 @@ import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
+import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
@@ -69,13 +70,13 @@ public class JimpleInjector {
    * Chain containing all new units which have to be set
    * after a given position.
    */
-  static UnitStore unitStore_After = new UnitStore();
+  static UnitStore unitStore_After = new UnitStore("UnitStore_After");
 
   /**
    * Chain containing all new units which have to be set
    * before a given position. 
    */
-  static UnitStore unitStore_Before = new UnitStore();
+  static UnitStore unitStore_Before = new UnitStore("UnitStore_Before");
 
   /**
    *
@@ -118,36 +119,27 @@ public class JimpleInjector {
   static Unit lastPos;
 
   /**
-   * Initialization of JimpleInjector.
-   * @param body
+   * Initialization of JimpleInjector. Set all needed variables
+   * and compute the start position for inserting new units.
+   * @param body The body of the analyzed method.
    */
   public static void setBody(Body body) {
     b = body;
     units = b.getUnits();
     locals = b.getLocals();
-    lastPos = units.getFirst();
-    System.out.println("LAST POS_ " + lastPos);
     
     Iterator<Unit> it = units.iterator();
     
-    // Insert after the setting of all arguments since Jimple would otherwise complain.
-    int numOfArgs = getStartPos();
-    System.out.println("NUM OF ARGS OF " + b.getMethod() + ": " + numOfArgs);
-    for (int i = 0; i < numOfArgs - 1; i++) {
-      lastPos = it.next();
-      System.out.println("LAST POS_ " + lastPos);
+    // Insert after the setting of all arguments and the @this-reference,
+    // since Jimple would otherwise complain.
+    int startPos = getStartPos(body);
+    Iterator<Unit> uIt = units.iterator();
+    for (int i = 0; i <= startPos; i++) {
+      lastPos = uIt.next();
     }
-    
-    if (!b.getMethod().isStatic()) {
-      lastPos = it.next();
-      System.out.println("LAST POS_ " + lastPos);
-    }
-    
-    if (b.getMethod().getName().equals("<init>")) {
-      lastPos = it.next();
-      System.out.println("LAST POS_ " + lastPos);
-    }
-    System.out.println("LAST POS_ " + lastPos);
+
+    logger.info("Start position is " + lastPos.toString());
+
   }
 
   /**
@@ -164,8 +156,8 @@ public class JimpleInjector {
 
     Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
-    unitStore_After.insertElement(unitStore_After.new Element(in, lastPos)); 
-    unitStore_After.insertElement(unitStore_After.new Element(inv, in));
+    unitStore_Before.insertElement(unitStore_After.new Element(in, lastPos)); 
+    unitStore_Before.insertElement(unitStore_After.new Element(inv, in));
     lastPos = inv;
   }
 
@@ -1030,7 +1022,10 @@ public class JimpleInjector {
       if (item.getPosition() == null) {
         units.addFirst(item.getUnit());
       } else {
-        units.insertAfter(item.getUnit(), item.getPosition()); 
+        logger.finest("Starting to insert: " + item.getUnit().toString()
+            + " after position " + item.getPosition().toString());
+        units.insertAfter(item.getUnit(), item.getPosition());
+        logger.finest("Insertion completed");
       }
     }
 	
@@ -1099,24 +1094,28 @@ public class JimpleInjector {
   }
 
   /**
-   * @return
+   * Method which calculates the start position for inserting further units.
+   * It depends on the number of arguments and wheter it is a static method,
+   * or not, because there are statements, which shouldn't be preceeded by
+   * other statements.
+   * @return the computed start position as int.
    */
-  private static int getStartPos() {
+  private static int getStartPos(Body b) {
     int startPos = 0;
-	
-    // Jimple requires that @param-assignments statements 
-    //shall precede all non-identity statements
-    if (b.getMethod().isConstructor()) {
-      startPos = 1;
-    } else {
-      startPos = b.getMethod().getParameterCount();
-    }
-	
-    // At the beginning of every non-static method, the this-reference is assigned to a local.
-    // Jimple requires, that it's on the first position
-    if (!b.getMethod().isStatic()) {
+    
+    SootMethod m = b.getMethod();
+    
+    // If the method is not static the @this reference must be skipped. 
+    if (!m.isStatic()) {
       startPos++;
-    }	
+    }
+    
+    // Skip the @parameter-references
+    int numOfParams = m.getParameterCount();
+    startPos += numOfParams;
+    
+    logger.info("Calculated start position: " + startPos);
+    
     return startPos;
   }
   

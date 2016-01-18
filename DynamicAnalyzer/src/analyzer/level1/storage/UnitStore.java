@@ -1,40 +1,57 @@
 package analyzer.level1.storage;
 
-import java.util.ArrayList;
 import soot.Unit;
+
+import java.util.ArrayList;
 
 public class UnitStore {
 	
-	ArrayList<Element> units = new ArrayList<Element>();
+  ArrayList<Element> units = new ArrayList<Element>();
+  
+  String name = "Default UnitStore";
+  
+  public UnitStore(String name) {
+    this.name = name;
+  }
+	
+  public void insertElement(Element e) {
+    units.add(e);
+  }
+	
+  public ArrayList<Element> getElements() {
+    return units;
+  }
+	
+  public class Element {
+    Unit unit;
+    Unit position;
+		
+    public Element(Unit newUnit, Unit position) {
+      unit = newUnit;
+      this.position = position;
+    }
 
-	
-	public void insertElement(Element e) {
-		units.add(e);
-	}
-	
-	public ArrayList<Element> getElements() {
-		return units;
-	}
-	
-	public class Element {
-		Unit i;
-		Unit j;
+    public Unit getUnit() {
+      return unit;
+    }
 		
-		public Element(Unit newUnit, Unit position) {
-			i = newUnit;
-			j = position;
-		}
-		
-		public Unit getUnit() {
-			return i;
-		}
-		
-		public Unit getPosition() {
-			return j;
-		}
-	}
+    public Unit getPosition() {
+      return position;
+    }
+  }
 
-	public void flush() {
-		units.clear();
-	}
+  public void flush() {
+    units.clear();
+  }
+  
+  /**
+   * Print all stored elements.
+   */
+  public void print() {
+    System.out.println("Content of UnitStore '" + name + "'");
+    for (Element e : units) {
+      System.out.println("Unit: " + e.getUnit().toString() + ", Position: "
+          + e.getPosition().toString());
+    }
+  }
 }
