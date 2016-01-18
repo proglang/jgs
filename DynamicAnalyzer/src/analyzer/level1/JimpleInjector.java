@@ -1016,9 +1016,34 @@ public class JimpleInjector {
  * 
  */
   protected static void addUnitsToChain() {	
-    Iterator<Element> uIt = unitStore_After.getElements().iterator();
+
+    // First add all elements from unitStore_Before
+    Iterator<Element> uIt = unitStore_Before.getElements().iterator();
+    
+    // If needed for debugging, you can remove the comment
+    // unitStore_Before.print();
+    
     while (uIt.hasNext()) {
       Element item = (Element) uIt.next();
+      if (item.getPosition() == null) {
+        units.addFirst(item.getUnit());
+      } else {
+        logger.finest("Starting to insert: " + item.getUnit().toString()
+            + " after position " + item.getPosition().toString());
+        units.insertBefore(item.getUnit(), item.getPosition()); 
+        logger.finest("Insertion completed");
+      }
+    }
+
+    // Now add all elements from unitStore_After
+    uIt = unitStore_After.getElements().iterator();
+    
+    // If needed for debugging, you can remove the comment
+    // unitStore_After.print();
+    
+    while (uIt.hasNext()) {
+      Element item = (Element) uIt.next();
+      
       if (item.getPosition() == null) {
         units.addFirst(item.getUnit());
       } else {
@@ -1028,16 +1053,6 @@ public class JimpleInjector {
         logger.finest("Insertion completed");
       }
     }
-	
-    uIt = unitStore_Before.getElements().iterator();
-    while (uIt.hasNext()) {
-      Element item = (Element) uIt.next();
-      if (item.getPosition() == null) {
-        units.addFirst(item.getUnit());
-      } else {
-        units.insertBefore(item.getUnit(), item.getPosition()); 
-      }
-    } 
 	
     unitStore_After.flush();
     unitStore_Before.flush();
