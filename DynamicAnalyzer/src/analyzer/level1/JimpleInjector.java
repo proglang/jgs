@@ -126,18 +126,28 @@ public class JimpleInjector {
     units = b.getUnits();
     locals = b.getLocals();
     lastPos = units.getFirst();
+    System.out.println("LAST POS_ " + lastPos);
     
     Iterator<Unit> it = units.iterator();
     
     // Insert after the setting of all arguments since Jimple would otherwise complain.
     int numOfArgs = getStartPos();
+    System.out.println("NUM OF ARGS OF " + b.getMethod() + ": " + numOfArgs);
     for (int i = 0; i < numOfArgs - 1; i++) {
       lastPos = it.next();
+      System.out.println("LAST POS_ " + lastPos);
+    }
+    
+    if (!b.getMethod().isStatic()) {
+      lastPos = it.next();
+      System.out.println("LAST POS_ " + lastPos);
     }
     
     if (b.getMethod().getName().equals("<init>")) {
       lastPos = it.next();
+      System.out.println("LAST POS_ " + lastPos);
     }
+    System.out.println("LAST POS_ " + lastPos);
   }
 
   /**
@@ -219,14 +229,14 @@ public class JimpleInjector {
   }
   
   /**
-   * Add the instance of the actual class-object to the object map. This is only done in <init>.
+   * Add the instance of the actual class-object to the object map. This is only done in "init".
    */
   public static void addInstanceObjectToObjectMap() {
 		
     // Check if the first unit is a reference to the actual object
     if (!(units.getFirst() instanceof IdentityStmt) 
         || !(units.getFirst().getUseBoxes().get(0).getValue() instanceof ThisRef)) {
-            new InternalAnalyzerException("Expected @this reference");
+      new InternalAnalyzerException("Expected @this reference");
     }
 
     String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
@@ -1037,7 +1047,8 @@ public class JimpleInjector {
     unitStore_After.flush();
     unitStore_Before.flush();
     
-    printUnits();
+    // print the units in the right order for debugging.
+    // printUnits();
     
     b.validate();
   }
@@ -1112,6 +1123,7 @@ public class JimpleInjector {
   /**
    * This method is only for debugging purposes.
    */
+  @SuppressWarnings("unused")
   private static void printUnits() {
     Iterator<Unit> uIt = units.iterator();
     int i = 0;
