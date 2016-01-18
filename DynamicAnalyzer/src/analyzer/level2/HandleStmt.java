@@ -350,7 +350,7 @@ public class HandleStmt {
    * Check the array-field and the local-level of the object against the gpc,
    * and read the level stored as Assignmentlevel. This level - joined with the gpc -
    * is set as the new level for given array-field. This method is needed if the index
-   * is a local and so must be checked against the gpc.
+   * is a local and must be checked against the gpc.
    * @param o - Object - The array object
    * @param field - String - the signature of the field (array element)
    * @param localForObject - String - the signature of the local where the object is stored
@@ -372,7 +372,7 @@ public class HandleStmt {
    * Check the array-field and the local-level of the object against the gpc,
    * and read the level stored as Assignmentlevel. This level - joined with the gpc -
    * is set as the new level for given array-field. This method is needed if the index
-   * is a constant and so is not needed to be checked against the gpc.
+   * is a constant and it is not needed to be checked against the gpc.
    * @param o - Object - The array object
    * @param field - String - the signature of the field (array element)
    * @param localForObject - String - the signature of the local where the object is stored

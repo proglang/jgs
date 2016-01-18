@@ -729,11 +729,10 @@ public class JimpleInjector {
    */
   public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
     logger.info( "Set Level of Array " + a.toString() + " in assign stmt");
-    // setLevelOfArrayField(Object o, String field, String localForObject, String localForIndex)
 		
     Expr addObj = null;
 		
-    if (!(a.getIndex() instanceof Local)) {
+    if (!(a.getIndex() instanceof Local)) { // Case where the index is a constant
       String signature = getSignatureForArrayField(a);
       logger.info("Signature of array field in jimple injector is" + signature);
       Unit assignSignature = Jimple.v().newAssignStmt(
@@ -751,7 +750,7 @@ public class JimpleInjector {
           "setLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"),
           false), a.getBase(), local_for_Strings);
 			
-    } else if (a.getIndex() instanceof Local) {
+    } else if (a.getIndex() instanceof Local) { // The index is a local and must be given as param
       Value fieldIndex = a.getIndex();
       logger.info("Signature of array field in jimple injector is stored in "
           + fieldIndex.toString());
