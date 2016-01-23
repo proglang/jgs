@@ -1,6 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs;
 
-import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
@@ -9,21 +8,25 @@ import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 import de.unifreiburg.cs.proglang.jgs.typing.Environments;
+import org.apache.commons.lang3.tuple.Pair;
 import soot.*;
-import soot.jimple.GotoStmt;
-import soot.jimple.IntConstant;
-import soot.jimple.Jimple;
+import soot.jimple.*;
 import soot.toolkits.graph.DirectedGraph;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.*;
-import static java.util.Collections.*;
-import static java.util.Arrays.asList;
-import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
+import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.makeTable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Some example "code" data for unit testing
@@ -56,14 +59,14 @@ public class Code {
         this.localX = j.newLocal("x", IntType.v());
         this.localY = j.newLocal("y", IntType.v());
         this.localZ = j.newLocal("z", IntType.v());
-        this.localO = j.newLocal("o", RefType.v());
+        this.localO = j.newLocal("o", RefType.v("java.lang.Object"));
         this.varX = Var.fromLocal(localX);
         this.varY = Var.fromLocal(localY);
         this.varZ = Var.fromLocal(localZ);
         this.varO = Var.fromLocal(localO);
         this.tvarX = tvars.testParam(varX, "");
         this.tvarY = tvars.testParam(varY, "");
-        this.tvarZ = tvars.testParam(varZ,"");
+        this.tvarZ = tvars.testParam(varZ, "");
         this.tvarO = tvars.testParam(varO, "");
 
         this.init = Environments.makeEmpty()
@@ -109,7 +112,7 @@ public class Code {
                         IntType.v()),
                 IntType.v());
         this.testClass.addMethod(ignoreSnd_int_int__int);
-        sigCstrs = signatureConstraints(asList(leS(param_x, ret())));
+        sigCstrs = signatureConstraints(asList(leS(param_x, ret()), leS(param_y, param_y)));
         sigMap.put(this.ignoreSnd_int_int__int,
                 makeSignature(sigCstrs, emptyEffect()));
 
@@ -118,7 +121,7 @@ public class Code {
                 singletonList(IntType.v()),
                 IntType.v());
         this.testClass.addMethod(this.writeToLowReturn0_int__int);
-        sigCstrs = signatureConstraints(asList((leS(param_x, literal(TLOW)))));
+        sigCstrs = signatureConstraints(asList((leS(param_x, literal(TLOW))), leS(ret(), ret())));
         sigMap.put(this.writeToLowReturn0_int__int,
                 makeSignature(sigCstrs, effects(TLOW)));
 
@@ -126,8 +129,35 @@ public class Code {
         this.signatures = makeTable(sigMap);
     }
 
+
+    public SootMethod makeMethod(int modifier, String name, List<Local> params, soot.Type retType, List<Unit> bodyStmts) {
+        SootMethod m = new SootMethod(name, params.stream().map(Local::getType).collect(toList()), retType, modifier);
+        this.testClass.addMethod(m);
+        Body body = Jimple.v().newBody(m);
+        m.setActiveBody(body);
+
+        // set the statements for the body.. first the identity statements, then the bodyStmts
+        IntStream.range(0, params.size()).forEach(pos -> {
+            Local l = params.get(pos);
+            ParameterRef pr = Jimple.v().newParameterRef(l.getType(), pos);
+            body.getUnits().add(Jimple.v().newIdentityStmt(l, pr));
+        });
+        body.getUnits().addAll(bodyStmts);
+
+        // set the locals for the body
+        Set<Local> locals = Stream.concat(
+                params.stream(),
+                body.getUseAndDefBoxes().stream()
+                        .filter(b -> b.getValue() instanceof Local)
+                        .map(b -> (Local)b.getValue())
+                ).collect(toSet());
+        body.getLocals().addAll(locals);
+
+        return m;
+    }
+
     public abstract class AdHocUnitGraph implements DirectedGraph<Unit> {
-        protected abstract List<Unit> getUnits();
+        protected abstract Collection<Unit> getUnits();
 
         @Override
         public final int size() {
@@ -137,6 +167,53 @@ public class Code {
         @Override
         public final Iterator<Unit> iterator() {
             return getUnits().iterator();
+        }
+
+    }
+
+    public class AdHocForwardUnitGraph extends AdHocUnitGraph {
+
+        private Map<Unit, Set<Unit>> forwardEdges;
+
+        protected AdHocForwardUnitGraph() {
+        }
+
+        protected void setForwardEdges(Map<Unit, Set<Unit>> forwardEdges) {
+            this.forwardEdges = forwardEdges;
+        }
+
+        @Override
+        public final List<Unit> getSuccsOf(Unit s) {
+            if (this.forwardEdges.containsKey(s)) {
+                return new ArrayList<>(this.forwardEdges.get(s));
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+        @Override
+        public final List<Unit> getHeads() {
+            return this.getUnits().stream().filter(s -> this.getPredsOf(s).isEmpty()).collect(toList());
+        }
+
+        @Override
+        public final List<Unit> getTails() {
+            return this.getUnits().stream().filter(s -> this.getSuccsOf(s).isEmpty()).collect(toList());
+        }
+
+        @Override
+        public final List<Unit> getPredsOf(Unit s) {
+            return this.forwardEdges.entrySet().stream()
+                    .filter(e -> e.getValue().contains(s))
+                    .map(Map.Entry::getKey).collect(toList());
+        }
+
+        @Override
+        protected final Collection<Unit> getUnits() {
+            Set<Unit> result = new HashSet<>();
+            result.addAll(this.forwardEdges.keySet());
+            this.forwardEdges.values().forEach(result::addAll);
+            return result;
         }
 
     }
@@ -205,13 +282,13 @@ public class Code {
         *     +---------> n1
         * */
 
-        public final Unit n1 = j.newGotoStmt((Unit)null);
-        public final Unit n2 = j.newGotoStmt((Unit)null);
+        public final Unit n1 = j.newGotoStmt((Unit) null);
+        public final Unit n2 = j.newGotoStmt((Unit) null);
         public final Unit nIf = j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), n1);
 
         public LoopWhereIfIsExitNode() {
-            ((GotoStmt)n1).setTarget(nIf);
-            ((GotoStmt)n2).setTarget(nIf);
+            ((GotoStmt) n1).setTarget(nIf);
+            ((GotoStmt) n2).setTarget(nIf);
         }
 
         @Override
@@ -411,7 +488,7 @@ public class Code {
     public class Spaghetti1 extends AdHocUnitGraph {
         public final Unit setX = j.newAssignStmt(localX, IntConstant.v(0));
         public final Unit if1 = j.newIfStmt(j.newEqExpr(localY, localY), setX);
-        public final Unit if2= j.newIfStmt(j.newEqExpr(localZ, localZ), setX);
+        public final Unit if2 = j.newIfStmt(j.newEqExpr(localZ, localZ), setX);
         public final Unit gotoIf2 = j.newGotoStmt(if2);
         public final Unit exit = j.newReturnStmt(IntConstant.v(42));
         public final Unit gotoEnd = j.newGotoStmt(exit);
@@ -471,4 +548,33 @@ public class Code {
         }
     }
 
+    private Pair<Unit, Set<Unit>> makeEdge(Unit s) {
+        return Pair.of(s, emptySet());
+    }
+
+    private Pair<Unit, Set<Unit>> makeEdge(Unit s, Unit... succs) {
+        return Pair.of(s, new HashSet<>(asList(succs)));
+    }
+
+    @SafeVarargs
+    private final Map<Unit, Set<Unit>> makeEdges(Pair<Unit, Set<Unit>> firstEntry, Pair<Unit, Set<Unit>>... restEntries) {
+        return Stream.concat(Stream.of(firstEntry), Stream.of(restEntries)).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+    }
+
+
+    public class MultipleReturns extends AdHocForwardUnitGraph {
+        public final Unit returnX = j.newReturnStmt(localX);
+        public final Unit returnZ = j.newReturnStmt(localZ);
+        public final Unit ifY = j.newIfStmt(j.newEqExpr(localY, localY), returnX);
+        public final Unit ifO = j.newIfStmt(j.newEqExpr(localO, localO), ifY);
+        public final Unit returnZero = j.newReturnStmt(IntConstant.v(0));
+
+        public MultipleReturns() {
+            setForwardEdges(
+                    makeEdges(
+                            makeEdge(ifO, ifY, returnZ),
+                            makeEdge(ifY, returnX, returnZero)
+                    ));
+        }
+    }
 }

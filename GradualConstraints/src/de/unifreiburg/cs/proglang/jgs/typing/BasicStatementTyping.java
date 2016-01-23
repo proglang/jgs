@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -19,13 +20,14 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import soot.Local;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.*;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
-import static de.unifreiburg.cs.proglang.jgs.typing.Result.fromEnv;
+import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
@@ -51,11 +53,11 @@ public class BasicStatementTyping<LevelT> {
         this.cstrs = cstrs;
     }
 
-    public Result<LevelT> generate(Stmt s,
-                                   Environment env,
-                                   Set<TypeVar> pc,
-                                   SignatureTable<LevelT> signatures,
-                                   Casts<LevelT> casts) throws TypingException {
+    public BodyTypingResult<LevelT> generate(Stmt s,
+                                             Environment env,
+                                             Set<TypeVar> pc,
+                                             SignatureTable<LevelT> signatures,
+                                             Casts<LevelT> casts) throws TypingException {
         Gen g = new Gen(env, pc, signatures, casts);
         s.apply(g);
         // abort on any errors
@@ -68,10 +70,10 @@ public class BasicStatementTyping<LevelT> {
         return g.getResult();
     }
 
-    private Result<LevelT> makeResult(ConstraintSet<LevelT> constraints,
-                                      Environment env,
-                                      Effects<LevelT> effects) {
-        return new Result<>(constraints, effects, env);
+    private BodyTypingResult<LevelT> makeResult(ConstraintSet<LevelT> constraints,
+                                                Environment env,
+                                                Effects<LevelT> effects) {
+        return new BodyTypingResult<>(constraints, effects, env);
     }
 
     //
@@ -106,7 +108,7 @@ public class BasicStatementTyping<LevelT> {
             this.errorMsg = new ArrayList<>();
         }
 
-        private Result<LevelT> result;
+        private BodyTypingResult<LevelT> result;
 
         private Effects<LevelT> extractEffects(Value rhs) {
             RhsSwitch<LevelT> effectCases = new RhsSwitch<LevelT>(casts) {
@@ -155,8 +157,7 @@ public class BasicStatementTyping<LevelT> {
                                     + m.toString()));
         }
 
-        @Override
-        public void caseAssignStmt(AssignStmt stmt) {
+        private void caseDefinitionStmt(DefinitionStmt stmt) {
             // get the variables that we write to
             List<Var<?>> writeVars =
                     Var.getAllFromValueBoxes(stmt.getDefBoxes())
@@ -266,7 +267,7 @@ public class BasicStatementTyping<LevelT> {
                         return;
                     }
                     asList(cstrs.le(toCType.apply(cast.value),
-                                    CTypes.literal(cast.sourceType)),
+                            CTypes.literal(cast.sourceType)),
                             cstrs.le(CTypes.literal(cast.destType),
                                     destCType)).forEach(constraints);
                 }
@@ -294,6 +295,11 @@ public class BasicStatementTyping<LevelT> {
                     extractEffects(rhs));
         }
 
+        @Override
+        public void caseAssignStmt(AssignStmt stmt) {
+            caseDefinitionStmt(stmt);
+        }
+
 
         private boolean compatible(TypeDomain.Type<LevelT> sourceType,
                                    TypeDomain.Type<LevelT> destType) {
@@ -307,9 +313,8 @@ public class BasicStatementTyping<LevelT> {
 
         @Override
         public void caseIdentityStmt(IdentityStmt stmt) {
-            super.caseIdentityStmt(stmt);
+            this.caseDefinitionStmt(stmt);
         }
-
 
 
         @Override
@@ -325,13 +330,25 @@ public class BasicStatementTyping<LevelT> {
 
         @Override
         public void caseReturnStmt(ReturnStmt stmt) {
-            noRestrictions();
+            if (stmt.getOp() instanceof Local) {
+                Var<?> r = Var.fromLocal((Local) stmt.getOp());
+                this.result = makeResult(csets.fromCollection(
+                        Stream.concat(
+                                Stream.of(Constraints.<LevelT>le(variable(env.get(r)), variable(tvars.ret()))),
+                                this.pcs.stream().map(pcVar -> Constraints.<LevelT>le(variable(pcVar), variable(tvars.ret()))))
+                                .collect(Collectors.<Constraint<LevelT>>toList()))
+                        , env, emptyEffect());
+            } else if (stmt.getOp() instanceof Constant) {
+                noRestrictions();
+            } else {
+                throw new RuntimeException("Did not expect to return a " + stmt.getOp().getClass());
+            }
         }
 
         @Override
         public void caseIfStmt(IfStmt stmt) {
-           // note that this is the case where an if statement only has a single successor. I.e. it degenerates to a noop.
-           noRestrictions();
+            // note that this is the case where an if statement only has a single successor. I.e. it degenerates to a noop.
+            noRestrictions();
         }
 
         @Override
@@ -340,7 +357,7 @@ public class BasicStatementTyping<LevelT> {
         }
 
         @Override
-        public Result<LevelT> getResult() {
+        public BodyTypingResult<LevelT> getResult() {
             return result;
         }
 

@@ -8,10 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import soot.Unit;
-import soot.jimple.Expr;
-import soot.jimple.IntConstant;
-import soot.jimple.Jimple;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.DominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
@@ -25,6 +22,7 @@ import java.util.stream.Stream;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -61,7 +59,7 @@ public class MethodBodyTypingTest {
         );
 
         assertEquivalentConstraints(g,
-                (Result<Level> finalResult) -> makeNaive(asList(
+                (BodyTypingResult<Level> finalResult) -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
@@ -174,15 +172,15 @@ public class MethodBodyTypingTest {
         /* if (y = y) { x = 1}; x = 1*/
         cond = j.newEqExpr(code.localY, code.localY);
         g = seq(branchIf(cond, singleton(j.newAssignStmt(code.localX, IntConstant.v(1))), singleton(j.newNopStmt())), j.newAssignStmt(code.localX, IntConstant.v(1)));
-        Result<Level> r = analyze(g);
+        BodyTypingResult<Level> r = analyze(g);
         //TODO-needs-test: write some tests that check minimallySubsumes is not trivial!!!
-        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY)))), is(minimallySubsumes(makeNaive(Collections.singletonList(compC(code.init.get(code.varX), code.init.get(code.varY)))))));
-        assertThat(r.getConstraints().projectTo(new HashSet<>(Collections.singletonList(code.init.get(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY)))), is(minimallySubsumes(makeNaive(singletonList(compC(code.init.get(code.varX), code.init.get(code.varY)))))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(singletonList(code.init.get(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
         assertThat(r.getConstraints(), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
-        assertThat(r.getConstraints().projectTo(new HashSet<>(Collections.singletonList(r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(singletonList(r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
         assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
         assertMinimalSubsumption(g,
-                finalResult -> makeNaive(Collections.singletonList(compC(code.init.get(code.varY), code.init.get(code.varX)))));
+                finalResult -> makeNaive(singletonList(compC(code.init.get(code.varY), code.init.get(code.varX)))));
 
 
     }
@@ -225,27 +223,28 @@ public class MethodBodyTypingTest {
                 )),
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
 
-        Result<Level> r = analyze(g);
+        BodyTypingResult<Level> r = analyze(g);
 //        // TODO-performance: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
         ConstraintSet<Level> sig = makeNaive(asList(
                         /* {z,y,x} <= z** */
-                        leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
-                        leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varZ)),
-                        leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varZ)),
+                leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
+                leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varZ)),
+                leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varZ)),
 
                         /* {y, z, x} <= x* */
-                        leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)),
-                        leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
-                        leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varX))));
+                leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)),
+                leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
+                leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varX))));
 
         assertThat(sig.isSatisfiedFor(types, Assignments.builder(code.init.get(code.varX), PUB)
                         .add(r.finalTypeVariableOf(code.varX), DYN)
                         .add(code.init.get(code.varY), PUB)
                         .add(r.finalTypeVariableOf(code.varZ), TLOW)
                         .add(code.init.get(code.varZ), PUB).build())
-                        , is(true));
-        assertThat(r.getConstraints(), refines(tvars,sig));
+                , is(true));
+        assertThat(r.getConstraints(), refines(tvars, sig));
     }
+
     @Test
     public void testPostDom() {
         /*
@@ -297,9 +296,9 @@ public class MethodBodyTypingTest {
 
     @Test
     public void testTrivialIf() throws TypingException {
-        Code.TrivialIf g  = code.new TrivialIf();
-        Result<Level> r = analyze(g);
-        assertThat(r, is(Result.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
+        Code.TrivialIf g = code.new TrivialIf();
+        BodyTypingResult<Level> r = analyze(g);
+        assertThat(r, is(BodyTypingResult.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
     }
 
     @Test
@@ -327,6 +326,27 @@ public class MethodBodyTypingTest {
 
     }
 
+    @Test
+    public void testMultipleExits() throws TypingException {
+
+        Code.MultipleReturns g = code.new MultipleReturns();
+        assertThat("Unexpected exit nodes: " + g.getTails(), g.getTails().stream().collect(toSet()), is(Stream.of(g.returnZ, g.returnZero, g.returnX).collect(Collectors.toSet())));
+        assertThat("Unexpected intro nodes: " + g.getHeads(), g.getHeads().stream().collect(toSet()), is(Stream.of(g.ifO).collect(Collectors.toSet())));
+        List<Unit> postdomsOfIfO = new MHGPostDominatorsFinder(g).getDominators(g.ifO);
+        assertThat("IfO is not its only postdominator: ", postdomsOfIfO, is(equalTo(singletonList(g.ifO))));
+        assertThat("Ify does not have the right successors",
+                g.getSuccsOf(g.ifY).stream().collect(toSet()),
+                is(equalTo(Stream.of(g.returnX, g.returnZero).collect(Collectors.toSet()))));
+        BodyTypingResult<Level> a = analyze(g);
+        ConstraintSet<Level> expected = makeNaive(asList(
+                leC(code.init.get(code.varX), tvars.ret()),
+                leC(code.init.get(code.varY), tvars.ret()),
+                leC(code.init.get(code.varO), tvars.ret()),
+                leC(code.init.get(code.varZ), tvars.ret())
+        ));
+        ConstraintSet<Level> projected = a.getConstraints().projectTo(Stream.concat(Stream.of(tvars.ret()), Stream.of(code.varX, code.varY, code.varZ, code.varO).map(a::finalTypeVariableOf)).collect(Collectors.toSet()));
+        assertThat("Not equivalent. Orig: " + a.getConstraints(), projected, is(equivalent(expected)));
+    }
 
 
     @Test
@@ -374,8 +394,8 @@ public class MethodBodyTypingTest {
         Stmt incZ = j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
         g = seq(g, incZ);
 
-        Result<Level> result = analyze(g);
-        Function<Result<Level>,ConstraintSet<Level>> getConstraints = finalResult -> makeNaive(asList(
+        BodyTypingResult<Level> result = analyze(g);
+        Function<BodyTypingResult<Level>, ConstraintSet<Level>> getConstraints = finalResult -> makeNaive(asList(
                 leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
                 compC(code.init.get(code.varZ), code.init.get(code.varY))));
 
@@ -387,16 +407,16 @@ public class MethodBodyTypingTest {
                 Assignments.builder(code.init.get(code.varZ), TLOW)
                         .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
 
-        assertThat("Unsat projected fewer",makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+        assertThat("Unsat projected fewer", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
                 Assignments.builder(code.init.get(code.varZ), TLOW)
                         .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-        assertThat("Unsat projected",makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+        assertThat("Unsat projected", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
                 Assignments.builder(code.init.get(code.varZ), TLOW)
                         .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
 
-        assertThat("Unsat projected for sig", makeNaive(result.getConstraints().projectForSignature(tvars, getConstraints.apply(result)).apply(
-                Assignments.builder(code.init.get(code.varZ), TLOW)
-                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+//        assertThat("Unsat projected for sig", makeNaive(result.getConstraints().projectForSignature(tvars, getConstraints.apply(result)).apply(
+//                Assignments.builder(code.init.get(code.varZ), TLOW)
+//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
 //        assertThat(makeNaive(getConstraints.apply(result).proapply(
 //                Assignments.builder(code.init.get(code.varZ), TLOW)
 //                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
@@ -407,23 +427,23 @@ public class MethodBodyTypingTest {
 
     }
 
-    private Result<Level> analyze(DirectedGraph<Unit> g) throws TypingException {
+    private BodyTypingResult<Level> analyze(DirectedGraph<Unit> g) throws TypingException {
         return mbTyping.generateResult(g, pc, code.init);
     }
 
-    private void assertEquivalentConstraints(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected, Function<Result<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypingException {
-        Result<Level> finalResult = analyze(g);
+    private void assertEquivalentConstraints(DirectedGraph<Unit> g, Function<BodyTypingResult<Level>, ConstraintSet<Level>> getExpected, Function<BodyTypingResult<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypingException {
+        BodyTypingResult<Level> finalResult = analyze(g);
         Set<TypeVars.TypeVar> varsToProject = getVarsToProject.apply(finalResult);
         ConstraintSet<Level> expected = getExpected.apply(finalResult);
         assertThat(String.format("The constraints of %s projected to %s", Graphs.toString(g), varsToProject),
                 NaiveConstraints.minimize(finalResult.getConstraints().projectTo(varsToProject)), is(equivalent(expected)));
     }
 
-    private void assertMinimalSubsumption(DirectedGraph<Unit> g, Function<Result<Level>, ConstraintSet<Level>> getExpected) throws TypingException {
-        Result<Level> finalResult = analyze(g);
+    private void assertMinimalSubsumption(DirectedGraph<Unit> g, Function<BodyTypingResult<Level>, ConstraintSet<Level>> getExpected) throws TypingException {
+        BodyTypingResult<Level> finalResult = analyze(g);
         ConstraintSet<Level> expected = getExpected.apply(finalResult);
         assertThat(String.format("The constraints of %s", Graphs.toString(g)),
-                NaiveConstraints.minimize(finalResult.getConstraints()),minimallySubsumes(expected));
+                NaiveConstraints.minimize(finalResult.getConstraints()), minimallySubsumes(expected));
 
     }
 

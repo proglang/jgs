@@ -50,7 +50,7 @@ public class GenerateTest {
     @Test public void testLocals() throws TypingException {
 
         Stmt s;
-        Result<Level> r;
+        BodyTypingResult<Level> r;
         ConstraintSet<Level> expected;
         TypeVar tvarXFinal;
         ConstraintSet<Level> pc_HIGH_finalX_LOW;
@@ -107,7 +107,7 @@ public class GenerateTest {
 
     @Test public void testCall() throws TypingException {
         Stmt s;
-        Result<Level> r;
+        BodyTypingResult<Level> r;
         ConstraintSet<Level> expected;
         TypeVar finalX;
         TypeVar initX;
@@ -185,7 +185,7 @@ public class GenerateTest {
 
     @Test public void testCast() throws TypingException {
         Stmt s;
-        Result<Level> r;
+        BodyTypingResult<Level> r;
         ConstraintSet<Level> expected;
         TypeVar finalX;
         TypeVar initX;

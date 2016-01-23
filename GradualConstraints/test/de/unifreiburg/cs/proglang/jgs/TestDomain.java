@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
@@ -294,12 +296,14 @@ public class TestDomain {
         };
     }
 
+    //TODO: this is basically like signatureCounterExample but directly accepts TypeVars instead of Parameter to project. Remove this code duplication
     public static Matcher<ConstraintSet<Level>> refines(TypeVars tvars, final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
             Optional<ConstraintSet<Level>.RefinementError> maybeError;
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
-                maybeError = other.signatureCounterExample(tvars, levelConstraintSet);
+                ConstraintSet<Level> projected = levelConstraintSet.projectTo(Stream.concat(Stream.of(tvars.topLevelContext()), other.variables()).collect(Collectors.toSet()));
+                maybeError = other.subsumptionCounterExample(projected).map(ce -> other.new RefinementError(levelConstraintSet, projected, ce));
                 return !maybeError.isPresent();
             }
 

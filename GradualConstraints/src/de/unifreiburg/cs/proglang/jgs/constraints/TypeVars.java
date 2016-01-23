@@ -170,6 +170,11 @@ public class TypeVars {
         public int hashCode() {
             return param != null ? param.hashCode() : 0;
         }
+
+        @Override
+        public String toString() {
+            return "$" + this.param.toString();
+        }
     }
 
     private class InternalConstant implements  TypeVar {

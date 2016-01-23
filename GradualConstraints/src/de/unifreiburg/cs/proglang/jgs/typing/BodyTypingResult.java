@@ -5,13 +5,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Collectors.*;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The result of typing a statement: a set of constraints, an
@@ -19,7 +16,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author fennell
  */
-public class Result<LevelT> {
+public class BodyTypingResult<LevelT> {
     @NotNull
     private final ConstraintSet<LevelT> constraints;
     @NotNull
@@ -28,38 +25,38 @@ public class Result<LevelT> {
     private final Environment env;
 
     // factory methods
-    public static <Level> Result<Level> trivialCase(ConstraintSetFactory<Level> csets) {
-        return new Result<>(csets.empty(),
+    public static <Level> BodyTypingResult<Level> trivialCase(ConstraintSetFactory<Level> csets) {
+        return new BodyTypingResult<>(csets.empty(),
                 emptyEffect(),
                 Environments.makeEmpty());
     }
 
-    public static <Level> Result<Level> fromEnv(ConstraintSetFactory<Level> csets, Environment env) {
-        return new Result<>(csets.empty(), emptyEffect(), env);
+    public static <Level> BodyTypingResult<Level> fromEnv(ConstraintSetFactory<Level> csets, Environment env) {
+        return new BodyTypingResult<>(csets.empty(), emptyEffect(), env);
     }
 
 
 
-    public static <Level> Result<Level> join(Result<Level> r1, Result<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars) {
+    public static <Level> BodyTypingResult<Level> join(BodyTypingResult<Level> r1, BodyTypingResult<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars) {
         Environment.JoinResult<Level> envJoin = Environment.join(tvars, r1.getFinalEnv(),r2.getFinalEnv());
         List<Constraint<Level>> csList = envJoin.constraints.collect(Collectors.toList());
         ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(csets.fromCollection(csList));
-        return new Result<>(cs, r1.effects.add(r2.effects), envJoin.env) ;
+        return new BodyTypingResult<>(cs, r1.effects.add(r2.effects), envJoin.env) ;
     }
 
-    public static <Level> Result<Level> addConstraints(Result<Level> r, ConstraintSet<Level> constraints) {
-        return new Result<>(r.constraints.add(constraints), r.effects, r.env);
+    public static <Level> BodyTypingResult<Level> addConstraints(BodyTypingResult<Level> r, ConstraintSet<Level> constraints) {
+        return new BodyTypingResult<>(r.constraints.add(constraints), r.effects, r.env);
     }
 
-    public static <Level> Result<Level> addEffects(Result<Level> r, MethodSignatures.Effects<Level> effects) {
-        return new Result<>(r.constraints, r.effects.add(effects), r.env);
+    public static <Level> BodyTypingResult<Level> addEffects(BodyTypingResult<Level> r, MethodSignatures.Effects<Level> effects) {
+        return new BodyTypingResult<>(r.constraints, r.effects.add(effects), r.env);
     }
 
     // impl
 
-    Result(@NotNull ConstraintSet<LevelT> constraints,
-           @NotNull MethodSignatures.Effects<LevelT> effects,
-           @NotNull Environment env) {
+    BodyTypingResult(@NotNull ConstraintSet<LevelT> constraints,
+                     @NotNull MethodSignatures.Effects<LevelT> effects,
+                     @NotNull Environment env) {
         super();
         if (constraints == null || effects == null || env == null) {
             throw new NullPointerException("when instantiating results");
@@ -90,7 +87,7 @@ public class Result<LevelT> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Result<?> result = (Result<?>) o;
+        BodyTypingResult<?> result = (BodyTypingResult<?>) o;
 
         if (constraints != null ? !constraints.equals(result.constraints) : result.constraints != null) return false;
         if (effects != null ? !effects.equals(result.effects) : result.effects != null) return false;
@@ -108,7 +105,7 @@ public class Result<LevelT> {
 
     @Override
     public String toString() {
-        return "Result{" +
+        return "BodyTypingResult{" +
                 "constraints=" + constraints +
                 ", effects=" + effects +
                 ", env=" + env +

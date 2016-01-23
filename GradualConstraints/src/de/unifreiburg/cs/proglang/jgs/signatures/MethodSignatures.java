@@ -47,6 +47,11 @@ public class MethodSignatures<Level> {
             this.constraints = constraints;
             this.effects = effects;
         }
+
+        @Override
+        public String toString() {
+            return String.format("C:%s, E:%s", constraints.toString(), effects.toString());
+        }
     }
 
     /* Effects */
@@ -67,6 +72,7 @@ public class MethodSignatures<Level> {
         return new Effects<>(result);
     }
 
+    // TODO: move out of signatures and in its dedicated file in the typing package (as BodyTypingResult also uses it and the "concept" makes sense independently of MethodSignatures)
     public final static class Effects<Level> {
         private final HashSet<Type<Level>> effectSet;
 
@@ -90,6 +96,16 @@ public class MethodSignatures<Level> {
 
         public final Stream<Type<Level>> stream() {
             return this.effectSet.stream();
+        }
+
+        public final Optional<Effects> checkSubsumptionOf(Effects<Level> other) {
+            HashSet<Type<Level>> notCovered = new HashSet<>(other.effectSet);
+            notCovered.removeAll(this.effectSet);
+            if (notCovered.isEmpty()) {
+                return Optional.empty();
+            } else {
+                return Optional.of(new Effects(notCovered));
+            }
         }
 
         @Override
@@ -175,8 +191,16 @@ public class MethodSignatures<Level> {
         }
 
         public Stream<Constraint<Level>> toTypingConstraints(Map<Symbol<Level>, TypeVar> mapping) {
-            return this.sigSet.stream()
-                    .map(c -> c.toTypingConstraint(mapping));
+            return this.sigSet.stream().map(c -> c.toTypingConstraint(mapping));
+        }
+
+        @Override
+        public String toString() {
+            return sigSet.toString();
+        }
+
+        public Stream<Symbol<Level>> symbols() {
+            return sigSet.stream().flatMap(SigConstraint::symbols);
         }
     }
 
@@ -200,8 +224,15 @@ public class MethodSignatures<Level> {
             return toConstraint.apply(lhs.toCType(tvarMapping),
                     rhs.toCType(tvarMapping));
         }
-    }
 
-        /* Symbols: */
+        public Stream<Symbol<Level>> symbols() {
+            return Stream.of(lhs, rhs);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s ? %s", lhs.toString(), rhs.toString());
+        }
+    }
 
 }

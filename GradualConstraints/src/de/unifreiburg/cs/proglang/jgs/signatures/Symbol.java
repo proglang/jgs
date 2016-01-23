@@ -4,11 +4,14 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import soot.EquivalentValue;
+import soot.SootMethod;
 import soot.jimple.Jimple;
 
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * JGS Symbols that occur in method signatures. They correspond to Jimples Parameters, @return, or literals
@@ -21,6 +24,18 @@ public abstract class Symbol<Level> {
      */
     public static <Level> Param<Level> param(soot.Type t, int pos) {
         return new Param<>(new EquivalentValue(Jimple.v().newParameterRef(t, pos)));
+    }
+
+    /**
+     * Get the list of Params from a SootMethod.
+     */
+    public static <Level> List<Param<Level>> methodParameters(SootMethod m) {
+        List<soot.Type> types = m.getParameterTypes();
+        List<Param<Level>> result = new ArrayList<>();
+        IntStream.range(0, m.getParameterCount()).forEach(pos -> {
+           result.add(param(types.get(pos), pos));
+        });
+        return result;
     }
 
     // TODO-performance: make a singleton out of this

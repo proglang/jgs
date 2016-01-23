@@ -14,7 +14,6 @@ import soot.jimple.Jimple;
 
 import java.util.Collections;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
@@ -24,7 +23,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by fennell on 12/1/15.
  */
-public class ResultTest {
+public class BodyTypingResultTest {
 
     private Jimple j;
     private TypeVars tvars;
@@ -49,19 +48,19 @@ public class ResultTest {
         Environment second = before.add(v, tv2);
         ConstraintSet<Level> cs1 = csets.fromCollection(Collections.singletonList(leC(code.tvarX, tv1)));
         ConstraintSet<Level> cs2 = csets.fromCollection(Collections.singletonList(leC(code.tvarY, tv2)));
-        Result<Level> r1 = Result.addConstraints(Result.fromEnv(csets, first), cs1);
-        Result<Level> result = Result.join(r1,
-                Result.addConstraints(Result.fromEnv(csets, second), cs2), csets, tvars
+        BodyTypingResult<Level> r1 = BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, first), cs1);
+        BodyTypingResult<Level> result = BodyTypingResult.join(r1,
+                BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, second), cs2), csets, tvars
         );
 
         TypeVar freshV = tvars.join(tv1, tv2);
         ConstraintSet<Level> cs = cs1.add(cs2).add(leC(tv1, freshV)).add(leC(tv2, freshV));
-        Result<Level> expected = Result.addConstraints(Result.fromEnv(csets, before.add(v, freshV)), cs);
+        BodyTypingResult<Level> expected = BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, before.add(v, freshV)), cs);
 
 
         assertThat(result, is(equalTo(expected)));
 
-        assertThat(Result.join(Result.trivialCase(csets), r1, csets, tvars), is(r1));
-        assertThat(Result.join(r1, Result.trivialCase(csets), csets, tvars), is(r1));
+        assertThat(BodyTypingResult.join(BodyTypingResult.trivialCase(csets), r1, csets, tvars), is(r1));
+        assertThat(BodyTypingResult.join(r1, BodyTypingResult.trivialCase(csets), csets, tvars), is(r1));
     }
 }

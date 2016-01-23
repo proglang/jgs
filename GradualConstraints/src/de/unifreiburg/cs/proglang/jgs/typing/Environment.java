@@ -39,7 +39,7 @@ public class Environment {
     private final Map<Var<?>, TypeVar> env;
 
     /**
-     * Joint two environments. Returns a <code>Result</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left trivialCase) which is a bit of a hack...
+     * Joint two environments. Returns a <code>BodyTypingResult</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left trivialCase) which is a bit of a hack...
      */
     public static <Level> JoinResult<Level> join(TypeVars tvars, Environment r1, Environment r2) {
         Map<Var<?>, TypeVar> joinedEnv = new HashMap<>();
@@ -73,13 +73,17 @@ public class Environment {
         this.env = new HashMap<>(env);
     }
 
-    private Environment(Map<Var<?>, TypeVar> env, Var<?> k, TypeVar v) {
+    private Environment(Map<Var<?>, TypeVar> env, Map<Var<?>, TypeVar> newEntries) {
         this(env);
-        this.env.put(k, v);
+        this.env.putAll(newEntries);
     }
 
     public Environment add(Var<?> k, TypeVar v) {
-        return new Environment(this.env, k, v);
+        return new Environment(this.env, Collections.singletonMap(k, v));
+    }
+
+    public Environment add(Environment other) {
+        return new Environment(this.env, other.env);
     }
 
     public TypeVar get(Var<?> local) {

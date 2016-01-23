@@ -1,11 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -60,7 +63,7 @@ public abstract class ConstraintSet<Level> {
         private final ConstraintSet<Level> projected ;
         private final Assignment<Level> counterExample;
 
-        private RefinementError(ConstraintSet<Level> concrete, ConstraintSet<Level> projected, Assignment<Level> counterExample) {
+        public RefinementError(ConstraintSet<Level> concrete, ConstraintSet<Level> projected, Assignment<Level> counterExample) {
             this.concrete = concrete;
             this.projected = projected;
             this.counterExample = counterExample;
@@ -77,15 +80,20 @@ public abstract class ConstraintSet<Level> {
         public Set<Constraint<Level>> getApplied() {
             return projected.stream().filter(c -> !Constraints.isTrivial(types, c.apply(counterExample))).collect(toSet());
         }
+
+        @Override
+        public String toString() {
+            return String.format("Projected: %s\n Counterexample: %s\n Conflicting: %s", this.getProjected(), this.getCounterExample(), this.getApplied());
+        }
     }
 
-    public  Optional<RefinementError> signatureCounterExample(TypeVars tvars, ConstraintSet<Level> other) {
+    public  Optional<RefinementError> signatureCounterExample(TypeVars tvars, Stream<Var<?>> params, ConstraintSet<Level> other) {
         /* TODO-needs-test: cs1.subsumes(cs2) === cs1.subsumes(cs2.projectForSignature(tvars, cs1))
                             === cs1.projectForSignature(tvars, cs1).subsumes(cs2)
                             === cs1.projectForSignature(tvars, cs1).subsumes(cs2.projectForSignature(tvars, cs1)) */
 
         // the projection is just an optimization to keep the number of variables small
-        ConstraintSet<Level> projected = other.projectForSignature(tvars,other);
+        ConstraintSet<Level> projected = other.projectForSignature(tvars,params);
         Optional<Assignment<Level>> counterExample = this.subsumptionCounterExample(projected);
 
         return counterExample.map(ce -> new RefinementError(other, projected, ce));
@@ -128,13 +136,13 @@ public abstract class ConstraintSet<Level> {
     /**
      * @return true if <code>this</code> is a suitable signature for <code>other</code>
      */
-    public boolean isSignatureOf(TypeVars tvars, ConstraintSet<Level> other) {
-        return !this.signatureCounterExample(tvars, other).isPresent();
+    public boolean isSignatureOf(TypeVars tvars, Stream<Var<?>> params, ConstraintSet<Level> other) {
+        return !this.signatureCounterExample(tvars, params, other).isPresent();
     }
 
 
-    public ConstraintSet<Level> projectForSignature(TypeVars tvars, ConstraintSet<Level> sig) {
-        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext()), sig.variables()).collect(toSet());
+    public ConstraintSet<Level> projectForSignature(TypeVars tvars, Stream<Var<?>> params) {
+        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext()), params.map(tvars::param)).collect(toSet());
         return this.projectTo(vars);
     }
 
