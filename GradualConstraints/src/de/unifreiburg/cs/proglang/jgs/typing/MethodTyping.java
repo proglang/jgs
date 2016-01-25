@@ -10,7 +10,6 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import org.apache.commons.lang3.tuple.Pair;
 import soot.SootMethod;
 import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
@@ -20,9 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.methodParameters;
 
 /**
@@ -30,37 +27,34 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.methodParameters;
  * Created by fennell on 1/12/16.
  */
 public class MethodTyping<Level> {
-    final private Casts<Level> casts;
     final private ConstraintSetFactory<Level> csets;
     final private Constraints<Level> cstrs;
-    final private TypeVars tvars;
+    private final Casts<Level> casts;
 
     static public class Result<Level> {
-        public final Optional<ConstraintSet<Level>.RefinementError> refinementError;
+        public final ConstraintSet.RefinementCheckResult refinementCheckResult;
         public final Optional<MethodSignatures.Effects> missedEffects;
 
-        public Result(Optional<ConstraintSet<Level>.RefinementError> refinementError, Optional<MethodSignatures.Effects> missedEffects) {
-            this.refinementError = refinementError;
+        public Result(ConstraintSet.RefinementCheckResult refinementCheckResult, Optional<MethodSignatures.Effects> missedEffects) {
+            this.refinementCheckResult = refinementCheckResult;
             this.missedEffects = missedEffects;
         }
 
         public boolean isSuccess() {
-            return !(refinementError.isPresent() || missedEffects.isPresent());
+            return !(refinementCheckResult.counterExample.isPresent() || missedEffects.isPresent());
         }
 
     }
 
     /**
-     * @param tvars Factory for generating type variables
      * @param csets Factory for constraint sets
      * @param cstrs The domain of constraints
      * @param casts Specification of cast methods
      */
-    public MethodTyping(TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts) {
+    public MethodTyping(ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts) {
         this.csets = csets;
         this.casts = casts;
         this.cstrs = cstrs;
-        this.tvars = tvars;
     }
 
     /**
@@ -70,7 +64,7 @@ public class MethodTyping<Level> {
      * @throws TypingException
      */
     // TODO: what's up with "this"?
-    public Result<Level> check(SignatureTable<Level> signatures, SootMethod method) throws TypingException {
+    public Result<Level> check(TypeVars tvars, SignatureTable<Level> signatures, SootMethod method) throws TypingException {
         // Get the signature of "method"
         MethodSignatures.Signature<Level> signatureToCheck = signatures.get(method)
                 .orElseThrow(() -> new TypingException("No signature found for method " + method.toString()));
@@ -82,7 +76,7 @@ public class MethodTyping<Level> {
 
 
         DirectedGraph<Unit> body = new BriefUnitGraph(method.getActiveBody());
-        BodyTypingResult<Level> r = new MethodBodyTyping<Level>(tvars, csets, cstrs, casts, signatures).generateResult(body, tvars.topLevelContext(), init);
+        BodyTypingResult<Level> r = new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures).generateResult(body, tvars.topLevelContext(), init);
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
         Map<Symbol<Level>, TypeVars.TypeVar> symbolMapping = new HashMap<>(paramMapping);

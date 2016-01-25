@@ -35,6 +35,8 @@ public class MethodSignatures<Level> {
     /**
      * Signatures: constraints + effects
      */
+    //TODO: this is a dangerous factory method, as it allows to create signatures that are not connected to any method
+    // I (fennell) have been bitten once already.. should find a way to prevent this mistake
     public static <Level> Signature<Level> makeSignature(SigConstraintSet<Level> constraints, Effects<Level> effects) {
         return new Signature<>(constraints, effects);
     }
@@ -52,6 +54,11 @@ public class MethodSignatures<Level> {
         public String toString() {
             return String.format("C:%s, E:%s", constraints.toString(), effects.toString());
         }
+
+        public Signature<Level> addConstraints(Stream<SigConstraint<Level>> sigs) {
+            SigConstraintSet<Level> newConstraints = this.constraints.addAll(sigs);
+            return makeSignature(newConstraints, this.effects);
+        }
     }
 
     /* Effects */
@@ -59,6 +66,7 @@ public class MethodSignatures<Level> {
         return new Effects<>(new HashSet<>());
     }
 
+    @SafeVarargs
     public static <Level> Effects<Level> effects(Type<Level> type, Type<Level>... types) {
         return MethodSignatures.<Level>emptyEffect().add(type, types);
     }
@@ -133,7 +141,7 @@ public class MethodSignatures<Level> {
     }
 
     /* Signatures */
-    public static <Level> SigConstraintSet<Level> signatureConstraints(Collection<SigConstraint<Level>> sigSet) {
+    public static <Level> SigConstraintSet<Level> signatureConstraints(Stream<SigConstraint<Level>> sigSet) {
         return new SigConstraintSet<>(sigSet);
     }
 
@@ -166,19 +174,19 @@ public class MethodSignatures<Level> {
                 default:
                     throw new IllegalArgumentException(String.format("Unexpected case for ConstraintKind: %s", c));
             }
-        }).collect(Collectors.toSet()));
+        }));
     }
 
 
-    public SigConstraint<Level> le(Symbol<Level> lhs, Symbol<Level> rhs) {
+    public static <Level> SigConstraint<Level> le(Symbol<Level> lhs, Symbol<Level> rhs) {
         return new SigConstraint<>(lhs, rhs, Constraints::le);
     }
 
-    public SigConstraint<Level> comp(Symbol<Level> lhs, Symbol<Level> rhs) {
+    public static <Level> SigConstraint<Level> comp(Symbol<Level> lhs, Symbol<Level> rhs) {
         return new SigConstraint<>(lhs, rhs, Constraints::le);
     }
 
-    public SigConstraint<Level> dimpl(Symbol<Level> lhs, Symbol<Level> rhs) {
+    public static <Level> SigConstraint<Level> dimpl(Symbol<Level> lhs, Symbol<Level> rhs) {
         return new SigConstraint<>(lhs, rhs, Constraints::le);
     }
 
@@ -186,8 +194,8 @@ public class MethodSignatures<Level> {
     public static class SigConstraintSet<Level> {
         private final Set<SigConstraint<Level>> sigSet;
 
-        private SigConstraintSet(Collection<SigConstraint<Level>> sigSet) {
-            this.sigSet = new HashSet<>(sigSet);
+        private SigConstraintSet(Stream<SigConstraint<Level>> sigSet) {
+            this.sigSet = sigSet.collect(Collectors.toSet());
         }
 
         public Stream<Constraint<Level>> toTypingConstraints(Map<Symbol<Level>, TypeVar> mapping) {
@@ -200,7 +208,15 @@ public class MethodSignatures<Level> {
         }
 
         public Stream<Symbol<Level>> symbols() {
-            return sigSet.stream().flatMap(SigConstraint::symbols);
+            return this.stream().flatMap(SigConstraint::symbols);
+        }
+
+        public Stream<SigConstraint<Level>> stream() {
+            return sigSet.stream();
+        }
+
+        public SigConstraintSet<Level> addAll(Stream<SigConstraint<Level>> sigs) {
+            return signatureConstraints(Stream.concat(this.sigSet.stream(), sigs));
         }
     }
 

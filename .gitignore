@@ -9,6 +9,9 @@ generatedJimple/
 
 Testcases/src/Scratch.java
 /GradualConstraints/bin/
+testclasses-*/
+/generate-jimple-testclasses.sh
+/result
 
 # For IDEA
 

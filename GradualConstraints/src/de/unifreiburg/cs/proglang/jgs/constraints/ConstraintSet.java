@@ -1,14 +1,13 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -57,37 +56,36 @@ public abstract class ConstraintSet<Level> {
      */
     abstract public Optional<Assignment<Level>> subsumptionCounterExample(ConstraintSet<Level> other);
 
-    public class RefinementError {
+    public static class RefinementCheckResult<Level> {
 
-        private final ConstraintSet<Level> concrete;
-        private final ConstraintSet<Level> projected ;
-        private final Assignment<Level> counterExample;
+        public final ConstraintSet<Level> signature;
+        public final ConstraintSet<Level> concrete;
+        public final ConstraintSet<Level> projected ;
+        public final Optional<Assignment<Level>> counterExample;
 
-        public RefinementError(ConstraintSet<Level> concrete, ConstraintSet<Level> projected, Assignment<Level> counterExample) {
+        public RefinementCheckResult(ConstraintSet<Level> signature, ConstraintSet<Level> concrete, ConstraintSet<Level> projected, Optional<Assignment<Level>> counterExample) {
+            this.signature = signature;
             this.concrete = concrete;
             this.projected = projected;
             this.counterExample = counterExample;
         }
 
-        public ConstraintSet<Level> getProjected() {
-            return projected;
-        }
-
-        public Assignment<Level> getCounterExample() {
-            return counterExample;
-        }
-
-        public Set<Constraint<Level>> getApplied() {
-            return projected.stream().filter(c -> !Constraints.isTrivial(types, c.apply(counterExample))).collect(toSet());
+        /**
+         * @return A set of constraints that conflicts with the counterexample (if present)
+         */
+        public Set<Constraint<Level>> getConflicting() {
+            return counterExample.map(ce ->
+                    projected.stream().filter(c -> !Constraints.isTrivial(signature.types, c.apply(ce))).collect(toSet()))
+                    .orElse(Collections.emptySet());
         }
 
         @Override
         public String toString() {
-            return String.format("Projected: %s\n Counterexample: %s\n Conflicting: %s", this.getProjected(), this.getCounterExample(), this.getApplied());
+            return String.format("Projected: %s\n Counterexample: %s\n Conflicting: %s", this.projected, this.counterExample, this.getConflicting());
         }
     }
 
-    public  Optional<RefinementError> signatureCounterExample(TypeVars tvars, Stream<Var<?>> params, ConstraintSet<Level> other) {
+    public  RefinementCheckResult signatureCounterExample(TypeVars tvars, Stream<Var<?>> params, ConstraintSet<Level> other) {
         /* TODO-needs-test: cs1.subsumes(cs2) === cs1.subsumes(cs2.projectForSignature(tvars, cs1))
                             === cs1.projectForSignature(tvars, cs1).subsumes(cs2)
                             === cs1.projectForSignature(tvars, cs1).subsumes(cs2.projectForSignature(tvars, cs1)) */
@@ -96,7 +94,7 @@ public abstract class ConstraintSet<Level> {
         ConstraintSet<Level> projected = other.projectForSignature(tvars,params);
         Optional<Assignment<Level>> counterExample = this.subsumptionCounterExample(projected);
 
-        return counterExample.map(ce -> new RefinementError(other, projected, ce));
+        return new RefinementCheckResult(this, other, projected, counterExample);
     }
 
     /**
@@ -137,7 +135,7 @@ public abstract class ConstraintSet<Level> {
      * @return true if <code>this</code> is a suitable signature for <code>other</code>
      */
     public boolean isSignatureOf(TypeVars tvars, Stream<Var<?>> params, ConstraintSet<Level> other) {
-        return !this.signatureCounterExample(tvars, params, other).isPresent();
+        return !this.signatureCounterExample(tvars, params, other).counterExample.isPresent();
     }
 
 

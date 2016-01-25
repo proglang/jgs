@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -21,9 +22,6 @@ import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
-/**
- * Created by fennell on 10/29/15.
- */
 public class MethodSignaturesTest {
 
     private Jimple j;
@@ -46,8 +44,8 @@ public class MethodSignaturesTest {
         mapping.put(Symbol.ret(), cs.v3);
 
         // a typical constraint for an "add" method: @return >= x, @return >= y
-        List<SigConstraint<Level>> sig =
-                asList(leS(s1, Symbol.ret()), leS(s2, Symbol.ret()));
+        Stream<SigConstraint<Level>> sig =
+                Stream.of(leS(s1, Symbol.ret()), leS(s2, Symbol.ret()));
         ConstraintSet<Level> sigAsCSet =
                 makeNaive((signatureConstraints(sig).toTypingConstraints(mapping)).collect(Collectors.toSet()));
         assertThat(sigAsCSet, (equivalent(cs.x1_le_x3__x2_le_x3)));

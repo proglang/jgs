@@ -3,7 +3,6 @@ package de.unifreiburg.cs.proglang.jgs;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,9 +18,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import de.unifreiburg.cs.proglang.jgs.typing.BasicStatementTyping;
-import de.unifreiburg.cs.proglang.jgs.typing.Environment;
-import de.unifreiburg.cs.proglang.jgs.typing.MethodBodyTyping;
+import de.unifreiburg.cs.proglang.jgs.typing.*;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -29,7 +26,6 @@ import soot.*;
 import soot.jimple.StaticInvokeExpr;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
-import static java.util.stream.Collectors.toSet;
 
 public class TestDomain {
 
@@ -37,6 +33,7 @@ public class TestDomain {
     public static final TypeDomain<Level> types = new TypeDomain<>(levels);
     public static final Constraints<Level> cstrs = new Constraints<>(types);
     public static final MethodSignatures<Level> sigs = new MethodSignatures<>();
+    public static final ConstraintSetFactory<Level> csets = new NaiveConstraintsFactory<>(types);
 
     ///////
     // casts
@@ -72,6 +69,8 @@ public class TestDomain {
             }
         }
     };
+
+    public static final MethodTyping mtyping = new MethodTyping<>(csets, cstrs, casts);
 
 
     //////
@@ -299,12 +298,12 @@ public class TestDomain {
     //TODO: this is basically like signatureCounterExample but directly accepts TypeVars instead of Parameter to project. Remove this code duplication
     public static Matcher<ConstraintSet<Level>> refines(TypeVars tvars, final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
-            Optional<ConstraintSet<Level>.RefinementError> maybeError;
+            ConstraintSet.RefinementCheckResult result;
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
                 ConstraintSet<Level> projected = levelConstraintSet.projectTo(Stream.concat(Stream.of(tvars.topLevelContext()), other.variables()).collect(Collectors.toSet()));
-                maybeError = other.subsumptionCounterExample(projected).map(ce -> other.new RefinementError(levelConstraintSet, projected, ce));
-                return !maybeError.isPresent();
+                result = new ConstraintSet.RefinementCheckResult(other, levelConstraintSet, projected, other.subsumptionCounterExample(projected));
+                return !result.counterExample.isPresent();
             }
 
             @Override
@@ -314,8 +313,78 @@ public class TestDomain {
 
             @Override
             protected void describeMismatchSafely(ConstraintSet<Level> item, Description mismatchDescription) {
-                ConstraintSet<Level>.RefinementError error = maybeError.get();
-                mismatchDescription.appendText(String.format("was (projected to sig) %s\n Counterexample: %s\n Conflicting: %s", error.getProjected(), error.getCounterExample(), error.getApplied()));
+                mismatchDescription.appendText(String.format("was (projected to sig) %s\n Counterexample: %s\n Conflicting: %s", result.projected, result.counterExample, result.getConflicting()));
+            }
+        };
+    }
+
+    private static abstract class MethodTypingError {}
+    private static final class MissingMethod extends MethodTypingError {
+        @Override
+        public String toString() {
+            return "Method is missing from signatures";
+        }
+    }
+    private static final class TypingExceptionError extends MethodTypingError {
+        public final TypingException exception;
+
+        private TypingExceptionError(TypingException exception) {
+            this.exception = exception;
+        }
+
+        @Override
+        public String toString() {
+            return "Typing exception: " + exception;
+        }
+    }
+    private static final class RefinementError extends  MethodTypingError {
+        public final ConstraintSet.RefinementCheckResult refinementCheckResult;
+
+        private RefinementError(ConstraintSet.RefinementCheckResult refinementCheckResult) {
+            this.refinementCheckResult = refinementCheckResult;
+        }
+
+        @Override
+        public String toString() {
+            return "Refinement Error: " + refinementCheckResult.toString();
+        }
+    }
+
+    public static Matcher<SootMethod> compliesTo(TypeVars tvars, SignatureTable<Level> signatures) {
+        return new TypeSafeMatcher<SootMethod>() {
+            MethodTypingError error;
+            Optional<Signature<Level>> maybeSig;
+            @Override
+            protected boolean matchesSafely(SootMethod method) {
+                maybeSig =  signatures.get(method);
+                return maybeSig.map(sig -> {
+                    MethodTyping.Result r;
+                    try {
+                        r = mtyping.check(tvars, signatures, method);
+                    } catch (TypingException e) {
+                        this.error = new TypingExceptionError(e);
+                        return false;
+                    }
+                    if (r.refinementCheckResult.counterExample.isPresent()) {
+                        this.error = new RefinementError(r.refinementCheckResult);
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }).orElseGet( () -> {
+                    this.error = new MissingMethod();
+                    return false;
+                });
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" complies to ").appendValue(maybeSig);
+            }
+
+            @Override
+            protected void describeMismatchSafely(SootMethod item, Description mismatchDescription) {
+                mismatchDescription.appendText(error.toString());
             }
         };
     }

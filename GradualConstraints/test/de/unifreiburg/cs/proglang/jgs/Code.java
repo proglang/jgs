@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
@@ -13,6 +14,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.toolkits.graph.DirectedGraph;
 
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -46,6 +48,8 @@ public class Code {
     public final SootClass testClass;
     public final SootMethod testCallee__int;
     public final SootField testLowField_int;
+    public final SootField testHighField_int;
+    public final SootField testDynField_int;
 
     public final SootMethod testCallee_int_int__int;
     public final SootMethod ignoreSnd_int_int__int;
@@ -54,6 +58,11 @@ public class Code {
     public final Environment init;
 
     public Code(TypeVars tvars) {
+
+        // set classpath to some test code
+        // TODO: move stuff that depends on classpaths somewhere else
+        Scene.v().setSootClassPath("testclasses-java:" + Scene.v().getSootClassPath());
+
         this.j = Jimple.v();
 
         this.localX = j.newLocal("x", IntType.v());
@@ -77,8 +86,14 @@ public class Code {
         ;
 
         this.testClass = new SootClass("TestClass");
-        this.testLowField_int = new SootField("testLowField", IntType.v());
+        Scene.v().addClass(testClass);
+
+        this.testLowField_int = new SootField("testLowField", IntType.v(), Modifier.STATIC);
         testClass.addField(this.testLowField_int);
+        this.testHighField_int = new SootField("testHighField", IntType.v(), Modifier.STATIC);
+        testClass.addField(this.testHighField_int);
+        this.testDynField_int = new SootField("testDynField", IntType.v(), Modifier.STATIC);
+        testClass.addField(this.testDynField_int);
 
         Map<SootMethod, MethodSignatures.Signature<LowHigh.Level>> sigMap = new HashMap<>();
         Symbol.Param<LowHigh.Level> param_x = param(IntType.v(), 0);
@@ -87,10 +102,10 @@ public class Code {
         // Method:
         this.testCallee__int = new SootMethod("testCallee",
                 Collections.emptyList(),
-                IntType.v());
+                IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(testCallee__int);
         sigMap.put(this.testCallee__int,
-                makeSignature(signatureConstraints(singleton(leS(
+                makeSignature(signatureConstraints(Stream.of(leS(
                         Symbol.literal(PUB),
                         ret()))), emptyEffect()));
 
@@ -98,10 +113,10 @@ public class Code {
         this.testCallee_int_int__int = new SootMethod("testCallee",
                 asList(IntType.v(),
                         IntType.v()),
-                IntType.v());
+                IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(testCallee_int_int__int);
         SigConstraintSet<Level> sigCstrs =
-                signatureConstraints(asList(leS(param_x, ret()),
+                signatureConstraints(Stream.of(leS(param_x, ret()),
                         leS(param_y, ret())));
         sigMap.put(this.testCallee_int_int__int,
                 makeSignature(sigCstrs, emptyEffect()));
@@ -110,18 +125,18 @@ public class Code {
         this.ignoreSnd_int_int__int = new SootMethod("ignoreSnd",
                 asList(IntType.v(),
                         IntType.v()),
-                IntType.v());
+                IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(ignoreSnd_int_int__int);
-        sigCstrs = signatureConstraints(asList(leS(param_x, ret()), leS(param_y, param_y)));
+        sigCstrs = signatureConstraints(Stream.of(leS(param_x, ret()), leS(param_y, param_y)));
         sigMap.put(this.ignoreSnd_int_int__int,
                 makeSignature(sigCstrs, emptyEffect()));
 
         //Method:
         this.writeToLowReturn0_int__int = new SootMethod("writeToLow",
                 singletonList(IntType.v()),
-                IntType.v());
+                IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(this.writeToLowReturn0_int__int);
-        sigCstrs = signatureConstraints(asList((leS(param_x, literal(TLOW))), leS(ret(), ret())));
+        sigCstrs = signatureConstraints(Stream.of((leS(param_x, literal(TLOW))), leS(ret(), ret())));
         sigMap.put(this.writeToLowReturn0_int__int,
                 makeSignature(sigCstrs, effects(TLOW)));
 
