@@ -724,8 +724,15 @@ public class JimpleInjector {
   }
 	
   /**
-   * @param a
-   * @param pos
+   * Inject a method of HandleStmt to set the level of an array-field. This method
+   * distinguishes two cases, one case where the index of the referenced array-field
+   * is a constant number and the other case, where the index is stored in a local variable.
+   * In the second case, the signature of the local variable also must be passed as an
+   * argument to {@link analyzer.level2.HandleStmt
+   *     #setLevelOfArrayField(Object o, int field, String localForObject, String localForIndex)} .
+   * @param a -ArrayRef. The reference to the array-field
+   * @param pos -Unit- The assignStmt in the analyzed methods body, where this
+   *     reference appears. 
    */
   public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
     logger.info( "Set Level of Array " + a.toString() + " in assign stmt");
@@ -1089,8 +1096,9 @@ public class JimpleInjector {
   }
 
   /**
-   * @param a
-   * @return
+   * 
+   * @param a -ArrayRef-
+   * @return -String- The signature for the array-field.
    */
   private static String getSignatureForArrayField(ArrayRef a) {
     System.out.println("Type of index: " + a.getIndex().getType()); 
