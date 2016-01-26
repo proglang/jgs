@@ -73,6 +73,22 @@ public abstract class Symbol<Level> {
                             this,
                             tvarMapping.toString())));
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Param<?> param = (Param<?>) o;
+
+            return position == param.position;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return position;
+        }
     }
 
     public static class Return<Level> extends Symbol<Level> {
