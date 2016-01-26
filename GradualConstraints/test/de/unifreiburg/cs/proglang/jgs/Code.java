@@ -1,6 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
@@ -14,10 +13,8 @@ import de.unifreiburg.cs.proglang.jgs.typing.Environments;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.*;
 import soot.jimple.*;
-import soot.jimple.toolkits.scalar.pre.SootFilter;
 import soot.toolkits.graph.DirectedGraph;
 
-import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -32,7 +29,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
+
 /**
  * Some example "code" data for unit testing
  * <p>
@@ -53,7 +50,7 @@ public class Code {
     public final SootMethod testCallee__int;
     public final SootField testLowField_int;
     public final SootField testHighField_int;
-    public final SootField testDynField_int;
+    public final SootField testStaticDynField_int;
 
     public final SootMethod testCallee_int_int__int;
     public final SootMethod ignoreSnd_int_int__int;
@@ -61,6 +58,16 @@ public class Code {
 
     public final Environment init;
     public final FieldTable<Level> fields;
+
+    private static SootClass makeFreshClass(String name) {
+        // reset the testClass
+        if (Scene.v().containsClass(name)) {
+            Scene.v().removeClass(Scene.v().getSootClass(name));
+        }
+        SootClass result = new SootClass(name);
+        Scene.v().addClass(result);
+        return result;
+    }
 
     public Code(TypeVars tvars) {
 
@@ -91,24 +98,19 @@ public class Code {
                 .add(varT, tvarT)
         ;
 
-        this.testClass = new SootClass("TestClass");
-        // reset the testClass
-        if (Scene.v().containsClass("TestClass")) {
-            Scene.v().removeClass(Scene.v().getSootClass("TestClass"));
-        }
-        Scene.v().addClass(testClass);
+        this.testClass = makeFreshClass("TestClass");
 
         Map<SootField, TypeDomain.Type<Level>> fieldMap = new HashMap<>();
 
-        this.testLowField_int = new SootField("testLowField", IntType.v(), Modifier.STATIC);
+        this.testLowField_int = new SootField("testLowField", IntType.v(), 0);
         testClass.addField(this.testLowField_int);
         fieldMap.put(testLowField_int, TLOW);
-        this.testHighField_int = new SootField("testHighField", IntType.v(), Modifier.STATIC);
+        this.testHighField_int = new SootField("testHighField", IntType.v(), 0);
         testClass.addField(this.testHighField_int);
         fieldMap.put(testHighField_int, THIGH);
-        this.testDynField_int = new SootField("testDynField", IntType.v(), Modifier.STATIC);
-        testClass.addField(this.testDynField_int);
-        fieldMap.put(testDynField_int, DYN);
+        this.testStaticDynField_int = new SootField("testStaticDynField", IntType.v(), Modifier.STATIC);
+        testClass.addField(this.testStaticDynField_int);
+        fieldMap.put(testStaticDynField_int, DYN);
 
         // freeze field map
         this.fields = new FieldTable<>(fieldMap);

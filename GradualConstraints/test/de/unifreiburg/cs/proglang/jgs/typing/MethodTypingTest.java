@@ -144,7 +144,7 @@ public class MethodTypingTest {
      */
     public SootMethod makeMethodUsingThis() {
         // TODO: check what Soot does with nested expressions
-        Unit getDynField = j.newAssignStmt(code.localY, j.newStaticFieldRef(code.testDynField_int.makeRef()));
+        Unit getDynField = j.newAssignStmt(code.localY, j.newStaticFieldRef(code.testStaticDynField_int.makeRef()));
         Unit add = j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localY));
         Unit exit = j.newReturnStmt(code.localY);
 
@@ -192,5 +192,30 @@ public class MethodTypingTest {
                 ),
                 emptyEffect());
         assertThat(m, violates(tvars, signatures, code.fields));
+    }
+
+
+    // Method with static low effects
+    /*
+     void methodWithLowEffects(TestClass t, int x) {
+        t.testLowField = x;
+     }
+     */
+    public SootMethod makeMethodWithLowEffects() {
+        Unit assignToLow = j.newAssignStmt(j.newInstanceFieldRef(code.localT, code.testLowField_int.makeRef()), code.localX);
+        return code.makeMethod(0, "methodWithLowEffects", asList(code.localT, code.localX), VoidType.v(), singletonList(assignToLow));
+    }
+
+
+    // Valid signature
+    /*
+    constraints:
+      t <= LOW, x <= LOW
+    effects:
+      {LOW}
+     */
+    @Test
+    public void testMakeMethodWithLowEffects() {
+        SootMethod m = makeMethodWithLowEffects();
     }
 }
