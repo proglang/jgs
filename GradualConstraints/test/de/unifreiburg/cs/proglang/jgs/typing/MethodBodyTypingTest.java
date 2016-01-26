@@ -44,7 +44,7 @@ public class MethodBodyTypingTest {
         this.j = Jimple.v();
         this.pc = tvars.topLevelContext();
         this.code = new Code(tvars);
-        this.mbTyping = mkMbTyping(code.init, tvars, code.signatures);
+        this.mbTyping = mkMbTyping(code.init, tvars, code.signatures, code.fields);
     }
 
     @Test

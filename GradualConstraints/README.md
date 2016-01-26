@@ -1,5 +1,6 @@
 # The type checker for JGS
 
-The front-end is still work-in-progress. There are some tests on
-programmatically constructed CFGs in the
-test/de/unifreiburg/cs/proglang/jgs/typing directory.
+The front-end is still work-in-progress. However, the class
+test/de/unifreiburg/cs/proglang/jgs/typing/MethodTypingTest.java
+contains examples of type checking (programmatically created) method
+bodies.

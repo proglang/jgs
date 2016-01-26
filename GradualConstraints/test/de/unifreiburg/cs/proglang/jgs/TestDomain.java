@@ -15,6 +15,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
@@ -52,10 +53,11 @@ public class TestDomain {
 
     public static final Casts<Level> casts = new Casts<Level>() {
 
-        @Override public Optional<Cast<Level>> detectFromCall(StaticInvokeExpr e) {
+        @Override
+        public Optional<Cast<Level>> detectFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>,Type<Level>,Optional<Cast<Level>>> makeCast =
-                    (t1, t2) ->  Var.getAll(e.getArg(0)).findFirst().map(value -> makeCast(t1, t2,value));
+            BiFunction<Type<Level>, Type<Level>, Optional<Cast<Level>>> makeCast =
+                    (t1, t2) -> Var.getAll(e.getArg(0)).findFirst().map(value -> makeCast(t1, t2, value));
             if (m.equals(castHighToDyn)) {
                 return makeCast.apply(THIGH, DYN);
             } else if (m.equals(castLowToDyn)) {
@@ -98,7 +100,7 @@ public class TestDomain {
     public static final Type<Level> PUB = types.pub();
 
     public static Type<Level> tglb(Type<Level> l1,
-                                                 Type<Level> l2) {
+                                   Type<Level> l2) {
         return types.glb(l1, l2);
     }
 
@@ -115,30 +117,31 @@ public class TestDomain {
     public static final CType<Level> CPUB = CTypes.literal(PUB);
 
     public static Constraint<Level> leC(CType<Level> lhs,
-                                           CType<Level> rhs) {
+                                        CType<Level> rhs) {
         return Constraints.le(lhs, rhs);
     }
 
     public static Constraint<Level> leC(CType<Level> ct, TypeVar v) {
-       return leC(ct, CTypes.variable(v));
+        return leC(ct, CTypes.variable(v));
     }
 
     public static Constraint<Level> leC(TypeVar lhs,
                                         TypeVar rhs) {
-        return Constraints.le( CTypes.variable(lhs), CTypes.variable(rhs));
+        return Constraints.le(CTypes.variable(lhs), CTypes.variable(rhs));
     }
 
     public static Constraint<Level> leC(TypeVar lhs,
                                         CType<Level> rhs) {
-        return Constraints.le( CTypes.variable(lhs), rhs);
+        return Constraints.le(CTypes.variable(lhs), rhs);
     }
 
     public static Constraint<Level> compC(CType<Level> lhs,
-                                           CType<Level> rhs) {
+                                          CType<Level> rhs) {
         return Constraints.comp(lhs, rhs);
     }
+
     public static Constraint<Level> compC(TypeVar lhs,
-                                        TypeVar rhs) {
+                                          TypeVar rhs) {
         return compC(CTypes.variable(lhs), CTypes.variable(rhs));
     }
 
@@ -165,8 +168,8 @@ public class TestDomain {
 
     ///////
     // Method body typing
-    public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars, SignatureTable<Level> signatures) {
-        return new MethodBodyTyping<>(tvars, new NaiveConstraintsFactory<>(types), cstrs, casts, signatures);
+    public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars, SignatureTable<Level> signatures, FieldTable fields) {
+        return new MethodBodyTyping<>(tvars, new NaiveConstraintsFactory<>(types), cstrs, casts, signatures, fields);
     }
     /////
     // JUnit matcher
@@ -213,7 +216,7 @@ public class TestDomain {
 
     /**
      * Holds for constraint sets where each assignment satisfying the left set also satisfies the right set.
-     *
+     * <p>
      * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), implies(v0 <= v1)) does not hold.
      */
     public static Matcher<ConstraintSet<Level>> implies(final ConstraintSet<Level> other) {
@@ -243,9 +246,10 @@ public class TestDomain {
             }
         };
     }
+
     /**
      * Holds for constraint sets that are satisfied by the <b>same assignments</b>.
-     *
+     * <p>
      * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
      */
     public static Matcher<ConstraintSet<Level>> equivalent(final ConstraintSet<Level> other) {
@@ -264,7 +268,7 @@ public class TestDomain {
 
     /**
      * Holds for constraint sets that subsume each other. In contrast to equivalent sets, constraint sets that subsume each other may contain different sets of variables. Only the assignments of the common variables needs to be consistent.
-     *
+     * <p>
      * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
      */
     public static Matcher<ConstraintSet<Level>> minimallySubsumes(final ConstraintSet<Level> other) {
@@ -299,6 +303,7 @@ public class TestDomain {
     public static Matcher<ConstraintSet<Level>> refines(TypeVars tvars, final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
             ConstraintSet.RefinementCheckResult result;
+
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
                 ConstraintSet<Level> projected = levelConstraintSet.projectTo(Stream.concat(Stream.of(tvars.topLevelContext()), other.variables()).collect(Collectors.toSet()));
@@ -318,13 +323,16 @@ public class TestDomain {
         };
     }
 
-    private static abstract class MethodTypingError {}
+    private static abstract class MethodTypingError {
+    }
+
     private static final class MissingMethod extends MethodTypingError {
         @Override
         public String toString() {
             return "Method is missing from signatures";
         }
     }
+
     private static final class TypingExceptionError extends MethodTypingError {
         public final TypingException exception;
 
@@ -337,7 +345,8 @@ public class TestDomain {
             return "Typing exception: " + exception;
         }
     }
-    private static final class RefinementError extends  MethodTypingError {
+
+    private static final class RefinementError extends MethodTypingError {
         public final ConstraintSet.RefinementCheckResult refinementCheckResult;
 
         private RefinementError(ConstraintSet.RefinementCheckResult refinementCheckResult) {
@@ -346,40 +355,82 @@ public class TestDomain {
 
         @Override
         public String toString() {
-            return "Refinement Error: " + refinementCheckResult.toString();
+            return "result of refinement check: \n" + refinementCheckResult.toString();
         }
     }
 
-    public static Matcher<SootMethod> compliesTo(TypeVars tvars, SignatureTable<Level> signatures) {
-        return new TypeSafeMatcher<SootMethod>() {
-            MethodTypingError error;
-            Optional<Signature<Level>> maybeSig;
-            @Override
-            protected boolean matchesSafely(SootMethod method) {
-                maybeSig =  signatures.get(method);
-                return maybeSig.map(sig -> {
-                    MethodTyping.Result r;
-                    try {
-                        r = mtyping.check(tvars, signatures, method);
-                    } catch (TypingException e) {
-                        this.error = new TypingExceptionError(e);
-                        return false;
-                    }
-                    if (r.refinementCheckResult.counterExample.isPresent()) {
-                        this.error = new RefinementError(r.refinementCheckResult);
-                        return false;
-                    } else {
-                        return true;
-                    }
-                }).orElseGet( () -> {
-                    this.error = new MissingMethod();
+    private abstract static class MethodTypingMatcher extends TypeSafeMatcher<SootMethod> {
+        protected MethodTypingError error;
+        protected Optional<Signature<Level>> maybeSig;
+        private final SignatureTable<Level> signatures;
+        private final FieldTable<Level> fields;
+        private final TypeVars tvars;
+
+        private MethodTypingMatcher(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
+            this.signatures = signatures;
+            this.fields = fields;
+            this.tvars = tvars;
+        }
+
+        protected abstract boolean goodResult(ConstraintSet.RefinementCheckResult<Level> r);
+
+        @Override
+        protected boolean matchesSafely(SootMethod method) {
+            maybeSig = signatures.get(method);
+            return maybeSig.map(sig -> {
+                MethodTyping.Result r;
+                try {
+                    r = mtyping.check(tvars, signatures, fields, method);
+                } catch (TypingException e) {
+                    this.error = new TypingExceptionError(e);
                     return false;
-                });
+                }
+                if (!goodResult(r.refinementCheckResult)) {
+                    this.error = new RefinementError(r.refinementCheckResult);
+                    return false;
+                } else {
+                    return true;
+                }
+            }).orElseGet(() -> {
+                this.error = new MissingMethod();
+                return false;
+            });
+        }
+
+        @Override
+        public abstract void describeTo(Description description);
+
+        @Override
+        protected abstract void describeMismatchSafely(SootMethod item, Description mismatchDescription);
+    }
+
+
+    public static Matcher<SootMethod> compliesTo(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
+        return new MethodTypingMatcher(tvars, signatures, fields) {
+            @Override
+            protected boolean goodResult(ConstraintSet.RefinementCheckResult<Level> r) {
+                return !r.counterExample.isPresent();
+            }
+
+            public void describeTo(Description description) {
+                description.appendText(" complies to ").appendValue(maybeSig);
+            }
+            protected void describeMismatchSafely(SootMethod item, Description mismatchDescription) {
+                mismatchDescription.appendText(error.toString());
+            }
+        };
+    }
+
+    public static Matcher<SootMethod> violates(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
+        return new MethodTypingMatcher(tvars, signatures, fields) {
+            @Override
+            protected boolean goodResult(ConstraintSet.RefinementCheckResult<Level> r) {
+                return r.counterExample.isPresent();
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText(" complies to ").appendValue(maybeSig);
+                description.appendText(" violates ").appendValue(maybeSig);
             }
 
             @Override
@@ -387,5 +438,6 @@ public class TestDomain {
                 mismatchDescription.appendText(error.toString());
             }
         };
+
     }
 }

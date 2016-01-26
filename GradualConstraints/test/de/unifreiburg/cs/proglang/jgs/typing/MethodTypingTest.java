@@ -21,6 +21,15 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+/**
+ * Tests that illustrate type-checking of individual methods against their signatures. The assertions for expected
+ * success or failure are "compliesTo" and "violates", respectively.
+ * <p>
+ * Less-than-or-equal constraints are created with the statically imported "leS" method.
+ * <p>
+ * The "code" object (see class <code>de.unifreiburg.cs.proglang.jgs.Code</code>) contains some common helper
+ * definitions (local variables, fields, abstract methods).
+ */
 public class MethodTypingTest {
 
     private static final Jimple j = Jimple.v();
@@ -78,13 +87,13 @@ public class MethodTypingTest {
         SootMethod m = makeMultipleReturns();
         List<Param<Level>> ps = methodParameters(m);
         Stream<SigConstraint<Level>> sigConstraints = Stream.of(
-                        leS(ps.get(0), ret()),
-                        leS(ps.get(1), ret()),
-                        leS(ps.get(2), ret()),
-                        leS(ps.get(2), ps.get(2)),
-                        leS(ps.get(3), ret()));
+                leS(ps.get(0), ret()),
+                leS(ps.get(1), ret()),
+                leS(ps.get(2), ret()),
+                leS(ps.get(2), ps.get(2)),
+                leS(ps.get(3), ret()));
         SignatureTable<Level> signatures = code.signatures.extendWith(m, sigConstraints, emptyEffect());
-        MethodTyping.Result<Level> r = mtyping.check(tvars, signatures, m);
+        MethodTyping.Result<Level> r = mtyping.check(tvars, signatures, code.fields, m);
 
         //TODO: make a junit-Matcher for these results
         assertThat("No success: " + r.refinementCheckResult.toString() + "\n Effects:" + r.missedEffects.toString(), r.isSuccess(), is(true));
@@ -107,9 +116,9 @@ public class MethodTypingTest {
                         leS(ps.get(0), ret()),
                         leS(ps.get(1), ret()),
                         leS(ps.get(3), ret())),
-                        emptyEffect());
+                emptyEffect());
 
-        MethodTyping.Result r = mtyping.check(tvars, signatures, m);
+        MethodTyping.Result r = mtyping.check(tvars, signatures, code.fields, m);
 
         //TODO: make a junit-Matcher for these results
         assertThat(String.format("Should not succeed, constraints: \nSIG: %s\n CONSTRAINTS: %s", r.refinementCheckResult.signature.toString().replace(",", ",\n"),
@@ -154,8 +163,24 @@ public class MethodTypingTest {
                         leS(Symbol.literal(DYN), ret())
                 ),
                 emptyEffect());
-        assertThat(m, compliesTo(tvars, signatures));
+        assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
 
-
+    // Invalid signature
+    /*
+    constraints:
+       ? <= ret
+    no effects
+     */
+    @Test
+    public void testMethodUsingThis_invalid() throws TypingException {
+        SootMethod m = makeMethodUsingThis();
+        List<Param<Level>> ps = methodParameters(m);
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.of(
+                        leS(Symbol.literal(DYN), ret())
+                ),
+                emptyEffect());
+        assertThat(m, violates(tvars, signatures, code.fields));
+    }
 }

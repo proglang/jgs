@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
@@ -15,6 +16,7 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.DirectedGraph;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -64,7 +66,7 @@ public class MethodTyping<Level> {
      * @throws TypingException
      */
     // TODO: what's up with "this"?
-    public Result<Level> check(TypeVars tvars, SignatureTable<Level> signatures, SootMethod method) throws TypingException {
+    public Result<Level> check(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields, SootMethod method) throws TypingException {
         // Get the signature of "method"
         MethodSignatures.Signature<Level> signatureToCheck = signatures.get(method)
                 .orElseThrow(() -> new TypingException("No signature found for method " + method.toString()));
@@ -76,7 +78,7 @@ public class MethodTyping<Level> {
 
 
         DirectedGraph<Unit> body = new BriefUnitGraph(method.getActiveBody());
-        BodyTypingResult<Level> r = new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures).generateResult(body, tvars.topLevelContext(), init);
+        BodyTypingResult<Level> r = new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures, fields).generateResult(body, tvars.topLevelContext(), init);
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
         Map<Symbol<Level>, TypeVars.TypeVar> symbolMapping = new HashMap<>(paramMapping);

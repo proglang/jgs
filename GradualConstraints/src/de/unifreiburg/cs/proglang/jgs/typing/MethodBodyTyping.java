@@ -4,6 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.Unit;
@@ -34,6 +35,7 @@ public class MethodBodyTyping<Level> {
     final private Constraints<Level> cstrs;
     final private TypeVars tvars;
     final private SignatureTable<Level> signatures;
+    final private FieldTable<Level> fields;
 
     /**
      * @param tvars Factory for generating type variables
@@ -41,13 +43,15 @@ public class MethodBodyTyping<Level> {
      * @param cstrs The domain of constraints
      * @param casts Specification of cast methods
      * @param signatures
+     * @param fields
      */
-    public MethodBodyTyping(TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts, SignatureTable<Level> signatures) {
+    public MethodBodyTyping(TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts, SignatureTable<Level> signatures, FieldTable<Level> fields) {
         this.csets = csets;
         this.casts = casts;
         this.cstrs = cstrs;
         this.tvars = tvars;
         this.signatures = signatures;
+        this.fields = fields;
     }
 
     Set<Constraint<Level>> constraintsForBranches(Unit s,
@@ -97,7 +101,7 @@ public class MethodBodyTyping<Level> {
 
 
 
-        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g), g, postdoms, s, BodyTypingResult.fromEnv(csets, env), signatures, pc, Collections.emptySet(), Optional.empty());
+        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g), g, postdoms, s, BodyTypingResult.fromEnv(csets, env), signatures, fields, pc, Collections.emptySet(), Optional.empty());
 
         return r;
     }
@@ -111,6 +115,7 @@ public class MethodBodyTyping<Level> {
                                                    // previous: the previous result
                                                    BodyTypingResult<Level> previous,
                                                    SignatureTable<Level> signatures,
+                                                   FieldTable<Level> fields,
                                                    TypeVar topLevelContext,
                                                    // visited: branches that were already in the current context visited, identified by their first statement
                                                    Set<Pair<TypeVar,Unit>> visited,
@@ -129,7 +134,7 @@ public class MethodBodyTyping<Level> {
         // a basic (non-branching) unit in a straight-line sequence
         if (successors.size() <= 1) {
             BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, sTvars, cstrs);
-            BodyTypingResult<Level> atomic = bsTyping.generate(s, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, casts);
+            BodyTypingResult<Level> atomic = bsTyping.generate(s, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, fields, casts);
             r = BodyTypingResult.addEffects(BodyTypingResult.addConstraints(atomic, previous.getConstraints()), previous.getEffects());
             // if the unit is the end of a sequence, stop
             if (successors.isEmpty()) {
@@ -138,7 +143,7 @@ public class MethodBodyTyping<Level> {
                 // otherwise continue with the rest of the sequence
                 Stmt next = (Stmt) successors.get(0);
                 // TODO-performance: this is a tailcall
-                return generateResult(sTvars, g, postdoms, next, r, signatures, topLevelContext, visited, until);
+                return generateResult(sTvars, g, postdoms, next, r, signatures, fields, topLevelContext, visited, until);
             }
         } else {
             // a branching statement. When the graph is checked with Assumptions.validUnitGraph then result should never be null
@@ -160,13 +165,13 @@ public class MethodBodyTyping<Level> {
                     return conditionResult;
                 }
                 Set<Pair<TypeVar, Unit>> newVisited = Stream.concat(Stream.of(Pair.of(newPc, uBranch)), visited.stream()).collect(toSet());
-                BodyTypingResult<Level> branchResult = generateResult(sTvars, g, postdoms, (Stmt)uBranch, conditionResult, signatures, newPc, newVisited, end);
+                BodyTypingResult<Level> branchResult = generateResult(sTvars, g, postdoms, (Stmt)uBranch, conditionResult, signatures, fields, newPc, newVisited, end);
                 r = BodyTypingResult.join(r, branchResult, csets, sTvars);
             }
             // continue after join point, if there is any
             if (end.isPresent()) {
                 //TODO-performance: this is a tailcall
-                return generateResult(sTvars, g, postdoms, (Stmt)end.get(), r, signatures, topLevelContext, visited, until);
+                return generateResult(sTvars, g, postdoms, (Stmt)end.get(), r, signatures, fields, topLevelContext, visited, until);
             } else {
                 return  r;
             }

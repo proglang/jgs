@@ -59,7 +59,7 @@ public class GenerateTest {
         /* x = x */
         /*********/
         s = j.newAssignStmt(code.localX, code.localX);
-        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, code.fields, casts);
         tvarXFinal = r.finalTypeVariableOf(code.varX);
         pc_HIGH_finalX_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(this.pc)),
@@ -78,7 +78,7 @@ public class GenerateTest {
         /*********/
         // Actually this is very similar to x = x...
         s = j.newAssignStmt(code.localX, code.localY);
-        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, code.fields, casts);
         tvarXFinal = r.finalTypeVariableOf(code.varX);
         pc_HIGH_finalX_LOW =
                 makeNaive(asList(leC(CHIGH, CTypes.variable(this.pc)),
@@ -120,7 +120,7 @@ public class GenerateTest {
         s = j.newAssignStmt(code.localX,
                             j.newVirtualInvokeExpr(code.localY,
                                                    code.testCallee__int.makeRef()));
-        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, code.fields, casts);
         initY = code.init.get(code.varY);
         finalX = r.finalTypeVariableOf(code.varX);
 
@@ -136,7 +136,7 @@ public class GenerateTest {
                                                    code.testCallee_int_int__int.makeRef(),
                                                    asList(code.localX, code.localZ)));
 
-        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, code.fields, casts);
         initX = code.init.get(code.varX);
         initY = code.init.get(code.varY);
         initZ = code.init.get(code.varZ);
@@ -155,7 +155,7 @@ public class GenerateTest {
                                                    code.ignoreSnd_int_int__int.makeRef(),
                                                    asList(code.localX, code.localZ)));
 
-        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, code.fields, casts);
         initX = code.init.get(code.varX);
         initY = code.init.get(code.varY);
         initZ = code.init.get(code.varZ);
@@ -172,7 +172,7 @@ public class GenerateTest {
                             j.newVirtualInvokeExpr(code.localY,
                                                    code.writeToLowReturn0_int__int.makeRef(),
                                                    singletonList(code.localX)));
-        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, code.fields, casts);
         initX = code.init.get(code.varX);
         initY = code.init.get(code.varY);
         finalX = r.finalTypeVariableOf(code.varX);
@@ -198,7 +198,7 @@ public class GenerateTest {
         s = j.newAssignStmt(code.localX,
                             j.newStaticInvokeExpr(castLowToDyn.makeRef(),
                                                   asList(code.localY)));
-        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, casts);
+        r = typing.generate(s, code.init, singleton(this.pc), code.signatures, code.fields, casts);
         initY = code.init.get(code.varY);
         finalX = r.finalTypeVariableOf(code.varX);
         expected = makeNaive(asList(leC(initY, CLOW),

@@ -100,7 +100,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseStaticFieldRef(StaticFieldRef v) {
-        super.caseStaticFieldRef(v);
+        caseGetField(v, Optional.empty());
     }
 
     /*

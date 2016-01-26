@@ -17,10 +17,12 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
+import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import soot.Local;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.*;
@@ -57,8 +59,9 @@ public class BasicStatementTyping<LevelT> {
                                              Environment env,
                                              Set<TypeVar> pc,
                                              SignatureTable<LevelT> signatures,
+                                             FieldTable<LevelT> fields,
                                              Casts<LevelT> casts) throws TypingException {
-        Gen g = new Gen(env, pc, signatures, casts);
+        Gen g = new Gen(env, pc, signatures, fields, casts);
         s.apply(g);
         // abort on any errors
         if (!g.getErrorMsg().isEmpty()) {
@@ -88,6 +91,7 @@ public class BasicStatementTyping<LevelT> {
         private final Environment env;
         private final Set<TypeVar> pcs;
         private final SignatureTable<LevelT> signatures;
+        private final FieldTable<LevelT> fields;
         private final Casts<LevelT> casts;
 
         public List<String> getErrorMsg() {
@@ -99,11 +103,12 @@ public class BasicStatementTyping<LevelT> {
         public Gen(Environment env,
                    Set<TypeVar> pc,
                    SignatureTable signatures,
-                   Casts<LevelT> casts) {
+                   FieldTable<LevelT> fields, Casts<LevelT> casts) {
             super();
             this.env = env;
             this.pcs = pc;
             this.signatures = signatures;
+            this.fields = fields;
             this.casts = casts;
             this.errorMsg = new ArrayList<>();
         }
@@ -155,6 +160,14 @@ public class BasicStatementTyping<LevelT> {
                     .orElseThrow(() -> new TypingAssertionFailure(
                             "No signature found for method "
                                     + m.toString()));
+        }
+
+        private TypeDomain.Type<LevelT> getFieldType(SootField f) {
+
+            return fields.get(f)
+                    .orElseThrow(() ->
+                    new TypingAssertionFailure("No field type found for field " + f.toString()));
+
         }
 
         private void caseDefinitionStmt(DefinitionStmt stmt) {
@@ -254,7 +267,9 @@ public class BasicStatementTyping<LevelT> {
                 @Override
                 public void caseGetField(FieldRef field,
                                          Optional<Var<?>> thisPtr) {
-                    throw new RuntimeException("NOT IMPLEMENTED");
+
+
+
                 }
 
                 @Override

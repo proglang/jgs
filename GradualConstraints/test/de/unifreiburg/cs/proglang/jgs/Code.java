@@ -1,9 +1,11 @@
 package de.unifreiburg.cs.proglang.jgs;
 
 import com.sun.org.apache.xpath.internal.operations.Mod;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
@@ -12,6 +14,7 @@ import de.unifreiburg.cs.proglang.jgs.typing.Environments;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.*;
 import soot.jimple.*;
+import soot.jimple.toolkits.scalar.pre.SootFilter;
 import soot.toolkits.graph.DirectedGraph;
 
 import java.io.PrintWriter;
@@ -29,7 +32,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
 /**
  * Some example "code" data for unit testing
  * <p>
@@ -56,6 +59,7 @@ public class Code {
     public final SootMethod writeToLowReturn0_int__int;
 
     public final Environment init;
+    public final FieldTable<Level> fields;
 
     public Code(TypeVars tvars) {
 
@@ -88,12 +92,20 @@ public class Code {
         this.testClass = new SootClass("TestClass");
         Scene.v().addClass(testClass);
 
+        Map<SootField, TypeDomain.Type<Level>> fieldMap = new HashMap<>();
+
         this.testLowField_int = new SootField("testLowField", IntType.v(), Modifier.STATIC);
         testClass.addField(this.testLowField_int);
+        fieldMap.put(testLowField_int, TLOW);
         this.testHighField_int = new SootField("testHighField", IntType.v(), Modifier.STATIC);
         testClass.addField(this.testHighField_int);
+        fieldMap.put(testHighField_int, THIGH);
         this.testDynField_int = new SootField("testDynField", IntType.v(), Modifier.STATIC);
         testClass.addField(this.testDynField_int);
+        fieldMap.put(testDynField_int, DYN);
+
+        // freeze field map
+        this.fields = new FieldTable<>(fieldMap);
 
         Map<SootMethod, MethodSignatures.Signature<LowHigh.Level>> sigMap = new HashMap<>();
         Symbol.Param<LowHigh.Level> param_x = param(IntType.v(), 0);
@@ -145,6 +157,11 @@ public class Code {
     }
 
 
+    /**
+     * Create a method conveniently. The method is added to the class "TestClass". Parameters can be given as an
+     * (positional) array of local variables (the "identity statements", required by Soot to map parameters to local
+     * variables, are inserted automatically)
+     */
     public SootMethod makeMethod(int modifier, String name, List<Local> params, soot.Type retType, List<Unit> bodyStmts) {
         SootMethod m = new SootMethod(name, params.stream().map(Local::getType).collect(toList()), retType, modifier);
         this.testClass.addMethod(m);

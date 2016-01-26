@@ -81,7 +81,12 @@ public abstract class ConstraintSet<Level> {
 
         @Override
         public String toString() {
-            return String.format("Projected: %s\n Counterexample: %s\n Conflicting: %s", this.projected, this.counterExample, this.getConflicting());
+            return String.format("Signature: %s\nBody: %s\nProjected Body: %s\n Counterexample: %s\n Conflicting: %s",
+                    this.signature.toString().replace(",", ",\n"),
+                    this.concrete.toString().replace(",", ",\n"),
+                    this.projected,
+                    this.counterExample,
+                    this.getConflicting());
         }
     }
 
@@ -139,8 +144,11 @@ public abstract class ConstraintSet<Level> {
     }
 
 
+    /**
+     * Project a constraint set to the symbols relevant for a method signature, which are the parameters, the top-level context and the return symbol
+     */
     public ConstraintSet<Level> projectForSignature(TypeVars tvars, Stream<Var<?>> params) {
-        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext()), params.map(tvars::param)).collect(toSet());
+        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext(), tvars.ret()), params.map(tvars::param)).collect(toSet());
         return this.projectTo(vars);
     }
 
