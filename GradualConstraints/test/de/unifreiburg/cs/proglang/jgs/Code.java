@@ -64,9 +64,6 @@ public class Code {
 
     public Code(TypeVars tvars) {
 
-        // set classpath to some test code
-        // TODO: move stuff that depends on classpaths somewhere else
-        Scene.v().setSootClassPath("testclasses-java:" + Scene.v().getSootClassPath());
 
         this.j = Jimple.v();
 
@@ -95,6 +92,10 @@ public class Code {
         ;
 
         this.testClass = new SootClass("TestClass");
+        // reset the testClass
+        if (Scene.v().containsClass("TestClass")) {
+            Scene.v().removeClass(Scene.v().getSootClass("TestClass"));
+        }
         Scene.v().addClass(testClass);
 
         Map<SootField, TypeDomain.Type<Level>> fieldMap = new HashMap<>();

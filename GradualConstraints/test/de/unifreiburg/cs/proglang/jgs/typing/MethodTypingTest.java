@@ -4,6 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import org.junit.Before;
 import org.junit.Test;
 import soot.*;
 import soot.jimple.IntConstant;
@@ -32,10 +33,19 @@ import static org.junit.Assert.*;
  */
 public class MethodTypingTest {
 
-    private static final Jimple j = Jimple.v();
-    private static final TypeVars tvars = new TypeVars();
-    private static final Code code = new Code(tvars);
-    private static final ConstraintSetFactory<Level> csets = new NaiveConstraintsFactory<>(types);
+    private Jimple j;
+    private TypeVars tvars;
+    private Code code;
+    private ConstraintSetFactory<Level> csets;
+
+    @Before
+    public void setUp() {
+        this.j = Jimple.v();
+        this.tvars = new TypeVars();
+        this.code = new Code(tvars);
+        this.csets = new NaiveConstraintsFactory<>(types);
+
+    }
 
     /*
     // a method with multiple return statements
@@ -52,7 +62,7 @@ public class MethodTypingTest {
        }
     }
      */
-    public static SootMethod makeMultipleReturns() {
+    public SootMethod makeMultipleReturns() {
         Unit returnX = j.newReturnStmt(code.localX);
         Unit returnZ = j.newReturnStmt(code.localZ);
         Unit ifY = j.newIfStmt(j.newEqExpr(code.localY, code.localY), returnX);
