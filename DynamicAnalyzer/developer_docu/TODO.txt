@@ -22,9 +22,7 @@ Try to run ArrayRefTest successfully
 >> main(arg) arg = low
 >> Wenn alle Argumente erst in einer Local gespeichert werden,ist makeFieldHigh... wahrscheinlich gar nicht nötig??
 >> BCEL um Bytecode zu validieren
-
+>> Add a chain for arguments of the superconstructor
 
 
 Fragen:
-<< Ein Superkonstruktor kann auch Argumente haben. Allerdings kann man sie nicht rechtzeitig testen, weil alle Aktionen erst hinterher ausgeführt werden dürfen. Ist das eine mögliche Sicherheitslücke?
-

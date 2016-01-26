@@ -736,68 +736,75 @@ public class JimpleInjector {
    *     reference appears. 
    */
   public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
-    logger.info( "Set Level of Array " + a.toString() + " in assign stmt");
+    logger.info( "Set level of array " + a.toString() + " in assign stmt");
 		
-    Expr addObj = null;
-    
+    // Define the types of the arguments for HandleStmt.setLevelOfArrayField()
     ArrayList<Type> parameterTypes = new ArrayList<Type>();
     parameterTypes.add(RefType.v("java.lang.Object")); // for Object o
     parameterTypes.add(RefType.v("java.lang.String")); // for String field
     parameterTypes.add(RefType.v("java.lang.String")); // for String localForObject
     
+    
     Value objectO = a.getBase();
     String signatureForField = getSignatureForArrayField(a);
-    logger.info("Signature of array field in jimple injector is" + signatureForField);
-    
     String signatureForObjectLocal = getSignatureForLocal((Local) a.getBase());
 
-    List args = new ArrayList();
+    // List for the arguments for HandleStmt.setLevelOfArrayField()
+    List<Value> args = new ArrayList<Value>();
     args.add(objectO);
-    args.add(signatureForField);
-    args.add(signatureForObjectLocal);
+    
+    // Store all string-arguments in an array and assign the field to the
+    // argument list.
+    Expr paramArray = Jimple.v().newNewArrayExpr(RefType.v(
+            "java.lang.String"), IntConstant.v(3));
+    Unit assignNewStringArray = Jimple.v().newAssignStmt(local_for_String_Arrays, paramArray);
+    
+    Unit assignFieldSignature = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+            local_for_String_Arrays, IntConstant.v(0)), StringConstant.v(signatureForField));
+    Unit assignObjectSignature = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+            local_for_String_Arrays, IntConstant.v(1)), StringConstant.v(signatureForObjectLocal));
+    
+    args.add(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(0)));
+    args.add(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(1)));
 		
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignNewStringArray, pos));
+    
     if (!(a.getIndex() instanceof Local)) { 
       // Case where the index is a constant.
       // The needed arguments are "Object o, String field, String localForObject".
-    	
-    	
-      Unit assignSignature = Jimple.v().newAssignStmt(
-          local_for_Strings, StringConstant.v(signature));
 			
-      unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-      lastPos = assignSignature;
-
-			
-      addObj = Jimple.v().newVirtualInvokeExpr(
-          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-          "setLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"),
-          false), a.getBase(), local_for_Strings);
+      logger.fine("Index value for the array field is a constant value");
 			
     } else if (a.getIndex() instanceof Local) { 
       // The index is a local and must be given as param.
       // The needed arguments are 
       // "Object o, String field, String localForObject, String localForIndex".
     	
-      parameterTypes.add(RefType.v("java.lang.String")); // for String localForIndex
+      logger.fine("Index value for the array field is stored in a local");
     	
+      // add a further parameter type for String localForIndex and add it to the args-list.
+      parameterTypes.add(RefType.v("java.lang.String"));
       Value fieldIndex = a.getIndex();
-      logger.info("Signature of array field in jimple injector is stored in "
-          + fieldIndex.toString());
-
-	
-      addObj = Jimple.v().newVirtualInvokeExpr(
-          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-          "setLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"),
-          false));
+      Unit assignIndexSignature = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+              local_for_String_Arrays, IntConstant.v(2)), fieldIndex);     
+      args.add(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(2)));
 			
+      unitStore_Before.insertElement(unitStore_Before.new Element(assignIndexSignature, pos));
+      
     } else {
       logger.log(Level.SEVERE, "Unexpected type of index",
           new InternalAnalyzerException("Unexpected type of index for array-field")); 
       System.exit(0);
     }
+    
+    Expr addObj = Jimple.v().newVirtualInvokeExpr(
+            hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+            "setLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"),
+            false), args);
 
     Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignFieldSignature, pos));
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignObjectSignature, pos));
     unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
     lastPos = pos;
   }
@@ -1116,20 +1123,21 @@ public class JimpleInjector {
 
   /**
    * Create the signature of an array-field based on the index.
+   * It simply returns the int-value as string.
    * @param a -ArrayRef-
    * @return -String- The signature for the array-field.
    */
   private static String getSignatureForArrayField(ArrayRef a) {
-    System.out.println("Type of index: " + a.getIndex().getType()); 
+    logger.fine("Type of index: " + a.getIndex().getType()); 
     String result = "";
     if (a.getIndex().getType().toString() == "int") {
-      System.out.println("Int Index");
       result = a.getIndex().toString();
     } else {
       logger.log(Level.SEVERE, "Unexpected type of index",
           new InternalAnalyzerException("Unexpected type of index")); 
       System.exit(0);
     }
+    logger.info("Signature of array field in jimple injector is: " + result);
     return result; 
   }
 
