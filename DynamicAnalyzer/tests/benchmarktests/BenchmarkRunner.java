@@ -1,4 +1,4 @@
-package benchmarktests;
+/*package benchmarktests;
 
 import classfiletests.SimpleTest;
 
@@ -14,4 +14,4 @@ public class BenchmarkRunner extends SimpleBenchmark {
 		 );
 		 }
 
-}
+}*/

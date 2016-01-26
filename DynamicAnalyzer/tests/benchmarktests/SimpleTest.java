@@ -1,4 +1,4 @@
-package benchmarktests;
+/*package benchmarktests;
 import java.util.logging.Logger;
 
 import com.google.caliper.Runner;
@@ -40,4 +40,4 @@ public class SimpleTest extends SimpleBenchmark {
 		}
 		}
 		}
-}
+}*/

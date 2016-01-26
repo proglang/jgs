@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Logger;
+
+import utils.logging.L1Logger;
 
 
 public class ClassRunner {
@@ -12,6 +15,7 @@ public class ClassRunner {
   static String s = null;
   static boolean error_recognized = false;
   static String fileName = "";
+  static Logger logger = L1Logger.getLogger();
 
   protected static void runClass(String fileName) {
 
@@ -60,7 +64,7 @@ public class ClassRunner {
           InputStreamReader(process.getInputStream()));
 
       // read the output from the command
-      System.out.println("Here is the standard output of the command:\n");
+      logger.severe("Here is the standard output of the command:\n");
       while ((s = stdInput.readLine()) != null) {
         System.out.println(s);
       }
@@ -69,7 +73,7 @@ public class ClassRunner {
               InputStreamReader(process.getErrorStream()));
       
       // read any errors from the attempted command
-      System.out.println("Here is the standard error of the command (if any):\n");
+      logger.severe("Here is the standard error of the command (if any):\n");
       while ((s = stdError.readLine()) != null) {
         System.out.println(s);
       }
@@ -80,17 +84,17 @@ public class ClassRunner {
   }
 
 
-  protected static void runClass2(String fileName) {
+  protected static void runClass2(String fileName) throws InvocationTargetException {
 
     ClassRunner.fileName = fileName;
 
     try { 
       DaClassLoader classloader = new DaClassLoader(ClassRunner.class.getClassLoader(), fileName);
       Class<?> loadedClass = classloader.loadClass();
-      System.out.println("aClass.getName() = " + loadedClass.getName());
-      String[] args = new String[0];
+      logger.info("aClass.getName() = " + loadedClass.getName());
+      Object[] args = new Object[1];
       Method method = loadedClass.getMethod("main", String[].class);
-      method.invoke(args);
+      method.invoke(null, args);
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (NoSuchMethodException e) {
@@ -100,8 +104,6 @@ public class ClassRunner {
     } catch (IllegalAccessException e) {
       e.printStackTrace();
     } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
       e.printStackTrace();
     }
   }

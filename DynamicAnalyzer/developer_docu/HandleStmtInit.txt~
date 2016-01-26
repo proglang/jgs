@@ -1,0 +1,7 @@
+Rules for the position of the "New" statement for HandleStmt
+_____________________________________________________________
+
+-- If it is a static method without arguments: position 0
+-- If it is a non-static method:  position +1 (!m.isStatic())
+-- If there are arguments: position + #ofArgs (m.ParameterCount())
+-- The superconstructor also must be skipped (???? or not?)

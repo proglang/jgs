@@ -2,22 +2,39 @@ package main.testclasses;
 
 public class ArrayRef {
 
-	public static void main(String[] args) {
-		
-	}
+  /**
+   * @param args
+   */
+  public static void main(String[] args) {
+    read();
+    writeWithIndexAsLocal(1);
+    writeWithFixedIndex();
+  }
 	
-	public void read() {
-		String [] arr = {"b","a"};
-		String res = arr[0];
-	}
+  /**
+   * 
+   */
+  public static void read() {
+    String [] arr = {"b","a"};
+    String res = arr[0];
+    System.out.println("Read-Result: " + res);
+  }
 	
-	public void writeWithIndexAsLocal(int i) {
-		String[] wr = {"a","b"};
-		wr[i] = "c";
-	}
+  /**
+   * @param i
+   */
+  public static void writeWithIndexAsLocal(int i) {
+    String[] wr = {"a","b"};
+    wr[i] = "c";
+    System.out.println("Write-Result: " + wr[i]);
+  }
 	
-	public void writeWithFixedIndex() {
-		String[] wr = {"a","b"};
-		wr[1] = "c";
-	}
+  /**
+   * 
+   */
+  public static void writeWithFixedIndex() {
+    String[] wr = {"a","b"};
+    wr[1] = "c";
+    System.out.println("Write-Result: " + wr[1]);
+  }
 }
