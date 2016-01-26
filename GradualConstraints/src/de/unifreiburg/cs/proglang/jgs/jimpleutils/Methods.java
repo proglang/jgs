@@ -23,7 +23,7 @@ public class Methods {
 
     public static <Level> Stream<Symbol.Param<Level>> parameters(SootMethod method) {
         return IntStream.range(0, method.getParameterCount())
-                .mapToObj(pos -> Symbol.param(method.getParameterType(pos), pos));
+                .mapToObj(pos -> Symbol.param(pos));
     }
 
     public static <Level> Map<Symbol.Param<Level>, TypeVar> symbolMapForMethod(TypeVars tvars, SootMethod method) {

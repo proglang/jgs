@@ -8,10 +8,7 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * JGS Symbols that occur in method signatures. They correspond to Jimples Parameters, @return, or literals
@@ -22,8 +19,11 @@ public abstract class Symbol<Level> {
      *
      * Why not use ParameterRef? Because it only implements pointer equality and there is no way to get to the ParameterRefs of a SootMethod (that I know of)
      */
-    public static <Level> Param<Level> param(soot.Type t, int pos) {
-        return new Param<>(new EquivalentValue(Jimple.v().newParameterRef(t, pos)));
+    public static <Level> Param<Level> param(int position) {
+        if (position < 0) {
+            throw new IllegalArgumentException(String.format("Negative position for parameter: %d", position));
+        }
+        return new Param<>(position);
     }
 
     /**
@@ -33,7 +33,7 @@ public abstract class Symbol<Level> {
         List<soot.Type> types = m.getParameterTypes();
         List<Param<Level>> result = new ArrayList<>();
         IntStream.range(0, m.getParameterCount()).forEach(pos -> {
-           result.add(param(types.get(pos), pos));
+           result.add(param(pos));
         });
         return result;
     }
@@ -52,32 +52,16 @@ public abstract class Symbol<Level> {
     public abstract CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVars.TypeVar> tvarMapping);
 
     public static class Param<Level> extends Symbol<Level> {
-        private final EquivalentValue me;
+        private final int position;
 
-        @Override public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-
-            Param<?> param = (Param<?>) o;
-
-            return !(me != null ? !me.equals(param.me) : param.me != null);
-
-        }
-
-        @Override public int hashCode() {
-            return me != null ? me.hashCode() : 0;
-        }
-
-        private Param(EquivalentValue me) {
+        private Param(int position) {
             super();
-            this.me = me;
+            this.position = position;
         }
 
         @Override
         public String toString() {
-            return String.format("@%s", this.me.toString());
+            return String.format("@param%d", this.position);
         }
 
         @Override
@@ -88,6 +72,22 @@ public abstract class Symbol<Level> {
                             "No mapping for %s: %s",
                             this,
                             tvarMapping.toString())));
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Param<?> param = (Param<?>) o;
+
+            return position == param.position;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return position;
         }
     }
 

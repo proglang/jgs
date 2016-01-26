@@ -2,8 +2,10 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import org.junit.Before;
 import org.junit.Test;
 import soot.*;
 import soot.jimple.IntConstant;
@@ -17,6 +19,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
 import static java.util.Arrays.asList;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -32,10 +35,19 @@ import static org.junit.Assert.*;
  */
 public class MethodTypingTest {
 
-    private static final Jimple j = Jimple.v();
-    private static final TypeVars tvars = new TypeVars();
-    private static final Code code = new Code(tvars);
-    private static final ConstraintSetFactory<Level> csets = new NaiveConstraintsFactory<>(types);
+    private Jimple j;
+    private TypeVars tvars;
+    private Code code;
+    private ConstraintSetFactory<Level> csets;
+
+    @Before
+    public void setUp() {
+        this.j = Jimple.v();
+        this.tvars = new TypeVars();
+        this.code = new Code(tvars);
+        this.csets = new NaiveConstraintsFactory<>(types);
+
+    }
 
     /*
     // a method with multiple return statements
@@ -52,7 +64,7 @@ public class MethodTypingTest {
        }
     }
      */
-    public static SootMethod makeMultipleReturns() {
+    public SootMethod makeMultipleReturns() {
         Unit returnX = j.newReturnStmt(code.localX);
         Unit returnZ = j.newReturnStmt(code.localZ);
         Unit ifY = j.newIfStmt(j.newEqExpr(code.localY, code.localY), returnX);
@@ -134,7 +146,7 @@ public class MethodTypingTest {
      */
     public SootMethod makeMethodUsingThis() {
         // TODO: check what Soot does with nested expressions
-        Unit getDynField = j.newAssignStmt(code.localY, j.newStaticFieldRef(code.testDynField_int.makeRef()));
+        Unit getDynField = j.newAssignStmt(code.localY, j.newStaticFieldRef(code.testStaticDynField_int.makeRef()));
         Unit add = j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localY));
         Unit exit = j.newReturnStmt(code.localY);
 
@@ -183,4 +195,131 @@ public class MethodTypingTest {
                 emptyEffect());
         assertThat(m, violates(tvars, signatures, code.fields));
     }
+
+
+    // Method with static low effects
+    /*
+     void methodWithLowEffects(TestClass t, int x) {
+        t.testLowField = x;
+     }
+     */
+    public SootMethod makeMethodWithLowEffects() {
+        Unit assignToLow = j.newAssignStmt(j.newInstanceFieldRef(code.localT, code.testLowField_int.makeRef()), code.localX);
+        return code.makeMethod(0, "methodWithLowEffects", asList(code.localT, code.localX), VoidType.v(), singletonList(assignToLow));
+    }
+
+
+    // Valid signature
+    /*
+    constraints:
+      param0 <= LOW, param1 <= LOW
+    effects:
+      {LOW}
+     */
+    @Test
+    public void testMakeMethodWithLowEffects() {
+        SootMethod m = makeMethodWithLowEffects();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.of(leS(0, literal(TLOW)),
+                        leS(1, literal(TLOW))),
+                MethodSignatures.<Level>emptyEffect().add(TLOW));
+        assertThat(m, compliesTo(tvars, signatures, code.fields));
+    }
+
+    // Also a valid, but more conservative signature (public effects)
+    /*
+    constraints:
+      param0 <= LOW, param1 <= LOW
+    effects:
+      {PUBLIC}
+     */
+    @Test
+    public void testMakeMethodWithLowEffects_publicEffect() {
+        SootMethod m = makeMethodWithLowEffects();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.of(leS(0, literal(TLOW)),
+                        leS(1, literal(TLOW))),
+                MethodSignatures.<Level>emptyEffect().add(PUB));
+        assertThat(m, compliesTo(tvars, signatures, code.fields));
+    }
+
+    // Invalid signature (constraint missing for param1)
+    /*
+    constraints:
+      param0 <= LOW
+    effects:
+      {LOW}
+     */
+    @Test
+    public void testMakeMethodWithLowEffects_invalid1() {
+        SootMethod m = makeMethodWithLowEffects();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.of(leS(0, literal(TLOW))),
+                MethodSignatures.<Level>emptyEffect().add(TLOW));
+        assertThat(m, violates(tvars, signatures, code.fields));
+    }
+
+    // Invalid signature (constraint missing for param0)
+    /*
+    constraints:
+      param1 <= LOW
+    effects:
+      {LOW}
+     */
+    @Test
+    public void testMakeMethodWithLowEffects_invalid2() {
+        SootMethod m = makeMethodWithLowEffects();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.of(leS(1, literal(TLOW))),
+                MethodSignatures.<Level>emptyEffect().add(TLOW));
+        assertThat(m, violates(tvars, signatures, code.fields));
+    }
+
+    // Invalid signature (constraint missing effect)
+    /*
+    constraints:
+      param0 <= LOW
+      param1 <= LOW
+    empty effects
+     */
+    @Test
+    public void testMakeMethodWithLowEffects_invalid3() {
+        SootMethod m = makeMethodWithLowEffects();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.of(leS(0, literal(TLOW)), leS(1, literal(TLOW))),
+                MethodSignatures.<Level>emptyEffect());
+        assertThat(m, violates(tvars, signatures, code.fields));
+    }
+
+
+    // An invalid method that performs a dynamic field update in static context
+    /*
+    void invalidDynUpdateInHighContext() {
+      if (this.testHighField == 42) {
+        testStatidDynField = 42;
+      }
+    }
+    */
+    public SootMethod makeInvalidDynUpdateInHighContext() {
+        Unit getField = j.newAssignStmt(code.localY, j.newInstanceFieldRef(code.localThis, code.testLowField_int.makeRef()));
+        Unit dynUpd = j.newAssignStmt(j.newStaticFieldRef(code.testStaticDynField_int.makeRef()), IntConstant.v(42));
+        Unit ifHigh = j.newIfStmt(j.newEqExpr(code.localY,
+                IntConstant.v(42)), dynUpd);
+        return code.makeMethod(0, "invalidDynUpdateInHighContext", emptyList(), VoidType.v(),
+                asList(ifHigh, dynUpd));
+    }
+
+    // trivial signature, but invalid typing
+    /*
+     constraints: <empty>
+     effect:      { PUBLIC }
+     */
+    @Test
+    public void testMakeInvalidDynUpdateInHighContext() {
+        SootMethod m = makeInvalidDynUpdateInHighContext();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.empty(), MethodSignatures.<Level>emptyEffect().add(PUB));
+        assertThat(m, violates(tvars, signatures, code.fields));
+    }
 }
+

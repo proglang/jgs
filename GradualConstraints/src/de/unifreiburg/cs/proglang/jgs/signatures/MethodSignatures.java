@@ -92,6 +92,10 @@ public class MethodSignatures<Level> {
             return this.add(Stream.concat(Stream.of(type), asList(types).stream()).collect(toList()));
         }
 
+        public final Effects<Level> add(Type<Level> type) {
+            return this.add((Stream.of(type)).collect(toList()));
+        }
+
         public final Effects<Level> add(Effects<Level> other) {
             return this.add(other.stream().collect(toList()));
         }
@@ -106,9 +110,14 @@ public class MethodSignatures<Level> {
             return this.effectSet.stream();
         }
 
-        public final Optional<Effects> checkSubsumptionOf(Effects<Level> other) {
-            HashSet<Type<Level>> notCovered = new HashSet<>(other.effectSet);
-            notCovered.removeAll(this.effectSet);
+        private boolean covers(TypeDomain<Level> types, Type<Level> t) {
+            return this.effectSet.stream().anyMatch(cand -> types.le(cand, t));
+        }
+
+        // TODO: get rid of the optional and just rename the method to "missingEffects" or something
+        public final Optional<Effects> checkSubsumptionOf(TypeDomain<Level> types, Effects<Level> other) {
+            HashSet<Type<Level>> notCovered = new HashSet<>();
+            other.stream().filter(t -> !(this.covers(types,t))).forEach(notCovered::add);
             if (notCovered.isEmpty()) {
                 return Optional.empty();
             } else {
