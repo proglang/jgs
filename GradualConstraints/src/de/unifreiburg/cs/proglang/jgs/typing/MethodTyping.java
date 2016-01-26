@@ -34,18 +34,42 @@ public class MethodTyping<Level> {
     private final Casts<Level> casts;
 
     static public class Result<Level> {
-        public final ConstraintSet.RefinementCheckResult refinementCheckResult;
-        public final Optional<MethodSignatures.Effects> missedEffects;
+        public final ConstraintSet.RefinementCheckResult<Level> refinementCheckResult;
+        public final Optional<MethodSignatures.Effects<Level>> missedEffects;
+        public final MethodSignatures.Effects sigEffects;
+        public final MethodSignatures.Effects inferredEffects;
 
-        public Result(ConstraintSet.RefinementCheckResult refinementCheckResult, Optional<MethodSignatures.Effects> missedEffects) {
+        public Result(ConstraintSet.RefinementCheckResult<Level> refinementCheckResult, MethodSignatures.Effects sigEffects, MethodSignatures.Effects inferredEffects, Optional<MethodSignatures.Effects<Level>> missedEffects) {
             this.refinementCheckResult = refinementCheckResult;
             this.missedEffects = missedEffects;
+            this.inferredEffects = inferredEffects;
+            this.sigEffects = sigEffects;
         }
 
         public boolean isSuccess() {
             return !(refinementCheckResult.counterExample.isPresent() || missedEffects.isPresent());
         }
 
+        @Override
+        public String toString() {
+            StringBuilder b = new StringBuilder("Typing result: \n");
+            if (this.refinementCheckResult.counterExample.isPresent()) {
+                b.append("- Error in refining constraints (see below)!\n");
+            } else {
+                b.append("- The constraints of the signature are sound\n");
+            }
+            if (this.missedEffects.isPresent()) {
+                b.append("- The signature is missing effects: ");
+                b.append(this.missedEffects.toString());
+                b.append("\n\n");
+            } else {
+                b.append("- The effects of the signature are sound \n");
+            }
+            b.append("Result of constraint refinement check:\n");
+            b.append(this.refinementCheckResult.toString());
+            b.append("\nInferred effects: " + this.inferredEffects.toString() + " signature effects: " + this.sigEffects.toString());
+            return b.toString();
+        }
     }
 
     /**
@@ -87,7 +111,7 @@ public class MethodTyping<Level> {
         ConstraintSet<Level> sigConstraints = csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(Collectors.toList()));
 
         return new Result(sigConstraints.signatureCounterExample(tvars, methodParameters(method).stream().map(Var::fromParam), r.getConstraints())
-        ,signatureToCheck.effects.checkSubsumptionOf(r.getEffects()));
+        ,signatureToCheck.effects, r.getEffects(), signatureToCheck.effects.checkSubsumptionOf(cstrs.types, r.getEffects()));
     }
 
 }

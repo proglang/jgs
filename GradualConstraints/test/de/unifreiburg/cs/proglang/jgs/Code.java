@@ -41,8 +41,9 @@ public class Code {
     public final Local localX, localY, localZ;
     public final Local localO;
     public final Local localT;
-    public final Var<?> varX, varY, varZ, varO, varT;
-    public final TypeVars.TypeVar tvarX, tvarY, tvarZ, tvarO, tvarT;
+    public final Local localThis;
+    public final Var<?> varX, varY, varZ, varO, varT, varThis;
+    public final TypeVars.TypeVar tvarX, tvarY, tvarZ, tvarO, tvarT, tvarThis;
 
     // classes and methods for tests
     public final SignatureTable<LowHigh.Level> signatures;
@@ -79,16 +80,19 @@ public class Code {
         this.localZ = j.newLocal("z", IntType.v());
         this.localO = j.newLocal("o", RefType.v("java.lang.Object"));
         this.localT = j.newLocal("t", RefType.v("TestClass"));
+        this.localThis = j.newLocal("this", RefType.v("TestClass"));
         this.varX = Var.fromLocal(localX);
         this.varY = Var.fromLocal(localY);
         this.varZ = Var.fromLocal(localZ);
         this.varO = Var.fromLocal(localO);
         this.varT = Var.fromLocal(localT);
+        this.varThis = Var.fromLocal(localThis);
         this.tvarX = tvars.testParam(varX, "");
         this.tvarY = tvars.testParam(varY, "");
         this.tvarZ = tvars.testParam(varZ, "");
         this.tvarO = tvars.testParam(varO, "");
         this.tvarT = tvars.testParam(varT, "");
+        this.tvarThis = tvars.testParam(varThis, "");
 
         this.init = Environments.makeEmpty()
                 .add(varX, tvarX)
@@ -96,6 +100,7 @@ public class Code {
                 .add(varZ, tvarZ)
                 .add(varO, tvarO)
                 .add(varT, tvarT)
+                .add(varThis, tvarThis)
         ;
 
         this.testClass = makeFreshClass("TestClass");
@@ -177,6 +182,10 @@ public class Code {
         m.setActiveBody(body);
 
         // set the statements for the body.. first the identity statements, then the bodyStmts
+        if (!m.isStatic()) {
+            body.getLocals().add(localThis);
+            body.getUnits().add(Jimple.v().newIdentityStmt(localThis, Jimple.v().newThisRef(testClass.getType())));
+        }
         IntStream.range(0, params.size()).forEach(pos -> {
             Local l = params.get(pos);
             ParameterRef pr = Jimple.v().newParameterRef(l.getType(), pos);
@@ -191,6 +200,7 @@ public class Code {
                         .filter(b -> b.getValue() instanceof Local)
                         .map(b -> (Local)b.getValue())
                 ).collect(toSet());
+        locals.removeAll(body.getLocals());
         body.getLocals().addAll(locals);
 
         return m;

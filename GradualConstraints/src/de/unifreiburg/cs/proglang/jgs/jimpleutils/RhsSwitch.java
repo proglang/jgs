@@ -95,7 +95,8 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseThisRef(ThisRef v) {
-        super.caseThisRef(v);
+        // for our purposes, this is a public constant
+        caseConstant(v);
     }
 
     @Override

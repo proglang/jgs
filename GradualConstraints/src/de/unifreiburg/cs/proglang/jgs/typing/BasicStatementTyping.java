@@ -18,15 +18,14 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import soot.Local;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Value;
+import soot.*;
 import soot.jimple.*;
 
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv;
@@ -35,7 +34,8 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 
 /**
- * A context for typing basic statements (assignments, method calls, instantiations... everything except branching and sequencing).
+ * A context for typing basic statements (assignments, method calls, instantiations... everything except branching and
+ * sequencing).
  *
  * @param <LevelT> The type of security levels.
  * @author fennell
@@ -166,43 +166,22 @@ public class BasicStatementTyping<LevelT> {
 
             return fields.get(f)
                     .orElseThrow(() ->
-                    new TypingAssertionFailure("No field type found for field " + f.toString()));
+                            new TypingAssertionFailure("No field type found for field " + f.toString()));
 
         }
 
-        private void caseDefinitionStmt(DefinitionStmt stmt) {
-            // get the variables that we write to
-            List<Var<?>> writeVars =
-                    Var.getAllFromValueBoxes(stmt.getDefBoxes())
-                            .collect(toList());
-            if (writeVars.size() != 1) {
-                throw new TypingAssertionFailure(String.format(
-                        "Assignment should have "
-                                + "exactly one destination variable. "
-                                + "Found: %s. Statement was: %s.",
-                        writeVars.toString(),
-                        stmt.toString()));
-            }
-            Var<?> writeVar = writeVars.get(0); // cannot fail now
-
-
+        private void caseLocalDefinition(Local writeVar, DefinitionStmt stmt) {
             //constraints and errors
             Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
 
             // Type variable (and constraint-type) for destinations
-            TypeVar destTVar = tvars.forLocal(writeVar, stmt);
+            TypeVar destTVar = tvars.forLocal(Var.fromLocal(writeVar), stmt);
             CType<LevelT> destCType = variable(destTVar);
 
             // Utility functions
-            Function<CType<LevelT>, Constraint<LevelT>> leDest =
-                    ct -> cstrs.le(ct, destCType);
+            Function<CType<LevelT>, Constraint<LevelT>> leDest =(CType<LevelT> ct) -> cstrs.le(ct, destCType);
             Function<Var<?>, CType<LevelT>> toCType =
                     v -> variable(env.get(v));
-
-            // get reads from lhs.. they are definitively flowing into the destination
-            Var.getAllFromValueBoxes(stmt.getLeftOp().getUseBoxes())
-                    .map(toCType.andThen(leDest))
-                    .forEach(constraints);
 
             // get constraints from rhs..
             Value rhs = stmt.getRightOp();
@@ -247,6 +226,7 @@ public class BasicStatementTyping<LevelT> {
                         TypeVar at = argTypes.get(i);
                         instantiation.put(Symbol.param(i), at);
                     }); // <- params
+
                     instantiation.put(Symbol.ret(), destTVar); // <- return
                     sig.constraints.toTypingConstraints(instantiation)
                             .forEach(constraints);
@@ -258,7 +238,7 @@ public class BasicStatementTyping<LevelT> {
                     sig.effects.stream().forEach(t -> {
                         pcs.forEach(pc -> {
                             constraints.add(cstrs.le(variable(pc),
-                                    CTypes.literal(t)));
+                                    literal(t)));
                         });
                     });
                 }
@@ -266,7 +246,6 @@ public class BasicStatementTyping<LevelT> {
                 @Override
                 public void caseGetField(FieldRef field,
                                          Optional<Var<?>> thisPtr) {
-
 
 
                 }
@@ -281,8 +260,8 @@ public class BasicStatementTyping<LevelT> {
                         return;
                     }
                     asList(cstrs.le(toCType.apply(cast.value),
-                            CTypes.literal(cast.sourceType)),
-                            cstrs.le(CTypes.literal(cast.destType),
+                            literal(cast.sourceType)),
+                            cstrs.le(literal(cast.destType),
                                     destCType)).forEach(constraints);
                 }
 
@@ -298,8 +277,8 @@ public class BasicStatementTyping<LevelT> {
                 constraints.add(leDest.apply(variable(pc)));
             });
 
-            // transition (for now only local assignments)
-            Environment fin = env.add(writeVar, destTVar);
+            // transition
+            Environment fin = env.add(Var.fromLocal(writeVar), destTVar);
 
             // .. and the result
             this.result = makeResult(csets.fromCollection(constraints.build()
@@ -307,6 +286,47 @@ public class BasicStatementTyping<LevelT> {
                                     toList())),
                     fin,
                     extractEffects(rhs));
+
+        }
+
+        // TODO: shares quite a lot of code with caseLocalDefinition
+        private void caseFieldDefinition(SootField field, DefinitionStmt stmt) {
+
+            //constraints and errors
+            Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
+
+            TypeDomain.Type<LevelT> fieldType = getFieldType(field);
+            // get reads from lhs.. they are definitively flowing into the destination
+            Var.getAllFromValueBoxes((Collection<ValueBox>)stmt.getLeftOp().getUseBoxes())
+                    .map((Var<?> v) -> Constraints.<LevelT>le(CTypes.variable(env.get(v)), CTypes.literal(fieldType)))
+                    .forEach(constraints);
+
+            // the right hand side should only be a local
+            if ((stmt.getRightOp() instanceof Local)) {
+                // .. and it flows into the field
+                Local rhs = (Local) stmt.getRightOp();
+                constraints.add(Constraints.le(CTypes.variable(env.get(Var.fromLocal(rhs))), CTypes.literal(fieldType)));
+            } else if (stmt.getRightOp() instanceof Constant) {
+                // do nothing
+            } else {
+                throw new TypingAssertionFailure("Only field updates of the form \"x.F = y\" of \"x.F = c\" are supported. Found " + stmt.toString());
+            }
+
+            // it remains to define the effect
+            Effects<LevelT> effects = MethodSignatures.<LevelT>emptyEffect().add(fieldType);
+            this.result = makeResult(csets.fromCollection(constraints.build().collect(Collectors.toList())), env, effects);
+        }
+
+
+        private void caseDefinitionStmt(DefinitionStmt stmt) {
+            Value lhs = stmt.getLeftOp();
+            if (lhs instanceof Local) {
+                caseLocalDefinition(((Local) lhs), stmt);
+            } else if (lhs instanceof FieldRef) {
+                caseFieldDefinition(((FieldRef)lhs).getField(), stmt);
+            } else {
+                throw new TypingAssertionFailure("Extracting write locations for statement " + stmt.toString() + " is not implemented!");
+            }
         }
 
         @Override

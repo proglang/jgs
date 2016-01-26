@@ -27,6 +27,7 @@ import soot.*;
 import soot.jimple.StaticInvokeExpr;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
 
 public class TestDomain {
 
@@ -152,6 +153,10 @@ public class TestDomain {
 
     public static SigConstraint<Level> leS(Symbol<Level> sc1, Symbol<Level> sc2) {
         return sigs.le(sc1, sc2);
+    }
+
+    public static SigConstraint<Level> leS(int paramPos, Symbol<Level> sc2) {
+        return sigs.le(param(paramPos), sc2);
     }
 
     //////////////
@@ -346,16 +351,16 @@ public class TestDomain {
         }
     }
 
-    private static final class RefinementError extends MethodTypingError {
-        public final ConstraintSet.RefinementCheckResult refinementCheckResult;
+    private static final class TypeError extends MethodTypingError {
+        public final MethodTyping.Result<Level> typingResult;
 
-        private RefinementError(ConstraintSet.RefinementCheckResult refinementCheckResult) {
-            this.refinementCheckResult = refinementCheckResult;
+        private TypeError(MethodTyping.Result<Level> typingResult) {
+            this.typingResult = typingResult;
         }
 
         @Override
         public String toString() {
-            return "result of refinement check: \n" + refinementCheckResult.toString();
+            return "result of method typing: \n" + typingResult.toString();
         }
     }
 
@@ -372,21 +377,21 @@ public class TestDomain {
             this.tvars = tvars;
         }
 
-        protected abstract boolean goodResult(ConstraintSet.RefinementCheckResult<Level> r);
+        protected abstract boolean goodResult(MethodTyping.Result r);
 
         @Override
         protected boolean matchesSafely(SootMethod method) {
             maybeSig = signatures.get(method);
             return maybeSig.map(sig -> {
-                MethodTyping.Result r;
+                MethodTyping.Result<Level> r;
                 try {
                     r = mtyping.check(tvars, signatures, fields, method);
                 } catch (TypingException e) {
                     this.error = new TypingExceptionError(e);
                     return false;
                 }
-                if (!goodResult(r.refinementCheckResult)) {
-                    this.error = new RefinementError(r.refinementCheckResult);
+                if (!goodResult(r)) {
+                    this.error = new TypeError(r);
                     return false;
                 } else {
                     return true;
@@ -408,8 +413,8 @@ public class TestDomain {
     public static Matcher<SootMethod> compliesTo(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
         return new MethodTypingMatcher(tvars, signatures, fields) {
             @Override
-            protected boolean goodResult(ConstraintSet.RefinementCheckResult<Level> r) {
-                return !r.counterExample.isPresent();
+            protected boolean goodResult(MethodTyping.Result r) {
+                return r.isSuccess();
             }
 
             public void describeTo(Description description) {
@@ -424,8 +429,8 @@ public class TestDomain {
     public static Matcher<SootMethod> violates(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
         return new MethodTypingMatcher(tvars, signatures, fields) {
             @Override
-            protected boolean goodResult(ConstraintSet.RefinementCheckResult<Level> r) {
-                return r.counterExample.isPresent();
+            protected boolean goodResult(MethodTyping.Result r) {
+                return !r.isSuccess();
             }
 
             @Override
