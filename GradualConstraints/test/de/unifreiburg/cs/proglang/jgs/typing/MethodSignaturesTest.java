@@ -35,8 +35,8 @@ public class MethodSignaturesTest {
     }
 
     @Test public void testConstraints() {
-        Symbol<Level> s1 = Symbol.param(IntType.v(), 0);
-        Symbol<Level> s2 = Symbol.param(IntType.v(), 1);
+        Symbol<Level> s1 = Symbol.param(0);
+        Symbol<Level> s2 = Symbol.param(1);
 
         Map<Symbol<Level>, TypeVar> mapping = new HashMap<>();
         mapping.put(s1, cs.v1);

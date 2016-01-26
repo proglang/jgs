@@ -74,7 +74,7 @@ public class Var<T> {
 
             @Override
             public void caseParameterRef(ParameterRef v) {
-                result.add(Var.fromParam(param(v.getType(), v.getIndex())));
+                result.add(Var.fromParam(param(v.getIndex())));
             }
 
             @Override

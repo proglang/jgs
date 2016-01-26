@@ -245,8 +245,7 @@ public class BasicStatementTyping<LevelT> {
                             args.stream().map(env::get).collect(toList());
                     IntStream.range(0, argCount).forEach(i -> {
                         TypeVar at = argTypes.get(i);
-                        soot.Type pt = m.getParameterType(i);
-                        instantiation.put(Symbol.param(pt, i), at);
+                        instantiation.put(Symbol.param(i), at);
                     }); // <- params
                     instantiation.put(Symbol.ret(), destTVar); // <- return
                     sig.constraints.toTypingConstraints(instantiation)

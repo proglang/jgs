@@ -43,8 +43,9 @@ public class Code {
     public final Jimple j;
     public final Local localX, localY, localZ;
     public final Local localO;
-    public final Var<?> varX, varY, varZ, varO;
-    public final TypeVars.TypeVar tvarX, tvarY, tvarZ, tvarO;
+    public final Local localT;
+    public final Var<?> varX, varY, varZ, varO, varT;
+    public final TypeVars.TypeVar tvarX, tvarY, tvarZ, tvarO, tvarT;
 
     // classes and methods for tests
     public final SignatureTable<LowHigh.Level> signatures;
@@ -73,20 +74,24 @@ public class Code {
         this.localY = j.newLocal("y", IntType.v());
         this.localZ = j.newLocal("z", IntType.v());
         this.localO = j.newLocal("o", RefType.v("java.lang.Object"));
+        this.localT = j.newLocal("t", RefType.v("TestClass"));
         this.varX = Var.fromLocal(localX);
         this.varY = Var.fromLocal(localY);
         this.varZ = Var.fromLocal(localZ);
         this.varO = Var.fromLocal(localO);
+        this.varT = Var.fromLocal(localT);
         this.tvarX = tvars.testParam(varX, "");
         this.tvarY = tvars.testParam(varY, "");
         this.tvarZ = tvars.testParam(varZ, "");
         this.tvarO = tvars.testParam(varO, "");
+        this.tvarT = tvars.testParam(varT, "");
 
         this.init = Environments.makeEmpty()
                 .add(varX, tvarX)
                 .add(varY, tvarY)
                 .add(varZ, tvarZ)
                 .add(varO, tvarO)
+                .add(varT, tvarT)
         ;
 
         this.testClass = new SootClass("TestClass");
@@ -108,8 +113,8 @@ public class Code {
         this.fields = new FieldTable<>(fieldMap);
 
         Map<SootMethod, MethodSignatures.Signature<LowHigh.Level>> sigMap = new HashMap<>();
-        Symbol.Param<LowHigh.Level> param_x = param(IntType.v(), 0);
-        Symbol.Param<LowHigh.Level> param_y = param(IntType.v(), 1);
+        Symbol.Param<LowHigh.Level> param_x = param(0);
+        Symbol.Param<LowHigh.Level> param_y = param(1);
 
         // Method:
         this.testCallee__int = new SootMethod("testCallee",
