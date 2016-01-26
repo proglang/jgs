@@ -1,0 +1,13 @@
+// CREATE NEW ARRAY
+ Expr paramArray = Jimple.v().newNewArrayExpr(RefType.v(
+   "java.lang.String"), IntConstant.v(3));
+
+Unit assignNewStringArray = Jimple.v().newAssignStmt(
+  local_for_String_Arrays, paramArray);
+    
+// WRITE INTO ARRAY FIELD
+Unit assignFieldSignature = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
+  local_for_String_Arrays, IntConstant.v(0)), StringConstant.v(signatureForField));
+
+// ACCESS ARRAY FIELD
+Jimple.v().newArrayRef( (Local) local_for_String_Arrays, IntConstant.v(0))
