@@ -24,7 +24,6 @@ import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import soot.*;
 import soot.jimple.*;
-import soot.util.Cons;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
@@ -138,7 +137,7 @@ public class BasicStatementTyping<LevelT> {
                 }
 
                 @Override
-                public void caseCast(Casts.Cast<LevelT> cast) {
+                public void caseCast(Casts.ValueCast<LevelT> cast) {
                     setResult(emptyEffect());
                 }
 
@@ -257,7 +256,7 @@ public class BasicStatementTyping<LevelT> {
                 }
 
                 @Override
-                public void caseCast(Casts.Cast<LevelT> cast) {
+                public void caseCast(Casts.ValueCast<LevelT> cast) {
                     if (!compatible(cast.sourceType, cast.destType)) {
                         errorMsg.add(String.format(
                                 "Source type %s cannot be converted to destination type %s.",

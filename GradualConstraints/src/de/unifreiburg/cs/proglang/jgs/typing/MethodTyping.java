@@ -66,7 +66,7 @@ public class MethodTyping<Level> {
                 b.append("- !! Method cannot be called (has an unsatisfiable signature)");
             }
             if (!this.refinementCheckResult.concrete.isSat(types)) {
-                b.append("- !! Conflicting constraints in method body");
+                b.append("- !! Conflicting constraints in method body\n");
             } else {
                 b.append("- Method body has no typing conflicts\n");
             }

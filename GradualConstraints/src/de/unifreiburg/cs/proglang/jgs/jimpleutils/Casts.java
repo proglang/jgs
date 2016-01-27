@@ -1,6 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
+import soot.jimple.InvokeExpr;
 import soot.jimple.StaticInvokeExpr;
+import soot.jimple.Stmt;
 
 import java.util.Optional;
 
@@ -13,14 +15,30 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
  */
 public abstract class Casts<Level> {
 
-    public static class Cast<Level> {
+    public static class CxCast<Level> {
+        public final Type<Level> sourceType;
+        public final Type<Level> destType;
+
+        public CxCast(Type<Level> sourceType, Type<Level> destType) {
+            this.sourceType = sourceType;
+            this.destType = destType;
+        }
+
+        @Override public String toString() {
+            return String.format("cx(%s => %s)",
+                    this.destType,
+                    this.sourceType);
+        }
+    }
+
+    public static class ValueCast<Level> {
         public final Type<Level> sourceType;
         public final Type<Level> destType;
         public final Var<?> value;
 
-        protected Cast(Type<Level> sourceType,
-                       Type<Level> destType,
-                       Var<?> value) {
+        protected ValueCast(Type<Level> sourceType,
+                            Type<Level> destType,
+                            Var<?> value) {
             this.sourceType = sourceType;
             this.destType = destType;
             this.value = value;
@@ -39,7 +57,7 @@ public abstract class Casts<Level> {
             if (o == null || getClass() != o.getClass())
                 return false;
 
-            Cast<?> cast = (Cast<?>) o;
+            ValueCast<?> cast = (ValueCast<?>) o;
 
             if (sourceType != null ?
                 !sourceType.equals(cast.sourceType) :
@@ -63,8 +81,33 @@ public abstract class Casts<Level> {
         }
     }
 
-    public abstract Optional<Cast<Level>> detectFromCall(StaticInvokeExpr e);
-    protected Cast<Level> makeCast(Type<Level>source, Type<Level> destination, Var<?> value) {
-        return new Cast<>(source, destination, value);
+    public Optional<CxCast<Level>> detectContextCastStartFromStmt(Stmt s) {
+        if (s.containsInvokeExpr()) {
+            InvokeExpr e = s.getInvokeExpr();
+            if (e instanceof StaticInvokeExpr) {
+                return this.detectContextCastStartFromCall((StaticInvokeExpr)e);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public boolean detectContextCastEndFromStmt(Stmt s) {
+        if (s.containsInvokeExpr()) {
+            InvokeExpr e = s.getInvokeExpr();
+            if (e instanceof StaticInvokeExpr) {
+                return this.detectContextCastEndFromCall((StaticInvokeExpr)e);
+            }
+        }
+        return false;
+    }
+
+    public abstract Optional<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e);
+    public abstract Optional<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e);
+    public abstract boolean detectContextCastEndFromCall(StaticInvokeExpr e);
+    protected ValueCast<Level> makeValueCast(Type<Level>source, Type<Level> destination, Var<?> value) {
+        return new ValueCast<>(source, destination, value);
+    }
+    protected CxCast<Level> makeContextCast(Type<Level>source, Type<Level> destination) {
+        return new CxCast<>(source, destination);
     }
 }

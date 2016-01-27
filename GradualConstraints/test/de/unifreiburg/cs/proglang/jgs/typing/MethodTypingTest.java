@@ -330,5 +330,41 @@ public class MethodTypingTest {
                 Stream.empty(), MethodSignatures.<Level>emptyEffect().add(PUB));
         assertThat(m, violates(tvars, signatures, code.fields));
     }
+
+    // The invalid method from above but now using a correct context cast
+    /*
+    void validDynUpdateInHighContext() {
+      if (this.testHighField == 42) {
+        (High ~> ?) {
+           testStaticDYnField = 42;
+        }
+      }
+    }
+     */
+    public SootMethod makeValidDynUpdateInHighContext() {
+        Unit getField = j.newAssignStmt(code.localY, j.newInstanceFieldRef(code.localThis, code.testLowField_int.makeRef()));
+        Unit cxBegin = j.newInvokeStmt(j.newStaticInvokeExpr(castCxHighToDyn.makeRef()));
+        Unit ifHigh = j.newIfStmt(j.newEqExpr(code.localY,
+                IntConstant.v(42)), cxBegin);
+        Unit dynUpd = j.newAssignStmt(j.newStaticFieldRef(code.testStaticDynField_int.makeRef()), IntConstant.v(42));
+        Unit cxEnd = j.newInvokeStmt(j.newStaticInvokeExpr(castCxEnd.makeRef()));
+        Unit returnVoid = j.newReturnVoidStmt();
+        Unit gotoReturn = j.newGotoStmt(returnVoid);
+        return code.makeMethod(0, "validDynUpdateInHighContext", emptyList(), VoidType.v(),
+                asList(getField, ifHigh, gotoReturn, cxBegin, dynUpd, cxEnd, returnVoid ));
+    }
+
+    // trivial, and valid signature
+    /*
+     constraints: <empty>
+     effect:      { PUBLIC }
+     */
+    @Test
+    public void testMakeValidDynUpdateInHighContext() {
+        SootMethod m = makeValidDynUpdateInHighContext();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.empty(), MethodSignatures.<Level>emptyEffect().add(PUB));
+        assertThat(m, compliesTo(tvars, signatures, code.fields));
+    }
 }
 

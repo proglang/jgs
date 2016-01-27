@@ -54,7 +54,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      */
     public abstract void caseGetField(FieldRef field, Optional<Var<?>> thisPtr);
 
-    public abstract void caseCast(Cast<Level> cast);
+    public abstract void caseCast(ValueCast<Level> cast);
 
 
     /*
@@ -137,7 +137,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-        Optional<Cast<Level>> c = casts.detectFromCall(v);
+        Optional<ValueCast<Level>> c = casts.detectValueCastFromCall(v);
         if (c.isPresent()) {
             caseCast(c.get());
         } else {

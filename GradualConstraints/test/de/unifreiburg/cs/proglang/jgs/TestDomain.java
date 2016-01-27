@@ -39,12 +39,21 @@ public class TestDomain {
 
     ///////
     // casts
-    public static final SootClass castClass = new SootClass("castClass");
+    public static final SootClass castClass = new SootClass("CastClass");
     public static final SootMethod castHighToDyn = makeCastMethod("castHighToDyn");
     public static final SootMethod castLowToDyn = makeCastMethod("castLowToDyn");
     public static final SootMethod castDynToLow = makeCastMethod("castDynToLow");
     public static final SootMethod castDynToHigh = makeCastMethod("castDynToHigh");
+    public static final SootMethod castCxHighToDyn = makeContextCastMethod("castCxHighToDyn");
+    public static final SootMethod castCxDynToHigh = makeContextCastMethod("castCxDynToHigh");
+    public static final SootMethod castCxEnd = makeContextCastMethod("castCxEnd");
 
+    static {
+        if (Scene.v().containsClass("CastClass")) {
+            Scene.v().removeClass(Scene.v().getSootClass("CastClass"));
+        }
+        Scene.v().addClass(castClass);
+    }
 
     private static SootMethod makeCastMethod(String name) {
         SootMethod result = new SootMethod(name, Collections.singletonList(RefType.v()), RefType.v(), Modifier.STATIC);
@@ -52,13 +61,20 @@ public class TestDomain {
         return result;
     }
 
+    private static SootMethod makeContextCastMethod(String name) {
+        SootMethod result = new SootMethod(name, Collections.emptyList(), VoidType.v(), Modifier.STATIC);
+        castClass.addMethod(result);
+        return result;
+    }
+
+
     public static final Casts<Level> casts = new Casts<Level>() {
 
         @Override
-        public Optional<Cast<Level>> detectFromCall(StaticInvokeExpr e) {
+        public Optional<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Optional<Cast<Level>>> makeCast =
-                    (t1, t2) -> Var.getAll(e.getArg(0)).findFirst().map(value -> makeCast(t1, t2, value));
+            BiFunction<Type<Level>, Type<Level>, Optional<ValueCast<Level>>> makeCast =
+                    (t1, t2) -> Var.getAll(e.getArg(0)).findFirst().map(value -> makeValueCast(t1, t2, value));
             if (m.equals(castHighToDyn)) {
                 return makeCast.apply(THIGH, DYN);
             } else if (m.equals(castLowToDyn)) {
@@ -70,6 +86,25 @@ public class TestDomain {
             } else {
                 return Optional.empty();
             }
+        }
+
+        @Override
+        public Optional<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e) {
+            SootMethod m = e.getMethod();
+            BiFunction<Type<Level>, Type<Level>, Optional<CxCast<Level>>> makeCast =
+                    (t1, t2) -> Optional.of(makeContextCast(t1, t2));
+            if (m.equals(castCxDynToHigh)) {
+                return makeCast.apply(DYN, THIGH);
+            } else if (m.equals(castCxHighToDyn)) {
+                return makeCast.apply(THIGH, DYN);
+            } else {
+                return Optional.empty();
+            }
+        }
+
+        @Override
+        public boolean detectContextCastEndFromCall(StaticInvokeExpr e) {
+            return e.getMethod().equals(castCxEnd);
         }
     };
 

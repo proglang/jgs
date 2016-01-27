@@ -71,6 +71,10 @@ public class MethodSignatures<Level> {
         return MethodSignatures.<Level>emptyEffect().add(type, types);
     }
 
+    public static <Level> Effects<Level> effects(Collection<Type<Level>> types) {
+        return MethodSignatures.<Level>emptyEffect().add(types);
+    }
+
     @SafeVarargs
     public static <Level> Effects<Level> union(Effects<Level>... effectSets) {
         HashSet<Type<Level>> result = new HashSet<>();
