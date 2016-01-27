@@ -104,6 +104,13 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
         caseGetField(v, Optional.empty());
     }
 
+    @Override
+    public void caseInstanceFieldRef(InstanceFieldRef v) {
+        // the base of a field ref is always a local in Jimple
+        caseGetField(v, Optional.of(Var.fromLocal((Local)v.getBase())));
+    }
+
+
     /*
      *  Calls
      */
@@ -323,10 +330,6 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     @Override
     public void caseLengthExpr(LengthExpr v) {
         super.caseLengthExpr(v);
-    }
-    @Override
-    public void caseInstanceFieldRef(InstanceFieldRef v) {
-        super.caseInstanceFieldRef(v);
     }
 
     @Override

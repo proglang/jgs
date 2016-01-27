@@ -197,6 +197,13 @@ public class MethodTypingTest {
     }
 
 
+    // TODO: finish
+    // Method with some local variables
+    /*
+
+     */
+
+
     // Method with static low effects
     /*
      void methodWithLowEffects(TestClass t, int x) {
@@ -305,8 +312,10 @@ public class MethodTypingTest {
         Unit dynUpd = j.newAssignStmt(j.newStaticFieldRef(code.testStaticDynField_int.makeRef()), IntConstant.v(42));
         Unit ifHigh = j.newIfStmt(j.newEqExpr(code.localY,
                 IntConstant.v(42)), dynUpd);
+        Unit returnVoid = j.newReturnVoidStmt();
+        Unit gotoReturn = j.newGotoStmt(returnVoid);
         return code.makeMethod(0, "invalidDynUpdateInHighContext", emptyList(), VoidType.v(),
-                asList(ifHigh, dynUpd));
+                asList(getField, ifHigh, gotoReturn, dynUpd, returnVoid ));
     }
 
     // trivial signature, but invalid typing

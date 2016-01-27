@@ -24,6 +24,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import soot.*;
 import soot.jimple.*;
+import soot.util.Cons;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
@@ -196,7 +197,7 @@ public class BasicStatementTyping<LevelT> {
                 }
 
                 /* for method calls:
-                   - [ ] add return as lower bound to dest
+                   - [x] add return as lower bound to dest
                  */
                 @Override
                 public void caseCall(SootMethod m,
@@ -247,7 +248,12 @@ public class BasicStatementTyping<LevelT> {
                 public void caseGetField(FieldRef field,
                                          Optional<Var<?>> thisPtr) {
 
-
+                    Stream.concat(
+                            Stream.of(leDest.apply(literal(getFieldType(field.getField())))),
+                            thisPtr.isPresent()
+                                    ? Stream.of(leDest.apply(variable(env.get(thisPtr.get()))))
+                                    : Stream.empty()
+                    ).forEach(constraints);
                 }
 
                 @Override
@@ -296,6 +302,7 @@ public class BasicStatementTyping<LevelT> {
             Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
 
             TypeDomain.Type<LevelT> fieldType = getFieldType(field);
+            Function<CType<LevelT>, Constraint<LevelT>> leDest = c -> cstrs.le(c, CTypes.literal(fieldType));
             // get reads from lhs.. they are definitively flowing into the destination
             Var.getAllFromValueBoxes((Collection<ValueBox>)stmt.getLeftOp().getUseBoxes())
                     .map((Var<?> v) -> Constraints.<LevelT>le(CTypes.variable(env.get(v)), CTypes.literal(fieldType)))
@@ -305,12 +312,15 @@ public class BasicStatementTyping<LevelT> {
             if ((stmt.getRightOp() instanceof Local)) {
                 // .. and it flows into the field
                 Local rhs = (Local) stmt.getRightOp();
-                constraints.add(Constraints.le(CTypes.variable(env.get(Var.fromLocal(rhs))), CTypes.literal(fieldType)));
+                constraints.add(leDest.apply(CTypes.variable(env.get(Var.fromLocal(rhs)))));
             } else if (stmt.getRightOp() instanceof Constant) {
                 // do nothing
             } else {
                 throw new TypingAssertionFailure("Only field updates of the form \"x.F = y\" of \"x.F = c\" are supported. Found " + stmt.toString());
             }
+
+            // also the context (pc) flows into the destination
+            pcs.stream().forEach(v -> constraints.add(leDest.apply(CTypes.variable(v))));
 
             // it remains to define the effect
             Effects<LevelT> effects = MethodSignatures.<LevelT>emptyEffect().add(fieldType);
@@ -382,6 +392,11 @@ public class BasicStatementTyping<LevelT> {
         @Override
         public void caseIfStmt(IfStmt stmt) {
             // note that this is the case where an if statement only has a single successor. I.e. it degenerates to a noop.
+            noRestrictions();
+        }
+
+        @Override
+        public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
             noRestrictions();
         }
 

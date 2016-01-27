@@ -1,9 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
-import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
@@ -16,7 +13,6 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.DirectedGraph;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -34,25 +30,46 @@ public class MethodTyping<Level> {
     private final Casts<Level> casts;
 
     static public class Result<Level> {
+        private final TypeDomain<Level> types;
         public final ConstraintSet.RefinementCheckResult<Level> refinementCheckResult;
         public final Optional<MethodSignatures.Effects<Level>> missedEffects;
         public final MethodSignatures.Effects sigEffects;
         public final MethodSignatures.Effects inferredEffects;
 
-        public Result(ConstraintSet.RefinementCheckResult<Level> refinementCheckResult, MethodSignatures.Effects sigEffects, MethodSignatures.Effects inferredEffects, Optional<MethodSignatures.Effects<Level>> missedEffects) {
+        public Result(TypeDomain<Level> types, ConstraintSet.RefinementCheckResult<Level> refinementCheckResult, MethodSignatures.Effects sigEffects, MethodSignatures.Effects inferredEffects, Optional<MethodSignatures.Effects<Level>> missedEffects) {
+            this.types = types;
             this.refinementCheckResult = refinementCheckResult;
             this.missedEffects = missedEffects;
             this.inferredEffects = inferredEffects;
             this.sigEffects = sigEffects;
         }
 
+        /**
+         * @return true, if the method signature can be called, i.e. it's constraints can be solved
+         */
+        public boolean hasSolution() {
+           return this.refinementCheckResult.signature.isSat(types);
+        }
+        /**
+         * @return true if the type analysis determined that the method implementation complies to the method signature
+         */
         public boolean isSuccess() {
-            return !(refinementCheckResult.counterExample.isPresent() || missedEffects.isPresent());
+            return (!this.hasSolution() || this.refinementCheckResult.concrete.isSat(types))
+                   && !refinementCheckResult.counterExample.isPresent()
+                    && !missedEffects.isPresent();
         }
 
         @Override
         public String toString() {
             StringBuilder b = new StringBuilder("Typing result: \n");
+            if (!this.hasSolution()) {
+                b.append("- !! Method cannot be called (has an unsatisfiable signature)");
+            }
+            if (!this.refinementCheckResult.concrete.isSat(types)) {
+                b.append("- !! Conflicting constraints in method body");
+            } else {
+                b.append("- Method body has no typing conflicts\n");
+            }
             if (this.refinementCheckResult.counterExample.isPresent()) {
                 b.append("- Error in refining constraints (see below)!\n");
             } else {
@@ -67,7 +84,10 @@ public class MethodTyping<Level> {
             }
             b.append("Result of constraint refinement check:\n");
             b.append(this.refinementCheckResult.toString());
-            b.append("\nInferred effects: " + this.inferredEffects.toString() + " signature effects: " + this.sigEffects.toString());
+            b.append("\nInferred effects: ")
+                    .append(this.inferredEffects.toString())
+                    .append(" signature effects: ")
+                    .append(this.sigEffects.toString());
             return b.toString();
         }
     }
@@ -110,7 +130,7 @@ public class MethodTyping<Level> {
 
         ConstraintSet<Level> sigConstraints = csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(Collectors.toList()));
 
-        return new Result(sigConstraints.signatureCounterExample(tvars, methodParameters(method).stream().map(Var::fromParam), r.getConstraints())
+        return new Result(cstrs.types, sigConstraints.signatureCounterExample(tvars, methodParameters(method).stream().map(Var::fromParam), r.getConstraints())
         ,signatureToCheck.effects, r.getEffects(), signatureToCheck.effects.checkSubsumptionOf(cstrs.types, r.getEffects()));
     }
 
