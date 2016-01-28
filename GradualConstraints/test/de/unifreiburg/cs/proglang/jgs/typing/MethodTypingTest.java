@@ -342,7 +342,7 @@ public class MethodTypingTest {
     }
      */
     public SootMethod makeValidDynUpdateInHighContext() {
-        Unit getField = j.newAssignStmt(code.localY, j.newInstanceFieldRef(code.localThis, code.testLowField_int.makeRef()));
+        Unit getField = j.newAssignStmt(code.localY, j.newInstanceFieldRef(code.localThis, code.testHighField_int.makeRef()));
         Unit cxBegin = j.newInvokeStmt(j.newStaticInvokeExpr(castCxHighToDyn.makeRef()));
         Unit ifHigh = j.newIfStmt(j.newEqExpr(code.localY,
                 IntConstant.v(42)), cxBegin);
@@ -365,6 +365,43 @@ public class MethodTypingTest {
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
                 Stream.empty(), MethodSignatures.<Level>emptyEffect().add(PUB));
         assertThat(m, compliesTo(tvars, signatures, code.fields));
+    }
+
+    // A invalid method with a dynamic->static context casts
+    /*
+    void invalidLowUpdateInDynContext() {
+      if (testStaticDynField == 42) {
+        (? ~> HIGH) {
+           this.testLowField = 42;
+        }
+      }
+    }
+     */
+
+    public SootMethod makeInvalidLowUpdateInDynContext() {
+        Unit getField = j.newAssignStmt(code.localY, j.newStaticFieldRef(code.testStaticDynField_int.makeRef()));
+        Unit cxBegin = j.newInvokeStmt(j.newStaticInvokeExpr(castCxDynToHigh.makeRef()));
+        Unit ifHigh = j.newIfStmt(j.newEqExpr(code.localY,
+                IntConstant.v(42)), cxBegin);
+        Unit dynUpd = j.newAssignStmt(j.newInstanceFieldRef(code.localThis, code.testLowField_int.makeRef()), IntConstant.v(42));
+        Unit cxEnd = j.newInvokeStmt(j.newStaticInvokeExpr(castCxEnd.makeRef()));
+        Unit returnVoid = j.newReturnVoidStmt();
+        Unit gotoReturn = j.newGotoStmt(returnVoid);
+        return code.makeMethod(0, "invalidLowUpdateInDynContext", emptyList(), VoidType.v(),
+                asList(getField, ifHigh, gotoReturn, cxBegin, dynUpd, cxEnd, returnVoid ));
+    }
+
+    // trivial signature, but invalid body
+    /*
+     constraints: <empty>
+     effect:      { PUBLIC }
+     */
+    @Test
+    public void testInvalidLowUpdateInDynContext() {
+        SootMethod m = makeInvalidDynUpdateInHighContext();
+        SignatureTable<Level> signatures = code.signatures.extendWith(m,
+                Stream.empty(), MethodSignatures.<Level>emptyEffect().add(PUB));
+        assertThat(m, violates(tvars, signatures, code.fields));
     }
 }
 
