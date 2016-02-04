@@ -1,0 +1,8 @@
+>> INSTANCE FIELDS
+r1.<TestSubClass: int pField> = 1;  // Field of an Object
+InstanceFieldRef.getBase -> returns the object r1
+
+
+>> STATIC FIELDS
+<TestSubClass: int sField> = 1;
+v.getField().getDeclaringClass() returns the class

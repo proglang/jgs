@@ -3,8 +3,12 @@ package main.testclasses;
 public class NonStaticMethods {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		NonStaticMethods nsm = new NonStaticMethods();
+		nsm.nonStatic();
+	}
+	
+	public void nonStatic() {
+		System.out.println("Called a non-static method");
 	}
 
 }

@@ -1,2 +1,5 @@
 IntConstant.v(2)
 StringConstant.v("some_string");
+ClassConstant.v(sc.getName().replace(".","/")) with sc of type SootClass
+CullConstant
+LongConstant

@@ -2,7 +2,7 @@ Start with:
 Try to run ArrayRefTest successfully
 
 >> Define sootClassPath for rt.jar in Main which works globally
->> Dominator or PointsTo in if else
+>> Dominator or PointsTo in if else if stmt.getTarget() stmt.getTargetBox().getUnit()
 >> Remove all System.outs
 >> Check all TODOs
 >> One Exception with System.out and one without

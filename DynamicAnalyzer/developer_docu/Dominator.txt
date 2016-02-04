@@ -1,0 +1,11 @@
+                 (stmt) -------->(stmt)
+                  /                 \
+                 /                   \
+                /                     \
+---------> (ifStmt) ----------------> (stmt)------> (stmt)
+          dominator                postdominator
+          
+          
+>> SootMethods:
+MHGPostDominatorsFinder.getDominators
+                       .getImmediateDominator

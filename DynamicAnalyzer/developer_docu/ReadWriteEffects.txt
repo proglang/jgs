@@ -1,0 +1,21 @@
+>> LOCALS
+
+
+>> FIELDS
+> Write to field
+		/* Assign Constant to Field
+		 *  int field = c;
+		 *  1. Check if Level(field) >= gpc
+		 *  2. Assign level of gpc to field
+		 */
+	
+ 		/* Assign Local to Field
+		 *  int field = local;
+		 *  1. Check if Level(field) >= gpc
+		 *  2. Assign level of join(local, gpc) to field
+		 */
+
+
+>> ARRAY REFERENCES
+
+>> 

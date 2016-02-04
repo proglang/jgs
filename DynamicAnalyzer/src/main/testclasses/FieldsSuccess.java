@@ -15,6 +15,7 @@ public class FieldsSuccess {
 	
 	public static void readField() {
 		String local = field;
+		System.out.println("Value of Field:" + local);
 	}
 
 }

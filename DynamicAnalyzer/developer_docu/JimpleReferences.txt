@@ -1,0 +1,8 @@
+ClassRef("java.lang.Class");
+SootClass obj = Scene.v().getSootClass("java.lang.Object")
+staticFieldRef
+instanceFieldRef
+Local
+Constant
+ArrayRef
+New

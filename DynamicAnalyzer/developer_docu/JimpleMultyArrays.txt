@@ -1,0 +1,7 @@
+>> In Jimple code <<
+String[][] r1, $r2;
+String[] $r3, $r4, $r5;
+
+$r2 = newarray(String[])[3];
+$r3 = newarray(String)[1];
+$r3[0] = "e";
