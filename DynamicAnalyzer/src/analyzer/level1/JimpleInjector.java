@@ -745,9 +745,9 @@ public class JimpleInjector {
     	
       // add a further parameter type for String localForIndex and add it to the arguments-list.
       parameterTypes.add(RefType.v("java.lang.String"));
-      Value fieldIndex = a.getIndex();
+      String localSignature = getSignatureForLocal((Local) a.getIndex());
       Unit assignIndexSignature = Jimple.v().newAssignStmt(
-              local_for_Strings3, fieldIndex);     
+              local_for_Strings3, StringConstant.v(localSignature));     
       args.add(local_for_Strings3);
 			
       unitStore_Before.insertElement(unitStore_Before.new Element(assignIndexSignature, pos));
