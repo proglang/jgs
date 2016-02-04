@@ -11,7 +11,7 @@ public class Simple {
    */
   public static void main(String[] args) {
     String message = "Hello World";
-    HelperClass.makeHigh(message);
+    message = HelperClass.makeHigh(message);
     System.out.println(message);
   }
 }

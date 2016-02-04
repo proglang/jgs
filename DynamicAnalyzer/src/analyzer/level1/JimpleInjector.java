@@ -58,12 +58,12 @@ public class JimpleInjector {
   static Body b = Jimple.v().newBody();
 
   /**
-   * Chain with all units in the actual methodbody. 
+   * Chain with all units in the actual method-body. 
    */
   static Chain<Unit> units = b.getUnits();
 
   /**
-   * Chain with all locals in the actual methodbody.
+   * Chain with all locals in the actual method-body.
    */
   static Chain<Local> locals = b.getLocals();
 
@@ -398,41 +398,6 @@ public class JimpleInjector {
    * Change level of elements
    */
 	
-	
-  /**
-   * @param o
-   * @param signature
-   * @param pos
-   */
-  public static void makeFieldHigh(Object o, String signature, Unit pos) {}
-  // TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
-	
-  /**
-   * @param o
-   * @param signature
-   * @param pos
-   */
-  public static void makeFieldLow(Object o, String signature, Unit pos) {}
-  // TODO: erst machen, wenn das Problem mit dem Feld-Objekt geklärt ist
-	
-  /**
-   * @param o
-   * @param index
-   * @param pos
-   */
-  public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
-		// TODO
-  }
-	
-  /**
-   * @param o
-   * @param index
-   * @param pos
-	 */
-  public static void makeArrayFieldLow(Object o, String index, Unit pos) {
-		// TODO
-  }
-	
   /**
    * @param l
    * @param pos
@@ -592,54 +557,29 @@ public class JimpleInjector {
   }
 	
   /**
-   * Add the level of a read array field to the security-level-list.
+   * Add the level of a read array field to the security-level-list. 
    * @param a -ArrayRef- The referenced array field
    * @param pos -Unit- The position where this reference occurs
    */
   public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
     logger.info( "Add Level of Array " + a.toString() + " in assign stmt");
-	
-    Expr addObj = null;
-			
-    if (!(a.getIndex() instanceof Local)) {
-      String signature = getSignatureForArrayField(a);
-      logger.info("Signature of array field in jimple injector is" + signature);
-      Unit assignSignature = Jimple.v().newAssignStmt(
-          local_for_Strings, StringConstant.v(signature));
-				
-      unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-      lastPos = assignSignature;
+    
+    ArrayList<Type> parameterTypes = new ArrayList<Type>();
+    parameterTypes.add(RefType.v("java.lang.Object"));
+    parameterTypes.add(RefType.v("java.lang.String"));
+    
+    String signature = getSignatureForArrayField(a);
+    Unit assignSignature = Jimple.v().newAssignStmt(
+        local_for_Strings, StringConstant.v(signature));
+  				
+    unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+    lastPos = assignSignature;
 
-      ArrayList<Type> parameterTypes = new ArrayList<Type>();
-      parameterTypes.add(RefType.v("java.lang.Object"));
-      parameterTypes.add(RefType.v("java.lang.String"));
-				
-      addObj = Jimple.v().newVirtualInvokeExpr(
-          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-          "addLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
-           a.getBase(), local_for_Strings);
-				
-    } else if (a.getIndex() instanceof Local) {
-      Value fieldIndex = a.getIndex();
-      logger.info("Signature of array field in jimple injector is stored in "
-          + fieldIndex.toString());
-				
-
-      ArrayList<Type> parameterTypes = new ArrayList<Type>();
-      parameterTypes.add(RefType.v("java.lang.Object"));
-      parameterTypes.add(IntType.v());
-				
-      addObj = Jimple.v().newVirtualInvokeExpr(
-          hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-          "addLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
-          a.getBase(), fieldIndex);
-				
-    } else {
-      logger.log(Level.SEVERE, "Unexpected type of index",
-          new InternalAnalyzerException("Unexpected type of index")); 
-      System.exit(0);
-    }
-
+    Expr addObj = Jimple.v().newVirtualInvokeExpr(
+        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+        "addLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
+        a.getBase(), local_for_Strings);
+    
     Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 
     unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
@@ -797,13 +737,13 @@ public class JimpleInjector {
       logger.fine("Index value for the array field is a constant value");
 			
     } else if (a.getIndex() instanceof Local) { 
-      // The index is a local and must be given as param.
+      // The index is a local and must be given as a parameter.
       // The needed arguments are 
       // "Object o, String field, String localForObject, String localForIndex".
     	
       logger.fine("Index value for the array field is stored in a local");
     	
-      // add a further parameter type for String localForIndex and add it to the args-list.
+      // add a further parameter type for String localForIndex and add it to the arguments-list.
       parameterTypes.add(RefType.v("java.lang.String"));
       Value fieldIndex = a.getIndex();
       Unit assignIndexSignature = Jimple.v().newAssignStmt(
@@ -812,11 +752,7 @@ public class JimpleInjector {
 			
       unitStore_Before.insertElement(unitStore_Before.new Element(assignIndexSignature, pos));
       
-    } else {
-      logger.log(Level.SEVERE, "Unexpected type of index",
-          new InternalAnalyzerException("Unexpected type of index for array-field")); 
-      System.exit(0);
-    }
+    } 
     
     Expr addObj = Jimple.v().newVirtualInvokeExpr(
             hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),

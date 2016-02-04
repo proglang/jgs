@@ -1,7 +1,5 @@
 Start with:
 Try to run ArrayRefTest successfully
---- JimpleInjector.setLevelOfAssignStmt adjust the method invokes. Better Comments.
---- Javadoc Comment.
 
 >> Define sootClassPath for rt.jar in Main which works globally
 >> Dominator or PointsTo in if else
@@ -14,6 +12,7 @@ Try to run ArrayRefTest successfully
 	public static void makeFieldLow(Object o, String signature, Unit pos) {}
 	public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
 	public static void makeArrayFieldLow(Object o, String index, Unit pos) {
+	Wie verhält sich das bei Feldern? Wie wird der Wert im originalen Feld gespeichert?
 >> makeHigh
 >> Benchmarktests
 >> URL = classLoader.getSystemResource
@@ -23,6 +22,7 @@ Try to run ArrayRefTest successfully
 >> Wenn alle Argumente erst in einer Local gespeichert werden,ist makeFieldHigh... wahrscheinlich gar nicht nötig??
 >> BCEL um Bytecode zu validieren
 >> Add a chain for arguments of the superconstructor
+>> addLevelOfArrayField in HandleStmt 
 
 
 Fragen:

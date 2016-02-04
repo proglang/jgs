@@ -1,5 +1,11 @@
 package utils.analyzer;
 
+/**
+ * @author koenigr
+ * Class to set the security-level of locals, fields and array-fields.
+ * Note, that the return value must be assigned to the original value,
+ * otherwise the security-level won't be assigned to the original field.
+ */
 public class HelperClass {
 
   public static <T> T makeHigh(T value) {
