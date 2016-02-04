@@ -25,8 +25,8 @@ public class ArrayRef {
    */
   public static void writeWithIndexAsLocal(int i) {
     String[] wr = {"a","b"};
-    wr[i] = "c";
-    System.out.println("Write-Result: " + wr[i]);
+    //wr[i] = "c";
+    //System.out.println("Write-Result: " + wr[i]);
   }
 	
   /**

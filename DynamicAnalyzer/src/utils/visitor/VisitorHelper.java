@@ -21,7 +21,7 @@ public class VisitorHelper {
    * @return list containing all non-constant arguments
    */
   protected Local[] getArgumentsForInvokedMethod(InvokeExpr invokeExpr) {
-    logger.finer("Arguments of invoked method: " + invokeExpr.getArgs());
+    logger.finer("Arguments of invoked method: " + invokeExpr.getArgs().toString());
 		
     List<Value> list = invokeExpr.getArgs();
     int sizeOfList = list.size();

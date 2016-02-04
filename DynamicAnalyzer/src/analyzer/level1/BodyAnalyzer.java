@@ -124,6 +124,7 @@ public class BodyAnalyzer extends BodyTransformer{
     while (lit.hasNext()) {
       Local item = lit.next();
       if (!(item.getName() == "local_for_Strings") && !(item.getName() == "local_for_String_Arrays")
+             && !(item.getName() == "local_for_Strings2") && !(item.getName() == "local_for_Strings3") 
     	     && !(item.getName() == "local_for_Objects") && !(item.getName() == "local_level")
              && !(item.getName() == "hs")) {
         JimpleInjector.addLocal(item);

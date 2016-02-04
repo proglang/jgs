@@ -1,3 +1,5 @@
+>> THIS IS NEEDED EG TO SPECIFY THE RETURN VALUE OF INVOKED METHODS
+
 VoidType.v()
 RefType.v("analyzer.level2.SecurityLevel")
 IntType.v()

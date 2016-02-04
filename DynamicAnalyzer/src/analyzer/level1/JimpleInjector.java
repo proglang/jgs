@@ -89,12 +89,29 @@ public class JimpleInjector {
    */
   static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 
+  /**
+   * Boolean to check whether the extra locals had already been added.
+   */
+  static boolean extralocals = false;
 	
   /**
    * 
    */
   static Local local_for_Strings = Jimple.v().newLocal(
       "local_for_Strings", RefType.v("java.lang.String"));
+  
+  /**
+   * This local is needed for methods
+   * with more than two arguments. 
+   */
+  static Local local_for_Strings2 = Jimple.v().newLocal(
+      "local_for_Strings2", RefType.v("java.lang.String"));
+  /**
+   * This locals is needed for methods
+   * with more than two arguments. 
+   */
+  static Local local_for_Strings3 = Jimple.v().newLocal(
+      "local_for_Strings3", RefType.v("java.lang.String"));
 
   /**
    * 
@@ -128,6 +145,8 @@ public class JimpleInjector {
     b = body;
     units = b.getUnits();
     locals = b.getLocals();
+    
+    extralocals = false;
     
     Iterator<Unit> it = units.iterator();
     
@@ -573,8 +592,9 @@ public class JimpleInjector {
   }
 	
   /**
-   * @param a
-   * @param pos
+   * Add the level of a read array field to the security-level-list.
+   * @param a -ArrayRef- The referenced array field
+   * @param pos -Unit- The position where this reference occurs
    */
   public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
     logger.info( "Add Level of Array " + a.toString() + " in assign stmt");
@@ -596,7 +616,7 @@ public class JimpleInjector {
 				
       addObj = Jimple.v().newVirtualInvokeExpr(
           hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-          "addLevelOfArrayField", parameterTypes, VoidType.v(), false),
+          "addLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
            a.getBase(), local_for_Strings);
 				
     } else if (a.getIndex() instanceof Local) {
@@ -611,7 +631,7 @@ public class JimpleInjector {
 				
       addObj = Jimple.v().newVirtualInvokeExpr(
           hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-          "addLevelOfArrayField", parameterTypes, VoidType.v(), false),
+          "addLevelOfArrayField", parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
           a.getBase(), fieldIndex);
 				
     } else {
@@ -737,13 +757,19 @@ public class JimpleInjector {
    */
   public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
     logger.info( "Set level of array " + a.toString() + " in assign stmt");
+    
+    // Add extra locals for arguments
+    if (!extralocals) {
+        locals.add(local_for_Strings2);
+        locals.add(local_for_Strings3);
+        extralocals = true;
+    }
 		
     // Define the types of the arguments for HandleStmt.setLevelOfArrayField()
     ArrayList<Type> parameterTypes = new ArrayList<Type>();
     parameterTypes.add(RefType.v("java.lang.Object")); // for Object o
     parameterTypes.add(RefType.v("java.lang.String")); // for String field
     parameterTypes.add(RefType.v("java.lang.String")); // for String localForObject
-    
     
     Value objectO = a.getBase();
     String signatureForField = getSignatureForArrayField(a);
@@ -753,21 +779,16 @@ public class JimpleInjector {
     List<Value> args = new ArrayList<Value>();
     args.add(objectO);
     
-    // Store all string-arguments in an array and assign the field to the
-    // argument list.
-    Expr paramArray = Jimple.v().newNewArrayExpr(RefType.v(
-            "java.lang.String"), IntConstant.v(3));
-    Unit assignNewStringArray = Jimple.v().newAssignStmt(local_for_String_Arrays, paramArray);
+    // Store all string-arguments in locals for strings and assign the locals to the
+    // argument list.  
+    Unit assignFieldSignature = Jimple.v().newAssignStmt(
+            local_for_Strings, StringConstant.v(signatureForField));
+    Unit assignObjectSignature = Jimple.v().newAssignStmt(
+            local_for_Strings2, StringConstant.v(signatureForObjectLocal));
     
-    Unit assignFieldSignature = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
-            local_for_String_Arrays, IntConstant.v(0)), StringConstant.v(signatureForField));
-    Unit assignObjectSignature = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
-            local_for_String_Arrays, IntConstant.v(1)), StringConstant.v(signatureForObjectLocal));
-    
-    args.add(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(0)));
-    args.add(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(1)));
+    args.add(local_for_Strings);
+    args.add(local_for_Strings2);
 		
-    unitStore_Before.insertElement(unitStore_Before.new Element(assignNewStringArray, pos));
     
     if (!(a.getIndex() instanceof Local)) { 
       // Case where the index is a constant.
@@ -785,9 +806,9 @@ public class JimpleInjector {
       // add a further parameter type for String localForIndex and add it to the args-list.
       parameterTypes.add(RefType.v("java.lang.String"));
       Value fieldIndex = a.getIndex();
-      Unit assignIndexSignature = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
-              local_for_String_Arrays, IntConstant.v(2)), fieldIndex);     
-      args.add(Jimple.v().newArrayRef(local_for_String_Arrays, IntConstant.v(2)));
+      Unit assignIndexSignature = Jimple.v().newAssignStmt(
+              local_for_Strings3, fieldIndex);     
+      args.add(local_for_Strings3);
 			
       unitStore_Before.insertElement(unitStore_Before.new Element(assignIndexSignature, pos));
       
@@ -1095,13 +1116,14 @@ public class JimpleInjector {
   }
 
   /**
-   * 
+   * Add all locals which are needed from JimpleInjector to store values
+   * of parameters for invoked methods.
    */
   protected static void addNeededLocals() {
     locals.add(local_for_Strings);
     locals.add(local_for_String_Arrays);
     locals.add(local_for_Objects);
-    
+
     b.validate();
   }
 
