@@ -13,7 +13,6 @@ Try to run ArrayRefTest successfully
 	public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
 	public static void makeArrayFieldLow(Object o, String index, Unit pos) {
 	Wie verhält sich das bei Feldern? Wie wird der Wert im originalen Feld gespeichert?
->> makeHigh
 >> Benchmarktests
 >> URL = classLoader.getSystemResource
 >> Standard von Return sollte High sein, bei Return const auf Low setzen
@@ -22,7 +21,8 @@ Try to run ArrayRefTest successfully
 >> Wenn alle Argumente erst in einer Local gespeichert werden,ist makeFieldHigh... wahrscheinlich gar nicht nötig??
 >> BCEL um Bytecode zu validieren
 >> Add a chain for arguments of the superconstructor
->> addLevelOfArrayField in HandleStmt 
+>> addLevelOfArrayField in HandleStmt fertig machen
+>> Add all classfiletests to testmain
 
 
 Fragen:

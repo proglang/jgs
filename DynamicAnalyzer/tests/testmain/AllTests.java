@@ -25,6 +25,7 @@ import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
 import classfiletests.ArrayRefTest;
 import classfiletests.ExtClassesTest;
+import classfiletests.FieldsSuccessTest;
 import classfiletests.GotoStmtTest;
 import classfiletests.IfStmtTest;
 import classfiletests.InvokeInternalMethodTest;
@@ -77,7 +78,8 @@ import tests.ExampleFailScenarios;
     InvokeInternalMethodTest.class,
     InvokeLibMethodTest.class,
     MulArrayTest.class,
-    SimpleTest.class
+    SimpleTest.class,
+    FieldsSuccessTest.class
     })
 
 public class AllTests {
