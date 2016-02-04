@@ -58,7 +58,7 @@ public class ArraysSuccess {
 		 * x = Join(i,a, lpc, a_i)
 		 */
 		int i = 2;
-		hs.addLevelOfArrayField(a, i);
+		hs.addLevelOfArrayField(a, Integer.toString(i));
 		hs.addLevelOfLocal("int_i");
 		hs.addLevelOfLocal("String[]_a");
 		hs.addLocal("String_x");
