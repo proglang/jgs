@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="main.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f c --classes main.testclasses.ArrayRef --main_class main.testclasses.ArrayRef"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f c --classes main.testclasses.IfStmt --main_class main.testclasses.IfStmt"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="DynamicAnalyzer"/>
 </launchConfiguration>

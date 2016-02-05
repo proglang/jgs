@@ -42,6 +42,7 @@ import tests.ExampleFailScenarios;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
+    // Tests for public HandleStmt methods
     LocalMapTest.class, 
     AssignLocalsSuccess.class,
     AssignLocalsFail.class,
@@ -67,19 +68,21 @@ import tests.ExampleFailScenarios;
     analyzer.level2.storage.ObjectMapTest.class, 
     JimpleInjectorTest.class, 
 
+    // Tests for protected HandleStmt methods
     InternalMethods.class,
     ObjectMapTest.class,
     LocalMapTest.class,
 
+    // Tests for vaild bytecode of testclasses
     ArrayRefTest.class,
     ExtClassesTest.class,
-    GotoStmtTest.class,
+    
+    FieldsSuccessTest.class,
     IfStmtTest.class,
     InvokeInternalMethodTest.class,
     InvokeLibMethodTest.class,
     MulArrayTest.class,
     SimpleTest.class,
-    FieldsSuccessTest.class
     })
 
 public class AllTests {

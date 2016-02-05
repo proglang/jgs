@@ -1,3 +1,10 @@
+                                       >>>> DOMINATOR <<<<
+                              ____________________________________________
+                              
+ A statement s postdominates a statement t if every path starting at t has to go through s.
+ Check wheter the post-dominator set of the given if-stmt contains the given statement, 
+ ie. the given stmt is a post dominator of the ifstmt.
+
                  (stmt) -------->(stmt)
                   /                 \
                  /                   \
@@ -5,7 +12,88 @@
 ---------> (ifStmt) ----------------> (stmt)------> (stmt)
           dominator                postdominator
           
-          
->> SootMethods:
-MHGPostDominatorsFinder.getDominators
-                       .getImmediateDominator
+_________________________________________________________________________________________          
+>> SootMethods, which could be interesting:<<
+
+- MHGDominatorsFinder<N> (DirectedGraph<N> graph)
+- MHGPostDominatorsFinder(DirectedGraph<N< graph)
+- MHGPostDominatorsFinder.getDominators
+- MHGPostDominatorsFinder.getImmediateDominator
+- postdominatorfinder.getDominators(stmt).contains(s)
+- UnitGraph graph = new BriefUnitGraph(body)
+- soot.toolkits.graph.UnitGraph+
+- soot.toolkits.graph.BriefUnitGraph.
+- BriefUnitGraph(Body body)
+_________________________________________________________________________________________
+ >> Java code like <<
+     if (x < 0) {
+      x = 0;
+    } else if (x < 2) {
+      x = 2;
+    } else if (x < 4) {
+      x = 4;
+    } else {
+      x = 6;
+    }
+    
+ >> is translated into<<
+        if i0 >= 0 goto label0;
+        b1 = 0;
+        goto label3;
+     label0:
+        if i0 >= 2 goto label1;
+        b1 = 2;
+        goto label3;
+     label1:
+        if i0 >= 4 goto label2;
+        b1 = 4;
+        goto label3;
+     label2:
+        b1 = 6;
+     label3:
+        return b1;
+        
+ ___________________________________________________________________________________________
+                              >>> Problems <<<
+ 1. How to distinguish separated ifs and multiple ifs in Jimple?
+ 
+ MULTIPLE IF:
+                     
+              /-----(if)------\
+             /                 \
+ -----(ifStmt)----(else if)----( )------ as java-code ist translated into (in Jimple):
+             \                 / 
+              \-----(else)----/
+              
+              L0,L1... = Label0, Label1,...
+              
+              														actions of else-clause	
+ ---(Neg of itStmt?)----true--->(L0/Neg of elseIfStmt?)----true-->(L1)---------------->(L2)----->
+ 			\							\                                              /
+ 			 \							 \         actions of else-if-clause          /
+ 			  \							  \------------------------------------------/
+               \                                                                    /
+                \                 actions of if-clause                             /
+                 \----------------------------------------------------------------/
+              
+             Observations:
+               - all statements have the same postdominator
+
+SEPARATED IFS:
+
+----(ifStmt)--------------()----(ifStmt)---------()------
+          \              /          \           /
+           \----------- /            \---------/
+              
+              
+ 2. If one if-clause creates a high context... is it nesseccary that the other clauses are high,too?
+ 
+ if (...) {
+   ...LOW...
+ } else if (...) {
+   ...HIGH...
+ } else if (...) {
+   ...LOW...    //!! IF this clause is active it means that the condition of the highclause was false
+ } else {
+   ???          //!!
+ }        
