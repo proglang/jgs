@@ -1,7 +1,10 @@
 Start with:
 IfStmt
 ------
->> Dominator or PointsTo in if else if stmt.getTarget() stmt.getTargetBox().getUnit()
+>> BodyAnalyzer already uses Dominator. Start here.
+>> What is better? Dominator or target box?
+>> Where should the exitInnerScope be placed?
+>> Complete dominator class.
 >> Adjust level 2 tests.
 >> Check all methods, which work with ifStmts
 

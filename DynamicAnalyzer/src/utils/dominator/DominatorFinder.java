@@ -12,38 +12,39 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class DominatorFinder {
-  private MHGPostDominatorsFinder pdfinder;
-  private UnitGraph graph;
-  private List<Unit> postDomList = new ArrayList<Unit>();
-  Logger logger = L1Logger.getLogger();
+	private MHGPostDominatorsFinder pdfinder;
+	private UnitGraph graph;
+	private List<Unit> postDomList = new ArrayList<Unit>();
+	Logger logger = L1Logger.getLogger();
   
-  public DominatorFinder(Body body) {
-    graph = new BriefUnitGraph(body);
-    pdfinder = new MHGPostDominatorsFinder(graph);
-  }
+	public DominatorFinder(Body body) {
+		graph = new BriefUnitGraph(body);
+		pdfinder = new MHGPostDominatorsFinder(graph);
+	}
   
-  /**
-   * @param node
-   */
-  public void getImmediateDominator(Unit node) {
-    postDomList.add((Unit) pdfinder.getImmediateDominator(node));
-    System.out.println("postDomList after inserting one element :" + postDomList.toString());
-    System.out.println("Dominator :" + pdfinder.getImmediateDominator(node).toString());
-  }
+	/**
+	 * Get the f
+	 * @param node -Unit- 
+	 */
+	public void getImmediateDominator(Unit node) {
+		postDomList.add((Unit) pdfinder.getImmediateDominator(node));
+		logger.info("postDomList after inserting one element :" + postDomList.toString());
+		logger.info("Dominator :" + pdfinder.getImmediateDominator(node).toString());
+	}
   
-  /**
-   * @param node
-   * @return
-   */
-  public boolean containsStmt(Unit node) {
-    if (postDomList.contains(node)) {
-      postDomList.remove(node);
-      System.out.println("PostDomList after Removing one element " + postDomList.toString());
-      return true;
-    } else {
-      return false;
-    }
-  }
-  
+	/**
+	 * @param node
+	 * @return
+	 */
+	public boolean containsStmt(Unit node) {
+		if (postDomList.contains(node)) {
+			postDomList.remove(node);
+			logger.info("PostDomList after Removing one element "
+					+ postDomList.toString());
+			return true;
+		} else {
+			return false;
+		}
+	}
   
 }

@@ -56,457 +56,467 @@ import java.util.logging.Logger;
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
-  Logger logger = L1Logger.getLogger();
-  VisitorHelper vh = new VisitorHelper();
+	Logger logger = L1Logger.getLogger();
+	VisitorHelper vh = new VisitorHelper();
 	
-  protected enum StmtContext {
-      UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, RETURN, GOTO, IF, SWITCH, THROW};
-  protected StmtContext actualContext = StmtContext.UNDEF;
-  protected enum RightElement {NOT, NEW_ARRAY, NEW_UNDEF_OBJECT,
-  INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD};
-  protected RightElement rightElement = RightElement.NOT;
-  protected Stmt callingStmt;
-
-  @Override
-  public void caseDoubleConstant(DoubleConstant v) {
-    rightElement = RightElement.NOT;
-  }
-
-  @Override
-  public void caseFloatConstant(FloatConstant v) {
-    rightElement = RightElement.NOT;
-  }
-
-  @Override
-  public void caseIntConstant(IntConstant v) {
-    rightElement = RightElement.NOT;
-  }
-
-  @Override
-  public void caseLongConstant(LongConstant v) {
-    rightElement = RightElement.NOT;
-  }
-
-  @Override
-  public void caseNullConstant(NullConstant v) {
-    rightElement = RightElement.NOT;
-  }
-
-  @Override
-  public void caseStringConstant(StringConstant v) {
-    rightElement = RightElement.NOT;
-  }
-
-  @Override
-  public void caseClassConstant(ClassConstant v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-    System.out.println(v);
-  }
-
-  @Override
-  public void defaultCase(Object object) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseAddExpr(AddExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseAndExpr(AndExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseCmpExpr(CmpExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseCmpgExpr(CmpgExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseCmplExpr(CmplExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseDivExpr(DivExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
- }
-
-  @Override
-  public void caseEqExpr(EqExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseNeExpr(NeExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseGeExpr(GeExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseGtExpr(GtExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseLeExpr(LeExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseLtExpr(LtExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseMulExpr(MulExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseOrExpr(OrExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseRemExpr(RemExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseShlExpr(ShlExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseShrExpr(ShrExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseUshrExpr(UshrExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseSubExpr(SubExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseXorExpr(XorExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
-
-  @Override
-  public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-    rightElement = RightElement.NOT;
-    logger.fine("Invoke expression is of type InterfaceInvoke");
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException("Unexpected InterfaceInvokeExpression");
-    }
-  }
-
-  @Override
-  public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
-    logger.fine("Invoke expression is of type SpecialInvoke");
-    logger.finest(v.toString());
-    rightElement = RightElement.NOT;
+	protected enum StmtContext { 
+		UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, 
+		RETURN, GOTO, IF, SWITCH, THROW
+	}
 	
-    if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
-      Local[] args = vh.getArgumentsForInvokedMethod(v);
-      String method = v.getMethod().toString();
-
-      if (ExternalClasses.methodMap.containsKey(method)) {
-        logger.fine("Found an external class " + method);
-        ExternalClasses.receiveCommand(method, callingStmt, args);
-      } else {
-        JimpleInjector.storeArgumentLevels(callingStmt, args);
-      }
-    } else {
-      new InternalAnalyzerException("Unexpected Context for Invoke Expression");
-    }
-  }
-
-  @Override
-  public void caseStaticInvokeExpr(StaticInvokeExpr v) {
-    logger.fine("Invoke expression is of type StaticInvoke");
-    logger.finest(v.toString());
-    rightElement = RightElement.NOT;
+	protected StmtContext actualContext = StmtContext.UNDEF;
 	
-    if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
-      Local[] args = vh.getArgumentsForInvokedMethod(v);
-      String method = v.getMethod().toString();
-
-      if (ExternalClasses.methodMap.containsKey(method)) {
-        logger.fine("Found an external class " + method);
-        ExternalClasses.receiveCommand(method, callingStmt, args);
-      } else {
-        JimpleInjector.storeArgumentLevels(callingStmt, args);
-      }
-    } else {
-      new InternalAnalyzerException("Unexpected Context for Invoke Expression");
-    }
-  }
-
-  @Override
-  public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
-    logger.fine("Invoke expression is of type VirtualInvoke");
-    logger.finest(v.toString());
-    rightElement = RightElement.NOT;
+	protected enum RightElement {
+		NOT, NEW_ARRAY, NEW_UNDEF_OBJECT,
+		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD
+	} 
 	
-    if (actualContext == StmtContext.INVOKE || actualContext == StmtContext.ASSIGNRIGHT ) {
-      Local[] args = vh.getArgumentsForInvokedMethod(v);
-      String method = v.getMethod().toString();
+	protected RightElement rightElement = RightElement.NOT;
+	protected Stmt callingStmt;
 
-      if (ExternalClasses.methodMap.containsKey(method)) {
-        logger.fine("Found an external class " + method);
-        ExternalClasses.receiveCommand(method, callingStmt, args);
-      } else {
-        JimpleInjector.storeArgumentLevels(callingStmt, args);
-      }
-    } else {
-      new InternalAnalyzerException("Unexpected Context for Invoke Expression");
-    }		
-  }
+	@Override
+	public void caseDoubleConstant(DoubleConstant v) {
+		rightElement = RightElement.NOT;
+	}
 
-  @Override
-  public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-    rightElement = RightElement.NOT;
-    logger.fine("Invoke expression is of type DynamicInvoke");
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
+	@Override
+	public void caseFloatConstant(FloatConstant v) {
+		rightElement = RightElement.NOT;
+	}
 
-  @Override
-  public void caseCastExpr(CastExpr v) {
-    rightElement = RightElement.NOT;
-		  
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
+	@Override
+	public void caseIntConstant(IntConstant v) {
+		rightElement = RightElement.NOT;
+	}
 
-  @Override
-  public void caseInstanceOfExpr(InstanceOfExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
+	@Override
+	public void caseLongConstant(LongConstant v) {
+		rightElement = RightElement.NOT;
+	}
 
-  @Override
-  public void caseNewArrayExpr(NewArrayExpr v) {
-    rightElement = RightElement.NEW_ARRAY;
-    logger.finest("New Array expression identified");
-    System.out.println("Base Type " + v.getBaseType());
-    System.out.println("Class " + v.getClass());
-    System.out.println("Size " + v.getSize());
-    System.out.println("SizeBox " + v.getSizeBox());
-    System.out.println("Type " + v.getType());
-    System.out.println("UseBox " + v.getUseBoxes());
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-    // TODO
-    }
-  }
+	@Override
+	public void caseNullConstant(NullConstant v) {
+		rightElement = RightElement.NOT;
+	}
 
-  @Override
-  public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-    rightElement = RightElement.NEW_ARRAY;
-    logger.finest("New Multiarray expression identified");
-    System.out.println("Size count " + v.getSizeCount());
-    System.out.println("Base Type " + v.getBaseType().toString());
-    System.out.println("Class " + v.getClass().toString());
-    System.out.println("Sizes " + v.getSizes().toString());
-    System.out.println("Type " + v.getType().toString());
-    System.out.println("Use Boxes " + v.getUseBoxes().toString());
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
+	@Override
+	public void caseStringConstant(StringConstant v) {
+		rightElement = RightElement.NOT;
+	}
 
-  @Override
-  public void caseNewExpr(NewExpr v) {
-    rightElement = RightElement.NEW_UNDEF_OBJECT;
-    logger.finest("NewExpr identified " + v.getBaseType());
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      // new InternalAnalyzerException("new Expr");
-      if (!ExternalClasses.classMap.contains(v.toString())) {
-        // TODO Standardverfahren
-      } else {
+	@Override
+	public void caseClassConstant(ClassConstant v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+		System.out.println(v);
+	}
+
+	@Override
+	public void defaultCase(Object object) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseAddExpr(AddExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseAndExpr(AndExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseCmpExpr(CmpExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseCmpgExpr(CmpgExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseCmplExpr(CmplExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseDivExpr(DivExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseEqExpr(EqExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseNeExpr(NeExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseGeExpr(GeExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseGtExpr(GtExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseLeExpr(LeExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseLtExpr(LtExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseMulExpr(MulExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseOrExpr(OrExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseRemExpr(RemExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseShlExpr(ShlExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseShrExpr(ShrExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseUshrExpr(UshrExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseSubExpr(SubExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseXorExpr(XorExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
+		rightElement = RightElement.NOT;
+		logger.fine("Invoke expression is of type InterfaceInvoke");
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException("Unexpected InterfaceInvokeExpression");
+		}
+	}
+
+	@Override
+	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
+		logger.fine("Invoke expression is of type SpecialInvoke");
+		logger.finest(v.toString());
+		rightElement = RightElement.NOT;
+	
+		if (actualContext == StmtContext.INVOKE 
+				|| actualContext == StmtContext.ASSIGNRIGHT ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			String method = v.getMethod().toString();
+
+			if (ExternalClasses.methodMap.containsKey(method)) {
+				logger.fine("Found an external class " + method);
+				ExternalClasses.receiveCommand(method, callingStmt, args);
+			} else {
+				JimpleInjector.storeArgumentLevels(callingStmt, args);
+			}
+		} else {
+			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+		}
+	}
+
+	@Override
+	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
+		logger.fine("Invoke expression is of type StaticInvoke");
+		logger.finest(v.toString());
+		rightElement = RightElement.NOT;
+	
+		if (actualContext == StmtContext.INVOKE 
+				|| actualContext == StmtContext.ASSIGNRIGHT ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			String method = v.getMethod().toString();
+
+			if (ExternalClasses.methodMap.containsKey(method)) {
+				logger.fine("Found an external class " + method);
+				ExternalClasses.receiveCommand(method, callingStmt, args);
+			} else {
+				JimpleInjector.storeArgumentLevels(callingStmt, args);
+			}
+		} else {
+			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+		}
+	}
+
+	@Override
+	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
+		logger.fine("Invoke expression is of type VirtualInvoke");
+		logger.finest(v.toString());
+		rightElement = RightElement.NOT;
+	
+		if (actualContext == StmtContext.INVOKE 
+				|| actualContext == StmtContext.ASSIGNRIGHT ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			String method = v.getMethod().toString();
+
+			if (ExternalClasses.methodMap.containsKey(method)) {
+				logger.fine("Found an external class " + method);
+				ExternalClasses.receiveCommand(method, callingStmt, args);
+			} else {
+				JimpleInjector.storeArgumentLevels(callingStmt, args);
+			}
+		} else {
+			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+		}		
+	}
+
+	@Override
+	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
+		rightElement = RightElement.NOT;
+		logger.fine("Invoke expression is of type DynamicInvoke");
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseCastExpr(CastExpr v) {
+		rightElement = RightElement.NOT;
+			
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseInstanceOfExpr(InstanceOfExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseNewArrayExpr(NewArrayExpr v) {
+		rightElement = RightElement.NEW_ARRAY;
+		logger.finest("New Array expression identified");
+		System.out.println("Base Type " + v.getBaseType());
+		System.out.println("Class " + v.getClass());
+		System.out.println("Size " + v.getSize());
+		System.out.println("SizeBox " + v.getSizeBox());
+		System.out.println("Type " + v.getType());
+		System.out.println("UseBox " + v.getUseBoxes());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+		// TODO
+		}
+	}
+
+	@Override
+	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
+		rightElement = RightElement.NEW_ARRAY;
+		logger.finest("New Multiarray expression identified");
+		System.out.println("Size count " + v.getSizeCount());
+		System.out.println("Base Type " + v.getBaseType().toString());
+		System.out.println("Class " + v.getClass().toString());
+		System.out.println("Sizes " + v.getSizes().toString());
+		System.out.println("Type " + v.getType().toString());
+		System.out.println("Use Boxes " + v.getUseBoxes().toString());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
+
+	@Override
+	public void caseNewExpr(NewExpr v) {
+		rightElement = RightElement.NEW_UNDEF_OBJECT;
+		logger.finest("NewExpr identified " + v.getBaseType());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			// new InternalAnalyzerException("new Expr");
+			if (!ExternalClasses.classMap.contains(v.toString())) {
+				// TODO Standardverfahren
+			} else {
 				// TODO special methods
-      }
-    }
-  }
+			}
+		}
+	}
 
-  @Override
-  public void caseLengthExpr(LengthExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
+	@Override
+	public void caseLengthExpr(LengthExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
 
-  @Override
-  public void caseNegExpr(NegExpr v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
+	@Override
+	public void caseNegExpr(NegExpr v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
 
-  @Override
-  public void caseArrayRef(ArrayRef v) {
-    logger.finest("Array reference identified " + v.toString());
-    System.out.println("Base " + v.getBase());
-    System.out.println("Index " + v.getIndex());
-    System.out.println("IndexBox " + v.getIndexBox().toString());
-    System.out.println("Type " + v.getType());
-    System.out.println("Use Box " + v.getUseBoxes().toString());
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      JimpleInjector.addLevelInAssignStmt(v, callingStmt);
-    } else if (actualContext == StmtContext.ASSIGNLEFT) {
-      JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
-    } else {
-      new InternalAnalyzerException();			
-    }
-  }
+	@Override
+	public void caseArrayRef(ArrayRef v) {
+		logger.finest("Array reference identified " + v.toString());
+		System.out.println("Base " + v.getBase());
+		System.out.println("Index " + v.getIndex());
+		System.out.println("IndexBox " + v.getIndexBox().toString());
+		System.out.println("Type " + v.getType());
+		System.out.println("Use Box " + v.getUseBoxes().toString());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
+	}
 
-  @Override
-  public void caseStaticFieldRef(StaticFieldRef v) {	
-    rightElement = RightElement.NOT;
-    logger.finest("Static field reference identified " + v.toString());
-    System.out.println(		v.getField().getDeclaringClass());
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      JimpleInjector.addLevelInAssignStmt(v, callingStmt);
-    } else if (actualContext == StmtContext.ASSIGNLEFT) {
-      JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
-    } else {
-      new InternalAnalyzerException();			
-    }
-  }
+	@Override
+	public void caseStaticFieldRef(StaticFieldRef v) {	
+		rightElement = RightElement.NOT;
+		logger.finest("Static field reference identified " + v.toString());
+		System.out.println(		v.getField().getDeclaringClass());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
+	}
 
-  @Override
-  public void caseInstanceFieldRef(InstanceFieldRef v) {	
-    rightElement = RightElement.NOT;
-    logger.finest("Instance field reference identified " + v.toString());	
-    System.out.println("kh" + v.getBase().toString());
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      JimpleInjector.addLevelInAssignStmt(v, callingStmt);
-    } else if (actualContext == StmtContext.ASSIGNLEFT) {
-      JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
-    } else {
-      new InternalAnalyzerException();			
-    }
-  }
+	@Override
+	public void caseInstanceFieldRef(InstanceFieldRef v) {	
+		rightElement = RightElement.NOT;
+		logger.finest("Instance field reference identified " + v.toString());	
+		System.out.println("kh" + v.getBase().toString());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
+	}
 
-  @Override
-  public void caseParameterRef(ParameterRef v) {
-    logger.finest("Parameter reference identified " + v.toString());
-    new InternalAnalyzerException("Unhandled case of ParameterRef");
-  }
+	@Override
+	public void caseParameterRef(ParameterRef v) {
+		logger.finest("Parameter reference identified " + v.toString());
+		new InternalAnalyzerException("Unhandled case of ParameterRef");
+	}
 
-  @Override
-  public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-    rightElement = RightElement.NOT;
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      new InternalAnalyzerException();
-    }
-  }
+	@Override
+	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException();
+		}
+	}
 
-  @Override
-  public void caseThisRef(ThisRef v) {
-    logger.finer("@This reference identified " + v.toString());
-    new InternalAnalyzerException("Unhandled case of ThisRef");
-  }
+	@Override
+	public void caseThisRef(ThisRef v) {
+		logger.finer("@This reference identified " + v.toString());
+		new InternalAnalyzerException("Unhandled case of ThisRef");
+	}
 
-  @Override
-  public void caseLocal(Local l) {	
-    rightElement = RightElement.NOT;
-    logger.finest("Local identified " + l.toString());
-    if (actualContext == StmtContext.ASSIGNRIGHT) {
-      JimpleInjector.addLevelInAssignStmt(l, callingStmt);
-    } else if (actualContext == StmtContext.ASSIGNLEFT) {
-      JimpleInjector.setLevelOfAssignStmt(l, callingStmt);
-    } else {
-      new InternalAnalyzerException();			
-    }
-  }
+	@Override
+	public void caseLocal(Local l) {	
+		rightElement = RightElement.NOT;
+		logger.finest("Local identified " + l.toString());
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			JimpleInjector.addLevelInAssignStmt(l, callingStmt);
+		} else if (actualContext == StmtContext.ASSIGNLEFT) {
+			JimpleInjector.setLevelOfAssignStmt(l, callingStmt);
+		} else {
+			new InternalAnalyzerException();			
+		}
+	}
 }

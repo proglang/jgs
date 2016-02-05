@@ -33,120 +33,120 @@ import java.util.logging.Logger;
  */
 public class BodyAnalyzer extends BodyTransformer{
 
+	@Override
+	protected void internalTransform(Body arg0, String arg1,
+				@SuppressWarnings("rawtypes") Map arg2) {
+		SootMethod method;
+		Body body;	
+		Chain<Unit> units;
+		Chain<Local> locals;
+		AnnotationStmtSwitch stmtSwitch;
+		Chain<SootField> fields;
 
-    
+		DominatorFinder df;
+
+		Logger logger = L1Logger.getLogger();
+		
+		try { 
+
+			System.out.println("Logger Init2");
+			L1Logger.setup(Level.ALL);
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "L1Logger couldn't be initialized properly");
+			e.printStackTrace();
+		}
+
+		logger.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}",
+				arg0.getMethod().getName());
 	
-  /* (non-Javadoc)
-   * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
-   */
-  @Override
-  protected void internalTransform(Body arg0, String arg1,
-	      @SuppressWarnings("rawtypes") Map arg2) {
-    SootMethod method;
-    Body body;  
-    Chain<Unit> units;
-    Chain<Local> locals;
-    AnnotationStmtSwitch stmtSwitch;
-    Chain<SootField> fields;
+		body = arg0;
+		method = body.getMethod();
+		fields = method.getDeclaringClass().getFields();	
 
-    DominatorFinder df;
+		stmtSwitch = new AnnotationStmtSwitch(body);
+		
+		df = new DominatorFinder(body);
+				
+		JimpleInjector.setBody(body);
 
-    Logger logger = L1Logger.getLogger();
-	  
-    try { 
+		units = body.getUnits();
+		locals = body.getLocals();
+				
+		// invokeHS should be at the beginning of every method-body. 
+		// It creates a map for locals.
+		JimpleInjector.invokeHS();
+		JimpleInjector.addNeededLocals();
+				
+		if (method.isMain()) {
+			JimpleInjector.initHS();
+		}
 
-      System.out.println("Logger Init2");
-      L1Logger.setup(Level.ALL);
-    } catch (IOException e) {
-      logger.log(Level.WARNING, "L1Logger couldn't be initialized properly");
-      e.printStackTrace();
-    }
+		/*
+		 * If the method is the constructor, the newly created object
+		 * has to be added to the ObjectMap and its fields are added to the
+		 * new object
+		 */
+		if (method.getName().equals("<init>")) {
+			logger.log(Level.INFO, "Entering <init>");
+			JimpleInjector.addInstanceObjectToObjectMap();
+						
+			// Add all instance fields to ObjectMap
+			Iterator<SootField> fIt = fields.iterator();
+			while (fIt.hasNext()) {
+				SootField item = fIt.next();
+				if (!item.isStatic()) {
+					JimpleInjector.addInstanceFieldToObjectMap(item);
+				}
+			}
+						
+		} else if (method.getName().equals("<clinit>")) {
+			logger.log(Level.INFO, "Entering <clinit>");
+			SootClass sc = method.getDeclaringClass();
+			JimpleInjector.addClassObjectToObjectMap(sc);
+						
+			// Add all static fields to ObjectMap
+			Iterator<SootField> fIt = fields.iterator();
+			while (fIt.hasNext()) {
+				SootField item = fIt.next();
+				if (item.isStatic()) {
+					JimpleInjector.addStaticFieldToObjectMap(item);
+				} 
+			}
+		}
+				
 
-    logger.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}", arg0.getMethod().getName());
-	
-    body = arg0;
-    method = body.getMethod();
-    fields = method.getDeclaringClass().getFields();  
+		// Add all locals to LocalMap except the locals which 
+		// are inserted for analyzation purposes.
+		Iterator<Local> lit = locals.iterator();
+		while (lit.hasNext()) {
+			Local item = lit.next();
+			if (!(item.getName() == "local_for_Strings") 
+					&& !(item.getName() == "local_for_String_Arrays")
+					&& !(item.getName() == "local_for_Strings2") 
+					&& !(item.getName() == "local_for_Strings3") 
+					&& !(item.getName() == "local_for_Objects") 
+					&& !(item.getName() == "local_level")
+					&& !(item.getName() == "hs")) {
+				JimpleInjector.addLocal(item);
+			}
+		}
 
-    stmtSwitch = new AnnotationStmtSwitch(body);
-    
-    df = new DominatorFinder(body);
-        
-    JimpleInjector.setBody(body);
-
-    units = body.getUnits();
-    locals = body.getLocals();
-        
-    // invokeHS should be at the beginning of every method-body. It creates a map for locals.
-    JimpleInjector.invokeHS();
-    JimpleInjector.addNeededLocals();
-        
-    if (method.isMain()) {
-      JimpleInjector.initHS();
-    }
-
-    /*
-     * If the method is the constructor, the newly created object
-     * has to be added to the ObjectMap and its fields are added to the
-     * new object
-     */
-    if (method.getName().equals("<init>")) {
-      logger.log(Level.INFO, "Entering <init>");
-      JimpleInjector.addInstanceObjectToObjectMap();
-        		
-      // Add all instance fields to ObjectMap
-      Iterator<SootField> fIt = fields.iterator();
-      while (fIt.hasNext()) {
-        SootField item = fIt.next();
-        if (!item.isStatic()) {
-          JimpleInjector.addInstanceFieldToObjectMap(item);
-        }
-      }
-        		
-    } else if (method.getName().equals("<clinit>")) {
-      logger.log(Level.INFO, "Entering <clinit>");
-      SootClass sc = method.getDeclaringClass();
-      JimpleInjector.addClassObjectToObjectMap(sc);
-        		
-      // Add all static fields to ObjectMap
-      Iterator<SootField> fIt = fields.iterator();
-      while (fIt.hasNext()) {
-        SootField item = fIt.next();
-        if (item.isStatic()) {
-          JimpleInjector.addStaticFieldToObjectMap(item);
-        } 
-      }
-    }
-        
-
-
-    Iterator<Local> lit = locals.iterator();
-    while (lit.hasNext()) {
-      Local item = lit.next();
-      if (!(item.getName() == "local_for_Strings") && !(item.getName() == "local_for_String_Arrays")
-             && !(item.getName() == "local_for_Strings2") && !(item.getName() == "local_for_Strings3") 
-    	     && !(item.getName() == "local_for_Objects") && !(item.getName() == "local_level")
-             && !(item.getName() == "hs")) {
-        JimpleInjector.addLocal(item);
-      }
-    }
-
-        
-        
-    Iterator<Unit> uit = units.iterator();
-    while (uit.hasNext()) {
-      Unit item = uit.next();
-      item.apply(stmtSwitch);
-      if (item instanceof IfStmt) {
-        df.getImmediateDominator(item);
-      }
-      while (df.containsStmt(item)) {
-        // JimpleInjector.exitInnerScope(); TODO
-      }
-    }
-        
-    JimpleInjector.addUnitsToChain();      
-        
-    JimpleInjector.closeHS();
-  }
+				
+				
+		Iterator<Unit> uit = units.iterator();
+		while (uit.hasNext()) {
+			Unit item = uit.next();
+			item.apply(stmtSwitch);
+			if (item instanceof IfStmt) {
+				df.getImmediateDominator(item);
+			}
+			while (df.containsStmt(item)) {
+				JimpleInjector.exitInnerScope(item);
+			}
+		}
+				
+		JimpleInjector.addUnitsToChain();			
+				
+		JimpleInjector.closeHS();
+	}
 }
