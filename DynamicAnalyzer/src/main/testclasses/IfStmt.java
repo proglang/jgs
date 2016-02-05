@@ -5,11 +5,12 @@ public class IfStmt {
   /**
    * @param args
    */
-  public void main(String[] args) {
+  public static void main(String[] args) {
+	IfStmt thisObj = new IfStmt();
     // int res = 0;
-    multIfs(1);
-    multIfs(3);
-    multIfs(5);
+    thisObj.multIfs(1);
+    thisObj.multIfs(3);
+    thisObj.multIfs(5);
   }
 
   /**
