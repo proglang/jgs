@@ -344,16 +344,16 @@ public class HandleStmt {
    * @param localForIndex - String - the signature of the local where the index is stored
    * @return Returns the new SecurityLevel of the array-element
    */
-  public SecurityLevel setLevelOfArrayField(
-      Object o, String field, String localForObject, String localForIndex) {
-    if (!hsu.checkArrayWithGlobalPC(
-        o, field, localForObject, localForIndex)) {
-      abort(o.toString() + field);
-    }
-    om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
-    om.clearAssignmentLevel();
-    return om.getFieldLevel(o, field);
-  }
+	public SecurityLevel setLevelOfArrayField(
+			Object o, String field, String localForObject, String localForIndex) {
+		if (!hsu.checkArrayWithGlobalPC(
+				o, field, localForObject, localForIndex)) {
+			abort(o.toString() + field);
+		}
+		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
+		om.clearAssignmentLevel();
+		return om.getFieldLevel(o, field);
+	}
 	
   /**
    * Check the array-field and the local-level of the object against the gpc,

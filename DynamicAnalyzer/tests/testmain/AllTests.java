@@ -1,5 +1,6 @@
 package testmain;
 
+import analyzer.level1.DominatorFinderTest;
 import analyzer.level1.JimpleInjectorTest;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
@@ -66,7 +67,10 @@ import tests.ExampleFailScenarios;
 
     ExampleFailScenarios.class,
     analyzer.level2.storage.ObjectMapTest.class, 
+    
+    // Tests for level 1
     JimpleInjectorTest.class, 
+    DominatorFinderTest.class,
 
     // Tests for protected HandleStmt methods
     InternalMethods.class,
