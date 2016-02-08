@@ -56,7 +56,7 @@ public class Main {
 		PackManager.v()
         		   .getPack("jtp")
         		   .add(new Transform("jtp.analyzer", banalyzer)); 
-        	   
+        	  
 
 		soot.Main.main(sootOptions);
 

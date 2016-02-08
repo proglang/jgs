@@ -2,22 +2,20 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
+import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.SecurityLevel;
+import org.junit.Before;
+import org.junit.Test;
+import tests.testClasses.TestSubClass;
+import utils.exceptions.IllegalFlowException;
+import utils.logging.L2Logger;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import tests.testClasses.TestSubClass;
-import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
-import utils.exceptions.IllegalFlowException;
-
 public class AssignFieldsFail {
 	
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
@@ -26,7 +24,7 @@ public class AssignFieldsFail {
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantToField() {
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -44,12 +42,12 @@ public class AssignFieldsFail {
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		hs.setLevelOfField(this, "int_field");
 		
-	    hs.close();	
+		hs.close();	
 	}
 	
 	@Test(expected = IllegalFlowException.class)
 	public void assignLocalsToField() {
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -68,12 +66,12 @@ public class AssignFieldsFail {
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		hs.setLevelOfField(this, "int_field");
 		
-	    hs.close();	
+		hs.close();	
 	}
 	
 	@Test(expected = IllegalFlowException.class)
 	public void assignLocalToForeignField() {
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -100,7 +98,7 @@ public class AssignFieldsFail {
 		hs.setLevelOfField(o, "int_pField");
 		o.pField = local;
 		
-	    hs.close();	
+		hs.close();	
 	}
 	
 }

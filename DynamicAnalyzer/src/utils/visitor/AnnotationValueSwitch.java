@@ -370,7 +370,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		rightElement = RightElement.NOT;
 			
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+			// new InternalAnalyzerException();
 		}
 	}
 

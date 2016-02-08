@@ -1,4 +1,7 @@
 >> LOCALS
+	checkLocalPC
+	local = join(lpc, field or local)
+
 
 
 >> FIELDS
@@ -14,6 +17,7 @@
 		 *  1. Check if Level(field) >= gpc
 		 *  2. Assign level of join(local, gpc) to field
 		 */
+		 
 
 
 >> ARRAY REFERENCES

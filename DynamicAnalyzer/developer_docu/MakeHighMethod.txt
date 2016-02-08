@@ -1,0 +1,12 @@
+>> HOW HelperClass.MakeHigh() works<<
+
+Jimple stores every variable in a local when passing it as an argument to a method. 
+So even if you want set a field-level to high, the field value first is stored in
+a local.
+
+Conclusions:
+
+1. You must assign the return-value of MakeHigh method to the original vairable,
+	e.g. field = makeHigh(field)
+2. The returnvalue of the method must be set to high.
+3. 

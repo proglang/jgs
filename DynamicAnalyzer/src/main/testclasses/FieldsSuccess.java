@@ -1,12 +1,14 @@
 package main.testclasses;
 
+import utils.analyzer.HelperClass;
+
 public class FieldsSuccess {
 	
 	static String field = "testfield";
 
 	public static void main(String[] args) {
-      readField();
-      writeField("Test");
+		readField();
+		writeField("Test");
 	}
 	
 	public static void writeField(String arg) {
@@ -14,8 +16,8 @@ public class FieldsSuccess {
 	}
 	
 	public static void readField() {
-		String local = field;
-		System.out.println("Value of Field:" + local);
+		field = HelperClass.makeHigh(field);
+		// System.out.println("Value of Field:" + local);
 	}
 
 }

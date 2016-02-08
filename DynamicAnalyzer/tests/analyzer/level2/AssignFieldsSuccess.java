@@ -1,22 +1,25 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import utils.logging.L2Logger;
+import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.SecurityLevel;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import tests.testClasses.TestSubClass;
-import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
+import utils.logging.L2Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class AssignFieldsSuccess {
 
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
+	
+	static int sField;
 	
 	@Before
 	public void init() {
@@ -26,7 +29,7 @@ public class AssignFieldsSuccess {
 	@Test
 	public void assignConstantToField() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO FIELD TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -56,15 +59,15 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.HIGH, hs.getFieldLevel(this, "int_field"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfField(this, "int_field"));
 		
-	    hs.close();	
+		hs.close();	
 
-	    LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO FIELD TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD TEST FINISHED");
 	}
 	
 	@Test
 	public void assignLocalsToField() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST STARTED");
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -90,26 +93,45 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.HIGH, hs.addLevelOfLocal("int_var2"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfField(this, "int_field"));
 		
-	    hs.close();	
+		hs.close();	
 	    
-	    LOGGER.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST FINISHED");
 		
 	}
 	
 	@Test
 	public void assignLocalsToAStaticField() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD STARTED");
+		logger.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD STARTED");
 
-		// TODO 
+		HandleStmtForTests hs = new HandleStmtForTests();
+		hs.addObjectToObjectMap(this.getClass());
+		assertEquals(1,  hs.getNumberOfElements());
+		hs.addFieldToObjectMap(this.getClass(), "int_sField");
+		hs.addLocal("int_var1");
 		
-		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD FINISHED");
+		/* Assign Local To Field
+		 *  int field = var1;
+		 *  1. Check if Level(field) >= lpc
+		 *  2. Assign Join(y, z, lpc) to field
+		 */
+		hs.setLocalPC(SecurityLevel.LOW);
+		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_var1"));
+		assertEquals(SecurityLevel.LOW, hs.setLevelOfField(this.getClass(), "int_sField"));
+		
+		hs.setLevelOfLocal("int_var1", SecurityLevel.HIGH);
+		assertEquals(SecurityLevel.HIGH, hs.addLevelOfLocal("int_var1"));
+		assertEquals(SecurityLevel.HIGH, hs.setLevelOfField(this.getClass(), "int_sField"));
+		
+		hs.close();	
+		
+		logger.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD FINISHED");
 	}
 	
 	@Test
 	public void assignLocalsToAnExternalField() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN LOCAL TO AN EXTERNAL FIELD STARTED");
+		logger.log(Level.INFO, "ASSIGN LOCAL TO AN EXTERNAL FIELD STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
@@ -146,7 +168,7 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfField(o, "int_pField"));
 		o.pField = local;
 		
-		LOGGER.log(Level.INFO, "ASSIGN LOCAL TO AN EXTERNAL FIELD FINISHED");
+		logger.log(Level.INFO, "ASSIGN LOCAL TO AN EXTERNAL FIELD FINISHED");
 	}
 	
 	

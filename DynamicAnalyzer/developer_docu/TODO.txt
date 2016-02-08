@@ -10,6 +10,7 @@ IfStmt
 
 >>> Continue with for, while and switch
 
+Easier: Documentation HandleStmt. MakeFieldHigh
 
 
 >> Define sootClassPath for rt.jar in Main which works globally
@@ -29,7 +30,6 @@ IfStmt
 >> Klassen zum Laufen bringen
 >> main(arg) arg = low
 >> Wenn alle Argumente erst in einer Local gespeichert werden,ist makeFieldHigh... wahrscheinlich gar nicht nötig??
->> BCEL um Bytecode zu validieren
 >> Add a chain for arguments of the superconstructor
 >> addLevelOfArrayField in HandleStmt fertig machen
 >> Add all classfiletests to testmain
