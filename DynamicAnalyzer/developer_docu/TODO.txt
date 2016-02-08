@@ -10,7 +10,9 @@ IfStmt
 
 >>> Continue with for, while and switch
 
-Easier: Documentation HandleStmt. MakeFieldHigh
+MakeFieldHigh (Low, Make ArrayFieldHigh,...)
+------------
+>> Whats the best way to realize this method?
 
 
 >> Define sootClassPath for rt.jar in Main which works globally
@@ -19,23 +21,22 @@ Easier: Documentation HandleStmt. MakeFieldHigh
 >> One Exception with System.out and one without
 >> Exit Code not 0
 >> All Unit tests should be correct
->> 	public static void makeFieldHigh(Object o, String signature, Unit pos) {}
-	public static void makeFieldLow(Object o, String signature, Unit pos) {}
-	public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
-	public static void makeArrayFieldLow(Object o, String index, Unit pos) {
-	Wie verhält sich das bei Feldern? Wie wird der Wert im originalen Feld gespeichert?
 >> Benchmarktests
 >> URL = classLoader.getSystemResource
 >> Standard von Return sollte High sein, bei Return const auf Low setzen
 >> Klassen zum Laufen bringen
 >> main(arg) arg = low
->> Wenn alle Argumente erst in einer Local gespeichert werden,ist makeFieldHigh... wahrscheinlich gar nicht nötig??
 >> Add a chain for arguments of the superconstructor
 >> addLevelOfArrayField in HandleStmt fertig machen
 >> Add all classfiletests to testmain
+>> Move more parts to visitorhelper??
 
 
-Fragen:
+<<<<<<<<<  FRAGEN >>>>>>>>>>
+Dominator, ifs
 >> Welchen lpc hat das else? Wenn eine Bedingung einen lpc High erzeugt, 
   muss dann der lpc von allen Bedingungen auf high gesetzt werden?
 >> Siehe Dominator.txt#Probleme
+
+makeHigh
+>> Was kann eigentlich high gesetzt werden? fields, locals, arrayfields??
