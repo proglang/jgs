@@ -27,6 +27,7 @@ import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThisRef;
 import soot.jimple.ThrowStmt;
 import utils.exceptions.InternalAnalyzerException;
+import utils.exceptions.NotSupportedStmtException;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationValueSwitch.StmtContext;
 
@@ -128,7 +129,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		} else if (stmt.getRightOp() instanceof ThisRef) {
 			// TODO im Grunde nicht nötig...
 		} else if (stmt.getRightOp() instanceof CaughtExceptionRef) {
-			System.out.println("CAUGHT EXCEPTION");
+			logger.fine("Right operand in IdentityStmt is a CaughtException");
 		} else {
 			new InternalAnalyzerException("Unexpected type of right value "
 					+ stmt.getRightOp().toString() + " in IdentityStmt");
@@ -141,14 +142,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
 		logger.fine("\n > > > Enter monitor statement identified < < <");
 		valueSwitch.callingStmt = stmt;
-		// TODO Auto-generated method stub
+		new NotSupportedStmtException("EnterMonitorStmt identified");
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
 		logger.fine("\n > > > Exit monitor statement identified < < <");
 		valueSwitch.callingStmt = stmt;
-		// TODO Auto-generated method stub
+		new NotSupportedStmtException("ExitMonitorStmt identified");
 	}
 
 	@Override
@@ -210,7 +211,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
 		logger.fine("\n > > > Lookup switch statement identified < < <");
 		valueSwitch.callingStmt = stmt; 
-		new InternalAnalyzerException("Lookup Switch Stmt");
+		new NotSuppoertedStmtException("Lookup Switch Stmt");
 	}
 
 	@Override

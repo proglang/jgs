@@ -26,3 +26,25 @@ Conclusions:
 4. Which kinds of variable types can be set to high?
 	fields, locals, arrays?
 
+
+
+
+<<<<< EXAMPLE FOR JIMPLE >>>>>>>>>
+ java.lang.String[] r0, r2, $r3;
+        java.lang.String r1, r5, r6, $r7, $r9;
+        java.lang.Object $r4, $r8;
+
+        r0 := @parameter0: java.lang.String[];
+        r1 = "";
+        $r3 = newarray (java.lang.String)[2];
+        $r3[0] = "a";
+        $r3[1] = "b";
+        r2 = $r3;
+        $r4 = staticinvoke <utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>(r1);
+        r5 = (java.lang.String) $r4;
+        r6 = "bg";
+        $r7 = <main.testclasses.MakeHigh: java.lang.String field>;
+        $r8 = staticinvoke <utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>($r7);
+        $r9 = (java.lang.String) $r8;
+        <main.testclasses.MakeHigh: java.lang.String field> = $r9;
+        return;

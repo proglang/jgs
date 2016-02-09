@@ -30,6 +30,7 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 >> addLevelOfArrayField in HandleStmt fertig machen
 >> Add all classfiletests to testmain
 >> Move more parts to visitorhelper??
+>> InternalAnalyzerException richtige Fehlermeldung
 
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
@@ -40,3 +41,7 @@ Dominator, ifs
 
 makeHigh
 >> Was kann eigentlich high gesetzt werden? fields, locals, arrayfields??
+>> Für eine Variable entstehen in Jimple mehrere Variablen
+
+
+>> NotSupportedStmtExcpetion
