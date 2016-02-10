@@ -1,11 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import soot.SootMethod;
@@ -16,13 +19,12 @@ import soot.toolkits.graph.DirectedGraph;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.methodParameters;
+import static java.util.stream.Collectors.toList;
 
 /**
- * Context for typing methods
- * Created by fennell on 1/12/16.
+ * Context for typing methods Created by fennell on 1/12/16.
  */
 public class MethodTyping<Level> {
     final private ConstraintSetFactory<Level> csets;
@@ -31,13 +33,15 @@ public class MethodTyping<Level> {
 
     static public class Result<Level> {
         private final TypeDomain<Level> types;
-        public final ConstraintSet.RefinementCheckResult<Level> refinementCheckResult;
-        public final Optional<MethodSignatures.Effects<Level>> missedEffects;
-        public final MethodSignatures.Effects sigEffects;
-        public final MethodSignatures.Effects inferredEffects;
+        public final ConstraintSet<Level> completeBodyConstraints;
+        public final RefinementCheckResult<Level> refinementCheckResult;
+        public final Effects<Level> missedEffects;
+        public final Effects sigEffects;
+        public final Effects inferredEffects;
 
-        public Result(TypeDomain<Level> types, ConstraintSet.RefinementCheckResult<Level> refinementCheckResult, MethodSignatures.Effects sigEffects, MethodSignatures.Effects inferredEffects, Optional<MethodSignatures.Effects<Level>> missedEffects) {
+        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects) {
             this.types = types;
+            this.completeBodyConstraints = completeBodyConstraints;
             this.refinementCheckResult = refinementCheckResult;
             this.missedEffects = missedEffects;
             this.inferredEffects = inferredEffects;
@@ -45,27 +49,34 @@ public class MethodTyping<Level> {
         }
 
         /**
-         * @return true, if the method signature can be called, i.e. it's constraints can be solved
+         * @return true, if the signature allows the method to be called, i.e. its constraints can be solved
          */
-        public boolean hasSolution() {
-           return this.refinementCheckResult.signature.isSat(types);
-        }
-        /**
-         * @return true if the type analysis determined that the method implementation complies to the method signature
-         */
-        public boolean isSuccess() {
-            return (!this.hasSolution() || this.refinementCheckResult.concrete.isSat(types))
-                   && !refinementCheckResult.counterExample.isPresent()
-                    && !missedEffects.isPresent();
+        public boolean signatureHasSolution() {
+            return this.refinementCheckResult.abstractConstraints.isSat(types);
         }
 
+        public boolean bodyHasSolution() {
+            return this.completeBodyConstraints.isSat(types);
+        }
+
+        /**
+         * @return true if the type analysis determined that the method implementation complies to the method
+         * signature and that the typing constraints of the method's body are satisfiable if the signature is satisfiable.
+         */
+        public boolean isSuccess() {
+            return (!this.signatureHasSolution() || this.bodyHasSolution())
+                    && !refinementCheckResult.counterExample.isPresent()
+                    && missedEffects.isEmpty();
+        }
+
+        // TODO: fix refactoring mess in strings: abstractConstraints should be called "signature" most of the time
         @Override
         public String toString() {
             StringBuilder b = new StringBuilder("Typing result: \n");
-            if (!this.hasSolution()) {
-                b.append("- !! Method cannot be called (has an unsatisfiable signature)");
+            if (!this.signatureHasSolution()) {
+                b.append("- !! Method cannot be called (has an unsatisfiable signature constraints)");
             }
-            if (!this.refinementCheckResult.concrete.isSat(types)) {
+            if (!this.refinementCheckResult.concreteConstraints.isSat(types)) {
                 b.append("- !! Conflicting constraints in method body\n");
             } else {
                 b.append("- Method body has no typing conflicts\n");
@@ -73,20 +84,20 @@ public class MethodTyping<Level> {
             if (this.refinementCheckResult.counterExample.isPresent()) {
                 b.append("- Error in refining constraints (see below)!\n");
             } else {
-                b.append("- The constraints of the signature are sound\n");
+                b.append("- The constraints of the abstractConstraints are sound\n");
             }
-            if (this.missedEffects.isPresent()) {
-                b.append("- The signature is missing effects: ");
+            if (!this.missedEffects.isEmpty()) {
+                b.append("- The abstractConstraints is missing effects: ");
                 b.append(this.missedEffects.toString());
                 b.append("\n\n");
             } else {
-                b.append("- The effects of the signature are sound \n");
+                b.append("- The effects of the abstractConstraints are sound \n");
             }
             b.append("Result of constraint refinement check:\n");
             b.append(this.refinementCheckResult.toString());
             b.append("\nInferred effects: ")
                     .append(this.inferredEffects.toString())
-                    .append(" signature effects: ")
+                    .append(" abstractConstraints effects: ")
                     .append(this.sigEffects.toString());
             return b.toString();
         }
@@ -104,20 +115,23 @@ public class MethodTyping<Level> {
     }
 
     /**
-     * Check if the signature of a method complies (i.e. subsumes) the constraints generated for the body.
+     * Check if the abstractConstraints of a method complies (i.e. subsumes) the constraints generated for the body.
+     *
      * @param method The method to check
-     * @return A pair of typing errors. If the left component is present there was an error refining the constraints, if the right component is present, it yields the effect types inferred for the body that the signature does not cover.
+     * @return A pair of typing errors. If the left component is present there was an error refining the constraints, if
+     * the right component is present, it yields the effect types inferred for the body that the abstractConstraints
+     * does not cover.
      * @throws TypingException
      */
     // TODO: what's up with "this"?
     public Result<Level> check(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields, SootMethod method) throws TypingException {
-        // Get the signature of "method"
+        // Get the abstractConstraints of "method"
         MethodSignatures.Signature<Level> signatureToCheck = signatures.get(method)
                 .orElseThrow(() -> new TypingException("No signature found for method " + method.toString()));
 
 
-        // type check the body and connect signature with the typing result through a symbol mapping
-        Map<Symbol.Param<Level>, TypeVars.TypeVar> paramMapping = Methods.symbolMapForMethod(tvars, method);
+        // type check the body and connect abstractConstraints with the typing result through a symbol mapping
+        Map<Symbol.Param<Level>, TypeVar> paramMapping = Methods.symbolMapForMethod(tvars, method);
         Environment init = Environments.forParamMap(tvars, paramMapping);
 
 
@@ -125,13 +139,18 @@ public class MethodTyping<Level> {
         BodyTypingResult<Level> r = new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures, fields).generateResult(body, tvars.topLevelContext(), init);
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
-        Map<Symbol<Level>, TypeVars.TypeVar> symbolMapping = new HashMap<>(paramMapping);
+        Map<Symbol<Level>, TypeVar> symbolMapping = new HashMap<>(paramMapping);
         symbolMapping.put(Symbol.ret(), tvars.ret());
 
-        ConstraintSet<Level> sigConstraints = csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(Collectors.toList()));
+        ConstraintSet<Level> sigConstraints =
+                csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(toList()));
 
-        return new Result(cstrs.types, sigConstraints.signatureCounterExample(tvars, methodParameters(method).stream().map(Var::fromParam), r.getConstraints())
-        ,signatureToCheck.effects, r.getEffects(), signatureToCheck.effects.checkSubsumptionOf(cstrs.types, r.getEffects()));
+        ConstraintSet<Level> bodyConstraints =
+                r.getConstraints().asSignatureConstraints(tvars, methodParameters(method).stream().map(Var::fromParam));
+
+        return new Result<>(cstrs.types, r.getConstraints(), bodyConstraints.refines(sigConstraints)
+                , signatureToCheck.effects, r.getEffects(), r.getEffects().refines(cstrs.types, signatureToCheck.effects).missingEffects);
     }
+
 
 }

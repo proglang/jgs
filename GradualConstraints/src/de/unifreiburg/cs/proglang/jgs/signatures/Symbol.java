@@ -3,12 +3,21 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
+import org.apache.commons.lang3.tuple.Pair;
 import soot.EquivalentValue;
+import soot.JastAddJ.Signatures;
 import soot.SootMethod;
 import soot.jimple.Jimple;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * JGS Symbols that occur in method signatures. They correspond to Jimples Parameters, @return, or literals
@@ -16,8 +25,9 @@ import java.util.stream.IntStream;
 public abstract class Symbol<Level> {
     /**
      * Create a parameter symbol from a type and a position.
-     *
-     * Why not use ParameterRef? Because it only implements pointer equality and there is no way to get to the ParameterRefs of a SootMethod (that I know of)
+     * <p>
+     * Why not use ParameterRef? Because it only implements pointer equality and there is no way to get to the
+     * ParameterRefs of a SootMethod (that I know of)
      */
     public static <Level> Param<Level> param(int position) {
         if (position < 0) {
@@ -33,9 +43,17 @@ public abstract class Symbol<Level> {
         List<soot.Type> types = m.getParameterTypes();
         List<Param<Level>> result = new ArrayList<>();
         IntStream.range(0, m.getParameterCount()).forEach(pos -> {
-           result.add(param(pos));
+            result.add(param(pos));
         });
         return result;
+    }
+
+    /**
+     * Get an identity mapping for signatures
+     */
+    public static <Level> Map<Symbol<Level>, TypeVar> identityMapping(TypeVars tvars, Set<Symbol<Level>> sig) {
+        return sig.stream().flatMap(s -> s.asTypeVar(tvars).map(tv -> Stream.of(Pair.of(s, tv))).orElse(Stream.empty()))
+                .collect(toMap(Pair::getKey, Pair::getValue));
     }
 
     // TODO-performance: make a singleton out of this
@@ -47,9 +65,12 @@ public abstract class Symbol<Level> {
         return new Literal<>(t);
     }
 
-    @Override public abstract String toString();
+    @Override
+    public abstract String toString();
 
-    public abstract CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVars.TypeVar> tvarMapping);
+    public abstract CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping);
+
+    protected abstract Optional<TypeVar> asTypeVar(TypeVars tvars);
 
     public static class Param<Level> extends Symbol<Level> {
         private final int position;
@@ -65,13 +86,18 @@ public abstract class Symbol<Level> {
         }
 
         @Override
-        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVars.TypeVar> tvarMapping) {
+        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return Optional.ofNullable(tvarMapping.get(this))
                     .map(CTypes::<Level>variable)
                     .orElseThrow(() -> new NoSuchElementException(String.format(
                             "No mapping for %s: %s",
                             this,
                             tvarMapping.toString())));
+        }
+
+        @Override
+        protected Optional<TypeVar> asTypeVar(TypeVars tvars) {
+            return Optional.of(tvars.param(Var.fromParam(this)));
         }
 
         @Override
@@ -102,13 +128,18 @@ public abstract class Symbol<Level> {
         }
 
         @Override
-        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVars.TypeVar> tvarMapping) {
+        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return Optional.ofNullable(tvarMapping.get(this))
                     .map(CTypes::<Level>variable)
                     .orElseThrow(() -> new NoSuchElementException(String.format(
                             "No mapping for %s: %s",
                             this.toString(),
                             tvarMapping.toString())));
+        }
+
+        @Override
+        protected Optional<TypeVar> asTypeVar(TypeVars tvars) {
+            return Optional.of(tvars.ret());
         }
 
         @Override
@@ -138,11 +169,17 @@ public abstract class Symbol<Level> {
         }
 
         @Override
-        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVars.TypeVar> tvarMapping) {
+        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return CTypes.literal(this.me);
         }
 
-        @Override public boolean equals(Object o) {
+        @Override
+        protected Optional<TypeVar> asTypeVar(TypeVars tvars) {
+            return Optional.empty();
+        }
+
+        @Override
+        public boolean equals(Object o) {
             if (this == o)
                 return true;
             if (o == null || getClass() != o.getClass())
@@ -154,7 +191,8 @@ public abstract class Symbol<Level> {
 
         }
 
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             return me != null ? me.hashCode() : 0;
         }
     }

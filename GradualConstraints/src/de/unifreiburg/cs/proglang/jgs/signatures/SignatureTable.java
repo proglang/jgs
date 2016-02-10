@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toSet;
 public class SignatureTable<Level> {
 
     /**
-     * Create a new table from a map. The signatures in the map <code>signatureMap</code> are extended to be consistent, that is, each signature should mention exactly the parameters of the method and should mention ret exactly if the method has a return type
+     * Create a new table from a map. The signatures in the map <code>signatureMap</code> are extended to be consistent, that is, each abstractConstraints should mention exactly the parameters of the method and should mention ret exactly if the method has a return type
      *
      * @param signatureEntries
      * @param <Level>
@@ -51,11 +51,11 @@ public class SignatureTable<Level> {
             // TODO: check what happens in these cases.. are they unproblematic now?
             /*
             if (m.getReturnType().equals(VoidType.v()) && sig.constraints.symbols().collect(toSet()).contains(Symbol.ret())) {
-                throw new IllegalArgumentException(String.format("Method signature of void method contains return symbol.\n method: %s\n sig: %s ", m, sig));
+                throw new IllegalArgumentException(String.format("Method abstractConstraints of void method contains return symbol.\n method: %s\n sig: %s ", m, sig));
             }
 
             if (!m.getReturnType().equals(VoidType.v()) && !sig.constraints.symbols().collect(toSet()).contains(Symbol.ret())) {
-                throw new IllegalArgumentException(String.format("No return symbol found in method signature.\n method: %s\n sig: %s", m, sig));
+                throw new IllegalArgumentException(String.format("No return symbol found in method abstractConstraints.\n method: %s\n sig: %s", m, sig));
             }
             */
 
@@ -69,7 +69,14 @@ public class SignatureTable<Level> {
     }
 
     public SignatureTable<Level> extendWith(SootMethod m, Stream<SigConstraint<Level>> constraints, Effects<Level> effects) {
-        return makeTable(Collections.singletonMap(m, makeSignature(MethodSignatures.signatureConstraints(constraints), effects)));
+        HashMap<SootMethod, Signature<Level>> freshTable = new HashMap<>(this.signatureMap);
+        freshTable.put(m, makeSignature(MethodSignatures.signatureConstraints(constraints), effects));
+        return makeTable(freshTable);
+    }
+
+    @Override
+    public String toString() {
+        return this.signatureMap.toString();
     }
 
     public Optional<Signature<Level>> get(SootMethod m) {

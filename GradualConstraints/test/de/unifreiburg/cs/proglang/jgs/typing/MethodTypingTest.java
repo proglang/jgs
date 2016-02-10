@@ -86,7 +86,7 @@ public class MethodTypingTest {
 
 
     /*
-    valid signature:
+    valid abstractConstraints:
     constraints:
       param0 <= ret
       param1 <= ret
@@ -112,7 +112,7 @@ public class MethodTypingTest {
     }
 
     /*
-    invalid signature (constraint for param2 is missing):
+    invalid abstractConstraints (constraint for param2 is missing):
     constraints:
       param0 <= ret
       param1 <= ret
@@ -130,11 +130,11 @@ public class MethodTypingTest {
                         leS(ps.get(3), ret())),
                 emptyEffect());
 
-        MethodTyping.Result r = mtyping.check(tvars, signatures, code.fields, m);
+        MethodTyping.Result<Level> r = mtyping.check(tvars, signatures, code.fields, m);
 
         //TODO: make a junit-Matcher for these results
-        assertThat(String.format("Should not succeed, constraints: \nSIG: %s\n CONSTRAINTS: %s", r.refinementCheckResult.signature.toString().replace(",", ",\n"),
-                r.refinementCheckResult.concrete.toString().replace(",", ",\n")), r.isSuccess(), is(false));
+        assertThat(String.format("Should not succeed, constraints: \nSIG: %s\n CONSTRAINTS: %s", r.refinementCheckResult.abstractConstraints.toString().replace(",", ",\n"),
+                r.refinementCheckResult.concreteConstraints.toString().replace(",", ",\n")), r.isSuccess(), is(false));
     }
 
 
@@ -157,7 +157,7 @@ public class MethodTypingTest {
         ));
     }
 
-    // Valid signature
+    // Valid abstractConstraints
     /*
     constraints:
       param0 <= ret, ? <= ret
@@ -178,7 +178,7 @@ public class MethodTypingTest {
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
 
-    // Invalid signature
+    // Invalid abstractConstraints
     /*
     constraints:
        ? <= ret
@@ -216,7 +216,7 @@ public class MethodTypingTest {
     }
 
 
-    // Valid signature
+    // Valid abstractConstraints
     /*
     constraints:
       param0 <= LOW, param1 <= LOW
@@ -233,7 +233,7 @@ public class MethodTypingTest {
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
 
-    // Also a valid, but more conservative signature (public effects)
+    // Also a valid, but more conservative abstractConstraints (public effects)
     /*
     constraints:
       param0 <= LOW, param1 <= LOW
@@ -250,7 +250,7 @@ public class MethodTypingTest {
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
 
-    // Invalid signature (constraint missing for param1)
+    // Invalid abstractConstraints (constraint missing for param1)
     /*
     constraints:
       param0 <= LOW
@@ -266,7 +266,7 @@ public class MethodTypingTest {
         assertThat(m, violates(tvars, signatures, code.fields));
     }
 
-    // Invalid signature (constraint missing for param0)
+    // Invalid abstractConstraints (constraint missing for param0)
     /*
     constraints:
       param1 <= LOW
@@ -282,7 +282,7 @@ public class MethodTypingTest {
         assertThat(m, violates(tvars, signatures, code.fields));
     }
 
-    // Invalid signature (constraint missing effect)
+    // Invalid abstractConstraints (constraint missing effect)
     /*
     constraints:
       param0 <= LOW
@@ -318,7 +318,7 @@ public class MethodTypingTest {
                 asList(getField, ifHigh, gotoReturn, dynUpd, returnVoid ));
     }
 
-    // trivial signature, but invalid typing
+    // trivial abstractConstraints, but invalid typing
     /*
      constraints: <empty>
      effect:      { PUBLIC }
@@ -354,7 +354,7 @@ public class MethodTypingTest {
                 asList(getField, ifHigh, gotoReturn, cxBegin, dynUpd, cxEnd, returnVoid ));
     }
 
-    // trivial, and valid signature
+    // trivial, and valid abstractConstraints
     /*
      constraints: <empty>
      effect:      { PUBLIC }
@@ -391,7 +391,7 @@ public class MethodTypingTest {
                 asList(getField, ifHigh, gotoReturn, cxBegin, dynUpd, cxEnd, returnVoid ));
     }
 
-    // trivial signature, but invalid body
+    // trivial abstractConstraints, but invalid body
     /*
      constraints: <empty>
      effect:      { PUBLIC }

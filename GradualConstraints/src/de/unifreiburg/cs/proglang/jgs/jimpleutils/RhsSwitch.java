@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
 
 /**
- * A Value-Switch that abstracts over the concrete expressions and is only
+ * A Value-Switch that abstracts over the concreteConstraints expressions and is only
  * concerned with the differences of right-hand-sides that are relevant to
  * information flow. Created by fennell on 11/5/15.
  */

@@ -54,19 +54,17 @@ public abstract class ConstraintSet<Level> {
     /**
      * @return A counterexample why <code>this</code> does not subsume <code>other</code>
      */
-    abstract public Optional<Assignment<Level>> subsumptionCounterExample(ConstraintSet<Level> other);
+    abstract public Optional<Assignment<Level>> doesNotSubsume(ConstraintSet<Level> other);
 
     public static class RefinementCheckResult<Level> {
 
-        public final ConstraintSet<Level> signature;
-        public final ConstraintSet<Level> concrete;
-        public final ConstraintSet<Level> projected ;
+        public final ConstraintSet<Level> abstractConstraints;
+        public final ConstraintSet<Level> concreteConstraints;
         public final Optional<Assignment<Level>> counterExample;
 
-        public RefinementCheckResult(ConstraintSet<Level> signature, ConstraintSet<Level> concrete, ConstraintSet<Level> projected, Optional<Assignment<Level>> counterExample) {
-            this.signature = signature;
-            this.concrete = concrete;
-            this.projected = projected;
+        public RefinementCheckResult(ConstraintSet<Level> abstractConstraints, ConstraintSet<Level> concreteConstraints, Optional<Assignment<Level>> counterExample) {
+            this.abstractConstraints = abstractConstraints;
+            this.concreteConstraints = concreteConstraints;
             this.counterExample = counterExample;
         }
 
@@ -75,31 +73,36 @@ public abstract class ConstraintSet<Level> {
          */
         public Set<Constraint<Level>> getConflicting() {
             return counterExample.map(ce ->
-                    projected.stream().filter(c -> !Constraints.isTrivial(signature.types, c.apply(ce))).collect(toSet()))
+                    concreteConstraints.stream().filter(c -> !Constraints.isTrivial(abstractConstraints.types, c.apply(ce))).collect(toSet()))
                     .orElse(Collections.emptySet());
         }
 
         @Override
         public String toString() {
-            return String.format("Signature: %s\nBody: %s\nProjected Body: %s\n Counterexample: %s\n Conflicting: %s",
-                    this.signature.toString().replace(",", ",\n"),
-                    this.concrete.toString().replace(",", ",\n"),
-                    this.projected,
-                    this.counterExample,
-                    this.getConflicting());
+            StringBuilder result = new StringBuilder();
+            result.append(String.format("Abstract: %s\n", this.abstractConstraints.toString().replace(",", ",\n")));
+            result.append(String.format("Concrete: %s\n", this.concreteConstraints.toString().replace(",", ",\n")));
+            result.append(String.format("Counterexample: %s\n", this.counterExample));
+            result.append(String.format("Conflicting: %s\n", this.getConflicting()));
+            return result.toString();
+        }
+
+        public boolean isSuccess() {
+            return !this.counterExample.isPresent();
         }
     }
 
-    public  RefinementCheckResult signatureCounterExample(TypeVars tvars, Stream<Var<?>> params, ConstraintSet<Level> other) {
-        /* TODO-needs-test: cs1.subsumes(cs2) === cs1.subsumes(cs2.projectForSignature(tvars, cs1))
-                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2)
-                            === cs1.projectForSignature(tvars, cs1).subsumes(cs2.projectForSignature(tvars, cs1)) */
+    /**
+     * Check if this constraint set refines the constraint set {@code other}.
+     */
+    public  RefinementCheckResult<Level> refines(ConstraintSet<Level> other) {
+        /* TODO-needs-test: cs1.subsumes(cs2) === cs1.subsumes(cs2.asSignatureConstraints(tvars, cs1))
+                            === cs1.asSignatureConstraints(tvars, cs1).subsumes(cs2)
+                            === cs1.asSignatureConstraints(tvars, cs1).subsumes(cs2.asSignatureConstraints(tvars, cs1)) */
 
-        // the projection is just an optimization to keep the number of variables small
-        ConstraintSet<Level> projected = other.projectForSignature(tvars,params);
-        Optional<Assignment<Level>> counterExample = this.subsumptionCounterExample(projected);
+        Optional<Assignment<Level>> counterExample = other.doesNotSubsume(this);
 
-        return new RefinementCheckResult(this, other, projected, counterExample);
+        return new RefinementCheckResult<Level>(other, this, counterExample);
     }
 
     /**
@@ -133,21 +136,24 @@ public abstract class ConstraintSet<Level> {
      * @return True if <code>other</code> is satisfiable for all of the satisfying assignments of <code>this</code>.
      */
     public boolean subsumes(ConstraintSet<Level> other) {
-        return !this.subsumptionCounterExample(other).isPresent();
+        return !this.doesNotSubsume(other).isPresent();
     }
 
     /**
-     * @return true if <code>this</code> is a suitable signature for <code>other</code>
+     * @return true if <code>this</code> is a suitable abstractConstraints for <code>other</code>
      */
+    //TODO: remove
+    /*
     public boolean isSignatureOf(TypeVars tvars, Stream<Var<?>> params, ConstraintSet<Level> other) {
-        return !this.signatureCounterExample(tvars, params, other).counterExample.isPresent();
+        return !this.refines(tvars, params, other).counterExample.isPresent();
     }
+    */
 
 
     /**
-     * Project a constraint set to the symbols relevant for a method signature, which are the parameters, the top-level context and the return symbol
+     * Project a constraint set to the symbols relevant for a method abstractConstraints, which are the parameters, the top-level context and the return symbol
      */
-    public ConstraintSet<Level> projectForSignature(TypeVars tvars, Stream<Var<?>> params) {
+    public ConstraintSet<Level> asSignatureConstraints(TypeVars tvars, Stream<Var<?>> params) {
         Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext(), tvars.ret()), params.map(tvars::param)).collect(toSet());
         return this.projectTo(vars);
     }

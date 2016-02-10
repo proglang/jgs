@@ -1,6 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -12,11 +14,12 @@ import static java.util.Arrays.asList;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Method signtures. Internal representation of method signatures of the form
  * <p>
- * M where <signature-constraints> and <effect>
+ * M where <abstractConstraints-constraints> and <effect>
  * <p>
  * Signature constraints are similar to regular constraints but instead of relating type variables, they relate special
  * symbols, which are:
@@ -41,6 +44,11 @@ public class MethodSignatures<Level> {
         return new Signature<>(constraints, effects);
     }
 
+    //TODO: this is a dangerous factory method, as it allows to create signatures that are not connected to any method
+    public static <Level> Signature<Level> makeSignature(Stream<SigConstraint<Level>> constraints, Effects<Level> effects) {
+        return new Signature<>(signatureConstraints(constraints), effects);
+    }
+
     public static class Signature<Level> {
         public final SigConstraintSet<Level> constraints;
         public final Effects<Level> effects;
@@ -59,6 +67,11 @@ public class MethodSignatures<Level> {
             SigConstraintSet<Level> newConstraints = this.constraints.addAll(sigs);
             return makeSignature(newConstraints, this.effects);
         }
+
+        // TODO: use a dedicated result type (to be able to name the second component sensibly)
+        public Pair<RefinementCheckResult<Level>, EffectRefinementResult<Level>> refines(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, Signature<Level> other) {
+            return Pair.of(this.constraints.refines(csets, types, other.constraints), this.effects.refines(types, other.effects));
+        }
     }
 
     /* Effects */
@@ -67,11 +80,11 @@ public class MethodSignatures<Level> {
     }
 
     @SafeVarargs
-    public static <Level> Effects<Level> effects(Type<Level> type, Type<Level>... types) {
+    public static <Level> Effects<Level> makeEffects(Type<Level> type, Type<Level>... types) {
         return MethodSignatures.<Level>emptyEffect().add(type, types);
     }
 
-    public static <Level> Effects<Level> effects(Collection<Type<Level>> types) {
+    public static <Level> Effects<Level> makeEffects(Collection<Type<Level>> types) {
         return MethodSignatures.<Level>emptyEffect().add(types);
     }
 
@@ -82,6 +95,18 @@ public class MethodSignatures<Level> {
             result.addAll(es.effectSet);
         }
         return new Effects<>(result);
+    }
+
+    public static class EffectRefinementResult<Level> {
+        public final Effects<Level> missingEffects;
+
+        public EffectRefinementResult(Effects<Level> missingEffects) {
+            this.missingEffects = missingEffects;
+        }
+
+        public boolean isSuccess() {
+            return missingEffects.isEmpty();
+        }
     }
 
     // TODO: move out of signatures and in its dedicated file in the typing package (as BodyTypingResult also uses it and the "concept" makes sense independently of MethodSignatures)
@@ -110,6 +135,10 @@ public class MethodSignatures<Level> {
             return new Effects<>(result);
         }
 
+        public boolean isEmpty() {
+            return this.effectSet.isEmpty();
+        }
+
         public final Stream<Type<Level>> stream() {
             return this.effectSet.stream();
         }
@@ -118,15 +147,11 @@ public class MethodSignatures<Level> {
             return this.effectSet.stream().anyMatch(cand -> types.le(cand, t));
         }
 
-        // TODO: get rid of the optional and just rename the method to "missingEffects" or something
-        public final Optional<Effects> checkSubsumptionOf(TypeDomain<Level> types, Effects<Level> other) {
+        // TODO: get rid of the optional and use emptyEffects instead (?)
+        public final EffectRefinementResult<Level> refines(TypeDomain<Level> types, Effects<Level> other) {
             HashSet<Type<Level>> notCovered = new HashSet<>();
-            other.stream().filter(t -> !(this.covers(types,t))).forEach(notCovered::add);
-            if (notCovered.isEmpty()) {
-                return Optional.empty();
-            } else {
-                return Optional.of(new Effects(notCovered));
-            }
+            this.stream().filter(t -> !(other.covers(types,t))).forEach(t -> notCovered.add(t));
+            return new EffectRefinementResult<>(new Effects<>(notCovered));
         }
 
         @Override
@@ -159,7 +184,7 @@ public class MethodSignatures<Level> {
     }
 
     public SigConstraintSet<Level> toSignatureConstraintSet(ConstraintSet<Level> constraints, Map<TypeVar, Symbol.Param> params, TypeVar retVar) {
-        Set<TypeVar> relevantVars = Stream.concat(Collections.singleton(retVar).stream(), params.keySet().stream()).collect(Collectors.toSet());
+        Set<TypeVar> relevantVars = Stream.concat(Collections.singleton(retVar).stream(), params.keySet().stream()).collect(toSet());
 
         CTypeSwitch<Level, Symbol<Level>> toSymbol = new CTypeSwitch<Level, Symbol<Level>>() {
             @Override
@@ -208,7 +233,7 @@ public class MethodSignatures<Level> {
         private final Set<SigConstraint<Level>> sigSet;
 
         private SigConstraintSet(Stream<SigConstraint<Level>> sigSet) {
-            this.sigSet = sigSet.collect(Collectors.toSet());
+            this.sigSet = sigSet.collect(toSet());
         }
 
         public Stream<Constraint<Level>> toTypingConstraints(Map<Symbol<Level>, TypeVar> mapping) {
@@ -230,6 +255,13 @@ public class MethodSignatures<Level> {
 
         public SigConstraintSet<Level> addAll(Stream<SigConstraint<Level>> sigs) {
             return signatureConstraints(Stream.concat(this.sigSet.stream(), sigs));
+        }
+
+        public RefinementCheckResult<Level> refines(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, SigConstraintSet<Level> other) {
+            TypeVars tvars = new TypeVars();
+            ConstraintSet<Level> cs1 = csets.fromCollection(this.toTypingConstraints(Symbol.identityMapping(tvars, this.symbols().collect(toSet()))).collect(Collectors.toList()));
+            ConstraintSet<Level> cs2 = csets.fromCollection(other.toTypingConstraints(Symbol.identityMapping(tvars, other.symbols().collect(toSet()))).collect(Collectors.toList()));
+            return cs1.refines(cs2);
         }
     }
 

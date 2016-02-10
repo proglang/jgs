@@ -50,6 +50,22 @@ public final class Constraint<Level> {
         }
     }
 
+    /**
+     *
+     * @return true if this single constraint, in isolation, is satisfiable
+     */
+    // TODO: needs more tests
+    public boolean isSatisfiable(TypeDomain<Level> types) {
+        // first check if there are variable, which will make (binary) constraints satisfiable
+        if (this.variables().count() != 0) {
+            return true;
+        } else {
+            // no variables so check if it is satisfied with an empty assignment
+            // TODO: (kind of a hack)
+            return this.isSatisfied(types, Assignments.empty());
+        }
+    }
+
 
     public Constraint<Level> apply(Assignment<Level> a) {
         CType<Level> newLhs = this.lhs.applyWhenPossible(a);

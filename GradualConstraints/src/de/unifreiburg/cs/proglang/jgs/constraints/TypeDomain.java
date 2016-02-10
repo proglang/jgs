@@ -139,7 +139,7 @@ public class TypeDomain<Level> {
      * @author Luminous Fennell <fennell@informatik.uni-freiburg.de>
      *
      * @param <Level>
-     *            concrete security level
+     *            concreteConstraints security level
      */
     public static abstract class Type<Level> {
         abstract <T> T accept(TypeSwitch<Level, T> sw);

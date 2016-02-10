@@ -4,10 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
-import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.signatures.*;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 import de.unifreiburg.cs.proglang.jgs.typing.Environments;
 import org.apache.commons.lang3.tuple.Pair;
@@ -59,6 +56,7 @@ public class Code {
 
     public final Environment init;
     public final FieldTable<Level> fields;
+    public final SootMethod ignore0Low1ReturnHigh;
 
     private static SootClass makeFreshClass(String name) {
         // reset the testClass
@@ -125,6 +123,8 @@ public class Code {
         Symbol.Param<LowHigh.Level> param_y = param(1);
 
         // Method:
+        // int testCallee()
+        //    with {} effect {}
         this.testCallee__int = new SootMethod("testCallee",
                 Collections.emptyList(),
                 IntType.v(), Modifier.ABSTRACT);
@@ -135,6 +135,8 @@ public class Code {
                         ret()))), emptyEffect()));
 
         // Method:
+        // int testCallee_int_int__int (int, int)
+        //   with {@param1 <= @ret, @param2 <= @ret} effect {}
         this.testCallee_int_int__int = new SootMethod("testCallee",
                 asList(IntType.v(),
                         IntType.v()),
@@ -147,6 +149,8 @@ public class Code {
                 makeSignature(sigCstrs, emptyEffect()));
 
         // Method:
+        // int ignoreSnd(int, int)
+        //   with { @param1 <= @ret } effect {}
         this.ignoreSnd_int_int__int = new SootMethod("ignoreSnd",
                 asList(IntType.v(),
                         IntType.v()),
@@ -156,14 +160,27 @@ public class Code {
         sigMap.put(this.ignoreSnd_int_int__int,
                 makeSignature(sigCstrs, emptyEffect()));
 
-        //Method:
+        // Method:
+        // int writeToLowReturn0(int)
+        //   with { @param0 <= LOW } effect { LOW }
         this.writeToLowReturn0_int__int = new SootMethod("writeToLow",
                 singletonList(IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(this.writeToLowReturn0_int__int);
         sigCstrs = signatureConstraints(Stream.of((leS(param_x, literal(TLOW))), leS(ret(), ret())));
         sigMap.put(this.writeToLowReturn0_int__int,
-                makeSignature(sigCstrs, effects(TLOW)));
+                makeSignature(sigCstrs, makeEffects(TLOW)));
+
+
+        // Method:
+        // int ignore0Low1ReturnHigh(int, int)
+        //   with { @param1 <= LOW, HIGH <= ret } effect {}
+        this.ignore0Low1ReturnHigh = new SootMethod("ignore0Low1ReturnHigh",
+                asList(IntType.v(), IntType.v()),
+                IntType.v(), Modifier.ABSTRACT);
+        this.testClass.addMethod(this.ignore0Low1ReturnHigh);
+        sigCstrs = signatureConstraints(Stream.of(leS(param(1), literal(TLOW)), leS(literal(THIGH), ret())));
+        sigMap.put(this.ignore0Low1ReturnHigh, makeSignature(sigCstrs, emptyEffect()));
 
         // freeze signatures
         this.signatures = makeTable(sigMap);
@@ -198,12 +215,30 @@ public class Code {
                 params.stream(),
                 body.getUseAndDefBoxes().stream()
                         .filter(b -> b.getValue() instanceof Local)
-                        .map(b -> (Local)b.getValue())
-                ).collect(toSet());
+                        .map(b -> (Local) b.getValue())
+        ).collect(toSet());
         locals.removeAll(body.getLocals());
         body.getLocals().addAll(locals);
 
         return m;
+    }
+
+
+
+
+    /**
+     * Conveniently create a class deriving from Code.testClass
+     */
+    public Pair<SootClass,SignatureTable<Level>> makeDerivedClass(String name, SootClass superClass, List<MethodWithSignature<Level>> methods) {
+        SootClass result = makeFreshClass(name);
+        result.setSuperclass(superClass);
+        SignatureTable<Level> newSignatures = this.signatures;
+        for (MethodWithSignature<Level> m : methods) {
+            result.addMethod(m.method);
+            newSignatures = newSignatures.extendWith(m.method, m.signature.constraints.stream(), m.signature.effects);
+        }
+
+        return Pair.of(result, newSignatures);
     }
 
     public abstract class AdHocUnitGraph implements DirectedGraph<Unit> {

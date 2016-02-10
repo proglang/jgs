@@ -69,7 +69,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                 // first the transitive le constraints
                 Stream<CType<Level>> transCands = oldLes.stream().filter(c -> c.getLhs().equals(x_to_y.getRhs())).map(Constraint::getRhs);
                 transCands.forEach(rhs -> {
-                    CType lhs = x_to_y.getLhs();
+                    CType<Level> lhs = x_to_y.getLhs();
                     if (!lhs.equals(rhs)) {
                         result.add(Constraints.le(lhs, rhs));
                     }
@@ -77,7 +77,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                 // then the compatibility constraints
                 Stream<CType<Level>> compCands = oldLes.stream().filter(c -> c.getRhs().equals(x_to_y.getRhs())).map(Constraint::getLhs);
                 compCands.forEach(lhs1 -> {
-                    CType lhs2 = x_to_y.getLhs();
+                    CType<Level> lhs2 = x_to_y.getLhs();
                     if (!lhs1.equals(lhs2)) {
                         result.add(Constraints.comp(lhs1, lhs2));
                     }
@@ -143,10 +143,11 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public boolean isSat(TypeDomain<Level> types) {
-        return this.satisfyingAssignment(types, Collections.emptyList()).isPresent();
+        // close the constraints and check for conflicts in the single constraints
+        return close(this.stream().collect(toSet())).stream().allMatch(c -> c.isSatisfiable(types));
     }
 
-    public Optional<Assignment<Level>> subsumptionCounterExample(ConstraintSet<Level> other) {
+    public Optional<Assignment<Level>> doesNotSubsume(ConstraintSet<Level> other) {
         return this.enumerateSatisfyingAssignments(types, Collections.<TypeVar>emptyList()).filter((Assignment<Level> a) -> {
             Stream<Constraint<Level>> cStream = other.apply(a);
             List<Constraint<Level>> cs = cStream.collect(toList());

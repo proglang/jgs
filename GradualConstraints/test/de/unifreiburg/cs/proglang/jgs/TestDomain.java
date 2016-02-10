@@ -20,6 +20,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -339,15 +340,36 @@ public class TestDomain {
         };
     }
 
-    //TODO: this is basically like signatureCounterExample but directly accepts TypeVars instead of Parameter to project. Remove this code duplication
+    public static Matcher<Signature<Level>> refines(final Signature<Level> other) {
+        return new TypeSafeMatcher<Signature<Level>>() {
+            Pair<ConstraintSet.RefinementCheckResult<Level>, EffectRefinementResult<Level>> result;
+            @Override
+            protected boolean matchesSafely(Signature<Level> levelConstraintSet) {
+                result = levelConstraintSet.refines(csets, types, other);
+                return result.getLeft().isSuccess() && result.getRight().isSuccess();
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" refines ").appendValue(other);
+            }
+
+            @Override
+            protected void describeMismatchSafely(Signature<Level> item, Description mismatchDescription) {
+                mismatchDescription.appendValue(result);
+            }
+        };
+    }
+
     public static Matcher<ConstraintSet<Level>> refines(TypeVars tvars, final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
-            ConstraintSet.RefinementCheckResult result;
+            ConstraintSet.RefinementCheckResult<Level> result;
 
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
+                // TODO: refactor tests such that we can use ConstraintSet.refine
                 ConstraintSet<Level> projected = levelConstraintSet.projectTo(Stream.concat(Stream.of(tvars.topLevelContext()), other.variables()).collect(Collectors.toSet()));
-                result = new ConstraintSet.RefinementCheckResult(other, levelConstraintSet, projected, other.subsumptionCounterExample(projected));
+                result = new ConstraintSet.RefinementCheckResult<>(other, projected, other.doesNotSubsume(projected));
                 return !result.counterExample.isPresent();
             }
 
@@ -358,7 +380,29 @@ public class TestDomain {
 
             @Override
             protected void describeMismatchSafely(ConstraintSet<Level> item, Description mismatchDescription) {
-                mismatchDescription.appendText(String.format("was (projected to sig) %s\n Counterexample: %s\n Conflicting: %s", result.projected, result.counterExample, result.getConflicting()));
+                mismatchDescription.appendText(result.toString());
+            }
+        };
+    }
+
+    public static Matcher<Collection<SootMethod>> passesSubtypingCheckFor(SignatureTable<Level> signatures) {
+        return new TypeSafeMatcher<Collection<SootMethod>>() {
+            ClassHierarchyTyping.Result<Level> result;
+
+            @Override
+            protected boolean matchesSafely(Collection<SootMethod> sootMethods) {
+                result = ClassHierarchyTyping.<Level>checkMethods(csets, types, signatures, sootMethods.stream());
+                return result.isSuccess();
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(" passes subtyping check");
+            }
+
+            @Override
+            protected void describeMismatchSafely(Collection<SootMethod> item, Description mismatchDescription) {
+                mismatchDescription.appendValue(result);
             }
         };
     }
@@ -412,7 +456,7 @@ public class TestDomain {
             this.tvars = tvars;
         }
 
-        protected abstract boolean goodResult(MethodTyping.Result r);
+        protected abstract boolean goodResult(MethodTyping.Result<Level> r);
 
         @Override
         protected boolean matchesSafely(SootMethod method) {
@@ -448,7 +492,7 @@ public class TestDomain {
     public static Matcher<SootMethod> compliesTo(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
         return new MethodTypingMatcher(tvars, signatures, fields) {
             @Override
-            protected boolean goodResult(MethodTyping.Result r) {
+            protected boolean goodResult(MethodTyping.Result<Level> r) {
                 return r.isSuccess();
             }
 
@@ -464,7 +508,7 @@ public class TestDomain {
     public static Matcher<SootMethod> violates(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
         return new MethodTypingMatcher(tvars, signatures, fields) {
             @Override
-            protected boolean goodResult(MethodTyping.Result r) {
+            protected boolean goodResult(MethodTyping.Result<Level> r) {
                 return !r.isSuccess();
             }
 

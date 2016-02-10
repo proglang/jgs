@@ -158,7 +158,7 @@ public class BasicStatementTyping<LevelT> {
         private Signature<LevelT> getSignature(SootMethod m) {
             return signatures.get(m)
                     .orElseThrow(() -> new TypingAssertionFailure(
-                            "No signature found for method "
+                            "No abstractConstraints found for method "
                                     + m.toString()));
         }
 
@@ -214,10 +214,10 @@ public class BasicStatementTyping<LevelT> {
                                 m.toString()));
                     }
 
-                    // Get signature, if possible
+                    // Get abstractConstraints, if possible
                     Signature<LevelT> sig = getSignature(m);
 
-                    // - [x] instantiate the signature with the parameters and destination variable and add corresponding constraints
+                    // - [x] instantiate the abstractConstraints with the parameters and destination variable and add corresponding constraints
                     Map<Symbol<LevelT>, TypeVar> instantiation =
                             new HashMap<>();
                     List<TypeVar> argTypes =

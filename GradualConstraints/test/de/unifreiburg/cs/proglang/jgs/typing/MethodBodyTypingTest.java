@@ -212,7 +212,7 @@ public class MethodBodyTypingTest {
         Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
 
         /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
-        /*  signature: {y, z, x} <= x* ; {x, z,y} <= z** */
+        /*  abstractConstraints: {y, z, x} <= x* ; {x, z,y} <= z** */
         /*  ( x <= z* through the loop and the indirect flow from x to y) */
         DirectedGraph<Unit> g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
 
@@ -414,7 +414,7 @@ public class MethodBodyTypingTest {
                 Assignments.builder(code.init.get(code.varZ), TLOW)
                         .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
 
-//        assertThat("Unsat projected for sig", makeNaive(result.getConstraints().projectForSignature(tvars, getConstraints.apply(result)).apply(
+//        assertThat("Unsat projected for sig", makeNaive(result.getConstraints().asSignatureConstraints(tvars, getConstraints.apply(result)).apply(
 //                Assignments.builder(code.init.get(code.varZ), TLOW)
 //                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
 //        assertThat(makeNaive(getConstraints.apply(result).proapply(

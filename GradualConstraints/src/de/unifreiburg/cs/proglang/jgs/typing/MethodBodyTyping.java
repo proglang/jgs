@@ -5,7 +5,6 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.Unit;
@@ -22,10 +21,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.effects;
+import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeEffects;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.addConstraints;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.trivialCase;
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -165,7 +163,7 @@ public class MethodBodyTyping<Level> {
             ).collect(Collectors.toList()));
             // modify effects: remove dest and add source
             Set<TypeDomain.Type<Level>> newEffects = r.getEffects().stream().collect(toSet());
-            return new BodyTypingResult<Level>(r.getConstraints().add(additionalConstraints), effects(newEffects), r.getFinalEnv());
+            return new BodyTypingResult<Level>(r.getConstraints().add(additionalConstraints), makeEffects(newEffects), r.getFinalEnv());
         } else if (successors.size() <= 1) {
             // a basic (non-branching) unit in a straight-line sequence
 

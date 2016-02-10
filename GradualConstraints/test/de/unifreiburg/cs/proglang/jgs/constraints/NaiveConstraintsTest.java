@@ -121,6 +121,12 @@ public class NaiveConstraintsTest {
         assertThat(closed, is(equivalent(expected)));
     }
 
+    public void testLeClosureWithConcreteTypes() {
+        Set<Constraint<Level>> tmp = Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(literal(THIGH), literal(TLOW))).collect(toSet());
+        ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
+        ConstraintSet<Level> expected = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(cs.x1, cs.x3)));
+    }
+
 
     @Test
     public void testCompClosure() {
@@ -138,7 +144,7 @@ public class NaiveConstraintsTest {
 
         assertThat(closed, is(equivalent(expected)));
 
-        tmp = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2))).stream().collect(Collectors.toSet());
+        tmp = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2))).stream().collect(toSet());
         closed = makeNaive(NaiveConstraints.close(tmp));
         expected = makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2), compC(cs.x1, cs.x3)));
 
