@@ -8,8 +8,11 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefineme
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import org.apache.commons.lang3.tuple.Pair;
+import soot.SootClass;
 import soot.SootMethod;
+import soot.util.Chain;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -65,9 +68,9 @@ public class ClassHierarchyTyping {
         public String toString() {
             return String.format(
                     "Overriding method: %s\n" +
-                            "Super method: %s\n" +
-                            "Constraint check: %s\n" +
-                            "Effect check: %s", subtypeMethod, superTypeMethod, constraintsCheckResult, effectCheckResult);
+                    "Super method: %s\n" +
+                    "Constraint check: %s\n" +
+                    "Effect check: %s", subtypeMethod, superTypeMethod, constraintsCheckResult, effectCheckResult);
         }
     }
 
@@ -110,4 +113,16 @@ public class ClassHierarchyTyping {
         });
         return new Result<>(errors.findAny());
     }
+
+
+    public static <Level> Result<Level> check(
+            ConstraintSetFactory<Level> csets,
+            TypeDomain<Level> types,
+            SignatureTable<Level> signatures,
+            Stream<SootClass> classes) {
+       return checkMethods(csets, types, signatures,
+                           classes.flatMap(c -> c.getMethods().stream()));
+
+    }
+
 }
