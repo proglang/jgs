@@ -73,7 +73,7 @@ public class IfStmtSuccess {
 		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
 		
 		hs.makeLocalLow("int_x");
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH);
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		
 		hs.checkCondition("int_x");
@@ -88,6 +88,7 @@ public class IfStmtSuccess {
 		assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 		assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());
 		
+		hs.popLocalPC();
 		hs.close();
 		
 		System.out.println("SIMPLE IF STMT TEST FINISHED");

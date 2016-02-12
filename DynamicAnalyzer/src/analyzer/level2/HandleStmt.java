@@ -198,14 +198,14 @@ public class HandleStmt {
 		lm.setLevel(signature, SecurityLevel.LOW);
 	}
 
-	protected SecurityLevel pushLocalPC(SecurityLevel l) {
-		lm.pushLocalPC(l);
+	protected SecurityLevel pushLocalPC(SecurityLevel l, int domHash) {
+		lm.pushLocalPC(l, domHash);
 		return lm.getLocalPC();
 	}
 	
-	protected void popLocalPC() {
+	protected void popLocalPC(int domHash) {
 		logger.info("Pop local pc.");
-		lm.popLocalPC();
+		lm.popLocalPC(domHash);
 	}
 	
 	protected SecurityLevel getLocalPC() {
@@ -277,14 +277,16 @@ public class HandleStmt {
 	
 
 	
-	public void checkCondition(String... args) {
-		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)));
+	public void checkCondition(int domHash, String... args) {
+		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)), domHash);
 		om.pushGlobalPC(hsu.joinWithGPC(lm.getLocalPC()));
 	}
 	
-	public void exitInnerScope() {
-		lm.popLocalPC();
-		om.popGlobalPC();
+	public void exitInnerScope(int domHash) {
+		while (lm.domHashEquals(domHash)) {
+			lm.popLocalPC(domHash);
+			om.popGlobalPC();
+		}
 	}
 	
 	/**

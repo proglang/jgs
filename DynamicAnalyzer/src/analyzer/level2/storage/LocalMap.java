@@ -14,21 +14,12 @@ public class LocalMap {
 	
 	private Logger logger = L2Logger.getLogger();
 	
-	private LinkedList<SecurityLevel> localPC = new LinkedList<SecurityLevel>();
+	private LinkedList<LPCDominatorPair> localPC = new LinkedList<LPCDominatorPair>();
 	private HashMap<String, SecurityLevel> lMap = new HashMap<String, SecurityLevel>();
-	// private SecurityLevel returnLevel = SecurityLevel.LOW;
 	
 	public LocalMap() {
-		localPC.push(SecurityLevel.LOW);
+		localPC.push(new LPCDominatorPair(SecurityLevel.LOW, -1));
 	}
-	/*
-	public void setReturnLevel(SecurityLevel l) {
-		returnLevel = l;
-	}
-	
-	public SecurityLevel getReturnLevel() {
-		return returnLevel;
-	}*/
 	
 	/**
 	 * Check whether the lpc stack is empty. This method is invoked at the end of every method. If
@@ -45,17 +36,17 @@ public class LocalMap {
 	
 	public SecurityLevel getLocalPC() {
 		// return localPC;
-		return localPC.getFirst();
+		return localPC.getFirst().getSecurityLevel();
 	}
 	
-	public void popLocalPC() {
+	public void popLocalPC(int domHash) {
 		int n = localPC.size();
 		localPC.pop();
 		logger.finer("Reduced stack size from " + n + " to " + localPC.size() + " elements.");
 	}
 	
-	public void pushLocalPC(SecurityLevel l) {
-		localPC.push(l);
+	public void pushLocalPC(SecurityLevel l, int domHash) {
+		localPC.push(new LPCDominatorPair(l, domHash));
 	}
 	
 	public void insertElement(String signature, SecurityLevel level) {
@@ -87,5 +78,9 @@ public class LocalMap {
 	
 	public boolean contains(String local) {
 		return lMap.containsKey(local);
+	}
+	
+	public boolean domHashEquals(int domHash) {
+		return localPC.getFirst().getPostDomHashValue() == domHash;	
 	}
 }

@@ -10,7 +10,6 @@ import analyzer.level2.ForStmtFail;
 import analyzer.level2.ForStmtSuccess;
 import analyzer.level2.IfStmtFail;
 import analyzer.level2.IfStmtSuccess;
-import analyzer.level2.InternalMethods;
 import analyzer.level2.InvokeSuccess;
 import analyzer.level2.MultiArrayFail;
 import analyzer.level2.MultiArraySuccess;
@@ -27,7 +26,6 @@ import analyzer.level2.storage.ObjectMapTest;
 import classfiletests.ArrayRefTest;
 import classfiletests.ExtClassesTest;
 import classfiletests.FieldsSuccessTest;
-import classfiletests.GotoStmtTest;
 import classfiletests.IfStmtTest;
 import classfiletests.InvokeInternalMethodTest;
 import classfiletests.InvokeLibMethodTest;
@@ -73,7 +71,6 @@ import tests.ExampleFailScenarios;
     DominatorFinderTest.class,
 
     // Tests for protected HandleStmt methods
-    InternalMethods.class,
     ObjectMapTest.class,
     LocalMapTest.class,
 

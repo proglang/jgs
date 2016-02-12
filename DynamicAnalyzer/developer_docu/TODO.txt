@@ -32,7 +32,8 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 >> Move more parts to visitorhelper??
 >> InternalAnalyzerException richtige Fehlermeldung
 >> Why is there a field for returnLevel in ObjectMap AND in LocalMap? 
-
+>> Whats the possibility that identityHashCode returns the same value for different objects? 
+   Use two hash-functions?
 
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
