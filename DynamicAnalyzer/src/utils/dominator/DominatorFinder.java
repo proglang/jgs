@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class DominatorFinder {
 	private MHGPostDominatorsFinder pdfinder;
 	private UnitGraph graph;
-	private List<Unit> postDomList = new ArrayList<Unit>();
+	
 	Logger logger = L1Logger.getLogger();
   
 	public DominatorFinder(Body body) {
@@ -24,27 +24,12 @@ public class DominatorFinder {
   
 	/**
 	 * Get the f
-	 * @param node -Unit- 
+	 * @param node 
 	 */
-	public void getImmediateDominator(Unit node) {
-		postDomList.add((Unit) pdfinder.getImmediateDominator(node));
-		logger.info("postDomList after inserting one element :" + postDomList.toString());
-		logger.info("Dominator :" + pdfinder.getImmediateDominator(node).toString());
-	}
-  
-	/**
-	 * @param node
-	 * @return
-	 */
-	public boolean containsStmt(Unit node) {
-		if (postDomList.contains(node)) {
-			postDomList.remove(node);
-			logger.info("PostDomList after Removing one element "
-					+ postDomList.toString());
-			return true;
-		} else {
-			return false;
-		}
+	public int getImmediateDominatorHashValue(Unit node) {
+		Object dom = pdfinder.getImmediateDominator(node);
+		logger.info("Dominator :" + dom.toString());
+		return System.identityHashCode(dom);
 	}
   
 }

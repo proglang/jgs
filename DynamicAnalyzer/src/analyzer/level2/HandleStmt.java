@@ -277,14 +277,14 @@ public class HandleStmt {
 	
 
 	
-	public void checkCondition(int domHash, String... args) {
-		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)), domHash);
+	public void checkCondition(String domHash, String... args) {
+		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)), Integer.valueOf(domHash));
 		om.pushGlobalPC(hsu.joinWithGPC(lm.getLocalPC()));
 	}
 	
-	public void exitInnerScope(int domHash) {
-		while (lm.domHashEquals(domHash)) {
-			lm.popLocalPC(domHash);
+	public void exitInnerScope(String domHash) {
+		while (lm.domHashEquals(Integer.valueOf(domHash))) {
+			lm.popLocalPC(Integer.valueOf(domHash));
 			om.popGlobalPC();
 		}
 	}

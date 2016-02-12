@@ -35,7 +35,7 @@ public class WhileStmtSuccess {
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		
-		hs.checkCondition("int_x");
+		hs.checkCondition(123, "int_x");
 		while (x == 0) {
 			
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC());
@@ -43,7 +43,7 @@ public class WhileStmtSuccess {
 			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
-		hs.exitInnerScope();
+		hs.exitInnerScope(123);
 		}
 
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
@@ -63,7 +63,7 @@ public class WhileStmtSuccess {
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		
-		hs.checkCondition("int_x");
+		hs.checkCondition(123, "int_x");
 		while (x == 0) {
 			
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
@@ -71,7 +71,7 @@ public class WhileStmtSuccess {
 			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
-		hs.exitInnerScope();
+		hs.exitInnerScope(123);
 		}
 
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());

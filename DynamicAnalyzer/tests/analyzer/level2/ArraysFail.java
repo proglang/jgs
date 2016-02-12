@@ -33,7 +33,7 @@ public class ArraysFail {
 		hs.addLocal("String[]_a");
 		int i = 2;
 		hs.addLocal("int_i");
-		hs.pushLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 12);
 		
 		
 		assertTrue(hs.containsObjectInObjectMap(a));

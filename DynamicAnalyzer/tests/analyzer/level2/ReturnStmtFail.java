@@ -32,7 +32,7 @@ public class ReturnStmtFail {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
-		hs.pushLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 123);
 		hs.addLocal("int_res1");
 		
 		@SuppressWarnings("unused")
@@ -45,7 +45,7 @@ public class ReturnStmtFail {
 		hs.assignReturnLevelToLocal("int_res1");
 		
 
-		hs.popLocalPC();
+		hs.popLocalPC(123);
 	    hs.close();	
 	    
 	    LOGGER.log(Level.INFO, "RETURN TEST FINISHED");

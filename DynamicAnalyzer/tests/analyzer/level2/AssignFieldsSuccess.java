@@ -81,7 +81,7 @@ public class AssignFieldsSuccess {
 		 *  1. Check if Level(field) >= lpc
 		 *  2. Assign Join(y, z, lpc) to field
 		 */
-		hs.pushLocalPC(SecurityLevel.LOW);
+		hs.pushLocalPC(SecurityLevel.LOW, 123);
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_var1"));
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfField(this, "int_field"));
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_var1"));
@@ -93,7 +93,7 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.HIGH, hs.addLevelOfLocal("int_var2"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfField(this, "int_field"));
 		
-		hs.popLocalPC();
+		hs.popLocalPC(123);
 		hs.close();	
 	    
 		logger.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST FINISHED");
@@ -116,7 +116,7 @@ public class AssignFieldsSuccess {
 		 *  1. Check if Level(field) >= lpc
 		 *  2. Assign Join(y, z, lpc) to field
 		 */
-		hs.pushLocalPC(SecurityLevel.LOW);
+		hs.pushLocalPC(SecurityLevel.LOW, 123);
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_var1"));
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfField(this.getClass(), "int_sField"));
 		
@@ -124,7 +124,7 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.HIGH, hs.addLevelOfLocal("int_var1"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfField(this.getClass(), "int_sField"));
 		
-		hs.popLocalPC();
+		hs.popLocalPC(123);
 		hs.close();	
 		
 		logger.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD FINISHED");

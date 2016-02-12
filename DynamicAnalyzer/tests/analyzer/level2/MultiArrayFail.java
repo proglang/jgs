@@ -37,7 +37,7 @@ public class MultiArrayFail {
 		 * String[][] arr = new String[][]{{"a"},{"b"}};
 		 * String x = arr[1][0];
 		 */ 
-		hs.pushLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 123);
 		
 		String[][] arr = new String[2][];
 		hs.addArrayToObjectMap(arr);
@@ -75,7 +75,7 @@ public class MultiArrayFail {
 		@SuppressWarnings("unused")
 		String x = tmp[0];
 		
-		hs.popLocalPC();
+		hs.popLocalPC(123);
 		hs.close();
 		
 		logger.info("readArray fail test finished");

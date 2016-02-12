@@ -30,13 +30,12 @@ public class WhileStmtFail {
 		
 		hs.addLocal("int_x");
 		hs.setLevelOfLocal("int_x");
-		@SuppressWarnings("unused")
 		int x = 0;
 		
 		hs.addLocal("int_y", SecurityLevel.HIGH);
 		int y = 0;
 		
-		hs.checkCondition("int_y");
+		hs.checkCondition(123, "int_y");
 		while (y == 0) {
 			
 			hs.addLevelOfLocal("int_x");
@@ -46,7 +45,7 @@ public class WhileStmtFail {
 			hs.setLevelOfLocal("int_y");
 			y += 1;
 			
-		hs.exitInnerScope();
+		hs.exitInnerScope(123);
 		}
 		
 		LOGGER.log(Level.INFO, "WHILE STMT TEST FINISHED");
