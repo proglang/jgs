@@ -5,7 +5,7 @@ import soot.SootMethod;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 
 /**
- * A soot method with a security abstractConstraints
+ * A soot method with a security signature
  */
 public class MethodWithSignature<Level> {
 

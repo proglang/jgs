@@ -140,7 +140,7 @@ public abstract class ConstraintSet<Level> {
     }
 
     /**
-     * @return true if <code>this</code> is a suitable abstractConstraints for <code>other</code>
+     * @return true if <code>this</code> is a suitable signature for <code>other</code>
      */
     //TODO: remove
     /*
@@ -151,7 +151,7 @@ public abstract class ConstraintSet<Level> {
 
 
     /**
-     * Project a constraint set to the symbols relevant for a method abstractConstraints, which are the parameters, the top-level context and the return symbol
+     * Project a constraint set to the symbols relevant for a method signature, which are the parameters, the top-level context and the return symbol
      */
     public ConstraintSet<Level> asSignatureConstraints(TypeVars tvars, Stream<Var<?>> params) {
         Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext(), tvars.ret()), params.map(tvars::param)).collect(toSet());

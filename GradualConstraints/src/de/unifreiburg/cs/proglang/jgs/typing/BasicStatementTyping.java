@@ -214,10 +214,10 @@ public class BasicStatementTyping<LevelT> {
                                 m.toString()));
                     }
 
-                    // Get abstractConstraints, if possible
+                    // Get signature, if possible
                     Signature<LevelT> sig = getSignature(m);
 
-                    // - [x] instantiate the abstractConstraints with the parameters and destination variable and add corresponding constraints
+                    // - [x] instantiate the signature with the parameters and destination variable and add corresponding constraints
                     Map<Symbol<LevelT>, TypeVar> instantiation =
                             new HashMap<>();
                     List<TypeVar> argTypes =

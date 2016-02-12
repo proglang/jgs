@@ -25,13 +25,16 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
- * Tests that illustrate type-checking of individual methods against their signatures. The assertions for expected
- * success or failure are "compliesTo" and "violates", respectively.
+ * Tests that illustrate type-checking of individual methods against their
+ * signatures. The assertions for expected success or failure are "compliesTo"
+ * and "violates", respectively.
  * <p>
- * Less-than-or-equal constraints are created with the statically imported "leS" method.
+ * Less-than-or-equal constraints are created with the statically imported "leS"
+ * method.
  * <p>
- * The "code" object (see class <code>de.unifreiburg.cs.proglang.jgs.Code</code>) contains some common helper
- * definitions (local variables, fields, abstract methods).
+ * The "code" object (see class <code>de.unifreiburg.cs.proglang.jgs.Code</code>)
+ * contains some common helper definitions (local variables, fields, abstract
+ * methods).
  */
 public class MethodTypingTest {
 
@@ -73,20 +76,22 @@ public class MethodTypingTest {
 
         IntType i = IntType.v();
 
-        SootMethod m = code.makeMethod(Modifier.STATIC, "multipleReturns", asList(code.localX, code.localY, code.localZ, code.localO),
-                IntType.v(),
-                asList(ifO,
-                        returnZ,
-                        ifY,
-                        returnZero,
-                        returnX
-                ));
+        SootMethod m =
+                code.makeMethod(Modifier.STATIC, "multipleReturns",
+                                asList(code.localX, code.localY, code.localZ, code.localO),
+                                IntType.v(),
+                                asList(ifO,
+                                       returnZ,
+                                       ifY,
+                                       returnZero,
+                                       returnX
+                                ));
         return m;
     }
 
 
     /*
-    valid abstractConstraints:
+    valid signature:
     constraints:
       param0 <= ret
       param1 <= ret
@@ -112,7 +117,7 @@ public class MethodTypingTest {
     }
 
     /*
-    invalid abstractConstraints (constraint for param2 is missing):
+    invalid signature (constraint for param2 is missing):
     constraints:
       param0 <= ret
       param1 <= ret
@@ -133,8 +138,14 @@ public class MethodTypingTest {
         MethodTyping.Result<Level> r = mtyping.check(tvars, signatures, code.fields, m);
 
         //TODO: make a junit-Matcher for these results
-        assertThat(String.format("Should not succeed, constraints: \nSIG: %s\n CONSTRAINTS: %s", r.refinementCheckResult.abstractConstraints.toString().replace(",", ",\n"),
-                r.refinementCheckResult.concreteConstraints.toString().replace(",", ",\n")), r.isSuccess(), is(false));
+        assertThat(String.format(
+                "Should not succeed, constraints: \n"
+                + "SIG: %s"
+                + "\n CONSTRAINTS: %s",
+                r.refinementCheckResult
+                        .abstractConstraints.toString().replace(",", ",\n"),
+                r.refinementCheckResult
+                        .concreteConstraints.toString().replace(",", ",\n")), r.isSuccess(), is(false));
     }
 
 
@@ -157,7 +168,7 @@ public class MethodTypingTest {
         ));
     }
 
-    // Valid abstractConstraints
+    // Valid signature
     /*
     constraints:
       param0 <= ret, ? <= ret
@@ -178,7 +189,7 @@ public class MethodTypingTest {
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
 
-    // Invalid abstractConstraints
+    // Invalid signature
     /*
     constraints:
        ? <= ret
@@ -216,7 +227,7 @@ public class MethodTypingTest {
     }
 
 
-    // Valid abstractConstraints
+    // Valid signature
     /*
     constraints:
       param0 <= LOW, param1 <= LOW
@@ -233,7 +244,7 @@ public class MethodTypingTest {
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
 
-    // Also a valid, but more conservative abstractConstraints (public effects)
+    // Also a valid, but more conservative signature (public effects)
     /*
     constraints:
       param0 <= LOW, param1 <= LOW
@@ -250,7 +261,7 @@ public class MethodTypingTest {
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
 
-    // Invalid abstractConstraints (constraint missing for param1)
+    // Invalid signature (constraint missing for param1)
     /*
     constraints:
       param0 <= LOW
@@ -266,7 +277,7 @@ public class MethodTypingTest {
         assertThat(m, violates(tvars, signatures, code.fields));
     }
 
-    // Invalid abstractConstraints (constraint missing for param0)
+    // Invalid signature (constraint missing for param0)
     /*
     constraints:
       param1 <= LOW
@@ -282,7 +293,7 @@ public class MethodTypingTest {
         assertThat(m, violates(tvars, signatures, code.fields));
     }
 
-    // Invalid abstractConstraints (constraint missing effect)
+    // Invalid signature (constraint missing effect)
     /*
     constraints:
       param0 <= LOW
@@ -318,7 +329,7 @@ public class MethodTypingTest {
                 asList(getField, ifHigh, gotoReturn, dynUpd, returnVoid ));
     }
 
-    // trivial abstractConstraints, but invalid typing
+    // trivial signature, but invalid typing
     /*
      constraints: <empty>
      effect:      { PUBLIC }
@@ -354,7 +365,7 @@ public class MethodTypingTest {
                 asList(getField, ifHigh, gotoReturn, cxBegin, dynUpd, cxEnd, returnVoid ));
     }
 
-    // trivial, and valid abstractConstraints
+    // trivial, and valid signature
     /*
      constraints: <empty>
      effect:      { PUBLIC }
@@ -391,7 +402,7 @@ public class MethodTypingTest {
                 asList(getField, ifHigh, gotoReturn, cxBegin, dynUpd, cxEnd, returnVoid ));
     }
 
-    // trivial abstractConstraints, but invalid body
+    // trivial signature, but invalid body
     /*
      constraints: <empty>
      effect:      { PUBLIC }

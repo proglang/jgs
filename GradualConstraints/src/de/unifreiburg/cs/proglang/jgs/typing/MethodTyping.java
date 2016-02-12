@@ -69,7 +69,7 @@ public class MethodTyping<Level> {
                     && missedEffects.isEmpty();
         }
 
-        // TODO: fix refactoring mess in strings: abstractConstraints should be called "signature" most of the time
+        // TODO: fix refactoring mess in strings: signature should be called "signature" most of the time
         @Override
         public String toString() {
             StringBuilder b = new StringBuilder("Typing result: \n");
@@ -115,22 +115,22 @@ public class MethodTyping<Level> {
     }
 
     /**
-     * Check if the abstractConstraints of a method complies (i.e. subsumes) the constraints generated for the body.
+     * Check if the signature of a method complies (i.e. subsumes) the constraints generated for the body.
      *
      * @param method The method to check
      * @return A pair of typing errors. If the left component is present there was an error refining the constraints, if
-     * the right component is present, it yields the effect types inferred for the body that the abstractConstraints
+     * the right component is present, it yields the effect types inferred for the body that the signature
      * does not cover.
      * @throws TypingException
      */
     // TODO: what's up with "this"?
     public Result<Level> check(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields, SootMethod method) throws TypingException {
-        // Get the abstractConstraints of "method"
+        // Get the signature of "method"
         MethodSignatures.Signature<Level> signatureToCheck = signatures.get(method)
                 .orElseThrow(() -> new TypingException("No signature found for method " + method.toString()));
 
 
-        // type check the body and connect abstractConstraints with the typing result through a symbol mapping
+        // type check the body and connect signature with the typing result through a symbol mapping
         Map<Symbol.Param<Level>, TypeVar> paramMapping = Methods.symbolMapForMethod(tvars, method);
         Environment init = Environments.forParamMap(tvars, paramMapping);
 

@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * Method signtures. Internal representation of method signatures of the form
  * <p>
- * M where <abstractConstraints-constraints> and <effect>
+ * M where <signature-constraints> and <effect>
  * <p>
  * Signature constraints are similar to regular constraints but instead of relating type variables, they relate special
  * symbols, which are:

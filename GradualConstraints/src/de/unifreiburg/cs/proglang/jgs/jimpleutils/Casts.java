@@ -9,7 +9,8 @@ import java.util.Optional;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
 
 /**
- * An interface to detect casts from method calls. In JGS, casts are identity methods that BasicStatementTyping.generate treats specially.
+ * An interface to detect casts from method calls. In JGS, casts are identity
+ * methods that BasicStatementTyping.generate treats specially.
  * <p>
  * Created by fennell on 11/13/15.
  */
@@ -24,7 +25,8 @@ public abstract class Casts<Level> {
             this.destType = destType;
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             return String.format("cx(%s => %s)",
                     this.destType,
                     this.sourceType);
@@ -44,14 +46,16 @@ public abstract class Casts<Level> {
             this.value = value;
         }
 
-        @Override public String toString() {
+        @Override
+        public String toString() {
             return String.format("(%s <= %s)%s",
-                                 this.destType,
-                                 this.sourceType,
-                                 this.value);
+                    this.destType,
+                    this.sourceType,
+                    this.value);
         }
 
-        @Override public boolean equals(Object o) {
+        @Override
+        public boolean equals(Object o) {
             if (this == o)
                 return true;
             if (o == null || getClass() != o.getClass())
@@ -60,20 +64,21 @@ public abstract class Casts<Level> {
             ValueCast<?> cast = (ValueCast<?>) o;
 
             if (sourceType != null ?
-                !sourceType.equals(cast.sourceType) :
-                cast.sourceType != null)
+                    !sourceType.equals(cast.sourceType) :
+                    cast.sourceType != null)
                 return false;
             if (destType != null ?
-                !destType.equals(cast.destType) :
-                cast.destType != null)
+                    !destType.equals(cast.destType) :
+                    cast.destType != null)
                 return false;
             return !(value != null ?
-                     !value.equals(cast.value) :
-                     cast.value != null);
+                    !value.equals(cast.value) :
+                    cast.value != null);
 
         }
 
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             int result = sourceType != null ? sourceType.hashCode() : 0;
             result = 31 * result + (destType != null ? destType.hashCode() : 0);
             result = 31 * result + (value != null ? value.hashCode() : 0);
@@ -85,7 +90,7 @@ public abstract class Casts<Level> {
         if (s.containsInvokeExpr()) {
             InvokeExpr e = s.getInvokeExpr();
             if (e instanceof StaticInvokeExpr) {
-                return this.detectContextCastStartFromCall((StaticInvokeExpr)e);
+                return this.detectContextCastStartFromCall((StaticInvokeExpr) e);
             }
         }
         return Optional.empty();
@@ -95,19 +100,23 @@ public abstract class Casts<Level> {
         if (s.containsInvokeExpr()) {
             InvokeExpr e = s.getInvokeExpr();
             if (e instanceof StaticInvokeExpr) {
-                return this.detectContextCastEndFromCall((StaticInvokeExpr)e);
+                return this.detectContextCastEndFromCall((StaticInvokeExpr) e);
             }
         }
         return false;
     }
 
     public abstract Optional<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e);
+
     public abstract Optional<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e);
+
     public abstract boolean detectContextCastEndFromCall(StaticInvokeExpr e);
-    protected ValueCast<Level> makeValueCast(Type<Level>source, Type<Level> destination, Var<?> value) {
+
+    protected ValueCast<Level> makeValueCast(Type<Level> source, Type<Level> destination, Var<?> value) {
         return new ValueCast<>(source, destination, value);
     }
-    protected CxCast<Level> makeContextCast(Type<Level>source, Type<Level> destination) {
+
+    protected CxCast<Level> makeContextCast(Type<Level> source, Type<Level> destination) {
         return new CxCast<>(source, destination);
     }
 }

@@ -49,8 +49,10 @@ public class MethodBodyTypingTest {
 
     @Test
     public void testSequences() throws TypingException {
-        Stmt first = j.newAssignStmt(code.localX, j.newAddExpr(code.localX, code.localY));
-        Stmt last = j.newAssignStmt(code.localY, j.newAddExpr(code.localX, code.localZ));
+        Stmt first = j.newAssignStmt(code.localX,
+                                     j.newAddExpr(code.localX, code.localY));
+        Stmt last = j.newAssignStmt(code.localY,
+                                    j.newAddExpr(code.localX, code.localZ));
         // x = x + y;
         // y = x + z;
         DirectedGraph<Unit> g = seq(
@@ -58,14 +60,15 @@ public class MethodBodyTypingTest {
                 last
         );
 
-        assertEquivalentConstraints(g,
+        assertEquivalentConstraints(
+                g,
                 (BodyTypingResult<Level> finalResult) -> makeNaive(asList(
                         leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
                         leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
                         leC(pc, finalResult.finalTypeVariableOf(code.varY)))),
                 finalResult -> new HashSet<>(asList(pc, code.init.get(code.varX), code.init.get(code.varY),
-                        code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))));
+                                                    code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))));
 
         // x = x + y;
         // y = o.ignoreSnd_int_int__int(x, z);
@@ -212,7 +215,7 @@ public class MethodBodyTypingTest {
         Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
 
         /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
-        /*  abstractConstraints: {y, z, x} <= x* ; {x, z,y} <= z** */
+        /*  signature: {y, z, x} <= x* ; {x, z,y} <= z** */
         /*  ( x <= z* through the loop and the indirect flow from x to y) */
         DirectedGraph<Unit> g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
 
@@ -413,14 +416,6 @@ public class MethodBodyTypingTest {
         assertThat("Unsat projected", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
                 Assignments.builder(code.init.get(code.varZ), TLOW)
                         .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-
-//        assertThat("Unsat projected for sig", makeNaive(result.getConstraints().asSignatureConstraints(tvars, getConstraints.apply(result)).apply(
-//                Assignments.builder(code.init.get(code.varZ), TLOW)
-//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-//        assertThat(makeNaive(getConstraints.apply(result).proapply(
-//                Assignments.builder(code.init.get(code.varZ), TLOW)
-//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-
         assertEquivalentConstraints(g, getConstraints,
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
 
