@@ -211,7 +211,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
 		logger.fine("\n > > > Lookup switch statement identified < < <");
 		valueSwitch.callingStmt = stmt; 
-		new NotSuppoertedStmtException("Lookup Switch Stmt");
+		new NotSupportedStmtException("Lookup Switch Stmt");
 	}
 
 	@Override

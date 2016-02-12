@@ -116,7 +116,7 @@ public class BodyAnalyzer extends BodyTransformer{
 				
 
 		// Add all locals to LocalMap except the locals which 
-		// are inserted for analyzation purposes.
+		// are inserted for analysis purposes.
 		Iterator<Local> lit = locals.iterator();
 		while (lit.hasNext()) {
 			Local item = lit.next();

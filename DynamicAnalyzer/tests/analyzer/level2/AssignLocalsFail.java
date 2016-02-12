@@ -32,9 +32,10 @@ public class AssignLocalsFail {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", SecurityLevel.LOW);
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH);
 		// x = LOW, lpc = HIGH
 		hs.setLevelOfLocal("int_x");
+		hs.popLocalPC();
 		hs.close();
 		
 		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
@@ -57,7 +58,7 @@ public class AssignLocalsFail {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH);
 		// x = LOW, lpc = HIGH
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_x"));
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
@@ -81,12 +82,12 @@ public class AssignLocalsFail {
 		
 		TestSubClass xy;
 		
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH);
 		
 		hs.setLevelOfLocal("TestSubClass_xy");
 		xy = new TestSubClass();
 		
-		
+		hs.popLocalPC();
 	    hs.close();	
 
 		LOGGER.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST FINISHED");
@@ -138,10 +139,11 @@ public class AssignLocalsFail {
 		 */
 		
 		hs.addLocal("int_x");
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH);
 		hs.addLevelOfLocal("int_x");
 		hs.setLevelOfLocal("int_x"); // Just ignore the constants
 		
+		hs.popLocalPC();
 		hs.close();
 				
 		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST FINISHED");

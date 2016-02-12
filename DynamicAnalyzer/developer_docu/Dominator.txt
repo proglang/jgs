@@ -99,4 +99,12 @@ SEPARATED IFS:
  }        
  
  3. What to do with big if-expressions, which are split in Jimple?
- if (...)
+ if(... && ... &&...)
+ 
+ if(...)
+ if(...)
+ if(...)
+ 
+ 
+ 
+ => set lpc before ifStmt

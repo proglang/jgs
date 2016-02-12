@@ -63,6 +63,7 @@ public class ArraysSuccess {
 		hs.addLevelOfLocal("String[]_a");
 		hs.addLocal("String_x");
 		hs.setLevelOfLocal("String_x");
+		@SuppressWarnings("unused")
 		String x = a[i];
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("String_x"));

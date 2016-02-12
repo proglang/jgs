@@ -31,17 +31,10 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 >> Add all classfiletests to testmain
 >> Move more parts to visitorhelper??
 >> InternalAnalyzerException richtige Fehlermeldung
+>> Why is there a field for returnLevel in ObjectMap AND in LocalMap? 
+
 
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
-Dominator, ifs
->> Welchen lpc hat das else? Wenn eine Bedingung einen lpc High erzeugt, 
-  muss dann der lpc von allen Bedingungen auf high gesetzt werden?
->> Siehe Dominator.txt#Probleme
-
-makeHigh
->> Was kann eigentlich high gesetzt werden? fields, locals, arrayfields??
->> Für eine Variable entstehen in Jimple mehrere Variablen
 
 
->> NotSupportedStmtExcpetion

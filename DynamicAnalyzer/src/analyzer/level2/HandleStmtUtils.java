@@ -3,6 +3,7 @@ package analyzer.level2;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L2Logger;
 import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LocalMap;
@@ -16,25 +17,33 @@ public class HandleStmtUtils {
 	
 	protected HandleStmtUtils(LocalMap lm, ObjectMap om) {
 		this.lm = lm;
-		this.om = om;
+		if (lm == null) {
+			new InternalAnalyzerException("LocalMap initialization has failed.");
+		}
+		HandleStmtUtils.om = om;		
+		if (om == null) {
+			new InternalAnalyzerException("ObjectMap initialization has failed.");
+		}
 	}
 	
 	//
 	// PC check operations
 	//
-	
-	public HandleStmtUtils() {
-		// TODO Auto-generated constructor stub
-	}
 
 	/**
 	 * @param signature
 	 * @return
 	 */
-	protected boolean checkLocalPC(String signature) {
-		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {lm.getLevel(signature), lm.getLocalPC()  });
+	protected boolean checkLocalPC(String signature) {		
+		System.out.println(signature);
+		if (lm == null) {
+			System.out.println("sdf");
+		}
+		SecurityLevel level = lm.getLevel(signature);
+		SecurityLevel lpc = lm.getLocalPC();
+		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {level, lpc });
 		boolean res = true;
-		if (lm.getLevel(signature) == SecurityLevel.LOW && lm.getLocalPC() == SecurityLevel.HIGH) {
+		if (level == SecurityLevel.LOW && lpc == SecurityLevel.HIGH) {
 			res = false;
 		}
 		return res;		
