@@ -23,7 +23,7 @@ public class Constraints<Level> {
         this.types = types;
     }
 
-    static <Level> Constraint<Level> make(Constraint.Kind kind, CType<Level> lhs, CType<Level> rhs) {
+    public static <Level> Constraint<Level> make(Constraint.Kind kind, CType<Level> lhs, CType<Level> rhs) {
         return new Constraint<>(kind, lhs, rhs);
     }
 

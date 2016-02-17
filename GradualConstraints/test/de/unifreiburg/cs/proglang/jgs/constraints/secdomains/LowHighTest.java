@@ -1,9 +1,13 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 
 import org.junit.Test;
+
+import java.util.Optional;
 
 public class LowHighTest {
     
@@ -18,6 +22,13 @@ public class LowHighTest {
        assertEquals(HIGH, lub(LOW, HIGH));
        assertEquals(HIGH, lub(HIGH, LOW));
        assertEquals(LOW, glb(HIGH, LOW));
+    }
+
+    @Test
+    public void testParser() {
+        assertThat(levels.levelParser().parse("LOW"), is(equalTo(Optional.of(LOW))));
+        assertThat(levels.levelParser().parse("HIGH"), is(equalTo(Optional.of(HIGH))));
+        assertThat(levels.levelParser().parse("lkjas"), is(equalTo(Optional.empty())));
     }
 
 }

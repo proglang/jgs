@@ -1,9 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import soot.JastAddJ.Opt;
 
 /**
  * The classical LOW-HIGH security lattice.
@@ -39,6 +42,19 @@ public class LowHigh implements SecDomain<LowHigh.Level> {
     @Override
     public boolean le(Level l1, Level l2) {
         return l1.equals(Level.LOW) || l1.equals(l2);
+    }
+
+    @Override
+    public AnnotationParser<Level> levelParser() {
+        return s -> {
+            if (s.equals("LOW")) {
+               return Optional.of(Level.LOW);
+            } else if (s.equals("HIGH")) {
+                return Optional.of(Level.HIGH);
+            } else {
+                return Optional.empty();
+            }
+        };
     }
 
     @Override

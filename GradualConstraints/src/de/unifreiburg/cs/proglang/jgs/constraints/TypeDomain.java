@@ -1,5 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import soot.JastAddJ.Opt;
+
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -40,6 +43,19 @@ public class TypeDomain<Level> {
     public Type<Level> level(Level level) {
         return new SecLevel<>(level);
     }
+
+    public AnnotationParser<Type<Level>> typeParser() {
+        return s -> {
+            if (s.equals("?")) {
+                return Optional.of(dyn());
+            } else if (s.equals("pub")) {
+                return Optional.of(pub());
+            } else {
+                return secDomain.levelParser().parse(s).map(this::level);
+            }
+        };
+    }
+
 
     /**
      * Enumerates all types by prepending "pub" and "dyn" to the security
