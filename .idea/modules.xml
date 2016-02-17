@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GradualConstraints/GradualConstraints.iml" filepath="$PROJECT_DIR$/GradualConstraints/GradualConstraints.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JGSSupport/JGSSupport.iml" filepath="$PROJECT_DIR$/JGSSupport/JGSSupport.iml" />
     </modules>
   </component>
 </project>
