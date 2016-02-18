@@ -6,7 +6,7 @@ package de.unifreiburg.cs.proglang.jgs.support;
  * array element encodes a single constraint.
  */
 public @interface Constraints {
-    String[] constraints();
+    String[] value();
 }
 
 

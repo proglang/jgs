@@ -3,7 +3,6 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
-import lombok.Value;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -14,6 +13,7 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
 import static java.util.Arrays.asList;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -100,9 +100,16 @@ public class MethodSignatures<Level> {
     }
 
     public static class EffectRefinementResult<Level> {
+        @Override
+        public String toString() {
+            return "missingEffects = " + missingEffects +
+                   '}';
+        }
+
         public final Effects<Level> missingEffects;
 
         public EffectRefinementResult(Effects<Level> missingEffects) {
+
             this.missingEffects = missingEffects;
         }
 
@@ -140,6 +147,8 @@ public class MethodSignatures<Level> {
         public boolean isEmpty() {
             return this.effectSet.isEmpty();
         }
+
+        private <T> List<T> id (List<T>l ) { return l;}
 
         public final Stream<Type<Level>> stream() {
             return this.effectSet.stream();
@@ -280,7 +289,6 @@ public class MethodSignatures<Level> {
         }
     }
 
-    @Value
     public static class SigConstraint<Level> {
 
         private final Symbol<Level> lhs;
@@ -308,6 +316,30 @@ public class MethodSignatures<Level> {
         public String toString() {
             return String.format("%s %s %s", lhs.toString(), kind.toString(), rhs.toString());
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            SigConstraint<?> that = (SigConstraint<?>) o;
+
+            if (lhs != null ? !lhs.equals(that.lhs) : that.lhs != null)
+                return false;
+            if (rhs != null ? !rhs.equals(that.rhs) : that.rhs != null)
+                return false;
+            return kind == that.kind;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = lhs != null ? lhs.hashCode() : 0;
+            result = 31 * result + (rhs != null ? rhs.hashCode() : 0);
+            result = 31 * result + (kind != null ? kind.hashCode() : 0);
+            return result;
+        }
+
     }
 
 }

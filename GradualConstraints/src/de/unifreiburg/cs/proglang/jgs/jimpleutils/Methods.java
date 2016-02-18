@@ -1,22 +1,27 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser;
 import soot.SootMethod;
-import soot.tagkit.Tag;
+import soot.tagkit.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -37,9 +42,62 @@ public class Methods {
                       p -> tvars.param(Var.fromParam(p))));
     }
 
+    /**
+     * Filter a stream of tags for Annotations and return the list of Strings
+     * contained in them.
+     *
+     * @param type The type of the Annotation class to be extracted, as a
+     *             mangled class name. Should contain a "value" field containing
+     *             a String array.
+     */
+    public static Stream<List<String>> extractStringArrayAnnotation(String type, Stream<Tag> tags) {
+        Stream<AnnotationTag> matchingAnnotationTags =
+                tags.filter(t -> t instanceof VisibilityAnnotationTag)
+                    .flatMap(t -> ((VisibilityAnnotationTag) t)
+                            .getAnnotations().stream()
+                            .filter(a -> a.getType().equals(type)));
+
+        return matchingAnnotationTags.flatMap(
+                a -> {
+                    IllegalArgumentException wrongType =
+                            new IllegalArgumentException(
+                                    "Expected a string array Element but got: "
+                                    + a.toString());
+                    Stream.Builder<List<String>> es = Stream.builder();
+                    IntStream.range(0, a.getNumElems()).forEach(
+                            i -> {
+                                AnnotationElem e = a.getElemAt(i);
+                                if (!(e instanceof AnnotationArrayElem)) {
+                                    throw wrongType;
+                                }
+                                List<String> values =
+                                        ((AnnotationArrayElem) e).getValues().stream().map(
+                                                s -> {
+                                                    if (!(s instanceof AnnotationStringElem)) {
+                                                        throw wrongType;
+                                                    }
+                                                    return ((AnnotationStringElem) s).getValue();
+                                                }
+
+                                        ).collect(toList());
+                                es.add(values);
+                            }
+                    );
+                    return es.build();
+                }
+        );
+    }
+
     public static <Level> Signature<Level> extractSignatureFromTags(
-            AnnotationParser<Level> parser,
+            ConstraintParser<Level> parser,
             List<Tag> tags) {
+        List<AnnotationTag> atags =
+                tags.stream()
+                    .filter(t -> t instanceof AnnotationTag)
+                    .map(t -> (AnnotationTag) t).collect(toList());
+//        Stream<AnnotationTag> constraint =
+//                atags.stream().filter(t -> t.getName().equals("Constraints"))
+
         throw new RuntimeException("Not implemented");
     }
 }

@@ -5,5 +5,5 @@ package de.unifreiburg.cs.proglang.jgs.support;
  * corresponds to a security type.
  */
 public @interface Effects {
-    String[] effects();
+    String[] value();
 }
