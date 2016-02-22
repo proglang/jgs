@@ -56,8 +56,8 @@ public class ClassHierarchyTypingTest {
     @Test
     public void testIllegalOverride_testCallee() {
         SootMethod testCallee_override = new SootMethod("testCallee", emptyList(), IntType.v());
-        Signature<Level> sig = makeSignature(
-                                Stream.of(leS(literal(THIGH), ret())),
+        Signature<Level> sig = makeSignature(testCallee_override.getParameterCount(),
+                                Stream.of(leS(literal(THIGH), ret())).collect(toList()),
                                 emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(
@@ -77,7 +77,8 @@ public class ClassHierarchyTypingTest {
                 new SootMethod("ignore0Low1ReturnHigh",
                         code.ignore0Low1ReturnHigh.getParameterTypes(),
                         code.ignore0Low1ReturnHigh.getReturnType());
-        Signature<Level> sig = makeSignature(Stream.of(leS(param(1), literal(THIGH)), leS(literal(TLOW), ret())), emptyEffect());
+        Signature<Level> sig = makeSignature(ignore0Low1ReturnHigh_override.getParameterCount(),
+                                             Stream.of(leS(param(1), literal(THIGH)), leS(literal(TLOW), ret())).collect(toList()), emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(
                         ignore0Low1ReturnHigh_override,
@@ -91,7 +92,8 @@ public class ClassHierarchyTypingTest {
                 new SootMethod("ignore0Low1ReturnHigh",
                         code.ignore0Low1ReturnHigh.getParameterTypes(),
                         code.ignore0Low1ReturnHigh.getReturnType());
-        Signature<Level> sig = makeSignature(Stream.of(leS(param(1), literal(THIGH)), leS(literal(TLOW), ret())),
+        Signature<Level> sig = makeSignature(ignore0Low1ReturnHigh_override.getParameterCount(),
+                                             Stream.of(leS(param(1), literal(THIGH)), leS(literal(TLOW), ret())).collect(toList()),
                 makeEffects(TLOW));
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(

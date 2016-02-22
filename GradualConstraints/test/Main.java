@@ -35,6 +35,9 @@ import java.util.stream.Stream;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractSignatureFromTags;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation;
+import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
+import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeEffects;
+import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -66,40 +69,43 @@ public class Main {
         return result;
     }
 
-    private static Signature<Level> parseSignature(Optional<List<String>> constraintStrings, Optional<List<String>> effectStrings) {
-        SigConstraintSet<Level> constraints =
-                MethodSignatures.signatureConstraints(constraintStrings.map(
-                        ss -> ss.stream().map((String s) -> {
+    private static Stream<SigConstraint<Level>> parseConstraints(List<String> constraintStrings) {
+        Stream<SigConstraint<Level>> constraints =
+                constraintStrings.stream().map((String s) -> {
                             return getReplyOrThrow(new ConstraintParser<Level>(types.typeParser()).constraintParser().parse(State.of(s)),
                                                    e -> new RuntimeException(String.format("Error parsing constraint %s;\n%s", s, e.getMessage())))
                                     ;
-                        })).orElse(Stream.empty()));
-        Stream<Type<Level>> effects = effectStrings
-                .map((List<String> ss) -> {
-                    Stream<Type<Level>> result = ss.stream().map(
+                        });
+        return constraints;
+    }
+
+    private static Stream<Type<Level>> parseEffects(List<String> effectStrings) {
+        Stream<Type<Level>> effects = effectStrings.stream().map(
                             (String s) ->
                                     types.typeParser().parse(s)
                                          .orElseGet(() -> {
                                              throw new RuntimeException(String.format("Error parsing type %s", s));
                                          }));
-                    return result;
-                })
-                .orElse(Stream.<Type<Level>>empty());
-        return MethodSignatures.makeSignature(constraints, MethodSignatures.makeEffects(effects.collect(toList())));
+
+        return effects;
     }
 
+
     private static Signature<Level> parseSignature(SootMethod m) {
-        Optional<List<String>> constraints =
+        List<String> constraintStrings =
                 getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().stream()),
                                     new IllegalArgumentException(
                                             "Found more than one constraint annotation on "
-                                            + m.getName()));
-        Optional<List<String>> effects =
+                                            + m.getName())).orElse(emptyList());
+        List<String> effectStrings =
                 getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().stream()),
                                     new IllegalArgumentException(
                                             "Found more than one effect annotation on "
-                                            + m.getName()));
-        return parseSignature(constraints, effects);
+                                            + m.getName())).orElse(emptyList());
+        return makeSignature(m.getParameterCount(),
+                             parseConstraints(constraintStrings).collect(toList()),
+                             makeEffects(parseEffects(effectStrings)
+                                                 .collect(toList())));
     }
 
     private static void addSpecialSignatures(Map<SootMethod, Signature<Level>> signatureMap) {
@@ -114,7 +120,9 @@ public class Main {
                       || m.getName().contains("<clinit>");})
          .forEach(m -> {
              if (!signatureMap.containsKey(m)) {
-                 signatureMap.put(m, MethodSignatures.makeSignature(MethodSignatures.signatureConstraints(Stream.empty()), MethodSignatures.emptyEffect()));
+                 signatureMap.put(m, makeSignature(m.getParameterCount(),
+                                                   emptyList(),
+                                                   emptyEffect()));
              }
          });
     }

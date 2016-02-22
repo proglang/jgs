@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
@@ -29,6 +28,7 @@ import soot.jimple.StaticInvokeExpr;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
+import static java.util.stream.Collectors.toSet;
 
 public class TestDomain {
 
@@ -36,18 +36,26 @@ public class TestDomain {
     public static final TypeDomain<Level> types = new TypeDomain<>(levels);
     public static final Constraints<Level> cstrs = new Constraints<>(types);
     public static final MethodSignatures<Level> sigs = new MethodSignatures<>();
-    public static final ConstraintSetFactory<Level> csets = new NaiveConstraintsFactory<>(types);
+    public static final ConstraintSetFactory<Level> csets =
+            new NaiveConstraintsFactory<>(types);
 
     ///////
     // casts
     public static final SootClass castClass = new SootClass("CastClass");
-    public static final SootMethod castHighToDyn = makeCastMethod("castHighToDyn");
-    public static final SootMethod castLowToDyn = makeCastMethod("castLowToDyn");
-    public static final SootMethod castDynToLow = makeCastMethod("castDynToLow");
-    public static final SootMethod castDynToHigh = makeCastMethod("castDynToHigh");
-    public static final SootMethod castCxHighToDyn = makeContextCastMethod("castCxHighToDyn");
-    public static final SootMethod castCxDynToHigh = makeContextCastMethod("castCxDynToHigh");
-    public static final SootMethod castCxEnd = makeContextCastMethod("castCxEnd");
+    public static final SootMethod castHighToDyn =
+            makeCastMethod("castHighToDyn");
+    public static final SootMethod castLowToDyn =
+            makeCastMethod("castLowToDyn");
+    public static final SootMethod castDynToLow =
+            makeCastMethod("castDynToLow");
+    public static final SootMethod castDynToHigh =
+            makeCastMethod("castDynToHigh");
+    public static final SootMethod castCxHighToDyn =
+            makeContextCastMethod("castCxHighToDyn");
+    public static final SootMethod castCxDynToHigh =
+            makeContextCastMethod("castCxDynToHigh");
+    public static final SootMethod castCxEnd =
+            makeContextCastMethod("castCxEnd");
 
     static {
         if (Scene.v().containsClass("CastClass")) {
@@ -57,13 +65,15 @@ public class TestDomain {
     }
 
     private static SootMethod makeCastMethod(String name) {
-        SootMethod result = new SootMethod(name, Collections.singletonList(RefType.v()), RefType.v(), Modifier.STATIC);
+        SootMethod result =
+                new SootMethod(name, Collections.singletonList(RefType.v()), RefType.v(), Modifier.STATIC);
         castClass.addMethod(result);
         return result;
     }
 
     private static SootMethod makeContextCastMethod(String name) {
-        SootMethod result = new SootMethod(name, Collections.emptyList(), VoidType.v(), Modifier.STATIC);
+        SootMethod result =
+                new SootMethod(name, Collections.emptyList(), VoidType.v(), Modifier.STATIC);
         castClass.addMethod(result);
         return result;
     }
@@ -74,7 +84,8 @@ public class TestDomain {
         @Override
         public Optional<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Optional<ValueCast<Level>>> makeCast =
+            BiFunction<Type<Level>, Type<Level>, Optional<ValueCast<Level>>>
+                    makeCast =
                     (t1, t2) -> Var.getAll(e.getArg(0)).findFirst().map(value -> makeValueCast(t1, t2, value));
             if (m.equals(castHighToDyn)) {
                 return makeCast.apply(THIGH, DYN);
@@ -92,7 +103,8 @@ public class TestDomain {
         @Override
         public Optional<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Optional<CxCast<Level>>> makeCast =
+            BiFunction<Type<Level>, Type<Level>, Optional<CxCast<Level>>>
+                    makeCast =
                     (t1, t2) -> Optional.of(makeContextCast(t1, t2));
             if (m.equals(castCxDynToHigh)) {
                 return makeCast.apply(DYN, THIGH);
@@ -109,7 +121,8 @@ public class TestDomain {
         }
     };
 
-    public static final MethodTyping mtyping = new MethodTyping<>(csets, cstrs, casts);
+    public static final MethodTyping<Level> mtyping =
+            new MethodTyping<>(csets, cstrs, casts);
 
 
     //////
@@ -256,9 +269,11 @@ public class TestDomain {
     }
 
     /**
-     * Holds for constraint sets where each assignment satisfying the left set also satisfies the right set.
+     * Holds for constraint sets where each assignment satisfying the left set
+     * also satisfies the right set.
      * <p>
-     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), implies(v0 <= v1)) does not hold.
+     * Note: Alpha-renaming is <b>not</b> taken into account, i.e.
+     * assertThat((v1 <= v2), implies(v0 <= v1)) does not hold.
      */
     public static Matcher<ConstraintSet<Level>> implies(final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
@@ -289,15 +304,18 @@ public class TestDomain {
     }
 
     /**
-     * Holds for constraint sets that are satisfied by the <b>same assignments</b>.
+     * Holds for constraint sets that are satisfied by the <b>same
+     * assignments</b>.
      * <p>
-     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
+     * Note: Alpha-renaming is <b>not</b> taken into account, i.e.
+     * assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
      */
     public static Matcher<ConstraintSet<Level>> equivalent(final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
-                return cstrs.implies(levelConstraintSet, other) && cstrs.implies(other, levelConstraintSet);
+                return cstrs.implies(levelConstraintSet, other)
+                       && cstrs.implies(other, levelConstraintSet);
             }
 
             @Override
@@ -308,15 +326,20 @@ public class TestDomain {
     }
 
     /**
-     * Holds for constraint sets that subsume each other. In contrast to equivalent sets, constraint sets that subsume each other may contain different sets of variables. Only the assignments of the common variables needs to be consistent.
+     * Holds for constraint sets that subsume each other. In contrast to
+     * equivalent sets, constraint sets that subsume each other may contain
+     * different sets of variables. Only the assignments of the common variables
+     * needs to be consistent.
      * <p>
-     * Note: Alpha-renaming is <b>not</b> taken into account, i.e. assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
+     * Note: Alpha-renaming is <b>not</b> taken into account, i.e.
+     * assertThat((v1 <= v2), is(equivalent(v0 <= v1))) does not hold.
      */
     public static Matcher<ConstraintSet<Level>> minimallySubsumes(final ConstraintSet<Level> other) {
         return new TypeSafeMatcher<ConstraintSet<Level>>() {
             @Override
             protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
-                return cstrs.subsubmes(levelConstraintSet, other) && cstrs.subsubmes(other, levelConstraintSet);
+                return cstrs.subsubmes(levelConstraintSet, other)
+                       && cstrs.subsubmes(other, levelConstraintSet);
             }
 
             @Override
@@ -340,48 +363,108 @@ public class TestDomain {
         };
     }
 
-    public static Matcher<Signature<Level>> refines(final Signature<Level> other) {
-        return new TypeSafeMatcher<Signature<Level>>() {
-            Pair<ConstraintSet.RefinementCheckResult<Level>, EffectRefinementResult<Level>> result;
+    private static class SigRefineMatcher extends TypeSafeMatcher<Signature<Level>> {
+        private final Signature<Level> other;
+        Pair<ConstraintSet.RefinementCheckResult<Level>, EffectRefinementResult<Level>>
+                result;
+
+        private SigRefineMatcher(Signature<Level> other) {
+            this.other = other;
+        }
+
+        @Override
+        protected boolean matchesSafely(Signature<Level> concreteSig) {
+            result = concreteSig.refines(csets, types, other);
+            return result.getLeft().isSuccess()
+                   && result.getRight().isSuccess();
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText(" refines ").appendValue(other);
+        }
+
+        @Override
+        protected void describeMismatchSafely
+                (Signature<Level> item, Description mismatchDescription) {
+            mismatchDescription.appendValue(result);
+        }
+
+
+    }
+
+    public static Matcher<Signature<Level>> refines(
+            final Signature<Level> other) {
+        return new SigRefineMatcher(other);
+    }
+
+    public static Matcher<Signature<Level>> notRefines(Signature<Level> other) {
+        return new SigRefineMatcher(other) {
             @Override
-            protected boolean matchesSafely(Signature<Level> levelConstraintSet) {
-                result = levelConstraintSet.refines(csets, types, other);
-                return result.getLeft().isSuccess() && result.getRight().isSuccess();
+            protected boolean matchesSafely(Signature<Level> concreteSig) {
+                return !super.matchesSafely(concreteSig);
             }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText(" refines ").appendValue(other);
-            }
-
-            @Override
-            protected void describeMismatchSafely(Signature<Level> item, Description mismatchDescription) {
-                mismatchDescription.appendValue(result);
+                description.appendText(" not "); super.describeTo(description);
             }
         };
     }
 
+    private static class RefineMatchter extends TypeSafeMatcher<ConstraintSet<Level>> {
+        private final ConstraintSet<Level> abstractConstraints;
+        private final TypeVars tvars;
+        ConstraintSet.RefinementCheckResult<Level> result;
+
+        private RefineMatchter(ConstraintSet<Level> abstractConstraints, TypeVars tvars) {
+            this.abstractConstraints = abstractConstraints;
+            this.tvars = tvars;
+        }
+
+        @Override
+        protected boolean matchesSafely(ConstraintSet<Level> concreteConstraints) {
+            // project for efficiency .. be careful to keep top-level context to not loose implicit flows
+            // TODO: keeping the top-level context is strange. Should be fixed, i.e. removed or solved in a general way
+            // TODO: why don't we keep the top-level context in ConstraintSet.refines?
+            ConstraintSet<Level> projected =
+                    concreteConstraints.projectTo(Stream.concat(
+                            Stream.of(tvars.topLevelContext()),
+                            abstractConstraints.variables()
+                    ).collect(toSet()));
+            result =
+                    new ConstraintSet.RefinementCheckResult<>(abstractConstraints, projected, abstractConstraints.doesNotSubsume(projected));
+            return !result.counterExample.isPresent();
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText(" refines ").appendValue(abstractConstraints);
+        }
+
+        @Override
+        protected void describeMismatchSafely(ConstraintSet<Level> item, Description mismatchDescription) {
+            mismatchDescription.appendText(
+                    "was \nMatched: " + item.toString() + "\n")
+                               .appendText(String.format(" projected to: %s\n"
+                                       , abstractConstraints.variables()
+                                                            .collect(toSet())
+                                                            .toString()))
+                               .appendText(result.toString());
+        }
+    }
+
     public static Matcher<ConstraintSet<Level>> refines(TypeVars tvars, final ConstraintSet<Level> other) {
-        return new TypeSafeMatcher<ConstraintSet<Level>>() {
-            ConstraintSet.RefinementCheckResult<Level> result;
+        return new RefineMatchter(other, tvars);
+    }
 
+    public static Matcher<ConstraintSet<Level>> notRefines(TypeVars tvars, final ConstraintSet<Level> other) {
+        return new RefineMatchter(other, tvars) {
             @Override
-            protected boolean matchesSafely(ConstraintSet<Level> levelConstraintSet) {
-                // TODO: refactor tests such that we can use ConstraintSet.refine
-                ConstraintSet<Level> projected = levelConstraintSet.projectTo(Stream.concat(Stream.of(tvars.topLevelContext()), other.variables()).collect(Collectors.toSet()));
-                result = new ConstraintSet.RefinementCheckResult<>(other, projected, other.doesNotSubsume(projected));
-                return !result.counterExample.isPresent();
+            protected boolean matchesSafely(ConstraintSet<Level> concreteConstraints) {
+                return !super.matchesSafely(concreteConstraints);
             }
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendText(" refines ").appendValue(other);
-            }
-
-            @Override
-            protected void describeMismatchSafely(ConstraintSet<Level> item, Description mismatchDescription) {
-                mismatchDescription.appendText(result.toString());
-            }
         };
     }
 
@@ -391,7 +474,8 @@ public class TestDomain {
 
             @Override
             protected boolean matchesSafely(Collection<SootMethod> sootMethods) {
-                result = ClassHierarchyTyping.<Level>checkMethods(csets, types, signatures, sootMethods.stream());
+                result =
+                        ClassHierarchyTyping.<Level>checkMethods(csets, types, signatures, sootMethods.stream());
                 return result.isSuccess();
             }
 
@@ -499,6 +583,7 @@ public class TestDomain {
             public void describeTo(Description description) {
                 description.appendText(" complies to ").appendValue(maybeSig);
             }
+
             protected void describeMismatchSafely(SootMethod item, Description mismatchDescription) {
                 mismatchDescription.appendText(error.toString());
             }

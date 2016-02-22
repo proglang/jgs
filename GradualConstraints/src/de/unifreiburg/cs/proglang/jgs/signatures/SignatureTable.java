@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -21,45 +22,17 @@ import static java.util.stream.Collectors.toSet;
 public class SignatureTable<Level> {
 
     /**
-     * Create a new table from a map. The signatures in the map <code>signatureMap</code> are extended to be consistent, that is, each signature should mention exactly the parameters of the method and should mention ret exactly if the method has a return type
-     *
-     * @param signatureEntries
-     * @param <Level>
-     * @return
+     * Create a new table from a map. The signatures in the map
+     * <code>signatureMap</code> are extended to be consistent, that is, each
+     * signature should mention exactly the parameters of the method and should
+     * mention ret exactly if the method has a return type
      */
     public static <Level> SignatureTable<Level> makeTable(Map<SootMethod, Signature<Level>> signatureMap) {
         // update the signatures such that they are consistent for their methods, i.e. add trivial constraints for parameters not mentioned
-        Stream<Pair<SootMethod, Signature<Level>>> sigStream = signatureMap.entrySet().stream()
-                .map(e -> Pair.of(e.getKey(), e.getValue()));
-        Stream<Pair<SootMethod, Signature<Level>>> fixedSigStream = sigStream.map(e -> {
-            SootMethod m = e.getKey();
-            Set<Symbol.Param<Level>> requiredParams =
-                    Methods.<Level>parameters(m).collect(toSet());
-            Signature<Level> sig = e.getValue();
-            Set<Symbol.Param<Level>> sigParams = sig.constraints.symbols()
-                    .filter(s -> s instanceof Symbol.Param)
-                    .map(s -> (Symbol.Param<Level>) s)
-                    .collect(toSet());
-
-            requiredParams.removeAll(sigParams);
-            Stream<SigConstraint<Level>> missingSigConstraints = requiredParams.stream()
-                    .map(p -> MethodSignatures.le(p, p));
-
-            return Pair.of(m, sig.addConstraints(missingSigConstraints));
-        });
-
-            // TODO: check what happens in these cases.. are they unproblematic now?
-            /*
-            if (m.getReturnType().equals(VoidType.v()) && sig.constraints.symbols().collect(toSet()).contains(Symbol.ret())) {
-                throw new IllegalArgumentException(String.format("Method signature of void method contains return symbol.\n method: %s\n sig: %s ", m, sig));
-            }
-
-            if (!m.getReturnType().equals(VoidType.v()) && !sig.constraints.symbols().collect(toSet()).contains(Symbol.ret())) {
-                throw new IllegalArgumentException(String.format("No return symbol found in method signature.\n method: %s\n sig: %s", m, sig));
-            }
-            */
-
-        return new SignatureTable<>(fixedSigStream.collect(toMap(Pair::getKey, Pair::getValue)));
+        Stream<Pair<SootMethod, Signature<Level>>> sigStream =
+                signatureMap.entrySet().stream()
+                            .map(e -> Pair.of(e.getKey(), e.getValue()));
+        return new SignatureTable<>(sigStream.collect(toMap(Pair::getKey, Pair::getValue)));
     }
 
     private final Map<SootMethod, Signature<Level>> signatureMap;
@@ -69,8 +42,9 @@ public class SignatureTable<Level> {
     }
 
     public SignatureTable<Level> extendWith(SootMethod m, Stream<SigConstraint<Level>> constraints, Effects<Level> effects) {
-        HashMap<SootMethod, Signature<Level>> freshTable = new HashMap<>(this.signatureMap);
-        freshTable.put(m, makeSignature(MethodSignatures.signatureConstraints(constraints), effects));
+        HashMap<SootMethod, Signature<Level>> freshTable =
+                new HashMap<>(this.signatureMap);
+        freshTable.put(m, makeSignature(m.getParameterCount(), constraints.collect(toList()), effects));
         return makeTable(freshTable);
     }
 

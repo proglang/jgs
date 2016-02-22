@@ -130,9 +130,9 @@ public class Code {
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(testCallee__int);
         sigMap.put(this.testCallee__int,
-                makeSignature(signatureConstraints(Stream.of(leS(
-                        Symbol.literal(PUB),
-                        ret()))), emptyEffect()));
+                makeSignature(this.testCallee__int.getParameterCount(),
+                              Stream.of(leS(Symbol.literal(PUB), ret())).collect(toList()),
+                              emptyEffect()));
 
         // Method:
         // int testCallee_int_int__int (int, int)
@@ -142,11 +142,13 @@ public class Code {
                         IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(testCallee_int_int__int);
-        SigConstraintSet<Level> sigCstrs =
-                signatureConstraints(Stream.of(leS(param_x, ret()),
-                        leS(param_y, ret())));
+        Stream<SigConstraint<Level>> sigCstrs =
+                Stream.of(leS(param_x, ret()),
+                        leS(param_y, ret()));
         sigMap.put(this.testCallee_int_int__int,
-                makeSignature(sigCstrs, emptyEffect()));
+                makeSignature(this.testCallee_int_int__int.getParameterCount(),
+                              sigCstrs.collect(toList()),
+                              emptyEffect()));
 
         // Method:
         // int ignoreSnd(int, int)
@@ -156,9 +158,10 @@ public class Code {
                         IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(ignoreSnd_int_int__int);
-        sigCstrs = signatureConstraints(Stream.of(leS(param_x, ret()), leS(param_y, param_y)));
+        sigCstrs = Stream.of(leS(param_x, ret()), leS(param_y, param_y));
         sigMap.put(this.ignoreSnd_int_int__int,
-                makeSignature(sigCstrs, emptyEffect()));
+                makeSignature(this.ignoreSnd_int_int__int.getParameterCount(),
+                              sigCstrs.collect(toList()), emptyEffect()));
 
         // Method:
         // int writeToLowReturn0(int)
@@ -167,9 +170,10 @@ public class Code {
                 singletonList(IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(this.writeToLowReturn0_int__int);
-        sigCstrs = signatureConstraints(Stream.of((leS(param_x, literal(TLOW))), leS(ret(), ret())));
+        sigCstrs = Stream.of((leS(param_x, literal(TLOW))), leS(ret(), ret()));
         sigMap.put(this.writeToLowReturn0_int__int,
-                makeSignature(sigCstrs, makeEffects(TLOW)));
+                makeSignature(this.writeToLowReturn0_int__int.getParameterCount(),
+                              sigCstrs.collect(toList()), makeEffects(TLOW)));
 
 
         // Method:
@@ -179,8 +183,9 @@ public class Code {
                 asList(IntType.v(), IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(this.ignore0Low1ReturnHigh);
-        sigCstrs = signatureConstraints(Stream.of(leS(param(1), literal(TLOW)), leS(literal(THIGH), ret())));
-        sigMap.put(this.ignore0Low1ReturnHigh, makeSignature(sigCstrs, emptyEffect()));
+        sigCstrs = Stream.of(leS(param(1), literal(TLOW)), leS(literal(THIGH), ret()));
+        sigMap.put(this.ignore0Low1ReturnHigh, makeSignature(this.ignore0Low1ReturnHigh.getParameterCount(),
+                                                             sigCstrs.collect(toList()), emptyEffect()));
 
         // freeze signatures
         this.signatures = makeTable(sigMap);

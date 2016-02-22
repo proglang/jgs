@@ -123,7 +123,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         Set<Constraint<Level>> closure = close(cs);
         Set<CType<Level>> typeVars = typeVarCol.stream().map(CTypes::<Level>variable).collect(Collectors.<CType<Level>>toSet());
         return closure.stream().filter(c -> {
-            return typeVars.contains(c.getLhs()) && typeVars.contains(c.getRhs());
+            return c.variables().allMatch(v -> typeVars.contains(variable(v)));
         });
     }
 
@@ -148,7 +148,8 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     }
 
     public Optional<Assignment<Level>> doesNotSubsume(ConstraintSet<Level> other) {
-        return this.enumerateSatisfyingAssignments(types, Collections.<TypeVar>emptyList()).filter((Assignment<Level> a) -> {
+        return this.enumerateSatisfyingAssignments(types, Collections.<TypeVar>emptyList())
+                   .filter((Assignment<Level> a) -> {
             Stream<Constraint<Level>> cStream = other.apply(a);
             List<Constraint<Level>> cs = cStream.collect(toList());
             return !(new NaiveConstraints<>(types, cs).isSat(types));

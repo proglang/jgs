@@ -73,7 +73,7 @@ public abstract class Symbol<Level> {
     protected abstract Optional<TypeVar> asTypeVar(TypeVars tvars);
 
     public static class Param<Level> extends Symbol<Level> {
-        private final int position;
+        public final int position;
 
         private Param(int position) {
             super();

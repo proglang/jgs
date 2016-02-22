@@ -54,7 +54,8 @@ public class SupertypesTest {
     public void testSubTypeOf_testClass() {
         SootMethod testCallee_override = new SootMethod("testCallee", emptyList(), IntType.v());
         Signature<Level> sig = makeSignature(
-                Stream.of(leS(literal(THIGH), ret())),
+                testCallee_override.getParameterCount(),
+                Stream.of(leS(literal(THIGH), ret())).collect(toList()),
                 emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(
@@ -70,8 +71,8 @@ public class SupertypesTest {
     @Test
     public void testOverrides_testCallee_int() {
         SootMethod testCallee_override = new SootMethod("testCallee", emptyList(), IntType.v());
-        Signature<Level> sig = makeSignature(
-                Stream.of(leS(literal(THIGH), ret())),
+        Signature<Level> sig = makeSignature(testCallee_override.getParameterCount(),
+                Stream.of(leS(literal(THIGH), ret())).collect(toList()),
                 emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(

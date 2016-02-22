@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
@@ -47,7 +48,8 @@ public class MethodSignaturesTest {
         Stream<SigConstraint<Level>> sig =
                 Stream.of(leS(s1, Symbol.ret()), leS(s2, Symbol.ret()));
         ConstraintSet<Level> sigAsCSet =
-                makeNaive((signatureConstraints(sig).toTypingConstraints(mapping)).collect(Collectors.toSet()));
+                makeNaive((makeSignature(2, sig.collect(toList()), emptyEffect())
+                        .constraints.toTypingConstraints(mapping)).collect(Collectors.toSet()));
         assertThat(sigAsCSet, (equivalent(cs.x1_le_x3__x2_le_x3)));
     }
 }

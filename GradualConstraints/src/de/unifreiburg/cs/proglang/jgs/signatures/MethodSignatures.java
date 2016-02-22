@@ -6,10 +6,14 @@ import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static java.util.Arrays.asList;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
@@ -37,19 +41,41 @@ public class MethodSignatures<Level> {
     }
 
     /**
+     * Make a new JGS security signature for a method from a method's parameter
+     * count, some constraints and effects. The constraints should only mention
+     * parameters in the range of 0..paramCount.
+     */
+    public static <Level> Signature<Level> makeSignature(int paramCount,
+                                                         Collection<SigConstraint<Level>> constraints,
+                                                         Effects<Level> effects) {
+        // check if all parameters are in range
+        Predicate<Param<?>> paramInRange =
+                p -> p.position < paramCount && 0 <= p.position;
+        if (!constraints.stream().flatMap(SigConstraint::symbols).allMatch(
+                s -> !(s instanceof Param)
+                     || paramInRange.test(((Param<Level>) s)))
+                ) {
+
+            throw new IllegalArgumentException(
+                    String.format("Illegal parameter for parameter count %d in constraint %s",
+                                  paramCount, constraints));
+        }
+        Stream<SigConstraint<Level>> paramConstraints =
+                IntStream.range(0, paramCount)
+                         .mapToObj(i -> trivial(param(i)));
+        Stream<SigConstraint<Level>> allConstraints =
+                Stream.concat(
+                        constraints.stream(),
+                        Stream.concat(
+                                Stream.<SigConstraint<Level>>of(trivial(ret())),
+                                paramConstraints)
+                );
+        return new Signature<>(signatureConstraints(allConstraints), effects);
+    }
+
+    /**
      * Signatures: constraints + effects
      */
-    //TODO: this is a dangerous factory method, as it allows to create signatures that are not connected to any method
-    // I (fennell) have been bitten once already.. should find a way to prevent this mistake
-    public static <Level> Signature<Level> makeSignature(SigConstraintSet<Level> constraints, Effects<Level> effects) {
-        return new Signature<>(constraints, effects);
-    }
-
-    //TODO: this is a dangerous factory method, as it allows to create signatures that are not connected to any method
-    public static <Level> Signature<Level> makeSignature(Stream<SigConstraint<Level>> constraints, Effects<Level> effects) {
-        return new Signature<>(signatureConstraints(constraints), effects);
-    }
-
     public static class Signature<Level> {
         public final SigConstraintSet<Level> constraints;
         public final Effects<Level> effects;
@@ -67,7 +93,7 @@ public class MethodSignatures<Level> {
         public Signature<Level> addConstraints(Stream<SigConstraint<Level>> sigs) {
             SigConstraintSet<Level> newConstraints =
                     this.constraints.addAll(sigs);
-            return makeSignature(newConstraints, this.effects);
+            return new Signature<>(newConstraints, this.effects);
         }
 
         // TODO: use a dedicated result type (to be able to name the second component sensibly)
@@ -148,7 +174,9 @@ public class MethodSignatures<Level> {
             return this.effectSet.isEmpty();
         }
 
-        private <T> List<T> id (List<T>l ) { return l;}
+        private <T> List<T> id(List<T> l) {
+            return l;
+        }
 
         public final Stream<Type<Level>> stream() {
             return this.effectSet.stream();
@@ -158,7 +186,6 @@ public class MethodSignatures<Level> {
             return this.effectSet.stream().anyMatch(cand -> types.le(cand, t));
         }
 
-        // TODO: get rid of the optional and use emptyEffects instead (?)
         public final EffectRefinementResult<Level> refines(TypeDomain<Level> types, Effects<Level> other) {
             HashSet<Type<Level>> notCovered = new HashSet<>();
             this.stream().filter(t -> !(other.covers(types, t))).forEach(t -> notCovered.add(t));
@@ -191,7 +218,7 @@ public class MethodSignatures<Level> {
     }
 
     /* Signatures */
-    public static <Level> SigConstraintSet<Level> signatureConstraints(Stream<SigConstraint<Level>> sigSet) {
+    private static <Level> SigConstraintSet<Level> signatureConstraints(Stream<SigConstraint<Level>> sigSet) {
         return new SigConstraintSet<>(sigSet);
     }
 
@@ -230,6 +257,12 @@ public class MethodSignatures<Level> {
         }));
     }
 
+    /**
+     * @return A trivial constraint mentioning {@code s}.
+     */
+    public static <Level> SigConstraint<Level> trivial(Symbol<Level> s) {
+        return le(s, s);
+    }
 
     public static <Level> SigConstraint<Level> le(Symbol<Level> lhs, Symbol<Level> rhs) {
         return new SigConstraint<>(lhs, rhs, Constraint.Kind.LE);
@@ -279,12 +312,21 @@ public class MethodSignatures<Level> {
             return signatureConstraints(Stream.concat(this.sigSet.stream(), sigs));
         }
 
+        /**
+         * Check if this signature refines another one. This check is at the
+         * heart of validating a sound class hierarchy.
+         */
         public RefinementCheckResult<Level> refines(ConstraintSetFactory<Level> csets, TypeDomain<Level> types, SigConstraintSet<Level> other) {
             TypeVars tvars = new TypeVars();
+            // the two signatures need to talk the same symbols.
+            // We add trivial "identity mappings" of the form "s <= s" to a signature,
+            // if it is missing a symbol mentioned in the other one.
+            Set<Symbol<Level>> symbols =
+                    Stream.concat(this.symbols(), other.symbols()).collect(toSet());
             ConstraintSet<Level> cs1 =
-                    csets.fromCollection(this.toTypingConstraints(Symbol.identityMapping(tvars, this.symbols().collect(toSet()))).collect(Collectors.toList()));
+                    csets.fromCollection(this.toTypingConstraints(Symbol.identityMapping(tvars, symbols)).collect(toList()));
             ConstraintSet<Level> cs2 =
-                    csets.fromCollection(other.toTypingConstraints(Symbol.identityMapping(tvars, other.symbols().collect(toSet()))).collect(Collectors.toList()));
+                    csets.fromCollection(other.toTypingConstraints(Symbol.identityMapping(tvars, symbols)).collect(toList()));
             return cs1.refines(cs2);
         }
     }
@@ -305,7 +347,7 @@ public class MethodSignatures<Level> {
 
         public Constraint<Level> toTypingConstraint(Map<Symbol<Level>, TypeVar> tvarMapping) {
             return Constraints.make(kind, lhs.toCType(tvarMapping),
-                                      rhs.toCType(tvarMapping));
+                                    rhs.toCType(tvarMapping));
         }
 
         public Stream<Symbol<Level>> symbols() {

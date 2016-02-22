@@ -24,7 +24,7 @@ public class ConstraintParser<Level> {
 
     static <T> Parser<Character, String> takeString(Parser<Character, ?> charClass) {
         return charClass.many1().bind(cs -> {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             cs.stream().forEach(sb::append);
             return retn(sb.toString());
         });
