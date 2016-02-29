@@ -176,7 +176,6 @@ public class TypeVars {
         TypeVarViews.TypeVarView inspect();
     }
 
-
     private class Param implements TypeVar {
         private final Var<Symbol.Param<?>> param;
 
