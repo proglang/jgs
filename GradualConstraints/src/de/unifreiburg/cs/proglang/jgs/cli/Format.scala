@@ -38,10 +38,13 @@ object Format {
         val superMethod = text(error.superTypeMethod.toString)
         val methods = text("methods:") <+> subMethod <+> text(" overrides ") <+> superMethod
 
-        val csResult = text("constraint refinement:") <>
-          refinementCheckResult(
-            abstractName = "Signature of supermethod",
-            concreteName = "Signature of overriding method")(error.constraintsCheckResult)
+        val classHierarchyRefinement =
+          refinementCheckResult[Level](
+            abstractDescription = "Signature constraints of supermethod",
+            concreteDescription = "Signature constraints of overriding method",
+            conflictDescription = "Conflicts in overriding constraints") _
+
+        val csResult = text("constraint refinement:") <> classHierarchyRefinement(error.constraintsCheckResult)
         val effResult = text("effect refinement:") <> effectCheck(error.effectCheckResult)
 
         methods <@@> csResult <@@> effResult
@@ -64,13 +67,18 @@ object Format {
       }
 
       val reason = cat(List(
-        when(!result.bodyHasSolution(),
-          "Unsatisfiable constraints in method body: " <+> result.completeBodyConstraints.toString),
-        when(!result.refinementCheckResult.isSuccess,
-          "Method body violates constraints in the signature: " <>
-            nest(linebreak <>
-              refinementCheckResult(abstractName = "Signature constraints", concreteName = "Constraints inferred for body")(result.refinementCheckResult),
-              2)),
+        (if (!result.bodyHasSolution()) {
+          "Unsatisfiable constraints in method body: " <>
+            nest(linebreak<> constraintSet(copyToList(result.completeBodyConstraints.stream())))
+        } else if (!result.refinementCheckResult.isSuccess) {
+          val bodyRefinenemtResult =
+            refinementCheckResult[Level](
+              abstractDescription = "Signature constraints",
+              concreteDescription = "Constraints inferred for body",
+              conflictDescription = "Conflicts of body constraints with counterexample") _
+          "Signature constraints are insufficient: " <>
+            nest(linebreak <> bodyRefinenemtResult(result.refinementCheckResult), 2)
+        } else { empty }),
         when(!result.missedEffects.isEmpty,
           "Signature misses following effects detected in the body: " <+> result.missedEffects.toString)
       ))
@@ -78,16 +86,18 @@ object Format {
     }
   }
 
-  def refinementCheckResult[Level](abstractName: String, concreteName: String)
+  def refinementCheckResult[Level](abstractDescription: String,
+                                   concreteDescription: String,
+                                   conflictDescription: String)
                                   (result: RefinementCheckResult[Level]): Doc = {
     result.counterExample
       .map[Doc](
       fun(cs => {
         nest(linebreak <>
           "Counterexample:" <+> assignment(cs) <@@>
-          abstractName <+> constraintSet(copyToList(result.abstractConstraints.stream())) <@@>
-          concreteName <+> constraintSet(copyToList(result.concreteConstraints.stream())) <@@>
-          "Constraints conflicting with counterexample: " <+> constraintSet(copyToList(result.getConflicting.stream())), 2)
+          s"${abstractDescription}:" <+> constraintSet(copyToList(result.abstractConstraints.stream())) <@@>
+          s"${concreteDescription}:" <+> constraintSet(copyToList(result.concreteConstraints.stream())) <@@>
+          s"${conflictDescription}: " <+> constraintSet(copyToList(result.getConflicting.stream())), 2)
       }))
       .orElse(space <> text("ok"))
   }
