@@ -22,7 +22,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
  * @param <T>
  */
 public class Var<T> {
-    T me;
+    public final T repr;
 
     /*
      ******************* factory methods ******************
@@ -35,7 +35,7 @@ public class Var<T> {
         return new Var<>(v);
     }
 
-    public static Var<Symbol.Param> fromParam(Symbol.Param v) {
+    public static <Level> Var<Symbol.Param<?>> fromParam(Symbol.Param<Level> v) {
         return new Var<>(v);
     }
     /**
@@ -97,14 +97,14 @@ public class Var<T> {
 
     private Var(T me) {
         super();
-        this.me = me;
+        this.repr = me;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((me == null) ? 0 : me.hashCode());
+        result = prime * result + ((repr == null) ? 0 : repr.hashCode());
         return result;
     }
 
@@ -117,17 +117,17 @@ public class Var<T> {
         if (getClass() != obj.getClass())
             return false;
         Var other = (Var) obj;
-        if (me == null) {
-            if (other.me != null)
+        if (repr == null) {
+            if (other.repr != null)
                 return false;
-        } else if (!me.equals(other.me))
+        } else if (!repr.equals(other.repr))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return  me.toString();
+        return  repr.toString();
     }
 
 }

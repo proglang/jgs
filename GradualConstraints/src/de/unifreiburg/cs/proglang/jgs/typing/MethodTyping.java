@@ -135,7 +135,7 @@ public class MethodTyping<Level> {
         Environment init = Environments.forParamMap(tvars, paramMapping);
 
 
-        DirectedGraph<Unit> body = new BriefUnitGraph(method.getActiveBody());
+        DirectedGraph<Unit> body = new BriefUnitGraph(method.retrieveActiveBody());
         BodyTypingResult<Level> r = new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures, fields).generateResult(body, tvars.topLevelContext(), init);
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"

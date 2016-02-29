@@ -5,6 +5,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
+import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.SigConstraint;
@@ -13,13 +16,17 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser;
 import de.unifreiburg.cs.proglang.jgs.typing.ClassHierarchyTyping;
+import de.unifreiburg.cs.proglang.jgs.typing.MethodTyping;
+import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
 import org.apache.commons.lang3.StringUtils;
 import org.javafp.parsecj.Reply;
 import org.javafp.parsecj.State;
+import scala.collection.*;
 import soot.JastAddJ.Opt;
 import soot.JastAddJ.Signatures;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.options.Options;
 import soot.tagkit.AnnotationTag;
@@ -27,6 +34,9 @@ import soot.tagkit.Tag;
 import soot.tagkit.VisibilityAnnotationTag;
 
 import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -34,11 +44,13 @@ import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractSignatureFromTags;
+import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringAnnotation;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeEffects;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -72,20 +84,20 @@ public class Main {
     private static Stream<SigConstraint<Level>> parseConstraints(List<String> constraintStrings) {
         Stream<SigConstraint<Level>> constraints =
                 constraintStrings.stream().map((String s) -> {
-                            return getReplyOrThrow(new ConstraintParser<Level>(types.typeParser()).constraintParser().parse(State.of(s)),
-                                                   e -> new RuntimeException(String.format("Error parsing constraint %s;\n%s", s, e.getMessage())))
-                                    ;
-                        });
+                    return getReplyOrThrow(new ConstraintParser<Level>(types.typeParser()).constraintParser().parse(State.of(s)),
+                                           e -> new RuntimeException(String.format("Error parsing constraint %s;\n%s", s, e.getMessage())))
+                            ;
+                });
         return constraints;
     }
 
     private static Stream<Type<Level>> parseEffects(List<String> effectStrings) {
         Stream<Type<Level>> effects = effectStrings.stream().map(
-                            (String s) ->
-                                    types.typeParser().parse(s)
-                                         .orElseGet(() -> {
-                                             throw new RuntimeException(String.format("Error parsing type %s", s));
-                                         }));
+                (String s) ->
+                        types.typeParser().parse(s)
+                             .orElseGet(() -> {
+                                 throw new RuntimeException(String.format("Error parsing type %s", s));
+                             }));
 
         return effects;
     }
@@ -108,16 +120,34 @@ public class Main {
                                                  .collect(toList())));
     }
 
+    private static Type<Level> parseType(SootField f) {
+        return getAtMostOneOrThrow(extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;",
+                                                           f.getTags().stream()),
+                                   new IllegalArgumentException(
+                                           "Found more than one security level on "
+                                           + f.getName()))
+                .map(s -> types.typeParser().parse(s).orElseGet(() -> {
+                    throw new IllegalArgumentException(
+                            "Unable to parse security type " + s);
+                }))
+                .orElse(types.pub());
+    }
+
     private static void addSpecialSignatures(Map<SootMethod, Signature<Level>> signatureMap) {
         Scene s = Scene.v();
         Set<String> specialClasses =
                 Stream.of("java.lang.Object")
                       .collect(toSet());
         s.getClasses().stream()
-         .filter(c -> { return c.isApplicationClass() || specialClasses.contains(c.getName());})
+         .filter(c -> {
+             return c.isApplicationClass()
+                    || specialClasses.contains(c.getName());
+         })
          .flatMap(c -> c.getMethods().stream())
-         .filter(m -> { return m.getName().contains("<init>")
-                      || m.getName().contains("<clinit>");})
+         .filter(m -> {
+             return m.getName().contains("<init>")
+                    || m.getName().contains("<clinit>");
+         })
          .forEach(m -> {
              if (!signatureMap.containsKey(m)) {
                  signatureMap.put(m, makeSignature(m.getParameterCount(),
@@ -127,13 +157,15 @@ public class Main {
          });
     }
 
+    public final static String TESTCLASSES_DIR = "JGSTestclasses/src";
+
     public static void main(String[] args) {
 
         log.setLevel(java.util.logging.Level.WARNING);
 
         Options o = Options.v();
-        o.set_soot_classpath("JGSSupport/bin:testclasses-java:result/lib/openjdk/jre/lib/rt.jar");
-        o.set_process_dir(Collections.singletonList("testclasses-java"));
+        o.set_soot_classpath("JGSSupport/bin:"+TESTCLASSES_DIR+":result/lib/openjdk/jre/lib/rt.jar");
+        o.set_process_dir(Collections.singletonList(TESTCLASSES_DIR));
 
         Scene s = Scene.v();
         log.info(String.format("Classpath: %s", s.getSootClassPath()));
@@ -143,28 +175,46 @@ public class Main {
 
         List<SootClass> classes =
                 s.getApplicationClasses().stream().collect(toList());
-        log.info(String.format("Application classes: [%s]",
-                               StringUtils.join(classes, ", ")));
 
-
-        System.out.println("Application classes and methods:");
+        // Create the signature table
         Map<SootMethod, Signature<Level>> signatureMap = new HashMap<>();
+        Map<SootField, Type<Level>> fieldTypeTable = new HashMap<>();
+        log.info("Application classes: ");
         for (SootClass c : classes) {
-            System.out.println(c.toString());
+            log.info(" " + c.toString());
+
+            for (SootField f : c.getFields()) {
+                log.info("  " + f.toString());
+                Type<Level> t = parseType(f);
+                log.info("    security level: " + t.toString());
+                fieldTypeTable.put(f, t);
+            }
 
             for (SootMethod m : c.getMethods()) {
-                System.out.println(" " + m.toString());
+                log.info("  " + m.toString());
                 Signature<Level> sig = parseSignature(m);
-                System.out.println("  sig:" + sig.toString());
+                log.info("    sig:" + sig.toString());
+                log.info("    active body? " + (m.hasActiveBody() ? "yes" : "no"));
                 signatureMap.put(m, sig);
             }
-            System.out.println();
         }
 
-        System.out.print("Checking class hierarchy: ");
-        addSpecialSignatures(signatureMap);
+
+        Map<SootMethod, Signature<Level>> special = new HashMap<>();
+        addSpecialSignatures(special);
+        log.info("Special signatures: ");
+        for (Map.Entry<SootMethod, Signature<Level>> e : special.entrySet()) {
+            log.info(String.format("  %s : %s", e.getKey(), e.getValue()));
+        }
+
+        signatureMap.putAll(special);
         SignatureTable<Level> signatures =
                 SignatureTable.makeTable(signatureMap);
+        FieldTable<Level> fieldTable = new FieldTable<>(fieldTypeTable);
+
+        // Create the field table
+
+        System.out.print("Checking class hierarchy: ");
         ClassHierarchyTyping.Result<Level>
                 result = ClassHierarchyTyping.check(csets,
                                                     types,
@@ -172,5 +222,37 @@ public class Main {
                                                     s.getApplicationClasses().stream());
 
         System.out.println(Format.pprint(Format.classHierarchyCheck(result)));
+
+        // configuring cast methods
+        Map<String,String> valueCasts = new HashMap<>();
+        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castHighToDyn", "HIGH ~> ?");
+        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castLowToDyn", "LOW ~> ?");
+        Map<String,String> cxCasts = new HashMap<>();
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxHighToDyn", "HIGH ~> ?");
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxLowToDyn", "LOW ~> ?");
+        String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.Casts.castCxEnd";
+
+        Casts<Level> casts = new CastsFromMapping<Level>(CastsFromMapping.<Level>parseConversionMap(types.typeParser(), valueCasts).get(),
+                                                    CastsFromMapping.<Level>parseConversionMap(types.typeParser(), cxCasts).get(),
+                                                    cxCastEnd);
+
+        System.out.print("\nChecking method bodies: ");
+        for (SootClass c : classes) {
+            for (SootMethod m : c.getMethods()) {
+                log.info(" Checking body of method: " + m.toString());
+                MethodTyping<Level> methodTyping =
+                        new MethodTyping<>(csets, cstrs,
+                                           casts);
+                MethodTyping.Result<Level> mresult;
+                try {
+                    mresult =
+                            methodTyping.check(new TypeVars(), signatures, fieldTable, m);
+                    System.out.println(String.format("* Type checking method %s:  %s", m.toString(), Format.pprint(Format.methodTypingResult(mresult))));
+                } catch (TypingException e) {
+                    System.out.println(" failed: " + e.getMessage());
+                }
+                System.out.println();
+            }
+        }
     }
 }

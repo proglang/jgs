@@ -6,6 +6,32 @@
 		<testFolder url="file://$MODULE_DIR$/test"/>
 	</contentEntry>
 	<lib name="soot-2.5.0.jar" scope="COMPILE">
-		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/eclipse/ca.mcgill.sable.soot/examples"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/eclipse/ca.mcgill.sable.soot/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/generated/jastadd"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/generated/options"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/generated/sablecc"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/generated/singletons"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/systests/java_tests"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/systests/tests/arrayclone/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/systests/tests/devirt/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/systests/tests/hello/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/systests/tests/typing/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tests"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/createclass"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/analysis_framework/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/call_graph/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/intermediate_representation/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/pointsto/src"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/pointsto/test"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/representations/grimp"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/representations/jimple"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/guide/examples/representations/shimple"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/intro"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/optimizingCourse/examples"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/pldi03/examples"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/profiler2"/>
+		<srcroot url="jar://$JGS_DEPS$/soot-2.5.0/lib/sootsrc-2.5.0.jar!/tutorial/tagclass"/>
 	</lib>
 </component>

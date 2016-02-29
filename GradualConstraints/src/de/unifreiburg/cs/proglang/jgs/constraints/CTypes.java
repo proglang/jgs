@@ -21,6 +21,8 @@ public class CTypes {
 
         public abstract Stream<TypeVar> variables();
 
+        public abstract CTypeViews.CTypeView<Level> inspect();
+
         public final Type<Level> apply(Assignment<Level> a) {
             return tryApply(a).orElseThrow(() -> new RuntimeException("Unknown variable: "
                                                                       + this.toString()
@@ -101,6 +103,11 @@ public class CTypes {
         }
 
         @Override
+        public CTypeViews.CTypeView<Level> inspect() {
+            return new CTypeViews.Lit<Level>(this.t);
+        }
+
+        @Override
         public <R> R accept(CTypeSwitch<Level, R> sw) {
             return sw.caseLiteral(this.t);
         }
@@ -157,6 +164,11 @@ public class CTypes {
         @Override
         public Stream<TypeVar> variables() {
             return Stream.of(this.v);
+        }
+
+        @Override
+        public CTypeViews.CTypeView<Level> inspect() {
+            return new CTypeViews.Variable<Level>(this.v);
         }
 
         @Override

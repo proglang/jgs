@@ -10,7 +10,7 @@
 	<classpathentry kind="var" path="JGS_DEPS/commons-lang3-3.4/commons-lang3-3.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="JGS_DEPS/parsecj-0.2.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/scala-sdk-2.11.7"/>
 	<classpathentry kind="var" path="JGS_DEPS/kiama_2.11-1.8.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/scala-sdk-2.11.7"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

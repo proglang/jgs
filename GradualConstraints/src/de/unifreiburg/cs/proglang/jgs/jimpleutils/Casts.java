@@ -36,11 +36,11 @@ public abstract class Casts<Level> {
     public static class ValueCast<Level> {
         public final Type<Level> sourceType;
         public final Type<Level> destType;
-        public final Var<?> value;
+        public final Optional<Var<?>> value;
 
         protected ValueCast(Type<Level> sourceType,
                             Type<Level> destType,
-                            Var<?> value) {
+                            Optional<Var<?>> value) {
             this.sourceType = sourceType;
             this.destType = destType;
             this.value = value;
@@ -112,7 +112,7 @@ public abstract class Casts<Level> {
 
     public abstract boolean detectContextCastEndFromCall(StaticInvokeExpr e);
 
-    protected ValueCast<Level> makeValueCast(Type<Level> source, Type<Level> destination, Var<?> value) {
+    protected ValueCast<Level> makeValueCast(Type<Level> source, Type<Level> destination, Optional<Var<?>> value) {
         return new ValueCast<>(source, destination, value);
     }
 

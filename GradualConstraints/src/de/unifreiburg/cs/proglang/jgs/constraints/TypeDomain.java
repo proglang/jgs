@@ -1,7 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
-import soot.JastAddJ.Opt;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -158,7 +157,10 @@ public class TypeDomain<Level> {
      *            concreteConstraints security level
      */
     public static abstract class Type<Level> {
+        // TODO: remove TypeSwitch and pattern-match on TypeView instead (implies converting to Scala)
         abstract <T> T accept(TypeSwitch<Level, T> sw);
+        public abstract TypeViews.TypeView<Level> inspect();
+
     }
 
     static class SecLevel<Level> extends Type<Level> {
@@ -178,6 +180,11 @@ public class TypeDomain<Level> {
         @Override
         public <T> T accept(TypeSwitch<Level, T> sw) {
             return sw.caseLevel(this);
+        }
+
+        @Override
+        public TypeViews.TypeView<Level> inspect() {
+            return new TypeViews.Lit<>(this.level);
         }
 
         public Level getLevel() {
@@ -219,6 +226,11 @@ public class TypeDomain<Level> {
         }
 
         @Override
+        public TypeViews.TypeView<Level> inspect() {
+            return new TypeViews.Dyn<Level>();
+        }
+
+        @Override
         public String toString() {
             return "?";
         }
@@ -231,6 +243,11 @@ public class TypeDomain<Level> {
         @Override
         public <T> T accept(TypeSwitch<Level,T> sw) {
             return sw.casePublic(this);
+        }
+
+        @Override
+        public TypeViews.TypeView<Level> inspect() {
+            return new TypeViews.Pub<Level>();
         }
 
         @Override

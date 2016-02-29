@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
@@ -17,6 +18,7 @@ import java.util.function.Function;
  * @author Luminous Fennell <fennell@informatik.uni-freiburg.de>
  *
  */
+// TODO: change the toString() method of type variables to be more generic.. they should not be read by users anyway. That's what "inspect" is for.
 public class TypeVars {
 
 
@@ -92,6 +94,11 @@ public class TypeVars {
                 result = 31 * result + (stmt != null ? stmt.hashCode() : 0);
                 return result;
             }
+
+            @Override
+            public TypeVarViews.TypeVarView inspect() {
+                return new TypeVarViews.Internal(this.toString());
+            }
         }
 
         private class ForContext implements TypeVar {
@@ -121,6 +128,11 @@ public class TypeVars {
             public int hashCode() {
                 return s != null ? s.hashCode() : 0;
             }
+
+            @Override
+            public TypeVarViews.TypeVarView inspect() {
+                return new TypeVarViews.Internal(this.toString());
+            }
         }
 
     }
@@ -133,25 +145,42 @@ public class TypeVars {
         return new TestParam(param, id);
     }
 
-    public TypeVar param(Var<?> param) {
+    public TypeVar param(Var<Symbol.Param<?>> param) {
         return new Param(param);
     }
 
+    private static TypeVar topLevelContext = new TypeVar() {
+
+            @Override
+            public TypeVarViews.TypeVarView inspect() {
+                return new TypeVarViews.Cx();
+            }
+        };
+
     public TypeVar topLevelContext() {
-        return new InternalConstant("cx");
+        return topLevelContext;
     }
+
+    private static TypeVar ret = new TypeVar() {
+            @Override
+            public TypeVarViews.TypeVarView inspect() {
+                return new TypeVarViews.Ret();
+            }
+        };
 
     public TypeVar ret() {
-        return new InternalConstant("ret");
+        return ret;
     }
 
-    public interface TypeVar{}
+    public interface TypeVar{
+        TypeVarViews.TypeVarView inspect();
+    }
 
 
     private class Param implements TypeVar {
-        private final Var<?> param;
+        private final Var<Symbol.Param<?>> param;
 
-        private Param(Var<?> param) {
+        private Param(Var<Symbol.Param<?>> param) {
             this.param = param;
         }
 
@@ -174,6 +203,11 @@ public class TypeVars {
         @Override
         public String toString() {
             return "$" + this.param.toString();
+        }
+
+        @Override
+        public TypeVarViews.TypeVarView inspect() {
+            return new TypeVarViews.Param(param.repr.position);
         }
     }
 
@@ -203,6 +237,11 @@ public class TypeVars {
         @Override
         public int hashCode() {
             return name != null ? name.hashCode() : 0;
+        }
+
+        @Override
+        public TypeVarViews.TypeVarView inspect() {
+            return new TypeVarViews.Internal(this.name);
         }
     }
 
@@ -239,6 +278,11 @@ public class TypeVars {
             result = 31 * result + (id != null ? id.hashCode() : 0);
             return result;
         }
+
+        @Override
+        public TypeVarViews.TypeVarView inspect() {
+            return new TypeVarViews.Internal(this.id);
+        }
     }
 
     private class Join implements TypeVar {
@@ -272,6 +316,11 @@ public class TypeVars {
             int result = v1 != null ? v1.hashCode() : 0;
             result = 31 * result + (v2 != null ? v2.hashCode() : 0);
             return result;
+        }
+
+        @Override
+        public TypeVarViews.TypeVarView inspect() {
+            return new TypeVarViews.Internal(this.toString());
         }
     }
 

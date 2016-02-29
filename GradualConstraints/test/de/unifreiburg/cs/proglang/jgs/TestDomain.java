@@ -41,7 +41,7 @@ public class TestDomain {
 
     ///////
     // casts
-    public static final SootClass castClass = new SootClass("CastClass");
+    public static final SootClass castClass = new SootClass("testCasts");
     public static final SootMethod castHighToDyn =
             makeCastMethod("castHighToDyn");
     public static final SootMethod castLowToDyn =
@@ -81,19 +81,23 @@ public class TestDomain {
 
     public static final Casts<Level> casts = new Casts<Level>() {
 
+        private boolean castEquals(SootMethod declaredCast, SootMethod m) {
+            return m.getName().equals(declaredCast.getName());
+        }
+
         @Override
         public Optional<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
             BiFunction<Type<Level>, Type<Level>, Optional<ValueCast<Level>>>
                     makeCast =
-                    (t1, t2) -> Var.getAll(e.getArg(0)).findFirst().map(value -> makeValueCast(t1, t2, value));
-            if (m.equals(castHighToDyn)) {
+                    (t1, t2) -> Var.getAll(e.getArg(0)).findFirst().map(value -> makeValueCast(t1, t2, Optional.of(value)));
+            if (castEquals(castHighToDyn, m)) {
                 return makeCast.apply(THIGH, DYN);
-            } else if (m.equals(castLowToDyn)) {
+            } else if (castEquals(castLowToDyn, m)) {
                 return makeCast.apply(TLOW, DYN);
-            } else if (m.equals(castDynToLow)) {
+            } else if (castEquals(castDynToLow, m)) {
                 return makeCast.apply(DYN, TLOW);
-            } else if (m.equals(castDynToHigh)) {
+            } else if (castEquals(castDynToHigh, m)) {
                 return makeCast.apply(DYN, THIGH);
             } else {
                 return Optional.empty();
@@ -106,9 +110,9 @@ public class TestDomain {
             BiFunction<Type<Level>, Type<Level>, Optional<CxCast<Level>>>
                     makeCast =
                     (t1, t2) -> Optional.of(makeContextCast(t1, t2));
-            if (m.equals(castCxDynToHigh)) {
+            if (castEquals(castCxDynToHigh, m)) {
                 return makeCast.apply(DYN, THIGH);
-            } else if (m.equals(castCxHighToDyn)) {
+            } else if (castEquals(castCxHighToDyn, m)) {
                 return makeCast.apply(THIGH, DYN);
             } else {
                 return Optional.empty();
@@ -117,7 +121,7 @@ public class TestDomain {
 
         @Override
         public boolean detectContextCastEndFromCall(StaticInvokeExpr e) {
-            return e.getMethod().equals(castCxEnd);
+            return castEquals(castCxEnd, e.getMethod());
         }
     };
 

@@ -1,14 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
-import soot.Local;
-import soot.SootMethod;
-import soot.Value;
-import soot.ValueBox;
+import soot.*;
 import soot.jimple.*;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
@@ -55,6 +53,8 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     public abstract void caseGetField(FieldRef field, Optional<Var<?>> thisPtr);
 
     public abstract void caseCast(ValueCast<Level> cast);
+
+    public abstract void caseNew(RefType type);
 
 
     /*
@@ -137,6 +137,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseStaticInvokeExpr(StaticInvokeExpr v) {
+
         Optional<ValueCast<Level>> c = casts.detectValueCastFromCall(v);
         if (c.isPresent()) {
             caseCast(c.get());
@@ -324,7 +325,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseNewExpr(NewExpr v) {
-        super.caseNewExpr(v);
+        caseNew(v.getBaseType());
     }
 
     @Override

@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -153,7 +154,7 @@ public abstract class ConstraintSet<Level> {
     /**
      * Project a constraint set to the symbols relevant for a method signature, which are the parameters, the top-level context and the return symbol
      */
-    public ConstraintSet<Level> asSignatureConstraints(TypeVars tvars, Stream<Var<?>> params) {
+    public ConstraintSet<Level> asSignatureConstraints(TypeVars tvars, Stream<Var<Symbol.Param<?>>> params) {
         Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext(), tvars.ret()), params.map(tvars::param)).collect(toSet());
         return this.projectTo(vars);
     }

@@ -42,6 +42,40 @@ public class Methods {
                       p -> tvars.param(Var.fromParam(p))));
     }
 
+    public static <T> Stream<T> extractAnntotation(String type,
+                                                   Function<AnnotationElem, T> extract,
+                                                   Stream<Tag> tags) {
+        Stream<AnnotationTag> matchingAnnotationTags =
+                tags.filter(t -> t instanceof VisibilityAnnotationTag)
+                    .flatMap(t -> ((VisibilityAnnotationTag) t)
+                            .getAnnotations().stream()
+                            .filter(a -> a.getType().equals(type)));
+
+        return matchingAnnotationTags.flatMap(a -> {
+            Stream.Builder<T> es = Stream.builder();
+            IntStream.range(0, a.getNumElems()).forEach(
+                    i -> {
+                        AnnotationElem e = a.getElemAt(i);
+                        es.add(extract.apply(e));
+                    });
+            return es.build();
+        });
+    }
+
+    public static Stream<String> extractStringAnnotation(String type, Stream<Tag> tags) {
+        Function<AnnotationElem, String> extract = e -> {
+            IllegalArgumentException wrongType =
+                    new IllegalArgumentException(
+                            "Expected a string element but got: "
+                            + e.toString());
+            if (! (e instanceof AnnotationStringElem)) {
+                throw wrongType;
+            }
+            return ((AnnotationStringElem) e).getValue();
+        };
+        return extractAnntotation(type, extract, tags);
+    }
+
     /**
      * Filter a stream of tags for Annotations and return the list of Strings
      * contained in them.
@@ -51,41 +85,27 @@ public class Methods {
      *             a String array.
      */
     public static Stream<List<String>> extractStringArrayAnnotation(String type, Stream<Tag> tags) {
-        Stream<AnnotationTag> matchingAnnotationTags =
-                tags.filter(t -> t instanceof VisibilityAnnotationTag)
-                    .flatMap(t -> ((VisibilityAnnotationTag) t)
-                            .getAnnotations().stream()
-                            .filter(a -> a.getType().equals(type)));
-
-        return matchingAnnotationTags.flatMap(
-                a -> {
-                    IllegalArgumentException wrongType =
-                            new IllegalArgumentException(
-                                    "Expected a string array Element but got: "
-                                    + a.toString());
-                    Stream.Builder<List<String>> es = Stream.builder();
-                    IntStream.range(0, a.getNumElems()).forEach(
-                            i -> {
-                                AnnotationElem e = a.getElemAt(i);
-                                if (!(e instanceof AnnotationArrayElem)) {
+        Function<AnnotationElem, List<String>> extract = e -> {
+            IllegalArgumentException wrongType =
+                    new IllegalArgumentException(
+                            "Expected a string array Element but got: "
+                            + e.toString());
+            if (!(e instanceof AnnotationArrayElem)) {
+                throw wrongType;
+            }
+            List<String> values =
+                    ((AnnotationArrayElem) e).getValues().stream().map(
+                            s -> {
+                                if (!(s instanceof AnnotationStringElem)) {
                                     throw wrongType;
                                 }
-                                List<String> values =
-                                        ((AnnotationArrayElem) e).getValues().stream().map(
-                                                s -> {
-                                                    if (!(s instanceof AnnotationStringElem)) {
-                                                        throw wrongType;
-                                                    }
-                                                    return ((AnnotationStringElem) s).getValue();
-                                                }
-
-                                        ).collect(toList());
-                                es.add(values);
+                                return ((AnnotationStringElem) s).getValue();
                             }
-                    );
-                    return es.build();
-                }
-        );
+
+                    ).collect(toList());
+            return values;
+        };
+        return extractAnntotation(type, extract, tags);
     }
 
     public static <Level> Signature<Level> extractSignatureFromTags(
