@@ -41,7 +41,7 @@ object Format {
         val csResult = text("constraint refinement:") <>
           refinementCheckResult(
             abstractName = "Signature of supermethod",
-            concreteName = "Signature of submethod")(error.constraintsCheckResult)
+            concreteName = "Signature of overriding method")(error.constraintsCheckResult)
         val effResult = text("effect refinement:") <> effectCheck(error.effectCheckResult)
 
         methods <@@> csResult <@@> effResult
@@ -97,7 +97,10 @@ object Format {
   }
 
   def constraintSet[Level](cs: List[Constraint[Level]]): Doc = {
-      braces(hsep(cs.map(constraint(_)), ","))
+    def isReflexive(c : Constraint[Level]) = c.getLhs == c.getRhs
+    // TODO: Why add reflexive constraints when I want to remove them later anyway? Fix the representation of constraints s.t. it is not necessary to "saturate" constraint sets to contain all parameters.
+    val simplifiedCs = cs.filter(!isReflexive(_))
+      braces(hsep(simplifiedCs.map(constraint(_)), ","))
   }
 
   def constraint[Level](c: Constraint[Level]): Doc = {

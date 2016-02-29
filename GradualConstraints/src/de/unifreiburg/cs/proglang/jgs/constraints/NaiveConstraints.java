@@ -75,12 +75,15 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                     }
                 });
                 // then the compatibility constraints
-                // TODO: remove compatibility constraints, if it works without
                 Stream<CType<Level>> compCands = oldLes.stream().filter(c -> c.getRhs().equals(x_to_y.getRhs())).map(Constraint::getLhs);
                 compCands.forEach(lhs1 -> {
                     CType<Level> lhs2 = x_to_y.getLhs();
                     if (!lhs1.equals(lhs2)) {
-                        result.add(Constraints.comp(lhs1, lhs2));
+                        Constraint<Level> cand = Constraints.comp(lhs1, lhs2);
+                        // do not add symmetric compatibilities.
+                        // TODO: actually compatibility is an equivalence class. It should be represented as such, instead of trying to naively keep symmetric pairs out
+                        if (!result.contains(Constraints.symmetricOf(cand)))
+                        result.add(cand);
                     }
                 });
             });
