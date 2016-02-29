@@ -1,14 +1,13 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
+import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -167,4 +166,10 @@ public abstract class ConstraintSet<Level> {
      * the original set.
      */
     public abstract ConstraintSet<Level> projectTo(Set<TypeVar> typeVars);
+
+
+    public List<ConflictCause<Level>> findConflictCause(TagMap<Level> tags) {
+        // give up by default
+        return Collections.emptyList();
+    }
 }

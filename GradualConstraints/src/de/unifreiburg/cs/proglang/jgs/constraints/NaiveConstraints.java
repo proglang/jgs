@@ -1,5 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
+import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
+
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -58,16 +62,19 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     /// close constraints cs transitively and by compatibility. Will not generate reflexive constraints.
     static <Level> HashSet<Constraint<Level>> close(Set<Constraint<Level>> cs) {
-        Predicate<Constraint<Level>>  isLeConstraint = c -> c.kind.equals(Constraint.Kind.LE);
+        Predicate<Constraint<Level>> isLeConstraint =
+                c -> c.kind.equals(Constraint.Kind.LE);
 
         HashSet<Constraint<Level>> result = new HashSet<>(cs);
         HashSet<Constraint<Level>> old = new HashSet<>();
         do {
             old.addAll(result);
-            Set<Constraint<Level>> oldLes = old.stream().filter(isLeConstraint).collect(Collectors.toSet());
+            Set<Constraint<Level>> oldLes =
+                    old.stream().filter(isLeConstraint).collect(toSet());
             oldLes.stream().forEach(x_to_y -> {
                 // first the transitive le constraints
-                Stream<CType<Level>> transCands = oldLes.stream().filter(c -> c.getLhs().equals(x_to_y.getRhs())).map(Constraint::getRhs);
+                Stream<CType<Level>> transCands =
+                        oldLes.stream().filter(c -> c.getLhs().equals(x_to_y.getRhs())).map(Constraint::getRhs);
                 transCands.forEach(rhs -> {
                     CType<Level> lhs = x_to_y.getLhs();
                     if (!lhs.equals(rhs)) {
@@ -75,7 +82,8 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                     }
                 });
                 // then the compatibility constraints
-                Stream<CType<Level>> compCands = oldLes.stream().filter(c -> c.getRhs().equals(x_to_y.getRhs())).map(Constraint::getLhs);
+                Stream<CType<Level>> compCands =
+                        oldLes.stream().filter(c -> c.getRhs().equals(x_to_y.getRhs())).map(Constraint::getLhs);
                 compCands.forEach(lhs1 -> {
                     CType<Level> lhs2 = x_to_y.getLhs();
                     if (!lhs1.equals(lhs2)) {
@@ -83,7 +91,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                         // do not add symmetric compatibilities.
                         // TODO: actually compatibility is an equivalence class. It should be represented as such, instead of trying to naively keep symmetric pairs out
                         if (!result.contains(Constraints.symmetricOf(cand)))
-                        result.add(cand);
+                            result.add(cand);
                     }
                 });
             });
@@ -97,16 +105,22 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     }
 
     /**
-     * Try minimize to <code>cs</code>. Currently checks if the le constraints cover any other kinds of constraints.
+     * Try minimize to <code>cs</code>. Currently checks if the le constraints
+     * cover any other kinds of constraints.
      */
     static <Level> Set<Constraint<Level>> minimize(Set<Constraint<Level>> cs) {
-        Predicate<Constraint<Level>> isLeConstraint = c -> c.kind.equals(Constraint.Kind.LE);
-        BiFunction<Constraint<Level>, Constraint<Level>, Boolean> covers = (cLe, c) -> {
-            Constraint<Level> scLe = Constraints.symmetricOf(cLe);
-            return Constraints.equalComponents(cLe, c) || Constraints.equalComponents(scLe, c);
-        };
-        Supplier<Stream<Constraint<Level>>> leCs = () -> cs.stream().filter(isLeConstraint);
-        Stream<Constraint<Level>> notLeCs = cs.stream().filter(isLeConstraint.negate());
+        Predicate<Constraint<Level>> isLeConstraint =
+                c -> c.kind.equals(Constraint.Kind.LE);
+        BiFunction<Constraint<Level>, Constraint<Level>, Boolean> covers =
+                (cLe, c) -> {
+                    Constraint<Level> scLe = Constraints.symmetricOf(cLe);
+                    return Constraints.equalComponents(cLe, c)
+                           || Constraints.equalComponents(scLe, c);
+                };
+        Supplier<Stream<Constraint<Level>>> leCs =
+                () -> cs.stream().filter(isLeConstraint);
+        Stream<Constraint<Level>> notLeCs =
+                cs.stream().filter(isLeConstraint.negate());
         HashSet<Constraint<Level>> seen = new HashSet<>();
         Stream<Constraint<Level>> minimizedNonLEs = notLeCs.flatMap(cNle -> {
             if (leCs.get().anyMatch(c -> covers.apply(c, cNle))) {
@@ -125,7 +139,8 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     public static <Level> Stream<Constraint<Level>> projectTo(Set<Constraint<Level>> cs, Collection<TypeVar> typeVarCol) {
         Set<Constraint<Level>> closure = close(cs);
-        Set<CType<Level>> typeVars = typeVarCol.stream().map(CTypes::<Level>variable).collect(Collectors.<CType<Level>>toSet());
+        Set<CType<Level>> typeVars =
+                typeVarCol.stream().map(CTypes::<Level>variable).collect(Collectors.<CType<Level>>toSet());
         return closure.stream().filter(c -> {
             return c.variables().allMatch(v -> typeVars.contains(variable(v)));
         });
@@ -140,8 +155,8 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     @Override
     public boolean implies(TypeDomain<Level> types, ConstraintSet<Level> other) {
         return this.enumerateSatisfyingAssignments(types, other.variables()
-                .collect(toSet()))
-                .allMatch(ass -> other.isSatisfiedFor(types, ass));
+                                                               .collect(toSet()))
+                   .allMatch(ass -> other.isSatisfiedFor(types, ass));
 
     }
 
@@ -154,26 +169,26 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     public Optional<Assignment<Level>> doesNotSubsume(ConstraintSet<Level> other) {
         return this.enumerateSatisfyingAssignments(types, Collections.<TypeVar>emptyList())
                    .filter((Assignment<Level> a) -> {
-            Stream<Constraint<Level>> cStream = other.apply(a);
-            List<Constraint<Level>> cs = cStream.collect(toList());
-            return !(new NaiveConstraints<>(types, cs).isSat(types));
-        }).findFirst();
+                       Stream<Constraint<Level>> cStream = other.apply(a);
+                       List<Constraint<Level>> cs = cStream.collect(toList());
+                       return !(new NaiveConstraints<>(types, cs).isSat(types));
+                   }).findFirst();
 
     }
 
     /**
      * Enumerate all assignments that satisfy this constraint set.
      *
-     * @param requiredVariables The minimal set of variables that should be bound by a
-     *                          satisfying assignment. The actual assignments may bind more
-     *                          variables.
+     * @param requiredVariables The minimal set of variables that should be
+     *                          bound by a satisfying assignment. The actual
+     *                          assignments may bind more variables.
      */
     public Stream<Assignment<Level>> enumerateSatisfyingAssignments(TypeDomain<Level> types, Collection<TypeVar> requiredVariables) {
         Set<TypeVar> variables =
                 cs.stream().flatMap(Constraint::variables).collect(toSet());
         variables.addAll(requiredVariables);
         return Assignments.enumerateAll(types, variables)
-                .filter(a -> this.isSatisfiedFor(types, a));
+                          .filter(a -> this.isSatisfiedFor(types, a));
     }
 
     @Override
@@ -181,10 +196,62 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         return this.enumerateSatisfyingAssignments(types, requiredVariables).findAny();
     }
 
+
+    /**
+     * Try to find a conflict cause that tries to succinctly explain the
+     * conflicting flows.
+     */
+    @Override
+    public List<ConflictCause<Level>> findConflictCause(TagMap<Level> tags) {
+        // First, find sources and sinks of illegal flows
+        Set<Constraint<Level>> closed = NaiveConstraints.close(this.cs);
+        List<Constraint<Level>> conflicts =
+                closed.stream().filter(c -> !c.isSatisfiable(types)).collect(Collectors.toList());
+        Stream<Type<Level>> sources = conflicts.stream().map(c -> {
+            CType<Level> ct = c.getLhs();
+            if (!(ct.inspect() instanceof CTypeViews.Lit)) {
+                throw new IllegalStateException(
+                        "Unexpected: conflicting constraint does not consist of literals:  "
+                        + c.toString());
+            }
+            CTypeViews.Lit<Level> lit = (CTypeViews.Lit<Level>) ct.inspect();
+            return lit.t();
+        });
+        Stream<Type<Level>> sinkStream = conflicts.stream().map(c -> {
+            CType<Level> ct = c.getRhs();
+            if (!(ct.inspect() instanceof CTypeViews.Lit)) {
+                throw new IllegalStateException(
+                        "Unexpected: conflicting constraint does not consist of literals:  "
+                        + c.toString());
+            }
+            CTypeViews.Lit<Level> lit = (CTypeViews.Lit<Level>) ct.inspect();
+            return lit.t();
+        });
+
+        Set<Type<Level>> sinks = sinkStream.collect(Collectors.toSet());
+
+        // for all sources that have a tagged constraint, try to find connection to any sink
+        // TODO: oh my god, is this ugly!!!
+        return sources.flatMap(
+                t -> {
+                    Stream<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
+                            sourceTags = tags.getJavaMap().entrySet().stream()
+                                             .filter(kv -> kv.getKey().getLhs().equals(literal(t)));
+                    return sinks.stream().flatMap(tSink -> {
+                        Stream<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
+                                sinkTags = tags.getJavaMap().entrySet().stream()
+                                               .filter(kv -> kv.getKey().getRhs().equals(literal(tSink)));
+                        return sourceTags.flatMap(srcT -> sinkTags.filter(snkT -> srcT.getKey().getRhs().equals(snkT.getKey().getLhs()))
+                                .map(relevantSnk -> new ConflictCause<Level>(t, srcT.getValue(),tSink, relevantSnk.getValue())));
+                    });
+                }).collect(Collectors.toList());
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder("{");
-        Predicate<Constraint<Level>> isLe = c -> c.kind.equals(Constraint.Kind.LE);
+        Predicate<Constraint<Level>> isLe =
+                c -> c.kind.equals(Constraint.Kind.LE);
         Consumer<Constraint<Level>> append = c -> {
             result.append(c.toString());
             result.append(", ");

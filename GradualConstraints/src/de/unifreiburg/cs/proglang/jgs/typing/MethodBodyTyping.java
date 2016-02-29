@@ -163,7 +163,8 @@ public class MethodBodyTyping<Level> {
             ).collect(Collectors.toList()));
             // modify effects: remove dest and add source
             Set<TypeDomain.Type<Level>> newEffects = r.getEffects().stream().collect(toSet());
-            return new BodyTypingResult<Level>(r.getConstraints().add(additionalConstraints), makeEffects(newEffects), r.getFinalEnv());
+            // TODO: why not a factory method?
+            return new BodyTypingResult<Level>(r.getConstraints().add(additionalConstraints), makeEffects(newEffects), r.getFinalEnv(), r.getTags());
         } else if (successors.size() <= 1) {
             // a basic (non-branching) unit in a straight-line sequence
 

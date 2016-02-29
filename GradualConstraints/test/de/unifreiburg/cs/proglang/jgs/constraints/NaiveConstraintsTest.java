@@ -10,10 +10,15 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.unifreiburg.cs.proglang.jgs.Code;
+import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
+import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import soot.IntType;
+import soot.SootField;
 import soot.jimple.spark.ondemand.EverythingHeuristic;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
@@ -26,12 +31,14 @@ public class NaiveConstraintsTest {
 
     private TypeVars tvars;
     private SomeConstraintSets cs;
+    private Code code;
 
     @Before
     public void setUp() {
 
         tvars = new TypeVars();
         cs = new SomeConstraintSets(tvars);
+        code =  new Code(tvars);
     }
 
     @Test
@@ -236,5 +243,21 @@ public class NaiveConstraintsTest {
     public void testEmptyRefinement() {
         assertThat("with trivial constraints", makeNaive(singletonList(leC(CLOW, variable(tvars.ret())))),
                    notRefines(tvars, makeNaive(singletonList(leC(variable(tvars.ret()), variable(tvars.ret()))))));
+    }
+
+    @Test
+    public void testCausFinding_HField_LField_1() {
+        SootField lowField = new SootField("lowField", IntType.v());
+        SootField highField = new SootField("highField", IntType.v());
+        code.testClass.addField(lowField);
+        code.testClass.addField(highField);
+        Constraint<Level> c1 = leC(literal(THIGH), variable(cs.v0));
+        Constraint<Level> c2 = leC(variable(cs.v0), literal(TLOW));
+        TagMap<Level> tags = TagMap.of(c1, new TypeVarTags.Field(highField))
+                .add(c2,  new TypeVarTags.Field(lowField));
+        ConstraintSet<Level> cs = makeNaive(asList(c1, c2));
+        assertThat("Is satisfiable!", cs, is(not(sat())));
+        assertThat(cs.findConflictCause(tags), is(asList(new ConflictCause<>(THIGH, new TypeVarTags.Field(highField),
+                                                                             TLOW, new TypeVarTags.Field(lowField)))));
     }
 }

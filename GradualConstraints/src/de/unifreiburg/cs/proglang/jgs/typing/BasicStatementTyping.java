@@ -7,14 +7,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
-import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
@@ -77,8 +72,9 @@ public class BasicStatementTyping<LevelT> {
 
     private BodyTypingResult<LevelT> makeResult(ConstraintSet<LevelT> constraints,
                                                 Environment env,
-                                                Effects<LevelT> effects) {
-        return new BodyTypingResult<>(constraints, effects, env);
+                                                Effects<LevelT> effects,
+                                                TagMap<LevelT> tags) {
+        return new BodyTypingResult<>(constraints, effects, env, tags);
     }
 
     //
@@ -189,6 +185,8 @@ public class BasicStatementTyping<LevelT> {
             private final TypeVar destTVar;
             private final CType<LevelT> destCType;
 
+            private TagMap<LevelT> tags = TagMap.empty();
+
             public ExprSwitch(Casts<LevelT> casts, Function<CType<LevelT>, Constraint<LevelT>> leDest, Function<Var<?>, CType<LevelT>> toCType, Stream.Builder<Constraint<LevelT>> constraints, TypeVar destTVar, CType<LevelT> destCType) {
                 super(casts);
                 this.leDest = leDest;
@@ -197,6 +195,11 @@ public class BasicStatementTyping<LevelT> {
                 this.destTVar = destTVar;
                 this.destCType = destCType;
             }
+
+            public TagMap<LevelT> getTags() {
+                return tags;
+            }
+
 
             @Override
             public void caseLocalExpr(Collection<Value> atoms) {
@@ -310,7 +313,8 @@ public class BasicStatementTyping<LevelT> {
 
             // get constraints from rhs..
             Value rhs = stmt.getRightOp();
-            rhs.apply(new ExprSwitch(casts, leDest, toCType, constraints, destTVar, destCType));
+            ExprSwitch sw = new ExprSwitch(casts, leDest, toCType, constraints, destTVar, destCType);
+            rhs.apply(sw);
 
             // finally the pcs flow into the destination
             this.pcs.forEach(pc -> {
@@ -325,7 +329,8 @@ public class BasicStatementTyping<LevelT> {
                                                                      .collect(
                                                                              toList())),
                                      fin,
-                                     extractEffects(rhs));
+                                     extractEffects(rhs),
+                                     sw.getTags());
 
         }
 
@@ -343,13 +348,18 @@ public class BasicStatementTyping<LevelT> {
                .map((Var<?> v) -> Constraints.<LevelT>le(CTypes.variable(env.get(v)), CTypes.literal(fieldType)))
                .forEach(constraints);
 
+            TagMap<LevelT> tags;
             // the right hand side should only be a local
             if ((stmt.getRightOp() instanceof Local)) {
                 // .. and it flows into the field
                 Local rhs = (Local) stmt.getRightOp();
-                constraints.add(leDest.apply(CTypes.variable(env.get(Var.fromLocal(rhs)))));
+                Constraint<LevelT> cstr = leDest.apply(CTypes.variable(env.get(Var.fromLocal(rhs))));
+                constraints.add(cstr);
+                // add a tag for the field
+                tags = TagMap.of(cstr, new TypeVarTags.Field(field));
             } else if (stmt.getRightOp() instanceof Constant) {
                 // do nothing
+                tags = TagMap.empty();
             } else {
                 throw new TypingAssertionFailure(
                         "Only field updates of the form \"x.F = y\" of \"x.F = c\" are supported. Found "
@@ -363,7 +373,7 @@ public class BasicStatementTyping<LevelT> {
             Effects<LevelT> effects =
                     MethodSignatures.<LevelT>emptyEffect().add(fieldType);
             this.result =
-                    makeResult(csets.fromCollection(constraints.build().collect(Collectors.toList())), env, effects);
+                    makeResult(csets.fromCollection(constraints.build().collect(Collectors.toList())), env, effects, tags);
         }
 
 
@@ -422,7 +432,7 @@ public class BasicStatementTyping<LevelT> {
                                 Stream.of(Constraints.<LevelT>le(variable(env.get(r)), variable(tvars.ret()))),
                                 this.pcs.stream().map(pcVar -> Constraints.<LevelT>le(variable(pcVar), variable(tvars.ret()))))
                               .collect(Collectors.<Constraint<LevelT>>toList()))
-                        , env, emptyEffect());
+                        , env, emptyEffect(), TagMap.empty());
             } else if (stmt.getOp() instanceof Constant) {
                 noRestrictions();
             } else {
@@ -443,11 +453,12 @@ public class BasicStatementTyping<LevelT> {
             Function<CType<LevelT>, Constraint<LevelT>> leDest =
                     t -> cstrs.le(t, destCType);
             Function<Var<?>, CType<LevelT>> toCType = v -> variable(env.get(v));
-            e.apply(new ExprSwitch(casts, leDest, toCType, constraints, destTVar
-                    , destCType));
+            ExprSwitch sw = new ExprSwitch(casts, leDest, toCType, constraints, destTVar
+                    , destCType);
+            e.apply(sw);
 
             this.result =
-                    makeResult(csets.fromCollection(constraints.build().collect(toList())), env, extractEffects(e));
+                    makeResult(csets.fromCollection(constraints.build().collect(toList())), env, extractEffects(e), sw.getTags());
         }
 
         @Override

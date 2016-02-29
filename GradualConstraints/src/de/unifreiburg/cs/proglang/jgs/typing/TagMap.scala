@@ -3,6 +3,8 @@ package de.unifreiburg.cs.proglang.jgs.typing
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag
 
+import scala.collection.JavaConverters._
+
 /**
   * Created by fennell on 2/29/16.
   */
@@ -13,6 +15,9 @@ case class TagMap[Level](tags : Map[Constraint[Level], TypeVarTag]) {
 
   def addAll(otherTags : TagMap[Level]) =
     TagMap(this.tags ++ otherTags.tags)
+
+  def getJavaMap : java.util.Map[Constraint[Level], TypeVarTag] =
+    tags.asJava
 }
 
 object TagMap {

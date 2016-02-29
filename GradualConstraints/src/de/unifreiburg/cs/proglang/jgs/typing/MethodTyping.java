@@ -69,7 +69,6 @@ public class MethodTyping<Level> {
                     && missedEffects.isEmpty();
         }
 
-        // TODO: fix refactoring mess in strings: signature should be called "signature" most of the time
         @Override
         public String toString() {
             StringBuilder b = new StringBuilder("Typing result: \n");

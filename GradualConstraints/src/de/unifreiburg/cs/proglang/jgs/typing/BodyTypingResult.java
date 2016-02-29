@@ -5,10 +5,13 @@ import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
+import static java.util.Collections.emptyMap;
 
 /**
  * The result of typing a statement: a set of constraints, an
@@ -16,6 +19,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEf
  *
  * @author fennell
  */
+// TODO: make a case class out of this
 public class BodyTypingResult<LevelT> {
     @NotNull
     private final ConstraintSet<LevelT> constraints;
@@ -23,16 +27,17 @@ public class BodyTypingResult<LevelT> {
     private final MethodSignatures.Effects<LevelT> effects;
     @NotNull
     private final Environment env;
+    private final TagMap<LevelT> tags;
 
     // factory methods
     public static <Level> BodyTypingResult<Level> trivialCase(ConstraintSetFactory<Level> csets) {
         return new BodyTypingResult<>(csets.empty(),
-                emptyEffect(),
-                Environments.makeEmpty());
+                                      emptyEffect(),
+                                      Environments.makeEmpty(), TagMap.empty());
     }
 
     public static <Level> BodyTypingResult<Level> fromEnv(ConstraintSetFactory<Level> csets, Environment env) {
-        return new BodyTypingResult<>(csets.empty(), emptyEffect(), env);
+        return new BodyTypingResult<>(csets.empty(), emptyEffect(), env, TagMap.empty());
     }
 
 
@@ -41,22 +46,23 @@ public class BodyTypingResult<LevelT> {
         Environment.JoinResult<Level> envJoin = Environment.join(tvars, r1.getFinalEnv(),r2.getFinalEnv());
         List<Constraint<Level>> csList = envJoin.constraints.collect(Collectors.toList());
         ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(csets.fromCollection(csList));
-        return new BodyTypingResult<>(cs, r1.effects.add(r2.effects), envJoin.env) ;
+        return new BodyTypingResult<>(cs, r1.effects.add(r2.effects), envJoin.env, r1.tags.addAll(r2.tags)) ;
     }
 
     public static <Level> BodyTypingResult<Level> addConstraints(BodyTypingResult<Level> r, ConstraintSet<Level> constraints) {
-        return new BodyTypingResult<>(r.constraints.add(constraints), r.effects, r.env);
+        return new BodyTypingResult<>(r.constraints.add(constraints), r.effects, r.env, r.tags);
     }
 
     public static <Level> BodyTypingResult<Level> addEffects(BodyTypingResult<Level> r, MethodSignatures.Effects<Level> effects) {
-        return new BodyTypingResult<>(r.constraints, r.effects.add(effects), r.env);
+        return new BodyTypingResult<>(r.constraints, r.effects.add(effects), r.env, r.tags);
     }
 
     // impl
 
     BodyTypingResult(@NotNull ConstraintSet<LevelT> constraints,
                      @NotNull MethodSignatures.Effects<LevelT> effects,
-                     @NotNull Environment env) {
+                     @NotNull Environment env,
+                     TagMap<LevelT> tags) {
         super();
         if (constraints == null || effects == null || env == null) {
             throw new NullPointerException("when instantiating results");
@@ -64,6 +70,7 @@ public class BodyTypingResult<LevelT> {
         this.constraints = constraints;
         this.effects = effects;
         this.env = env;
+        this.tags = tags;
     }
 
     public ConstraintSet<LevelT> getConstraints() {
@@ -77,6 +84,11 @@ public class BodyTypingResult<LevelT> {
     public MethodSignatures.Effects<LevelT> getEffects() {
         return effects;
     }
+
+    public TagMap<LevelT> getTags() {
+        return tags;
+    }
+
 
     public TypeVars.TypeVar finalTypeVariableOf(Var<?> local) {
         return this.env.get(local);
