@@ -433,7 +433,11 @@ public class TestDomain {
             // TODO: why don't we keep the top-level context in ConstraintSet.refines?
             ConstraintSet<Level> projected =
                     concreteConstraints.projectTo(Stream.concat(
-                            Stream.of(tvars.topLevelContext()),
+                            //TODO: remove if correct without
+
+//                            Stream.of(tvars.topLevelContext()),
+//                            abstractConstraints.variables()
+                            Stream.empty(),
                             abstractConstraints.variables()
                     ).collect(toSet()));
             result =

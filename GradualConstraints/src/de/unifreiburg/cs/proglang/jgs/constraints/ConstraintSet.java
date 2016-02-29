@@ -152,10 +152,12 @@ public abstract class ConstraintSet<Level> {
 
 
     /**
-     * Project a constraint set to the symbols relevant for a method signature, which are the parameters, the top-level context and the return symbol
+     * Project a constraint set to the symbols relevant for a method signature, which are the parameters, and the return symbol
      */
     public ConstraintSet<Level> asSignatureConstraints(TypeVars tvars, Stream<Var<Symbol.Param<?>>> params) {
-        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext(), tvars.ret()), params.map(tvars::param)).collect(toSet());
+        //TODO: remove, if correct
+//        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.topLevelContext(), tvars.ret()), params.map(tvars::param)).collect(toSet());
+        Set<TypeVar> vars = Stream.concat(Stream.of(tvars.ret()), params.map(tvars::param)).collect(toSet());
         return this.projectTo(vars);
     }
 

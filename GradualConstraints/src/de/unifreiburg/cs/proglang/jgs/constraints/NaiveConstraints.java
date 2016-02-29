@@ -75,6 +75,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                     }
                 });
                 // then the compatibility constraints
+                // TODO: remove compatibility constraints, if it works without
                 Stream<CType<Level>> compCands = oldLes.stream().filter(c -> c.getRhs().equals(x_to_y.getRhs())).map(Constraint::getLhs);
                 compCands.forEach(lhs1 -> {
                     CType<Level> lhs2 = x_to_y.getLhs();
