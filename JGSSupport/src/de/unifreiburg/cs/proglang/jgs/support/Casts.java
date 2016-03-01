@@ -13,8 +13,13 @@ public class Casts {
         return x;
     }
 
+    public static <T> T castDynToLow(T x) {
+        return x;
+    }
     public static void castCxHighToDyn() {}
     public static void castCxLowToDyn() {}
+    public static void castCxDynToLow() {}
+    public static void castCxDynToHigh() {}
     public static void castCxEnd(){}
 
 }

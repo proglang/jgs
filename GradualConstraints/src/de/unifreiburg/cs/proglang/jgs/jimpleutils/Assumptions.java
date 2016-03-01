@@ -19,12 +19,6 @@ public class Assumptions {
 
     public static void validUnitGraph(DirectedGraph<Unit> g) throws Violation {
 
-        /* The unit graph should have a single entry point */
-        List<Unit> heads = g.getHeads();
-        if (heads.size() != 1) {
-            throw new Violation("Analyzing graphs with more than a single head is not supported");
-        }
-
         /* Branching statements should not be exit nodes.
         This restriction ensures that we always get a non-null immediatePostdominator */
         for (Unit u : g) {

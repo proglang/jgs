@@ -25,6 +25,11 @@ public class Scratch {
         }
     }
 
+    @Effects({"pub"})
+    void conflicts() {
+        this.answer = this.high;
+    }
+
     static int returnAStatic() {
         return aStatic;
     }

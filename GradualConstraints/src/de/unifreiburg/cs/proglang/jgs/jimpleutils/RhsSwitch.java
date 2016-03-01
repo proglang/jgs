@@ -298,15 +298,15 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
         super.caseNegExpr(v);
     }
 
+    @Override
+    public void caseCastExpr(CastExpr v) {
+        caseLocal((Local)v.getOp());
+    }
 
     /*
      * TODO-missing-cases: misc cases
      */
 
-    @Override
-    public void caseCastExpr(CastExpr v) {
-        super.caseCastExpr(v);
-    }
 
     @Override
     public void caseInstanceOfExpr(InstanceOfExpr v) {

@@ -29,3 +29,5 @@ testclasses-*/
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 
+.idea/artifacts
+GradualConstraints/src/META-INF

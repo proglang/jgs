@@ -423,7 +423,7 @@ public class MethodBodyTypingTest {
     }
 
     private BodyTypingResult<Level> analyze(DirectedGraph<Unit> g) throws TypingException {
-        return mbTyping.generateResult(g, pc, code.init);
+        return mbTyping.generateResult((Stmt)g.getHeads().get(0), g, pc, code.init);
     }
 
     private void assertEquivalentConstraints(DirectedGraph<Unit> g, Function<BodyTypingResult<Level>, ConstraintSet<Level>> getExpected, Function<BodyTypingResult<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypingException {

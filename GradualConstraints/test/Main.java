@@ -23,12 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.javafp.parsecj.Reply;
 import org.javafp.parsecj.State;
 import scala.collection.*;
+import soot.*;
 import soot.JastAddJ.Opt;
 import soot.JastAddJ.Signatures;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
 import soot.options.Options;
 import soot.tagkit.AnnotationTag;
 import soot.tagkit.Tag;
@@ -52,6 +49,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeEff
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -156,6 +154,12 @@ public class Main {
                                                    emptyEffect()));
              }
          });
+        SootMethod printInt = s.getSootClass("de.unifreiburg.cs.proglang.jgs.support.IO").getMethodByName("printInt");
+        signatureMap.put(printInt, makeSignature(1, singletonList(leS(0, Symbol.literal(TLOW))), makeEffects(singletonList(TLOW))));
+        SootMethod valueOfInt = s.getSootClass("java.lang.Integer").getMethod("valueOf", singletonList(IntType.v()));
+        SootMethod intValue = s.getSootClass("java.lang.Integer").getMethod("intValue", emptyList());
+        signatureMap.put(valueOfInt, makeSignature(1, singletonList(leS(0, Symbol.ret())), emptyEffect()));
+        signatureMap.put(intValue, makeSignature(0, emptyList(), emptyEffect()));
     }
 
     public final static String TESTCLASSES_DIR = "JGSTestclasses/src";
@@ -228,9 +232,12 @@ public class Main {
         Map<String,String> valueCasts = new HashMap<>();
         valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castHighToDyn", "HIGH ~> ?");
         valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castLowToDyn", "LOW ~> ?");
+        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castDynToLow", "? ~> LOW");
         Map<String,String> cxCasts = new HashMap<>();
         cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxHighToDyn", "HIGH ~> ?");
         cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxLowToDyn", "LOW ~> ?");
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxDynToLow", "? ~> LOW");
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxDynToHigh", "? ~> HIGH");
         String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.Casts.castCxEnd";
 
         Casts<Level> casts = new CastsFromMapping<Level>(CastsFromMapping.<Level>parseConversionMap(types.typeParser(), valueCasts).get(),
@@ -250,7 +257,8 @@ public class Main {
                             methodTyping.check(new TypeVars(), signatures, fieldTable, m);
                     System.out.println(String.format("* Type checking method %s:  %s", m.toString(), Format.pprint(Format.methodTypingResult(mresult))));
                 } catch (TypingException e) {
-                    System.out.println(" failed: " + e.getMessage());
+                    System.err.println(" failed: " + e.getMessage());
+                    e.printStackTrace();
                 }
                 System.out.println();
             }

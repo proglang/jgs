@@ -7,8 +7,10 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import org.apache.commons.lang3.tuple.Pair;
+import soot.Body;
 import soot.Unit;
 import soot.jimple.*;
+import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.DominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
@@ -18,6 +20,7 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,15 +92,23 @@ public class MethodBodyTyping<Level> {
     }
 
 
-    public BodyTypingResult<Level> generateResult(DirectedGraph<Unit> g, TypeVar pc, Environment env) throws TypingException {
+    public BodyTypingResult<Level> generateResult(Body b, TypeVar pc, Environment env) throws TypingException {
+        DirectedGraph<Unit> g = new BriefUnitGraph(b);
         try {
             Assumptions.validUnitGraph(g);
         } catch (Assumptions.Violation e) {
-            throw new TypingException("Unexpected unit graph: " + e.getMessage());
+            throw new TypingException(
+                    "Unexpected unit graph: " + e.getMessage() + "\n body "
+                    + b.toString() + "first elem" + b.getUnits().getFirst());
         }
+        if (b.getUnits().isEmpty()) {
+            throw new TypingException("Unexpected empty body:" + b.toString());
+        }
+        Stmt entry = (Stmt)b.getUnits().getFirst();
+        return generateResult(entry, g, pc, env);
 
-        // valid unit graphs have exactly one head
-        Stmt s = (Stmt) g.getHeads().get(0);
+    }
+    public BodyTypingResult<Level> generateResult(Stmt s, DirectedGraph<Unit> g , TypeVar pc, Environment env) throws TypingException {
 
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
 
