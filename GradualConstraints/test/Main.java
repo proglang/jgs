@@ -169,7 +169,7 @@ public class Main {
         log.setLevel(java.util.logging.Level.WARNING);
 
         Options o = Options.v();
-        o.set_soot_classpath("JGSSupport/bin:"+TESTCLASSES_DIR+":result/lib/openjdk/jre/lib/rt.jar");
+        o.set_soot_classpath("JGSSupport/bin:"+TESTCLASSES_DIR+":openjdk7/lib/openjdk/jre/lib/rt.jar");
         o.set_process_dir(Collections.singletonList(TESTCLASSES_DIR));
 
         Scene s = Scene.v();

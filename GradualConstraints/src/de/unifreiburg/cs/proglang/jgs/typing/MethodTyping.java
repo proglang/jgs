@@ -12,6 +12,9 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import soot.SootMethod;
+import soot.Unit;
+import soot.toolkits.graph.BriefUnitGraph;
+import soot.toolkits.graph.DirectedGraph;
 
 import java.util.HashMap;
 import java.util.List;
@@ -136,8 +139,7 @@ public class MethodTyping<Level> {
         Environment init = Environments.forParamMap(tvars, paramMapping);
 
 
-        DirectedGraph<Unit> body = new BriefUnitGraph(method.retrieveActiveBody());
-        BodyTypingResult<Level> r = new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures, fields).generateResult(body, tvars.topLevelContext(), init);
+        BodyTypingResult<Level> r = new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures, fields).generateResult(method.retrieveActiveBody(), tvars.topLevelContext(), init);
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
         Map<Symbol<Level>, TypeVar> symbolMapping = new HashMap<>(paramMapping);

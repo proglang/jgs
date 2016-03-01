@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs;
 import org.junit.Before;
 import org.junit.Rule;
@@ -290,11 +291,11 @@ public class MethodBodyTypingTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testIllegalExitNode() throws TypingException {
+    public void testIllegalExitNode() throws Assumptions.Violation {
         Code.LoopWhereIfIsExitNode g = code.new LoopWhereIfIsExitNode();
-        thrown.expect(TypingException.class);
+        thrown.expect(Assumptions.Violation.class);
         thrown.expectMessage(containsString("Branching statement is an exit node"));
-        analyze(g);
+        Assumptions.validUnitGraph(g);
     }
 
     @Test
