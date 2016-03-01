@@ -12,6 +12,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Internal, Ret, C
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Pub, Dyn, Lit}
 import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult
 import de.unifreiburg.cs.proglang.jgs.typing.{ConflictCause, MethodTyping, ClassHierarchyTyping}
 import org.kiama.output.PrettyPrinter._
@@ -103,19 +104,23 @@ object Format {
       case Null() => "unknown source"
       case Symbol(symbol) => "Parameter" <+> symbol.toString
       case Field(field) => "Field" <+> field.toString
-      case Cast(conversion) => "Destination of cast from" <+> conversion.toString
+      case Cast(conv) => "destination of a" <+> parens(conversion(conv))<+> "value cast"
       case MethodReturn(method) => "Call to"<+>method.toString
       case MethodArg(method, pos) => s"Argument ${pos} of method ${method}"
     }
     val dest : Doc = c.upperTag match {
       case Null() => "unknown destination"
-      case Symbol(symbol) => "Return type"
-      case Field(field) => "Field" <+> field.toString
-      case Cast(conversion) => "Source of cast from" <+> conversion.toString
+      case Symbol(symbol) => "return type"
+      case Field(field) => "field" <+> field.toString
+      case Cast(conv) => "a" <+> braces(conversion(conv)) <+> "value cast"
       case MethodReturn(method) => "Call to"<+>method.toString
       case MethodArg(method, pos) => s"Argument ${pos} of method ${method}"
     }
-    src <+> "of type" <+> c.lowerType.toString <+> "flows into " <+> dest <+> "of type" <+> c.upperLevel.toString
+    src <+> parens(sectype(c.lowerType)) <+> "flows into" <+> dest <+> parens(sectype(c.upperLevel))
+  }
+
+  def conversion[Level](c : Conversion[Level]) : Doc = {
+    sectype(c.source) <+> "~>" <+> sectype(c.dest)
   }
 
   def refinementCheckResult[Level](abstractDescription: String,

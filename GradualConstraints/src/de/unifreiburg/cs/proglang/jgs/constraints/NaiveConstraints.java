@@ -243,8 +243,24 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                         List<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
                                 sinkTags = tags.getJavaMap().entrySet().stream()
                                                .filter(kv -> kv.getKey().getRhs().equals(literal(tSink))).collect(Collectors.toList());
-                        return sourceTags.stream().flatMap(srcT -> sinkTags.stream().filter(snkT -> srcT.getKey().getRhs().equals(snkT.getKey().getLhs()))
-                                                                  .map(relevantSnk -> new ConflictCause<Level>(t, srcT.getValue(), tSink, relevantSnk.getValue())));
+                        return sourceTags.stream().flatMap(
+                                srcT -> {
+                                    return sinkTags
+                                            .stream()
+                                            .filter(
+                                                    snkT -> {
+                                                        CType<Level>
+                                                                srcRhs =
+                                                                srcT.getKey().getRhs();
+                                                        CType<Level>
+                                                                snkLhs =
+                                                                snkT.getKey().getLhs();
+                                                        return srcRhs.equals(snkLhs)
+                                                               || closed.stream().anyMatch(clC -> srcRhs.equals(clC.getLhs())
+                                                                                                  && snkLhs.equals(clC.getRhs()));
+                                                    })
+                                            .map(relevantSnk -> new ConflictCause<Level>(t, srcT.getValue(), tSink, relevantSnk.getValue()));
+                                });
                     });
                 }).collect(Collectors.toList());
     }

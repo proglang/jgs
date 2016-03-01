@@ -151,6 +151,7 @@ public class MethodTyping<Level> {
         ConstraintSet<Level> bodyConstraints =
                 r.getConstraints().asSignatureConstraints(tvars, methodParameters(method).stream().map(Var::fromParam));
 
+
         return new Result<>(cstrs.types, r.getConstraints(), bodyConstraints.refines(sigConstraints)
                 , signatureToCheck.effects, r.getEffects(), r.getEffects().refines(cstrs.types, signatureToCheck.effects).missingEffects, () -> r.getConstraints().findConflictCause(r.getTags()));
     }

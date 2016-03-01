@@ -12,6 +12,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
@@ -260,8 +261,10 @@ public class BasicStatementTyping<LevelT> {
             public void caseGetField(FieldRef field,
                                      Optional<Var<?>> thisPtr) {
 
-                Constraint<LevelT> destC = leDest.apply(literal(getFieldType(field.getField())));
-                tags = TagMap.of(destC, new TypeVarTags.Field(field.getField()));
+                Constraint<LevelT> destC =
+                        leDest.apply(literal(getFieldType(field.getField())));
+                tags =
+                        TagMap.of(destC, new TypeVarTags.Field(field.getField()));
                 Stream.concat(
                         Stream.of(destC),
                         thisPtr.isPresent()
@@ -280,11 +283,21 @@ public class BasicStatementTyping<LevelT> {
                     return;
                 }
                 // add source and dest type
-                cast.value.ifPresent(
-                        v -> constraints.add(cstrs.le(toCType.apply(v),
-                                                      literal(cast.sourceType))));
-                constraints.add(cstrs.le(literal(cast.destType),
-                                 destCType));
+                Optional<Constraint<LevelT>> mcstr = cast.value.map(
+                        v -> cstrs.le(toCType.apply(v), literal(cast.sourceType)));
+
+                mcstr.ifPresent(constraints);
+
+                Constraint<LevelT> destC =
+                        cstrs.le(literal(cast.destType), destCType);
+                constraints.add(destC);
+
+                CastsFromMapping.Conversion<LevelT> conv =
+                        new CastsFromMapping.Conversion<LevelT>(cast.sourceType, cast.destType);
+                TypeVarTag tag = new TypeVarTags.Cast(conv);
+                tags = TagMap.of(destC,
+                                 tag)
+                             .addAll(mcstr.map((Constraint<LevelT> c) -> TagMap.of(c, tag)).orElse(TagMap.empty()));
             }
 
             @Override
@@ -315,7 +328,8 @@ public class BasicStatementTyping<LevelT> {
 
             // get constraints from rhs..
             Value rhs = stmt.getRightOp();
-            ExprSwitch sw = new ExprSwitch(casts, leDest, toCType, constraints, destTVar, destCType);
+            ExprSwitch sw =
+                    new ExprSwitch(casts, leDest, toCType, constraints, destTVar, destCType);
             rhs.apply(sw);
 
             // finally the pcs flow into the destination
@@ -355,7 +369,8 @@ public class BasicStatementTyping<LevelT> {
             if ((stmt.getRightOp() instanceof Local)) {
                 // .. and it flows into the field
                 Local rhs = (Local) stmt.getRightOp();
-                Constraint<LevelT> cstr = leDest.apply(CTypes.variable(env.get(Var.fromLocal(rhs))));
+                Constraint<LevelT> cstr =
+                        leDest.apply(CTypes.variable(env.get(Var.fromLocal(rhs))));
                 constraints.add(cstr);
                 // add a tag for the field
                 tags = TagMap.of(cstr, new TypeVarTags.Field(field));
@@ -456,8 +471,9 @@ public class BasicStatementTyping<LevelT> {
             Function<CType<LevelT>, Constraint<LevelT>> leDest =
                     t -> cstrs.le(t, destCType);
             Function<Var<?>, CType<LevelT>> toCType = v -> variable(env.get(v));
-            ExprSwitch sw = new ExprSwitch(casts, leDest, toCType, constraints, destTVar
-                    , destCType);
+            ExprSwitch sw =
+                    new ExprSwitch(casts, leDest, toCType, constraints, destTVar
+                            , destCType);
             e.apply(sw);
 
             this.result =

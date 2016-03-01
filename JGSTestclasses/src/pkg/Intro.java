@@ -19,14 +19,7 @@ import de.unifreiburg.cs.proglang.jgs.support.*;
      ?    LOW
       \   /
        pub 
-               HIGH
-	      / |  \
-            M2  |    M1
-              \ |  /
-     ?         LOW
-      \   /
-       pub 
-       
+
    Now, let us look at a JGS class
  */
 public class Intro {
@@ -131,6 +124,20 @@ public class Intro {
             z += 1;
         }
         return z;
+    }
+
+    // explicit flow through fields using variables
+    void explicitWithVars() {
+        int x = this.highField;
+        int y = x + 1;
+        this.lowField = y;
+    }
+
+    // indirect flows involving fields
+    void implicitFields() {
+        if (this.highField == 1) {
+            this.lowField = 1;
+        }
     }
 
 
