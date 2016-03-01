@@ -207,7 +207,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         Set<Constraint<Level>> closed = NaiveConstraints.close(this.cs);
         List<Constraint<Level>> conflicts =
                 closed.stream().filter(c -> !c.isSatisfiable(types)).collect(Collectors.toList());
-        Stream<Type<Level>> sources = conflicts.stream().map(c -> {
+        Stream<Type<Level>> sourceStream = conflicts.stream().map(c -> {
             CType<Level> ct = c.getLhs();
             if (!(ct.inspect() instanceof CTypeViews.Lit)) {
                 throw new IllegalStateException(
@@ -217,6 +217,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
             CTypeViews.Lit<Level> lit = (CTypeViews.Lit<Level>) ct.inspect();
             return lit.t();
         });
+        List<Type<Level>> sources = sourceStream.collect(Collectors.toList());
         Stream<Type<Level>> sinkStream = conflicts.stream().map(c -> {
             CType<Level> ct = c.getRhs();
             if (!(ct.inspect() instanceof CTypeViews.Lit)) {
@@ -232,17 +233,18 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
         // for all sources that have a tagged constraint, try to find connection to any sink
         // TODO: oh my god, is this ugly!!!
-        return sources.flatMap(
+        return sources.stream().flatMap(
                 t -> {
-                    Stream<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
+                    // TODO: some lists are only used once; still I get an IllegalStateException when I would use streams instead... but only when running the jar
+                    List<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
                             sourceTags = tags.getJavaMap().entrySet().stream()
-                                             .filter(kv -> kv.getKey().getLhs().equals(literal(t)));
+                                             .filter(kv -> kv.getKey().getLhs().equals(literal(t))).collect(Collectors.toList());
                     return sinks.stream().flatMap(tSink -> {
-                        Stream<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
+                        List<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
                                 sinkTags = tags.getJavaMap().entrySet().stream()
-                                               .filter(kv -> kv.getKey().getRhs().equals(literal(tSink)));
-                        return sourceTags.flatMap(srcT -> sinkTags.filter(snkT -> srcT.getKey().getRhs().equals(snkT.getKey().getLhs()))
-                                .map(relevantSnk -> new ConflictCause<Level>(t, srcT.getValue(),tSink, relevantSnk.getValue())));
+                                               .filter(kv -> kv.getKey().getRhs().equals(literal(tSink))).collect(Collectors.toList());
+                        return sourceTags.stream().flatMap(srcT -> sinkTags.stream().filter(snkT -> srcT.getKey().getRhs().equals(snkT.getKey().getLhs()))
+                                                                  .map(relevantSnk -> new ConflictCause<Level>(t, srcT.getValue(), tSink, relevantSnk.getValue())));
                     });
                 }).collect(Collectors.toList());
     }

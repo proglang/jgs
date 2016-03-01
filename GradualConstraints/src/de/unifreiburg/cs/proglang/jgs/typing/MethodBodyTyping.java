@@ -170,7 +170,9 @@ public class MethodBodyTyping<Level> {
 
             BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, sTvars, cstrs);
             BodyTypingResult<Level> atomic = bsTyping.generate(s, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, fields, casts);
+            // TODO: the following two statements are so unclear because we need to include all the tags.. abstract away the sequencing to make this clearer (or more transparent)
             r = BodyTypingResult.addEffects(BodyTypingResult.addConstraints(atomic, previous.getConstraints()), previous.getEffects());
+            r = new BodyTypingResult<>(r.getConstraints(), r.getEffects(), r.getFinalEnv(), r.getTags().addAll(previous.getTags()).addAll(atomic.getTags()));
             // if the unit is the end of a sequence, stop
             if (successors.isEmpty()) {
                 return r;
@@ -191,6 +193,7 @@ public class MethodBodyTyping<Level> {
             // get condition constrains and the new context
             TypeVar newPc = sTvars.forContext(s);
             Set<Constraint<Level>> conditionConstraints = constraintsForBranches(s, previous.getFinalEnv(), topLevelContext, newPc);
+
             BodyTypingResult<Level> conditionResult = addConstraints(previous, csets.fromCollection(conditionConstraints));
             // generate results for each branch and join to final results
             r = trivialCase(csets);

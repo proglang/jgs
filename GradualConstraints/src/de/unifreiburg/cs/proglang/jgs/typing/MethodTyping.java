@@ -17,8 +17,10 @@ import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.DirectedGraph;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.methodParameters;
 import static java.util.stream.Collectors.toList;
@@ -36,16 +38,18 @@ public class MethodTyping<Level> {
         public final ConstraintSet<Level> completeBodyConstraints;
         public final RefinementCheckResult<Level> refinementCheckResult;
         public final Effects<Level> missedEffects;
-        public final Effects sigEffects;
-        public final Effects inferredEffects;
+        public final Effects<Level> sigEffects;
+        public final Effects<Level> inferredEffects;
+        public final Supplier<List<ConflictCause<Level>>> conflictCauses;
 
-        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects) {
+        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects, Supplier<List<ConflictCause<Level>>> conflicCauses) {
             this.types = types;
             this.completeBodyConstraints = completeBodyConstraints;
             this.refinementCheckResult = refinementCheckResult;
             this.missedEffects = missedEffects;
             this.inferredEffects = inferredEffects;
             this.sigEffects = sigEffects;
+            this.conflictCauses = conflicCauses;
         }
 
         /**
@@ -148,7 +152,7 @@ public class MethodTyping<Level> {
                 r.getConstraints().asSignatureConstraints(tvars, methodParameters(method).stream().map(Var::fromParam));
 
         return new Result<>(cstrs.types, r.getConstraints(), bodyConstraints.refines(sigConstraints)
-                , signatureToCheck.effects, r.getEffects(), r.getEffects().refines(cstrs.types, signatureToCheck.effects).missingEffects);
+                , signatureToCheck.effects, r.getEffects(), r.getEffects().refines(cstrs.types, signatureToCheck.effects).missingEffects, () -> r.getConstraints().findConflictCause(r.getTags()));
     }
 
 

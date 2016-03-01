@@ -260,8 +260,10 @@ public class BasicStatementTyping<LevelT> {
             public void caseGetField(FieldRef field,
                                      Optional<Var<?>> thisPtr) {
 
+                Constraint<LevelT> destC = leDest.apply(literal(getFieldType(field.getField())));
+                tags = TagMap.of(destC, new TypeVarTags.Field(field.getField()));
                 Stream.concat(
-                        Stream.of(leDest.apply(literal(getFieldType(field.getField())))),
+                        Stream.of(destC),
                         thisPtr.isPresent()
                         ? Stream.of(leDest.apply(variable(env.get(thisPtr.get()))))
                         : Stream.empty()
@@ -372,6 +374,7 @@ public class BasicStatementTyping<LevelT> {
             // it remains to define the effect
             Effects<LevelT> effects =
                     MethodSignatures.<LevelT>emptyEffect().add(fieldType);
+
             this.result =
                     makeResult(csets.fromCollection(constraints.build().collect(Collectors.toList())), env, effects, tags);
         }

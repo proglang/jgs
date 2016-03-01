@@ -14,6 +14,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.SigConstraint;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.SigConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser;
 import de.unifreiburg.cs.proglang.jgs.typing.ClassHierarchyTyping;
 import de.unifreiburg.cs.proglang.jgs.typing.MethodTyping;

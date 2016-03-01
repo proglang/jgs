@@ -7,12 +7,13 @@ import java.util.stream.Collectors
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Variable
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint.Kind
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Internal, Ret, Cx, Param}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Pub, Dyn, Lit}
 import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult
-import de.unifreiburg.cs.proglang.jgs.typing.{MethodTyping, ClassHierarchyTyping}
+import de.unifreiburg.cs.proglang.jgs.typing.{ConflictCause, MethodTyping, ClassHierarchyTyping}
 import org.kiama.output.PrettyPrinter._
 
 import scala.collection.JavaConverters._
@@ -61,29 +62,60 @@ object Format {
       })
     } else {
       val when = (b: Boolean, t: Doc) => if (b) {
-        t <> linebreak
+        List(t <> linebreak)
       } else {
-        empty
+        List()
       }
 
       val reason = cat(List(
-        (if (!result.bodyHasSolution()) {
-          "Unsatisfiable constraints in method body: " <>
-            nest(linebreak<> constraintSet(copyToList(result.completeBodyConstraints.stream())))
+        if (!result.bodyHasSolution()) {
+          val explanation = {
+            val mcauses = result.conflictCauses.get()
+            if (mcauses.isEmpty) {
+              "Unable to find succinct causes, sorry. Complete constraints of body:" <>
+              nest(linebreak<> vcat(copyToList(result.completeBodyConstraints.stream()).map(constraint(_))), 2)
+            } else {
+              hcat(mcauses.asScala.toList.map(conflictCause(_)))
+            }
+          }
+          List("Unsatisfiable constraints in method body: " <>
+            nest(linebreak <> explanation, 2))
         } else if (!result.refinementCheckResult.isSuccess) {
           val bodyRefinenemtResult =
             refinementCheckResult[Level](
               abstractDescription = "Signature constraints",
               concreteDescription = "Constraints inferred for body",
               conflictDescription = "Conflicts of body constraints with counterexample") _
-          "Signature constraints are insufficient: " <>
-            nest(linebreak <> bodyRefinenemtResult(result.refinementCheckResult), 2)
-        } else { empty }),
+          List("Signature constraints are insufficient: " <>
+            nest(linebreak <> bodyRefinenemtResult(result.refinementCheckResult), 2))
+        } else {
+          List()
+        },
         when(!result.missedEffects.isEmpty,
           "Signature misses following effects detected in the body: " <+> result.missedEffects.toString)
-      ))
+      ).flatten)
       "Failed for the following reasons:" <> nest(linebreak <> reason, 2)
     }
+  }
+
+  def conflictCause[Level](c : ConflictCause[Level]) : Doc = {
+    val src : Doc = c.lowerTag match {
+      case Null() => "unknown source"
+      case Symbol(symbol) => "Parameter" <+> symbol.toString
+      case Field(field) => "Field" <+> field.toString
+      case Cast(conversion) => "Destination of cast from" <+> conversion.toString
+      case MethodReturn(method) => "Call to"<+>method.toString
+      case MethodArg(method, pos) => s"Argument ${pos} of method ${method}"
+    }
+    val dest : Doc = c.upperTag match {
+      case Null() => "unknown destination"
+      case Symbol(symbol) => "Return type"
+      case Field(field) => "Field" <+> field.toString
+      case Cast(conversion) => "Source of cast from" <+> conversion.toString
+      case MethodReturn(method) => "Call to"<+>method.toString
+      case MethodArg(method, pos) => s"Argument ${pos} of method ${method}"
+    }
+    src <+> "of type" <+> c.lowerType.toString <+> "flows into " <+> dest <+> "of type" <+> c.upperLevel.toString
   }
 
   def refinementCheckResult[Level](abstractDescription: String,
