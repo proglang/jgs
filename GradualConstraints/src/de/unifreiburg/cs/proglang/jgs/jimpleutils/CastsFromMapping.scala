@@ -14,8 +14,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain._
 import scala.collection.JavaConverters._
 
 import CastsFromMapping._
+import de.unifreiburg.cs.proglang.jgs.util.Interop._
 
 import scala.util.{Success, Failure, Try}
+
 
 /**
   * Create a cast module from mappings of fully qualified method names to casts
@@ -26,17 +28,22 @@ case class CastsFromMapping[Level](valueCasts: Map[String, Conversion[Level]],
   extends Casts[Level] {
 
   override def detectValueCastFromCall(e: StaticInvokeExpr): Optional[ValueCast[Level]] = {
-    asJavaOptional(valueCasts.get(fqName(e.getMethod))
+    val key = e.getMethod.toString // fqName(e.getMethod) TODO: remove fqname based key
+    asJavaOptional(valueCasts.get(key)
       .map(c => new ValueCast[Level](c.source, c.dest, getCallArgument(e)))
     )
   }
 
-  override def detectContextCastEndFromCall(e: StaticInvokeExpr): Boolean =
-    CastsFromMapping.fqName(e.getMethod) == cxCastEnd
+  override def detectContextCastEndFromCall(e: StaticInvokeExpr): Boolean = {
+    val key = e.getMethod.toString // fqName(e.getMethod) TODO: remove fqname based key
+    key == cxCastEnd
+  }
 
-  override def detectContextCastStartFromCall(e: StaticInvokeExpr): Optional[CxCast[Level]] =
-    asJavaOptional(cxCastBegins.get(fqName(e.getMethod))
+  override def detectContextCastStartFromCall(e: StaticInvokeExpr): Optional[CxCast[Level]] = {
+    val key = e.getMethod.toString // fqName(e.getMethod) TODO: remove fqname based key
+    asJavaOptional(cxCastBegins.get(key)
       .map(c => new CxCast[Level](c.source, c.dest)))
+  }
 }
 
 object CastsFromMapping {
@@ -48,13 +55,6 @@ object CastsFromMapping {
     s"${m.getDeclaringClass.getName}.${m.getName}"
   }
 
-  private def asJavaOptional[T](o: Option[T]): Optional[T] =
-    o.map(Optional.of(_)).getOrElse(Optional.empty())
-
-  private def asScalaOption[T](o: Optional[T]): Option[T] =
-    o.map[Option[T]](new java.util.function.Function[T, Option[T]] {
-      override def apply(t: T): Option[T] = Some(t)
-    }).orElse(None)
 
   private def getCallArgument(e: StaticInvokeExpr): Optional[Var[_]] = {
     if (e.getArgCount != 1) {

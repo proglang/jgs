@@ -1,0 +1,19 @@
+{
+    "valuecasts": {
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)>": "HIGH ~> ?",
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castLowToDyn(java.lang.Object)>": "LOW ~> ?",
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castDynToLow(java.lang.Object)>": "? ~> LOW",
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castDynToHigh(java.lang.Object)>": "? ~> HIGH",
+    },
+    
+    "contextcasts": {
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxHighToDyn()>": "HIGH ~> ?",
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxLowToDyn()>": "LOW ~> ?",
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToLow()>": "? ~> LOW",
+	"<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToHigh()>": "? ~> HIGH",
+    },
+    
+    "contextcastend": "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxEnd()>" 
+}
+    
+    

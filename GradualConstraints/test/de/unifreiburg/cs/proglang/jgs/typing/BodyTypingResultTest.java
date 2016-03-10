@@ -50,7 +50,7 @@ public class BodyTypingResultTest {
         ConstraintSet<Level> cs2 = csets.fromCollection(Collections.singletonList(leC(code.tvarY, tv2)));
         BodyTypingResult<Level> r1 = BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, first), cs1);
         BodyTypingResult<Level> result = BodyTypingResult.join(r1,
-                BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, second), cs2), csets, tvars
+                BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, second), cs2), csets, tvars, "test"
         );
 
         TypeVar freshV = tvars.join(tv1, tv2);
@@ -60,7 +60,7 @@ public class BodyTypingResultTest {
 
         assertThat(result, is(equalTo(expected)));
 
-        assertThat(BodyTypingResult.join(BodyTypingResult.trivialCase(csets), r1, csets, tvars), is(r1));
-        assertThat(BodyTypingResult.join(r1, BodyTypingResult.trivialCase(csets), csets, tvars), is(r1));
+        assertThat(BodyTypingResult.join(BodyTypingResult.trivialCase(csets), r1, csets, tvars, "test"), is(r1));
+        assertThat(BodyTypingResult.join(r1, BodyTypingResult.trivialCase(csets), csets, tvars, "test"), is(r1));
     }
 }

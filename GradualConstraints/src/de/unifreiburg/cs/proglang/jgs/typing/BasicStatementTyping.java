@@ -242,8 +242,21 @@ public class BasicStatementTyping<LevelT> {
                 }); // <- params
 
                 instantiation.put(Symbol.ret(), destTVar); // <- return
-                sig.constraints.toTypingConstraints(instantiation)
-                               .forEach(constraints);
+                Map<Constraint<LevelT>, TypeVarTag> tagMap = new HashMap<>();
+                sig.constraints.stream().forEach(sc -> {
+                                                     Constraint<LevelT> c = sc.toTypingConstraint(instantiation);
+                                                     Stream<TypeVarTag> params =
+                                                             sc.symbols().filter(s -> s instanceof Symbol.Param)
+                                                               .map(s -> new TypeVarTags.MethodArg(m, ((Symbol.Param<LevelT>) s).position));
+                                                     Stream<TypeVarTag> rets =
+                                                             sc.symbols().filter(s -> s instanceof Symbol.Return)
+                                                               .map(s -> new TypeVarTags.MethodReturn(m));
+                                                     constraints.add(c);
+                                                     Stream.concat(params, rets).forEach(t -> tagMap.put(c, t));
+                                                 }
+                );
+
+                tags = TagMap.of(tagMap);
 
                 // - [x] add thisPtr as lower bound to dest
                 thisPtr.map(toCType.andThen(leDest)).ifPresent(constraints);
@@ -391,7 +404,7 @@ public class BasicStatementTyping<LevelT> {
                     MethodSignatures.<LevelT>emptyEffect().add(fieldType);
 
             this.result =
-                    makeResult(csets.fromCollection(constraints.build().collect(Collectors.toList())), env, effects, tags);
+                    makeResult(csets.fromCollection(constraints.build().collect(toList())), env, effects, tags);
         }
 
 

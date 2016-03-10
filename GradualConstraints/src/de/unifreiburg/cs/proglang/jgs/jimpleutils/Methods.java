@@ -62,7 +62,7 @@ public class Methods {
         });
     }
 
-    public static Stream<String> extractStringAnnotation(String type, Stream<Tag> tags) {
+    public static List<String> extractStringAnnotation(String type, Stream<Tag> tags) {
         Function<AnnotationElem, String> extract = e -> {
             IllegalArgumentException wrongType =
                     new IllegalArgumentException(
@@ -73,7 +73,7 @@ public class Methods {
             }
             return ((AnnotationStringElem) e).getValue();
         };
-        return extractAnntotation(type, extract, tags);
+        return extractAnntotation(type, extract, tags).collect(Collectors.toList());
     }
 
     /**
@@ -84,7 +84,7 @@ public class Methods {
      *             mangled class name. Should contain a "value" field containing
      *             a String array.
      */
-    public static Stream<List<String>> extractStringArrayAnnotation(String type, Stream<Tag> tags) {
+    public static List<List<String>> extractStringArrayAnnotation(String type, Stream<Tag> tags) {
         Function<AnnotationElem, List<String>> extract = e -> {
             IllegalArgumentException wrongType =
                     new IllegalArgumentException(
@@ -105,7 +105,7 @@ public class Methods {
                     ).collect(toList());
             return values;
         };
-        return extractAnntotation(type, extract, tags);
+        return extractAnntotation(type, extract, tags).collect(Collectors.toList());
     }
 
     public static <Level> Signature<Level> extractSignatureFromTags(

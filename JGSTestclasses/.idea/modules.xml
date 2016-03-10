@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JGSTestclasses.iml" filepath="$PROJECT_DIR$/JGSTestclasses.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Hierarchy1/Hierarchy1.iml" filepath="$PROJECT_DIR$/Hierarchy1/Hierarchy1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Scratch/Scratch.iml" filepath="$PROJECT_DIR$/Scratch/Scratch.iml" />
     </modules>
   </component>
 </project>

@@ -38,6 +38,10 @@ public class Intro {
     // same type as
     @Sec("pub")
     int alsoPublicField;
+
+    Object somePublicObject;
+    
+    String someString;
     
     /*
       Thus, fields are sources and sinks of fixed security types. 
@@ -52,6 +56,16 @@ public class Intro {
     @Effects({"LOW"})
     void printPublicField() {
         IO.printInt(publicField);
+    }
+
+    void storeSomeInt() {
+        highField = IO.someInt;
+    }
+
+    void storeSomeObject() {
+	if (highField == 0) {
+	    someString = IO.someString;
+	}
     }
 
     // Similarly we can write to a low field announce the

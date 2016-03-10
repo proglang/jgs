@@ -53,7 +53,7 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-public class Main {
+public class TestMain {
 
     private static Logger log =
             Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.test");
@@ -104,12 +104,12 @@ public class Main {
 
     private static Signature<Level> parseSignature(SootMethod m) {
         List<String> constraintStrings =
-                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().stream()),
+                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().stream()).stream(),
                                     new IllegalArgumentException(
                                             "Found more than one constraint annotation on "
                                             + m.getName())).orElse(emptyList());
         List<String> effectStrings =
-                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().stream()),
+                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().stream()).stream(),
                                     new IllegalArgumentException(
                                             "Found more than one effect annotation on "
                                             + m.getName())).orElse(emptyList());
@@ -121,7 +121,7 @@ public class Main {
 
     private static Type<Level> parseType(SootField f) {
         return getAtMostOneOrThrow(extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;",
-                                                           f.getTags().stream()),
+                                                           f.getTags().stream()).stream(),
                                    new IllegalArgumentException(
                                            "Found more than one security level on "
                                            + f.getName()))

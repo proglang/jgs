@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
+import de.unifreiburg.cs.proglang.jgs.typing.FlowConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
 import org.junit.Before;
 import org.junit.Test;
@@ -257,7 +258,7 @@ public class NaiveConstraintsTest {
                 .add(c2,  new TypeVarTags.Field(lowField));
         ConstraintSet<Level> cs = makeNaive(asList(c1, c2));
         assertThat("Is satisfiable!", cs, is(not(sat())));
-        assertThat(cs.findConflictCause(tags), is(asList(new ConflictCause<>(THIGH, new TypeVarTags.Field(highField),
-                                                                             TLOW, new TypeVarTags.Field(lowField)))));
+        assertThat(cs.findConflictCause(tags), is(asList(new FlowConflict<>(THIGH, new TypeVarTags.Field(highField),
+                                                  TLOW, new TypeVarTags.Field(lowField)))));
     }
 }

@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
@@ -149,7 +150,7 @@ public class MethodBodyTyping<Level> {
             Casts.CxCast<Level> cxCast = maybeCxCast.get();
 
             if (successors.size() != 1) {
-                throw new RuntimeException("Begin of context cast should have exatcly one successor " + s.toString());
+                throw new TypingAssertionFailure("Begin of context cast should have exatcly one successor " + s.toString());
             }
             ;
             Stmt startOfCast = (Stmt) successors.get(0); // there should be exactly this one
@@ -161,21 +162,26 @@ public class MethodBodyTyping<Level> {
             Unit endOfCast = cxDoms.stream()
                     .filter(u -> postdoms.isDominatedByAll(u, cxDoms))
                     // it has to exist, otherwise it is "syntactically" not a context casts
-                    .findAny().orElseThrow(() -> new RuntimeException("Could not find end of context casts: " + s.toString()));
+                    .findAny().orElseThrow(() -> new TypingAssertionFailure("Could not find end of context casts: " + s.toString()));
             // Type variable for the new context
             TypeVar newPc = sTvars.forContext(s);
             r = generateResult(sTvars, g, postdoms, startOfCast, previous, signatures, fields, newPc, visited, Optional.of(endOfCast));
 
             // add constraints: oldPc <= source, dest <= newPc, dest <= {effects}
+            Constraint<Level> srcConstraint = Constraints.le(variable(topLevelContext), literal(cxCast.sourceType));
+            Constraint<Level> destConstraint = Constraints.le(literal(cxCast.destType), variable(newPc));
             ConstraintSet<Level> additionalConstraints = csets.fromCollection(Stream.concat(
-                    Stream.of(Constraints.le(variable(topLevelContext), literal(cxCast.sourceType)),
-                            Constraints.le(literal(cxCast.destType), variable(newPc))),
+                    Stream.of(srcConstraint, destConstraint),
                     r.getEffects().stream().map(e -> Constraints.le(literal(cxCast.destType), literal(e)))
             ).collect(Collectors.toList()));
+
+            Map<Constraint<Level>, TypeVarTags.TypeVarTag> tagMap = new HashMap<>();
+            additionalConstraints.stream().forEach(c -> tagMap.put(c, new TypeVarTags.CxCast(new CastsFromMapping.Conversion<Level>(cxCast.sourceType, cxCast.destType))));
+
             // modify effects: remove dest and add source
             Set<TypeDomain.Type<Level>> newEffects = r.getEffects().stream().collect(toSet());
             // TODO: why not a factory method?
-            return new BodyTypingResult<Level>(r.getConstraints().add(additionalConstraints), makeEffects(newEffects), r.getFinalEnv(), r.getTags());
+            return new BodyTypingResult<Level>(r.getConstraints().add(additionalConstraints), makeEffects(newEffects), r.getFinalEnv(), r.getTags().addAll(TagMap.of(tagMap)));
         } else if (successors.size() <= 1) {
             // a basic (non-branching) unit in a straight-line sequence
 
@@ -215,7 +221,7 @@ public class MethodBodyTyping<Level> {
                 }
                 Set<Pair<TypeVar, Unit>> newVisited = Stream.concat(Stream.of(Pair.of(newPc, uBranch)), visited.stream()).collect(toSet());
                 BodyTypingResult<Level> branchResult = generateResult(sTvars, g, postdoms, (Stmt) uBranch, conditionResult, signatures, fields, newPc, newVisited, end);
-                r = BodyTypingResult.join(r, branchResult, csets, sTvars);
+                r = BodyTypingResult.join(r, branchResult, csets, sTvars, s.toString());
             }
             // continue after join point, if there is any
             if (end.isPresent()) {

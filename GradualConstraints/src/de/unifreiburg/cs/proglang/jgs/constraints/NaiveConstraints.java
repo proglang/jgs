@@ -1,7 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import de.unifreiburg.cs.proglang.jgs.typing.CompatibilityConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
+import de.unifreiburg.cs.proglang.jgs.typing.FlowConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
 
 import java.util.*;
@@ -52,7 +54,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public ConstraintSet<Level> add(ConstraintSet<Level> other) {
-        return this.add(other.stream().collect(Collectors.toList()));
+        return this.add(other.stream().collect(toList()));
     }
 
     @Override
@@ -206,19 +208,45 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         // First, find sources and sinks of illegal flows
         Set<Constraint<Level>> closed = NaiveConstraints.close(this.cs);
         List<Constraint<Level>> conflicts =
-                closed.stream().filter(c -> !c.isSatisfiable(types)).collect(Collectors.toList());
-        Stream<Type<Level>> sourceStream = conflicts.stream().map(c -> {
-            CType<Level> ct = c.getLhs();
-            if (!(ct.inspect() instanceof CTypeViews.Lit)) {
+                closed.stream().filter(c -> !c.isSatisfiable(types)).collect(toList());
+        conflicts.forEach(c -> {
+            Predicate<CType<Level>> isLit = ct -> ct.inspect() instanceof CTypeViews.Lit;
+            if (!(isLit.test(c.getLhs()) && isLit.test(c.getRhs()))) {
                 throw new IllegalStateException(
                         "Unexpected: conflicting constraint does not consist of literals:  "
                         + c.toString());
             }
+        });
+        List<Constraint<Level>> leConflicts =
+                conflicts.stream().filter(c -> c.kind.equals(Constraint.Kind.LE)).collect(toList());
+        List<Constraint<Level>> cmpConflicts =
+                conflicts.stream().filter(c -> c.kind.equals(Constraint.Kind.COMP)).collect(toList());
+        return Stream.<ConflictCause<Level>>concat(NaiveConstraints.findFlowConflict(closed, leConflicts, tags),
+                                            findCompatibilityConflicts(closed, cmpConflicts, tags)).collect(toList());
+    }
+
+    private static <Level> Stream<CompatibilityConflict<Level>> findCompatibilityConflicts(Collection<Constraint<Level>> closed, List<Constraint<Level>> cmpConflicts, TagMap<Level> tags) {
+        return cmpConflicts.stream().flatMap(confl -> {
+            Type<Level> tLeft = ((CTypeViews.Lit<Level>)(confl.getLhs().inspect())).t();
+            Type<Level> tRight = ((CTypeViews.Lit<Level>)(confl.getRhs().inspect())).t();
+            return tags.getJavaMap().entrySet().stream().filter(kv -> {
+                Constraint<Level> candC = kv.getKey();
+                Predicate<CType<Level>> testLe = conflT -> conflT.equals(candC.getLhs()) || closed.stream().anyMatch(c -> conflT.equals(c.getLhs()) && c.getRhs().equals(candC.getLhs()));
+                boolean leLeft = testLe.test(confl.getLhs());
+                boolean leRight = testLe.test(confl.getRhs());
+                return leLeft && leRight;
+            }).map(kv -> new CompatibilityConflict<Level>(tLeft, tRight, kv.getValue()));
+        });
+    }
+
+    private static <Level> Stream<FlowConflict<Level>> findFlowConflict(Collection<Constraint<Level>> closed, List<Constraint<Level>> leConflicts, TagMap<Level> tags) {
+        Stream<Type<Level>> sourceStream = leConflicts.stream().map(c -> {
+            CType<Level> ct = c.getLhs();
             CTypeViews.Lit<Level> lit = (CTypeViews.Lit<Level>) ct.inspect();
             return lit.t();
         });
-        List<Type<Level>> sources = sourceStream.collect(Collectors.toList());
-        Stream<Type<Level>> sinkStream = conflicts.stream().map(c -> {
+        List<Type<Level>> sources = sourceStream.collect(toList());
+        Stream<Type<Level>> sinkStream = leConflicts.stream().map(c -> {
             CType<Level> ct = c.getRhs();
             if (!(ct.inspect() instanceof CTypeViews.Lit)) {
                 throw new IllegalStateException(
@@ -238,11 +266,11 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                     // TODO: some lists are only used once; still I get an IllegalStateException when I would use streams instead... but only when running the jar
                     List<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
                             sourceTags = tags.getJavaMap().entrySet().stream()
-                                             .filter(kv -> kv.getKey().getLhs().equals(literal(t))).collect(Collectors.toList());
+                                             .filter(kv -> kv.getKey().getLhs().equals(literal(t))).collect(toList());
                     return sinks.stream().flatMap(tSink -> {
                         List<Map.Entry<Constraint<Level>, TypeVarTags.TypeVarTag>>
                                 sinkTags = tags.getJavaMap().entrySet().stream()
-                                               .filter(kv -> kv.getKey().getRhs().equals(literal(tSink))).collect(Collectors.toList());
+                                               .filter(kv -> kv.getKey().getRhs().equals(literal(tSink))).collect(toList());
                         return sourceTags.stream().flatMap(
                                 srcT -> {
                                     return sinkTags
@@ -259,10 +287,10 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
                                                                || closed.stream().anyMatch(clC -> srcRhs.equals(clC.getLhs())
                                                                                                   && snkLhs.equals(clC.getRhs()));
                                                     })
-                                            .map(relevantSnk -> new ConflictCause<Level>(t, srcT.getValue(), tSink, relevantSnk.getValue()));
+                                            .map(relevantSnk -> new FlowConflict<Level>(t, srcT.getValue(), tSink, relevantSnk.getValue()));
                                 });
                     });
-                }).collect(Collectors.toList());
+                });
     }
 
     @Override

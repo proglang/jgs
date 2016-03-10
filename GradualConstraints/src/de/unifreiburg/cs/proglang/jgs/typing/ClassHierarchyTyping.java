@@ -88,18 +88,12 @@ public class ClassHierarchyTyping {
             Stream<SootMethod> methodStream) {
         Stream<SubtypeError<Level>> errors = methodStream.flatMap(m1 -> {
 
-            Signature<Level> sig1 = signatures.get(m1).orElseThrow(
-                            () -> new IllegalArgumentException("No signature found for method "
-                                                               + m1
-                                                               + "\n "
-                                                               + signatures.toString()));
-
             Stream<SootMethod> overridden = Supertypes.findOverridden(m1);
             return overridden.flatMap(m2 -> {
 
-                Signature<Level> sig2 = signatures.get(m2).orElseThrow(
-                        () -> new IllegalArgumentException("No signature found for method "
-                                                           + m2));
+                String errorMsgTail = "when checking that " + m1.toString() + " refines " + m2.toString();
+                Signature<Level> sig1 = signatures.get(m1).orElseGet(() -> {throw new TypingAssertionFailure(String.format("No signature found for %s %s", m1.toString(), errorMsgTail));});
+                Signature<Level> sig2 = signatures.get(m1).orElseGet(() -> {throw new TypingAssertionFailure(String.format("No signature found for %s %s", m1.toString(), errorMsgTail));});
 
                 Pair<RefinementCheckResult<Level>, EffectRefinementResult<Level>> result =
                         sig1.refines(csets, types, sig2);

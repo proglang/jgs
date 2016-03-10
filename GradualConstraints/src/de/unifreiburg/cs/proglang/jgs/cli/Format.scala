@@ -14,13 +14,15 @@ import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult
-import de.unifreiburg.cs.proglang.jgs.typing.{ConflictCause, MethodTyping, ClassHierarchyTyping}
+import de.unifreiburg.cs.proglang.jgs.typing._
 import org.kiama.output.PrettyPrinter._
 
 import scala.collection.JavaConverters._
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain._
+
+import scala.util.{Success, Failure, Try}
 
 object Format {
 
@@ -54,6 +56,10 @@ object Format {
     }
   }
 
+  def typingException[Level](e: Throwable) : Doc = {
+    "Exceptional error " <> nest(linebreak <> e.getMessage, 2)
+  }
+
   def methodTypingResult[Level](result: MethodTyping.Result[Level]): Doc = {
     if (result.isSuccess) {
       "Success" <+> (if (result.signatureHasSolution) {
@@ -76,7 +82,7 @@ object Format {
               "Unable to find succinct causes, sorry. Complete constraints of body:" <>
               nest(linebreak<> vcat(copyToList(result.completeBodyConstraints.stream()).map(constraint(_))), 2)
             } else {
-              hcat(mcauses.asScala.toList.map(conflictCause(_)))
+              vcat(mcauses.asScala.toList.map(conflictCause(_)))
             }
           }
           List("Unsatisfiable constraints in method body: " <>
@@ -100,24 +106,37 @@ object Format {
   }
 
   def conflictCause[Level](c : ConflictCause[Level]) : Doc = {
-    val src : Doc = c.lowerTag match {
-      case Null() => "unknown source"
-      case Symbol(symbol) => "Parameter" <+> symbol.toString
-      case Field(field) => "Field" <+> field.toString
-      case Cast(conv) => "destination of a" <+> parens(conversion(conv))<+> "value cast"
-      case MethodReturn(method) => "Call to"<+>method.toString
-      case MethodArg(method, pos) => s"Argument ${pos} of method ${method}"
+    c match {
+      case c : FlowConflict[Level] => flowConflictCause(c)
+      case c : CompatibilityConflict[Level] => compatibilityConflictCause(c)
     }
-    val dest : Doc = c.upperTag match {
-      case Null() => "unknown destination"
-      case Symbol(symbol) => "return type"
-      case Field(field) => "field" <+> field.toString
-      case Cast(conv) => "a" <+> braces(conversion(conv)) <+> "value cast"
-      case MethodReturn(method) => "Call to"<+>method.toString
-      case MethodArg(method, pos) => s"Argument ${pos} of method ${method}"
-    }
+  }
+
+  def compatibilityConflictCause[Level](c : CompatibilityConflict[Level]) : Doc = {
+    val tag = conflictDest(c.upperTag)
+    sectype(c.type1) <+> "and" <+> sectype(c.type2) <+> "both flow into" <+> tag
+  }
+
+  def flowConflictCause[Level](c : FlowConflict[Level]) : Doc = {
+    val src : Doc = conflictSource(c.lowerTag)
+    val dest : Doc = conflictDest(c.upperTag)
     src <+> parens(sectype(c.lowerType)) <+> "flows into" <+> dest <+> parens(sectype(c.upperLevel))
   }
+
+  def conflictSource(tag: TypeVarTag) : Doc = conflictTag(tag)
+  def conflictDest(tag : TypeVarTag) : Doc = conflictTag(tag)
+  def conflictTag(tag : TypeVarTag) : Doc = tag match {
+    case Symbol(symbol) => "parameter" <+> symbol.toString
+    case Field(field) => "field" <+> field.toString
+    case Cast(conv) => "destination of a" <+> braces(conversion(conv))<+> "value cast"
+    case CxCast(conv) => braces(conversion(conv)) <+> "context cast"
+    case MethodReturn(method) => "call to"<+>method.toString
+    case MethodArg(method, pos) => s"argument ${pos} of method ${method}"
+    case Join(condition) => {
+      raw"""join point of condition "${condition}""""
+    }
+  }
+
 
   def conversion[Level](c : Conversion[Level]) : Doc = {
     sectype(c.source) <+> "~>" <+> sectype(c.dest)

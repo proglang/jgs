@@ -4,6 +4,7 @@ import com.sun.istack.internal.NotNull;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
+import soot.jimple.Expr;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,8 +15,8 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEf
 import static java.util.Collections.emptyMap;
 
 /**
- * The result of typing a statement: a set of constraints, an
- * environment that holds _after_ execution of the statement, and an effect.
+ * The result of typing a statement: a set of constraints, an environment that
+ * holds _after_ execution of the statement, and an effect.
  *
  * @author fennell
  */
@@ -41,12 +42,16 @@ public class BodyTypingResult<LevelT> {
     }
 
 
-
-    public static <Level> BodyTypingResult<Level> join(BodyTypingResult<Level> r1, BodyTypingResult<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars) {
-        Environment.JoinResult<Level> envJoin = Environment.join(tvars, r1.getFinalEnv(),r2.getFinalEnv());
-        List<Constraint<Level>> csList = envJoin.constraints.collect(Collectors.toList());
-        ConstraintSet<Level> cs = r1.constraints.add(r2.constraints).add(csets.fromCollection(csList));
-        return new BodyTypingResult<>(cs, r1.effects.add(r2.effects), envJoin.env, r1.tags.addAll(r2.tags)) ;
+    public static <Level> BodyTypingResult<Level> join(BodyTypingResult<Level> r1, BodyTypingResult<Level> r2, ConstraintSetFactory<Level> csets, TypeVars tvars, String condition) {
+        Environment.JoinResult<Level> envJoin =
+                Environment.join(tvars, r1.getFinalEnv(), r2.getFinalEnv());
+        List<Constraint<Level>> csList =
+                envJoin.constraints.collect(Collectors.toList());
+        TagMap.Builder<Level> joinTags = TagMap.builder();
+        csList.forEach(c -> joinTags.add(c, new TypeVarTags.Join(condition)));
+        ConstraintSet<Level> cs =
+                r1.constraints.add(r2.constraints).add(csets.fromCollection(csList));
+        return new BodyTypingResult<>(cs, r1.effects.add(r2.effects), envJoin.env, r1.tags.addAll(r2.tags).addAll(joinTags.build()));
     }
 
     public static <Level> BodyTypingResult<Level> addConstraints(BodyTypingResult<Level> r, ConstraintSet<Level> constraints) {
@@ -101,8 +106,11 @@ public class BodyTypingResult<LevelT> {
 
         BodyTypingResult<?> result = (BodyTypingResult<?>) o;
 
-        if (constraints != null ? !constraints.equals(result.constraints) : result.constraints != null) return false;
-        if (effects != null ? !effects.equals(result.effects) : result.effects != null) return false;
+        if (constraints != null ? !constraints.equals(result.constraints) :
+            result.constraints != null) return false;
+        if (effects != null ? !effects.equals(result.effects) : result.effects
+                                                                != null)
+            return false;
         return !(env != null ? !env.equals(result.env) : result.env != null);
 
     }
@@ -118,9 +126,9 @@ public class BodyTypingResult<LevelT> {
     @Override
     public String toString() {
         return "BodyTypingResult{" +
-                "constraints=" + constraints +
-                ", effects=" + effects +
-                ", env=" + env +
-                '}';
+               "constraints=" + constraints +
+               ", effects=" + effects +
+               ", env=" + env +
+               '}';
     }
 }
