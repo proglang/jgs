@@ -21,13 +21,15 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * Check that all overriding methods are subsumed by their "super"-implementations
+ * Check that all overriding methods are subsumed by their
+ * "super"-implementations
  */
 public class ClassHierarchyTyping {
 
     /**
-     * Result of a class hierarchy check. If the error is present, then it also contains a counterexample, i.e.
-     * error.counterExample.isPresent() returns true.
+     * Result of a class hierarchy check. If the error is present, then it also
+     * contains a counterexample, i.e. error.counterExample.isPresent() returns
+     * true.
      */
     public static class Result<Level> {
 
@@ -60,7 +62,8 @@ public class ClassHierarchyTyping {
             this.subtypeMethod = subtypeMethod;
             this.superTypeMethod = superTypeMethod;
             this.effectCheckResult = effectCheckResult;
-            if (!constraintsCheckResult.isSuccess() && !effectCheckResult.isSuccess()) {
+            if (constraintsCheckResult.isSuccess()
+                && effectCheckResult.isSuccess()) {
                 throw new IllegalArgumentException("Subtyping check is successful");
             }
             this.constraintsCheckResult = constraintsCheckResult;
@@ -76,10 +79,42 @@ public class ClassHierarchyTyping {
         }
     }
 
+    public static <Level> Result<Level> checkTwoMethods(
+            ConstraintSetFactory<Level> csets,
+            TypeDomain<Level> types,
+            SignatureTable<Level> signatures,
+            SootMethod subMethod, SootMethod superMethod) {
+
+        String errorMsgTail =
+                "when checking that " + subMethod.toString() + " refines "
+                + superMethod.toString();
+        Signature<Level> sig1 = signatures.get(subMethod).orElseGet(() -> {
+            throw new TypingAssertionFailure(String.format("No signature found for %s %s", subMethod.toString(), errorMsgTail));
+        });
+        Signature<Level> sig2 = signatures.get(superMethod).orElseGet(() -> {
+            throw new TypingAssertionFailure(String.format("No signature found for %s %s", superMethod.toString(), errorMsgTail));
+        });
+
+        Pair<RefinementCheckResult<Level>, EffectRefinementResult<Level>>
+                result =
+                sig1.refines(csets, types, sig2);
+        if (result.getLeft().isSuccess()
+            && result.getRight().isSuccess()) {
+            return new Result<Level>(Optional.empty());
+        } else {
+            return new Result<Level>(Optional.of(new SubtypeError<Level>(subMethod,
+                                                     superMethod,
+                                                     result.getLeft(),
+                                                     result.getRight())));
+        }
+    }
+
     /**
-     * Check if the overriding methods of {@code methodStream} refine their super-implementations.
+     * Check if the overriding methods of {@code methodStream} refine their
+     * super-implementations.
      * <p>
-     * The signature table <code>Signatures</code> has to include a signature for all methods.
+     * The signature table <code>Signatures</code> has to include a signature
+     * for all methods.
      */
     public static <Level> Result<Level> checkMethods(
             ConstraintSetFactory<Level> csets,
@@ -90,21 +125,7 @@ public class ClassHierarchyTyping {
 
             Stream<SootMethod> overridden = Supertypes.findOverridden(m1);
             return overridden.flatMap(m2 -> {
-
-                String errorMsgTail = "when checking that " + m1.toString() + " refines " + m2.toString();
-                Signature<Level> sig1 = signatures.get(m1).orElseGet(() -> {throw new TypingAssertionFailure(String.format("No signature found for %s %s", m1.toString(), errorMsgTail));});
-                Signature<Level> sig2 = signatures.get(m1).orElseGet(() -> {throw new TypingAssertionFailure(String.format("No signature found for %s %s", m1.toString(), errorMsgTail));});
-
-                Pair<RefinementCheckResult<Level>, EffectRefinementResult<Level>> result =
-                        sig1.refines(csets, types, sig2);
-                if (result.getLeft().isSuccess() && result.getRight().isSuccess()) {
-                    return Stream.empty();
-                } else {
-                    return Stream.of(new SubtypeError<Level>(m1,
-                                                             m2,
-                                                             result.getLeft(),
-                                                             result.getRight()));
-                }
+                return checkTwoMethods(csets, types, signatures, m1, m2).error.map(Stream::of).orElse(Stream.empty());
             });
         });
         return new Result<>(errors.findAny());
@@ -116,8 +137,8 @@ public class ClassHierarchyTyping {
             TypeDomain<Level> types,
             SignatureTable<Level> signatures,
             Stream<SootClass> classes) {
-       return checkMethods(csets, types, signatures,
-                           classes.flatMap(c -> c.getMethods().stream()));
+        return checkMethods(csets, types, signatures,
+                            classes.flatMap(c -> c.getMethods().stream()));
 
     }
 

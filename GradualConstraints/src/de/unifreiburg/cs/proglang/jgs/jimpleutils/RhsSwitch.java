@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
@@ -37,12 +38,12 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      * All kinds of method calls.
      *
      * @param m       The method which is called.
-     * @param args    The arguments for the method call, including
+     * @param args    The arguments for the method call. empty arguments are constant (for which we do not care)
      * @param thisPtr variable of the method call receiver
      */
     public abstract void caseCall(SootMethod m,
                                   Optional<Var<?>> thisPtr,
-                                  List<Var<?>> args);
+                                  List<Optional<Var<?>>> args);
 
     /**
      * Read operation on fields.
@@ -117,9 +118,19 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     private void caseCall(InvokeExpr m, Optional<Value> baseValue) {
         Optional<Var<?>> base =
                 baseValue.flatMap(v -> Var.getAll(v).findFirst());
-        List<Var<?>> args =
+        Stream<Optional<Var<?>>> args =
+                m.getArgs().stream().map(v -> {
+                    List<Var<?>> vars = Var.getAll(v).collect(toList());
+                    if (vars.isEmpty()) {
+                        return Optional.empty();
+                    } else if (vars.size() == 1) {
+                        return Optional.<Var<?>>of(vars.get(0));
+                    } else {
+                        throw new RuntimeException("Unexpected: multiple variables contained in a call argumnent");
+                    }
+                });
                 Var.getAllFromValues(m.getArgs()).collect(toList());
-        caseCall(m.getMethod(), base, args);
+        caseCall(m.getMethod(), base, args.collect(Collectors.toList()));
     }
     @Override public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
         caseCall(v, Optional.of(v.getBase()));

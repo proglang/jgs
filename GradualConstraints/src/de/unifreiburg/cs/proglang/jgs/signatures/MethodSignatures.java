@@ -291,7 +291,7 @@ public class MethodSignatures<Level> {
             this.sigSet = sigSet.collect(toSet());
         }
 
-        public Stream<Constraint<Level>> toTypingConstraints(Map<Symbol<Level>, TypeVar> mapping) {
+        public Stream<Constraint<Level>> toTypingConstraints(Map<Symbol<Level>, CType<Level>> mapping) {
             return this.sigSet.stream().map(c -> c.toTypingConstraint(mapping));
         }
 
@@ -345,7 +345,7 @@ public class MethodSignatures<Level> {
             this.kind = kind;
         }
 
-        public Constraint<Level> toTypingConstraint(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        public Constraint<Level> toTypingConstraint(Map<Symbol<Level>, CType<Level>> tvarMapping) {
             return Constraints.make(kind, lhs.toCType(tvarMapping),
                                     rhs.toCType(tvarMapping));
         }

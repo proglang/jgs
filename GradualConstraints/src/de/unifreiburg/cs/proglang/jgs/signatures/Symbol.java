@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
@@ -17,6 +18,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -51,9 +53,10 @@ public abstract class Symbol<Level> {
     /**
      * Get an identity mapping for signatures
      */
-    public static <Level> Map<Symbol<Level>, TypeVar> identityMapping(TypeVars tvars, Set<Symbol<Level>> sig) {
-        return sig.stream().flatMap(s -> s.asTypeVar(tvars).map(tv -> Stream.of(Pair.of(s, tv))).orElse(Stream.empty()))
-                .collect(toMap(Pair::getKey, Pair::getValue));
+    public static <Level> Map<Symbol<Level>, CType<Level>> identityMapping(TypeVars tvars, Set<Symbol<Level>> sig) {
+        Stream<Pair<Symbol<Level>, CType<Level>>> assocs =
+                sig.stream().flatMap(s -> s.asTypeVar(tvars).map(tv -> Stream.of(Pair.of(s, CTypes.<Level>variable(tv)))).orElse(Stream.empty()));
+        return assocs.collect(toMap(Pair::getKey, Pair::getValue));
     }
 
     // TODO-performance: make a singleton out of this
@@ -68,7 +71,7 @@ public abstract class Symbol<Level> {
     @Override
     public abstract String toString();
 
-    public abstract CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping);
+    public abstract CType<Level> toCType(Map<Symbol<Level>, CType<Level>> tvarMapping);
 
     protected abstract Optional<TypeVar> asTypeVar(TypeVars tvars);
 
@@ -86,9 +89,8 @@ public abstract class Symbol<Level> {
         }
 
         @Override
-        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        public CType<Level> toCType(Map<Symbol<Level>, CType<Level>> tvarMapping) {
             return Optional.ofNullable(tvarMapping.get(this))
-                    .map(CTypes::<Level>variable)
                     .orElseThrow(() -> new NoSuchElementException(String.format(
                             "No mapping for %s: %s",
                             this,
@@ -128,9 +130,8 @@ public abstract class Symbol<Level> {
         }
 
         @Override
-        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        public CType<Level> toCType(Map<Symbol<Level>, CType<Level>> tvarMapping) {
             return Optional.ofNullable(tvarMapping.get(this))
-                    .map(CTypes::<Level>variable)
                     .orElseThrow(() -> new NoSuchElementException(String.format(
                             "No mapping for %s: %s",
                             this.toString(),
@@ -169,7 +170,7 @@ public abstract class Symbol<Level> {
         }
 
         @Override
-        public CTypes.CType<Level> toCType(Map<Symbol<Level>, TypeVar> tvarMapping) {
+        public CType<Level> toCType(Map<Symbol<Level>, CType<Level>> tvarMapping) {
             return CTypes.literal(this.me);
         }
 

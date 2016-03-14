@@ -21,6 +21,8 @@ import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import soot.*;
 import soot.jimple.*;
+import soot.toolkits.scalar.LocalDefs;
+import sun.security.jca.GetInstance;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
@@ -43,22 +45,28 @@ public class BasicStatementTyping<LevelT> {
     final public Constraints<LevelT> cstrs;
     final public TypeVars.MethodTypeVars tvars;
 
+
+    final public SootMethod currentMethod;
+
     public BasicStatementTyping(ConstraintSetFactory<LevelT> csets,
                                 TypeVars.MethodTypeVars tvars,
-                                Constraints<LevelT> cstrs) {
+                                Constraints<LevelT> cstrs,
+                                SootMethod currentMethod) {
         super();
         this.csets = csets;
         this.tvars = tvars;
         this.cstrs = cstrs;
+        this.currentMethod = currentMethod;
     }
 
     public BodyTypingResult<LevelT> generate(Stmt s,
+                                             LocalDefs localDefs,
                                              Environment env,
                                              Set<TypeVar> pc,
                                              SignatureTable<LevelT> signatures,
                                              FieldTable<LevelT> fields,
                                              Casts<LevelT> casts) throws TypingException {
-        Gen g = new Gen(env, pc, signatures, fields, casts);
+        Gen g = new Gen(env, pc, signatures, fields, casts, localDefs);
         s.apply(g);
         // abort on any errors
         if (!g.getErrorMsg().isEmpty()) {
@@ -92,6 +100,7 @@ public class BasicStatementTyping<LevelT> {
         private final SignatureTable<LevelT> signatures;
         private final FieldTable<LevelT> fields;
         private final Casts<LevelT> casts;
+        private final LocalDefs localDefs;
 
         public List<String> getErrorMsg() {
             return unmodifiableList(errorMsg);
@@ -102,7 +111,7 @@ public class BasicStatementTyping<LevelT> {
         public Gen(Environment env,
                    Set<TypeVar> pc,
                    SignatureTable<LevelT> signatures,
-                   FieldTable<LevelT> fields, Casts<LevelT> casts) {
+                   FieldTable<LevelT> fields, Casts<LevelT> casts, LocalDefs localDefs) {
             super();
             this.env = env;
             this.pcs = pc;
@@ -110,6 +119,7 @@ public class BasicStatementTyping<LevelT> {
             this.fields = fields;
             this.casts = casts;
             this.errorMsg = new ArrayList<>();
+            this.localDefs = localDefs;
         }
 
         private BodyTypingResult<LevelT> result;
@@ -124,7 +134,7 @@ public class BasicStatementTyping<LevelT> {
                 @Override
                 public void caseCall(SootMethod m,
                                      Optional<Var<?>> thisPtr,
-                                     List<Var<?>> args) {
+                                     List<Optional<Var<?>>> args) {
                     setResult(getSignature(m).effects);
 
                 }
@@ -215,12 +225,12 @@ public class BasicStatementTyping<LevelT> {
             @Override
             public void caseCall(SootMethod m,
                                  Optional<Var<?>> thisPtr,
-                                 List<Var<?>> args) {
+                                 List<Optional<Var<?>>> args) {
                 // check parameter count
                 int argCount = args.size();
                 int paramterCount = m.getParameterCount();
                 if (argCount != paramterCount) {
-                    throw new TypingAssertionFailure(String.format(
+                    throw new RuntimeException(String.format(
                             "Argument count (%d) does not "
                             + "equal parameter count (%d): %s",
                             argCount,
@@ -232,16 +242,21 @@ public class BasicStatementTyping<LevelT> {
                 Signature<LevelT> sig = getSignature(m);
 
                 // - [x] instantiate the signature with the parameters and destination variable and add corresponding constraints
-                Map<Symbol<LevelT>, TypeVar> instantiation =
+                Map<Symbol<LevelT>, CType<LevelT>> instantiation =
                         new HashMap<>();
-                List<TypeVar> argTypes =
-                        args.stream().map(env::get).collect(toList());
+                List<Optional<TypeVar>> argTypes =
+                        args.stream().map(mv -> mv.map(env::get)).collect(toList());
                 IntStream.range(0, argCount).forEach(i -> {
-                    TypeVar at = argTypes.get(i);
-                    instantiation.put(Symbol.param(i), at);
+                    Optional<TypeVar> mat = argTypes.get(i);
+                    mat.ifPresent(at -> {
+                        instantiation.put(Symbol.param(i), variable(at));
+                    });
+                    if (!mat.isPresent()) {
+                        instantiation.put(Symbol.param(i), literal(cstrs.types.pub()));
+                    }
                 }); // <- params
 
-                instantiation.put(Symbol.ret(), destTVar); // <- return
+                instantiation.put(Symbol.ret(), variable(destTVar)); // <- return
                 Map<Constraint<LevelT>, TypeVarTag> tagMap = new HashMap<>();
                 sig.constraints.stream().forEach(sc -> {
                                                      Constraint<LevelT> c = sc.toTypingConstraint(instantiation);
@@ -364,7 +379,8 @@ public class BasicStatementTyping<LevelT> {
         }
 
         // TODO: shares quite a lot of code with caseLocalDefinition
-        private void caseFieldDefinition(SootField field, DefinitionStmt stmt) {
+        private void caseFieldDefinition(FieldRef fieldRef, DefinitionStmt stmt) {
+            SootField field = fieldRef.getField();
 
             //constraints and errors
             Stream.Builder<Constraint<LevelT>> constraints = Stream.builder();
@@ -400,8 +416,46 @@ public class BasicStatementTyping<LevelT> {
             pcs.stream().forEach(v -> constraints.add(leDest.apply(CTypes.variable(v))));
 
             // it remains to define the effect
-            Effects<LevelT> effects =
-                    MethodSignatures.<LevelT>emptyEffect().add(fieldType);
+            Effects<LevelT> effects;
+            if (
+                // if in a constructor and updating a "this" field, we do not have an effect
+                    currentMethod.getName().equals("<init>") && fieldRef instanceof InstanceFieldRef
+                    ) {
+
+                Value base = ((InstanceFieldRef) fieldRef).getBase();
+                if (base instanceof ThisRef) {
+                    effects = emptyEffect();
+                } else if (base instanceof Local){
+                    List<Unit> baseDefs = localDefs.getDefsOfAt((Local) base, stmt);
+                    if (baseDefs.size() == 1) {
+                        Stmt baseDef = (Stmt)baseDefs.get(0);
+                        if (baseDef instanceof IdentityStmt && ((IdentityStmt)baseDef).getRightOp() instanceof ThisRef) {
+                           effects = emptyEffect();
+                        } else {
+                            effects =
+                                    MethodSignatures.<LevelT>emptyEffect().add(fieldType);
+                        }
+                    } else {
+                        effects =
+                                MethodSignatures.<LevelT>emptyEffect().add(fieldType);
+                    }
+                } else {
+                    // regular case
+                    effects = MethodSignatures.<LevelT>emptyEffect().add(fieldType);
+                }
+
+
+            } else if(
+                //  or we are in a static initializer that writes to a static field of it's class
+                    currentMethod.getName().equals("<clinit>")
+                    && fieldRef instanceof StaticFieldRef
+                    && field.getDeclaringClass().equals(currentMethod.getDeclaringClass())
+                    ) {
+                effects = MethodSignatures.<LevelT>emptyEffect();
+            } else {
+                // regular case
+                effects = MethodSignatures.<LevelT>emptyEffect().add(fieldType);
+            }
 
             this.result =
                     makeResult(csets.fromCollection(constraints.build().collect(toList())), env, effects, tags);
@@ -413,7 +467,7 @@ public class BasicStatementTyping<LevelT> {
             if (lhs instanceof Local) {
                 caseLocalDefinition(((Local) lhs), stmt);
             } else if (lhs instanceof FieldRef) {
-                caseFieldDefinition(((FieldRef) lhs).getField(), stmt);
+                caseFieldDefinition(((FieldRef) lhs), stmt);
             } else {
                 throw new TypingAssertionFailure(
                         "Extracting write locations for statement "

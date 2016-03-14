@@ -48,6 +48,9 @@ public class Supertypes {
      * @return true if {@code m1} overrides {@code m2}.
      */
     public static boolean overrides(SootMethod m1, SootMethod m2) {
+        // ignore static methods and constructors
+        if (m1.isStatic() || m2.isStatic()) { return false; }
+        if (m1.getName().equals("<init>") || m2.getName().equals("<init>")) { return false; }
         if (m1.getName().equals(m2.getName())
                 && subTypeOf(m1.getDeclaringClass(), m2.getDeclaringClass())
                 && m1.getParameterTypes().equals(m2.getParameterTypes())) {

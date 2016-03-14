@@ -13,6 +13,9 @@ import soot.jimple.*;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.DominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
+import soot.toolkits.graph.UnitGraph;
+import soot.toolkits.scalar.SimpleLiveLocals;
+import soot.toolkits.scalar.SmartLocalDefs;
 
 import java.util.*;
 import java.util.function.Function;
@@ -424,7 +427,8 @@ public class MethodBodyTypingTest {
     }
 
     private BodyTypingResult<Level> analyze(DirectedGraph<Unit> g) throws TypingException {
-        return mbTyping.generateResult((Stmt)g.getHeads().get(0), g, pc, code.init);
+        UnitGraph ug = (UnitGraph)g;
+        return mbTyping.generateResult((Stmt)g.getHeads().get(0), g, pc, code.init, new SmartLocalDefs(ug, new SimpleLiveLocals(ug)));
     }
 
     private void assertEquivalentConstraints(DirectedGraph<Unit> g, Function<BodyTypingResult<Level>, ConstraintSet<Level>> getExpected, Function<BodyTypingResult<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypingException {

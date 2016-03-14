@@ -82,7 +82,7 @@ object Format {
               "Unable to find succinct causes, sorry. Complete constraints of body:" <>
               nest(linebreak<> vcat(copyToList(result.completeBodyConstraints.stream()).map(constraint(_))), 2)
             } else {
-              vcat(mcauses.asScala.toList.map(conflictCause(_)))
+              vcat(mcauses.asScala.toList.distinct.map(conflictCause))
             }
           }
           List("Unsatisfiable constraints in method body: " <>

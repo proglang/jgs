@@ -218,16 +218,19 @@ public class TestDomain {
         return new NaiveConstraints<>(types, cs);
     }
 
+    public static SootMethod dummyMethod = new SootMethod("notAConstructor", Collections.emptyList(), VoidType.v());
+
     ///////
     // BasicStatementTyping
     public static BasicStatementTyping<Level> mkTyping(TypeVars.MethodTypeVars tvars) {
-        return new BasicStatementTyping<>(new NaiveConstraintsFactory<>(types), tvars, cstrs);
+        // TODO do not pass a method to Typings ... pass a more sensible structure that contains exactly the required info
+        return new BasicStatementTyping<>(new NaiveConstraintsFactory<>(types), tvars, cstrs, dummyMethod);
     }
 
     ///////
     // Method body typing
-    public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars, SignatureTable<Level> signatures, FieldTable fields) {
-        return new MethodBodyTyping<>(tvars, new NaiveConstraintsFactory<>(types), cstrs, casts, signatures, fields);
+    public static MethodBodyTyping<Level> mkMbTyping(Environment env, TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields) {
+        return new MethodBodyTyping<>(dummyMethod, tvars, new NaiveConstraintsFactory<>(types), cstrs, casts, signatures, fields);
     }
     /////
     // JUnit matcher

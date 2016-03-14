@@ -9,12 +9,13 @@ import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.Body;
+import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.*;
-import soot.toolkits.graph.BriefUnitGraph;
-import soot.toolkits.graph.DirectedGraph;
-import soot.toolkits.graph.DominatorsFinder;
-import soot.toolkits.graph.MHGPostDominatorsFinder;
+import soot.toolkits.graph.*;
+import soot.toolkits.scalar.LocalDefs;
+import soot.toolkits.scalar.SimpleLiveLocals;
+import soot.toolkits.scalar.SmartLocalDefs;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
@@ -37,6 +38,7 @@ import static java.util.stream.Collectors.toSet;
  */
 public class MethodBodyTyping<Level> {
 
+    final private SootMethod method;
     final private Casts<Level> casts;
     final private ConstraintSetFactory<Level> csets;
     final private Constraints<Level> cstrs;
@@ -52,7 +54,8 @@ public class MethodBodyTyping<Level> {
      * @param signatures
      * @param fields
      */
-    public MethodBodyTyping(TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts, SignatureTable<Level> signatures, FieldTable<Level> fields) {
+    public MethodBodyTyping(SootMethod method, TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts, SignatureTable<Level> signatures, FieldTable<Level> fields) {
+        this.method = method;
         this.csets = csets;
         this.casts = casts;
         this.cstrs = cstrs;
@@ -94,7 +97,8 @@ public class MethodBodyTyping<Level> {
 
 
     public BodyTypingResult<Level> generateResult(Body b, TypeVar pc, Environment env) throws TypingException {
-        DirectedGraph<Unit> g = new BriefUnitGraph(b);
+        UnitGraph g = new BriefUnitGraph(b);
+        LocalDefs localDefs = new SmartLocalDefs(g, new SimpleLiveLocals(g));
         try {
             Assumptions.validUnitGraph(g);
         } catch (Assumptions.Violation e) {
@@ -106,15 +110,15 @@ public class MethodBodyTyping<Level> {
             throw new TypingException("Unexpected empty body:" + b.toString());
         }
         Stmt entry = (Stmt)b.getUnits().getFirst();
-        return generateResult(entry, g, pc, env);
+        return generateResult(entry, g, pc, env, localDefs);
 
     }
-    public BodyTypingResult<Level> generateResult(Stmt s, DirectedGraph<Unit> g , TypeVar pc, Environment env) throws TypingException {
+    public BodyTypingResult<Level> generateResult(Stmt s, DirectedGraph<Unit> g , TypeVar pc, Environment env, LocalDefs localDefs) throws TypingException {
 
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
 
 
-        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g), g, postdoms, s, BodyTypingResult.fromEnv(csets, env), signatures, fields, pc, Collections.emptySet(), Optional.empty());
+        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g), g, localDefs, postdoms, s, BodyTypingResult.fromEnv(csets, env), signatures, fields, pc, Collections.emptySet(), Optional.empty());
 
         return r;
     }
@@ -122,6 +126,7 @@ public class MethodBodyTyping<Level> {
 
     private BodyTypingResult<Level> generateResult(MethodTypeVars sTvars,
                                                    DirectedGraph<Unit> g,
+                                                   LocalDefs localDefs,
                                                    DominatorsFinder<Unit> postdoms,
                                                    Stmt s,
                                                    // previous: the previous result
@@ -165,7 +170,7 @@ public class MethodBodyTyping<Level> {
                     .findAny().orElseThrow(() -> new TypingAssertionFailure("Could not find end of context casts: " + s.toString()));
             // Type variable for the new context
             TypeVar newPc = sTvars.forContext(s);
-            r = generateResult(sTvars, g, postdoms, startOfCast, previous, signatures, fields, newPc, visited, Optional.of(endOfCast));
+            r = generateResult(sTvars, g, localDefs, postdoms, startOfCast, previous, signatures, fields, newPc, visited, Optional.of(endOfCast));
 
             // add constraints: oldPc <= source, dest <= newPc, dest <= {effects}
             Constraint<Level> srcConstraint = Constraints.le(variable(topLevelContext), literal(cxCast.sourceType));
@@ -179,14 +184,15 @@ public class MethodBodyTyping<Level> {
             additionalConstraints.stream().forEach(c -> tagMap.put(c, new TypeVarTags.CxCast(new CastsFromMapping.Conversion<Level>(cxCast.sourceType, cxCast.destType))));
 
             // modify effects: remove dest and add source
-            Set<TypeDomain.Type<Level>> newEffects = r.getEffects().stream().collect(toSet());
+            Set<TypeDomain.Type<Level>> newEffects = new HashSet<>();
+            newEffects.add(cxCast.sourceType);
             // TODO: why not a factory method?
             return new BodyTypingResult<Level>(r.getConstraints().add(additionalConstraints), makeEffects(newEffects), r.getFinalEnv(), r.getTags().addAll(TagMap.of(tagMap)));
         } else if (successors.size() <= 1) {
             // a basic (non-branching) unit in a straight-line sequence
 
-            BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, sTvars, cstrs);
-            BodyTypingResult<Level> atomic = bsTyping.generate(s, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, fields, casts);
+            BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, sTvars, cstrs, method);
+            BodyTypingResult<Level> atomic = bsTyping.generate(s, localDefs, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, fields, casts);
             // TODO: the following two statements are so unclear because we need to include all the tags.. abstract away the sequencing to make this clearer (or more transparent)
             r = BodyTypingResult.addEffects(BodyTypingResult.addConstraints(atomic, previous.getConstraints()), previous.getEffects());
             r = new BodyTypingResult<>(r.getConstraints(), r.getEffects(), r.getFinalEnv(), r.getTags().addAll(previous.getTags()).addAll(atomic.getTags()));
@@ -197,7 +203,7 @@ public class MethodBodyTyping<Level> {
                 // otherwise continue with the rest of the sequence
                 Stmt next = (Stmt) successors.get(0);
                 // TODO-performance: this is a tailcall
-                return generateResult(sTvars, g, postdoms, next, r, signatures, fields, topLevelContext, visited, until);
+                return generateResult(sTvars, g, localDefs, postdoms, next, r, signatures, fields, topLevelContext, visited, until);
             }
         } else {
             // a branching statement. When the graph is checked with Assumptions.validUnitGraph then result should never be null
@@ -220,13 +226,13 @@ public class MethodBodyTyping<Level> {
                     return conditionResult;
                 }
                 Set<Pair<TypeVar, Unit>> newVisited = Stream.concat(Stream.of(Pair.of(newPc, uBranch)), visited.stream()).collect(toSet());
-                BodyTypingResult<Level> branchResult = generateResult(sTvars, g, postdoms, (Stmt) uBranch, conditionResult, signatures, fields, newPc, newVisited, end);
+                BodyTypingResult<Level> branchResult = generateResult(sTvars, g, localDefs, postdoms, (Stmt) uBranch, conditionResult, signatures, fields, newPc, newVisited, end);
                 r = BodyTypingResult.join(r, branchResult, csets, sTvars, s.toString());
             }
             // continue after join point, if there is any
             if (end.isPresent()) {
                 //TODO-performance: this is a tailcall
-                return generateResult(sTvars, g, postdoms, (Stmt) end.get(), r, signatures, fields, topLevelContext, visited, until);
+                return generateResult(sTvars, g, localDefs, postdoms, (Stmt) end.get(), r, signatures, fields, topLevelContext, visited, until);
             } else {
                 return r;
             }

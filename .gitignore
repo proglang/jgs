@@ -15,6 +15,10 @@ testclasses-*/
 
 # For IDEA
 
+## compilation output
+out/
+bin/
+
 ## user specific files
 **/.idea/workspace.xml
 **/.idea/workspace.xml

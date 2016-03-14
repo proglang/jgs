@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.SomeConstraintSets;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
@@ -39,10 +42,10 @@ public class MethodSignaturesTest {
         Symbol<Level> s1 = Symbol.param(0);
         Symbol<Level> s2 = Symbol.param(1);
 
-        Map<Symbol<Level>, TypeVar> mapping = new HashMap<>();
-        mapping.put(s1, cs.v1);
-        mapping.put(s2, cs.v2);
-        mapping.put(Symbol.ret(), cs.v3);
+        Map<Symbol<Level>, CType<Level>> mapping = new HashMap<>();
+        mapping.put(s1, variable(cs.v1));
+        mapping.put(s2, variable(cs.v2));
+        mapping.put(Symbol.ret(), variable(cs.v3));
 
         // a typical constraint for an "add" method: @return >= x, @return >= y
         Stream<SigConstraint<Level>> sig =

@@ -11,7 +11,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{ValueCast, CxCast}
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.{CastsFromMapping, Casts, Methods}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Supertypes, CastsFromMapping, Casts, Methods}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.signatures.{FieldTable, SignatureTable, MethodSignatures}
@@ -129,9 +129,13 @@ object JgsCheck {
         val classes: List[SootClass] = s.getApplicationClasses.toList
 
 
+        /****************************
+        * Configuration of security lattice
+         ****************************/
         val cfg: Config[_] = opt.secdomainChoice match {
           case LowHigh => {
-            val types = new TypeDomain(new de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh())
+            val secdomain = new de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh()
+            val types = new TypeDomain(secdomain)
             val csets = new NaiveConstraintsFactory(types)
             new Config(types, csets, opt)
           }
@@ -206,10 +210,12 @@ object JgsCheck {
         for {
           JObject(entries) <- annotationsJson \\ "methods"
           JField(name, JObject(JField("constraints", cs) :: JField("effects", effs) :: Nil)) <- entries
+          m <- Try(s.getMethod(name)).map(m => List(m)).getOrElse(List())
         } yield {
-          val m : SootMethod = Try(s.getMethod(name)).getOrElse(
-            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find method ${name}")
-          )
+          // TODO: emit a warning when a method cannot be found
+//          val m : SootMethod = Try(s.getMethod(name)).getOrElse(
+//            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find method ${name}")
+//          )
           val constraintStrings : List[String] = for (JArray(entries) <- cs; JString(s) <- entries) yield s
           val effectStrings : List[String] = for (JArray(entries) <- effs; JString(s) <- entries) yield s
           val sig : Signature[Level] = makeSignature[Level](m.getParameterCount, parseConstraints(constraintStrings), makeEffects(parseEffects(effectStrings)))
@@ -223,10 +229,12 @@ object JgsCheck {
         for {
           JObject(entries) <- annotationsJson \\ "fields"
           JField(name, JString(typeString)) <- entries
+          f <- Try(s.getField(name)).map(f => List(f)).getOrElse(List())
         } yield {
-          val f : SootField = Try(s.getField(name)).getOrElse(
-            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find field ${name}")
-          )
+          // TODO: emit a warning when a field cannot be found
+//          val f : SootField = Try(s.getField(name)).getOrElse(
+//            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find field ${name}")
+//          )
           val t : Type[Level] = asScalaOption(types.typeParser().parse(typeString)).getOrElse(
             throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}")
           )
@@ -238,7 +246,7 @@ object JgsCheck {
         * set signature table and field table
         * *****************************/
       val signatures = SignatureTable.makeTable[Level](signatureMap ++ specialSignatures ++ configuredSignatures)
-      val fieldTable = new FieldTable(fieldMap ++ configuredFields)
+      val fieldTable = new FieldTable[Level](fieldMap ++ configuredFields)
 
       /** *********************
         * Read casts from config file
@@ -277,17 +285,20 @@ object JgsCheck {
       /** ***********************
         * Class hierarchy check
         * ************************/
-      print("Checking class hierarchy: ")
-      val result = ClassHierarchyTyping.check(csets, types, signatures, s.getApplicationClasses.stream())
-      println(Format.pprint(Format.classHierarchyCheck(result)))
+      println("Checking class hierarchy: ")
+      for (c <- classes; mSub <- c.getMethods; mSup <- Supertypes.findOverridden(mSub).collect(Collectors.toList())) {
+        val result = ClassHierarchyTyping.checkTwoMethods(csets, types, signatures, mSub, mSup)
+        print(s"* method ${mSub} overriding method ${mSup}: ")
+        println(Format.pprint(Format.classHierarchyCheck(result)))
+      }
       println
 
       /** *********************
         * Method signature check
-        */
+        ************************/
 
       println("Checking method bodies: ")
-      for (c <- classes; m <- c.getMethods) {
+      for (c <- classes if !c.isInterface; m <- c.getMethods if !m.isAbstract) {
         val methodTyping = new MethodTyping(csets, cstrs, casts)
         val mresult = catching(classOf[TypingException], classOf[TypingAssertionFailure]).either(methodTyping.check(new TypeVars(), signatures, fieldTable, m))
         val resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))

@@ -18,6 +18,9 @@ public interface SecDomain<Level> {
    Level glb(Level l1, Level l2);
    boolean le(Level l1, Level l2);
 
+   /**
+    * A way to parse security levels from Strings.
+    */
    AnnotationParser<Level> levelParser();
 
    /**

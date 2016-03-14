@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Hierarchy1/Hierarchy1.iml" filepath="$PROJECT_DIR$/Hierarchy1/Hierarchy1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ExamplesFromPaper/ExamplesFromPaper.iml" filepath="$PROJECT_DIR$/ExamplesFromPaper/ExamplesFromPaper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ClassHierarchy/Hierarchy1.iml" filepath="$PROJECT_DIR$/ClassHierarchy/Hierarchy1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MethodBodies/MethodBodies.iml" filepath="$PROJECT_DIR$/MethodBodies/MethodBodies.iml" />
       <module fileurl="file://$PROJECT_DIR$/Scratch/Scratch.iml" filepath="$PROJECT_DIR$/Scratch/Scratch.iml" />
     </modules>
   </component>

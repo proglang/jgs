@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.methodParameters;
 import static java.util.stream.Collectors.toList;
 
@@ -149,11 +151,14 @@ public class MethodTyping<Level> {
 
 
         BodyTypingResult<Level> r =
-                new MethodBodyTyping<>(tvars, csets, cstrs, casts, signatures, fields).generateResult(method.retrieveActiveBody(), tvars.topLevelContext(), init);
+                new MethodBodyTyping<>(method, tvars, csets, cstrs, casts, signatures, fields).generateResult(method.retrieveActiveBody(), tvars.topLevelContext(), init);
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
-        Map<Symbol<Level>, TypeVar> symbolMapping = new HashMap<>(paramMapping);
-        symbolMapping.put(Symbol.ret(), tvars.ret());
+        Map<Symbol<Level>, CType<Level>> symbolMapping = new HashMap<>();
+        paramMapping.forEach((k,v) -> {
+            symbolMapping.put(k, variable(v));
+        });
+        symbolMapping.put(Symbol.ret(), variable(tvars.ret()));
 
         ConstraintSet<Level> sigConstraints =
                 csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(toList()));
