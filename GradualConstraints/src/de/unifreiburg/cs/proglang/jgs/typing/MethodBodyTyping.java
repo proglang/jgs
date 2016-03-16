@@ -113,7 +113,8 @@ public class MethodBodyTyping<Level> {
         return generateResult(entry, g, pc, env, localDefs);
 
     }
-    public BodyTypingResult<Level> generateResult(Stmt s, DirectedGraph<Unit> g , TypeVar pc, Environment env, LocalDefs localDefs) throws TypingException {
+
+    private BodyTypingResult<Level> generateResult(Stmt s, DirectedGraph<Unit> g , TypeVar pc, Environment env, LocalDefs localDefs) throws TypingException {
 
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
 
