@@ -142,14 +142,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
 		logger.fine("\n > > > Enter monitor statement identified < < <");
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("EnterMonitorStmt identified");
+		new NotSupportedStmtException("EnterMonitorStmt");
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
 		logger.fine("\n > > > Exit monitor statement identified < < <");
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("ExitMonitorStmt identified");
+		new NotSupportedStmtException("ExitMonitorStmt");
 	}
 
 	@Override
@@ -211,28 +211,28 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
 		logger.fine("\n > > > Lookup switch statement identified < < <");
 		valueSwitch.callingStmt = stmt; 
-		new NotSuppoertedStmtException("Lookup Switch Stmt");
+		new NotSupportedStmtException("Lookup Switch Stmt");
 	}
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
 		logger.fine("\n > > > Nop statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new InternalAnalyzerException("NopStmt");
+		new NotSupportedStmtException("NopStmt");
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
 		logger.fine("\n > > > Ret statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new InternalAnalyzerException("RetStmt");
+		new NotSupportedStmtException("RetStmt");
 	}
 
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
 		logger.fine("\n > > > Return statement identified < < <");
 		valueSwitch.callingStmt = stmt;
-		System.out.println(stmt.getUseBoxes().toString());
+		logger.finer("Use boxes: " + stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
 		if (val instanceof Constant) {
 			JimpleInjector.returnConstant(stmt);
@@ -251,7 +251,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
 		logger.fine("\n > > > Table switch statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new InternalAnalyzerException("TableSwitchStmt");
+		new NotSupportedStmtException("TableSwitchStmt");
 
 	}
 
@@ -264,6 +264,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void defaultCase(Object obj) {
 		logger.fine("\n > > > Default case of statements identified < < <"); 
+		new NotSupportedStmtException("DefaultCase");
 		// valueSwitch.callingStmt = stmt;
 	
 	}
