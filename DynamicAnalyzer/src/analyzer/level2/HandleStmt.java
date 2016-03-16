@@ -11,11 +11,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
- /**
- * 
- *
+/**
+ * A class with all neccessary methods to perform an analysis.
  * @author koenigr
- * 
  */
 public class HandleStmt {
 	
@@ -67,7 +65,7 @@ public class HandleStmt {
 	public void close() {
 		logger.log(Level.INFO, "close HS");
 		om.popGlobalPC();
-		lm.CheckisLPCStackEmpty();
+		lm.checkisLPCStackEmpty();
 	}
 	
 	protected void abort(String sink) {
@@ -77,25 +75,33 @@ public class HandleStmt {
 	}
 	
 	/**
-	 * @param l
-	 * @return
+	 * @param l The securitylevel of actual return-statement.
+	 * @return The new returnlevel.
 	 */
 	protected SecurityLevel setActualReturnLevel(SecurityLevel l) {
 		return om.setActualReturnLevel(l);
 	}
 	
 	/**
-	 * @return
+	 * @return The securitylevel of the last return-statement.
 	 */
 	protected SecurityLevel getActualReturnLevel() {
 		return om.getActualReturnLevel();
 	}
 	
+	/**
+	 * @param o
+	 */
 	public void addObjectToObjectMap(Object o) {
 		logger.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
 		om.insertNewObject(o);
 	}
 	
+	/**
+	 * @param o
+	 * @param signature
+	 * @return
+	 */
 	public SecurityLevel addFieldToObjectMap(Object o, String signature) {
 		logger.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {signature, o});
 		return om.setField(o, signature);
@@ -122,30 +128,59 @@ public class HandleStmt {
 	}
 	
 	
+	/**
+	 * @param o
+	 * @return
+	 */
 	protected boolean containsObjectInObjectMap(Object o) {
 		return om.containsObject(o);
 	}
 	
+	/**
+	 * @param o
+	 * @param signature
+	 * @return
+	 */
 	protected boolean containsFieldInObjectMap(Object o, String signature) {
 		return om.containsField(o, signature);
 	}
 	
+	/**
+	 * @return
+	 */
 	protected int getNumberOfElements() {
 		return om.getNumberOfElements();
 	}
 	
+	/**
+	 * @param o
+	 * @return
+	 */
 	protected int getNumberOfFields(Object o) {
 		return om.getNumberOfFields(o);
 	}
 	
+	/**
+	 * @param o
+	 * @param signature
+	 * @return
+	 */
 	protected SecurityLevel getFieldLevel(Object o, String signature) {
 		return om.getFieldLevel(o, signature);
 	}
 	
+	/**
+	 * @param o
+	 * @param signature
+	 */
 	public void makeFieldHigh(Object o, String signature) {
 		om.setField(o, signature, SecurityLevel.HIGH);
 	}
 	
+	/**
+	 * @param o
+	 * @param signature
+	 */
 	public void makeFieldLow(Object o, String signature) {
 		logger.log(Level.INFO, "Set SecurityLevel of field {0} to LOW", signature);
 		om.setField(o, signature, SecurityLevel.LOW);
@@ -162,11 +197,19 @@ public class HandleStmt {
 		lm.insertElement(signature, level); 
 	}
 	
+	/**
+	 * @param signature
+	 */
 	public void addLocal(String signature) {
 		logger.log(Level.INFO, "add Local {0}", signature);
 		lm.insertElement(signature, SecurityLevel.LOW); 
 	}
 	
+	/**
+	 * @param signature
+	 * @param level
+	 * @return
+	 */
 	protected SecurityLevel setLevelOfLocal(String signature, SecurityLevel level) {
 		lm.setLevel(signature, level);
 		return lm.getLevel(signature);
@@ -186,48 +229,89 @@ public class HandleStmt {
 		return lm.getLevel(local);
 	}
 	
+	/**
+	 * @param signature
+	 * @return
+	 */
 	protected SecurityLevel getLocalLevel(String signature) {
 		return lm.getLevel(signature);
 	}
 	
+	/**
+	 * @param signature
+	 */
 	public void makeLocalHigh(String signature) {
 		lm.setLevel(signature, SecurityLevel.HIGH);
 	}
 	
+	/**
+	 * @param signature
+	 */
 	public void makeLocalLow(String signature) {
 		lm.setLevel(signature, SecurityLevel.LOW);
 	}
 
+	/**
+	 * Push a new localPC and the hashvalue for its corresponding 
+	 * postdominator unit to the LPCList.
+	 * @param l The new securitylevel.
+	 * @param domHash The hastvaule of the postdominator.
+	 * @return The new localPC.
+	 */
 	protected SecurityLevel pushLocalPC(SecurityLevel l, int domHash) {
 		lm.pushLocalPC(l, domHash);
 		return lm.getLocalPC();
 	}
 	
+	/**
+	 * Remove the first element of the localPC list. The domHash value
+	 * is used to check whether the first element belongs to the
+	 * actual dominator.
+	 * @param domHash Hashvalue for actual dominator.
+	 */
 	protected void popLocalPC(int domHash) {
 		logger.info("Pop local pc.");
 		lm.popLocalPC(domHash);
 	}
 	
+	/**
+	 * @return Actual localPC without removing it from the list.
+	 */
 	protected SecurityLevel getLocalPC() {
 		return lm.getLocalPC();
 	}
 	
+	/**
+	 * @param l
+	 * @return
+	 */
 	protected SecurityLevel pushGlobalPC(SecurityLevel l) {
 		logger.log(Level.INFO, "Set globalPC to {0}", l);
 		om.pushGlobalPC(l);
 		return om.getGlobalPC();
 	}
 	
+	/**
+	 * @return
+	 */
 	protected SecurityLevel getGlobalPC() {
 		return om.getGlobalPC();
 	}
 	
+	/**
+	 * @return
+	 */
 	protected SecurityLevel popGlobalPC() {
 		return om.popGlobalPC();
 	}
 
 
 	
+	/**
+	 * @param pos
+	 * @param local
+	 * @return
+	 */
 	public SecurityLevel assignArgumentToLocal(int pos, String local) {
 		lm.setLevel(local, hsu.joinWithLPC(om.getArgLevelAt(pos)));
 		return lm.getLevel(local);
@@ -278,8 +362,11 @@ public class HandleStmt {
 
 	
 	/**
-	 * @param domHash
-	 * @param args
+	 * Check condition of an if-statement. This operation merges the security-
+	 * levels of all locals with the actual localPC and stores them together
+	 * with the hash value of the corresponding postdominator in the localmap.
+	 * @param domHash Hashvalue of the postdominator.
+	 * @param args List of signatore-string of all locals.
 	 */
 	public void checkCondition(String domHash, String... args) {
 		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)), Integer.valueOf(domHash));
@@ -287,7 +374,10 @@ public class HandleStmt {
 	}
 	
 	/**
-	 * @param domHash
+	 * Exit scope of an if-Statement. For each if-statement which ends at this
+	 * position one lpc is popped from LPCstack. If the lpc belongs to this
+	 * position is checked with the hashvalue of the position.
+	 * @param domHash Hashvalue of the dominator.
 	 */
 	public void exitInnerScope(String domHash) {
 		while (lm.domHashEquals(Integer.valueOf(domHash))) {

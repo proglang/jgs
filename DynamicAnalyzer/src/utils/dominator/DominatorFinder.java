@@ -22,17 +22,16 @@ public class DominatorFinder {
 	 * Constructor. Has only to be called once in BodyAnalyzer.
 	 * @param body The body of the actual analyzed method.
 	 */
-	public DominatorFinder(Body body) {
+	public static void init(Body body) {
 		graph = new BriefUnitGraph(body);
 		pdfinder = new MHGPostDominatorsFinder(graph);
 		domList = new ArrayList<Unit>();
 	}
-  
-	
 
 	/**
 	 * Get the hashvalue of the immediate dominator of given IfStmt. 
-	 * The unit is stored in an internal list for later analysis.
+	 * The unit is stored in an internal list for later analysis
+	 * (if it's not already in the list).
 	 * @param node IfStmt.
 	 * @return Hashvalue of immerdiate dominator.
 	 */
@@ -60,6 +59,10 @@ public class DominatorFinder {
 		return false;
 	}
 	
+	/** Just get the hash-value for the object without storing it in a list.
+	 * @param dom The Object.
+	 * @return The hash-value for given object.
+	 */
 	public static String getHashValueFor(Object dom) {
 		return Integer.toString(System.identityHashCode(dom));
 	}

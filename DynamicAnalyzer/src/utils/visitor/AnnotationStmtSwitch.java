@@ -163,8 +163,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	
 	/* 
 	 * If an IfStmt is identified the condition must be checked. At this procedure
-	 * a new lpc is added to the lpc stack. The second step is to locate the first
-	 * postdominator to determine where the last lpc has to be dropped from lpc-stack.
+	 * a new lpc is added to the lpc stack. 
 	 */
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
@@ -173,7 +172,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		logger.finest("Use and def boxes of IfStmt: " 
 				+ stmt.getUseAndDefBoxes().toString());
 		
-		// STEP 1 - check the condition
 		// Check for all values in the condition if they are a constant value
 		// or if they are stored in a local. In the second case the local is added 
 		// to a list for the locals. 
@@ -196,15 +194,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		}
 
 		JimpleInjector.checkCondition(stmt, arguments);
-		
-		
-		// STEP 2 - determine unit where to drop lpc from stack
-		/*
-		logger.fine("Target box " + stmt.getTargetBox().getUnit().toString());
-		logger.fine("Target " + stmt.getTarget().toString());
-		JimpleInjector.exitInnerScope(stmt.getTargetBox().getUnit());
-		*/
-
 	}
 
 	@Override

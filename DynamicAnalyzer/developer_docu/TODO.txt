@@ -1,12 +1,6 @@
 Start with:
 IfStmt
-------
->> BodyAnalyzer already uses Dominator. Start here.
->> What is better? Dominator or target box?
->> Where should the exitInnerScope be placed?
->> Complete dominator class.
 >> Adjust level 2 tests.
->> Check all methods, which work with ifStmts
 
 >>> Continue with for, while and switch
 
@@ -29,11 +23,10 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 >> Add a chain for arguments of the superconstructor
 >> addLevelOfArrayField in HandleStmt fertig machen
 >> Add all classfiletests to testmain
->> Move more parts to visitorhelper??
 >> InternalAnalyzerException richtige Fehlermeldung
 >> Why is there a field for returnLevel in ObjectMap AND in LocalMap? 
->> Whats the possibility that identityHashCode returns the same value for different objects? 
-   Use two hash-functions?
+>> thorough refactoring of handleStmt.
+	>> Move more parts to visitorhelper??
 
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>

@@ -7,7 +7,6 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.IfStmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
@@ -64,7 +63,7 @@ public class BodyAnalyzer extends BodyTransformer{
 
 		stmtSwitch = new AnnotationStmtSwitch(body);
 
-		DominatorFinder df = new DominatorFinder(body);
+		DominatorFinder.init(body);
 				
 		JimpleInjector.setBody(body);
 
@@ -135,16 +134,21 @@ public class BodyAnalyzer extends BodyTransformer{
 		Iterator<Unit> uit = units.iterator();
 		while (uit.hasNext()) {
 			Unit item = uit.next();
+			
+			// Check if the statements is a postdominator for an IfStmt.
 			if (DominatorFinder.containsStmt(item)) {
 				JimpleInjector.exitInnerScope(item);
 				logger.log(Level.INFO, "Exit inner scope with hashVal {0}", 
 						System.identityHashCode(item));
 			}
+			
+			// Add further statements using JimpleInjector.
 			item.apply(stmtSwitch);
 		}
-				
+		
+		// Apply all changes.
 		JimpleInjector.addUnitsToChain();			
-				
+		
 		JimpleInjector.closeHS();
 	}
 }
