@@ -39,7 +39,7 @@ public class LocalMap {
 		return localPC.getFirst().getSecurityLevel();
 	}
 	
-	public void popLocalPC(int domHash) {
+	public void popLocalPC(int domHash) { // TODO domHash wird gar nicht geprüft.
 		int n = localPC.size();
 		localPC.pop();
 		logger.finer("Reduced stack size from " + n + " to " + localPC.size() + " elements.");
@@ -70,9 +70,13 @@ public class LocalMap {
 		lMap.put(signature, level);
 	}
 	
+	/**
+	 * Print elements of localmap in a readable form.
+	 */
 	public void printElements() {
-		for(Map.Entry<String, SecurityLevel> entry : lMap.entrySet()) {
-			System.out.println("Key " + entry.getKey() + " , Value: " + entry.getValue());
+		for (Map.Entry<String, SecurityLevel> entry : lMap.entrySet()) {
+			System.out.println("Key " + entry.getKey() + " , Value: " 
+					+ entry.getValue());
 		}
 	}
 	

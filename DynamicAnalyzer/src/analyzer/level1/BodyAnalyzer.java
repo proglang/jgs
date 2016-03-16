@@ -138,13 +138,13 @@ public class BodyAnalyzer extends BodyTransformer{
 			Unit item = uit.next();
 			item.apply(stmtSwitch);
 			
-			// TODO change and remove this part
-			if (item instanceof IfStmt) {
-				df.getImmediateDominator(item);
-			}
-			while (df.containsStmt(item)) {
+			/*if (item instanceof IfStmt) {
+				df.getImmediateDominatorHashValue(item);
+			}*/
+			if (DominatorFinder.containsStmt(item)) {
 				JimpleInjector.exitInnerScope(item);
-				System.out.println(System.identityHashCode(item));
+				logger.log(Level.INFO, "Exit inner scope with hashval {0}", 
+						System.identityHashCode(item));
 			}
 		}
 				

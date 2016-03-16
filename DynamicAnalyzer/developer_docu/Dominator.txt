@@ -105,6 +105,12 @@ SEPARATED IFS:
  if(...)
  if(...)
  
- 
- 
+ SOLUTION
  => set lpc before ifStmt
+ 
+ 1. As soon as an ifStmt is recognized by AnnotationStmtSwitch, JimpleInjector adds a
+ 	"HandleStmt.checkCondition(String domHash, String... args"-stmt BEFORE the IfStmt.
+ 2. In the same JimpleInjector Method, the DominatorFinder computes the immediate
+ 	dominator for this Stmt. The dominatorFinder stores the unit in an internal list for later
+ 	analysis and returns the hashvalueof the dominator. The hashvalue is needed as an
+ 	argument for checkcondition and will be used later in the LocalMap.

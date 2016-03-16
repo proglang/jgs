@@ -37,5 +37,5 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
-
+Dominator arbeitet mit HashValue. Kann das zu Problemen führen?
 

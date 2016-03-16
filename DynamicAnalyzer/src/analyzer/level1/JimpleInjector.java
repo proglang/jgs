@@ -27,6 +27,7 @@ import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.ThisRef;
 import soot.util.Chain;
+import utils.dominator.DominatorFinder;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 
@@ -973,11 +974,19 @@ public class JimpleInjector {
 	public static void checkCondition(Unit pos, Local... locals) {
 
 		logger.log(Level.INFO, "Check condition in method {0}", b.getMethod());
+		logger.log(Level.INFO, "IfStmt: {0}", pos.toString());
 		
 		int numberOfLocals = locals.length;
 		ArrayList<Type>	paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
 		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
 		
+		// Add hashvalue for immerdiate dominator
+		String domHash = DominatorFinder.getImmediateDominatorHashValue(pos);
+		Stmt assignHashVal = Jimple.v().newAssignStmt(
+				local_for_Strings, StringConstant.v(domHash));
+		
+		// Add all locals to string array
 		Expr newStringArray = Jimple.v().newNewArrayExpr(
 				RefType.v("java.lang.String"), IntConstant.v(numberOfLocals));
 		
@@ -994,10 +1003,11 @@ public class JimpleInjector {
 			tmpUnitList.add(assignSignature);
 		}
 		
+		// Invoke HandleStmt.checkCondition(String domHash, String... locals)
 		Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
 				"checkCondition", paramTypes, VoidType.v(), false),
-				local_for_String_Arrays);
+				local_for_Strings, local_for_String_Arrays);
 		Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
 		
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignNewArray, pos));
@@ -1006,6 +1016,8 @@ public class JimpleInjector {
 			unitStore_After.insertElement(unitStore_After.new Element(u, lastPos));
 			lastPos = u;
 		}
+		unitStore_After.insertElement(unitStore_After.new Element(assignHashVal, lastPos));
+		lastPos = assignHashVal;
 		unitStore_After.insertElement(unitStore_After.new Element(invokeCC, lastPos));
 		lastPos = invokeCC;
 		
