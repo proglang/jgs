@@ -1,5 +1,6 @@
 Start with:
 Arithmetic Expressions
+>> ValueSwitch: Warum ist rightelement = NOT?
 
 IfStmt
 >> Adjust level 2 tests.
@@ -29,7 +30,6 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 >> Why is there a field for returnLevel in ObjectMap AND in LocalMap? 
 >> thorough refactoring of handleStmt.
 	>> Move more parts to visitorhelper??
-
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Dominator arbeitet mit HashValue. Kann das zu Problemen führen?

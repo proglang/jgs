@@ -82,7 +82,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.NOT; // TODO WARUM?
 	}
 
 	@Override
@@ -124,18 +124,40 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseAddExpr(AddExpr v) {
+		logger.finest("Add Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+		if (actualContext != StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException("Add expression in wrong context");
 		}
+		if (callingStmt.getUseBoxes().size() != 3) {
+			new InternalAnalyzerException("Add expression has illegal number of args");
+		}
+		
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
+		JimpleInjector.setLevelOfAssignStmt(
+				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
 	public void caseAndExpr(AndExpr v) {
+		logger.finest("And Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+		if (actualContext != StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException("And expression in wrong context");
 		}
+		if (callingStmt.getUseBoxes().size() != 3) {
+			new InternalAnalyzerException("And expression has illegal number of args");
+		}
+		
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
+		JimpleInjector.setLevelOfAssignStmt(
+				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
@@ -164,18 +186,41 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseDivExpr(DivExpr v) {
+		logger.finest("Div Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+		if (actualContext != StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException("Div expression in wrong context");
 		}
+		if (callingStmt.getUseBoxes().size() != 3) {
+			new InternalAnalyzerException("Div expression has illegal number of args");
+		}
+		
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
+		JimpleInjector.setLevelOfAssignStmt(
+				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
 	public void caseEqExpr(EqExpr v) {
+
+		logger.finest("Eq Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+		if (actualContext != StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException("Eq expression in wrong context");
 		}
+		if (callingStmt.getUseBoxes().size() != 3) {
+			new InternalAnalyzerException("Eq expression has illegal number of args");
+		}
+		
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
+		JimpleInjector.setLevelOfAssignStmt(
+				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
@@ -220,18 +265,42 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseMulExpr(MulExpr v) {
+
+		logger.finest("Mul Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+		if (actualContext != StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException("Mul expression in wrong context");
 		}
+		if (callingStmt.getUseBoxes().size() != 3) {
+			new InternalAnalyzerException("Mul expression has illegal number of args");
+		}
+		
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
+		JimpleInjector.setLevelOfAssignStmt(
+				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
 	public void caseOrExpr(OrExpr v) {
+
+		logger.finest("Or Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+		if (actualContext != StmtContext.ASSIGNRIGHT) {
+			new InternalAnalyzerException("Or expression in wrong context");
 		}
+		if (callingStmt.getUseBoxes().size() != 3) {
+			new InternalAnalyzerException("Or expression has illegal number of args");
+		}
+		
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
+		JimpleInjector.addLevelInAssignStmt(
+				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
+		JimpleInjector.setLevelOfAssignStmt(
+				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
