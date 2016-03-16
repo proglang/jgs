@@ -1,4 +1,6 @@
 Start with:
+Arithmetic Expressions
+
 IfStmt
 >> Adjust level 2 tests.
 
@@ -8,7 +10,7 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 ------------
 >> Whats the best way to realize this method?
 
-
+>> AddExpression is not evaluated
 >> Define sootClassPath for rt.jar in Main which works globally
 >> Remove all System.outs
 >> Check all TODOs
