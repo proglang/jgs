@@ -43,7 +43,6 @@ public class BodyAnalyzer extends BodyTransformer{
 		AnnotationStmtSwitch stmtSwitch;
 		Chain<SootField> fields;
 
-		DominatorFinder df;
 
 		Logger logger = L1Logger.getLogger();
 		
@@ -64,8 +63,8 @@ public class BodyAnalyzer extends BodyTransformer{
 		fields = method.getDeclaringClass().getFields();	
 
 		stmtSwitch = new AnnotationStmtSwitch(body);
-		
-		df = new DominatorFinder(body);
+
+		DominatorFinder df = new DominatorFinder(body);
 				
 		JimpleInjector.setBody(body);
 
@@ -136,16 +135,12 @@ public class BodyAnalyzer extends BodyTransformer{
 		Iterator<Unit> uit = units.iterator();
 		while (uit.hasNext()) {
 			Unit item = uit.next();
-			item.apply(stmtSwitch);
-			
-			/*if (item instanceof IfStmt) {
-				df.getImmediateDominatorHashValue(item);
-			}*/
 			if (DominatorFinder.containsStmt(item)) {
 				JimpleInjector.exitInnerScope(item);
-				logger.log(Level.INFO, "Exit inner scope with hashval {0}", 
+				logger.log(Level.INFO, "Exit inner scope with hashVal {0}", 
 						System.identityHashCode(item));
 			}
+			item.apply(stmtSwitch);
 		}
 				
 		JimpleInjector.addUnitsToChain();			

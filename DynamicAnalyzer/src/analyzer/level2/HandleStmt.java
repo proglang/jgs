@@ -277,13 +277,21 @@ public class HandleStmt {
 	
 
 	
+	/**
+	 * @param domHash
+	 * @param args
+	 */
 	public void checkCondition(String domHash, String... args) {
 		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)), Integer.valueOf(domHash));
 		om.pushGlobalPC(hsu.joinWithGPC(lm.getLocalPC()));
 	}
 	
+	/**
+	 * @param domHash
+	 */
 	public void exitInnerScope(String domHash) {
 		while (lm.domHashEquals(Integer.valueOf(domHash))) {
+			logger.info("Pop LPC for hashval " + domHash);
 			lm.popLocalPC(Integer.valueOf(domHash));
 			om.popGlobalPC();
 		}

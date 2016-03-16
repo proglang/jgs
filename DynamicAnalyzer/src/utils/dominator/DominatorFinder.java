@@ -42,22 +42,26 @@ public class DominatorFinder {
 		if (!containsStmt((Unit) dom)) {
 			domList.add((Unit) dom);
 		}
-		return Integer.toString(System.identityHashCode(dom));
+		return getHashValueFor(dom);
 	}
 
 	/**
 	 * Check whether the given unit is a dominator of an IfStmt. If it is
 	 * contained in the list this element is simultaneously removed from the list.
-	 * @param item A Unit.
+	 * @param node A Unit.
 	 * @return Returns true if the given unit is a dominator of a previously 
 	 *     called ifStmt.
 	 */
-	public static boolean containsStmt(Unit item) {
-		if (domList.contains(item)) {
-			domList.remove(item);
+	public static boolean containsStmt(Unit node) {
+		if (domList.contains(node)) {
+			domList.remove(node);
 			return true;
 		}
 		return false;
+	}
+	
+	public static String getHashValueFor(Object dom) {
+		return Integer.toString(System.identityHashCode(dom));
 	}
   
 }

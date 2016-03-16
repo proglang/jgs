@@ -983,6 +983,7 @@ public class JimpleInjector {
 		
 		// Add hashvalue for immerdiate dominator
 		String domHash = DominatorFinder.getImmediateDominatorHashValue(pos);
+		logger.info("HashVal for Dominator: " + domHash);
 		Stmt assignHashVal = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(domHash));
 		
@@ -1024,23 +1025,34 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param pos
+	 * If a stmt is a postdominator of an ifStmt then the if-context ends before this stmt.
+	 * The method exitInnerScope pops the localPCs for all ifStmts which end here.
+	 * @param pos The position of this stmt.
 	 */
 	public static void exitInnerScope(Unit pos) {
 		logger.log(Level.INFO, "Exit inner scope in method {0}", b.getMethod().getName());
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		String domHash = DominatorFinder.getHashValueFor(pos);
+		logger.info("Dominator hash value: " + domHash);
+		
+		Stmt assignHashVal = Jimple.v().newAssignStmt(
+				local_for_Strings, StringConstant.v(domHash));
+		
 		
 		Expr specialIn = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"exitInnerScope", paramTypes, VoidType.v(), false));
+				"exitInnerScope", paramTypes, VoidType.v(), false), 
+				local_for_Strings);
 		
 		Unit inv = Jimple.v().newInvokeStmt(specialIn);
 		
-		Unit endOfScope = units.getPredOf(pos);
-		
-		unitStore_After.insertElement(unitStore_After.new Element(inv, endOfScope));
-		lastPos = inv;
+		unitStore_Before.insertElement(
+				unitStore_Before.new Element(assignHashVal, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(inv, pos));
+		lastPos = pos;
 	}
 	
 /*

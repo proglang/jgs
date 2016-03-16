@@ -39,10 +39,14 @@ public class LocalMap {
 		return localPC.getFirst().getSecurityLevel();
 	}
 	
-	public void popLocalPC(int domHash) { // TODO domHash wird gar nicht geprüft.
+	/**
+	 * @param domHash
+	 */
+	public void popLocalPC(int domHash) {
 		int n = localPC.size();
 		localPC.pop();
-		logger.finer("Reduced stack size from " + n + " to " + localPC.size() + " elements.");
+		logger.finer("Reduced stack size from " + n 
+				+ " to " + localPC.size() + " elements.");
 	}
 	
 	public void pushLocalPC(SecurityLevel l, int domHash) {
