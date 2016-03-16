@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class HandleStmt {
 	
-	private static final Logger LOGGER = L2Logger.getLogger();
+	private static final Logger logger = L2Logger.getLogger();
 	
 	private LocalMap lm;
 	private static ObjectMap om;
@@ -33,7 +33,7 @@ public class HandleStmt {
 	* of the globalPC
 	*/
 	public HandleStmt() {
-		LOGGER.log(Level.INFO, "invoke new HandleStmt");
+		logger.log(Level.INFO, "invoke new HandleStmt");
 		lm = new LocalMap();
 		om = ObjectMap.getInstance();
 		hsu = new HandleStmtUtils(lm, om);
@@ -46,11 +46,11 @@ public class HandleStmt {
 	* It triggers the setup of the logger.
 	*/
 	public static void init() {
-		LOGGER.log(Level.INFO, "init HS");
+		logger.log(Level.INFO, "init HS");
 		try {
 			L2Logger.setup();
 		} catch (IOException e) {
-			LOGGER.warning("setting up the logger was not successful");
+			logger.warning("setting up the logger was not successful");
 			e.printStackTrace();
 		}
 		if (om == null) {
@@ -65,12 +65,13 @@ public class HandleStmt {
 	* It resets the globalPC to its initial value
 	*/
 	public void close() {
-		LOGGER.log(Level.INFO, "close HS");
+		logger.log(Level.INFO, "close HS");
 		om.popGlobalPC();
+		lm.CheckisLPCStackEmpty();
 	}
 	
 	protected void abort(String sink) {
-		LOGGER.log(Level.SEVERE, "", new IllegalFlowException(
+		logger.log(Level.SEVERE, "", new IllegalFlowException(
 				"System.exit because of illegal flow to " + sink));
 		System.exit(0);
 	}
@@ -91,12 +92,12 @@ public class HandleStmt {
 	}
 	
 	public void addObjectToObjectMap(Object o) {
-		LOGGER.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
+		logger.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
 		om.insertNewObject(o);
 	}
 	
 	public SecurityLevel addFieldToObjectMap(Object o, String signature) {
-		LOGGER.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {signature, o});
+		logger.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {signature, o});
 		return om.setField(o, signature);
 	}
 	
@@ -106,9 +107,9 @@ public class HandleStmt {
 	 */
 	public void addArrayToObjectMap(Object[] a) {
 		
-		LOGGER.info("Array length " + a.length);
+		logger.info("Array length " + a.length);
 		
-		LOGGER.log(Level.INFO, "Add Array {0} to ObjectMap", a.toString());
+		logger.log(Level.INFO, "Add Array {0} to ObjectMap", a.toString());
 		
 		addObjectToObjectMap(a);
 		for (int i = 0; i < a.length ; i++) {
@@ -146,7 +147,7 @@ public class HandleStmt {
 	}
 	
 	public void makeFieldLow(Object o, String signature) {
-		LOGGER.log(Level.INFO, "Set SecurityLevel of field {0} to LOW", signature);
+		logger.log(Level.INFO, "Set SecurityLevel of field {0} to LOW", signature);
 		om.setField(o, signature, SecurityLevel.LOW);
 	}
 	
@@ -155,14 +156,14 @@ public class HandleStmt {
 	 * @param level
 	 */
 	public void addLocal(String signature, SecurityLevel level) {
-		LOGGER.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap", 
+		logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap", 
 				new Object[] {signature, level });
 
 		lm.insertElement(signature, level); 
 	}
 	
 	public void addLocal(String signature) {
-		LOGGER.log(Level.INFO, "add Local {0}", signature);
+		logger.log(Level.INFO, "add Local {0}", signature);
 		lm.insertElement(signature, SecurityLevel.LOW); 
 	}
 	
@@ -197,9 +198,14 @@ public class HandleStmt {
 		lm.setLevel(signature, SecurityLevel.LOW);
 	}
 
-	protected SecurityLevel setLocalPC(SecurityLevel l) {
-		lm.setLocalPC(l);
+	protected SecurityLevel pushLocalPC(SecurityLevel l, int domHash) {
+		lm.pushLocalPC(l, domHash);
 		return lm.getLocalPC();
+	}
+	
+	protected void popLocalPC(int domHash) {
+		logger.info("Pop local pc.");
+		lm.popLocalPC(domHash);
 	}
 	
 	protected SecurityLevel getLocalPC() {
@@ -207,7 +213,7 @@ public class HandleStmt {
 	}
 	
 	protected SecurityLevel pushGlobalPC(SecurityLevel l) {
-		LOGGER.log(Level.INFO, "Set globalPC to {0}", l);
+		logger.log(Level.INFO, "Set globalPC to {0}", l);
 		om.pushGlobalPC(l);
 		return om.getGlobalPC();
 	}
@@ -242,7 +248,7 @@ public class HandleStmt {
 	 * 
 	 */
 	public void returnConstant() {
-		LOGGER.log(Level.INFO, "Return a constant value");
+		logger.log(Level.INFO, "Return a constant value");
 		om.setActualReturnLevel(lm.getLocalPC()); // TODO ??
 		// TODO hier vielleicht eher auch addLevel? Dann kann man es n�mlich weglassen...
 		// Das Problem ist aber, wenn der Returnwert nicht assigned wird...
@@ -252,8 +258,8 @@ public class HandleStmt {
 	 * @param signature
 	 */
 	public void returnLocal(String signature) {
-		LOGGER.log(Level.INFO, "Return Local {0}", signature);
-		lm.setReturnLevel(lm.getLevel(signature)); // TODO: not needed??
+		logger.log(Level.INFO, "Return Local {0}", signature);
+		// lm.setReturnLevel(lm.getLevel(signature)); // TODO: not needed??
 		om.setActualReturnLevel(lm.getLevel(signature)); 
 	}
 	
@@ -271,14 +277,16 @@ public class HandleStmt {
 	
 
 	
-	public void checkCondition(String... args) {
-		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)));
+	public void checkCondition(String domHash, String... args) {
+		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)), Integer.valueOf(domHash));
 		om.pushGlobalPC(hsu.joinWithGPC(lm.getLocalPC()));
 	}
 	
-	public void exitInnerScope() {
-		lm.popLocalPC();
-		om.popGlobalPC();
+	public void exitInnerScope(String domHash) {
+		while (lm.domHashEquals(Integer.valueOf(domHash))) {
+			lm.popLocalPC(Integer.valueOf(domHash));
+			om.popGlobalPC();
+		}
 	}
 	
 	/**
@@ -379,9 +387,9 @@ public class HandleStmt {
 	 * @param local
 	 */
 	public void checkThatNotHigh(String local) {
-		LOGGER.info("Check. that " + lm.getLevel(local).toString() + " is not high");
+		logger.info("Check that " + lm.getLevel(local).toString() + " is not HIGH");
 		if (lm.getLevel(local) == SecurityLevel.HIGH) {
-			LOGGER.info("it's high");
+			logger.info("it's high");
 			throw new IllegalFlowException("Passed argument " + local
 			+ " with a high security level to a method which doesn't allow it.");			
 		}

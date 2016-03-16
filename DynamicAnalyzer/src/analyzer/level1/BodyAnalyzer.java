@@ -116,7 +116,7 @@ public class BodyAnalyzer extends BodyTransformer{
 				
 
 		// Add all locals to LocalMap except the locals which 
-		// are inserted for analyzation purposes.
+		// are inserted for analysis purposes.
 		Iterator<Local> lit = locals.iterator();
 		while (lit.hasNext()) {
 			Local item = lit.next();
@@ -137,11 +137,14 @@ public class BodyAnalyzer extends BodyTransformer{
 		while (uit.hasNext()) {
 			Unit item = uit.next();
 			item.apply(stmtSwitch);
+			
+			// TODO change and remove this part
 			if (item instanceof IfStmt) {
 				df.getImmediateDominator(item);
 			}
 			while (df.containsStmt(item)) {
 				JimpleInjector.exitInnerScope(item);
+				System.out.println(System.identityHashCode(item));
 			}
 		}
 				

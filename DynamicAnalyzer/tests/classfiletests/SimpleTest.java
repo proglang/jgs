@@ -18,15 +18,14 @@ public class SimpleTest{
   @Test
   public void test() {
     logger.info("Start of executing main.testclasses.Simple");
-    Exception catchedException = null;
     try {
       ClassRunner.runClass2("Simple");
     } catch (Exception e) {
-      catchedException = e;
+      assertEquals(e.getCause().getClass(),
+    	        IllegalFlowException.class);
       logger.info("Successfully found an illegal flow");
     }
-    assertEquals(catchedException.getCause().getClass(),
-        IllegalFlowException.class);
+
     logger.info("Finished executing main.testclasses.Simple");
   }
 }

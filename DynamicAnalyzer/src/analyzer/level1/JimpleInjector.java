@@ -967,8 +967,8 @@ public class JimpleInjector {
 	 * Check condition of if statements. Needed parameters are all locals (no constants)
 	 * which occur in the if statement. If the result is high, then the lpc of the if-context
 	 * is set to high.
-	 * @param pos -Unit- Position of the ifStmt in the method body.
-	 * @param locals -Local...- An array of all locals which appear in the condition.
+	 * @param pos Position of the ifStmt in the method body.
+	 * @param locals An array of all locals which appear in the condition.
 	 */
 	public static void checkCondition(Unit pos, Local... locals) {
 
@@ -1000,7 +1000,7 @@ public class JimpleInjector {
 				local_for_String_Arrays);
 		Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
 		
-		unitStore_After.insertElement(unitStore_After.new Element(assignNewArray, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(assignNewArray, pos));
 		lastPos = assignNewArray;
 		for (Unit u : tmpUnitList) {
 			unitStore_After.insertElement(unitStore_After.new Element(u, lastPos));

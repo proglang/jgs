@@ -41,9 +41,10 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfLocal("int_x")); // x = HIGH, lpc = LOW
 		
 		hs.makeLocalHigh("int_x");
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 123);
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfLocal("int_x")); //x = HIGH,lpc = HIGH
 		
+		hs.popLocalPC(123);
 		hs.close();
 
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
@@ -65,7 +66,7 @@ public class AssignLocalsSuccess {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
-		hs.setLocalPC(SecurityLevel.LOW);
+		hs.pushLocalPC(SecurityLevel.LOW, 123);
 		// x = LOW, lpc = LOW
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_x"));
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
@@ -85,7 +86,7 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_z"));
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfLocal("int_x"));
 		
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 123);
 		hs.makeLocalHigh("int_x");
 		// x = HIGH, lpc = HIGH
 		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_x"));
@@ -96,6 +97,8 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_z"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfLocal("int_x"));
 		
+		hs.popLocalPC(123);
+		hs.popLocalPC(123);
 		hs.close();	
 
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");

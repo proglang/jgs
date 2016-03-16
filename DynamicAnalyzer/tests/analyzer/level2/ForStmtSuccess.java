@@ -29,13 +29,13 @@ public class ForStmtSuccess {
 		
 		int res = 0;
 		
-		hs.checkCondition("int_i");
+		hs.checkCondition(123, "int_i");
 		for(int i = 0;i < 1; i++){
 			
 			hs.setLevelOfLocal("int_res");
 			res = 2;
 			
-			hs.exitInnerScope();
+			hs.exitInnerScope(123);
 		}
 		
 		hs.close();
@@ -57,13 +57,13 @@ public class ForStmtSuccess {
 		int i = 0; // Local
 		int res; // Field
 		
-		hs.checkCondition("int_i");
+		hs.checkCondition(123, "int_i");
 		for(i = 0;i < 1; i++){
 			
 			hs.setLevelOfField(this, "int_res");
 			res = 2;
 			
-			hs.exitInnerScope();
+			hs.exitInnerScope(123);
 		}
 		
 		hs.close();

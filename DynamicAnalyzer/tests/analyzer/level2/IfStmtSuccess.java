@@ -31,26 +31,26 @@ public class IfStmtSuccess {
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
 		
-		hs.checkCondition("int_x");
+		hs.checkCondition(123, "int_x");
 		if (x == 1) {
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 			assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
 			
 			hs.makeLocalHigh("int_x");
 			
-			hs.checkCondition("int_x");
+			hs.checkCondition(123, "int_x");
 			if (x == 1) {
 
 				assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 				assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
 				
-				hs.exitInnerScope();
+				hs.exitInnerScope(123);
 			}
 			
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 			assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
 			
-			hs.exitInnerScope();
+			hs.exitInnerScope(123);
 		}
 		
 
@@ -59,13 +59,13 @@ public class IfStmtSuccess {
 		
 		hs.makeLocalHigh("int_x");
 		
-		hs.checkCondition("int_x");
+		hs.checkCondition(123, "int_x");
 		if (x == 1) {
 
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 			assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
 			
-			hs.exitInnerScope();
+			hs.exitInnerScope(123);
 		}
 		
 
@@ -73,21 +73,22 @@ public class IfStmtSuccess {
 		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
 		
 		hs.makeLocalLow("int_x");
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 234);
 		hs.pushGlobalPC(SecurityLevel.HIGH);
 		
-		hs.checkCondition("int_x");
+		hs.checkCondition(123, "int_x");
 		if (x == 1) {
 
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 			assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
 			
-			hs.exitInnerScope();
+			hs.exitInnerScope(123);
 		}
 		
 		assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 		assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());
 		
+		hs.popLocalPC(234);
 		hs.close();
 		
 		System.out.println("SIMPLE IF STMT TEST FINISHED");

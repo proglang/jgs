@@ -159,6 +159,7 @@ public class MultiArraySuccess {
 		
 		hs.addLevelOfArrayField(tmp, Integer.toString(0));
 		hs.setLevelOfLocal("String_x");
+		@SuppressWarnings("unused")
 		String x = tmp[0];
 		
 		hs.close();

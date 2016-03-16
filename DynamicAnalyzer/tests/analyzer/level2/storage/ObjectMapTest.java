@@ -16,6 +16,8 @@ import analyzer.level2.storage.ObjectMap;
 
 public class ObjectMapTest {
 
+	Logger logger = L2Logger.getLogger();
+	
 	@Before
 	public void init() {
 		HandleStmt.init();
@@ -24,33 +26,33 @@ public class ObjectMapTest {
 	@Test
 	public void singletonTest() {
 		
-		System.out.println("OBEJCT MAP AS SINGLETON TEST STARTED");
+		logger.info("OBEJCT MAP AS SINGLETON TEST STARTED");
 		
 		ObjectMap m1 = ObjectMap.getInstance();
 		ObjectMap m2 = ObjectMap.getInstance();
 		
 		assertSame("The two instances of ObjectMap are not the same", m1, m2);
 		
-		System.out.println("OBEJCT MAP AS SINGLETON TEST FINISHED");
+		logger.info("OBEJCT MAP AS SINGLETON TEST FINISHED");
 	}
 	
 	@Test
 	public void globalPCTest() {
 		
-		System.out.println("GLOBAL PC TEST STARTED");
+		logger.info("GLOBAL PC TEST STARTED");
 		
 		ObjectMap m = ObjectMap.getInstance();
 		assertEquals(SecurityLevel.LOW, m.getGlobalPC());
 		m.pushGlobalPC(SecurityLevel.HIGH);
 		assertEquals(SecurityLevel.HIGH, m.getGlobalPC());
 
-		System.out.println("GLOBAL PC TEST FINISHED");
+		logger.info("GLOBAL PC TEST FINISHED");
 	}
 	
 	@Test
 	public void insertNewObjectTest() {
 		
-		System.out.println("INSERT NEW OBJECT TEST STARTED");
+		logger.info("INSERT NEW OBJECT TEST STARTED");
 		
 		ObjectMap m = ObjectMap.getInstance();
 		
@@ -61,19 +63,18 @@ public class ObjectMapTest {
 		m.insertNewObject(o1);
 		m.insertNewObject(o2);
 		
-		assertEquals(2, m.getNumberOfElements()); // Da sind noch die Objekte aus den anderen Tests drin
-		
+		assertEquals(2, m.getNumberOfElements()); 
 		// The same object should not be inserted a second time
 		m.insertNewObject(o1);
 		//assertEquals(2, m.getNumberOfElements());
 		
-		System.out.println("INSERT NEW OBJECT TEST FINISHED");
+		logger.info("INSERT NEW OBJECT TEST FINISHED");
 	}
 	
 	@Test
 	public void fieldsTest() {
 
-		System.out.println("FIELDS IN OBJECT MAP TEST STARTED");
+		logger.info("FIELDS IN OBJECT MAP TEST STARTED");
 		
 		ObjectMap m = ObjectMap.getInstance();
 		Object o = new Object();
@@ -94,15 +95,14 @@ public class ObjectMapTest {
 		m.setField(o2, f2, SecurityLevel.LOW);
 		m.setField(o2, f3);
 
-		System.out.println("FIELDS IN OBJECT MAP TEST FINISHED");
+		logger.info("FIELDS IN OBJECT MAP TEST FINISHED");
 	}
 	
 	@Test 
 	public void multipleObjectsTest() {
 
-		System.out.println("MULTIPLE OBJECTS TEST STARTED");
+		logger.info("MULTIPLE OBJECTS TEST STARTED");
 		
-		Logger l = L2Logger.getLogger();
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		ObjectMap m = ObjectMap.getInstance();
@@ -116,7 +116,7 @@ public class ObjectMapTest {
 		assertEquals(numOfEl + 2, m.getNumberOfElements());
 		hs.close();
 		
-		System.out.println("MULTIPLE OBJECTS TEST FINISHED");
+		logger.info("MULTIPLE OBJECTS TEST FINISHED");
 	}
 
 

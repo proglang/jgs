@@ -30,7 +30,7 @@ public class ReturnStmtSuccess {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
-		hs.setLocalPC(SecurityLevel.LOW);
+		hs.pushLocalPC(SecurityLevel.LOW, 123);
 		hs.addLocal("int_res1");
 		hs.addLocal("int_res2");
 		hs.addLocal("int_res3");
@@ -63,6 +63,7 @@ public class ReturnStmtSuccess {
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res2"));
 		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_res3"));
 		
+		hs.popLocalPC(123);
 	    hs.close();	
 	    
 	    LOGGER.log(Level.INFO, "RETURN TEST FINISHED");
