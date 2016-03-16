@@ -17,7 +17,7 @@ public class MakeHigh {
 		local = HelperClass.makeHigh(local);
 		local = "bg";
 		field = HelperClass.makeHigh(field);
-		
+		arr[0] = HelperClass.makeHigh(arr[1]);
 
 	}
 
