@@ -1,4 +1,7 @@
 Start with:
+MakeFieldHigh (Low, Make ArrayFieldHigh,...)
+>> Does it work now?
+>> Tests
 
 IfStmt
 >> Adjust level 2 tests.
@@ -6,11 +9,7 @@ IfStmt
 ForLoops
 >> What to do with length expression?
 
-While
 
-Switch
-
-MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 ------------
 >> Whats the best way to realize this method?
 

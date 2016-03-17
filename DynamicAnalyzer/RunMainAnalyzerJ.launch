@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="main.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f J --classes main.testclasses.SwitchStmt --main_class main.testclasses.SwitchStmt"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f J --classes main.testclasses.MakeHigh --main_class main.testclasses.MakeHigh"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="DynamicAnalyzer"/>
 </launchConfiguration>

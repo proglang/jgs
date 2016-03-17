@@ -49,3 +49,5 @@ Conclusions:
         $r9 = (java.lang.String) $r8;
         <main.testclasses.MakeHigh: java.lang.String field> = $r9;
         return;
+        
+SOLUTION
