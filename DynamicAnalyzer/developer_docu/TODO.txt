@@ -34,6 +34,7 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 >> Move more parts to visitorhelper??
 >> ValueSwitch: Warum ist rightelement = MAKEHIGH..wird das benutzt?
 >> ArithmeticExpressionsFail
+>> Fail/Success testclasses
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?
