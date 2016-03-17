@@ -1,5 +1,4 @@
 Start with:
-Arithmetic Expressions
 
 IfStmt
 >> Adjust level 2 tests.
@@ -7,7 +6,9 @@ IfStmt
 ForLoops
 >> What to do with length expression?
 
->>> Continue with for, while and switch
+While
+
+Switch
 
 MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 ------------
