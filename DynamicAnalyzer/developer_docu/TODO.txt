@@ -4,6 +4,9 @@ Arithmetic Expressions
 IfStmt
 >> Adjust level 2 tests.
 
+ForLoops
+>> What to do with length expression?
+
 >>> Continue with for, while and switch
 
 MakeFieldHigh (Low, Make ArrayFieldHigh,...)
@@ -34,4 +37,4 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?
 	Oder ist die Wahrscheinlichkeit gering genug? Mehr Daten zusätzlich zu Hashwert?
-
+What to do with length expression?
