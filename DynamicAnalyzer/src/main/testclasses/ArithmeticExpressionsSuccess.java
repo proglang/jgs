@@ -1,57 +1,77 @@
 package main.testclasses;
 
 public class ArithmeticExpressionsSuccess {
+	
+	/**
+	 * Simple test of all arithmetic functions.
+	 * @param args Not used.
+	 */
+	public static void main(String[] args) {
+		System.out.println("2 + 3 = " + addExpr(2,3));
+		System.out.println("2 - 3 = " + subExpr(2,3));
+		System.out.println("2 * 3 = " + mulExpr(2,3));
+		System.out.println("2 / 3 = " + divExpr(2,3));
+		System.out.println("2 | 3 = " + orExpr(2,3));
+		System.out.println("2 & 3 = " + andExpr(2,3));
+		System.out.println("2 ^ 3 = " + xorExpr(2,3));
+		System.out.println("2 >> 3 = " + shiftrExpr(2,3));
+		System.out.println("2 << 3 = " + shiftlExpr(2,3));
+		System.out.println("2 >>> 3 = " + shiftrzerofillExpr(2,3));
+		System.out.println("~2 = " + notExpr(2));
+		System.out.println("++2 = " + incrExpr(2));
+		System.out.println("--2 = " + decrExpr(2));
+	}
 
-	int addExpr(int x, int y) {
+	static int addExpr(int x, int y) {
 		return x + y;
 	}
 	
-	int subExpr(int x, int y) {
+	static int subExpr(int x, int y) {
 		return x - y;
 	}
 	
-	int mulExpr(int x, int y) {
+	static int mulExpr(int x, int y) {
 		return x * y;
 	}
 	
-	int divExpr(int x, int y) {
+	static int divExpr(int x, int y) {
 		return x / y;
 	}
 	
-	int orExpr(int x, int y) {
+	static int orExpr(int x, int y) {
 		return x | y;
 	}
 	
-	int andExpr(int x, int y) {
+	static int andExpr(int x, int y) {
 		return x & y;
 	}
 	
-	int xorExpr(int x, int y) {
+	static int xorExpr(int x, int y) {
 		return x ^ y;
 	}
 	
-	int shiftrExpr(int x, int y) {
+	static int shiftrExpr(int x, int y) {
 		return x >> y;
 	}
 	
-	int shiftlExpr(int x, int y) {
+	static int shiftlExpr(int x, int y) {
 		return x << y;
 	}
 	
-	int shiftrzerofillExpr(int x, int y) {
+	static int shiftrzerofillExpr(int x, int y) {
 		return x >>> y;
 	}
 	
-	int notExpr(int x) {
+	static int notExpr(int x) {
 		return ~x;
 	}
 	
-	int incrExpr(int x, int y) {
-		return x++;
+	static int incrExpr(int x) {
+		return ++x;
 	}
 	
-	int decrExpr(int x, int y) {
-		return x--;
+	static int decrExpr(int x) {
+		return --x;
 	}
 	
 }

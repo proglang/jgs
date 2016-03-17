@@ -59,6 +59,19 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	Logger logger = L1Logger.getLogger();
 	VisitorHelper vh = new VisitorHelper();
 	
+	/*
+	 * ???
+	 * UNDEF 
+	 * INVOKE 
+	 * ASSIGNRIGHT 
+	 * ASSIGNLEFT 
+	 * IDENTITY 
+	 * RETURN 
+	 * GOTO 
+	 * IF 
+	 * SWITCH 
+	 * THROW
+	 */
 	protected enum StmtContext { 
 		UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, 
 		RETURN, GOTO, IF, SWITCH, THROW
@@ -66,6 +79,18 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
 	protected StmtContext actualContext = StmtContext.UNDEF;
 	
+	/*
+	 * Type of the right expression in an assign statement. Certain types need to
+	 * be handled in a special way. Explanation:
+	 * NOT This is used for arithmetic expressions. The locals in the expressions
+	 * 		are already handled, so its not neccessary to treat the expression
+	 * NEW_ARRAY 
+	 * NEW_UNDEF_OBJECT
+	 * INVOKE_INTERAL_METHOD 
+	 * INVOKE_EXTERNAL_METHOD 
+	 * MAKE_HIGH ?????
+	 * MAKE_LOW ?????
+	 */
 	protected enum RightElement {
 		NOT, NEW_ARRAY, NEW_UNDEF_OBJECT,
 		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD,
@@ -73,45 +98,56 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	} 
 	
 	protected RightElement rightElement = RightElement.NOT;
+	
+	/*
+	 * The statement which called the AnnotationValueSwitch. This variable is set
+	 * by AnnotationStmtSwitch.
+	 */
 	protected Stmt callingStmt;
 
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
+		logger.finest("DoubleConstant identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
 	}
 
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
-		rightElement = RightElement.NOT; // TODO WARUM?
+		logger.finest("FloatConstant identified " + callingStmt.toString());
+		rightElement = RightElement.NOT;
 	}
 
 	@Override
 	public void caseIntConstant(IntConstant v) {
+		logger.finest("IntConstant identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
 	}
 
 	@Override
 	public void caseLongConstant(LongConstant v) {
+		logger.finest("LongConstant identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
 	}
 
 	@Override
 	public void caseNullConstant(NullConstant v) {
+		logger.finest("NullConstant identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
 	}
 
 	@Override
 	public void caseStringConstant(StringConstant v) {
+		logger.finest("StringConstant identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
 	}
 
 	@Override
 	public void caseClassConstant(ClassConstant v) {
+		logger.finest("ClassConstant identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
 		}
-		System.out.println(v);
 	}
 
 	@Override
@@ -126,38 +162,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseAddExpr(AddExpr v) {
 		logger.finest("Add Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext != StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("Add expression in wrong context");
-		}
-		if (callingStmt.getUseBoxes().size() != 3) {
-			new InternalAnalyzerException("Add expression has illegal number of args");
-		}
-		
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
-		JimpleInjector.setLevelOfAssignStmt(
-				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
 	public void caseAndExpr(AndExpr v) {
 		logger.finest("And Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext != StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("And expression in wrong context");
-		}
-		if (callingStmt.getUseBoxes().size() != 3) {
-			new InternalAnalyzerException("And expression has illegal number of args");
-		}
-		
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
-		JimpleInjector.setLevelOfAssignStmt(
-				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
@@ -188,39 +198,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseDivExpr(DivExpr v) {
 		logger.finest("Div Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext != StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("Div expression in wrong context");
-		}
-		if (callingStmt.getUseBoxes().size() != 3) {
-			new InternalAnalyzerException("Div expression has illegal number of args");
-		}
-		
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
-		JimpleInjector.setLevelOfAssignStmt(
-				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
 	public void caseEqExpr(EqExpr v) {
-
 		logger.finest("Eq Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext != StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("Eq expression in wrong context");
-		}
-		if (callingStmt.getUseBoxes().size() != 3) {
-			new InternalAnalyzerException("Eq expression has illegal number of args");
-		}
-		
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
-		JimpleInjector.setLevelOfAssignStmt(
-				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
 	}
 
 	@Override
@@ -265,42 +248,16 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseMulExpr(MulExpr v) {
-
 		logger.finest("Mul Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext != StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("Mul expression in wrong context");
-		}
-		if (callingStmt.getUseBoxes().size() != 3) {
-			new InternalAnalyzerException("Mul expression has illegal number of args");
-		}
-		
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
-		JimpleInjector.setLevelOfAssignStmt(
-				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
+
 	}
 
 	@Override
 	public void caseOrExpr(OrExpr v) {
-
 		logger.finest("Or Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext != StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("Or expression in wrong context");
-		}
-		if (callingStmt.getUseBoxes().size() != 3) {
-			new InternalAnalyzerException("Or expression has illegal number of args");
-		}
-		
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(0).getValue(), callingStmt);
-		JimpleInjector.addLevelInAssignStmt(
-				(Local) callingStmt.getUseBoxes().get(1).getValue(), callingStmt);
-		JimpleInjector.setLevelOfAssignStmt(
-				(Local) callingStmt.getDefBoxes().get(0).getValue(), callingStmt);
+
 	}
 
 	@Override
@@ -313,42 +270,34 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseShlExpr(ShlExpr v) {
+		logger.finest("Shl Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
+
 	}
 
 	@Override
 	public void caseShrExpr(ShrExpr v) {
+		logger.finest("Shr Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
+
 	}
 
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
+		logger.finest("Ushr Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
 	}
 
 	@Override
 	public void caseSubExpr(SubExpr v) {
+		logger.finest("Sub Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
 	}
 
 	@Override
 	public void caseXorExpr(XorExpr v) {
+		logger.finest("Xor Expr identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
-		}
 	}
 
 	@Override
