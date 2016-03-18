@@ -401,7 +401,7 @@ public class HandleStmt {
 	 */
 	public SecurityLevel addLevelOfField(Object o, String field) {
 		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
-		logger.log(Level.INFO, "Add level {0} of local {1} to assignment-level",
+		logger.log(Level.INFO, "Add level {0} of field {1} to assignment-level",
 				new Object[] {
 				fieldLevel, field });
 		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
@@ -415,8 +415,11 @@ public class HandleStmt {
 	 * @return
 	 */
 	public SecurityLevel addLevelOfArrayField(Object o, String field) {
+
 		// TODO
-		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
+		SecurityLevel fieldLevel = om.getFieldLevel(o, field);		
+		logger.log(Level.INFO, "Add level {0} of array-field {1} to assignment-level",
+				new Object[] {fieldLevel, field });
 		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
 				fieldLevel));
 		return om.getAssignmentLevel();
@@ -459,11 +462,15 @@ public class HandleStmt {
 	 * @param field
 	 * @return
 	 */
-	public SecurityLevel setLevelOfField(Object o, String field) {
+	public SecurityLevel setLevelOfField(Object o, String field) {		
+		logger.log(Level.INFO, "Set level of field {0} to {1}",
+				new Object[] {field, hsu.joinWithGPC(om.getAssignmentLevel())});
 		if (!hsu.checkGlobalPC(o, field)) {
 			abort(o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
+		logger.log(Level.INFO, "New level of field {0} is {1}",
+				new Object[] {field, om.getFieldLevel(o, field)});
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
 	}
@@ -488,10 +495,14 @@ public class HandleStmt {
 	 */
 	public SecurityLevel setLevelOfArrayField(Object o, String field,
 			String localForObject, String localForIndex) {
+		logger.log(Level.INFO, "Set level of array-field {0} to {1}",
+				new Object[] {field, hsu.joinWithGPC(om.getAssignmentLevel())});
 		if (!hsu.checkArrayWithGlobalPC(o, field, localForObject, localForIndex)) {
 			abort(o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
+		logger.log(Level.INFO, "New level of array-field {0} is {1}",
+				new Object[] {field, om.getFieldLevel(o, field)});
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
 	}
@@ -514,10 +525,14 @@ public class HandleStmt {
 	 */
 	public SecurityLevel setLevelOfArrayField(Object o, String field,
 			String localForObject) {
+		logger.log(Level.INFO, "Set level of array-field {0} to {1}",
+				new Object[] {field, hsu.joinWithGPC(om.getAssignmentLevel())});
 		if (!hsu.checkArrayWithGlobalPC(o, field, localForObject)) {
 			abort(o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
+		logger.log(Level.INFO, "New level of array-field {0} is {1}",
+				new Object[] {field, om.getFieldLevel(o, field)});
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
 	}

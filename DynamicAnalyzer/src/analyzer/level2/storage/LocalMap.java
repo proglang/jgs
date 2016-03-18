@@ -89,9 +89,11 @@ public class LocalMap {
 	 */
 	public SecurityLevel getLevel(String signature) {
 		if (!localMap.containsKey(signature)) {
-			logger.warning("Expected local not found in lMap. "
+			/*logger.warning("Expected local " + signature + " not found in lMap. "
 					+ "It's going to be inserted.");
-			localMap.put(signature, SecurityLevel.LOW);
+			localMap.put(signature, SecurityLevel.LOW);*/
+			new InternalAnalyzerException("Expected local " 
+			+ signature + " not found in LocalMap");
 		}
 		return localMap.get(signature);
 	}
