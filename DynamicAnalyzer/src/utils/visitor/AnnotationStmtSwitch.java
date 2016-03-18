@@ -29,6 +29,7 @@ import soot.jimple.ThrowStmt;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NotSupportedStmtException;
 import utils.logging.L1Logger;
+import utils.visitor.AnnotationValueSwitch.RightElement;
 import utils.visitor.AnnotationValueSwitch.StmtContext;
 
 import java.util.ArrayList;
@@ -94,19 +95,45 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		}
 		
 		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
+		
+		
+		Value leftOperand = aStmt.getLeftOp();
 
-		switch (valueSwitch.rightElement) {
+		switch (AnnotationValueSwitch.rightElement) {
 		  case NOT: break;
 		  case NEW_ARRAY: 
-			  System.out.println(stmt.getLeftOp());
-			  JimpleInjector.addArrayToObjectMap((Local) stmt.getLeftOp(), stmt);
+			  JimpleInjector.addArrayToObjectMap((Local) leftOperand, aStmt);
 			  break;
 		  case NEW_UNDEF_OBJECT: break;
-		  default: new InternalAnalyzerException("Unexpected newExprContext");
+		  case MAKE_HIGH: break; // This two cases are treated later
+		  case MAKE_LOW: break;
+		  default: 
+			  new InternalAnalyzerException(
+					"Unexpected Context: " 
+					+ AnnotationValueSwitch.rightElement);
 		}
 		
 
-		aStmt.getDefBoxes().get(0).getValue().apply(valueSwitch);
+		leftOperand.apply(valueSwitch);
+		
+		/* This must be done after the regular valueSwitch. Otherwise the
+		 * returnlevel of the MakeHigh/MakeLow Method would overwrite
+		 * the new level of the local.
+		**/
+		switch (AnnotationValueSwitch.rightElement) {
+		  case MAKE_HIGH:
+			  logger.finest("Make left operand high");
+			  JimpleInjector.makeLocalHigh((Local) leftOperand, aStmt);
+			  break;
+		  case MAKE_LOW:
+			  logger.finest("Make left operand low");
+			  JimpleInjector.makeLocalLow((Local) leftOperand, aStmt);
+			  break;
+		  default: break;
+		}
+		
+
+		AnnotationValueSwitch.rightElement = RightElement.NOT;
 
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}

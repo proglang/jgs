@@ -35,13 +35,13 @@ public class HandleStmtUtils {
 	 * @return
 	 */
 	protected boolean checkLocalPC(String signature) {		
-		System.out.println(signature);
 		if (lm == null) {
-			System.out.println("sdf");
+			System.out.println("sdf"); // TODO
 		}
 		SecurityLevel level = lm.getLevel(signature);
 		SecurityLevel lpc = lm.getLocalPC();
-		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {level, lpc });
+		LOGGER.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2})", 
+				new Object[] {signature, level, lpc });
 		boolean res = true;
 		if (level == SecurityLevel.LOW && lpc == SecurityLevel.HIGH) {
 			res = false;
@@ -55,9 +55,13 @@ public class HandleStmtUtils {
 	 * @return
 	 */
 	protected boolean checkGlobalPC(Object o, String signature) {
-		LOGGER.log(Level.INFO, "Check if {0} >= {1}", new Object[] {om.getFieldLevel(o, signature), om.getGlobalPC()  });
+		LOGGER.log(Level.INFO, "Check if level of field {0} ({1}) >= gpc ({1})",
+				new Object[] {
+				 signature, om.getFieldLevel(o, signature), om.getGlobalPC()
+				});
 		boolean res = true;
-		if (om.getFieldLevel(o, signature) == SecurityLevel.LOW && om.getGlobalPC() == SecurityLevel.HIGH) {
+		if (om.getFieldLevel(o, signature) == SecurityLevel.LOW 
+				&& om.getGlobalPC() == SecurityLevel.HIGH) {
 			res = false;
 		}
 		return res;		
@@ -74,17 +78,25 @@ public class HandleStmtUtils {
 			String localForObject, String localForIndex) {
 		boolean res = true;
 		SecurityLevel localsAndGPC = joinWithGPC(joinLocals(localForObject, localForIndex));
-		if (om.getFieldLevel(o, field) == SecurityLevel.LOW && localsAndGPC == SecurityLevel.HIGH) {
+		if (om.getFieldLevel(o, field) == SecurityLevel.LOW 
+				&& localsAndGPC == SecurityLevel.HIGH) {
 			res = false;
 		}
 		return res;		
 	}
 	
+	/**
+	 * @param o
+	 * @param field
+	 * @param localForObject
+	 * @return
+	 */
 	public boolean checkArrayWithGlobalPC(Object o, String field,
 			String localForObject) {
 		boolean res = true;
 		SecurityLevel localsAndGPC = joinWithGPC(lm.getLevel(localForObject));
-		if (om.getFieldLevel(o, field) == SecurityLevel.LOW && localsAndGPC == SecurityLevel.HIGH) {
+		if (om.getFieldLevel(o, field) == SecurityLevel.LOW 
+				&& localsAndGPC == SecurityLevel.HIGH) {
 			res = false;
 		}
 		return res;	
@@ -102,7 +114,7 @@ public class HandleStmtUtils {
 	 */
 	protected SecurityLevel joinLocals(String... stringList) {
 		SecurityLevel result = SecurityLevel.LOW;
-		for(String op: stringList) {
+		for (String op: stringList) {
 			if (lm.getLevel(op) == SecurityLevel.HIGH) {
 				result = SecurityLevel.HIGH;
 			}

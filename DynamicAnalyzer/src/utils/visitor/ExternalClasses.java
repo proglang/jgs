@@ -4,6 +4,7 @@ import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Unit;
 import utils.logging.L1Logger;
+import utils.visitor.AnnotationValueSwitch.RightElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,16 +76,17 @@ public class ExternalClasses {
 	static class MakeHigh implements Command {
 		@Override
 		public void execute(Unit pos, Local[] params) {
-			assert (params.length == 1);
+			/*assert (params.length == 1);
 			logger.fine("Variable" + params[0].toString() + " is set to high");
-			JimpleInjector.makeLocalHigh(params[0], pos);
+			JimpleInjector.makeLocalHigh(params[0], pos);*/
+			AnnotationValueSwitch.rightElement = RightElement.MAKE_HIGH;
 		}
 	}
 	
 	static class MakeLow implements Command {
 		@Override
 		public void execute(Unit pos, Local[] params) {
-			
+			AnnotationValueSwitch.rightElement = RightElement.MAKE_LOW;
 		}
 	}
 }

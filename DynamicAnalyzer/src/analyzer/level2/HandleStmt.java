@@ -31,7 +31,7 @@ public class HandleStmt {
 	* of the globalPC
 	*/
 	public HandleStmt() {
-		logger.log(Level.INFO, "invoke new HandleStmt");
+		logger.log(Level.INFO, "Create new HandleStmt instance");
 		lm = new LocalMap();
 		om = ObjectMap.getInstance();
 		hsu = new HandleStmtUtils(lm, om);
@@ -44,11 +44,11 @@ public class HandleStmt {
 	* It triggers the setup of the logger.
 	*/
 	public static void init() {
-		logger.log(Level.INFO, "init HS");
+		logger.log(Level.INFO, "Init HS");
 		try {
 			L2Logger.setup();
 		} catch (IOException e) {
-			logger.warning("setting up the logger was not successful");
+			logger.warning("Set up of logger failed");
 			e.printStackTrace();
 		}
 		if (om == null) {
@@ -63,7 +63,7 @@ public class HandleStmt {
 	* It resets the globalPC to its initial value
 	*/
 	public void close() {
-		logger.log(Level.INFO, "close HS");
+		logger.log(Level.INFO, "Close HS");
 		om.popGlobalPC();
 		lm.checkisLPCStackEmpty();
 	}
@@ -123,7 +123,7 @@ public class HandleStmt {
 		}
 		
 		if (!containsObjectInObjectMap(a)) {
-			new InternalAnalyzerException("Adding Object " + a + " to ObjectMap failed");
+			new InternalAnalyzerException("Add Object " + a + " to ObjectMap failed");
 		}
 	}
 	
@@ -174,6 +174,7 @@ public class HandleStmt {
 	 * @param signature
 	 */
 	public void makeFieldHigh(Object o, String signature) {
+		logger.log(Level.INFO, "Set SecurityLevel of field {0} to HIGH", signature);
 		om.setField(o, signature, SecurityLevel.HIGH);
 	}
 	
@@ -201,7 +202,7 @@ public class HandleStmt {
 	 * @param signature
 	 */
 	public void addLocal(String signature) {
-		logger.log(Level.INFO, "add Local {0}", signature);
+		logger.log(Level.INFO, "Add Local {0} with Level LOW to LocalMap", signature);
 		lm.insertElement(signature, SecurityLevel.LOW); 
 	}
 	
@@ -211,6 +212,7 @@ public class HandleStmt {
 	 * @return
 	 */
 	protected SecurityLevel setLevelOfLocal(String signature, SecurityLevel level) {
+		logger.log(Level.INFO, "Set level of local {0} to LOW", signature);
 		lm.setLevel(signature, level);
 		return lm.getLevel(signature);
 	}
@@ -219,8 +221,7 @@ public class HandleStmt {
 	 * @param local
 	 * @return
 	 */
-	public SecurityLevel setLevelOfLocal(String local) {
-		
+	public SecurityLevel setLevelOfLocal(String local) {	
 		if (!hsu.checkLocalPC(local)) {
 			abort(local);
 		}
@@ -241,14 +242,18 @@ public class HandleStmt {
 	 * @param signature
 	 */
 	public void makeLocalHigh(String signature) {
+		logger.info("Set level of local" + signature + " to HIGH");
 		lm.setLevel(signature, SecurityLevel.HIGH);
+		logger.info("New securitylevel: " + lm.getLevel(signature));
 	}
 	
 	/**
 	 * @param signature
 	 */
 	public void makeLocalLow(String signature) {
+		logger.info("Set level of " + signature + " to LOW");
 		lm.setLevel(signature, SecurityLevel.LOW);
+		logger.info("New securitylevel: " + lm.getLevel(signature));
 	}
 
 	/**

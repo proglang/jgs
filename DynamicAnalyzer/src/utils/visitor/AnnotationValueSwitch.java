@@ -97,7 +97,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		MAKE_HIGH, MAKE_LOW
 	} 
 	
-	protected RightElement rightElement = RightElement.NOT;
+	protected static RightElement rightElement = RightElement.NOT;
 	
 	/*
 	 * The statement which called the AnnotationValueSwitch. This variable is set
@@ -404,7 +404,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
 		rightElement = RightElement.NEW_ARRAY;
-		logger.finest("New Array expression identified");
+		logger.finest("New Array expression identified: " + callingStmt.toString());
 		System.out.println("Base Type " + v.getBaseType());
 		System.out.println("Class " + v.getClass());
 		System.out.println("Size " + v.getSize());
@@ -419,7 +419,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
 		rightElement = RightElement.NEW_ARRAY;
-		logger.finest("New Multiarray expression identified");
+		logger.finest("New Multiarray expression identified: " + callingStmt.toString());
 		System.out.println("Size count " + v.getSizeCount());
 		System.out.println("Base Type " + v.getBaseType().toString());
 		System.out.println("Class " + v.getClass().toString());
@@ -528,7 +528,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLocal(Local l) {	
-		rightElement = RightElement.NOT;
+		// rightElement = RightElement.NOT;
 		logger.finest("Local identified " + l.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			JimpleInjector.addLevelInAssignStmt(l, callingStmt);
