@@ -15,7 +15,7 @@ public class MakeHigh {
 //		String[] arr = {"a", "b"};
 		
 		local = HelperClass.makeHigh(local);
-		local = "bg";
+		//local = "bg";
 //		field = HelperClass.makeHigh(field);
 //		arr[0] = HelperClass.makeHigh(arr[1]);
 

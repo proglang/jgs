@@ -109,7 +109,7 @@ public class AssignLocalsFail {
 		int res ;
 		int high = 0;
 		
-		hs.checkCondition(123, "int_high");
+		hs.checkCondition("123", "int_high");
 		if (high == 0) {
 		
 			hs.addLevelOfLocal("TestSubClass_ts");
@@ -117,7 +117,7 @@ public class AssignLocalsFail {
 			res = ts.methodWithConstReturn();
 			hs.assignReturnLevelToLocal("int_res");
 			
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 		
 		}
 		

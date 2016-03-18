@@ -33,6 +33,7 @@ ForLoops
 >> ArithmeticExpressionsFail
 >> Fail/Success testclasses
 >> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)
+>> konsistente variablenbezeichnung
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?

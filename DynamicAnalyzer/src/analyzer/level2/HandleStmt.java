@@ -13,36 +13,35 @@ import java.util.logging.Logger;
 
 /**
  * A class with all neccessary methods to perform an analysis.
+ * 
  * @author koenigr
  */
 public class HandleStmt {
-	
+
 	private static final Logger logger = L2Logger.getLogger();
-	
+
 	private LocalMap lm;
 	private static ObjectMap om;
 	private HandleStmtUtils hsu;
-	
 
-	
 	/**
-	* This must be called at the beginning of every method in the analyzed code.
-	* It creates a new LocalMap for the method and adjusts the {@link SecurityLevel}
-	* of the globalPC
-	*/
+	 * This must be called at the beginning of every method in the analyzed
+	 * code. It creates a new LocalMap for the method and adjusts the
+	 * {@link SecurityLevel} of the globalPC
+	 */
 	public HandleStmt() {
 		logger.log(Level.INFO, "Create new HandleStmt instance");
 		lm = new LocalMap();
 		om = ObjectMap.getInstance();
 		hsu = new HandleStmtUtils(lm, om);
-		
+
 		om.pushGlobalPC(hsu.joinLevels(om.getGlobalPC(), lm.getLocalPC()));
 	}
-	
+
 	/**
-	* This method must be called just once at the beginning of the main method.
-	* It triggers the setup of the logger.
-	*/
+	 * This method must be called just once at the beginning of the main method.
+	 * It triggers the setup of the logger.
+	 */
 	public static void init() {
 		logger.log(Level.INFO, "Init HS");
 		try {
@@ -57,38 +56,39 @@ public class HandleStmt {
 		om.flush();
 		om.clearAssignmentLevel();
 	}
-	
+
 	/**
-	* This must be called at the end of every method in the analyzed code.
-	* It resets the globalPC to its initial value
-	*/
+	 * This must be called at the end of every method in the analyzed code. It
+	 * resets the globalPC to its initial value
+	 */
 	public void close() {
 		logger.log(Level.INFO, "Close HS");
 		om.popGlobalPC();
 		lm.checkisLPCStackEmpty();
 	}
-	
+
 	protected void abort(String sink) {
 		logger.log(Level.SEVERE, "", new IllegalFlowException(
 				"System.exit because of illegal flow to " + sink));
 		System.exit(0);
 	}
-	
+
 	/**
-	 * @param l The securitylevel of actual return-statement.
+	 * @param l
+	 *            The securitylevel of actual return-statement.
 	 * @return The new returnlevel.
 	 */
 	protected SecurityLevel setActualReturnLevel(SecurityLevel l) {
 		return om.setActualReturnLevel(l);
 	}
-	
+
 	/**
 	 * @return The securitylevel of the last return-statement.
 	 */
 	protected SecurityLevel getActualReturnLevel() {
 		return om.getActualReturnLevel();
 	}
-	
+
 	/**
 	 * @param o
 	 */
@@ -96,38 +96,38 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
 		om.insertNewObject(o);
 	}
-	
+
 	/**
 	 * @param o
 	 * @param signature
 	 * @return
 	 */
 	public SecurityLevel addFieldToObjectMap(Object o, String signature) {
-		logger.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {signature, o});
+		logger.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {
+				signature, o });
 		return om.setField(o, signature);
 	}
-	
 
 	/**
 	 * @param a
 	 */
 	public void addArrayToObjectMap(Object[] a) {
-		
+
 		logger.info("Array length " + a.length);
-		
+
 		logger.log(Level.INFO, "Add Array {0} to ObjectMap", a.toString());
-		
+
 		addObjectToObjectMap(a);
-		for (int i = 0; i < a.length ; i++) {
+		for (int i = 0; i < a.length; i++) {
 			addFieldToObjectMap(a, Integer.toString(i));
 		}
-		
+
 		if (!containsObjectInObjectMap(a)) {
-			new InternalAnalyzerException("Add Object " + a + " to ObjectMap failed");
+			new InternalAnalyzerException("Add Object " + a
+					+ " to ObjectMap failed");
 		}
 	}
-	
-	
+
 	/**
 	 * @param o
 	 * @return
@@ -135,7 +135,7 @@ public class HandleStmt {
 	protected boolean containsObjectInObjectMap(Object o) {
 		return om.containsObject(o);
 	}
-	
+
 	/**
 	 * @param o
 	 * @param signature
@@ -144,14 +144,14 @@ public class HandleStmt {
 	protected boolean containsFieldInObjectMap(Object o, String signature) {
 		return om.containsField(o, signature);
 	}
-	
+
 	/**
 	 * @return
 	 */
 	protected int getNumberOfElements() {
 		return om.getNumberOfElements();
 	}
-	
+
 	/**
 	 * @param o
 	 * @return
@@ -159,7 +159,7 @@ public class HandleStmt {
 	protected int getNumberOfFields(Object o) {
 		return om.getNumberOfFields(o);
 	}
-	
+
 	/**
 	 * @param o
 	 * @param signature
@@ -168,68 +168,47 @@ public class HandleStmt {
 	protected SecurityLevel getFieldLevel(Object o, String signature) {
 		return om.getFieldLevel(o, signature);
 	}
-	
+
 	/**
 	 * @param o
 	 * @param signature
 	 */
 	public void makeFieldHigh(Object o, String signature) {
-		logger.log(Level.INFO, "Set SecurityLevel of field {0} to HIGH", signature);
+		logger.log(Level.INFO, "Set SecurityLevel of field {0} to HIGH",
+				signature);
 		om.setField(o, signature, SecurityLevel.HIGH);
 	}
-	
+
 	/**
 	 * @param o
 	 * @param signature
 	 */
 	public void makeFieldLow(Object o, String signature) {
-		logger.log(Level.INFO, "Set SecurityLevel of field {0} to LOW", signature);
+		logger.log(Level.INFO, "Set SecurityLevel of field {0} to LOW",
+				signature);
 		om.setField(o, signature, SecurityLevel.LOW);
 	}
-	
+
 	/**
 	 * @param signature
 	 * @param level
 	 */
 	public void addLocal(String signature, SecurityLevel level) {
-		logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap", 
-				new Object[] {signature, level });
+		logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap",
+				new Object[] { signature, level });
 
-		lm.insertElement(signature, level); 
+		lm.insertElement(signature, level);
 	}
-	
+
 	/**
 	 * @param signature
 	 */
 	public void addLocal(String signature) {
-		logger.log(Level.INFO, "Add Local {0} with Level LOW to LocalMap", signature);
-		lm.insertElement(signature, SecurityLevel.LOW); 
+		logger.log(Level.INFO, "Add Local {0} with Level LOW to LocalMap",
+				signature);
+		lm.insertElement(signature, SecurityLevel.LOW);
 	}
-	
-	/**
-	 * @param signature
-	 * @param level
-	 * @return
-	 */
-	protected SecurityLevel setLevelOfLocal(String signature, SecurityLevel level) {
-		logger.log(Level.INFO, "Set level of local {0} to LOW", signature);
-		lm.setLevel(signature, level);
-		return lm.getLevel(signature);
-	}
-	
-	/**
-	 * @param local
-	 * @return
-	 */
-	public SecurityLevel setLevelOfLocal(String local) {	
-		if (!hsu.checkLocalPC(local)) {
-			abort(local);
-		}
-		lm.setLevel(local, hsu.joinWithLPC(om.getAssignmentLevel()));
-		om.clearAssignmentLevel();
-		return lm.getLevel(local);
-	}
-	
+
 	/**
 	 * @param signature
 	 * @return
@@ -237,16 +216,17 @@ public class HandleStmt {
 	protected SecurityLevel getLocalLevel(String signature) {
 		return lm.getLevel(signature);
 	}
-	
+
 	/**
 	 * @param signature
 	 */
 	public void makeLocalHigh(String signature) {
-		logger.info("Set level of local" + signature + " to HIGH");
+		logger.info("Set level of local " + signature + " to HIGH");
 		lm.setLevel(signature, SecurityLevel.HIGH);
-		logger.info("New securitylevel: " + lm.getLevel(signature));
+		logger.info("New securitylevel of local "
+				+ signature + " is " + lm.getLevel(signature));
 	}
-	
+
 	/**
 	 * @param signature
 	 */
@@ -257,35 +237,39 @@ public class HandleStmt {
 	}
 
 	/**
-	 * Push a new localPC and the hashvalue for its corresponding 
-	 * postdominator unit to the LPCList.
-	 * @param l The new securitylevel.
-	 * @param domHash The hastvaule of the postdominator.
+	 * Push a new localPC and the hashvalue for its corresponding postdominator
+	 * unit to the LPCList.
+	 * 
+	 * @param l
+	 *            The new securitylevel.
+	 * @param domHash
+	 *            The hastvaule of the postdominator.
 	 * @return The new localPC.
 	 */
 	protected SecurityLevel pushLocalPC(SecurityLevel l, int domHash) {
 		lm.pushLocalPC(l, domHash);
 		return lm.getLocalPC();
 	}
-	
+
 	/**
-	 * Remove the first element of the localPC list. The domHash value
-	 * is used to check whether the first element belongs to the
-	 * actual dominator.
-	 * @param domHash Hashvalue for actual dominator.
+	 * Remove the first element of the localPC list. The domHash value is used
+	 * to check whether the first element belongs to the actual dominator.
+	 * 
+	 * @param domHash
+	 *            Hashvalue for actual dominator.
 	 */
 	protected void popLocalPC(int domHash) {
 		logger.info("Pop local pc.");
 		lm.popLocalPC(domHash);
 	}
-	
+
 	/**
 	 * @return Actual localPC without removing it from the list.
 	 */
 	protected SecurityLevel getLocalPC() {
 		return lm.getLocalPC();
 	}
-	
+
 	/**
 	 * @param l
 	 * @return
@@ -295,14 +279,14 @@ public class HandleStmt {
 		om.pushGlobalPC(l);
 		return om.getGlobalPC();
 	}
-	
+
 	/**
 	 * @return
 	 */
 	protected SecurityLevel getGlobalPC() {
 		return om.getGlobalPC();
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -310,8 +294,6 @@ public class HandleStmt {
 		return om.popGlobalPC();
 	}
 
-
-	
 	/**
 	 * @param pos
 	 * @param local
@@ -321,7 +303,7 @@ public class HandleStmt {
 		lm.setLevel(local, hsu.joinWithLPC(om.getArgLevelAt(pos)));
 		return lm.getLevel(local);
 	}
-	
+
 	/**
 	 * @param local
 	 */
@@ -331,7 +313,6 @@ public class HandleStmt {
 		}
 		setLevelOfLocal(local, om.getActualReturnLevel());
 	}
-	
 
 	/**
 	 * 
@@ -339,7 +320,8 @@ public class HandleStmt {
 	public void returnConstant() {
 		logger.log(Level.INFO, "Return a constant value");
 		om.setActualReturnLevel(lm.getLocalPC()); // TODO ??
-		// TODO hier vielleicht eher auch addLevel? Dann kann man es n�mlich weglassen...
+		// TODO hier vielleicht eher auch addLevel? Dann kann man es n�mlich
+		// weglassen...
 		// Das Problem ist aber, wenn der Returnwert nicht assigned wird...
 	}
 
@@ -347,42 +329,47 @@ public class HandleStmt {
 	 * @param signature
 	 */
 	public void returnLocal(String signature) {
-		logger.log(Level.INFO, "Return Local {0}", signature);
+		logger.log(Level.INFO, "Return Local {0} with level {1}", new Object[] {
+				signature, lm.getLevel(signature) });
 		// lm.setReturnLevel(lm.getLevel(signature)); // TODO: not needed??
-		om.setActualReturnLevel(lm.getLevel(signature)); 
+		om.setActualReturnLevel(lm.getLevel(signature));
 	}
-	
+
 	/**
 	 * @param arguments
 	 */
 	public void storeArgumentLevels(String... arguments) {
-		
+
 		ArrayList<SecurityLevel> levelArr = new ArrayList<SecurityLevel>();
 		for (String el : arguments) {
 			levelArr.add(lm.getLevel(el));
 		}
 		om.setActualArguments(levelArr);
 	}
-	
 
-	
 	/**
 	 * Check condition of an if-statement. This operation merges the security-
 	 * levels of all locals with the actual localPC and stores them together
 	 * with the hash value of the corresponding postdominator in the localmap.
-	 * @param domHash Hashvalue of the postdominator.
-	 * @param args List of signatore-string of all locals.
+	 * 
+	 * @param domHash
+	 *            Hashvalue of the postdominator.
+	 * @param args
+	 *            List of signatore-string of all locals.
 	 */
 	public void checkCondition(String domHash, String... args) {
-		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)), Integer.valueOf(domHash));
+		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)),
+				Integer.valueOf(domHash));
 		om.pushGlobalPC(hsu.joinWithGPC(lm.getLocalPC()));
 	}
-	
+
 	/**
 	 * Exit scope of an if-Statement. For each if-statement which ends at this
 	 * position one lpc is popped from LPCstack. If the lpc belongs to this
 	 * position is checked with the hashvalue of the position.
-	 * @param domHash Hashvalue of the dominator.
+	 * 
+	 * @param domHash
+	 *            Hashvalue of the dominator.
 	 */
 	public void exitInnerScope(String domHash) {
 		while (lm.domHashEquals(Integer.valueOf(domHash))) {
@@ -391,31 +378,37 @@ public class HandleStmt {
 			om.popGlobalPC();
 		}
 	}
-	
+
 	/**
 	 * @param local
 	 * @return
 	 */
 	public SecurityLevel addLevelOfLocal(String local) {
 		SecurityLevel localLevel = lm.getLevel(local);
-		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), localLevel));
+		logger.log(Level.INFO, "Add level {0} of local {1} to assignment-level",
+				new Object[] {localLevel, local });
+		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
+				localLevel));
 		return om.getAssignmentLevel();
 	}
-	
-
 
 	/**
 	 * This method is for instance fields and for static fields.
+	 * 
 	 * @param o
 	 * @param field
 	 * @return
 	 */
 	public SecurityLevel addLevelOfField(Object o, String field) {
 		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
-		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), fieldLevel));
+		logger.log(Level.INFO, "Add level {0} of local {1} to assignment-level",
+				new Object[] {
+				fieldLevel, field });
+		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
+				fieldLevel));
 		return om.getAssignmentLevel();
 	}
-	
+
 	/**
 	 * @param o
 	 * @param field
@@ -424,13 +417,44 @@ public class HandleStmt {
 	public SecurityLevel addLevelOfArrayField(Object o, String field) {
 		// TODO
 		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
-		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(), fieldLevel));
+		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
+				fieldLevel));
 		return om.getAssignmentLevel();
 	}
-
+	
+	/**
+	 * @param signature
+	 * @param level
+	 * @return
+	 */
+	protected SecurityLevel setLevelOfLocal(String signature,
+			SecurityLevel level) {
+		logger.log(Level.INFO, "Set level of local {0} to {1}", 
+				new Object[] {signature, level});
+		lm.setLevel(signature, level);
+		return lm.getLevel(signature);
+	}
+	
+	/**
+	 * @param signature
+	 * @return
+	 */
+	public SecurityLevel setLevelOfLocal(String signature) {		
+		logger.log(Level.INFO, "Set level of local {0} to {1}",
+				new Object[] {signature, hsu.joinWithLPC(om.getAssignmentLevel())});
+		if (!hsu.checkLocalPC(signature)) {
+			abort(signature);
+		}
+		lm.setLevel(signature, hsu.joinWithLPC(om.getAssignmentLevel()));
+		logger.log(Level.INFO, "New level of local {0} is {1}",
+				new Object[] {signature, lm.getLevel(signature)});
+		om.clearAssignmentLevel();
+		return lm.getLevel(signature);
+	}
 
 	/**
 	 * This method is for instance-fields and for static-fields
+	 * 
 	 * @param o
 	 * @param field
 	 * @return
@@ -443,58 +467,73 @@ public class HandleStmt {
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
 	}
-	
+
 	/**
 	 * Check the array-field and the local-level of the object against the gpc,
-	 * and read the level stored as assignment-level. This level - joined with the gpc -
-	 * is set as the new level for given array-field. This method is needed if the index
-	 * is a local and must be checked against the gpc.
-	 * @param o - Object - The array object
-	 * @param field - String - the signature of the field (array element)
-	 * @param localForObject - String - the signature of the local where the object is stored
-	 * @param localForIndex - String - the signature of the local where the index is stored
+	 * and read the level stored as assignment-level. This level - joined with
+	 * the gpc - is set as the new level for given array-field. This method is
+	 * needed if the index is a local and must be checked against the gpc.
+	 * 
+	 * @param o
+	 *            - Object - The array object
+	 * @param field
+	 *            - String - the signature of the field (array element)
+	 * @param localForObject
+	 *            - String - the signature of the local where the object is
+	 *            stored
+	 * @param localForIndex
+	 *            - String - the signature of the local where the index is
+	 *            stored
 	 * @return Returns the new SecurityLevel of the array-element
 	 */
-	public SecurityLevel setLevelOfArrayField(
-			Object o, String field, String localForObject, String localForIndex) {
-		if (!hsu.checkArrayWithGlobalPC(
-				o, field, localForObject, localForIndex)) {
+	public SecurityLevel setLevelOfArrayField(Object o, String field,
+			String localForObject, String localForIndex) {
+		if (!hsu.checkArrayWithGlobalPC(o, field, localForObject, localForIndex)) {
 			abort(o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		om.clearAssignmentLevel();
 		return om.getFieldLevel(o, field);
 	}
-	
+
 	/**
 	 * Check the array-field and the local-level of the object against the gpc,
-	 * and read the level stored as Assignmentlevel. This level - joined with the gpc -
-	 * is set as the new level for given array-field. This method is needed if the index
-	 * is a constant and it is not needed to be checked against the gpc.
-	 * @param o - Object - The array object
-	 * @param field - String - the signature of the field (array element)
-	 * @param localForObject - String - the signature of the local where the object is stored
+	 * and read the level stored as Assignmentlevel. This level - joined with
+	 * the gpc - is set as the new level for given array-field. This method is
+	 * needed if the index is a constant and it is not needed to be checked
+	 * against the gpc.
+	 * 
+	 * @param o
+	 *            - Object - The array object
+	 * @param field
+	 *            - String - the signature of the field (array element)
+	 * @param localForObject
+	 *            - String - the signature of the local where the object is
+	 *            stored
 	 * @return Returns the new SecurityLevel of the array-element
 	 */
-	public SecurityLevel setLevelOfArrayField(Object o, String field, String localForObject) {
+	public SecurityLevel setLevelOfArrayField(Object o, String field,
+			String localForObject) {
 		if (!hsu.checkArrayWithGlobalPC(o, field, localForObject)) {
 			abort(o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		om.clearAssignmentLevel();
-		return om.getFieldLevel(o, field);		
+		return om.getFieldLevel(o, field);
 	}
 
-
 	/**
-	 * @param local
+	 * @param signature
 	 */
-	public void checkThatNotHigh(String local) {
-		logger.info("Check that " + lm.getLevel(local).toString() + " is not HIGH");
-		if (lm.getLevel(local) == SecurityLevel.HIGH) {
+	public void checkThatNotHigh(String signature) {
+		logger.info("Check that " + lm.getLevel(signature)
+				+ " is not HIGH");
+		if (lm.getLevel(signature) == SecurityLevel.HIGH) {
 			logger.info("it's high");
-			throw new IllegalFlowException("Passed argument " + local
-			+ " with a high security level to a method which doesn't allow it.");			
+			throw new IllegalFlowException(
+					"Passed argument " + signature
+					+ " with a high security level to a method "
+					+ "which doesn't allow it.");
 		}
 	}
 }

@@ -1,17 +1,18 @@
 package analyzer.level2;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import utils.exceptions.InternalAnalyzerException;
-import utils.logging.L2Logger;
 import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
+import utils.exceptions.InternalAnalyzerException;
+import utils.logging.L2Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class HandleStmtUtils {
 	
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
 	private LocalMap lm;
 	private static ObjectMap om;
 	
@@ -36,11 +37,11 @@ public class HandleStmtUtils {
 	 */
 	protected boolean checkLocalPC(String signature) {		
 		if (lm == null) {
-			System.out.println("sdf"); // TODO
+			new InternalAnalyzerException("LocalMap is not assigned");
 		}
 		SecurityLevel level = lm.getLevel(signature);
 		SecurityLevel lpc = lm.getLocalPC();
-		LOGGER.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2})", 
+		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2})", 
 				new Object[] {signature, level, lpc });
 		boolean res = true;
 		if (level == SecurityLevel.LOW && lpc == SecurityLevel.HIGH) {
@@ -55,7 +56,7 @@ public class HandleStmtUtils {
 	 * @return
 	 */
 	protected boolean checkGlobalPC(Object o, String signature) {
-		LOGGER.log(Level.INFO, "Check if level of field {0} ({1}) >= gpc ({1})",
+		logger.log(Level.INFO, "Check if level of field {0} ({1}) >= gpc ({1})",
 				new Object[] {
 				 signature, om.getFieldLevel(o, signature), om.getGlobalPC()
 				});
