@@ -11,14 +11,15 @@ public class MakeHigh {
 	 * @param args The arguments are ignored in this method.
 	 */
 	public static void main(String[] args) {
-//		String local = "initlocal";
-//		String[] arr = {"a", "b"};
+		String local = "initlocal";
+		String[] arr = {"a", "b"};
+		String[][] mularr = { {"aa"},{"bb"}};
 		
-//		local = HelperClass.makeHigh(local);
-//		local = "bg";
+		local = HelperClass.makeHigh(local);
+		local = "bg";
 		field = HelperClass.makeHigh(field);
-//		arr[0] = HelperClass.makeHigh(arr[1]);
-
+		arr[0] = HelperClass.makeHigh(arr[1]);
+		mularr[1] = HelperClass.makeHigh(mularr[1]);
 	}
 
 }
