@@ -44,6 +44,10 @@ class BodyBuilder private  {
     return this
   }
 
+  def whileLoop(cond : Expr, body : Stmt) : BodyBuilder = {
+    return whileLoop(cond, BodyBuilder.begin().seq(body))
+  }
+
   def whileLoop(cond : Expr, body : BodyBuilder) : BodyBuilder = {
 
     val bodyHead = body.chain.getFirst
@@ -82,4 +86,9 @@ class BodyBuilder private  {
 object BodyBuilder {
   def apply() : BodyBuilder = new BodyBuilder()
   def begin() : BodyBuilder = new BodyBuilder()
+  def begin(b : Body) : BodyBuilder = {
+    val result = new BodyBuilder()
+    for (s <- b.getUnits.asScala) result.addToChain(s.asInstanceOf[Stmt])
+    result
+  }
 }

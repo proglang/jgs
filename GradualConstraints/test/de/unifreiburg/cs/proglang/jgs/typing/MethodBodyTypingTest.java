@@ -12,10 +12,7 @@ import org.junit.rules.ExpectedException;
 import soot.Body;
 import soot.Unit;
 import soot.jimple.*;
-import soot.toolkits.graph.DirectedGraph;
-import soot.toolkits.graph.DominatorsFinder;
-import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.toolkits.graph.UnitGraph;
+import soot.toolkits.graph.*;
 import soot.toolkits.scalar.SimpleLiveLocals;
 import soot.toolkits.scalar.SmartLocalDefs;
 
@@ -390,99 +387,118 @@ public class MethodBodyTypingTest {
                 r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
 
     }
-//
-//    @Test
-//    public void testMultipleExits() throws TypingException {
-//
-//        Code.MultipleReturns g = code.new MultipleReturns();
-//        assertThat("Unexpected exit nodes: " + g.getTails(), g.getTails().stream().collect(toSet()), is(Stream.of(g.returnZ, g.returnZero, g.returnX).collect(Collectors.toSet())));
-//        assertThat("Unexpected intro nodes: " + g.getHeads(), g.getHeads().stream().collect(toSet()), is(Stream.of(g.ifO).collect(Collectors.toSet())));
-//        List<Unit> postdomsOfIfO = new MHGPostDominatorsFinder(g).getDominators(g.ifO);
-//        assertThat("IfO is not its only postdominator: ", postdomsOfIfO, is(equalTo(singletonList(g.ifO))));
-//        assertThat("Ify does not have the right successors",
-//                g.getSuccsOf(g.ifY).stream().collect(toSet()),
-//                is(equalTo(Stream.of(g.returnX, g.returnZero).collect(Collectors.toSet()))));
-//        BodyTypingResult<Level> a = analyze(g);
-//        ConstraintSet<Level> expected = makeNaive(asList(
-//                leC(code.init.get(code.varX), tvars.ret()),
-//                leC(code.init.get(code.varY), tvars.ret()),
-//                leC(code.init.get(code.varO), tvars.ret()),
-//                leC(code.init.get(code.varZ), tvars.ret())
-//        ));
-//        ConstraintSet<Level> projected = a.getConstraints().projectTo(Stream.concat(Stream.of(tvars.ret()), Stream.of(code.varX, code.varY, code.varZ, code.varO).map(a::finalTypeVariableOf)).collect(Collectors.toSet()));
-//        assertThat("Not equivalent. Orig: " + a.getConstraints(), projected, is(equivalent(expected)));
-//    }
-//
-//
-//    @Test
-//    //@Test(timeout = 3000)
-//    public void testWhile() throws TypingException {
-//        /* while (y = y) { y = z };
-//        */
-//        Expr cond = j.newEqExpr(code.localY, code.localY);
-//        Stmt body = j.newAssignStmt(code.localY, code.localZ);
-//        DirectedGraph<Unit> g = branchWhile(cond, singleton(body));
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))
-//                )),
-//                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))));
-//
-//        /* while (y = y) { y = z }; x = y;
-//        */
-//        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
-//        g = seq(branchWhile(cond, singleton(body)), singleton(afterLoop));
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX))
-//                )),
-//                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX))));
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)),
-//                        leC(finalResult.finalTypeVariableOf(code.varY), finalResult.finalTypeVariableOf(code.varX)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY))
-//                )),
-//                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varY))));
-//
-//        /* while (y = y) { y = z }; x = y; z = z + 1;
-//             sig = { z <= z*, z ~ y }
-//             cset = { z <= y*, y <= y*, y* <= x*, z <= z* }
-//
-//             unsat for sig: {z:LOW, y:?, z*:LOW}
-//             sat for {z <= z*}: {z:LOW, y:?, z*:LOW}
-//         */
-//        Stmt incZ = j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
-//        g = seq(g, incZ);
-//
-//        BodyTypingResult<Level> result = analyze(g);
-//        Function<BodyTypingResult<Level>, ConstraintSet<Level>> getConstraints = finalResult -> makeNaive(asList(
-//                leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
-//                compC(code.init.get(code.varZ), code.init.get(code.varY))));
-//
-//        assertThat(makeNaive(getConstraints.apply(result).apply(
-//                Assignments.builder(code.init.get(code.varZ), TLOW)
-//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-//
-//        assertThat(makeNaive(result.getConstraints().apply(
-//                Assignments.builder(code.init.get(code.varZ), TLOW)
-//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-//
-//        assertThat("Unsat projected fewer", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
-//                Assignments.builder(code.init.get(code.varZ), TLOW)
-//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-//        assertThat("Unsat projected", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
-//                Assignments.builder(code.init.get(code.varZ), TLOW)
-//                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-//        assertEquivalentConstraints(g, getConstraints,
-//                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
-//
-//
-//    }
+
+    @Test
+    public void testMultipleExits() throws TypingException {
+
+        Stmt returnX = j.newReturnStmt(code.localX);
+        Stmt returnZ = j.newReturnStmt(code.localZ);
+        Stmt ifY = j.newIfStmt(j.newEqExpr(code.localY, code.localY), returnX);
+        Stmt ifO = j.newIfStmt(j.newEqExpr(code.localO, code.localO), ifY);
+        Stmt returnZero = j.newReturnStmt(IntConstant.v(0));
+        Body b = BodyBuilder
+                .begin()
+                .seq(ifO)
+                .seq(returnZ)
+                .seq(ifY)
+                .seq(returnZero)
+                .seq(returnX)
+                .build();
+        DirectedGraph<Unit> g = new BriefUnitGraph(b);
+        assertThat("Unexpected exit nodes: " + g.getTails(), g.getTails().stream().collect(toSet()), is(Stream.of(returnZ, returnZero, returnX).collect(Collectors.toSet())));
+        assertThat("Unexpected intro nodes: " + g.getHeads(), g.getHeads().stream().collect(toSet()), is(Stream.of(ifO).collect(Collectors.toSet())));
+        List<Unit> postdomsOfIfO = new MHGPostDominatorsFinder(g).getDominators(ifO);
+        assertThat("IfO is not its only postdominator: ", postdomsOfIfO, is(equalTo(singletonList(ifO))));
+        assertThat("Ify does not have the right successors",
+                g.getSuccsOf(ifY).stream().collect(toSet()),
+                is(equalTo(Stream.of(returnX, returnZero).collect(Collectors.toSet()))));
+        BodyTypingResult<Level> a = analyze(b);
+        ConstraintSet<Level> expected = makeNaive(asList(
+                leC(code.init.get(code.varX), tvars.ret()),
+                leC(code.init.get(code.varY), tvars.ret()),
+                leC(code.init.get(code.varO), tvars.ret()),
+                leC(code.init.get(code.varZ), tvars.ret())
+        ));
+        ConstraintSet<Level> projected = a.getConstraints().projectTo(Stream.concat(Stream.of(tvars.ret()), Stream.of(code.varX, code.varY, code.varZ, code.varO).map(a::finalTypeVariableOf)).collect(Collectors.toSet()));
+        assertThat("Not equivalent. Orig: " + a.getConstraints(), projected, is(equivalent(expected)));
+    }
+
+
+    @Test
+    //@Test(timeout = 3000)
+    public void testWhile() throws TypingException {
+        /* while (y = y) { y = z };
+        */
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt body = j.newAssignStmt(code.localY, code.localZ);
+        Body b = BodyBuilder
+                .begin()
+                .whileLoop(cond, body)
+                .build();
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))));
+
+        /* while (y = y) { y = z }; x = y;
+        */
+        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
+        b = BodyBuilder
+            .begin()
+            .whileLoop(cond, body)
+            .seq(afterLoop).build();
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX))));
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(finalResult.finalTypeVariableOf(code.varY), finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varY))));
+
+        /* while (y = y) { y = z }; x = y; z = z + 1;
+             sig = { z <= z*, z ~ y }
+             cset = { z <= y*, y <= y*, y* <= x*, z <= z* }
+
+             unsat for sig: {z:LOW, y:?, z*:LOW}
+             sat for {z <= z*}: {z:LOW, y:?, z*:LOW}
+         */
+        Stmt incZ = j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
+        b = BodyBuilder.begin(b).seq(incZ).build();
+
+        BodyTypingResult<Level> result = analyze(b);
+        Function<BodyTypingResult<Level>, ConstraintSet<Level>> getConstraints = finalResult -> makeNaive(asList(
+                leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                compC(code.init.get(code.varZ), code.init.get(code.varY))));
+
+        assertThat(makeNaive(getConstraints.apply(result).apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+
+        assertThat(makeNaive(result.getConstraints().apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+
+        assertThat("Unsat projected fewer", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+        assertThat("Unsat projected", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+                Assignments.builder(code.init.get(code.varZ), TLOW)
+                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+        assertEquivalentConstraints(b, getConstraints,
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
+
+
+    }
 
     private BodyTypingResult<Level> analyze(Body b) throws TypingException {
         return mbTyping.generateResult(b, pc, code.init);
