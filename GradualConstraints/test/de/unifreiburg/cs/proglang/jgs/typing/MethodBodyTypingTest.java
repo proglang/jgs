@@ -21,6 +21,7 @@ import soot.toolkits.scalar.SmartLocalDefs;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -119,143 +120,158 @@ public class MethodBodyTypingTest {
 
     }
     // TODO: fix and re-enable tests w/ BodyBuilder
-//    @Test
-//    public void testIfBranches() throws TypingException {
-//        DirectedGraph<Unit> g;
+    @Test
+    public void testIfBranches() throws TypingException {
+
+        /* if (x = y) { y = z };
+        */
+        Stmt assignment = j.newAssignStmt(code.localY, code.localZ);
+        Body b = BodyBuilder.begin()
+                            .ite(j.newEqExpr(code.localX, code.localY),
+                                 assignment,
+                                 j.newNopStmt())
+                            .build();
+
+
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
+                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+        // should finish in a few iterations
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
+                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+        /* if (x = y) {  } { y = z};
+        */
+        Stmt els = j.newAssignStmt(code.localY, code.localZ);
+        b = BodyBuilder.begin()
+                       .ite(j.newEqExpr(code.localX, code.localY),
+                            j.newNopStmt(),
+                            els)
+                       .build();
+
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
+                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+        /* if (y = y) { y = z } { y = x};
+        */
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt thn = j.newAssignStmt(code.localY, code.localZ);
+        els = j.newAssignStmt(code.localY, code.localX);
+        b = BodyBuilder
+                .begin()
+                .ite(cond, thn, els)
+                .build();
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
+                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
+
+
+        /* if (y = y) { x = 1}; x = 1*/
+        cond = j.newEqExpr(code.localY, code.localY);
+        b = BodyBuilder
+                .begin()
+                .ite(cond, j.newAssignStmt(code.localX, IntConstant.v(1)), j.newNopStmt())
+                .seq(j.newAssignStmt(code.localX, IntConstant.v(1)))
+                .build();
+        BodyTypingResult<Level> r = analyze(b);
+        //TODO-needs-test: write some tests that check minimallySubsumes is not trivial!!!
+        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY)))), is(minimallySubsumes(makeNaive(singletonList(compC(code.init.get(code.varX), code.init.get(code.varY)))))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(singletonList(code.init.get(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints(), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(singletonList(r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
+        assertMinimalSubsumption(b,
+                finalResult -> makeNaive(singletonList(compC(code.init.get(code.varY), code.init.get(code.varX)))));
+
+
+    }
+
+    @Test
+    public void testNestedBranches() throws TypingException {
+
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt body = j.newAssignStmt(code.localY, code.localZ);
+        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
+        Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
+
+ /* if (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
+        Body b = BodyBuilder
+                .begin()
+                .ite(cond,
+                     BodyBuilder.begin().ite(j.newEqExpr(code.localX, code.localX), body, j.newNopStmt()).seq(incZ.get()),
+                     BodyBuilder.begin().seq(j.newNopStmt()))
+                .seq(afterLoop)
+                .seq(incZ.get())
+                .build();
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
+
+    }
 //
-//        /* if (x = y) { y = z };
-//        */
-//        Stmt assignment = j.newAssignStmt(code.localY, code.localZ);
-//        g = branchIf(j.newEqExpr(code.localX, code.localY),
-//                singleton(assignment),
-//                singleton(j.newNopStmt()));
-//
-//
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
-//                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
-//
-//        // should finish in a few iterations
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
-//                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
-//
-//        /* if (x = y) {  } { y = z};
-//        */
-//        Stmt els = j.newAssignStmt(code.localY, code.localZ);
-//        g = branchIf(j.newEqExpr(code.localX, code.localY),
-//                singleton(j.newNopStmt()),
-//                singleton(els)
-//        );
-//
-//        // misc assertions, to be sure
-//        assertThat((g.getPredsOf(g.getTails().get(0))), hasItem(els));
-//        assertThat(code.init.get(code.varY), not(is(analyze(g).finalTypeVariableOf(code.varY))));
-//
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
-//                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
-//
-//        /* if (y = y) { y = z } { y = x};
-//        */
-//        Expr cond = j.newEqExpr(code.localY, code.localY);
-//        Stmt thn = j.newAssignStmt(code.localY, code.localZ);
-//        els = j.newAssignStmt(code.localY, code.localX);
-//        g = branchIf(cond,
-//                singleton(thn),
-//                singleton(els));
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY)),
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY)))),
-//                finalResult -> new HashSet<>(asList(finalResult.finalTypeVariableOf(code.varY), code.init.get(code.varY), code.init.get(code.varX), code.init.get(code.varZ))));
-//
-//
-//        /* if (y = y) { x = 1}; x = 1*/
-//        cond = j.newEqExpr(code.localY, code.localY);
-//        g = seq(branchIf(cond, singleton(j.newAssignStmt(code.localX, IntConstant.v(1))), singleton(j.newNopStmt())), j.newAssignStmt(code.localX, IntConstant.v(1)));
-//        BodyTypingResult<Level> r = analyze(g);
-//        //TODO-needs-test: write some tests that check minimallySubsumes is not trivial!!!
-//        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), code.init.get(code.varY)))), is(minimallySubsumes(makeNaive(singletonList(compC(code.init.get(code.varX), code.init.get(code.varY)))))));
-//        assertThat(r.getConstraints().projectTo(new HashSet<>(singletonList(code.init.get(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
-//        assertThat(r.getConstraints(), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
-//        assertThat(r.getConstraints().projectTo(new HashSet<>(singletonList(r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
-//        assertThat(r.getConstraints().projectTo(new HashSet<>(asList(code.init.get(code.varX), r.finalTypeVariableOf(code.varX)))), is(minimallySubsumes(makeNaive(Collections.emptyList()))));
-//        assertMinimalSubsumption(g,
-//                finalResult -> makeNaive(singletonList(compC(code.init.get(code.varY), code.init.get(code.varX)))));
-//
-//
-//    }
-//
-//    @Test
-//    public void testNestedBranches() throws TypingException {
-//
-//        Expr cond = j.newEqExpr(code.localY, code.localY);
-//        Stmt body = j.newAssignStmt(code.localY, code.localZ);
-//        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
-//        Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
-//
-// /* if (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
-//        DirectedGraph<Unit> g = seq(branchIf(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get()), singleton(j.newNopStmt())), afterLoop, incZ.get());
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
-//                )),
-//                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
-//
-//    }
-//
-//    @Test
-//    public void testNestedBranches2() throws TypingException {
-//        Expr cond = j.newEqExpr(code.localY, code.localY);
-//        Stmt body = j.newAssignStmt(code.localY, code.localZ);
-//        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
-//        Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
-//
-//        /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
-//        /*  signature: {y, z, x} <= x* ; {x, z,y} <= z** */
-//        /*  ( x <= z* through the loop and the indirect flow from x to y) */
-//        DirectedGraph<Unit> g = seq(branchWhile(cond, seq(branchIf(j.newEqExpr(code.localX, code.localX), singleton(body), singleton(j.newNopStmt())), incZ.get())), afterLoop, incZ.get());
-//
-//        assertEquivalentConstraints(g,
-//                finalResult -> makeNaive(asList(
-//                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
-//                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
-//                )),
-//                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
-//
-//        BodyTypingResult<Level> r = analyze(g);
-////        // TODO-performance: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
-//        ConstraintSet<Level> sig = makeNaive(asList(
-//                        /* {z,y,x} <= z** */
-//                leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
-//                leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varZ)),
-//                leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varZ)),
-//
-//                        /* {y, z, x} <= x* */
-//                leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)),
-//                leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
-//                leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varX))));
-//
-//        assertThat(sig.isSatisfiedFor(types, Assignments.builder(code.init.get(code.varX), PUB)
-//                        .add(r.finalTypeVariableOf(code.varX), DYN)
-//                        .add(code.init.get(code.varY), PUB)
-//                        .add(r.finalTypeVariableOf(code.varZ), TLOW)
-//                        .add(code.init.get(code.varZ), PUB).build())
-//                , is(true));
-//        assertThat(r.getConstraints(), refines(tvars, sig));
-//    }
+    @Test
+    public void testNestedBranches2() throws TypingException {
+        Expr cond = j.newEqExpr(code.localY, code.localY);
+        Stmt body = j.newAssignStmt(code.localY, code.localZ);
+        Stmt afterLoop = j.newAssignStmt(code.localX, code.localY);
+        Supplier<Stmt> incZ = () -> j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
+
+        /* while (y = y) { if( x = x) { y = z }; z = z + 1 }; x = y; z = z + 1; */
+        /*  signature: {y, z, x} <= x* ; {x, z,y} <= z** */
+        /*  ( x <= z* through the loop and the indirect flow from x to y) */
+        Body b =
+                BodyBuilder
+                .begin()
+                .whileLoop(cond, BodyBuilder.begin().ite(j.newEqExpr(code.localX, code.localX), body, j.newNopStmt()).seq(incZ.get()))
+                .seq(afterLoop)
+                .seq(incZ.get()).build();
+
+        assertEquivalentConstraints(b,
+                finalResult -> makeNaive(asList(
+                        leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
+                        leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varZ))
+                )),
+                finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
+
+        BodyTypingResult<Level> r = analyze(b);
+//        // TODO-performance: find a solution for testing minimal subsumption more efficiently (without enumerating everything)
+        ConstraintSet<Level> sig = makeNaive(asList(
+                        /* {z,y,x} <= z** */
+                leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varZ)),
+                leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varZ)),
+                leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varZ)),
+
+                        /* {y, z, x} <= x* */
+                leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)),
+                leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)),
+                leC(code.init.get(code.varX), r.finalTypeVariableOf(code.varX))));
+
+        assertThat(sig.isSatisfiedFor(types, Assignments.builder(code.init.get(code.varX), PUB)
+                        .add(r.finalTypeVariableOf(code.varX), DYN)
+                        .add(code.init.get(code.varY), PUB)
+                        .add(r.finalTypeVariableOf(code.varZ), TLOW)
+                        .add(code.init.get(code.varZ), PUB).build())
+                , is(true));
+        assertThat(r.getConstraints(), refines(tvars, sig));
+    }
     @Test
     public void testPostDom() {
         /*
@@ -305,37 +321,75 @@ public class MethodBodyTypingTest {
         Assumptions.validUnitGraph(g);
     }
 
-//    @Test
-//    public void testTrivialIf() throws TypingException {
-//        Code.TrivialIf g = code.new TrivialIf();
-//        BodyTypingResult<Level> r = analyze(g);
-//        assertThat(r, is(BodyTypingResult.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
-//    }
-//
-//    @Test
-//    public void testDoWhileLoop() throws TypingException {
-//        Code.SimpleDoWhile g = code.new SimpleDoWhile();
-//        assertEquivalentConstraints(g,
-//                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
-//                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
-//    }
-//
-//    @Test
-//    public void testIncreasingLoop() throws TypingException {
-//        Code.LoopIncrease g = code.new LoopIncrease();
-//        assertEquivalentConstraints(g,
-//                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
-//                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
-//    }
-//
-//    @Test
-//    public void testSpaghetti1() throws TypingException {
-//        Code.Spaghetti1 g = code.new Spaghetti1();
-//        assertEquivalentConstraints(g,
-//                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
-//                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
-//
-//    }
+    @Test
+    public void testTrivialIf() throws TypingException {
+        Stmt ret = j.newReturnStmt(IntConstant.v(0));
+        Body b = BodyBuilder.begin()
+                .seq(j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), ret))
+                .seq(ret).build();
+        BodyTypingResult<Level> r = analyze(b);
+        assertThat(r, is(BodyTypingResult.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
+    }
+
+    @Test
+    public void testDoWhileLoop() throws TypingException {
+        Stmt nSet = j.newAssignStmt(code.localX, code.localY);
+        Stmt nIf = j.newIfStmt(j.newEqExpr(code.localZ, IntConstant.v(0)), nSet);
+        Stmt nExit = j.newReturnStmt(IntConstant.v(42));
+        Body b = BodyBuilder
+                .begin()
+                .seq(nSet)
+                .seq(nIf)
+                .seq(nExit)
+                .build();
+        assertEquivalentConstraints(b,
+                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
+                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void testIncreasingLoop() throws TypingException {
+        Stmt nExit = j.newReturnStmt(IntConstant.v(42));
+        Stmt nSetZ = j.newAssignStmt(code.localZ, code.localY);
+        Stmt nSetX = j.newAssignStmt(code.localX, IntConstant.v(0));
+        Stmt nIf = j.newIfStmt(j.newEqExpr(code.localZ, IntConstant.v(0)), nSetZ);
+        Stmt gotoIf = j.newGotoStmt(nIf);
+        Body b = BodyBuilder
+                .begin()
+                .seq(nIf)
+                .seq(nExit)
+                .seq(nSetZ)
+                .seq(nSetX)
+                .seq(gotoIf)
+                .build();
+        assertEquivalentConstraints(b,
+                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
+                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
+    }
+
+    @Test
+    public void testSpaghetti1() throws TypingException {
+        Stmt setX = j.newAssignStmt(code.localX, IntConstant.v(0));
+        Stmt if1 = j.newIfStmt(j.newEqExpr(code.localY, code.localY), setX);
+        Stmt if2 = j.newIfStmt(j.newEqExpr(code.localZ, code.localZ), setX);
+        Stmt gotoIf2 = j.newGotoStmt(if2);
+        Stmt exit = j.newReturnStmt(IntConstant.v(42));
+        Stmt gotoEndFromIf1 = j.newGotoStmt(exit);
+        Stmt gotoEnd = j.newGotoStmt(exit);
+        Body b = BodyBuilder
+                .begin()
+                .seq(if1)
+                .seq(gotoEndFromIf1)
+                .seq(if2)
+                .seq(gotoEnd)
+                .seq(setX)
+                .seq(gotoIf2)
+                .seq(exit).build();
+        assertEquivalentConstraints(b,
+                r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
+                r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
+
+    }
 //
 //    @Test
 //    public void testMultipleExits() throws TypingException {

@@ -4,7 +4,7 @@ import soot.{Body, SootMethod, VoidType, PatchingChain}
 
 import scala.collection.JavaConverters._
 
-import soot.jimple.{Jimple, Stmt, JimpleBody}
+import soot.jimple.{Expr, Jimple, Stmt, JimpleBody}
 
 
 class BodyBuilder private  {
@@ -24,6 +24,43 @@ class BodyBuilder private  {
     return this
   }
 
+  def ite(cond : Expr, thn : Stmt, els : Stmt) : BodyBuilder = {
+    return ite(cond, BodyBuilder.begin().seq(thn), BodyBuilder.begin().seq(els))
+  }
+
+  def ite(cond : Expr, thn : BodyBuilder, els : BodyBuilder) : BodyBuilder = {
+    val thnChain = thn.chain
+    val thnStmt = thn.chain.getFirst
+    val head = Jimple.v().newIfStmt(cond, thnStmt)
+    val end = Jimple.v().newNopStmt()
+    val gotoEnd = Jimple.v().newGotoStmt(end)
+    addToChain(head)
+    addToChain(els)
+    addToChain(gotoEnd)
+    addToChain(thn)
+    addToChain(end)
+
+
+    return this
+  }
+
+  def whileLoop(cond : Expr, body : BodyBuilder) : BodyBuilder = {
+
+    val bodyHead = body.chain.getFirst
+    val end = Jimple.v().newNopStmt()
+    val gotoEnd = Jimple.v().newGotoStmt(end)
+    val head = Jimple.v().newIfStmt(cond, bodyHead)
+    val gotoHead = Jimple.v().newGotoStmt(head)
+
+    addToChain(head)
+    addToChain(gotoEnd)
+    addToChain(body)
+    addToChain(gotoHead)
+    addToChain(end)
+
+    return this
+  }
+
   private def addToChain(s : Stmt) : Unit = {
     if (finalized) {
       throw new IllegalStateException("Attempt to modify a finalyzed BodyBuilder")
@@ -32,6 +69,12 @@ class BodyBuilder private  {
     if (!result) {
       throw new IllegalArgumentException(s"Failed adding statement `${s}' to chain ${chain}")
     }
+  }
+
+  private def addToChain(body: BodyBuilder) : Unit = {
+    for (s <- body.chain.asScala) addToChain(s.asInstanceOf[Stmt])
+    // finalize the body builder
+    body.build()
   }
 
 }
