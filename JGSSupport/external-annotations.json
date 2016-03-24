@@ -4,6 +4,7 @@
 	"<java.lang.Integer: java.lang.Integer valueOf(int)>": { "constraints": ["@0 <= @ret"], "effects": [] },
 	"<java.lang.Integer: int intValue()>": { "constraints": [], "effects": [] },
 	"<de.unifreiburg.cs.proglang.jgs.support.SString: de.unifreiburg.cs.proglang.jgs.support.SString append(de.unifreiburg.cs.proglang.jgs.support.SString,de.unifreiburg.cs.proglang.jgs.support.SString)>" : { "constraints": ["@0 <= @ret", "@1 <= @ret"], "effects": []},
+	"<java.lang.RuntimeException: void <init>()>" : {"constraints": [], "effects": []},
     },
     
     "fields": {
