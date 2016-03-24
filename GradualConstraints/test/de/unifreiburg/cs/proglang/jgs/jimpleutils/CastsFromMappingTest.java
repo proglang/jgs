@@ -48,7 +48,7 @@ public class CastsFromMappingTest {
     }
 
     private StaticInvokeExpr makeCall_1(String methodName) {
-        soot.Type t = RefType.v();
+        soot.Type t = RefType.v("java.lang.Object");
         SootMethod m = new SootMethod(methodName, singletonList(t), t, Modifier.STATIC);
         this.castClass.addMethod(m);
         return Jimple.v().newStaticInvokeExpr(m.makeRef(), NullConstant.v());
@@ -70,21 +70,36 @@ public class CastsFromMappingTest {
 
     @Test
     public void testValid() {
+        StaticInvokeExpr callCastHighToDyn = makeCall_1("castHighToDyn");
+        StaticInvokeExpr callCastLowToDyn = makeCall_1("castLowToDyn");
+        StaticInvokeExpr callCxCastHighToDyn = makeCall_0("cxCastHighToDyn");
+        StaticInvokeExpr callCxCastLowToDyn = makeCall_0("cxCastLowToDyn");
+        StaticInvokeExpr callCxCastEnd = makeCall_0("cxCastEnd");
+
+        assertThat("makeCall_ generates wrong name" + callCastHighToDyn.getMethod().toString(),
+                   callCastHighToDyn.getMethod().toString(),
+                   is("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)>"));
+        assertThat("makeCall_ generates wrong name" + callCxCastHighToDyn.getMethod().toString(),
+                   callCxCastHighToDyn.getMethod().toString(),
+                   is("<de.unifreiburg.cs.proglang.jgs.support.Casts: void cxCastHighToDyn()>"));
+
         Map<String,String> valueCasts = new HashMap<>();
-        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castHighToDyn", "HIGH ~> ?");
-        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castLowToDyn", "LOW ~> ?");
+        valueCasts.put(callCastHighToDyn.getMethod().toString(), "HIGH ~> ?");
+        valueCasts.put(callCastLowToDyn.getMethod().toString(), "LOW ~> ?");
         Map<String,String> cxCasts = new HashMap<>();
-        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxHighToDyn", "HIGH ~> ?");
-        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxLowToDyn", "LOW ~> ?");
-        String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.Casts.castCxEnd";
+        cxCasts.put(callCxCastHighToDyn.getMethod().toString(), "HIGH ~> ?");
+        cxCasts.put(callCxCastLowToDyn.getMethod().toString(), "LOW ~> ?");
+        String cxCastEnd = callCxCastEnd.getMethod().toString();
 
         Casts<Level> casts = new CastsFromMapping<>(CastsFromMapping.<Level>parseConversionMap(types.typeParser(), valueCasts).get(),
                                                             CastsFromMapping.<Level>parseConversionMap(types.typeParser(), cxCasts).get(),
                                                             cxCastEnd);
 
-        assertThat(casts.detectValueCastFromCall(makeCall_1("castHighToDyn")),
+        assertThat(String.format("wrong conversion for %s", callCxCastHighToDyn.getMethod().toString()), casts.detectValueCastFromCall(callCastHighToDyn),
                    convertsBetween(THIGH, DYN));
-        assertThat(casts.detectValueCastFromCall(makeCall_0("cxCastHighToDyn")), is(Optional.empty()));
+        assertThat(String.format("wrong conversion for %s", callCxCastLowToDyn.getMethod().toString()), casts.detectValueCastFromCall(callCastLowToDyn),
+                   convertsBetween(TLOW, DYN));
+        assertThat(casts.detectValueCastFromCall(callCxCastHighToDyn), is(Optional.empty()));
     }
 
     @Test(expected=IllegalArgumentException.class)
