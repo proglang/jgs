@@ -2,33 +2,33 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import soot.*;
 import soot.jimple.*;
 import soot.toolkits.scalar.LocalDefs;
-import sun.security.jca.GetInstance;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv;
-import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 

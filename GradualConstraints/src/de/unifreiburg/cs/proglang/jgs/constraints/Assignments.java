@@ -7,8 +7,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
  * Class for static utility methods for working with assignments.

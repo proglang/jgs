@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import soot.SootField;
 
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
 
 public class FieldTable<Level> {
 

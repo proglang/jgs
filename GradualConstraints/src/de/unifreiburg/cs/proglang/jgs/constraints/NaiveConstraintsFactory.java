@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+
 import java.util.Collection;
 import java.util.Collections;
 

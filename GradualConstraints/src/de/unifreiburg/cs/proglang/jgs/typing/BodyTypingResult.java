@@ -2,17 +2,14 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import com.sun.istack.internal.NotNull;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
-import soot.jimple.Expr;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
-import static java.util.Collections.emptyMap;
 
 /**
  * The result of typing a statement: a set of constraints, an environment that

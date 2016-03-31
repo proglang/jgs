@@ -5,7 +5,8 @@ import java.util.function.Function
 import java.util.stream.Collectors
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Variable
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain, CTypes}
+import CTypes.CType
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint.Kind
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Internal, Ret, Cx, Param}
@@ -19,8 +20,8 @@ import org.kiama.output.PrettyPrinter._
 
 import scala.collection.JavaConverters._
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain._
+import TypeVars._
+import TypeDomain._
 
 import scala.util.{Success, Failure, Try}
 

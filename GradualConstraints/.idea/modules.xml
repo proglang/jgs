@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GradualConstraints.iml" filepath="$PROJECT_DIR$/GradualConstraints.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport.iml" filepath="$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport-build.iml" filepath="$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../GradualConstraints_Tests/GradualConstraints_Tests.iml" filepath="$PROJECT_DIR$/../GradualConstraints_Tests/GradualConstraints_Tests.iml" />
     </modules>
   </component>
 </project>

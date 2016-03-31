@@ -1,16 +1,17 @@
 package de.unifreiburg.cs.proglang.jgs.signatures.parse;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.SigConstraint;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import main.java.de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import org.javafp.parsecj.Combinators;
 import org.javafp.parsecj.Parser;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSigConstraint;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
+import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
+import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
+import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static org.javafp.parsecj.Combinators.*;
 import static org.javafp.parsecj.Text.*;
 

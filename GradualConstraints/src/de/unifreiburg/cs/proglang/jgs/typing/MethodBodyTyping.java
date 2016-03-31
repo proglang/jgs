@@ -2,11 +2,13 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.Body;
 import soot.SootMethod;
@@ -17,12 +19,11 @@ import soot.toolkits.scalar.LocalDefs;
 import soot.toolkits.scalar.SimpleLiveLocals;
 import soot.toolkits.scalar.SmartLocalDefs;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

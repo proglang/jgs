@@ -1,18 +1,19 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import soot.*;
 import soot.jimple.*;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
-import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
+import static main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
 
 /**
  * A Value-Switch that abstracts over the concreteConstraints expressions and is only

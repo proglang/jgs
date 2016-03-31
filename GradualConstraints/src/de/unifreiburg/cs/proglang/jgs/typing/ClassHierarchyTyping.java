@@ -2,7 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Supertypes;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
@@ -10,12 +10,8 @@ import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.util.Chain;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;

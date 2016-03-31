@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 /**
  * A context for constraints, i.e. constraints for a particular type domain. 

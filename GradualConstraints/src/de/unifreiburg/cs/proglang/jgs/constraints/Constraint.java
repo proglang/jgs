@@ -1,12 +1,10 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import polyglot.ast.Assign;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 
 public final class Constraint<Level> {
 

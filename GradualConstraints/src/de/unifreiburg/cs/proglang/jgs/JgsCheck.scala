@@ -6,17 +6,20 @@ import java.util.logging.Logger
 import java.util.stream.Collectors
 
 import de.unifreiburg.cs.proglang.jgs.cli.Format
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import de.unifreiburg.cs.proglang.jgs.constraints._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{ValueCast, CxCast}
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Supertypes, CastsFromMapping, Casts, Methods}
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain}
+import TypeDomain.Type
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
+import LowHigh.Level
+import de.unifreiburg.cs.proglang.jgs.jimpleutils._
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts
+import Casts.{ValueCast, CxCast}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.signatures.{FieldTable, SignatureTable, MethodSignatures}
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
 import de.unifreiburg.cs.proglang.jgs.typing.{TypingAssertionFailure, TypingException, MethodTyping, ClassHierarchyTyping}
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import org.javafp.parsecj.State
 import scopt.OptionParser
 import scopt.OptionParser._
@@ -134,7 +137,7 @@ object JgsCheck {
          ****************************/
         val cfg: Config[_] = opt.secdomainChoice match {
           case LowHigh => {
-            val secdomain = new de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh()
+            val secdomain = new LowHigh()
             val types = new TypeDomain(secdomain)
             val csets = new NaiveConstraintsFactory(types)
             new Config(types, csets, opt)

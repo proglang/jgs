@@ -2,22 +2,23 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
+import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
+import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static java.util.Arrays.asList;
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
-import static java.util.Collections.emptyList;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
+import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 

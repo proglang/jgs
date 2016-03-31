@@ -3,9 +3,11 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import java.util.*;
 import java.util.stream.Stream;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
 import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
 

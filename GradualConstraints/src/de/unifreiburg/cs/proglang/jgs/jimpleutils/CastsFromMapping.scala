@@ -3,12 +3,15 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils
 import java.util.logging.Logger
 import java.util.{Properties, Optional}
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{ValueCast, CxCast}
-import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.{Casts, Var}
+import Casts.{ValueCast, CxCast}
+import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
+import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
+import main.java.de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
 import soot.SootMethod
 import soot.jimple.{InvokeExpr, StaticInvokeExpr}
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain._
+import TypeDomain._
 
 
 import scala.collection.JavaConverters._
