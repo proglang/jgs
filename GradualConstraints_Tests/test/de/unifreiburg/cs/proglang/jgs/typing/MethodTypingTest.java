@@ -5,6 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbols;
 import org.junit.Before;
 import org.junit.Test;
 import soot.*;
@@ -102,7 +103,7 @@ public class MethodTypingTest {
     @Test
     public void testMultipleReturns_validSig() throws TypingException {
         SootMethod m = makeMultipleReturns();
-        List<Param<Level>> ps = methodParameters(m);
+        List<Param<Level>> ps = Symbols.<Level>methodParameters(m);
         Stream<SigConstraint<Level>> sigConstraints = Stream.of(
                 leS(ps.get(0), ret()),
                 leS(ps.get(1), ret()),
@@ -127,7 +128,7 @@ public class MethodTypingTest {
     @Test
     public void testMultipleReturns_invalidSig() throws TypingException {
         SootMethod m = makeMultipleReturns();
-        List<Param<Level>> ps = methodParameters(m);
+        List<Param<Level>> ps = Symbols.methodParameters(m);
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
                 Stream.of(
                         leS(ps.get(0), ret()),
@@ -179,7 +180,7 @@ public class MethodTypingTest {
     @Test
     public void testMethodUsingThis() throws TypingException {
         SootMethod m = makeMethodUsingThis();
-        List<Param<Level>> ps = methodParameters(m);
+        List<Param<Level>> ps = Symbols.methodParameters(m);
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
                 Stream.of(
                         leS(ps.get(0), ret()),
@@ -198,7 +199,7 @@ public class MethodTypingTest {
     @Test
     public void testMethodUsingThis_invalid() throws TypingException {
         SootMethod m = makeMethodUsingThis();
-        List<Param<Level>> ps = methodParameters(m);
+        List<Param<Level>> ps = Symbols.methodParameters(m);
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
                 Stream.of(
                         leS(Symbol.literal(DYN), ret())

@@ -1,15 +1,15 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 
 /**
  * Environments: immutable maps from Locals to type variables.

@@ -13,6 +13,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser;
 import de.unifreiburg.cs.proglang.jgs.typing.ClassHierarchyTyping;
 import de.unifreiburg.cs.proglang.jgs.typing.MethodTyping;
 import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.javafp.parsecj.Reply;
 import org.javafp.parsecj.State;
 import soot.*;
@@ -77,8 +78,8 @@ public class TestMain {
     private static Stream<Type<Level>> parseEffects(List<String> effectStrings) {
         Stream<Type<Level>> effects = effectStrings.stream().map(
                 (String s) ->
-                        types.typeParser().parse(s)
-                             .orElseGet(() -> {
+                        Interop.asJavaOptional(types.typeParser().parse(s))
+                                     .orElseGet(() -> {
                                  throw new RuntimeException(String.format("Error parsing type %s", s));
                              }));
 
@@ -109,7 +110,7 @@ public class TestMain {
                                    new IllegalArgumentException(
                                            "Found more than one security level on "
                                            + f.getName()))
-                .map(s -> types.typeParser().parse(s).orElseGet(() -> {
+                .map(s -> Interop.asJavaOptional(types.typeParser().parse(s)).orElseGet(() -> {
                     throw new IllegalArgumentException(
                             "Unable to parse security type " + s);
                 }))

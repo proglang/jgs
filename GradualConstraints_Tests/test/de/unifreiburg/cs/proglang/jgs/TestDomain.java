@@ -14,15 +14,18 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.*;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import scala.Option;
 import soot.*;
 import soot.jimple.StaticInvokeExpr;
 
@@ -86,11 +89,14 @@ public class TestDomain {
         }
 
         @Override
-        public Optional<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e) {
+        public Option<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Optional<ValueCast<Level>>>
+            BiFunction<Type<Level>, Type<Level>, Option<ValueCast<Level>>>
                     makeCast =
-                    (t1, t2) -> Var.getAll(e.getArg(0)).findFirst().map(value -> makeValueCast(t1, t2, Optional.of(value)));
+                    (t1, t2) -> {
+                        Optional<ValueCast<Level>> result = Vars.getAll(e.getArg(0)).findFirst().map(value -> makeValueCast(t1, t2, Option.apply(value)));
+                        return Interop.asScalaOption(result);
+                    };
             if (castEquals(castHighToDyn, m)) {
                 return makeCast.apply(THIGH, DYN);
             } else if (castEquals(castLowToDyn, m)) {
@@ -100,22 +106,22 @@ public class TestDomain {
             } else if (castEquals(castDynToHigh, m)) {
                 return makeCast.apply(DYN, THIGH);
             } else {
-                return Optional.empty();
+                return Option.empty();
             }
         }
 
         @Override
-        public Optional<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e) {
+        public Option<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Optional<CxCast<Level>>>
+            BiFunction<Type<Level>, Type<Level>, Option<CxCast<Level>>>
                     makeCast =
-                    (t1, t2) -> Optional.of(makeContextCast(t1, t2));
+                    (t1, t2) -> Option.apply(makeContextCast(t1, t2));
             if (castEquals(castCxDynToHigh, m)) {
                 return makeCast.apply(DYN, THIGH);
             } else if (castEquals(castCxHighToDyn, m)) {
                 return makeCast.apply(THIGH, DYN);
             } else {
-                return Optional.empty();
+                return Option.empty();
             }
         }
 

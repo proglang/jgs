@@ -2,16 +2,17 @@ package de.unifreiburg.cs.proglang.jgs.signatures.parse;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.SigConstraint;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.javafp.parsecj.Combinators;
 import org.javafp.parsecj.Parser;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSigConstraint;
-import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
-import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
-import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static org.javafp.parsecj.Combinators.*;
 import static org.javafp.parsecj.Text.*;
 
@@ -33,9 +34,9 @@ public class ConstraintParser<Level> {
 
     static <T> Parser<Character, T> fromAnnotationParser(AnnotationParser<T> p) {
         return takeString(satisfy(c -> ! Character.isSpaceChar(c))).bind(
-                s -> p.parse(s)
-                      .map(t -> Combinators.<Character, T>retn(t))
-                      .orElse(fail()));
+                s -> Interop.asJavaOptional(p.parse(s))
+                              .map(t -> Combinators.<Character, T>retn(t))
+                              .orElse(fail()));
     }
 
     public Parser<Character, Symbol<Level>> symbolParser() {

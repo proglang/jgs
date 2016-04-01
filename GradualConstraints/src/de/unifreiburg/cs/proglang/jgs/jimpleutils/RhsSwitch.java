@@ -1,7 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import scala.Option;
 import soot.*;
 import soot.jimple.*;
 
@@ -13,7 +14,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
-import static main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
+import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
 
 /**
  * A Value-Switch that abstracts over the concreteConstraints expressions and is only
@@ -118,10 +119,10 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      */
     private void caseCall(InvokeExpr m, Optional<Value> baseValue) {
         Optional<Var<?>> base =
-                baseValue.flatMap(v -> Var.getAll(v).findFirst());
+                baseValue.flatMap(v -> Vars.getAll(v).findFirst());
         Stream<Optional<Var<?>>> args =
                 m.getArgs().stream().map(v -> {
-                    List<Var<?>> vars = Var.getAll(v).collect(toList());
+                    List<Var<?>> vars = Vars.getAll(v).collect(toList());
                     if (vars.isEmpty()) {
                         return Optional.empty();
                     } else if (vars.size() == 1) {
@@ -130,7 +131,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
                         throw new RuntimeException("Unexpected: multiple variables contained in a call argumnent");
                     }
                 });
-                Var.getAllFromValues(m.getArgs()).collect(toList());
+                Vars.getAllFromValues(m.getArgs()).collect(toList());
         caseCall(m.getMethod(), base, args.collect(Collectors.toList()));
     }
     @Override public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
@@ -150,8 +151,8 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     @Override
     public void caseStaticInvokeExpr(StaticInvokeExpr v) {
 
-        Optional<ValueCast<Level>> c = casts.detectValueCastFromCall(v);
-        if (c.isPresent()) {
+        Option<ValueCast<Level>> c = casts.detectValueCastFromCall(v);
+        if (c.isDefined()) {
             caseCast(c.get());
         } else {
             caseCall(v, Optional.empty());

@@ -1,19 +1,19 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import soot.SootMethod;
 
 import java.util.HashMap;
@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
-import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.methodParameters;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbols.methodParameters;
 import static java.util.stream.Collectors.toList;
 
 /**

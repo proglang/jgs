@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 
 import org.junit.Test;
+import scala.Option;
 
 import java.util.Optional;
 
@@ -26,9 +27,9 @@ public class LowHighTest {
 
     @Test
     public void testParser() {
-        assertThat(levels.levelParser().parse("LOW"), is(equalTo(Optional.of(LOW))));
-        assertThat(levels.levelParser().parse("HIGH"), is(equalTo(Optional.of(HIGH))));
-        assertThat(levels.levelParser().parse("lkjas"), is(equalTo(Optional.empty())));
+        assertThat(levels.levelParser().parse("LOW"), is(equalTo(Option.apply(LOW))));
+        assertThat(levels.levelParser().parse("HIGH"), is(equalTo(Option.apply(HIGH))));
+        assertThat(levels.levelParser().parse("lkjas"), is(equalTo(Option.empty())));
     }
 
 }

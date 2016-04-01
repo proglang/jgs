@@ -3,10 +3,13 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import org.junit.Test;
+import scala.Option;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
@@ -29,11 +32,11 @@ public class TypeDomainTest {
 
     @Test
     public void testParser() {
-        assertThat(types.typeParser().parse("LOW"), is(equalTo(Optional.of(TLOW))));
-        assertThat(types.typeParser().parse("HIGH"), is(equalTo(Optional.of(THIGH))));
-        assertThat(types.typeParser().parse("lkjas"), is(equalTo(Optional.empty())));
-        assertThat(types.typeParser().parse("pub"), is(equalTo(Optional.of(PUB))));
-        assertThat(types.typeParser().parse("?"), is(equalTo(Optional.of(DYN))));
+        assertThat(types.typeParser().parse("LOW"), is(equalTo(Option.apply(TLOW))));
+        assertThat(types.typeParser().parse("HIGH"), is(equalTo(Option.apply(THIGH))));
+        assertThat(types.typeParser().parse("lkjas"), is(equalTo(Option.empty())));
+        assertThat(types.typeParser().parse("pub"), is(equalTo(Option.apply(PUB))));
+        assertThat(types.typeParser().parse("?"), is(equalTo(Option.apply(DYN))));
         // see that special types like ? and pub take precendence
         SecDomain<Level> alternativeDomain = new SecDomain<Level>() {
             @Override
@@ -65,15 +68,20 @@ public class TypeDomainTest {
             public AnnotationParser<Level> levelParser() {
                 return s -> {
                     if (s.equals("?")) {
-                        return Optional.of(HIGH);
+                        return Option.apply(HIGH);
                     } else {
-                        return Optional.empty();
+                        return Option.empty();
                     }
                 };
             }
+
+            @Override
+            public Iterator<Level> enumerate() {
+                throw new RuntimeException("Not Implemented!");
+            }
         };
         TypeDomain<Level> alternativeTypeDomain = new TypeDomain<Level>(alternativeDomain);
-        assertThat(alternativeTypeDomain.typeParser().parse("?"), is(equalTo(Optional.of(alternativeTypeDomain.dyn()))));
+        assertThat(alternativeTypeDomain.typeParser().parse("?"), is(equalTo(Option.apply(alternativeTypeDomain.dyn()))));
     }
 
 }

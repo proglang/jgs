@@ -5,7 +5,7 @@ import java.util.function.Function
 import java.util.stream.Collectors
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Variable
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain, CTypes}
+import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain, CTypes}
 import CTypes.CType
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint.Kind
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags._

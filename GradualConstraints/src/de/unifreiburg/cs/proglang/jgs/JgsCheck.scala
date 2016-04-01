@@ -5,21 +5,21 @@ import java.util.Optional
 import java.util.logging.Logger
 import java.util.stream.Collectors
 
+import de.unifreiburg.cs.proglang.jgs.JgsCheck.LowHigh
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints._
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain}
+import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain}
 import TypeDomain.Type
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
-import LowHigh.Level
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts
 import Casts.{ValueCast, CxCast}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.signatures.{FieldTable, SignatureTable, MethodSignatures}
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
 import de.unifreiburg.cs.proglang.jgs.typing.{TypingAssertionFailure, TypingException, MethodTyping, ClassHierarchyTyping}
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import org.javafp.parsecj.State
 import scopt.OptionParser
 import scopt.OptionParser._
@@ -168,7 +168,7 @@ object JgsCheck {
               Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.stream()).toList
             val mt: Option[TypeDomain.Type[Level]] =
               for (typeStr <- getSingleAnnotation(secAnnotations, new IllegalArgumentException("Found more than one security level on " + f.getName()));
-                   t <- asScalaOption(types.typeParser().parse(typeStr)))
+                   t <- types.typeParser().parse(typeStr))
                 yield t
             val t: TypeDomain.Type[Level] = mt.getOrElse(types.pub())
             (f, t)
@@ -238,7 +238,7 @@ object JgsCheck {
 //          val f : SootField = Try(s.getField(name)).getOrElse(
 //            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find field ${name}")
 //          )
-          val t : Type[Level] = asScalaOption(types.typeParser().parse(typeString)).getOrElse(
+          val t : Type[Level] = types.typeParser().parse(typeString).getOrElse(
             throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}")
           )
           f -> t
@@ -314,7 +314,7 @@ object JgsCheck {
       constraintStrings.map(s => new ConstraintParser(types.typeParser()).constraintParser().parse(State.of(s)).getResult)
 
     private def parseEffects(effectStrings: List[String]): List[Type[Level]] =
-      effectStrings.map(s => asScalaOption(types.typeParser().parse(s)) match {
+      effectStrings.map(s => types.typeParser().parse(s) match {
         case Some(t) => t
         case None => throw new RuntimeException(String.format("Error parsing type %s", s))
       })

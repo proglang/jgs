@@ -16,6 +16,8 @@ import soot.jimple.Jimple;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class CTypeDomainTest {
     
@@ -58,10 +60,10 @@ public class CTypeDomainTest {
     @Test
     public void test() {
         
-        assertEquals(h1.apply(a1), THIGH);
+        assertEquals(CTypeOps.apply(a1, h1), THIGH);
         assertEquals(h1, variable(vh1));
         assertNotEquals(h1, h2);
-        assertEquals(h1.apply(a1), h2.apply(a1));
+        assertEquals(CTypeOps.apply(a1, h1), CTypeOps.apply(a1, h2));
 
     }
 

@@ -12,5 +12,6 @@
     <orderEntry type="library" name="soot" level="project" />
     <orderEntry type="library" name="testing" level="project" />
     <orderEntry type="library" name="json" level="project" />
+    <orderEntry type="module" module-name="GradualConstraints_InstrumentationSupport" />
   </component>
 </module>

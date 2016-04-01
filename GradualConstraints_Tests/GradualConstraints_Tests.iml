@@ -13,5 +13,6 @@
     <orderEntry type="library" name="soot" level="project" />
     <orderEntry type="library" scope="TEST" name="testing" level="project" />
     <orderEntry type="library" name="utils" level="project" />
+    <orderEntry type="module" module-name="GradualConstraints_InstrumentationSupport" />
   </component>
 </module>

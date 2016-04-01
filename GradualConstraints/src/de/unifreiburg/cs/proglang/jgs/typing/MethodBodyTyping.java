@@ -1,14 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.Body;
 import soot.SootMethod;
@@ -19,9 +17,9 @@ import soot.toolkits.scalar.LocalDefs;
 import soot.toolkits.scalar.SimpleLiveLocals;
 import soot.toolkits.scalar.SmartLocalDefs;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,7 +82,7 @@ public class MethodBodyTyping<Level> {
                 // add new pc as upper bound to old pc
                 cs.add(Constraints.le(variable(oldPc), variable(newPc)));
 
-                Var.getAllFromValueBoxes(stmt.getUseBoxes()).forEach(v ->
+                Vars.getAllFromValueBoxes(stmt.getUseBoxes()).forEach(v ->
                         cs.add(Constraints.le(variable(env.get(v)), variable(newPc))));
 
                 setResult(cs.build().collect(toSet()));
@@ -151,7 +149,8 @@ public class MethodBodyTyping<Level> {
         List<Unit> successors = g.getSuccsOf(s);
 
         // check for context casts a context casts
-        Optional<Casts.CxCast<Level>> maybeCxCast = casts.detectContextCastStartFromStmt(s);
+        Optional<Casts.CxCast<Level>> maybeCxCast =
+                Interop.asJavaOptional(casts.detectContextCastStartFromStmt(s));
         if (maybeCxCast.isPresent()) {
             //a context cast
             Casts.CxCast<Level> cxCast = maybeCxCast.get();

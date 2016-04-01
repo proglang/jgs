@@ -4,10 +4,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypeOps.tryApply;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 /**
  * A context for constraints, i.e. constraints for a particular type domain. 
@@ -31,15 +32,15 @@ public class Constraints<Level> {
 
 
     public static <Level> Constraint<Level> le(CType<Level> lhs, CType<Level> rhs) {
-        return new Constraint(Constraint.Kind.LE, lhs, rhs);
+        return new Constraint<Level>(Constraint.Kind.LE, lhs, rhs);
     }
 
     public static <Level> Constraint<Level> comp(CType<Level> lhs, CType<Level> rhs) {
-        return new Constraint(Constraint.Kind.COMP, lhs, rhs);
+        return new Constraint<Level>(Constraint.Kind.COMP, lhs, rhs);
     }
 
     public static <Level> Constraint<Level> dimpl(CType<Level> lhs, CType<Level> rhs) {
-        return new Constraint(Constraint.Kind.DIMPL, lhs, rhs);
+        return new Constraint<Level>(Constraint.Kind.DIMPL, lhs, rhs);
     }
 
     public static <Level> Constraint<Level> toKind(Constraint.Kind kind, Constraint<Level> c) {
@@ -59,7 +60,7 @@ public class Constraints<Level> {
 
     public static <Level> boolean isTrivial(TypeDomain<Level> types, Constraint<Level> c) {
         Assignment<Level> a = Assignments.empty();
-        return c.getLhs().tryApply(a).isPresent() && c.getRhs().tryApply(a).isPresent() && c.isSatisfied(types, Assignments.empty());
+        return tryApply(a, c.getLhs()).isPresent() && tryApply(a, c.getRhs()).isPresent() && c.isSatisfied(types, Assignments.empty());
     }
 
     /**

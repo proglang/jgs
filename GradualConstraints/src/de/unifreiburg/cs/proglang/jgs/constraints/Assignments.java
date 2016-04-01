@@ -1,15 +1,13 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
  * Class for static utility methods for working with assignments.
@@ -43,7 +41,7 @@ public class Assignments {
             TypeVar v = variableRest.remove();
             // TODO-performance: can we be a bit more efficient by memoizing this stream?
             Supplier<Stream<Assignment<Level>>> rest = () -> enumerateAll(types, variableRest);
-            return types.enumerate().flatMap(t -> rest.get().map(ass -> {
+            return StreamSupport.stream(Spliterators.spliteratorUnknownSize(types.enumerate(), Spliterator.ORDERED), false).flatMap(t -> rest.get().map(ass -> {
                 Map<TypeVar, Type<Level>> m =
                         new HashMap<>(ass.get());
                 m.put(v, t);

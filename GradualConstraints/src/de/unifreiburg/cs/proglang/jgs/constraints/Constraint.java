@@ -2,9 +2,9 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import java.util.stream.Stream;
 
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 
 public final class Constraint<Level> {
 
@@ -34,16 +34,16 @@ public final class Constraint<Level> {
         switch(this.kind) {
 
             case LE:
-                return types.le(this.lhs.apply(a), this.rhs.apply(a));
+                return types.le(CTypeOps.apply(a, this.lhs), CTypeOps.apply(a, rhs));
             case COMP:
                 TypeDomain.Type<Level> tlhs, trhs;
-                tlhs = this.lhs.apply(a);
-                trhs = this.rhs.apply(a);
+                tlhs = CTypeOps.<Level>apply(a, this.lhs);
+                trhs = CTypeOps.<Level>apply(a, this.rhs);
                 return types.le(tlhs, trhs) || types.le(trhs, tlhs);
             case DIMPL:
                 // lhs = ? --> rhs <= ?
-                return (!this.lhs.apply(a).equals(types.dyn())
-                        || types.le(this.rhs.apply(a), types.dyn()));
+                return (!CTypeOps.apply(a, this.lhs).equals(types.dyn())
+                        || types.le(CTypeOps.apply(a, this.rhs), types.dyn()));
             default: throw new RuntimeException("Impossible case!");
         }
     }
@@ -66,13 +66,13 @@ public final class Constraint<Level> {
 
 
     public Constraint<Level> apply(Assignment<Level> a) {
-        CType<Level> newLhs = this.lhs.applyWhenPossible(a);
-        CType<Level> newRhs = this.rhs.applyWhenPossible(a);
+        CType<Level> newLhs = CTypeOps.applyWhenPossible(a, this.lhs);
+        CType<Level> newRhs = CTypeOps.applyWhenPossible(a, this.rhs);
         return Constraints.make(this.kind, newLhs, newRhs);
     }
     
     public Stream<TypeVar> variables() {
-        return Stream.concat(lhs.variables(), rhs.variables());
+        return Stream.concat(CTypeOps.variables(lhs), CTypeOps.variables(rhs));
     }
 
     public CType<Level> getLhs() {

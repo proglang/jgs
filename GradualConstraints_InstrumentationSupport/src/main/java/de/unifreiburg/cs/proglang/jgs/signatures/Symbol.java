@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.signatures.SymbolViews.SymbolView;
 
 import java.util.*;
 /**
@@ -22,26 +23,7 @@ public abstract class Symbol<Level> {
         return new Param<>(position);
     }
 
-    /**
-     * Get the list of Params from a SootMethod.
-     */
-//    public static <Level> List<Param<Level>> methodParameters(SootMethod m) {
-//        List<soot.Type> types = m.getParameterTypes();
-//        List<Param<Level>> result = new ArrayList<>();
-//        IntStream.range(0, m.getParameterCount()).forEach(pos -> {
-//            result.add(param(pos));
-//        });
-//        return result;
-//    }
 
-    /**
-     * Get an identity mapping for signatures
-     */
-//    public static <Level> Map<Symbol<Level>, CType<Level>> identityMapping(TypeVars tvars, Set<Symbol<Level>> sig) {
-//        Stream<Pair<Symbol<Level>, CType<Level>>> assocs =
-//                sig.stream().flatMap(s -> s.asTypeVar(tvars).map(tv -> Stream.of(Pair.of(s, CTypes.<Level>variable(tv)))).orElse(Stream.empty()));
-//        return assocs.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-//    }
 
     // TODO-performance: make a singleton out of this
     public static <Level> Symbol<Level> ret() {
@@ -57,6 +39,8 @@ public abstract class Symbol<Level> {
 
     // TODO: wrong place for this operation. It only performs a lookup and fails if the element is not found. this should be simply a map with guarded lookup..
     public abstract CType<Level> toCType(Map<Symbol<Level>, CType<Level>> tvarMapping);
+
+    public abstract SymbolView<Level> inspect();
 
 //    protected abstract Optional<TypeVar> asTypeVar(TypeVars tvars);
 
@@ -81,6 +65,11 @@ public abstract class Symbol<Level> {
                             this,
                             tvarMapping.toString()));
             return result;
+        }
+
+        @Override
+        public SymbolView<Level> inspect() {
+            return new SymbolViews.Param<Level>(position);
         }
 
 //        @Override
@@ -125,6 +114,11 @@ public abstract class Symbol<Level> {
             return result;
         }
 
+        @Override
+        public SymbolView<Level> inspect() {
+            return new SymbolViews.Return<Level>();
+        }
+
 //        @Override
 //        protected Optional<TypeVar> asTypeVar(TypeVars tvars) {
 //            return Optional.of(tvars.ret());
@@ -161,10 +155,10 @@ public abstract class Symbol<Level> {
             return CTypes.literal(this.me);
         }
 
-//        @Override
-//        protected Optional<TypeVar> asTypeVar(TypeVars tvars) {
-//            return Optional.empty();
-//        }
+        @Override
+        public SymbolView<Level> inspect() {
+            return new SymbolViews.Literal<Level>(this.me);
+        }
 
         @Override
         public boolean equals(Object o) {

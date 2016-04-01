@@ -3,11 +3,13 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
+import scala.Option;
 import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.NullConstant;
@@ -89,11 +91,11 @@ public class CastsFromMappingTest {
                                                             CastsFromMapping.<Level>parseConversionMap(types.typeParser(), cxCasts).get(),
                                                             cxCastEnd);
 
-        assertThat(String.format("wrong conversion for %s", callCxCastHighToDyn.getMethod().toString()), casts.detectValueCastFromCall(callCastHighToDyn),
+        assertThat(String.format("wrong conversion for %s", callCxCastHighToDyn.getMethod().toString()), Interop.asJavaOptional(casts.detectValueCastFromCall(callCastHighToDyn)),
                    convertsBetween(THIGH, DYN));
-        assertThat(String.format("wrong conversion for %s", callCxCastLowToDyn.getMethod().toString()), casts.detectValueCastFromCall(callCastLowToDyn),
+        assertThat(String.format("wrong conversion for %s", callCxCastLowToDyn.getMethod().toString()), Interop.asJavaOptional(casts.detectValueCastFromCall(callCastLowToDyn)),
                    convertsBetween(TLOW, DYN));
-        assertThat(casts.detectValueCastFromCall(callCxCastHighToDyn), is(Optional.empty()));
+        assertThat(casts.detectValueCastFromCall(callCxCastHighToDyn), is(Option.empty()));
     }
 
     @Test(expected=IllegalArgumentException.class)

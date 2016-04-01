@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import soot.Local;
 import soot.Value;
 import soot.ValueBox;

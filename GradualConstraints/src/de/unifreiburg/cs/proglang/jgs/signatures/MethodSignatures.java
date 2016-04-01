@@ -2,10 +2,10 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -13,12 +13,12 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
-import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
-import static main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static java.util.Arrays.asList;
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -227,24 +227,24 @@ public class MethodSignatures<Level> {
         Set<TypeVar> relevantVars =
                 Stream.concat(Collections.singleton(retVar).stream(), params.keySet().stream()).collect(toSet());
 
-        CTypeSwitch<Level, Symbol<Level>> toSymbol =
-                new CTypeSwitch<Level, Symbol<Level>>() {
-                    @Override
-                    public Symbol<Level> caseLiteral(Type<Level> t) {
-                        return Symbol.literal(t);
-                    }
-
-                    @Override
-                    public Symbol<Level> caseVariable(TypeVar v) {
-                        Param<Level> p =
-                                Optional.ofNullable(params.get(v)).orElseThrow(() -> new NoSuchElementException(String.format("Type variable %s not found in parameter map: %s", v, params)));
-                        return p;
-                    }
-                };
+//        CTypeSwitch<Level, Symbol<Level>> toSymbol =
+//                new CTypeSwitch<Level, Symbol<Level>>() {
+//                    @Override
+//                    public Symbol<Level> caseLiteral(Type<Level> t) {
+//                        return Symbol.literal(t);
+//                    }
+//
+//                    @Override
+//                    public Symbol<Level> caseVariable(TypeVar v) {
+//                        Param<Level> p =
+//                                Optional.ofNullable(params.get(v)).orElseThrow(() -> new NoSuchElementException(String.format("Type variable %s not found in parameter map: %s", v, params)));
+//                        return p;
+//                    }
+//                };
 
         return signatureConstraints(constraints.projectTo(params.keySet()).stream().map(c -> {
-            Symbol<Level> lhs = c.getLhs().accept(toSymbol);
-            Symbol<Level> rhs = c.getRhs().accept(toSymbol);
+            Symbol<Level> lhs = Symbols.<Level>ctypeToSymbol(params, c.getLhs());
+            Symbol<Level> rhs = Symbols.<Level>ctypeToSymbol(params, c.getRhs());
             switch (c.kind) {
                 case LE:
                     return le(lhs, rhs);
@@ -325,9 +325,9 @@ public class MethodSignatures<Level> {
             Set<Symbol<Level>> symbols =
                     Stream.concat(this.symbols(), other.symbols()).collect(toSet());
             ConstraintSet<Level> cs1 =
-                    csets.fromCollection(this.toTypingConstraints(Symbol.identityMapping(tvars, symbols)).collect(toList()));
+                    csets.fromCollection(this.toTypingConstraints(Symbols.identityMapping(tvars, symbols)).collect(toList()));
             ConstraintSet<Level> cs2 =
-                    csets.fromCollection(other.toTypingConstraints(Symbol.identityMapping(tvars, symbols)).collect(toList()));
+                    csets.fromCollection(other.toTypingConstraints(Symbols.identityMapping(tvars, symbols)).collect(toList()));
             return cs1.refines(cs2);
         }
     }

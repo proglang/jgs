@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import soot.IntType;

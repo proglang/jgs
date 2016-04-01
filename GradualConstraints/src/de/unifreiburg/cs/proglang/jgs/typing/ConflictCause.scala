@@ -1,9 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs.typing
 
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
 import TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
 
 /**
   * Created by fennell on 2/29/16.

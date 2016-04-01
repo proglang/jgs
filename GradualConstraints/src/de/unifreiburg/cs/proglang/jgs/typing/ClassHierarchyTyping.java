@@ -2,7 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Supertypes;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;

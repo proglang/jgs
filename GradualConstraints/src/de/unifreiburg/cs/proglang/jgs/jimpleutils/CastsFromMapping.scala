@@ -1,15 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import java.util.logging.Logger
-import java.util.{Properties, Optional}
+import java.util.{Optional}
 
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.{Casts, Var}
 import Casts.{ValueCast, CxCast}
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
 import soot.SootMethod
-import soot.jimple.{InvokeExpr, StaticInvokeExpr}
+import soot.jimple.{StaticInvokeExpr}
 
 import TypeDomain._
 
@@ -30,10 +27,10 @@ case class CastsFromMapping[Level](valueCasts: Map[String, Conversion[Level]],
                                    cxCastEnd: String)
   extends Casts[Level] {
 
-  override def detectValueCastFromCall(e: StaticInvokeExpr): Optional[ValueCast[Level]] = {
+  override def detectValueCastFromCall(e: StaticInvokeExpr): Option[ValueCast[Level]] = {
     val key = e.getMethod.toString // fqName(e.getMethod) TODO: remove fqname based key
-    asJavaOptional(valueCasts.get(key)
-      .map(c => new ValueCast[Level](c.source, c.dest, getCallArgument(e)))
+    valueCasts.get(key)
+      .map(c => new ValueCast[Level](c.source, c.dest, asScalaOption(getCallArgument(e)))
     )
   }
 
@@ -42,10 +39,10 @@ case class CastsFromMapping[Level](valueCasts: Map[String, Conversion[Level]],
     key == cxCastEnd
   }
 
-  override def detectContextCastStartFromCall(e: StaticInvokeExpr): Optional[CxCast[Level]] = {
+  override def detectContextCastStartFromCall(e: StaticInvokeExpr): Option[CxCast[Level]] = {
     val key = e.getMethod.toString // fqName(e.getMethod) TODO: remove fqname based key
-    asJavaOptional(cxCastBegins.get(key)
-      .map(c => new CxCast[Level](c.source, c.dest)))
+    cxCastBegins.get(key)
+      .map(c => new CxCast[Level](c.source, c.dest))
   }
 }
 
@@ -63,7 +60,7 @@ object CastsFromMapping {
     if (e.getArgCount != 1) {
       throw new IllegalArgumentException(s"Illegal parameter count on cast method `${e}'. Expected single argument method.")
     }
-    Var.getAll(e.getArg(0)).findFirst()
+    Vars.getAll(e.getArg(0)).findFirst()
   }
 
   def parseConversionMap[Level](typeParser: AnnotationParser[Type[Level]],
@@ -80,11 +77,11 @@ object CastsFromMapping {
       s.trim.split("\\s") match {
         case Array(st1, "~>", st2) =>
           val result = for (
-            t1 <- asScalaOption(typeParser.parse(st1));
-            t2 <- asScalaOption(typeParser.parse(st2))
+            t1 <- typeParser.parse(st1);
+            t2 <- typeParser.parse(st2)
           ) yield Conversion(t1, t2)
           result match {
-            case Some(conv) => tryM.map(m => m + Tuple2(k, conv))
+            case Some(conv) => tryM.map[Map[String, Conversion[Level]]](m => m + Tuple2(k, conv))
             case _ => Failure(err)
           }
         case _ => Failure(err)

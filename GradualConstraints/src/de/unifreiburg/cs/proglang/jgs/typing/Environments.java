@@ -1,8 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 
 import java.util.Collections;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 /**
  * Companion class to <code>Environment</code>

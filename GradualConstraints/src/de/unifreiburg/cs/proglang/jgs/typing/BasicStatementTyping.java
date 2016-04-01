@@ -7,26 +7,24 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import main.java.de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import soot.*;
 import soot.jimple.*;
 import soot.toolkits.scalar.LocalDefs;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv;
 import static java.util.Collections.unmodifiableList;
@@ -214,9 +212,9 @@ public class BasicStatementTyping<LevelT> {
 
             @Override
             public void caseLocalExpr(Collection<Value> atoms) {
-                Var.getAllFromValues(atoms)
-                   .map(toCType.andThen(leDest))
-                   .forEach(constraints);
+                Vars.getAllFromValues(atoms)
+                    .map(toCType.andThen(leDest))
+                    .forEach(constraints);
             }
 
             /* for method calls:
@@ -311,7 +309,7 @@ public class BasicStatementTyping<LevelT> {
                     return;
                 }
                 // add source and dest type
-                Optional<Constraint<LevelT>> mcstr = cast.value.map(
+                Optional<Constraint<LevelT>> mcstr = Interop.asJavaOptional(cast.value).map(
                         v -> cstrs.le(toCType.apply(v), literal(cast.sourceType)));
 
                 mcstr.ifPresent(constraints);
@@ -389,7 +387,7 @@ public class BasicStatementTyping<LevelT> {
             Function<CType<LevelT>, Constraint<LevelT>> leDest =
                     c -> cstrs.le(c, CTypes.literal(fieldType));
             // get reads from lhs.. they are definitively flowing into the destination
-            Var.getAllFromValueBoxes((Collection<ValueBox>) stmt.getLeftOp().getUseBoxes())
+            Vars.getAllFromValueBoxes((Collection<ValueBox>) stmt.getLeftOp().getUseBoxes())
                .map((Var<?> v) -> Constraints.<LevelT>le(CTypes.variable(env.get(v)), CTypes.literal(fieldType)))
                .forEach(constraints);
 

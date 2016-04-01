@@ -15,25 +15,8 @@ public class CTypes {
 
     public static abstract class CType<Level> {
 
-//        public abstract Optional<Type<Level>> tryApply(Assignment<Level> a);
-//
-//        public abstract Iterator<TypeVar> variables();
 
         public abstract CTypeViews.CTypeView<Level> inspect();
-
-//        public final Type<Level> apply(Assignment<Level> a) {
-//            return tryApply(a).orElseThrow(() -> new RuntimeException("Unknown variable: "
-//                                                                      + this.toString()
-//                                                                      + " Ass.: "
-//                                                                      + a.mappedVariables()
-//                                                                         .toString()));
-//        }
-//
-//        public final CType<Level> applyWhenPossible(Assignment<Level> a) {
-//            return this.tryApply(a).map(CTypes::literal).orElse(this);
-//        }
-
-        public abstract <R> R accept(CTypeSwitch<Level, R> sw);
 
     }
 
@@ -43,11 +26,6 @@ public class CTypes {
 
     public static <Level> CType<Level> variable(TypeVar v) {
         return new Variable<>(v);
-    }
-
-    public static interface CTypeSwitch<Level, R> {
-        public R caseLiteral(Type<Level> l);
-        public R caseVariable(TypeVar v);
     }
 
     public static class Literal<Level> extends CType<Level> {
@@ -63,11 +41,6 @@ public class CTypes {
             super();
             this.t = t;
         }
-
-//        @Override
-//        public Optional<Type<Level>> tryApply(Assignment<Level> a) {
-//            return Optional.of(this.t);
-//        }
 
         @Override
         public int hashCode() {
@@ -95,20 +68,11 @@ public class CTypes {
             return true;
         }
 
-//        @Override
-//        public Stream<TypeVar> variables() {
-//            return Stream.empty();
-//        }
-
         @Override
         public CTypeViews.CTypeView<Level> inspect() {
             return new CTypeViews.Lit<Level>(this.t);
         }
 
-        @Override
-        public <R> R accept(CTypeSwitch<Level, R> sw) {
-            return sw.caseLiteral(this.t);
-        }
 
 
     }
@@ -121,11 +85,6 @@ public class CTypes {
             super();
             this.v = v;
         }
-
-//        @Override
-//        public Optional<Type<Level>> tryApply(Assignment<Level> a) {
-//            return Optional.ofNullable(a.get().get(v));
-//        }
 
         @Override
         public String toString() {
@@ -159,20 +118,11 @@ public class CTypes {
         }
 
 
-//        @Override
-//        public Stream<TypeVar> variables() {
-//            return Stream.of(this.v);
-//        }
-
         @Override
         public CTypeViews.CTypeView<Level> inspect() {
             return new CTypeViews.Variable<Level>(this.v);
         }
 
-        @Override
-        public <R> R accept(CTypeSwitch<Level, R> sw) {
-            return sw.caseVariable(this.v);
-        }
 
     }
 

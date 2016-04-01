@@ -1,12 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.typing.CompatibilityConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
 import de.unifreiburg.cs.proglang.jgs.typing.FlowConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
-import static main.java.de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 

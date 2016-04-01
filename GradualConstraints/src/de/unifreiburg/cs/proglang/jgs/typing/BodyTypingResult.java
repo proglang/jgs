@@ -2,9 +2,9 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import com.sun.istack.internal.NotNull;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
-import main.java.de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
-import main.java.de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 
 import java.util.List;
 import java.util.stream.Collectors;
