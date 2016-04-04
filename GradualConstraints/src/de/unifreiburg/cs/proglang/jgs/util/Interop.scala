@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.util
 
 import java.util.Optional
+import scala.collection.JavaConverters._
 
 /**
   * Created by fennell on 3/9/16.
@@ -14,5 +15,7 @@ object Interop {
     o.map[Option[T]](new java.util.function.Function[T, Option[T]] {
       override def apply(t: T): Option[T] = Some(t)
     }).orElse(None)
+
+  def asScalaIterator[T](i : java.util.Collection[T]) : Iterator[T] = i.iterator().asScala
 
 }

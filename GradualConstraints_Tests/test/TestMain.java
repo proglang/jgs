@@ -33,6 +33,7 @@ import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringAr
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeEffects;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asScalaIterator;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -89,12 +90,12 @@ public class TestMain {
 
     private static Signature<Level> parseSignature(SootMethod m) {
         List<String> constraintStrings =
-                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().stream()).stream(),
+                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", asScalaIterator(m.getTags())).stream(),
                                     new IllegalArgumentException(
                                             "Found more than one constraint annotation on "
                                             + m.getName())).orElse(emptyList());
         List<String> effectStrings =
-                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().stream()).stream(),
+                getAtMostOneOrThrow(extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", asScalaIterator(m.getTags())).stream(),
                                     new IllegalArgumentException(
                                             "Found more than one effect annotation on "
                                             + m.getName())).orElse(emptyList());
@@ -106,7 +107,7 @@ public class TestMain {
 
     private static Type<Level> parseType(SootField f) {
         return getAtMostOneOrThrow(extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;",
-                                                           f.getTags().stream()).stream(),
+                                                           asScalaIterator(f.getTags())).stream(),
                                    new IllegalArgumentException(
                                            "Found more than one security level on "
                                            + f.getName()))

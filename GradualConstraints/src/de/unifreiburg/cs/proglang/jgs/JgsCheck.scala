@@ -1,16 +1,13 @@
 package de.unifreiburg.cs.proglang.jgs
 
 import java.io.File
-import java.util.Optional
 import java.util.logging.Logger
 import java.util.stream.Collectors
 
-import de.unifreiburg.cs.proglang.jgs.JgsCheck.LowHigh
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain}
 import TypeDomain.Type
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts
 import Casts.{ValueCast, CxCast}
@@ -165,7 +162,7 @@ object JgsCheck {
               f <- c.getFields)
           yield {
             val secAnnotations: List[String] =
-              Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.stream()).toList
+              Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.iterator()).toList
             val mt: Option[TypeDomain.Type[Level]] =
               for (typeStr <- getSingleAnnotation(secAnnotations, new IllegalArgumentException("Found more than one security level on " + f.getName()));
                    t <- types.typeParser().parse(typeStr))
@@ -181,11 +178,11 @@ object JgsCheck {
           yield {
             val constraintStrings: List[String] =
               getSingleAnnotation(
-                extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().stream()).toList.map(_.toList),
+                extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().iterator()).toList.map(_.toList),
                 new IllegalArgumentException("Found more than one constraint annotation on " + m.getName())
               ).getOrElse(Nil)
             val effectStrings: List[String] = getSingleAnnotation(
-              extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().stream()).toList.map(_.toList),
+              extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().iterator()).toList.map(_.toList),
               new IllegalArgumentException("Found more than one effect annotation on " + m.getName())).getOrElse(Nil)
             val sig = makeSignature[Level](m.getParameterCount, parseConstraints(constraintStrings), makeEffects(parseEffects(effectStrings)))
             (m, sig)
