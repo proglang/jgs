@@ -18,6 +18,7 @@ object Interop {
     }).orElse(None)
 
   def asScalaIterator[T](i : java.util.Collection[T]) : Iterator[T] = i.iterator().asScala
+  def asScalaIterator[T](i : java.util.Iterator[T]) : Iterator[T] = i.asScala
 
   def asJavaStream[T](i : Iterator[T]) : Stream[T] = {
     StreamSupport.stream(Spliterators.spliteratorUnknownSize(i.asJava, Spliterator.ORDERED), false)

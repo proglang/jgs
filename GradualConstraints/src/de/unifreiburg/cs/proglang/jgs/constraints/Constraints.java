@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypeOps.tryApply;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
@@ -88,7 +89,7 @@ public class Constraints<Level> {
     }
 
     public Optional<Assignment<Level>> satisfyingAssignment(ConstraintSet<Level> levelConstraintSet, Collection<TypeVar> vars) {
-        return levelConstraintSet.satisfyingAssignment(this.types, vars);
+        return Interop.asJavaOptional(levelConstraintSet.satisfyingAssignment(this.types, vars));
     }
 
     public boolean implies(ConstraintSet<Level> left, ConstraintSet<Level> right) {

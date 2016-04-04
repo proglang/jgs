@@ -6,6 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -242,7 +243,7 @@ public class MethodSignatures<Level> {
 //                    }
 //                };
 
-        return signatureConstraints(constraints.projectTo(params.keySet()).stream().map(c -> {
+        return signatureConstraints(Interop.asJavaStream(constraints.projectTo(params.keySet()).stream()).map(c -> {
             Symbol<Level> lhs = Symbols.<Level>ctypeToSymbol(params, c.getLhs());
             Symbol<Level> rhs = Symbols.<Level>ctypeToSymbol(params, c.getRhs());
             switch (c.kind) {

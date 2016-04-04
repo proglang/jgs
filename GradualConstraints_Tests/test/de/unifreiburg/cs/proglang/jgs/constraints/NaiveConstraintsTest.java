@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.equals;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -10,6 +11,7 @@ import java.util.stream.Stream;
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.typing.FlowConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -125,7 +127,7 @@ public class NaiveConstraintsTest {
     @Test(timeout = 1000)
     public void testLeClosure() {
         Set<Constraint<Level>> tmp =
-                makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3))).stream().collect(toSet());
+                asJavaStream(makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3))).stream()).collect(toSet());
         ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
         ConstraintSet<Level> expected =
                 makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(cs.x1, cs.x3)));
@@ -144,7 +146,7 @@ public class NaiveConstraintsTest {
     @Test
     public void testCompClosure() {
         Set<Constraint<Level>> tmp =
-                makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3))).stream().collect(toSet());
+                asJavaStream(makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3))).stream()).collect(toSet());
         ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
         // closing compatibility constraints does not have an effect
         ConstraintSet<Level> expected =
@@ -154,14 +156,14 @@ public class NaiveConstraintsTest {
 
         // closing compatibility constraints does not have an effect. This is the same test as above
         tmp =
-                makeNaive(asList(compC(cs.x2, cs.x1), compC(cs.x2, cs.x3))).stream().collect(toSet());
+                asJavaStream(makeNaive(asList(compC(cs.x2, cs.x1), compC(cs.x2, cs.x3))).stream()).collect(toSet());
         closed = makeNaive(NaiveConstraints.close(tmp));
         expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3)));
 
         assertThat(closed, is(equivalent(expected)));
 
         tmp =
-                makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2))).stream().collect(toSet());
+                asJavaStream(makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2))).stream()).collect(toSet());
         closed = makeNaive(NaiveConstraints.close(tmp));
         expected =
                 makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2), compC(cs.x1, cs.x3)));

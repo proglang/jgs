@@ -144,9 +144,9 @@ public class MethodTypingTest {
                 + "SIG: %s"
                 + "\n CONSTRAINTS: %s",
                 r.refinementCheckResult
-                        .abstractConstraints.toString().replace(",", ",\n"),
+                        .abstractConstraints().toString().replace(",", ",\n"),
                 r.refinementCheckResult
-                        .concreteConstraints.toString().replace(",", ",\n")), r.isSuccess(), is(false));
+                        .concreteConstraints().toString().replace(",", ",\n")), r.isSuccess(), is(false));
     }
 
 

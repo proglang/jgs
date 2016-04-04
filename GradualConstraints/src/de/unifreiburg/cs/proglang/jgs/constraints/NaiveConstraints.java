@@ -7,8 +7,13 @@ import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause;
 import de.unifreiburg.cs.proglang.jgs.typing.FlowConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
+import scala.Option;
+import scala.collection.*;
 
 import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -18,6 +23,8 @@ import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.*;
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asScalaOption;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -46,7 +53,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     public ConstraintSet<Level> add(Collection<Constraint<Level>> other) {
         HashSet<Constraint<Level>> newCs = new HashSet<>(this.cs);
         newCs.addAll(other);
-        return new NaiveConstraints<>(types, newCs);
+        return new NaiveConstraints<>(types(), newCs);
     }
 
     @Override
@@ -56,12 +63,12 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
     @Override
     public ConstraintSet<Level> add(ConstraintSet<Level> other) {
-        return this.add(other.stream().collect(toList()));
+        return this.add(asJavaStream(other.stream()).collect(toList()));
     }
 
     @Override
-    public Stream<Constraint<Level>> stream() {
-        return this.cs.stream();
+    public scala.collection.Iterator<Constraint<Level>> stream() {
+        return Interop.asScalaIterator(this.cs.iterator());
     }
 
     /// close constraints cs transitively and by compatibility. Will not generate reflexive constraints.
@@ -105,7 +112,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
 
 
     public static <Level> ConstraintSet<Level> minimize(ConstraintSet<Level> cs) {
-        return new NaiveConstraints<>(cs.types, minimize(cs.stream().collect(toSet())));
+        return new NaiveConstraints<>(cs.types(), minimize(asJavaStream(cs.stream()).collect(toSet())));
     }
 
     /**
@@ -153,12 +160,12 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     @Override
     public ConstraintSet<Level> projectTo(Set<TypeVar> typeVars) {
         Set<Constraint<Level>> constraintSet = this.cs;
-        return new NaiveConstraints<>(this.types, projectTo(constraintSet, typeVars).collect(toSet()));
+        return new NaiveConstraints<>(this.types(), projectTo(constraintSet, typeVars).collect(toSet()));
     }
 
     @Override
     public boolean implies(TypeDomain<Level> types, ConstraintSet<Level> other) {
-        return this.enumerateSatisfyingAssignments(types, other.variables()
+        return this.enumerateSatisfyingAssignments(types, asJavaStream(other.variables())
                                                                .collect(toSet()))
                    .allMatch(ass -> other.isSatisfiedFor(types, ass));
 
@@ -167,16 +174,16 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     @Override
     public boolean isSat(TypeDomain<Level> types) {
         // close the constraints and check for conflicts in the single constraints
-        return close(this.stream().collect(toSet())).stream().allMatch(c -> c.isSatisfiable(types));
+        return close(asJavaStream(this.stream()).collect(toSet())).stream().allMatch(c -> c.isSatisfiable(types));
     }
 
-    public Optional<Assignment<Level>> doesNotSubsume(ConstraintSet<Level> other) {
-        return this.enumerateSatisfyingAssignments(types, Collections.<TypeVar>emptyList())
+    public Option<Assignment<Level>> doesNotSubsume(ConstraintSet<Level> other) {
+        return asScalaOption(this.enumerateSatisfyingAssignments(types(), Collections.<TypeVar>emptyList())
                    .filter((Assignment<Level> a) -> {
-                       Stream<Constraint<Level>> cStream = other.apply(a);
+                       Stream<Constraint<Level>> cStream = asJavaStream(other.apply(a));
                        List<Constraint<Level>> cs = cStream.collect(toList());
-                       return !(new NaiveConstraints<>(types, cs).isSat(types));
-                   }).findFirst();
+                       return !(new NaiveConstraints<>(types(), cs).isSat(types()));
+                   }).findFirst());
 
     }
 
@@ -196,8 +203,8 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
     }
 
     @Override
-    public Optional<Assignment<Level>> satisfyingAssignment(TypeDomain<Level> types, Collection<TypeVar> requiredVariables) {
-        return this.enumerateSatisfyingAssignments(types, requiredVariables).findAny();
+    public Option<Assignment<Level>> satisfyingAssignment(TypeDomain<Level> types, Collection<TypeVar> requiredVariables) {
+        return asScalaOption(this.enumerateSatisfyingAssignments(types, requiredVariables).findAny());
     }
 
 
@@ -210,7 +217,7 @@ public class NaiveConstraints<Level> extends ConstraintSet<Level> {
         // First, find sources and sinks of illegal flows
         Set<Constraint<Level>> closed = NaiveConstraints.close(this.cs);
         List<Constraint<Level>> conflicts =
-                closed.stream().filter(c -> !c.isSatisfiable(types)).collect(toList());
+                closed.stream().filter(c -> !c.isSatisfiable(types())).collect(toList());
         conflicts.forEach(c -> {
             Predicate<CType<Level>> isLit = ct -> ct.inspect() instanceof CTypeViews.Lit;
             if (!(isLit.test(c.getLhs()) && isLit.test(c.getRhs()))) {

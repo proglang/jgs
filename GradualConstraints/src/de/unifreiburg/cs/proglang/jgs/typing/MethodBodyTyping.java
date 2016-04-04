@@ -182,7 +182,7 @@ public class MethodBodyTyping<Level> {
             ).collect(Collectors.toList()));
 
             Map<Constraint<Level>, TypeVarTags.TypeVarTag> tagMap = new HashMap<>();
-            additionalConstraints.stream().forEach(c -> tagMap.put(c, new TypeVarTags.CxCast(new CastsFromMapping.Conversion<Level>(cxCast.sourceType, cxCast.destType))));
+            Interop.asJavaStream(additionalConstraints.stream()).forEach(c -> tagMap.put(c, new TypeVarTags.CxCast(new CastsFromMapping.Conversion<Level>(cxCast.sourceType, cxCast.destType))));
 
             // modify effects: remove dest and add source
             Set<TypeDomain.Type<Level>> newEffects = new HashSet<>();

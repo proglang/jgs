@@ -1,8 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.cli
 
 import java.util
-import java.util.function.Function
-import java.util.stream.Collectors
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Variable
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain, CTypes}
@@ -18,6 +16,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefineme
 import de.unifreiburg.cs.proglang.jgs.typing._
 import org.kiama.output.PrettyPrinter._
 
+import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 import TypeVars._
@@ -81,7 +80,7 @@ object Format {
             val mcauses = result.conflictCauses.get()
             if (mcauses.isEmpty) {
               "Unable to find succinct causes, sorry. Complete constraints of body:" <>
-              nest(linebreak<> vcat(copyToList(result.completeBodyConstraints.stream()).map(constraint(_))), 2)
+              nest(linebreak<> vcat(result.completeBodyConstraints.stream.toList.map(constraint(_))), 2)
             } else {
               vcat(mcauses.asScala.toList.distinct.map(conflictCause))
             }
@@ -148,20 +147,19 @@ object Format {
                                    conflictDescription: String)
                                   (result: RefinementCheckResult[Level]): Doc = {
     result.counterExample
-      .map[Doc](
-      fun(cs => {
+      .map[Doc](cs => {
         nest(linebreak <>
           "Counterexample:" <+> assignment(cs) <@@>
-          s"${abstractDescription}:" <+> constraintSet(copyToList(result.abstractConstraints.stream())) <@@>
-          s"${concreteDescription}:" <+> constraintSet(copyToList(result.concreteConstraints.stream())) <@@>
-          s"${conflictDescription}: " <+> constraintSet(copyToList(result.getConflicting.stream())), 2)
-      }))
-      .orElse(space <> text("ok"))
+          s"${abstractDescription}:" <+> constraintSet(result.abstractConstraints.stream.toList) <@@>
+          s"${concreteDescription}:" <+> constraintSet(result.concreteConstraints.stream.toList) <@@>
+          s"${conflictDescription}: " <+> constraintSet(result.getConflicting.toList), 2)
+      })
+      .getOrElse(space <> text("ok"))
   }
 
-  private def copyToList[T](c: util.stream.Stream[T]): List[T] = {
-    c.collect(Collectors.toList()).asScala.toList
-  }
+//  private def copyToList[T](c: util.stream.Stream[T]): List[T] = {
+//    c.collect(Collectors.toList()).asScala.toList
+//  }
 
   def constraintSet[Level](cs: List[Constraint[Level]]): Doc = {
     def isReflexive(c : Constraint[Level]) = c.getLhs == c.getRhs

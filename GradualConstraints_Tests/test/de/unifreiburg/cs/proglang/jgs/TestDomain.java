@@ -31,6 +31,7 @@ import soot.jimple.StaticInvokeExpr;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.stream.Collectors.toSet;
 
 public class TestDomain {
@@ -447,11 +448,11 @@ public class TestDomain {
 //                            Stream.of(tvars.topLevelContext()),
 //                            abstractConstraints.variables()
                             Stream.empty(),
-                            abstractConstraints.variables()
+                            asJavaStream(abstractConstraints.variables())
                     ).collect(toSet()));
             result =
                     new ConstraintSet.RefinementCheckResult<>(abstractConstraints, projected, abstractConstraints.doesNotSubsume(projected));
-            return !result.counterExample.isPresent();
+            return result.counterExample().isEmpty();
         }
 
         @Override
@@ -464,7 +465,7 @@ public class TestDomain {
             mismatchDescription.appendText(
                     "was \nMatched: " + item.toString() + "\n")
                                .appendText(String.format(" projected to: %s\n"
-                                       , abstractConstraints.variables()
+                                       , asJavaStream(abstractConstraints.variables())
                                                             .collect(toSet())
                                                             .toString()))
                                .appendText(result.toString());

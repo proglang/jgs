@@ -14,6 +14,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import soot.SootMethod;
 
 import java.util.HashMap;
@@ -58,7 +59,7 @@ public class MethodTyping<Level> {
          * its constraints can be solved
          */
         public boolean signatureHasSolution() {
-            return this.refinementCheckResult.abstractConstraints.isSat(types);
+            return this.refinementCheckResult.abstractConstraints().isSat(types);
         }
 
         public boolean bodyHasSolution() {
@@ -73,7 +74,7 @@ public class MethodTyping<Level> {
          */
         public boolean isSuccess() {
             return (!this.signatureHasSolution() || this.bodyHasSolution())
-                   && !refinementCheckResult.counterExample.isPresent()
+                   && !refinementCheckResult.counterExample().isDefined()
                    && missedEffects.isEmpty();
         }
 
@@ -83,12 +84,12 @@ public class MethodTyping<Level> {
             if (!this.signatureHasSolution()) {
                 b.append("- !! Method cannot be called (has an unsatisfiable signature constraints)");
             }
-            if (!this.refinementCheckResult.concreteConstraints.isSat(types)) {
+            if (!this.refinementCheckResult.concreteConstraints().isSat(types)) {
                 b.append("- !! Conflicting constraints in method body\n");
             } else {
                 b.append("- Method body has no typing conflicts\n");
             }
-            if (this.refinementCheckResult.counterExample.isPresent()) {
+            if (this.refinementCheckResult.counterExample().isDefined()) {
                 b.append("- Error in refining constraints (see below)!\n");
             } else {
                 b.append("- The constraints of the abstractConstraints are sound\n");
@@ -162,7 +163,7 @@ public class MethodTyping<Level> {
                 csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(toList()));
 
         ConstraintSet<Level> bodyConstraints =
-                r.getConstraints().asSignatureConstraints(tvars, methodParameters(method).stream().map(Var::fromParam));
+                r.getConstraints().asSignatureConstraints(tvars, Interop.asScalaIterator(methodParameters(method).stream().map(Var::fromParam).iterator()));
 
 
         return new Result<>(cstrs.types, r.getConstraints(),

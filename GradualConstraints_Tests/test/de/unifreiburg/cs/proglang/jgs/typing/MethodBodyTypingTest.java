@@ -4,6 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.BodyBuilder;
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs.*;
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toSet;
@@ -476,20 +478,20 @@ public class MethodBodyTypingTest {
                 leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
                 compC(code.init.get(code.varZ), code.init.get(code.varY))));
 
-        assertThat(makeNaive(getConstraints.apply(result).apply(
+        assertThat(makeNaive(asJavaStream(getConstraints.apply(result).apply(
                 Assignments.builder(code.init.get(code.varZ), TLOW)
-                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+                        .add(code.init.get(code.varY), DYN).build())).collect(toSet())), not(is(sat())));
 
-        assertThat(makeNaive(result.getConstraints().apply(
+        assertThat(makeNaive(asJavaStream(result.getConstraints().apply(
                 Assignments.builder(code.init.get(code.varZ), TLOW)
-                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+                        .add(code.init.get(code.varY), DYN).build())).collect(toSet())), not(is(sat())));
 
-        assertThat("Unsat projected fewer", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+        assertThat("Unsat projected fewer", makeNaive(asJavaStream(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
                 Assignments.builder(code.init.get(code.varZ), TLOW)
-                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
-        assertThat("Unsat projected", makeNaive(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
+                        .add(code.init.get(code.varY), DYN).build())).collect(toSet())), not(is(sat())));
+        assertThat("Unsat projected", makeNaive(asJavaStream(result.getConstraints().projectTo(Stream.of(code.init.get(code.varZ), code.init.get(code.varY), result.finalTypeVariableOf(code.varZ)).collect(toSet())).apply(
                 Assignments.builder(code.init.get(code.varZ), TLOW)
-                        .add(code.init.get(code.varY), DYN).build()).collect(toSet())), not(is(sat())));
+                        .add(code.init.get(code.varY), DYN).build())).collect(toSet())), not(is(sat())));
         assertEquivalentConstraints(b, getConstraints,
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ))));
 
