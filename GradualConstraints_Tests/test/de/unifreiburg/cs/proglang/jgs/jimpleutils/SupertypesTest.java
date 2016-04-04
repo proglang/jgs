@@ -8,6 +8,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodWithSignature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEf
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
@@ -62,7 +64,7 @@ public class SupertypesTest {
         SootClass derivedClass = derived.getKey();
 
         assertThat("Derived has no superclass", derivedClass.hasSuperclass());
-        assertThat(Supertypes.enumerate(derivedClass).collect(toList()), is(equalTo(asList(code.testClass))));
+        assertThat(asJavaStream(Supertypes.enumerate(derivedClass)).collect(toList()), is(equalTo(asList(code.testClass))));
         assertThat("Derived is no subtype", Supertypes.subTypeOf(derived.getKey(), code.testClass));
     }
 
@@ -80,7 +82,7 @@ public class SupertypesTest {
         assertThat("Names not equal", testCallee_override.getName(), is(equalTo(code.testCallee__int.getName())));
         assertThat("Parameternot equal", testCallee_override.getName(), is(equalTo(code.testCallee__int.getName())));
         assertThat("Method does not override", Supertypes.overrides(testCallee_override, code.testCallee__int), is(true));
-        assertThat("Could not find overridden method", Supertypes.findOverridden(testCallee_override).collect(toList()), is(equalTo(asList(code.testCallee__int))));
+        assertThat("Could not find overridden method", asJavaStream(Supertypes.findOverridden(testCallee_override)).collect(toList()), is(equalTo(asList(code.testCallee__int))));
     }
 
 

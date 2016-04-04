@@ -6,6 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Supertypes;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodWithSignature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
@@ -65,7 +67,7 @@ public class ClassHierarchyTypingTest {
 
         assertThat("Method does not override", Supertypes.overrides(testCallee_override, code.testCallee__int), is(true));
         assertThat(sig, not(refines(derived.getRight().get(code.testCallee__int).get())));
-        assertThat("Could not find overridden method", Supertypes.findOverridden(testCallee_override).collect(toList()), is(equalTo(asList(code.testCallee__int))));
+        assertThat("Could not find overridden method", asJavaStream(Supertypes.findOverridden(testCallee_override)).collect(toList()), is(equalTo(asList(code.testCallee__int))));
 
         assertThat(allMethods(derived.getLeft(), code.testClass), not(passesSubtypingCheckFor(derived.getRight())));
     }

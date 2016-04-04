@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Supertypes;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.SootClass;
 import soot.SootMethod;
@@ -119,7 +120,7 @@ public class ClassHierarchyTyping {
             Stream<SootMethod> methodStream) {
         Stream<SubtypeError<Level>> errors = methodStream.flatMap(m1 -> {
 
-            Stream<SootMethod> overridden = Supertypes.findOverridden(m1);
+            Stream<SootMethod> overridden = Interop.asJavaStream(Supertypes.findOverridden(m1));
             return overridden.flatMap(m2 -> {
                 return checkTwoMethods(csets, types, signatures, m1, m2).error.map(Stream::of).orElse(Stream.empty());
             });

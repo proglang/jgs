@@ -2,7 +2,6 @@ package de.unifreiburg.cs.proglang.jgs
 
 import java.io.File
 import java.util.logging.Logger
-import java.util.stream.Collectors
 
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints._
@@ -10,7 +9,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain}
 import TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts
-import Casts.{ValueCast, CxCast}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.signatures.{FieldTable, SignatureTable, MethodSignatures}
@@ -19,14 +17,10 @@ import de.unifreiburg.cs.proglang.jgs.typing.{TypingAssertionFailure, TypingExce
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import org.javafp.parsecj.State
 import scopt.OptionParser
-import scopt.OptionParser._
-import soot.jimple.StaticInvokeExpr
 import soot.{SootMethod, SootField, SootClass, Scene}
 import soot.options.Options
 
 import scala.collection.JavaConversions._
-import scala.collection.JavaConverters._
-import de.unifreiburg.cs.proglang.jgs.util.Interop._
 
 import scala.io.Source
 import scala.util.{Success, Failure, Try}
@@ -162,7 +156,7 @@ object JgsCheck {
               f <- c.getFields)
           yield {
             val secAnnotations: List[String] =
-              Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.iterator()).toList
+              Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.iterator).toList
             val mt: Option[TypeDomain.Type[Level]] =
               for (typeStr <- getSingleAnnotation(secAnnotations, new IllegalArgumentException("Found more than one security level on " + f.getName()));
                    t <- types.typeParser().parse(typeStr))
@@ -178,7 +172,7 @@ object JgsCheck {
           yield {
             val constraintStrings: List[String] =
               getSingleAnnotation(
-                extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().iterator()).toList.map(_.toList),
+                extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().iterator).toList.map(_.toList),
                 new IllegalArgumentException("Found more than one constraint annotation on " + m.getName())
               ).getOrElse(Nil)
             val effectStrings: List[String] = getSingleAnnotation(
@@ -286,7 +280,7 @@ object JgsCheck {
         * Class hierarchy check
         * ************************/
       println("Checking class hierarchy: ")
-      for (c <- classes; mSub <- c.getMethods; mSup <- Supertypes.findOverridden(mSub).collect(Collectors.toList())) {
+      for (c <- classes; mSub <- c.getMethods; mSup <- Supertypes.findOverridden(mSub)) {
         val result = ClassHierarchyTyping.checkTwoMethods(csets, types, signatures, mSub, mSup)
         print(s"* method ${mSub} overriding method ${mSup}: ")
         println(Format.pprint(Format.classHierarchyCheck(result)))

@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.util
 
-import java.util.Optional
+import java.util.{Spliterator, Spliterators, Optional}
+import java.util.stream.{StreamSupport, Stream}
 import scala.collection.JavaConverters._
 
 /**
@@ -17,5 +18,9 @@ object Interop {
     }).orElse(None)
 
   def asScalaIterator[T](i : java.util.Collection[T]) : Iterator[T] = i.iterator().asScala
+
+  def asJavaStream[T](i : Iterator[T]) : Stream[T] = {
+    StreamSupport.stream(Spliterators.spliteratorUnknownSize(i.asJava, Spliterator.ORDERED), false)
+  }
 
 }
