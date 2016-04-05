@@ -45,8 +45,8 @@ object ConstraintSet {
 
 }
 
-abstract class ConstraintSet[Level] (
-  protected val types: TypeDomain[Level]
+abstract case class ConstraintSet[Level] (
+  val types: TypeDomain[Level]
                                     )
 {
 

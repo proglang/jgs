@@ -20,9 +20,6 @@ import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by fennell on 12/1/15.
- */
 public class BodyTypingResultTest {
 
     private Jimple j;
@@ -55,10 +52,14 @@ public class BodyTypingResultTest {
 
         TypeVar freshV = tvars.join(tv1, tv2);
         ConstraintSet<Level> cs = cs1.add(cs2).add(leC(tv1, freshV)).add(leC(tv2, freshV));
+        ConstraintSet<Level> tmpcs = cs1.add(cs2).add(leC(tv1, freshV)).add(leC(tv2, freshV));
         BodyTypingResult<Level> expected = BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, before.add(v, freshV)), cs);
 
 
-        assertThat(result, is(equalTo(expected)));
+        assertThat("Simple constraints problem: ", tmpcs.equals(cs), is(true));
+        assertThat("Constraints problem: ", result.getConstraints(), is(expected.getConstraints()));
+        assertThat("Effect problem: ", result.getEffects(), is(expected.getEffects()));
+        assertThat("Other probelem: ", result, is(equalTo(expected)));
 
         assertThat(BodyTypingResult.join(BodyTypingResult.trivialCase(csets), r1, csets, tvars, "test"), is(r1));
         assertThat(BodyTypingResult.join(r1, BodyTypingResult.trivialCase(csets), csets, tvars, "test"), is(r1));

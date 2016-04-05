@@ -3,8 +3,8 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.BodyBuilder;
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Assumptions;
-import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class MethodBodyTypingTest {
     private Jimple j;
     private TypeVars tvars;
     private Code code;
-    private TypeVars.TypeVar pc;
+    private TypeVar pc;
 
     @Before
     public void setUp() {
@@ -462,6 +462,24 @@ public class MethodBodyTypingTest {
                         leC(code.init.get(code.varY), finalResult.finalTypeVariableOf(code.varY))
                 )),
                 finalResult -> new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ), code.init.get(code.varX), finalResult.finalTypeVariableOf(code.varX), finalResult.finalTypeVariableOf(code.varY))));
+        BodyTypingResult<Level> result = analyze(b);
+        assertThat("manual projection",
+                   makeNaive(asList(
+                           leC(code.init.get(code.varY), result.finalTypeVariableOf(code.varX)),
+                           leC(code.init.get(code.varZ), result.finalTypeVariableOf(code.varX)),
+                           leC(result.finalTypeVariableOf(code.varY), result.finalTypeVariableOf(code.varX)),
+                           leC(code.init.get(code.varZ), result.finalTypeVariableOf(code.varY)),
+                           leC(code.init.get(code.varY), result.finalTypeVariableOf(code.varY))
+                   )).projectTo(new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ)))),
+                   is(equivalent(makeNaive(asList(compC(code.init.get(code.varY), code.init.get(code.varZ)))))));
+        Set<TypeVar> projVars = new HashSet<>(asList(code.init.get(code.varY), code.init.get(code.varZ)));
+        ConstraintSet<Level> expected = makeNaive(asList(compC(code.init.get(code.varY), code.init.get(code.varZ))));
+        assertThat("Projection to compat",
+                   NaiveConstraints.minimize(result.getConstraints().projectTo(projVars)),
+                   is(equivalent(expected)));
+        assertEquivalentConstraints(b,
+                                    finalResult -> expected,
+                                    finalResult -> projVars);
 
         /* while (y = y) { y = z }; x = y; z = z + 1;
              sig = { z <= z*, z ~ y }
@@ -473,7 +491,7 @@ public class MethodBodyTypingTest {
         Stmt incZ = j.newAssignStmt(code.localZ, j.newAddExpr(code.localZ, IntConstant.v(1)));
         b = BodyBuilder.begin(b).seq(incZ).build();
 
-        BodyTypingResult<Level> result = analyze(b);
+        result = analyze(b);
         Function<BodyTypingResult<Level>, ConstraintSet<Level>> getConstraints = finalResult -> makeNaive(asList(
                 leC(code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varZ)),
                 compC(code.init.get(code.varZ), code.init.get(code.varY))));
@@ -502,9 +520,9 @@ public class MethodBodyTypingTest {
         return mbTyping.generateResult(b, pc, code.init);
     }
 
-    private void assertEquivalentConstraints(Body b, Function<BodyTypingResult<Level>, ConstraintSet<Level>> getExpected, Function<BodyTypingResult<Level>, Set<TypeVars.TypeVar>> getVarsToProject) throws TypingException {
+    private void assertEquivalentConstraints(Body b, Function<BodyTypingResult<Level>, ConstraintSet<Level>> getExpected, Function<BodyTypingResult<Level>, Set<TypeVar>> getVarsToProject) throws TypingException {
         BodyTypingResult<Level> finalResult = analyze(b);
-        Set<TypeVars.TypeVar> varsToProject = getVarsToProject.apply(finalResult);
+        Set<TypeVar> varsToProject = getVarsToProject.apply(finalResult);
         ConstraintSet<Level> expected = getExpected.apply(finalResult);
         assertThat(String.format("The constraints of %s projected to %s", b, varsToProject),
                 NaiveConstraints.minimize(finalResult.getConstraints().projectTo(varsToProject)), is(equivalent(expected)));

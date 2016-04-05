@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs
 
-import soot.{Body, SootMethod, VoidType, PatchingChain}
+import soot.{Body, SootClass, SootMethod, Scene, VoidType, PatchingChain}
 
 import scala.collection.JavaConverters._
 
@@ -9,9 +9,17 @@ import soot.jimple.{Expr, Jimple, Stmt, JimpleBody}
 
 class BodyBuilder private  {
 
-  private val body : Body = Jimple.v().newBody(new SootMethod("dummy", List().asJava, VoidType.v()))
+  private val body : Body = {
+    val c = new SootClass("DummyClass")
+    Scene.v().addClass(c)
+    val m = new SootMethod("dummy", List().asJava, VoidType.v())
+    c.addMethod(m)
+
+
+    Jimple.v().newBody(m)
   // TODO: check if we need to keep locals consistent
   // for (l <- locals) { body.getLocals.addLast(l) }
+  }
 
   private val chain : PatchingChain[soot.Unit]  = body.getUnits
 

@@ -6,9 +6,11 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.Code;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.typing.FlowConflict;
 import de.unifreiburg.cs.proglang.jgs.typing.TagMap;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
@@ -128,7 +130,7 @@ public class NaiveConstraintsTest {
     public void testLeClosure() {
         Set<Constraint<Level>> tmp =
                 asJavaStream(makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3))).stream()).collect(toSet());
-        ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
+        ConstraintSet<Level> closed = makeNaive(NaiveConstraints$.MODULE$.close(tmp));
         ConstraintSet<Level> expected =
                 makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(cs.x1, cs.x3)));
         assertThat(closed, is(equivalent(expected)));
@@ -137,7 +139,7 @@ public class NaiveConstraintsTest {
     public void testLeClosureWithConcreteTypes() {
         Set<Constraint<Level>> tmp =
                 Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(literal(THIGH), literal(TLOW))).collect(toSet());
-        ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
+        ConstraintSet<Level> closed = makeNaive(NaiveConstraints$.MODULE$.close(tmp));
         ConstraintSet<Level> expected =
                 makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), leC(cs.x1, cs.x3)));
     }
@@ -147,7 +149,7 @@ public class NaiveConstraintsTest {
     public void testCompClosure() {
         Set<Constraint<Level>> tmp =
                 asJavaStream(makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3))).stream()).collect(toSet());
-        ConstraintSet<Level> closed = makeNaive(NaiveConstraints.close(tmp));
+        ConstraintSet<Level> closed = makeNaive(NaiveConstraints$.MODULE$.close(tmp));
         // closing compatibility constraints does not have an effect
         ConstraintSet<Level> expected =
                 makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3)));
@@ -157,21 +159,30 @@ public class NaiveConstraintsTest {
         // closing compatibility constraints does not have an effect. This is the same test as above
         tmp =
                 asJavaStream(makeNaive(asList(compC(cs.x2, cs.x1), compC(cs.x2, cs.x3))).stream()).collect(toSet());
-        closed = makeNaive(NaiveConstraints.close(tmp));
+        closed = makeNaive(NaiveConstraints$.MODULE$.close(tmp));
         expected = makeNaive(asList(compC(cs.x1, cs.x2), compC(cs.x2, cs.x3)));
 
         assertThat(closed, is(equivalent(expected)));
 
         tmp =
                 asJavaStream(makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2))).stream()).collect(toSet());
-        closed = makeNaive(NaiveConstraints.close(tmp));
+        closed = makeNaive(NaiveConstraints$.MODULE$.close(tmp));
         expected =
                 makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2), compC(cs.x1, cs.x3)));
 
-        assertThat(closed, is(equivalent(expected)));
+        assertThat("CompClosure failed", closed, is(equivalent(expected)));
+        Set<TypeVar> projSet = Stream.of(cs.v1, cs.v3).collect(toSet());
+        assertThat("Projection failed", makeNaive(tmp).projectTo(projSet), is(equivalent(closed.projectTo(projSet))));
+
+        /* sig = { x1 <= x0, x1 ~ x3 }
+           cset = { x1 <= x2, x3 <= x2, x1 <= x0 }
+        */
+        tmp = asJavaStream(makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2), leC(cs.x1, cs.x0))).stream()).collect(toSet());
+        projSet = Stream.of(cs.v1, cs.v0, cs.v3).collect(Collectors.toSet());
+        assertThat("CompClosure1 failed", NaiveConstraints.minimize(makeNaive(tmp).projectTo(projSet)), is(equivalent(makeNaive(Stream.of(leC(cs.x1, cs.x0), compC(cs.x1, cs.x3)).collect(Collectors.toSet())))));
     }
 
-    void assertProjection(Collection<Constraint<Level>> cs, Collection<TypeVars.TypeVar> vars, Collection<Constraint<Level>> expectedSet) {
+    void assertProjection(Collection<Constraint<Level>> cs, Collection<TypeVar> vars, Collection<Constraint<Level>> expectedSet) {
         ConstraintSet<Level> projected =
                 makeNaive(cs).projectTo(new HashSet<>(vars));
         ConstraintSet<Level> expected = makeNaive(expectedSet);
@@ -202,13 +213,23 @@ public class NaiveConstraintsTest {
                          Stream.of(leC(literal(TLOW), variable(tvars.ret()))).collect(toList()));
     }
 
+    // TODO: need a property test that "forall s cs1 cs2. equivalent(cs1, cs2) => equivalent(cs1.projectTo(s), cs2.projectTo(s))"
+    // TODO: need a property test that "forall s cs. equivalent(minimize(cs), cs)"
+
     @Test
     public void testMinimize() {
         Set<Constraint<Level>> tmp =
                 Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3), compC(cs.x3, cs.x2), dimplC(cs.x1, cs.x2)).collect(toSet());
         Set<Constraint<Level>> expected =
                 Stream.of(leC(cs.x1, cs.x2), leC(cs.x2, cs.x3)).collect(toSet());
-        assertThat(makeNaive(NaiveConstraints.minimize(tmp)), is(equivalent(makeNaive(expected))));
+        assertThat(makeNaive(NaiveConstraints$.MODULE$.minimize(tmp)), is(equivalent(makeNaive(expected))));
+
+        assertThat("minimize comp", (NaiveConstraints.minimize(makeNaive(singletonList(compC(cs.x2, cs.x3))))), is(equivalent(makeNaive(singletonList(compC(cs.x2, cs.x3))))));
+
+        tmp = asJavaStream(makeNaive(asList(leC(cs.x1, cs.x2), leC(cs.x3, cs.x2), leC(cs.x1, cs.x0))).stream()).collect(toSet());
+        Set<TypeVar> projSet = Stream.of(cs.v1, cs.v0, cs.v3).collect(Collectors.toSet());
+        assertThat("just minimize", NaiveConstraints.minimize(makeNaive(tmp)), is(equivalent(makeNaive(tmp))));
+        assertThat("minimize and project", NaiveConstraints.minimize(makeNaive(tmp).projectTo(projSet)), is(equivalent(makeNaive(tmp).projectTo(projSet))));
     }
 
     @Test
