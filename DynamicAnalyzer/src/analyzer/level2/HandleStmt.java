@@ -67,9 +67,15 @@ public class HandleStmt {
 		lm.checkisLPCStackEmpty();
 	}
 
+	/**
+	 * If the result of the check for LPC or GPC is negative (that means,
+	 * that a LOW variable is written in a HIGH context), then
+	 * the analysis aborts with an {@link IllegalFlowException} and a System.exit.
+	 * @param sink the variable which is written in a HIGH context.
+	 */
 	protected void abort(String sink) {
-		logger.log(Level.SEVERE, "", new IllegalFlowException(
-				"System.exit because of illegal flow to " + sink));
+		new IllegalFlowException(
+				"System.exit because of illegal flow to " + sink);
 		System.exit(0);
 	}
 
@@ -358,9 +364,11 @@ public class HandleStmt {
 	 *            List of signatore-string of all locals.
 	 */
 	public void checkCondition(String domHash, String... args) {
+		logger.info("Check condition of ifStmt");
 		lm.pushLocalPC(hsu.joinWithLPC(hsu.joinLocals(args)),
 				Integer.valueOf(domHash));
 		om.pushGlobalPC(hsu.joinWithGPC(lm.getLocalPC()));
+		logger.info("New LPC is " + lm.getLocalPC().toString());
 	}
 
 	/**

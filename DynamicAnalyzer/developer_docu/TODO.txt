@@ -6,10 +6,8 @@ MakeFieldHigh (Low, Make ArrayFieldHigh,...)
 IfStmt
 >> Adjust level 2 tests.
 
-ForLoops
->> What to do with length expression?
-
 >> bessere handleStmt logs
+>> Run all Classtests automatically  
 >> Überall Fehlerchecks einbauen
 >> Define sootClassPath for rt.jar in Main which works globally
 >> Remove all System.outs
@@ -29,7 +27,6 @@ ForLoops
 >> Why is there a field for returnLevel in ObjectMap AND in LocalMap? 
 >> thorough refactoring of handleStmt.
 >> Move more parts to visitorhelper??
->> ValueSwitch: Warum ist rightelement = MAKEHIGH..wird das benutzt?
 >> ArithmeticExpressionsFail
 >> Fail/Success testclasses
 >> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)

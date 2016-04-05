@@ -16,7 +16,7 @@ public class MakeHigh {
 		String[][] mularr = { {"aa"},{"bb"}};
 		
 		local = HelperClass.makeHigh(local);
-		local = "bg";
+		local = HelperClass.makeHigh("bg");
 		field = HelperClass.makeHigh(field);
 		arr[0] = HelperClass.makeHigh(arr[1]);
 		mularr[1] = HelperClass.makeHigh(mularr[1]);

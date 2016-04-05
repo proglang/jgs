@@ -6,13 +6,12 @@ public class IllegalFlowException extends RuntimeException {
 
 	public IllegalFlowException(String message) {
 		super(message);
+		printStackTrace();
 	}
 
 	public IllegalFlowException(String message, Throwable cause) {
 		super(message, cause);
+		printStackTrace();
 	}
 		
-	public void printMessage() {
-		System.out.println(super.getMessage());
-	}	
 }

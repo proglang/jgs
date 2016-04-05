@@ -19,6 +19,7 @@ public class LocalMap {
 	
 	public LocalMap() {
 		localPC.push(new LPCDominatorPair(SecurityLevel.LOW, -1));
+		localMap.put("DEFAULT_LOW", SecurityLevel.LOW);
 	}
 	
 	/**
@@ -38,7 +39,7 @@ public class LocalMap {
 	}
 	
 	/**
-	 * @return The first element of the LPC stack.
+	 * @return The first element of the LPC stack without removing it.
 	 */
 	public SecurityLevel getLocalPC() {
 		return localPC.getFirst().getSecurityLevel();

@@ -879,11 +879,13 @@ public class JimpleInjector {
 	}
 
 	/**
-	 * @param pos
-	 * @param lArguments
+	 * Store the levels of all arguments in a list in ObjectMap. If an
+	 * argument is a constant, then the argument is stored as "DEFAULT_LOW".
+	 * @param pos position of actual statement
+	 * @param lArguments list of arguments
 	 */
 	public static void storeArgumentLevels(Unit pos, Local... lArguments) {
-
+ 
 		logger.log(Level.INFO, "Store Arguments for next method in method {0}",
 				b.getMethod().getName());
 
@@ -912,7 +914,7 @@ public class JimpleInjector {
 			} else {
 				tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
 						local_for_String_Arrays, IntConstant.v(i)), 
-						StringConstant.v(" ")); // TODO unnoetig
+						StringConstant.v("DEFAULT_LOW"));
 			}
 		}
 
