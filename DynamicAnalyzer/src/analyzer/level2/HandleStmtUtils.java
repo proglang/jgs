@@ -160,6 +160,31 @@ public class HandleStmtUtils {
 		}
 		return res;
 	}
+	
+	/**
+	 * @param signature
+	 * @param type 
+	 * 		0 = Local expected
+	 */
+	protected void checkIfLocalExists(String signature, int type) {
+		if (!lm.contains(signature)) {
+			new InternalAnalyzerException("Missing local " 
+				+ signature + " in LocalMap");
+		}
+	}
 
+	protected void checkIfObjectExists(Object o) {
+		if (!om.containsObject(o)) {
+			new InternalAnalyzerException("Missing object " 
+				+ o + " in ObjectMap");
+		}
+	}
+	
+	protected void checkIfFieldExists(Object o, String signature) {
+		if (!om.containsField(o, signature)) {
+			new InternalAnalyzerException("Missing field " 
+				+ signature + " in ObjectMap");
+		}
+	}
 
 }

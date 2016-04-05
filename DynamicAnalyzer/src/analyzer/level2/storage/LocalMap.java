@@ -46,6 +46,7 @@ public class LocalMap {
 	}
 	
 	/**
+	 * Remove first element of LPC-list if the given hashvalue matches.
 	 * @param domHash Hashvalue of the expected first element in LPC-list.
 	 */
 	public void popLocalPC(int domHash) {

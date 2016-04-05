@@ -113,14 +113,17 @@ public class ObjectMap{
 	 * @return the last globalPC before it was changed.
 	 */
 	public SecurityLevel popGlobalPC() {
+		if (globalPC.size() == 0) {
+			new InternalAnalyzerException("GPC-stack is empty");
+		}
 		if (globalPC.size() > 1) {
 			return globalPC.pop();
 		}
 		return globalPC.getFirst();
 	}
 
-	/**
-	 * @return SecurityLevel of the global PC.
+	/** Returns SecurityLevel of the global PC without removing it.
+	 * @return SecurityLevel
 	 */
 	public SecurityLevel getGlobalPC() {
 		return globalPC.getFirst();

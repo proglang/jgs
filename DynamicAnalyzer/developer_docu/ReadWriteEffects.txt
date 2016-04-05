@@ -22,4 +22,6 @@
 
 >> ARRAY REFERENCES
 
->> 
+>> RETURN VALUES
+> Standard value is HIGH (for external methods). If a contant is returned,
+	the value is LOW.

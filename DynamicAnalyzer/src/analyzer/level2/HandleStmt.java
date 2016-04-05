@@ -89,6 +89,7 @@ public class HandleStmt {
 	}
 
 	/**
+	 * Get the actual return level. The level is not changed in this operation.
 	 * @return The securitylevel of the last return-statement.
 	 */
 	protected SecurityLevel getActualReturnLevel() {
@@ -101,7 +102,10 @@ public class HandleStmt {
 	 */
 	public void addObjectToObjectMap(Object o) {
 		logger.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
-		om.insertNewObject(o);
+		om.insertNewObject(o);		
+		if (!om.containsObject(o)) {
+			new InternalAnalyzerException("Add object " + o + " to ObjectMap failed.");
+		}
 	}
 
 	/**
@@ -113,7 +117,13 @@ public class HandleStmt {
 	public SecurityLevel addFieldToObjectMap(Object o, String signature) {
 		logger.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {
 		    signature, o });
-		return om.setField(o, signature);
+		hsu.checkIfObjectExists(o);
+		SecurityLevel fieldLevel = om.setField(o, signature);
+		if (!om.containsField(o, signature)) {
+			new InternalAnalyzerException("Add field " 
+				+ signature + " to ObjectMap failed");
+		}
+		return fieldLevel;
 	}
 
 	/**
@@ -121,10 +131,8 @@ public class HandleStmt {
 	 * @param a array
 	 */
 	public void addArrayToObjectMap(Object[] a) {
-
-		logger.info("Array length " + a.length);
-
 		logger.log(Level.INFO, "Add Array {0} to ObjectMap", a.toString());
+		logger.info("Array length " + a.length);
 
 		addObjectToObjectMap(a);
 		for (int i = 0; i < a.length; i++) {
@@ -153,9 +161,7 @@ public class HandleStmt {
 	 * @return true, if field is found in ObjectMap
 	 */
 	protected boolean containsFieldInObjectMap(Object o, String signature) {		
-		if (!om.containsObject(o)) {
-			new InternalAnalyzerException("Missing object " + o + " in ObjectMap");
-		}
+		hsu.checkIfObjectExists(o);
 		return om.containsField(o, signature);
 	}
 
@@ -173,86 +179,122 @@ public class HandleStmt {
 	 * @return number of fields for given object
 	 */
 	protected int getNumberOfFields(Object o) {
-		if (!om.containsObject(o)) {
-			new InternalAnalyzerException("Missing object " + o + " in ObjectMap");
-		}
+		hsu.checkIfObjectExists(o);
 		return om.getNumberOfFields(o);
 	}
 
 	/**
-	 * @param o
-	 * @param signature
-	 * @return
+	 * Get the SecurityLevel for a field in ObjectMap.
+	 * @param o object of the field
+	 * @param signature signature of the field
+	 * @return SecurityLevel
 	 */
 	protected SecurityLevel getFieldLevel(Object o, String signature) {
+		hsu.checkIfObjectExists(o);
 		return om.getFieldLevel(o, signature);
 	}
 
 	/**
-	 * @param o
-	 * @param signature
+	 * Set the level of a field to HIGH.
+	 * @param o object containing the field
+	 * @param signature signature of the field
 	 */
 	public void makeFieldHigh(Object o, String signature) {
 		logger.log(Level.INFO, "Set SecurityLevel of field {0} to HIGH",
 				signature);
+		hsu.checkIfObjectExists(o);
 		om.setField(o, signature, SecurityLevel.HIGH);
 	}
 
 	/**
-	 * @param o
-	 * @param signature
+	 * Set the level of a field to LOW.
+	 * @param o object containing the field
+	 * @param signature signature of the field
 	 */
 	public void makeFieldLow(Object o, String signature) {
 		logger.log(Level.INFO, "Set SecurityLevel of field {0} to LOW",
 				signature);
+		hsu.checkIfObjectExists(o);
 		om.setField(o, signature, SecurityLevel.LOW);
 	}
 
 	/**
-	 * @param signature
-	 * @param level
+	 * Add a local to LocalMap.
+	 * @param signature signature of the local
+	 * @param level SecurityLevel for the new local
 	 */
 	public void addLocal(String signature, SecurityLevel level) {
 		logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap",
 				new Object[] { signature, level });
-
+		if (lm.contains(signature)) {
+			new InternalAnalyzerException("Trying to add local " + signature 
+				+ " to LocalMap, but it is already in the LocalMap.");
+		}
 		lm.insertElement(signature, level);
 	}
 
 	/**
-	 * @param signature
+	 * Add a local to LocalMap with default SecurityLevel LOW.
+	 * @param signature signature of the local
 	 */
 	public void addLocal(String signature) {
 		logger.log(Level.INFO, "Add Local {0} with Level LOW to LocalMap",
 				signature);
+		if (lm.contains(signature)) {
+			new InternalAnalyzerException("Trying to add local " + signature 
+				+ " to LocalMap, but it is already in the LocalMap.");
+		}
 		lm.insertElement(signature, SecurityLevel.LOW);
 	}
 
 	/**
-	 * @param signature
-	 * @return
+	 * Get the SecurityLevel of a local.
+	 * @param signature signature of the local
+	 * @return SecurityLevel
 	 */
 	protected SecurityLevel getLocalLevel(String signature) {
+		if (!lm.contains(signature)) {
+			new InternalAnalyzerException("Local " 
+				+ signature + " is missing in LocalMap");
+		}
 		return lm.getLevel(signature);
 	}
 
 	/**
-	 * @param signature
+	 * Set SecurityLevel of given local to HIGH.
+	 * @param signature signature of local
 	 */
 	public void makeLocalHigh(String signature) {
 		logger.info("Set level of local " + signature + " to HIGH");
+		if (!lm.contains(signature)) {
+			new InternalAnalyzerException("Missing local " 
+				+ signature + " in LocalMap");
+		}
 		lm.setLevel(signature, SecurityLevel.HIGH);
 		logger.info("New securitylevel of local "
 				+ signature + " is " + lm.getLevel(signature));
+		if (lm.getLevel(signature) != SecurityLevel.HIGH) {
+			new InternalAnalyzerException("Setting local " + signature 
+				+ " to HIGH failed");
+		}
 	}
 
 	/**
-	 * @param signature
+	 * Set SecurityLevel of given local to LOW.
+	 * @param signature signature of local
 	 */
 	public void makeLocalLow(String signature) {
 		logger.info("Set level of " + signature + " to LOW");
+		if (!lm.contains(signature)) {
+			new InternalAnalyzerException("Missing local " 
+				+ signature + " in LocalMap");
+		}
 		lm.setLevel(signature, SecurityLevel.LOW);
 		logger.info("New securitylevel: " + lm.getLevel(signature));
+		if (lm.getLevel(signature) != SecurityLevel.LOW) {
+			new InternalAnalyzerException("Setting local " + signature 
+				+ " to LOW failed");
+		}
 	}
 
 	/**
@@ -267,6 +309,7 @@ public class HandleStmt {
 	 */
 	protected SecurityLevel pushLocalPC(SecurityLevel l, int domHash) {
 		lm.pushLocalPC(l, domHash);
+		logger.info("New LPC: " + lm.getLocalPC().toString());
 		return lm.getLocalPC();
 	}
 
@@ -283,15 +326,17 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @return Actual localPC without removing it from the list.
+	 * Get actual localPC without removing it from the list.
+	 * @return localPC
 	 */
 	protected SecurityLevel getLocalPC() {
 		return lm.getLocalPC();
 	}
 
 	/**
-	 * @param l
-	 * @return
+	 * Add a GPC to GPC-stack.
+	 * @param l SecurityLevel of GPC.
+	 * @return new SecurityLevel
 	 */
 	protected SecurityLevel pushGlobalPC(SecurityLevel l) {
 		logger.log(Level.INFO, "Set globalPC to {0}", l);
@@ -300,25 +345,31 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @return
+	 * Get first element of GPC stack without removing it.
+	 * @return SecurityLevel
 	 */
 	protected SecurityLevel getGlobalPC() {
 		return om.getGlobalPC();
 	}
 
 	/**
-	 * @return
+	 * Remove the first element of GPC-stack.
+	 * @return SecurityLevel of last GPC
 	 */
 	protected SecurityLevel popGlobalPC() {
 		return om.popGlobalPC();
 	}
 
 	/**
-	 * @param pos
-	 * @param local
-	 * @return
+	 * Assign argument at given position to local.
+	 * @param pos position of argument
+	 * @param local signature of local
+	 * @return new SecurityLevel of local
 	 */
 	public SecurityLevel assignArgumentToLocal(int pos, String local) {
+		if (!lm.contains(local)) {
+			new InternalAnalyzerException("Local " + local + " is missing in LocalMap");
+		}
 		lm.setLevel(local, hsu.joinWithLPC(om.getArgLevelAt(pos)));
 		return lm.getLevel(local);
 	}
@@ -327,9 +378,12 @@ public class HandleStmt {
 	 * Assign actual returnlevel to local. The returnlevel must
 	 * be set again to HIGH because the standard return level is HIGH for all
 	 * external methods.
-	 * @param local
+	 * @param local signature of local
 	 */
 	public void assignReturnLevelToLocal(String local) {
+		if (!lm.contains(local)) {
+			new InternalAnalyzerException("Missing local " + local + " in LocalMap");
+		}
 		if (!hsu.checkLocalPC(local)) {
 			abort(local);
 		}
@@ -339,7 +393,7 @@ public class HandleStmt {
 	}
 
 	/**
-	 * 
+	 * Set Returnlevel to LOW.
 	 */
 	public void returnConstant() {
 		logger.log(Level.INFO, "Return a constant value.");
@@ -349,21 +403,25 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @param signature
+	 * Set returnlevel to the level of local.
+	 * @param signature signature of local
 	 */
 	public void returnLocal(String signature) {
 		logger.log(Level.INFO, "Return Local {0} with level {1}", 
 			new Object[] { signature, lm.getLevel(signature) });
+
 		om.setActualReturnLevel(lm.getLevel(signature));
 	}
 
 	/**
-	 * @param arguments
+	 * Store the levels of the arguments in a list in LocalMap.
+	 * @param arguments List of arguments
 	 */
 	public void storeArgumentLevels(String... arguments) {
-
+		logger.info("Store arguments " + arguments.toString() + " in LocalMap");
 		ArrayList<SecurityLevel> levelArr = new ArrayList<SecurityLevel>();
 		for (String el : arguments) {
+			hsu.checkIfLocalExists(el);
 			levelArr.add(lm.getLevel(el));
 		}
 		om.setActualArguments(levelArr);

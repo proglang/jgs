@@ -1,27 +1,34 @@
 Start with:
+Refactor HandleStmt
 
-
->> bessere handleStmt logs
+PROGRAMMIERUNG
 >> Run all Classtests automatically  
->> Überall Fehlerchecks einbauen
->> Define sootClassPath for rt.jar in Main which works globally
->> Remove all System.outs
->> Check all TODOs
->> Exit Code not 0
->> All Unit tests should be correct
->> Benchmarktests
->> URL = classLoader.getSystemResource
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
 >> addLevelOfArrayField in HandleStmt fertig machen
+
+KONFIGURATION
+>> Define sootClassPath for rt.jar in Main which works globally
+>> URL = classLoader.getSystemResource
+>> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)
+
+TESTS
+>> All Unit tests should be correct
+>> Benchmarktests
 >> Add all classfiletests to testmain
+>> Fail/Success testclasses
+
+ZUM SCHLUSS
+>> konsistente variablenbezeichnung
+>> Gute Javadoc Kommentare
+>> bessere handleStmt logs
+>> Überall Fehlerchecks einbauen
+>> Remove all System.outs
+>> Check all TODOs
+>> Exit Code not 0
 >> InternalAnalyzerException richtige Fehlermeldung
 >> thorough refactoring of handleStmt.
 >> Move more parts to visitorhelper, HandleStmtUtils??
->> Fail/Success testclasses
->> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)
->> konsistente variablenbezeichnung
->> Gute Javadoc Kommentare
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?
