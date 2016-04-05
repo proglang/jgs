@@ -493,7 +493,7 @@ public class TestDomain {
             @Override
             protected boolean matchesSafely(Collection<SootMethod> sootMethods) {
                 result =
-                        ClassHierarchyTyping.<Level>checkMethods(csets, types, signatures, sootMethods.stream());
+                        ClassHierarchyTyping.<Level>checkMethods(csets, types, signatures, Interop.asScalaIterator(sootMethods));
                 return result.isSuccess();
             }
 

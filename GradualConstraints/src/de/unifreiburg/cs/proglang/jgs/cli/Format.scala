@@ -36,7 +36,7 @@ object Format {
     if (result.isSuccess) {
       text("Success.")
     } else {
-      val error = result.error.get()
+      val error = result.error.get
       text("Failed.") <> nest(linebreak <> {
         val subMethod = text(error.subtypeMethod.toString)
         val superMethod = text(error.superTypeMethod.toString)

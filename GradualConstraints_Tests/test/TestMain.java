@@ -210,7 +210,7 @@ public class TestMain {
                 result = ClassHierarchyTyping.check(csets,
                                                     types,
                                                     signatures,
-                                                    s.getApplicationClasses().stream());
+                                                    Interop.asScalaIterator(s.getApplicationClasses()));
 
         System.out.println(Format.pprint(Format.classHierarchyCheck(result)));
 
