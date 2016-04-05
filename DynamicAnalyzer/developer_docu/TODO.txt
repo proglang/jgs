@@ -1,10 +1,5 @@
 Start with:
-MakeFieldHigh (Low, Make ArrayFieldHigh,...)
->> Does it work now?
->> Tests
 
-IfStmt
->> Adjust level 2 tests.
 
 >> bessere handleStmt logs
 >> Run all Classtests automatically  
@@ -12,25 +7,21 @@ IfStmt
 >> Define sootClassPath for rt.jar in Main which works globally
 >> Remove all System.outs
 >> Check all TODOs
->> One Exception with System.out and one without
 >> Exit Code not 0
 >> All Unit tests should be correct
 >> Benchmarktests
 >> URL = classLoader.getSystemResource
->> Standard von Return sollte High sein, bei Return const auf Low setzen
->> Klassen zum Laufen bringen
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
 >> addLevelOfArrayField in HandleStmt fertig machen
 >> Add all classfiletests to testmain
 >> InternalAnalyzerException richtige Fehlermeldung
->> Why is there a field for returnLevel in ObjectMap AND in LocalMap? 
 >> thorough refactoring of handleStmt.
->> Move more parts to visitorhelper??
->> ArithmeticExpressionsFail
+>> Move more parts to visitorhelper, HandleStmtUtils??
 >> Fail/Success testclasses
 >> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)
 >> konsistente variablenbezeichnung
+>> Gute Javadoc Kommentare
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?

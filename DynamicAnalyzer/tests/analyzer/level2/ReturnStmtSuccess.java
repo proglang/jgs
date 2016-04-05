@@ -49,14 +49,20 @@ public class ReturnStmtSuccess {
 		res1 = tsc.methodWithConstReturn();
 		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res1");
+		// After reading the returnlevel should be set to HIGH again
+		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 		
 		res2 = tsc.methodWithLowLocalReturn();
 		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res2");
+		// After reading the returnlevel should be set to HIGH again
+		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 		
 		res3 = tsc.methodWithHighLocalReturn();
 		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res3");
+		// After reading the returnlevel should be set to HIGH again
+		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res1"));

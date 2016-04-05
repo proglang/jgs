@@ -38,7 +38,7 @@ public class ObjectMap{
 	private ObjectMap() {
 		globalPC = new LinkedList<SecurityLevel>();
 		globalPC.push(SecurityLevel.LOW); 
-		actualReturnLevel = SecurityLevel.LOW;
+		actualReturnLevel = SecurityLevel.HIGH;
 		actualArguments = new ArrayList<SecurityLevel>();
 		innerMap = new ReferenceIdentityMap<Object, 
 				HashMap<String, SecurityLevel>>(
@@ -141,7 +141,8 @@ public class ObjectMap{
 	 * @return The return-level of the last return-operation.
 	 */
 	public SecurityLevel getActualReturnLevel() {
-		return actualReturnLevel;
+		SecurityLevel returnL = actualReturnLevel;
+		return returnL;
 	}
   
 	/**

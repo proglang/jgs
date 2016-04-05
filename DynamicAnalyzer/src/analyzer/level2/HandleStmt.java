@@ -80,8 +80,8 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @param l
-	 *            The securitylevel of actual return-statement.
+	 * Set the return level.
+	 * @param l The securitylevel of actual return-statement.
 	 * @return The new returnlevel.
 	 */
 	protected SecurityLevel setActualReturnLevel(SecurityLevel l) {
@@ -96,7 +96,8 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @param o
+	 * Add an object to the ObjectMap.
+	 * @param o object
 	 */
 	public void addObjectToObjectMap(Object o) {
 		logger.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
@@ -104,18 +105,20 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @param o
-	 * @param signature
-	 * @return
+	 * Add a field of an object to ObjectMap.
+	 * @param o an object
+	 * @param signature signature of the field of the object
+	 * @return SecurityLevel of the newly set field
 	 */
 	public SecurityLevel addFieldToObjectMap(Object o, String signature) {
 		logger.log(Level.INFO, "Add Field {0} to object {1}", new Object[] {
-				signature, o });
+		    signature, o });
 		return om.setField(o, signature);
 	}
 
 	/**
-	 * @param a
+	 * Add an array to ObjectMap.
+	 * @param a array
 	 */
 	public void addArrayToObjectMap(Object[] a) {
 
@@ -135,34 +138,44 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @param o
-	 * @return
+	 * Check if an object is contained in ObjectMap.
+	 * @param o object
+	 * @return true, if object is found in ObjectMap
 	 */
 	protected boolean containsObjectInObjectMap(Object o) {
 		return om.containsObject(o);
 	}
 
 	/**
-	 * @param o
-	 * @param signature
-	 * @return
+	 * Check if a field is contained in ObjectMap.
+	 * @param o object of the field
+	 * @param signature signature of the field
+	 * @return true, if field is found in ObjectMap
 	 */
-	protected boolean containsFieldInObjectMap(Object o, String signature) {
+	protected boolean containsFieldInObjectMap(Object o, String signature) {		
+		if (!om.containsObject(o)) {
+			new InternalAnalyzerException("Missing object " + o + " in ObjectMap");
+		}
 		return om.containsField(o, signature);
 	}
 
 	/**
-	 * @return
+	 * Get the number of elements in ObjectMap.
+	 * @return number of elements
 	 */
 	protected int getNumberOfElements() {
 		return om.getNumberOfElements();
 	}
 
 	/**
-	 * @param o
-	 * @return
+	 * Get the number of fields for an object in ObjectMap.
+	 * @param o object
+	 * @return number of fields for given object
 	 */
 	protected int getNumberOfFields(Object o) {
+		if (!om.containsObject(o)) {
+			new InternalAnalyzerException("Missing object " + o + " in ObjectMap");
+		}
 		return om.getNumberOfFields(o);
 	}
 
@@ -311,6 +324,9 @@ public class HandleStmt {
 	}
 
 	/**
+	 * Assign actual returnlevel to local. The returnlevel must
+	 * be set again to HIGH because the standard return level is HIGH for all
+	 * external methods.
 	 * @param local
 	 */
 	public void assignReturnLevelToLocal(String local) {
@@ -318,26 +334,26 @@ public class HandleStmt {
 			abort(local);
 		}
 		setLevelOfLocal(local, om.getActualReturnLevel());
+
+		om.setActualReturnLevel(SecurityLevel.HIGH);
 	}
 
 	/**
 	 * 
 	 */
 	public void returnConstant() {
-		logger.log(Level.INFO, "Return a constant value");
-		om.setActualReturnLevel(lm.getLocalPC()); // TODO ??
-		// TODO hier vielleicht eher auch addLevel? Dann kann man es n�mlich
-		// weglassen...
-		// Das Problem ist aber, wenn der Returnwert nicht assigned wird...
+		logger.log(Level.INFO, "Return a constant value.");
+		om.setActualReturnLevel(hsu.joinWithLPC(SecurityLevel.LOW));
+		logger.info("Actual return level is: " 
+			+ hsu.joinWithLPC(SecurityLevel.LOW).toString());
 	}
 
 	/**
 	 * @param signature
 	 */
 	public void returnLocal(String signature) {
-		logger.log(Level.INFO, "Return Local {0} with level {1}", new Object[] {
-				signature, lm.getLevel(signature) });
-		// lm.setReturnLevel(lm.getLevel(signature)); // TODO: not needed??
+		logger.log(Level.INFO, "Return Local {0} with level {1}", 
+			new Object[] { signature, lm.getLevel(signature) });
 		om.setActualReturnLevel(lm.getLevel(signature));
 	}
 
