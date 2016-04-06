@@ -15,7 +15,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes._
 import de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream
 import de.unifreiburg.cs.proglang.jgs.util.Interop.asScalaOption
 
-
 import JavaConversions._
 import JavaConverters._
 
@@ -30,27 +29,27 @@ import JavaConverters._
 object NaiveConstraints {
 
   private[constraints] def close[Level](cs: java.util.Set[Constraint[Level]]): java.util.Set[Constraint[Level]] = {
-    val isLeConstraint = (c: Constraint[Level]) => c.kind.equals(Constraint.Kind.LE)
-    val result: mutable.HashSet[Constraint[Level]] = mutable.HashSet(cs.toSeq: _*)
+    val isLeConstraint = (c: Constraint[Level]) => c.kind.equals(ConstraintKind.LE)
+    val result: mutable.HashSet[Constraint[Level]] = mutable.HashSet(cs.asScala.toSeq: _*)
     val old: mutable.HashSet[Constraint[Level]] = mutable.HashSet()
     do {
-      old.addAll(result)
+      old ++= result
       val oldLes: Set[Constraint[Level]] = old.filter(isLeConstraint).toSet
       oldLes.foreach(x_to_y => {
         // first the transitive le constraints
         val transCands: Iterator[CType[Level]] =
-          oldLes.iterator.filter(c => c.getLhs().equals(x_to_y.getRhs())).map(_.getRhs)
+          for (c <- oldLes.iterator if c.getLhs.equals(x_to_y.getRhs)) yield c.getRhs
         transCands.foreach(rhs => {
-          val lhs: CType[Level] = x_to_y.getLhs();
+          val lhs: CType[Level] = x_to_y.getLhs;
           if (!lhs.equals(rhs)) {
             result.add(Constraints.le(lhs, rhs));
           }
         });
         // then the compatibility constraints
         val compCands: Iterator[CType[Level]] =
-          oldLes.iterator.filter(c => c.getRhs().equals(x_to_y.getRhs())).map(_.getLhs);
+          oldLes.iterator.filter(c => c.getRhs.equals(x_to_y.getRhs)).map(_.getLhs);
         compCands.foreach(lhs1 => {
-          val lhs2 = x_to_y.getLhs();
+          val lhs2 = x_to_y.getLhs;
           if (!lhs1.equals(lhs2)) {
             val cand = Constraints.comp(lhs1, lhs2);
             // do not add symmetric compatibilities.
@@ -61,7 +60,7 @@ object NaiveConstraints {
         });
       })
     } while (!(result == old))
-    return result
+    return result.toSet.asJava
   }
 
   def minimize[Level](cs: ConstraintSet[Level]): ConstraintSet[Level] = {
@@ -73,7 +72,7 @@ object NaiveConstraints {
     * cover any other kinds of constraints.
     */
   private[constraints] def minimize[Level](cs: java.util.Set[Constraint[Level]]): java.util.Set[Constraint[Level]] = {
-    val isLeConstraint = (c: Constraint[Level]) => c.kind.equals(Constraint.Kind.LE)
+    val isLeConstraint = (c: Constraint[Level]) => c.kind.equals(ConstraintKind.LE)
     val covers = (cLe: Constraint[Level], c: Constraint[Level]) => {
       val scLe = Constraints.symmetricOf(cLe)
       Constraints.equalComponents(cLe, c) || Constraints.equalComponents(scLe, c);
@@ -119,7 +118,7 @@ object NaiveConstraints {
     val closure: Set[Constraint[Level]] = close(cs)
     val typeVars = typeVarCol.iterator.map(CTypes.variable[Level]).toSet
     closure.iterator.filter(c =>
-      c.variables().iterator.forall(v => typeVars.contains(variable(v)))
+      c.variables.forall(v => typeVars.contains(variable(v)))
     )
   }
 
@@ -130,7 +129,7 @@ object NaiveConstraints {
       tRight = confl.getRhs.inspect().asInstanceOf[Lit[Level]].t
       (candC , typeVarTag) <- tags.tags.iterator
       if {
-        val testLe = (conflT : CType[Level]) => conflT.equals(candC.getLhs()) || closed.iterator.exists(c => conflT.equals(c.getLhs()) && c.getRhs().equals(candC.getLhs()))
+        val testLe = (conflT : CType[Level]) => conflT.equals(candC.getLhs) || closed.iterator.exists(c => conflT.equals(c.getLhs) && c.getRhs.equals(candC.getLhs))
         testLe(confl.getLhs) && testLe(confl.getRhs)
       }
     } yield new CompatibilityConflict[Level](tLeft, tRight, typeVarTag)
@@ -138,13 +137,13 @@ object NaiveConstraints {
 
   private def findFlowConflict[Level](closed: Iterable[Constraint[Level]], leConflicts: List[Constraint[Level]], tags: TagMap[Level]): Iterator[FlowConflict[Level]] = {
     val sourceStream: Iterator[TypeDomain.Type[Level]] = leConflicts.iterator.map(c => {
-      val ct = c.getLhs()
+      val ct = c.getLhs
       val lit = ct.inspect().asInstanceOf[CTypeViews.Lit[Level]]
       lit.t
     })
     val sources: List[TypeDomain.Type[Level]] = sourceStream.toList
     val sinkStream: Iterator[TypeDomain.Type[Level]] = leConflicts.iterator.map(c => {
-      val ct = c.getRhs();
+      val ct = c.getRhs;
       if (!(ct.inspect().isInstanceOf[CTypeViews.Lit[Level]])) {
         throw new IllegalStateException(
           "Unexpected: conflicting constraint does not consist of literals:  "
@@ -156,16 +155,16 @@ object NaiveConstraints {
     val sinks: Set[TypeDomain.Type[Level]] = sinkStream.toSet
     for {
       t <- sources.iterator
-      sourceTags = tags.tags.filter(kv => kv._1.getLhs().equals(literal(t))).toList
+      sourceTags = tags.tags.filter(kv => kv._1.getLhs.equals(literal(t))).toList
       tSink <- sinks.iterator
-      sinkTags = tags.tags.filter(kv => kv._1.getRhs().equals(literal(tSink))).toList
+      sinkTags = tags.tags.filter(kv => kv._1.getRhs.equals(literal(tSink))).toList
       srcT <- sourceTags
       snkT <- sinkTags
       if {
         val srcRhs = srcT._1.getRhs
         val snkLhs = snkT._1.getLhs
-        srcRhs.equals(snkLhs) || closed.exists(clC => srcRhs.equals(clC.getLhs())
-                                  && snkLhs.equals(clC.getRhs()))
+        srcRhs.equals(snkLhs) || closed.exists(clC => srcRhs.equals(clC.getLhs)
+                                  && snkLhs.equals(clC.getRhs))
       }
     } yield new FlowConflict(t, srcT._2, tSink, snkT._2)
   }
@@ -228,7 +227,7 @@ class NaiveConstraints[Level](types: TypeDomain[Level], cs: Set[Constraint[Level
     *                          assignments may bind more variables.
     */
   def enumerateSatisfyingAssignments(types: TypeDomain[Level], requiredVariables: java.util.Collection[TypeVars.TypeVar]): Iterator[Assignment[Level]] = {
-    val variables: Set[TypeVars.TypeVar] = cs.flatMap(c => c.variables().iterator().toSet)
+    val variables: Set[TypeVars.TypeVar] = cs.flatMap(c => c.variables.toSet)
     Assignments.enumerateAll(types, requiredVariables.toSet ++ variables).iterator.filter(a => this.isSatisfiedFor(types, a))
   }
 
@@ -245,20 +244,20 @@ class NaiveConstraints[Level](types: TypeDomain[Level], cs: Set[Constraint[Level
     val conflicts: List[Constraint[Level]] = closed.filter(c => !c.isSatisfiable(types)).toList
     conflicts.foreach(c => {
       val isLit = (ct: CType [ Level ]) => ct.inspect().isInstanceOf[CTypeViews.Lit[Level]];
-      if (!(isLit(c.getLhs()) && isLit(c.getRhs()))) {
+      if (!(isLit(c.getLhs) && isLit(c.getRhs))) {
         throw new IllegalStateException(
           "Unexpected: conflicting constraint does not consist of literals:  "
             + c.toString());
       }
     })
-    val leConflicts: List[Constraint[Level]] = conflicts.filter(c => c.kind.equals(Constraint.Kind.LE))
-    val cmpConflicts: List[Constraint[Level]] = conflicts.filter(c => c.kind.equals(Constraint.Kind.COMP))
+    val leConflicts: List[Constraint[Level]] = conflicts.filter(c => c.kind.equals(ConstraintKind.LE))
+    val cmpConflicts: List[Constraint[Level]] = conflicts.filter(c => c.kind.equals(ConstraintKind.COMP))
     return (NaiveConstraints.findFlowConflict(closed, leConflicts, tags) ++ NaiveConstraints.findCompatibilityConflicts(closed, cmpConflicts, tags)).toList
   }
 
   override def toString: String = {
     val result: StringBuilder = new StringBuilder("{")
-    val isLe = (c : Constraint[Level]) => c.kind.equals(Constraint.Kind.LE)
+    val isLe = (c : Constraint[Level]) => c.kind.equals(ConstraintKind.LE)
     val append = (c : Constraint[Level]) => {
       result.append(c.toString());
       result.append(", ");

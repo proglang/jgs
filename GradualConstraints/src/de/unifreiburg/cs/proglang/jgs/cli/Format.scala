@@ -5,7 +5,7 @@ import java.util
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Variable
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain, CTypes}
 import CTypes.CType
-import de.unifreiburg.cs.proglang.jgs.constraints.Constraint.Kind
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Internal, Ret, Cx, Param}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Pub, Dyn, Lit}
@@ -182,11 +182,11 @@ object Format {
     }
   }
 
-  def kind(k: Constraint.Kind): Doc = {
+  def kind(k: ConstraintKind): Doc = {
     k match {
-      case Kind.LE => "<="
-      case Kind.COMP => "~"
-      case Kind.DIMPL => "?~>"
+      case ConstraintKind.LE => "<="
+      case ConstraintKind.COMP => "~"
+      case ConstraintKind.DIMPL => "?~>"
     }
   }
 

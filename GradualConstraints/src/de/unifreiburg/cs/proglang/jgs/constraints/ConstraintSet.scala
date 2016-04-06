@@ -104,7 +104,7 @@ abstract case class ConstraintSet[Level] (
     * @return The stream of variables contained in this set.
     */
   def variables: Iterator[TypeVars.TypeVar] = {
-    return this.stream.flatMap(c => asScalaIterator(c.variables().iterator()))
+    return this.stream.flatMap(c => c.variables)
   }
 
   /**

@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.signatures.parse;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
+import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -73,8 +74,8 @@ public class ConstraintParserTest {
 
     @Test
     public void test() throws Exception {
-        assertThat(parsers.constraintKindParser(), parses("<=", Constraint.Kind.LE));
-        assertThat(parsers.constraintKindParser(), parses("~", Constraint.Kind.COMP));
+        assertThat(parsers.constraintKindParser(), parses("<=", ConstraintKind.LE));
+        assertThat(parsers.constraintKindParser(), parses("~", ConstraintKind.COMP));
         assertThat(parsers.symbolParser(), parses("HIGH", literal(THIGH)));
         assertThat(parsers.symbolParser(), parses("?", literal(DYN)));
         assertThat(parsers.symbolParser(), parses("@ret", ret()));

@@ -1,6 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import java.util.Optional
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{Variable, Lit, CTypeView}
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
@@ -18,16 +17,16 @@ object CTypeOps {
   /**
     * @return The type of `ct` given assignment `a`. May return nothing when `ct` is a variable which is not mapped by `a`.
     */
-  def tryApply[Level](a: Assignment[Level], ct: CTypeView[Level]): Optional[Type[Level]] =
+  def tryApply[Level](a: Assignment[Level], ct: CTypeView[Level]): Option[Type[Level]] =
     ct match {
-      case Lit(t) => Optional.of(t)
-      case Variable(v) => Optional.ofNullable(a.get().get(v))
+      case Lit(t) => Some(t)
+      case Variable(v) => Option(a.get().get(v))
     }
 
   /**
     * See [[tryApply(Assignment, CTypeView)]]
     */
-  def tryApply[Level](a: Assignment[Level], ct: CType[Level]): Optional[Type[Level]] =
+  def tryApply[Level](a: Assignment[Level], ct: CType[Level]): Option[Type[Level]] =
     tryApply(a, ct.inspect())
 
 
@@ -36,16 +35,16 @@ object CTypeOps {
   /**
     * @return A stream of variables contained in `ct`. Either one or none.
     */
-  def variables[Level](ct: CTypeView[Level]): java.util.stream.Stream[TypeVar] =
+  def variables[Level](ct: CTypeView[Level]): Iterator[TypeVar] =
     ct match {
-      case Lit(t) => java.util.stream.Stream.empty()
-      case Variable(v) => java.util.stream.Stream.of(Seq(v):_*)
+      case Lit(t) => Seq().iterator
+      case Variable(v) => Seq(v).iterator
     }
 
   /**
     * See [[variables(CTypeView)]]
     */
-  def variables[Level](ct: CType[Level]): java.util.stream.Stream[TypeVar] =
+  def variables[Level](ct: CType[Level]): Iterator[TypeVar] =
     variables(ct.inspect())
 
 

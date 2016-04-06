@@ -9,6 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypeOps.tryApply;
+import static de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 /**
@@ -27,24 +28,24 @@ public class Constraints<Level> {
         this.types = types;
     }
 
-    public static <Level> Constraint<Level> make(Constraint.Kind kind, CType<Level> lhs, CType<Level> rhs) {
+    public static <Level> Constraint<Level> make(ConstraintKind kind, CType<Level> lhs, CType<Level> rhs) {
         return new Constraint<>(kind, lhs, rhs);
     }
 
 
     public static <Level> Constraint<Level> le(CType<Level> lhs, CType<Level> rhs) {
-        return new Constraint<Level>(Constraint.Kind.LE, lhs, rhs);
+        return new Constraint<Level>(LE, lhs, rhs);
     }
 
     public static <Level> Constraint<Level> comp(CType<Level> lhs, CType<Level> rhs) {
-        return new Constraint<Level>(Constraint.Kind.COMP, lhs, rhs);
+        return new Constraint<Level>(COMP, lhs, rhs);
     }
 
     public static <Level> Constraint<Level> dimpl(CType<Level> lhs, CType<Level> rhs) {
-        return new Constraint<Level>(Constraint.Kind.DIMPL, lhs, rhs);
+        return new Constraint<Level>(DIMPL, lhs, rhs);
     }
 
-    public static <Level> Constraint<Level> toKind(Constraint.Kind kind, Constraint<Level> c) {
+    public static <Level> Constraint<Level> toKind(ConstraintKind kind, Constraint<Level> c) {
         return make(kind, c.getLhs(), c.getRhs());
     }
 
@@ -52,7 +53,7 @@ public class Constraints<Level> {
      * Yields the symmetric constraint.
      */
     public static <Level> Constraint<Level> symmetricOf(Constraint<Level> c) {
-        return make(c.kind, c.getRhs(), c.getLhs());
+        return make(c.kind(), c.getRhs(), c.getLhs());
     }
 
     public static <Level> boolean equalComponents(Constraint<Level> c1, Constraint<Level> c2) {
@@ -61,7 +62,7 @@ public class Constraints<Level> {
 
     public static <Level> boolean isTrivial(TypeDomain<Level> types, Constraint<Level> c) {
         Assignment<Level> a = Assignments.empty();
-        return tryApply(a, c.getLhs()).isPresent() && tryApply(a, c.getRhs()).isPresent() && c.isSatisfied(types, Assignments.empty());
+        return tryApply(a, c.getLhs()).isDefined() && tryApply(a, c.getRhs()).isDefined() && c.isSatisfied(types, Assignments.empty());
     }
 
     /**
@@ -69,12 +70,12 @@ public class Constraints<Level> {
      */
     //TODO-needs-test: write a property-based test for the soundness of the implementation (i.e., the result is equivalent to <code>c</code>)
     public static <Level> Stream<Constraint<Level>> implicationsOf(Constraint<Level> c) {
-        switch (c.kind) {
+        switch (c.kind()) {
             case LE:
                 // x1 <= x2 implies x1 ~ x2
                 return Stream.concat(
                         Stream.of(c),
-                        implicationsOf(toKind(Constraint.Kind.COMP, c)));
+                        implicationsOf(toKind(ConstraintKind.COMP, c)));
             case COMP:
                 //TODO-nsu-support: fix this for NSU support... dimpl is needed
 //                Constraint<Level> dimpl = toKind(Constraint.Kind.DIMPL, c);

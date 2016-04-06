@@ -246,7 +246,7 @@ public class MethodSignatures<Level> {
         return signatureConstraints(Interop.asJavaStream(constraints.projectTo(params.keySet()).stream()).map(c -> {
             Symbol<Level> lhs = Symbols.<Level>ctypeToSymbol(params, c.getLhs());
             Symbol<Level> rhs = Symbols.<Level>ctypeToSymbol(params, c.getRhs());
-            switch (c.kind) {
+            switch (c.kind()) {
                 case LE:
                     return le(lhs, rhs);
                 case COMP:
@@ -267,20 +267,20 @@ public class MethodSignatures<Level> {
     }
 
     public static <Level> SigConstraint<Level> le(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, Constraint.Kind.LE);
+        return new SigConstraint<>(lhs, rhs, ConstraintKind.LE);
     }
 
     public static <Level> SigConstraint<Level> comp(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, Constraint.Kind.COMP);
+        return new SigConstraint<>(lhs, rhs, ConstraintKind.COMP);
     }
 
     public static <Level> SigConstraint<Level> dimpl(Symbol<Level> lhs, Symbol<Level> rhs) {
-        return new SigConstraint<>(lhs, rhs, Constraint.Kind.DIMPL);
+        return new SigConstraint<>(lhs, rhs, ConstraintKind.DIMPL);
     }
 
     public static <Level> SigConstraint<Level> makeSigConstraint(Symbol<Level> lhs,
                                                                  Symbol<Level> rhs,
-                                                                 Constraint.Kind kind) {
+                                                                 ConstraintKind kind) {
         return new SigConstraint<Level>(lhs, rhs,
                                         kind);
     }
@@ -337,10 +337,10 @@ public class MethodSignatures<Level> {
 
         private final Symbol<Level> lhs;
         private final Symbol<Level> rhs;
-        private final Constraint.Kind kind;
+        private final ConstraintKind kind;
 
         private SigConstraint(Symbol<Level> lhs,
-                              Symbol<Level> rhs, Constraint.Kind kind) {
+                              Symbol<Level> rhs, ConstraintKind kind) {
             super();
             this.lhs = lhs;
             this.rhs = rhs;

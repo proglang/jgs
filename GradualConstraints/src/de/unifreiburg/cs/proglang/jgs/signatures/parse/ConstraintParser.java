@@ -62,9 +62,9 @@ public class ConstraintParser<Level> {
         return (retOrParamParser).or(literalParser);
     }
 
-    public Parser<Character, Constraint.Kind> constraintKindParser() {
-        return string("<=").then(retn(Constraint.Kind.LE))
-                           .or(string("~").then(retn(Constraint.Kind.COMP)));
+    public Parser<Character, ConstraintKind> constraintKindParser() {
+        return string("<=").then(retn(ConstraintKind.LE))
+                           .or(string("~").then(retn(ConstraintKind.COMP)));
     }
 
     /**
