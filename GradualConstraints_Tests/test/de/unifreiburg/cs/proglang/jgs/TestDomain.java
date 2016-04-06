@@ -95,7 +95,7 @@ public class TestDomain {
             BiFunction<Type<Level>, Type<Level>, Option<ValueCast<Level>>>
                     makeCast =
                     (t1, t2) -> {
-                        Optional<ValueCast<Level>> result = Vars.getAll(e.getArg(0)).findFirst().map(value -> makeValueCast(t1, t2, Option.apply(value)));
+                        Optional<ValueCast<Level>> result = Interop.asJavaStream(Vars.getAll(e.getArg(0))).findFirst().map(value -> makeValueCast(t1, t2, Option.apply(value)));
                         return Interop.asScalaOption(result);
                     };
             if (castEquals(castHighToDyn, m)) {

@@ -82,7 +82,7 @@ public class MethodBodyTyping<Level> {
                 // add new pc as upper bound to old pc
                 cs.add(Constraints.le(variable(oldPc), variable(newPc)));
 
-                Vars.getAllFromValueBoxes(stmt.getUseBoxes()).forEach(v ->
+                Interop.asJavaStream(Vars.getAllFromValueBoxes(stmt.getUseBoxes())).forEach(v ->
                         cs.add(Constraints.le(variable(env.get(v)), variable(newPc))));
 
                 setResult(cs.build().collect(toSet()));

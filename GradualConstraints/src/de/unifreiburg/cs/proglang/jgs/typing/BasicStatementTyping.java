@@ -216,7 +216,7 @@ public class BasicStatementTyping<LevelT> {
 
             @Override
             public void caseLocalExpr(Collection<Value> atoms) {
-                Vars.getAllFromValues(atoms)
+                Interop.asJavaStream(Vars.getAllFromValues(atoms))
                     .map(toCType.andThen(leDest))
                     .forEach(constraints);
             }
@@ -391,7 +391,7 @@ public class BasicStatementTyping<LevelT> {
             Function<CType<LevelT>, Constraint<LevelT>> leDest =
                     c -> cstrs.le(c, CTypes.literal(fieldType));
             // get reads from lhs.. they are definitively flowing into the destination
-            Vars.getAllFromValueBoxes((Collection<ValueBox>) stmt.getLeftOp().getUseBoxes())
+            Interop.asJavaStream(Vars.getAllFromValueBoxes((Collection<ValueBox>) stmt.getLeftOp().getUseBoxes()))
                .map((Var<?> v) -> Constraints.<LevelT>le(CTypes.variable(env.get(v)), CTypes.literal(fieldType)))
                .forEach(constraints);
 

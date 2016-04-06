@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import scala.Option;
 import soot.*;
 import soot.jimple.*;
@@ -119,10 +120,10 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      */
     private void caseCall(InvokeExpr m, Optional<Value> baseValue) {
         Optional<Var<?>> base =
-                baseValue.flatMap(v -> Vars.getAll(v).findFirst());
+                baseValue.flatMap(v -> Interop.asJavaStream(Vars.getAll(v)).findFirst());
         Stream<Optional<Var<?>>> args =
                 m.getArgs().stream().map(v -> {
-                    List<Var<?>> vars = Vars.getAll(v).collect(toList());
+                    List<Var<?>> vars = Interop.asJavaStream(Vars.getAll(v)).collect(toList());
                     if (vars.isEmpty()) {
                         return Optional.empty();
                     } else if (vars.size() == 1) {
@@ -131,7 +132,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
                         throw new RuntimeException("Unexpected: multiple variables contained in a call argumnent");
                     }
                 });
-                Vars.getAllFromValues(m.getArgs()).collect(toList());
+                Interop.asJavaStream(Vars.getAllFromValues(m.getArgs())).collect(toList());
         caseCall(m.getMethod(), base, args.collect(Collectors.toList()));
     }
     @Override public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {

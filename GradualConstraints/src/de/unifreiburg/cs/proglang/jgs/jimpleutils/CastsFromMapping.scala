@@ -1,7 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import java.util.{Optional}
-
 import Casts.{ValueCast, CxCast}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
@@ -11,6 +9,7 @@ import soot.jimple.{StaticInvokeExpr}
 import TypeDomain._
 
 
+import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 import CastsFromMapping._
@@ -30,7 +29,7 @@ case class CastsFromMapping[Level](valueCasts: Map[String, Conversion[Level]],
   override def detectValueCastFromCall(e: StaticInvokeExpr): Option[ValueCast[Level]] = {
     val key = e.getMethod.toString // fqName(e.getMethod) TODO: remove fqname based key
     valueCasts.get(key)
-      .map(c => new ValueCast[Level](c.source, c.dest, asScalaOption(getCallArgument(e)))
+      .map(c => new ValueCast[Level](c.source, c.dest, getCallArgument(e))
     )
   }
 
@@ -56,11 +55,11 @@ object CastsFromMapping {
   }
 
 
-  private def getCallArgument(e: StaticInvokeExpr): Optional[Var[_]] = {
+  private def getCallArgument(e: StaticInvokeExpr): Option[Var[_]] = {
     if (e.getArgCount != 1) {
       throw new IllegalArgumentException(s"Illegal parameter count on cast method `${e}'. Expected single argument method.")
     }
-    Vars.getAll(e.getArg(0)).findFirst()
+    Vars.getAll(e.getArg(0)).find(_ => true)
   }
 
   def parseConversionMap[Level](typeParser: AnnotationParser[Type[Level]],
