@@ -172,10 +172,10 @@ public class MethodTyping<Level> {
                 r.getConstraints().asSignatureConstraints(tvars, Interop.asScalaIterator(methodParameters(method).stream().map(Var::fromParam).iterator()));
 
 
-        return new Result<>(cstrs.types, r.getConstraints(),
+        return new Result<>(cstrs.types(), r.getConstraints(),
                             bodyConstraints.refines(sigConstraints),
                             signatureToCheck.effects,
-                            r.getEffects(), r.getEffects().refines(cstrs.types, signatureToCheck.effects).missingEffects,
+                            r.getEffects(), r.getEffects().refines(cstrs.types(), signatureToCheck.effects).missingEffects,
                             () -> {
                                 List<ConflictCause<Level>> causes = r.getConstraints().findConflictCause(r.getTags());
                                 if (causes.isEmpty()) {

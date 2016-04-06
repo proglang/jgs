@@ -112,7 +112,7 @@ object NaiveConstraints {
    */
 
   def withImplications[Level](cs: Iterator[Constraint[Level]]): Iterator[Constraint[Level]] =
-    cs.flatMap(c => Interop.asScalaIterator(Constraints.implicationsOf(c).iterator()))
+    cs.flatMap(c => Interop.asScalaIterator(Constraints.implicationsOf(c)))
 
   def projectTo[Level](cs: java.util.Set[Constraint[Level]], typeVarCol: java.util.Collection[TypeVars.TypeVar]): Iterator[Constraint[Level]] = {
     val closure: Set[Constraint[Level]] = close(cs)

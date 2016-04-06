@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaOptional;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.equals;
 import static org.hamcrest.CoreMatchers.*;
@@ -68,19 +69,19 @@ public class NaiveConstraintsTest {
     public void testSatAssignments() {
         Optional<Assignment<Level>> result, expected;
         result =
-                cstrs.satisfyingAssignment(makeNaive(Arrays.asList(leC(cs.x1, literal(THIGH)),
+                asJavaOptional(cstrs.satisfyingAssignment(makeNaive(Arrays.asList(leC(cs.x1, literal(THIGH)),
                                                                    leC(literal(THIGH), cs.x2),
                                                                    leC(cs.x2,
-                                                                       cs.x1))), Collections.emptySet());
+                                                                       cs.x1))), Collections.emptySet()));
         expected = Optional.of(Assignments.builder(cs.v1, THIGH)
                                           .add(cs.v2, THIGH)
                                           .build());
         assertEquals("x1 = x2 = HIGH", expected, result);
 
         result =
-                cstrs.satisfyingAssignment(makeNaive(Arrays.asList(leC(cs.x1, literal(DYN)),
+                asJavaOptional(cstrs.satisfyingAssignment(makeNaive(Arrays.asList(leC(cs.x1, literal(DYN)),
                                                                    leC(cs.x1,
-                                                                       literal(THIGH)))), Collections.emptySet());
+                                                                       literal(THIGH)))), Collections.emptySet()));
         expected = Optional.of(Assignments.builder(cs.v1, PUB).build());
         assertEquals("x = pub", expected, result);
     }

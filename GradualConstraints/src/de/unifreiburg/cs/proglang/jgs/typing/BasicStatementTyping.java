@@ -254,7 +254,7 @@ public class BasicStatementTyping<LevelT> {
                         instantiation.put(Symbol.param(i), variable(at));
                     });
                     if (!mat.isPresent()) {
-                        instantiation.put(Symbol.param(i), literal(cstrs.types.pub()));
+                        instantiation.put(Symbol.param(i), literal(cstrs.types().pub()));
                     }
                 }); // <- params
 
@@ -485,7 +485,7 @@ public class BasicStatementTyping<LevelT> {
 
         private boolean compatible(TypeDomain.Type<LevelT> sourceType,
                                    TypeDomain.Type<LevelT> destType) {
-            return cstrs.types.dyn().equals(destType) ^ cstrs.types.dyn()
+            return cstrs.types().dyn().equals(destType) ^ cstrs.types().dyn()
                                                                    .equals(sourceType);
         }
 
