@@ -132,15 +132,14 @@ public class BasicStatementTyping<LevelT> {
 
                 @Override
                 public void caseCall(SootMethod m,
-                                     Optional<Var<?>> thisPtr,
-                                     List<Optional<Var<?>>> args) {
+                                     Option<Var<?>> thisPtr,
+                                     List<Option<Var<?>>> args) {
                     setResult(getSignature(m).effects);
-
                 }
 
                 @Override
                 public void caseGetField(FieldRef field,
-                                         Optional<Var<?>> thisPtr) {
+                                         Option<Var<?>> thisPtr) {
                     setResult(emptyEffect());
                 }
 
@@ -226,8 +225,8 @@ public class BasicStatementTyping<LevelT> {
              */
             @Override
             public void caseCall(SootMethod m,
-                                 Optional<Var<?>> thisPtr,
-                                 List<Optional<Var<?>>> args) {
+                                 Option<Var<?>> thisPtr,
+                                 List<Option<Var<?>>> args) {
                 // check parameter count
                 int argCount = args.size();
                 int paramterCount = m.getParameterCount();
@@ -247,7 +246,7 @@ public class BasicStatementTyping<LevelT> {
                 Map<Symbol<LevelT>, CType<LevelT>> instantiation =
                         new HashMap<>();
                 List<Optional<TypeVar>> argTypes =
-                        args.stream().map(mv -> mv.map(env::get)).collect(toList());
+                        args.stream().map(mv -> Interop.asJavaOptional(mv).map(env::get)).collect(toList());
                 IntStream.range(0, argCount).forEach(i -> {
                     Optional<TypeVar> mat = argTypes.get(i);
                     mat.ifPresent(at -> {
@@ -276,7 +275,7 @@ public class BasicStatementTyping<LevelT> {
                 tags = TagMap.of(tagMap);
 
                 // - [x] add thisPtr as lower bound to dest
-                thisPtr.map(toCType.andThen(leDest)).ifPresent(constraints);
+                Interop.asJavaOptional(thisPtr).map(toCType.andThen(leDest)).ifPresent(constraints);
 
                 // - [x] add effect as upper bound to each pcs
                 sig.effects.stream().forEach(t -> {
@@ -289,7 +288,7 @@ public class BasicStatementTyping<LevelT> {
 
             @Override
             public void caseGetField(FieldRef field,
-                                     Optional<Var<?>> thisPtr) {
+                                     Option<Var<?>> thisPtr) {
 
                 Constraint<LevelT> destC =
                         leDest.apply(literal(getFieldType(field.getField())));
@@ -297,7 +296,7 @@ public class BasicStatementTyping<LevelT> {
                         TagMap.of(destC, new TypeVarTags.Field(field.getField()));
                 Stream.concat(
                         Stream.of(destC),
-                        thisPtr.isPresent()
+                        thisPtr.isDefined()
                         ? Stream.of(leDest.apply(variable(env.get(thisPtr.get()))))
                         : Stream.empty()
                 ).forEach(constraints);

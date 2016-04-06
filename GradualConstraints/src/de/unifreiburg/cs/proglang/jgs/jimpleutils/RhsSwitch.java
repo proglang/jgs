@@ -2,16 +2,19 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.util.FunctionsForJava;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
+import scala.Function;
 import scala.Option;
+import scala.collection.JavaConverters;
 import soot.*;
 import soot.jimple.*;
 
+import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
@@ -45,8 +48,8 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      * @param thisPtr variable of the method call receiver
      */
     public abstract void caseCall(SootMethod m,
-                                  Optional<Var<?>> thisPtr,
-                                  List<Optional<Var<?>>> args);
+                                  Option<Var<?>> thisPtr,
+                                  List<Option<Var<?>>> args);
 
     /**
      * Read operation on fields.
@@ -54,7 +57,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      * @param field The field reference that is read
      * @param thisPtr The object from which the field is read
      */
-    public abstract void caseGetField(FieldRef field, Optional<Var<?>> thisPtr);
+    public abstract void caseGetField(FieldRef field, Option<Var<?>> thisPtr);
 
     public abstract void caseCast(ValueCast<Level> cast);
 
@@ -68,7 +71,10 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     private void caseCompoundExpr(Value v) {
         Value val = (Value) v;
-        Collection<Value> useValues = (Collection<Value>)val.getUseBoxes().stream().map(b-> ((ValueBox) b).getValue()).collect(Collectors.<Value>toList());
+        List<Value> useValues = new ArrayList<>();
+        for (Object b : val.getUseBoxes()) {
+            useValues.add(((ValueBox) b).getValue());
+        }
         this.caseLocalExpr(useValues);
     }
 
@@ -105,48 +111,49 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseStaticFieldRef(StaticFieldRef v) {
-        caseGetField(v, Optional.empty());
+        caseGetField(v, Option.empty());
     }
 
     @Override
     public void caseInstanceFieldRef(InstanceFieldRef v) {
         // the base of a field ref is always a local in Jimple
-        caseGetField(v, Optional.of(Var.fromLocal((Local)v.getBase())));
+        caseGetField(v, Option.apply(Var.fromLocal((Local)v.getBase())));
     }
 
 
     /*
      *  Calls
      */
-    private void caseCall(InvokeExpr m, Optional<Value> baseValue) {
-        Optional<Var<?>> base =
-                baseValue.flatMap(v -> Interop.asJavaStream(Vars.getAll(v)).findFirst());
-        Stream<Optional<Var<?>>> args =
-                m.getArgs().stream().map(v -> {
-                    List<Var<?>> vars = Interop.asJavaStream(Vars.getAll(v)).collect(toList());
-                    if (vars.isEmpty()) {
-                        return Optional.empty();
-                    } else if (vars.size() == 1) {
-                        return Optional.<Var<?>>of(vars.get(0));
-                    } else {
-                        throw new RuntimeException("Unexpected: multiple variables contained in a call argumnent");
-                    }
-                });
-                Interop.asJavaStream(Vars.getAllFromValues(m.getArgs())).collect(toList());
-        caseCall(m.getMethod(), base, args.collect(Collectors.toList()));
+    private void caseCall(InvokeExpr m, Option<Value> baseValue) {
+        Option<Var<?>> base =
+                baseValue.isDefined() ? Vars.getAll(baseValue.get()).find(FunctionsForJava.constantTrue()) : Option.empty();
+                // baseValue.flatMap(v -> Interop.asJavaStream().findFirst());
+        List<Option<Var<?>>> args = new ArrayList<>();
+        for (soot.Value v : m.getArgs()) {
+            List<Var<?>> vars = (List<Var<?>>)JavaConverters.seqAsJavaListConverter(Vars.getAll(v).toSeq()).asJava();
+            if (vars.isEmpty()) {
+                args.add(Option.empty());
+            } else if (vars.size() == 1) {
+                args.add(Option.<Var<?>>apply(vars.get(0)));
+            } else {
+                throw new RuntimeException("Unexpected: multiple variables contained in a call argumnent");
+            }
+        }
+        caseCall(m.getMethod(), base, args);
     }
+
     @Override public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
-        caseCall(v, Optional.of(v.getBase()));
+        caseCall(v, Option.apply(v.getBase()));
     }
 
     @Override
     public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-        caseCall(v, Optional.of(v.getBase()));
+        caseCall(v, Option.apply(v.getBase()));
     }
 
     @Override
     public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
-        caseCall(v, Optional.of(v.getBase()));
+        caseCall(v, Option.apply(v.getBase()));
     }
 
     @Override
@@ -156,7 +163,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
         if (c.isDefined()) {
             caseCast(c.get());
         } else {
-            caseCall(v, Optional.empty());
+            caseCall(v, Option.empty());
         }
     }
 
