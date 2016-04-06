@@ -191,7 +191,7 @@ object Format {
   }
 
   def assignment[Level](ass: Assignment[Level]): Doc = {
-    val mapping: Map[TypeVar, Type[Level]] = ass.get().asScala.toMap
+    val mapping: Map[TypeVar, Type[Level]] = ass.get
     val kvDocs = mapping.map(kv => typeVar(kv._1) <> "=" <> sectype(kv._2)).toList
     braces(hsep(kvDocs, ","))
   }

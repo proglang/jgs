@@ -228,7 +228,7 @@ class NaiveConstraints[Level](types: TypeDomain[Level], cs: Set[Constraint[Level
     */
   def enumerateSatisfyingAssignments(types: TypeDomain[Level], requiredVariables: java.util.Collection[TypeVars.TypeVar]): Iterator[Assignment[Level]] = {
     val variables: Set[TypeVars.TypeVar] = cs.flatMap(c => c.variables.toSet)
-    Assignments.enumerateAll(types, requiredVariables.toSet ++ variables).iterator.filter(a => this.isSatisfiedFor(types, a))
+    Assignments.enumerateAll(types, requiredVariables.toSet ++ variables).filter(a => this.isSatisfiedFor(types, a))
   }
 
   override def satisfyingAssignment(types: TypeDomain[Level], requiredVariables: java.util.Collection[TypeVars.TypeVar]): Option[Assignment[Level]] = {

@@ -97,7 +97,7 @@ public class ConstraintsTest {
     @Test
     public void testLe() {
         Constraint<Level> LleH = leC(cl1, ch1);
-        Assignment<Level> a = new Assignment<>(ass);
+        Assignment<Level> a = Assignments.<Level>builder().add(ass).build();
         assertThat(a, satisfies(LleH));
 
         Constraint<Level> HleL = leC(ch1, cl1);
@@ -128,7 +128,7 @@ public class ConstraintsTest {
     @Test
     public void testComp() {
 
-        Assignment<Level> a = new Assignment<>(ass);
+        Assignment<Level> a = Assignments.<Level>builder().add(ass).build();
         for (CType<Level> t : allVariables) {
             Constraint<Level> c = compC(literal(PUB), t);
             assertThat("all: pub ~ " + t.toString(), c, is(satisfiedBy(a)));
@@ -166,7 +166,7 @@ public class ConstraintsTest {
 
     @Test
     public void testDImpl() {
-        Assignment<Level> a = new Assignment<>(ass);
+        Assignment<Level> a = Assignments.<Level>builder().add(ass).build();
 
         for (CType<Level> t1 : nonDyn) {
             for (CType<Level> t2 : allVariables) {

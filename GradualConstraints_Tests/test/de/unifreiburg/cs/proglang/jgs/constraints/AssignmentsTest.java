@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.unifreiburg.cs.proglang.jgs.Code;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +38,7 @@ public class AssignmentsTest {
         Set<Assignment<Level>> expected, result;
         expected = Collections.singleton(Assignments.empty());
         result =
-            enumerateAll(types, Collections.<TypeVar>emptySet()).collect(Collectors.toSet());
+                Interop.asJavaStream(enumerateAll(types, Collections.<TypeVar>emptySet())).collect(Collectors.toSet());
         assertEquals(expected, result);
     }
 
@@ -49,8 +50,8 @@ public class AssignmentsTest {
                                         builder(x, THIGH).build(),
                                         builder(x, DYN).build()));
         result =
-            enumerateAll(types,
-                         Collections.singleton(x)).collect(Collectors.toSet());
+            Interop.asJavaStream(enumerateAll(types,
+                         Collections.singleton(x))).collect(Collectors.toSet());
         assertEquals(expected, result);
     }
 
@@ -74,9 +75,9 @@ public class AssignmentsTest {
                                         builder(x, DYN).add(y, TLOW).build(),
                                         builder(x, DYN).add(y, THIGH).build(),
                                         builder(x, DYN).add(y, DYN).build()));
-        Set<Assignment<Level>> result = Assignments
+        Set<Assignment<Level>> result = Interop.asJavaStream(Assignments
                                                    .enumerateAll(types,
-                                                                 new HashSet<>(Arrays.asList(x, y)))
+                                                                 new HashSet<>(Arrays.asList(x, y))))
                                                    .collect(Collectors.toSet());
         assertEquals(expected, result);
     }

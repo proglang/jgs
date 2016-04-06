@@ -54,7 +54,7 @@ public class CTypeDomainTest {
        m.put(vl, TLOW);
        m.put(vd, DYN);
        m.put(vb, PUB);
-       this.a1 = new Assignment<Level>(m);
+       this.a1 = Assignments.<Level>builder().add(m).build();
     }
 
     @Test

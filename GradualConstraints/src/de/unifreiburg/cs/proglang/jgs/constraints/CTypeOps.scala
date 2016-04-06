@@ -20,7 +20,7 @@ object CTypeOps {
   def tryApply[Level](a: Assignment[Level], ct: CTypeView[Level]): Option[Type[Level]] =
     ct match {
       case Lit(t) => Some(t)
-      case Variable(v) => Option(a.get().get(v))
+      case Variable(v) => a.get.get(v)
     }
 
   /**
@@ -56,7 +56,7 @@ object CTypeOps {
       new RuntimeException("Unknown variable: "
         + this.toString()
         + " Ass.: "
-        + a.mappedVariables()
+        + a.mappedVariables
         .toString()))
     val mresult = Try(tryApply(a, ct).get).recoverWith({case _ => error})
     mresult.get

@@ -1,13 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import java.util.Collection
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
-import de.unifreiburg.cs.proglang.jgs.util.Interop
-import scala.Option
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeOps.tryApply
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
 
 /**
   * A context for constraints, i.e. constraints for a particular type domain.
