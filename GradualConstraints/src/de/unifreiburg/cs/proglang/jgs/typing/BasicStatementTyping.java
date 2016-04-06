@@ -19,6 +19,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
+import scala.Option;
 import soot.*;
 import soot.jimple.*;
 import soot.toolkits.scalar.LocalDefs;
@@ -170,10 +171,13 @@ public class BasicStatementTyping<LevelT> {
         }
 
         private Signature<LevelT> getSignature(SootMethod m) {
-            return signatures.get(m)
-                             .orElseThrow(() -> new TypingAssertionFailure(
+            Option<Signature<LevelT>> maybe_Result = signatures.get(m);
+            if (maybe_Result.isEmpty()) {
+                throw new TypingAssertionFailure(
                                      "No signature found for method "
-                                     + m.toString()));
+                                     + m.toString());
+            }
+            return maybe_Result.get();
         }
 
         private TypeDomain.Type<LevelT> getFieldType(SootField f) {

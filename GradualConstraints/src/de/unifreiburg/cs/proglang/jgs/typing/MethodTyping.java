@@ -15,17 +15,17 @@ import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
+import scala.Option;
 import soot.SootMethod;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbols.methodParameters;
-import static java.util.stream.Collectors.toList;
 
 /**
  * Context for typing methods Created by fennell on 1/12/16.
@@ -35,6 +35,10 @@ public class MethodTyping<Level> {
     final private Constraints<Level> cstrs;
     private final Casts<Level> casts;
 
+    public interface ConflictResult<Level> {
+         List<ConflictCause<Level>> get();
+    }
+
     static public class Result<Level> {
         private final TypeDomain<Level> types;
         public final ConstraintSet<Level> completeBodyConstraints;
@@ -42,9 +46,9 @@ public class MethodTyping<Level> {
         public final Effects<Level> missedEffects;
         public final Effects<Level> sigEffects;
         public final Effects<Level> inferredEffects;
-        public final Supplier<List<ConflictCause<Level>>> conflictCauses;
+        public final ConflictResult<Level> conflictCauses;
 
-        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects, Supplier<List<ConflictCause<Level>>> conflicCauses) {
+        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects, ConflictResult<Level> conflicCauses) {
             this.types = types;
             this.completeBodyConstraints = completeBodyConstraints;
             this.refinementCheckResult = refinementCheckResult;
@@ -136,16 +140,17 @@ public class MethodTyping<Level> {
     // TODO: what's up with "this"?
     public Result<Level> check(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields, SootMethod method) throws TypingException {
         // Get the signature of "method"
-        MethodSignatures.Signature<Level> signatureToCheck =
-                signatures.get(method)
-                          .orElseThrow(() -> new TypingException(
+        Option<MethodSignatures.Signature<Level>> maybe_signatureToCheck = signatures.get(method);
+        if (maybe_signatureToCheck.isEmpty()) {
+            throw new TypingException(
                                   "No signature found for method "
-                                  + method.toString()));
-
+                                  + method.toString());
+        }
+        MethodSignatures.Signature<Level> signatureToCheck = maybe_signatureToCheck.get();
 
         // type check the body and connect signature with the typing result through a symbol mapping
         Map<Symbol.Param<Level>, TypeVar> paramMapping =
-                Methods.symbolMapForMethod(tvars, method);
+                Methods.<Level>symbolMapForMethod(tvars, method);
         Environment init = Environments.forParamMap(tvars, paramMapping);
 
 
@@ -154,13 +159,14 @@ public class MethodTyping<Level> {
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
         Map<Symbol<Level>, CType<Level>> symbolMapping = new HashMap<>();
-        paramMapping.forEach((k,v) -> {
-            symbolMapping.put(k, variable(v));
-        });
+
+        for (Map.Entry<Symbol.Param<Level>, TypeVar> e : paramMapping.entrySet()) {
+            symbolMapping.put(e.getKey(), variable(e.getValue()));
+        }
         symbolMapping.put(Symbol.ret(), variable(tvars.ret()));
 
         ConstraintSet<Level> sigConstraints =
-                csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(toList()));
+                csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(Collectors.toList()));
 
         ConstraintSet<Level> bodyConstraints =
                 r.getConstraints().asSignatureConstraints(tvars, Interop.asScalaIterator(methodParameters(method).stream().map(Var::fromParam).iterator()));

@@ -240,7 +240,7 @@ public class Code {
         SignatureTable<Level> newSignatures = this.signatures;
         for (MethodWithSignature<Level> m : methods) {
             result.addMethod(m.method);
-            newSignatures = newSignatures.extendWith(m.method, m.signature.constraints.stream(), m.signature.effects);
+            newSignatures = newSignatures.extendWith(m.method, m.signature.constraints.stream().collect(Collectors.toList()), m.signature.effects);
         }
 
         return Pair.of(result, newSignatures);

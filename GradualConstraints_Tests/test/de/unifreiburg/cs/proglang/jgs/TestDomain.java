@@ -562,7 +562,7 @@ public class TestDomain {
 
         @Override
         protected boolean matchesSafely(SootMethod method) {
-            maybeSig = signatures.get(method);
+            maybeSig = Interop.asJavaOptional(signatures.get(method));
             return maybeSig.map(sig -> {
                 MethodTyping.Result<Level> r;
                 try {

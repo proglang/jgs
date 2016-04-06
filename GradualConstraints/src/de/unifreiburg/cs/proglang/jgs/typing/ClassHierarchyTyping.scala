@@ -52,9 +52,9 @@ object ClassHierarchyTyping {
 
   def checkTwoMethods[Level](csets: ConstraintSetFactory[Level], types: TypeDomain[Level], signatures: SignatureTable[Level], subMethod: SootMethod, superMethod: SootMethod): Result[Level] = {
     val errorMsgTail: String = "when checking that " + subMethod.toString + " refines " + superMethod.toString
-    val sig1: MethodSignatures.Signature[Level] = asScalaOption(signatures.get(subMethod)).getOrElse(
+    val sig1: MethodSignatures.Signature[Level] = signatures.get(subMethod).getOrElse(
       throw new TypingAssertionFailure(String.format("No signature found for %s %s", subMethod.toString(), errorMsgTail)))
-    val sig2: MethodSignatures.Signature[Level] = asScalaOption(signatures.get(superMethod)).getOrElse(
+    val sig2: MethodSignatures.Signature[Level] = signatures.get(superMethod).getOrElse(
       throw new TypingAssertionFailure(String.format("No signature found for %s %s", superMethod.toString(), errorMsgTail)))
 
     val result: Pair[ConstraintSet.RefinementCheckResult[Level], MethodSignatures.EffectRefinementResult[Level]] = sig1.refines(csets, types, sig2)
