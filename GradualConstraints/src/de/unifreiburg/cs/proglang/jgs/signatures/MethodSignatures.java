@@ -147,7 +147,7 @@ public class MethodSignatures<Level> {
     }
 
     // TODO: move out of signatures and in its dedicated file in the typing package (as BodyTypingResult also uses it and the "concept" makes sense independently of MethodSignatures)
-    public final static class Effects<Level> {
+    public final static class Effects<Level> implements Iterable<Type<Level>> {
         private final HashSet<Type<Level>> effectSet;
 
         private Effects(HashSet<Type<Level>> effects) {
@@ -216,6 +216,11 @@ public class MethodSignatures<Level> {
             return "{" +
                    "" + effectSet +
                    '}';
+        }
+
+        @Override
+        public Iterator<Type<Level>> iterator() {
+            return this.effectSet.iterator();
         }
     }
 

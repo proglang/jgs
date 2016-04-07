@@ -4,20 +4,16 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.util.FunctionsForJava;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
-import scala.Function;
 import scala.Option;
 import scala.collection.JavaConverters;
 import soot.*;
 import soot.jimple.*;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
 
 /**
