@@ -6,6 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport.iml" filepath="$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport.iml" />
       <module fileurl="file://$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport-build.iml" filepath="$PROJECT_DIR$/../GradualConstraints_InstrumentationSupport/.idea/modules/GradualConstraints_InstrumentationSupport-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/../GradualConstraints_Tests/GradualConstraints_Tests.iml" filepath="$PROJECT_DIR$/../GradualConstraints_Tests/GradualConstraints_Tests.iml" />
+      <module fileurl="file://$USER_HOME$/Desktop/2016-03-31-sbt-hello-world/.idea/modules/hello.iml" filepath="$USER_HOME$/Desktop/2016-03-31-sbt-hello-world/.idea/modules/hello.iml" />
+      <module fileurl="file://$USER_HOME$/Desktop/2016-03-31-sbt-hello-world/.idea/modules/hello-build.iml" filepath="$USER_HOME$/Desktop/2016-03-31-sbt-hello-world/.idea/modules/hello-build.iml" />
     </modules>
   </component>
 </project>

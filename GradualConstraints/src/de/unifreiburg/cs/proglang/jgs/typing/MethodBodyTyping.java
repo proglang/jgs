@@ -192,7 +192,7 @@ public class MethodBodyTyping<Level> {
         } else if (successors.size() <= 1) {
             // a basic (non-branching) unit in a straight-line sequence
 
-            BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<>(csets, sTvars, cstrs, method);
+            BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<Level>(csets, sTvars, cstrs, method);
             BodyTypingResult<Level> atomic = bsTyping.generate(s, localDefs, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, fields, casts);
             // TODO: the following two statements are so unclear because we need to include all the tags.. abstract away the sequencing to make this clearer (or more transparent)
             r = BodyTypingResult.addEffects(BodyTypingResult.addConstraints(atomic, previous.getConstraints()), previous.getEffects());

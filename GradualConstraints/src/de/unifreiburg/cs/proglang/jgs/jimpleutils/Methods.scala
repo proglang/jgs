@@ -15,7 +15,7 @@ import scala.collection.JavaConverters._
   */
 object Methods {
   def parameters[Level](method: SootMethod): Iterator[Param[Level]] = {
-    (for (pos <- 0 to method.getParameterCount) yield param[Level](pos)).iterator
+    (for (pos <- 0 until method.getParameterCount) yield param[Level](pos)).iterator
   }
 
   def symbolMapForMethod[Level](tvars: TypeVars, method: SootMethod): java.util.Map[Param[Level], TypeVars.TypeVar] = {
@@ -27,7 +27,7 @@ object Methods {
            if t.isInstanceOf[VisibilityAnnotationTag];
            a <- t.asInstanceOf[VisibilityAnnotationTag].getAnnotations.asScala
            if a.getType == annotationType;
-           i <- 0 to a.getNumElems
+           i <- 0 until a.getNumElems
       ) yield extract(a.getElemAt(i))
   }
 

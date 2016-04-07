@@ -8,10 +8,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.SymbolViews.{Literal, Return, SymbolView, Param}
-import org.apache.commons.lang3.tuple.Pair
 import soot.SootMethod
-import java.util.stream.Collectors
-import java.util.stream.Stream
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param
 
 import scala.collection.JavaConverters._
