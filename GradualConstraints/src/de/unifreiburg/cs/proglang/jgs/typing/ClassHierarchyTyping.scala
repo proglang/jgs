@@ -3,9 +3,8 @@ package de.unifreiburg.cs.proglang.jgs.typing
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
 import de.unifreiburg.cs.proglang.jgs.constraints.{ConstraintSet, ConstraintSetFactory, TypeDomain}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Supertypes
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature
-import de.unifreiburg.cs.proglang.jgs.signatures.{MethodSignatures, SignatureTable}
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
+import de.unifreiburg.cs.proglang.jgs.signatures.{Signature, MethodSignatures, SignatureTable}
 import de.unifreiburg.cs.proglang.jgs.util.Interop
 import de.unifreiburg.cs.proglang.jgs.util.Interop.{asScalaIterator, asScalaOption}
 import org.apache.commons.lang3.tuple.Pair
@@ -39,7 +38,7 @@ object ClassHierarchyTyping {
                              val subtypeMethod: SootMethod,
                              val superTypeMethod: SootMethod,
                              val constraintsCheckResult: ConstraintSet.RefinementCheckResult[Level],
-                             val effectCheckResult: MethodSignatures.EffectRefinementResult[Level]
+                             val effectCheckResult: EffectRefinementResult[Level]
                            ) {
     if (constraintsCheckResult.isSuccess && effectCheckResult.isSuccess) {
       throw new IllegalArgumentException("Subtyping check is successful")
@@ -52,12 +51,12 @@ object ClassHierarchyTyping {
 
   def checkTwoMethods[Level](csets: ConstraintSetFactory[Level], types: TypeDomain[Level], signatures: SignatureTable[Level], subMethod: SootMethod, superMethod: SootMethod): Result[Level] = {
     val errorMsgTail: String = "when checking that " + subMethod.toString + " refines " + superMethod.toString
-    val sig1: MethodSignatures.Signature[Level] = signatures.get(subMethod).getOrElse(
+    val sig1: Signature[Level] = signatures.get(subMethod).getOrElse(
       throw new TypingAssertionFailure(String.format("No signature found for %s %s", subMethod.toString(), errorMsgTail)))
-    val sig2: MethodSignatures.Signature[Level] = signatures.get(superMethod).getOrElse(
+    val sig2: Signature[Level] = signatures.get(superMethod).getOrElse(
       throw new TypingAssertionFailure(String.format("No signature found for %s %s", superMethod.toString(), errorMsgTail)))
 
-    val result: Pair[ConstraintSet.RefinementCheckResult[Level], MethodSignatures.EffectRefinementResult[Level]] = sig1.refines(csets, types, sig2)
+    val result: Pair[ConstraintSet.RefinementCheckResult[Level], EffectRefinementResult[Level]] = sig1.refines(csets, types, sig2)
     if (result.getLeft.isSuccess && result.getRight.isSuccess) {
       Result(None)
     }

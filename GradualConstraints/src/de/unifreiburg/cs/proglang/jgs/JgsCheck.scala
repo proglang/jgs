@@ -10,8 +10,9 @@ import TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects.{makeEffects, emptyEffect}
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
-import de.unifreiburg.cs.proglang.jgs.signatures.{FieldTable, SignatureTable, MethodSignatures}
+import de.unifreiburg.cs.proglang.jgs.signatures._
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
 import de.unifreiburg.cs.proglang.jgs.typing.{TypingAssertionFailure, TypingException, MethodTyping, ClassHierarchyTyping}
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
@@ -27,7 +28,7 @@ import scala.util.{Success, Failure, Try}
 import scala.util.control.Exception.catching
 
 import org.json4s._
-import org.json4s.native.JsonMethods._
+import org.json4s.native.JsonMethods.{parse => parseJson, _}
 
 object JgsCheck {
 
@@ -148,7 +149,6 @@ object JgsCheck {
                       val opt: Opt) {
 
     val cstrs = new Constraints(types)
-    val sigs = new MethodSignatures[Level]()
 
     def typeCheck(s: Scene, classes: List[SootClass]): Unit = {
       val fieldMap: Map[SootField, Type[Level]] =
@@ -194,7 +194,7 @@ object JgsCheck {
         * Read configured signatures from file
         * *****************************/
       val annotationsJsonStr = Source.fromFile(opt.externalAnnotations).mkString
-      val annotationsJson = Try(parse(annotationsJsonStr)) match {
+      val annotationsJson = Try(parseJson(annotationsJsonStr)) match {
         case Failure(exception) =>
           throw new IllegalArgumentException(s"Error parsing external annotations (${opt.castMethods}): ${exception.getMessage}")
         case Success(value) => value
@@ -246,7 +246,7 @@ object JgsCheck {
         * Read casts from config file
         * *********************/
       val castJsonStr = Source.fromFile(opt.castMethods).mkString
-      val castJson = Try(parse(castJsonStr)) match {
+      val castJson = Try(parseJson(castJsonStr)) match {
         case Failure(exception) =>
           throw new IllegalArgumentException(s"Error parsing casts (${opt.castMethods}): ${exception.getMessage}")
         case Success(value) => value

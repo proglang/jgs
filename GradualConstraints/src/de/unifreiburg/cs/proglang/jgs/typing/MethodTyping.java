@@ -8,17 +8,16 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Effects;
-import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import scala.Option;
+import scala.collection.JavaConversions;
 import soot.SootMethod;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -140,16 +139,16 @@ public class MethodTyping<Level> {
     // TODO: what's up with "this"?
     public Result<Level> check(TypeVars tvars, SignatureTable<Level> signatures, FieldTable<Level> fields, SootMethod method) throws TypingException {
         // Get the signature of "method"
-        Option<MethodSignatures.Signature<Level>> maybe_signatureToCheck = signatures.get(method);
+        Option<Signature<Level>> maybe_signatureToCheck = signatures.get(method);
         if (maybe_signatureToCheck.isEmpty()) {
             throw new TypingException(
                                   "No signature found for method "
                                   + method.toString());
         }
-        MethodSignatures.Signature<Level> signatureToCheck = maybe_signatureToCheck.get();
+        Signature<Level> signatureToCheck = maybe_signatureToCheck.get();
 
         // type check the body and connect signature with the typing result through a symbol mapping
-        Map<Symbol.Param<Level>, TypeVar> paramMapping =
+        Map<Param<Level>, TypeVar> paramMapping =
                 Methods.<Level>symbolMapForMethod(tvars, method);
         Environment init = Environments.forParamMap(tvars, paramMapping);
 
@@ -160,16 +159,21 @@ public class MethodTyping<Level> {
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
         Map<Symbol<Level>, CType<Level>> symbolMapping = new HashMap<>();
 
-        for (Map.Entry<Symbol.Param<Level>, TypeVar> e : paramMapping.entrySet()) {
+        for (Map.Entry<Param<Level>, TypeVar> e : paramMapping.entrySet()) {
             symbolMapping.put(e.getKey(), variable(e.getValue()));
         }
         symbolMapping.put(Symbol.ret(), variable(tvars.ret()));
 
         ConstraintSet<Level> sigConstraints =
-                csets.fromCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).collect(Collectors.toList()));
+                csets.fromCollection(JavaConversions.asJavaCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).toSeq()));
+
+        List<Var<Param<?>>> params = new LinkedList<>();
+        for (Param<?> p : methodParameters(method)) {
+            params.add(Var.fromParam(p));
+        }
 
         ConstraintSet<Level> bodyConstraints =
-                r.getConstraints().asSignatureConstraints(tvars, Interop.asScalaIterator(methodParameters(method).stream().map(Var::fromParam).iterator()));
+                r.getConstraints().asSignatureConstraints(tvars, JavaConversions.asScalaIterator(params.iterator()));
 
 
         return new Result<>(cstrs.types(), r.getConstraints(),

@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.*;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 import de.unifreiburg.cs.proglang.jgs.typing.Environments;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
 import soot.*;
 import soot.jimple.*;
@@ -118,7 +119,7 @@ public class Code {
         // freeze field map
         this.fields = new FieldTable<>(fieldMap);
 
-        Map<SootMethod, MethodSignatures.Signature<LowHigh.Level>> sigMap = new HashMap<>();
+        Map<SootMethod, Signature<Level>> sigMap = new HashMap<>();
         Symbol.Param<LowHigh.Level> param_x = param(0);
         Symbol.Param<LowHigh.Level> param_y = param(1);
 
@@ -132,7 +133,7 @@ public class Code {
         sigMap.put(this.testCallee__int,
                 makeSignature(this.testCallee__int.getParameterCount(),
                               Stream.of(leS(Symbol.literal(PUB), ret())).collect(toList()),
-                              emptyEffect()));
+                              Effects.emptyEffect()));
 
         // Method:
         // int testCallee_int_int__int (int, int)
@@ -148,7 +149,7 @@ public class Code {
         sigMap.put(this.testCallee_int_int__int,
                 makeSignature(this.testCallee_int_int__int.getParameterCount(),
                               sigCstrs.collect(toList()),
-                              emptyEffect()));
+                              Effects.emptyEffect()));
 
         // Method:
         // int ignoreSnd(int, int)
@@ -161,7 +162,7 @@ public class Code {
         sigCstrs = Stream.of(leS(param_x, ret()), leS(param_y, param_y));
         sigMap.put(this.ignoreSnd_int_int__int,
                 makeSignature(this.ignoreSnd_int_int__int.getParameterCount(),
-                              sigCstrs.collect(toList()), emptyEffect()));
+                              sigCstrs.collect(toList()), Effects.emptyEffect()));
 
         // Method:
         // int writeToLowReturn0(int)
@@ -173,7 +174,7 @@ public class Code {
         sigCstrs = Stream.of((leS(param_x, literal(TLOW))), leS(ret(), ret()));
         sigMap.put(this.writeToLowReturn0_int__int,
                 makeSignature(this.writeToLowReturn0_int__int.getParameterCount(),
-                              sigCstrs.collect(toList()), makeEffects(TLOW)));
+                              sigCstrs.collect(toList()), Effects.makeEffects(TLOW)));
 
 
         // Method:
@@ -185,7 +186,7 @@ public class Code {
         this.testClass.addMethod(this.ignore0Low1ReturnHigh);
         sigCstrs = Stream.of(leS(param(1), literal(TLOW)), leS(literal(THIGH), ret()));
         sigMap.put(this.ignore0Low1ReturnHigh, makeSignature(this.ignore0Low1ReturnHigh.getParameterCount(),
-                                                             sigCstrs.collect(toList()), emptyEffect()));
+                                                             sigCstrs.collect(toList()), Effects.emptyEffect()));
 
         // freeze signatures
         this.signatures = makeTable(sigMap);
@@ -240,7 +241,7 @@ public class Code {
         SignatureTable<Level> newSignatures = this.signatures;
         for (MethodWithSignature<Level> m : methods) {
             result.addMethod(m.method);
-            newSignatures = newSignatures.extendWith(m.method, m.signature.constraints.stream().collect(Collectors.toList()), m.signature.effects);
+            newSignatures = newSignatures.extendWith(m.method, Interop.asJavaStream(m.signature.constraints.stream()).collect(Collectors.toList()), m.signature.effects);
         }
 
         return Pair.of(result, newSignatures);

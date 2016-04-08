@@ -4,7 +4,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.SomeConstraintSets;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
+import de.unifreiburg.cs.proglang.jgs.signatures.SigConstraint;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.junit.Before;
 import org.junit.Test;
 import soot.jimple.Jimple;
@@ -46,8 +49,8 @@ public class MethodSignaturesTest {
         Stream<SigConstraint<Level>> sig =
                 Stream.of(leS(s1, Symbol.ret()), leS(s2, Symbol.ret()));
         ConstraintSet<Level> sigAsCSet =
-                makeNaive((makeSignature(2, sig.collect(toList()), emptyEffect())
-                        .constraints.toTypingConstraints(mapping)).collect(Collectors.toSet()));
+                makeNaive(Interop.asJavaStream((makeSignature(2, sig.collect(toList()), Effects.emptyEffect())
+                        .constraints.toTypingConstraints(mapping))).collect(Collectors.toSet()));
         assertThat(sigAsCSet, (equivalent(cs.x1_le_x3__x2_le_x3)));
     }
 }

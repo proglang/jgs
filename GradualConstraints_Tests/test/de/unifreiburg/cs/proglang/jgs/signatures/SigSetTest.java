@@ -1,17 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.SigConstraint;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;

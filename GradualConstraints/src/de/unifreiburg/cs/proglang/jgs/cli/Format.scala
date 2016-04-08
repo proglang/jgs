@@ -12,7 +12,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Pub, Dyn, Lit}
 import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.EffectRefinementResult
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
 import de.unifreiburg.cs.proglang.jgs.typing._
 import org.kiama.output.PrettyPrinter._
 

@@ -4,9 +4,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping;
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.SigConstraint;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.Signature;
+import de.unifreiburg.cs.proglang.jgs.signatures.SigConstraint;
+import de.unifreiburg.cs.proglang.jgs.signatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser;
@@ -14,8 +15,6 @@ import de.unifreiburg.cs.proglang.jgs.typing.ClassHierarchyTyping;
 import de.unifreiburg.cs.proglang.jgs.typing.MethodTyping;
 import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
-import org.javafp.parsecj.Reply;
-import org.javafp.parsecj.State;
 import scala.util.parsing.combinator.Parsers;
 import soot.*;
 import soot.options.Options;
@@ -31,8 +30,8 @@ import java.util.stream.Stream;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringAnnotation;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation;
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeEffects;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Effects.makeEffects;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asScalaIterator;
 import static java.util.Collections.emptyList;
@@ -102,7 +101,7 @@ public class TestMain {
                                             + m.getName())).orElse(emptyList());
         return makeSignature(m.getParameterCount(),
                              parseConstraints(constraintStrings).collect(toList()),
-                             makeEffects(parseEffects(effectStrings)
+                             Effects.makeEffects(parseEffects(effectStrings)
                                                  .collect(toList())));
     }
 
@@ -142,7 +141,7 @@ public class TestMain {
              }
          });
         SootMethod printInt = s.getSootClass("de.unifreiburg.cs.proglang.jgs.support.IO").getMethodByName("printInt");
-        signatureMap.put(printInt, makeSignature(1, singletonList(leS(0, Symbol.literal(TLOW))), makeEffects(singletonList(TLOW))));
+        signatureMap.put(printInt, makeSignature(1, singletonList(leS(0, Symbol.literal(TLOW))), Effects.makeEffects(singletonList(TLOW))));
         SootMethod valueOfInt = s.getSootClass("java.lang.Integer").getMethod("valueOf", singletonList(IntType.v()));
         SootMethod intValue = s.getSootClass("java.lang.Integer").getMethod("intValue", emptyList());
         signatureMap.put(valueOfInt, makeSignature(1, singletonList(leS(0, Symbol.ret())), emptyEffect()));

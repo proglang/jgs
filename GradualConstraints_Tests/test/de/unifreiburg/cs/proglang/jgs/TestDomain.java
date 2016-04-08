@@ -13,12 +13,8 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
-import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
-import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.signatures.*;
 import de.unifreiburg.cs.proglang.jgs.typing.*;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,7 +25,6 @@ import scala.Option;
 import soot.*;
 import soot.jimple.StaticInvokeExpr;
 
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.stream.Collectors.toSet;
@@ -39,7 +34,7 @@ public class TestDomain {
     public static final LowHigh levels = new LowHigh();
     public static final TypeDomain<Level> types = new TypeDomain<>(levels);
     public static final Constraints<Level> cstrs = new Constraints<>(types);
-    public static final MethodSignatures<Level> sigs = new MethodSignatures<>();
+//    public static final MethodSignatures<Level> sigs = new MethodSignatures<>();
     public static final ConstraintSetFactory<Level> csets =
             new NaiveConstraintsFactory<>(types);
 
@@ -212,11 +207,11 @@ public class TestDomain {
     }
 
     public static SigConstraint<Level> leS(Symbol<Level> sc1, Symbol<Level> sc2) {
-        return sigs.le(sc1, sc2);
+        return MethodSignatures.le(sc1, sc2);
     }
 
     public static SigConstraint<Level> leS(int paramPos, Symbol<Level> sc2) {
-        return sigs.le(param(paramPos), sc2);
+        return MethodSignatures.le(param(paramPos), sc2);
     }
 
     //////////////
@@ -379,7 +374,7 @@ public class TestDomain {
 
     private static class SigRefineMatcher extends TypeSafeMatcher<Signature<Level>> {
         private final Signature<Level> other;
-        Pair<ConstraintSet.RefinementCheckResult<Level>, EffectRefinementResult<Level>>
+        Pair<ConstraintSet.RefinementCheckResult<Level>, Effects.EffectRefinementResult<Level>>
                 result;
 
         private SigRefineMatcher(Signature<Level> other) {

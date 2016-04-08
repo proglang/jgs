@@ -7,11 +7,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
-import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures
-import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
+import de.unifreiburg.cs.proglang.jgs.signatures._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol
 import de.unifreiburg.cs.proglang.jgs.util.Interop
 import scala.Option
 import soot._
@@ -50,7 +48,7 @@ class BasicStatementTyping[LevelT](
     return g.getResult
   }
 
-  private def makeResult(constraints: ConstraintSet[LevelT], env: Environment, effects: MethodSignatures.Effects[LevelT], tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
+  private def makeResult(constraints: ConstraintSet[LevelT], env: Environment, effects: Effects[LevelT], tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
     return new BodyTypingResult[LevelT](constraints, effects, env, tags)
   }
 
@@ -73,7 +71,7 @@ class BasicStatementTyping[LevelT](
     def getErrorMsg: List[String] = errorMsg.toList
 
 
-    private def extractEffects(rhs: Value): MethodSignatures.Effects[LevelT] = {
+    private def extractEffects(rhs: Value): Effects[LevelT] = {
       val effectCases: RhsSwitch[LevelT] = new RhsSwitch[LevelT]((casts)) {
         def caseLocalExpr(atoms: java.util.Collection[Value]) {
           setResult(emptyEffect)
@@ -104,11 +102,11 @@ class BasicStatementTyping[LevelT](
         }
       }
       rhs.apply(effectCases)
-      return effectCases.getResult.asInstanceOf[MethodSignatures.Effects[LevelT]]
+      return effectCases.getResult.asInstanceOf[Effects[LevelT]]
     }
 
-    private def getSignature(m: SootMethod): MethodSignatures.Signature[LevelT] = {
-      val maybe_Result: Option[MethodSignatures.Signature[LevelT]] = signatures.get(m)
+    private def getSignature(m: SootMethod): Signature[LevelT] = {
+      val maybe_Result: Option[Signature[LevelT]] = signatures.get(m)
       if (maybe_Result.isEmpty) {
         throw new TypingAssertionFailure("No signature found for method " + m.toString)
       }
@@ -147,7 +145,7 @@ class BasicStatementTyping[LevelT](
         if (argCount != paramterCount) {
           throw new RuntimeException(s"Argument count ($argCount) does not " + s"equal parameter count ($paramterCount): ${m.toString}")
         }
-        val sig: MethodSignatures.Signature[LevelT] = getSignature(m)
+        val sig: Signature[LevelT] = getSignature(m)
         val instantiation: mutable.HashMap[Symbol[LevelT], CTypes.CType[LevelT]] = mutable.HashMap()
         val argTypes: List[Option[TypeVars.TypeVar]] = args.map(mv => mv.map(env.get)).toList
         (0 until argCount).foreach(i => {
@@ -161,7 +159,7 @@ class BasicStatementTyping[LevelT](
         })
         instantiation += Symbol.ret[LevelT] -> variable(destTVar)
         val tagMap: mutable.Map[Constraint[LevelT], TypeVarTags.TypeVarTag] = mutable.HashMap()
-        sig.constraints.stream.iterator().foreach(sc => {
+        sig.constraints.stream.foreach(sc => {
           val c = sc.toTypingConstraint(instantiation);
           val params =
             sc.symbols().iterator().filter(s => s.isInstanceOf[Symbol.Param[LevelT]])
@@ -244,7 +242,7 @@ class BasicStatementTyping[LevelT](
         throw new TypingAssertionFailure(s"""Only field updates of the form \"x.F = y\" of \"x.F = c\" are supported. Found ${stmt}""")
       }
       pcs.foreach(v => constraints.add(leDest.apply(CTypes.variable(v))))
-      val effects: MethodSignatures.Effects[LevelT] = if ((currentMethod.getName == "<init>") && fieldRef.isInstanceOf[InstanceFieldRef]) {
+      val effects: Effects[LevelT] = if ((currentMethod.getName == "<init>") && fieldRef.isInstanceOf[InstanceFieldRef]) {
         val base: Value = (fieldRef.asInstanceOf[InstanceFieldRef]).getBase
         if (base.isInstanceOf[ThisRef]) {
           emptyEffect[LevelT]
@@ -256,22 +254,22 @@ class BasicStatementTyping[LevelT](
               emptyEffect[LevelT]
             }
             else {
-              MethodSignatures.emptyEffect[LevelT].add(fieldType)
+              Effects.emptyEffect[LevelT].add(fieldType)
             }
           }
           else {
-            MethodSignatures.emptyEffect[LevelT].add(fieldType)
+            Effects.emptyEffect[LevelT].add(fieldType)
           }
         }
         else {
-          MethodSignatures.emptyEffect[LevelT].add(fieldType)
+          Effects.emptyEffect[LevelT].add(fieldType)
         }
       }
       else if ((currentMethod.getName == "<clinit>") && fieldRef.isInstanceOf[StaticFieldRef] && (field.getDeclaringClass == currentMethod.getDeclaringClass)) {
-        MethodSignatures.emptyEffect[LevelT]
+        Effects.emptyEffect[LevelT]
       }
       else {
-        MethodSignatures.emptyEffect[LevelT].add(fieldType)
+        Effects.emptyEffect[LevelT].add(fieldType)
       }
       setResult(makeResult(csets.fromCollection(constraints), env, effects, tags))
     }

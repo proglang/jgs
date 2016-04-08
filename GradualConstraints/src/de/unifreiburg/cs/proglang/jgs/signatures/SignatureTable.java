@@ -2,7 +2,6 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import scala.Option;
 import soot.SootMethod;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 
 import java.util.*;
 

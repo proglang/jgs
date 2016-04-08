@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.*;
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
@@ -23,7 +24,7 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 
 import java.util.*;
 
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeEffects;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Effects.makeEffects;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.addConstraints;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.trivialCase;
 
@@ -197,7 +198,7 @@ public class MethodBodyTyping<Level> {
             Set<TypeDomain.Type<Level>> newEffects = new HashSet<>();
             newEffects.add(cxCast.sourceType);
             // TODO: why not a factory method?
-            return new BodyTypingResult<Level>(r.getConstraints().add(csets.fromCollection(additionalConstraintsList)), makeEffects(newEffects), r.getFinalEnv(), r.getTags().addAll(TagMap.of(tagMap)));
+            return new BodyTypingResult<Level>(r.getConstraints().add(csets.fromCollection(additionalConstraintsList)), Effects.makeEffects(newEffects), r.getFinalEnv(), r.getTags().addAll(TagMap.of(tagMap)));
         } else if (successors.size() <= 1) {
             // a basic (non-branching) unit in a straight-line sequence
 

@@ -2,8 +2,8 @@ package de.unifreiburg.cs.proglang.jgs.signatures.parse
 
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.{makeSigConstraint, SigConstraint}
+import de.unifreiburg.cs.proglang.jgs.signatures.{SigConstraint, MethodSignatures}
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSigConstraint
 import de.unifreiburg.cs.proglang.jgs.signatures
 
 import scala.util.parsing.combinator.RegexParsers

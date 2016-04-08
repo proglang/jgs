@@ -1,8 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol
+import de.unifreiburg.cs.proglang.jgs.signatures.{Signature, MethodSignatures, Symbol}
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import soot.SootMethod
@@ -72,7 +71,7 @@ object Methods {
     return extractAnntotation(annotationType, extract, tags).toList.asJava
   }
 
-  def extractSignatureFromTags[Level](parser: ConstraintParser[Level], tags: java.util.List[Tag]): MethodSignatures.Signature[Level] = {
+  def extractSignatureFromTags[Level](parser: ConstraintParser[Level], tags: java.util.List[Tag]): Signature[Level] = {
     val atags = tags.asScala.filter(t => t.isInstanceOf[AnnotationTag]).map((t : Tag) => t.asInstanceOf[AnnotationTag])
     throw new RuntimeException("Not implemented")
   }

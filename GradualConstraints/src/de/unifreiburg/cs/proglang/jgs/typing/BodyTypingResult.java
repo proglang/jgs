@@ -3,13 +3,13 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import com.sun.istack.internal.NotNull;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures;
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.emptyEffect;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect;
 
 /**
  * The result of typing a statement: a set of constraints, an environment that
@@ -22,7 +22,7 @@ public class BodyTypingResult<LevelT> {
     @NotNull
     private final ConstraintSet<LevelT> constraints;
     @NotNull
-    private final MethodSignatures.Effects<LevelT> effects;
+    private final Effects<LevelT> effects;
     @NotNull
     private final Environment env;
     private final TagMap<LevelT> tags;
@@ -55,14 +55,14 @@ public class BodyTypingResult<LevelT> {
         return new BodyTypingResult<>(r.constraints.add(constraints), r.effects, r.env, r.tags);
     }
 
-    public static <Level> BodyTypingResult<Level> addEffects(BodyTypingResult<Level> r, MethodSignatures.Effects<Level> effects) {
+    public static <Level> BodyTypingResult<Level> addEffects(BodyTypingResult<Level> r, Effects<Level> effects) {
         return new BodyTypingResult<>(r.constraints, r.effects.add(effects), r.env, r.tags);
     }
 
     // impl
 
     BodyTypingResult(@NotNull ConstraintSet<LevelT> constraints,
-                     @NotNull MethodSignatures.Effects<LevelT> effects,
+                     @NotNull Effects<LevelT> effects,
                      @NotNull Environment env,
                      TagMap<LevelT> tags) {
         super();
@@ -83,7 +83,7 @@ public class BodyTypingResult<LevelT> {
         return env;
     }
 
-    public MethodSignatures.Effects<LevelT> getEffects() {
+    public Effects<LevelT> getEffects() {
         return effects;
     }
 
