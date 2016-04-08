@@ -1,21 +1,17 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.*;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 
  // TODO: move out of signatures and in its dedicated file in the typing package (as BodyTypingResult also uses it and the "concept" makes sense independently of MethodSignatures)
-public final class Effects<Level> implements Iterable<TypeDomain.Type<Level>> {
-    private final HashSet<TypeDomain.Type<Level>> effectSet;
+public final class Effects<Level> implements Iterable<Type<Level>> {
+    private final HashSet<Type<Level>> effectSet;
 
-    Effects(HashSet<TypeDomain.Type<Level>> effects) {
+    Effects(HashSet<Type<Level>> effects) {
         this.effectSet = effects;
     }
 
@@ -25,37 +21,37 @@ public final class Effects<Level> implements Iterable<TypeDomain.Type<Level>> {
      }
 
      @SafeVarargs
-     public static <Level> Effects<Level> makeEffects(TypeDomain.Type<Level> type, TypeDomain.Type<Level>... types) {
+     public static <Level> Effects<Level> makeEffects(Type<Level> type, Type<Level>... types) {
          return Effects.<Level>emptyEffect().add(type, types);
      }
 
-     public static <Level> Effects<Level> makeEffects(Collection<TypeDomain.Type<Level>> types) {
+     public static <Level> Effects<Level> makeEffects(Collection<Type<Level>> types) {
          return Effects.<Level>emptyEffect().add(types);
      }
 
      @SafeVarargs
      public static <Level> Effects<Level> union(Effects<Level>... effectSets) {
-         HashSet<TypeDomain.Type<Level>> result = new HashSet<>();
+         HashSet<Type<Level>> result = new HashSet<>();
          for (Effects<Level> es : effectSets) {
              result.addAll(es.effectSet);
          }
          return new Effects<>(result);
      }
 
-     public final Effects<Level> add(TypeDomain.Type<Level> type, TypeDomain.Type<Level>... types) {
-        return this.add(Stream.concat(Stream.of(type), asList(types).stream()).collect(toList()));
+     public final Effects<Level> add(Type<Level> type, Type<Level>... types) {
+        return this.add(type).add(asList(types));
     }
 
-    public final Effects<Level> add(TypeDomain.Type<Level> type) {
-        return this.add((Stream.of(type)).collect(toList()));
+    public final Effects<Level> add(Type<Level> type) {
+        return this.add(Collections.singletonList(type));
     }
 
     public final Effects<Level> add(Effects<Level> other) {
-        return this.add(other.stream().collect(toList()));
+        return this.add(other.effectSet);
     }
 
-    public final Effects<Level> add(Collection<TypeDomain.Type<Level>> types) {
-        HashSet<TypeDomain.Type<Level>> result = new HashSet<>(this.effectSet);
+    public final Effects<Level> add(Collection<Type<Level>> types) {
+        HashSet<Type<Level>> result = new HashSet<>(this.effectSet);
         result.addAll(types);
         return new Effects<>(result);
     }
@@ -68,17 +64,26 @@ public final class Effects<Level> implements Iterable<TypeDomain.Type<Level>> {
         return l;
     }
 
-    public final Stream<TypeDomain.Type<Level>> stream() {
-        return this.effectSet.stream();
+    public final Iterator<Type<Level>> stream() {
+        return this.effectSet.iterator();
     }
 
-    private boolean covers(TypeDomain<Level> types, TypeDomain.Type<Level> t) {
-        return this.effectSet.stream().anyMatch(cand -> types.le(cand, t));
+    private boolean covers(TypeDomain<Level> types, Type<Level> t) {
+        for (Type<Level> cand : effectSet) {
+            if (types.le(cand, t)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public final EffectRefinementResult<Level> refines(TypeDomain<Level> types, Effects<Level> other) {
-        HashSet<TypeDomain.Type<Level>> notCovered = new HashSet<>();
-        this.stream().filter(t -> !(other.covers(types, t))).forEach(t -> notCovered.add(t));
+        HashSet<Type<Level>> notCovered = new HashSet<>();
+        for (Type<Level> t : this.effectSet) {
+            if (!(other.covers(types, t))) {
+                notCovered.add(t);
+            }
+        }
         return new EffectRefinementResult<>(new Effects<>(notCovered));
     }
 
@@ -107,7 +112,7 @@ public final class Effects<Level> implements Iterable<TypeDomain.Type<Level>> {
     }
 
     @Override
-    public Iterator<TypeDomain.Type<Level>> iterator() {
+    public Iterator<Type<Level>> iterator() {
         return this.effectSet.iterator();
     }
 

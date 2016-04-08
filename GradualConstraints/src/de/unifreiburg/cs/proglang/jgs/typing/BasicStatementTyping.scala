@@ -161,7 +161,7 @@ class BasicStatementTyping[LevelT](
         })
         tags = TagMap.of(tagMap)
         thisPtr.map(toCType.andThen(leDest)).foreach(constraints += _)
-        sig.effects.stream.iterator().foreach(t => {
+        sig.effects.iterator().foreach(t => {
           pcs.foreach(pc => {
             constraints += (Constraints.le(variable(pc), literal(t)));
           });

@@ -27,12 +27,12 @@ object MethodSignatures {
     */
   def makeSignature[Level](paramCount: Int, constraints: java.util.Collection[SigConstraint[Level]], effects: Effects[Level]): Signature[Level] = {
     val paramInRange = (p :  Symbol.Param[_])=> p.position < paramCount && 0 <= p.position
-    if (!constraints.stream.iterator().flatMap(c => c.symbols().iterator()).forall(s => !(s.isInstanceOf[Param[_]])
+    if (!constraints.iterator().flatMap(c => c.symbols().iterator()).forall(s => !(s.isInstanceOf[Param[_]])
       || paramInRange((s.asInstanceOf[Param[Level]])))) {
       throw new IllegalArgumentException(String.format(s"Illegal parameter for parameter count ${paramCount} in constraint ${constraints}"))
     }
     val paramConstraints: Iterator[SigConstraint[Level]] = (0 until paramCount).iterator.map(i => trivial(param[Level](i)))
-    val allConstraints: Iterator[SigConstraint[Level]] = (constraints.stream.iterator() ++ Iterator(trivial(ret[Level])) ++ paramConstraints)
+    val allConstraints: Iterator[SigConstraint[Level]] = (constraints.iterator() ++ Iterator(trivial(ret[Level])) ++ paramConstraints)
     return new Signature[Level](signatureConstraints(allConstraints), effects)
   }
 
