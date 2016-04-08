@@ -3,7 +3,9 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 import scala.Option;
 import soot.SootMethod;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
 

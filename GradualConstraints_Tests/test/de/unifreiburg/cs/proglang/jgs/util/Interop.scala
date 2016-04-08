@@ -1,7 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.util
 
-import java.util.{Spliterator, Spliterators, Optional}
-import java.util.stream.{StreamSupport, Stream}
+import java.util.stream.{Stream, StreamSupport}
+import java.util.{Optional, Spliterator, Spliterators}
+
 import scala.collection.JavaConverters._
 
 /**

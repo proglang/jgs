@@ -3,8 +3,6 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 import soot.Unit;
 import soot.toolkits.graph.DirectedGraph;
 
-import java.util.List;
-
 /**
  * Contains methods to assert some assumptions that JGS has about UnitGraphs/method bodies
  * Created by fennell on 1/8/16.

@@ -3,20 +3,12 @@ package de.unifreiburg.cs.proglang.jgs.constraints
 import java.util.Collections
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Lit
-import de.unifreiburg.cs.proglang.jgs.typing.CompatibilityConflict
-import de.unifreiburg.cs.proglang.jgs.typing.ConflictCause
-import de.unifreiburg.cs.proglang.jgs.typing.FlowConflict
-import de.unifreiburg.cs.proglang.jgs.typing.TagMap
-import de.unifreiburg.cs.proglang.jgs.util.Interop
-import scala.Option
-import scala.collection._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes._
-import de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream
-import de.unifreiburg.cs.proglang.jgs.util.Interop.asScalaOption
+import de.unifreiburg.cs.proglang.jgs.typing.{CompatibilityConflict, ConflictCause, FlowConflict, TagMap}
 
-import JavaConversions._
-import JavaConverters._
+import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
+import scala.collection._
 
 
 /**
@@ -112,7 +104,7 @@ object NaiveConstraints {
    */
 
   def withImplications[Level](cs: Iterator[Constraint[Level]]): Iterator[Constraint[Level]] =
-    cs.flatMap(c => Interop.asScalaIterator(Constraints.implicationsOf(c)))
+    cs.flatMap(c => Constraints.implicationsOf(c))
 
   def projectTo[Level](cs: java.util.Set[Constraint[Level]], typeVarCol: java.util.Collection[TypeVars.TypeVar]): Iterator[Constraint[Level]] = {
     val closure: Set[Constraint[Level]] = close(cs)
@@ -195,7 +187,7 @@ class NaiveConstraints[Level](types: TypeDomain[Level], cs: Set[Constraint[Level
   }
 
   def stream: Iterator[Constraint[Level]] = {
-    return Interop.asScalaIterator(this.cs.iterator)
+    return this.cs.iterator
   }
 
   def projectTo(typeVars: java.util.Set[TypeVars.TypeVar]): ConstraintSet[Level] = {

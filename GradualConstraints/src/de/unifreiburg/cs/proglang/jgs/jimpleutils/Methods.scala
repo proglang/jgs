@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
-import de.unifreiburg.cs.proglang.jgs.signatures.{Signature, MethodSignatures, Symbol}
+import de.unifreiburg.cs.proglang.jgs.signatures.Signature
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import soot.SootMethod

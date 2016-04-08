@@ -1,9 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.util.FunctionsForJava;
-import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import scala.Option;
 import scala.collection.JavaConverters;
 import soot.*;
@@ -13,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static java.util.Collections.*;
-import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.*;
+import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
+import static java.util.Collections.singleton;
 
 /**
  * A Value-Switch that abstracts over the concreteConstraints expressions and is only

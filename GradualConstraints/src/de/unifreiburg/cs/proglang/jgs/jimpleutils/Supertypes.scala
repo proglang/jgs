@@ -1,9 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import soot.RefType
-import soot.SootClass
-import soot.SootMethod
-import soot.Type
+import soot.{RefType, SootClass, SootMethod, Type}
 
 import scala.collection.JavaConversions._
 

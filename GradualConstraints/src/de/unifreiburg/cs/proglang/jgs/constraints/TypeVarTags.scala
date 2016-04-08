@@ -1,8 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
-import soot.jimple.Expr
-import soot.{SootMethod, SootField}
+import soot.{SootField, SootMethod}
 
 import scala.language.existentials
 

@@ -1,13 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol
-import soot.Local
-import soot.Value
-import soot.ValueBox
-import soot.jimple.AbstractJimpleValueSwitch
-import soot.jimple.ParameterRef
-import soot.jimple.ThisRef
+import soot.{Local, Value, ValueBox}
+import soot.jimple.{AbstractJimpleValueSwitch, ParameterRef, ThisRef}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer

@@ -5,8 +5,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.stream.Stream;
-
 /**
  * Signatures: constraints + effects
  */

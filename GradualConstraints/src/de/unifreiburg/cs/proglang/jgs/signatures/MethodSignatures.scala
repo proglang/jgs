@@ -1,17 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.signatures
 
-import de.unifreiburg.cs.proglang.jgs.constraints._
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param
-import de.unifreiburg.cs.proglang.jgs.util.Interop
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
-import java.util.stream.Collectors.toList
-import java.util.stream.Collectors.toSet
+import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.{Param, param, ret}
 
 import scala.collection.JavaConversions._
 

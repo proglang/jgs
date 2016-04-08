@@ -4,31 +4,26 @@ import java.io.File
 import java.util.logging.Logger
 
 import de.unifreiburg.cs.proglang.jgs.cli.Format
-import de.unifreiburg.cs.proglang.jgs.constraints._
-import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain}
-import TypeDomain.Type
-import de.unifreiburg.cs.proglang.jgs.jimpleutils._
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
-import de.unifreiburg.cs.proglang.jgs.signatures.Effects.{makeEffects, emptyEffect}
-import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
-import de.unifreiburg.cs.proglang.jgs.signatures._
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
-import de.unifreiburg.cs.proglang.jgs.typing.{TypingAssertionFailure, TypingException, MethodTyping, ClassHierarchyTyping}
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
-import org.javafp.parsecj.State
+import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Casts, _}
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects.{emptyEffect, makeEffects}
+import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
+import de.unifreiburg.cs.proglang.jgs.signatures._
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
+import de.unifreiburg.cs.proglang.jgs.typing.{ClassHierarchyTyping, MethodTyping, TypingAssertionFailure, TypingException}
+import org.json4s._
+import org.json4s.native.JsonMethods.{parse => parseJson}
 import scopt.OptionParser
-import soot.{SootMethod, SootField, SootClass, Scene}
 import soot.options.Options
+import soot.{Scene, SootClass, SootField, SootMethod}
 
 import scala.collection.JavaConversions._
-
 import scala.io.Source
-import scala.util.{Success, Failure, Try}
 import scala.util.control.Exception.catching
-
-import org.json4s._
-import org.json4s.native.JsonMethods.{parse => parseJson, _}
+import scala.util.{Failure, Success, Try}
 
 object JgsCheck {
 

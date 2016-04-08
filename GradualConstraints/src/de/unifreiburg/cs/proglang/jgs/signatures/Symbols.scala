@@ -1,15 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.signatures
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{Variable, Lit, CTypeView}
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{CTypeView, Lit, Variable}
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
+import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, TypeVars}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
-import de.unifreiburg.cs.proglang.jgs.signatures.SymbolViews.{Literal, Return, SymbolView, Param}
-import soot.SootMethod
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param
+import de.unifreiburg.cs.proglang.jgs.signatures.SymbolViews.{Literal, Param, Return, SymbolView}
+import soot.SootMethod
 
 import scala.collection.JavaConverters._
 

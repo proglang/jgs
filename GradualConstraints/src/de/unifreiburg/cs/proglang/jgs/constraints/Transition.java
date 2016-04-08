@@ -1,9 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import java.util.List;
-
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
+
+import java.util.List;
 
 /**
  *

@@ -1,15 +1,13 @@
 package de.unifreiburg.cs.proglang.jgs.typing
 
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
 import de.unifreiburg.cs.proglang.jgs.constraints.{ConstraintSet, ConstraintSetFactory, TypeDomain}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Supertypes
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
-import de.unifreiburg.cs.proglang.jgs.signatures.{Signature, MethodSignatures, SignatureTable}
-import de.unifreiburg.cs.proglang.jgs.util.Interop
-import de.unifreiburg.cs.proglang.jgs.util.Interop.{asScalaIterator, asScalaOption}
+import de.unifreiburg.cs.proglang.jgs.signatures.{Signature, SignatureTable}
 import org.apache.commons.lang3.tuple.Pair
-import soot.SootClass
-import soot.SootMethod
+import soot.{SootClass, SootMethod}
+
+import scala.collection.JavaConversions._
 
 
 /**
@@ -82,6 +80,6 @@ object ClassHierarchyTyping {
   }
 
   def check[Level](csets: ConstraintSetFactory[Level], types: TypeDomain[Level], signatures: SignatureTable[Level], classes: Iterator[SootClass]): Result[Level] = {
-    checkMethods(csets, types, signatures, classes.flatMap(c => asScalaIterator(c.getMethods())))
+    checkMethods(csets, types, signatures, classes.flatMap(c => c.getMethods().iterator()))
   }
 }

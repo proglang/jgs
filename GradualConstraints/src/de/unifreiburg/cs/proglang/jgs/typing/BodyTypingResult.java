@@ -4,7 +4,6 @@ import com.sun.istack.internal.NotNull;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 
 import java.util.List;
 import java.util.stream.Collectors;

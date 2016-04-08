@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
 /**
  * Companion class to <code>Environment</code>

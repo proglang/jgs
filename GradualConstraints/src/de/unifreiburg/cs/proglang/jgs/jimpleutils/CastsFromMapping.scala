@@ -1,21 +1,15 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import Casts.{ValueCast, CxCast}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain._
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{CxCast, ValueCast}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping._
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
 import soot.SootMethod
-import soot.jimple.{StaticInvokeExpr}
+import soot.jimple.StaticInvokeExpr
 
-import TypeDomain._
-
-
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
-
-import CastsFromMapping._
-import de.unifreiburg.cs.proglang.jgs.util.Interop._
-
-import scala.util.{Success, Failure, Try}
+import scala.util.{Failure, Success, Try}
 
 
 /**

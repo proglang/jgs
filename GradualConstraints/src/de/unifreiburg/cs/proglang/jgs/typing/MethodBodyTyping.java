@@ -5,30 +5,28 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import org.apache.commons.lang3.tuple.Pair;
 import scala.Option;
 import soot.Body;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.*;
+import soot.jimple.AbstractStmtSwitch;
+import soot.jimple.IfStmt;
+import soot.jimple.Stmt;
 import soot.toolkits.graph.*;
 import soot.toolkits.scalar.LocalDefs;
 import soot.toolkits.scalar.SimpleLiveLocals;
 import soot.toolkits.scalar.SmartLocalDefs;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
-
 import java.util.*;
 
-import static de.unifreiburg.cs.proglang.jgs.signatures.Effects.makeEffects;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.MethodTypeVars;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.addConstraints;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.trivialCase;
-
-import static scala.collection.JavaConverters.*;
+import static scala.collection.JavaConverters.seqAsJavaListConverter;
 
 /**
  * Context for generating typing constraints and environments for whole method bodies.

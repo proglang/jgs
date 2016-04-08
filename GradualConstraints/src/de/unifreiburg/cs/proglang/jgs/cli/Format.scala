@@ -1,16 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.cli
 
-import java.util
-
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Variable
-import de.unifreiburg.cs.proglang.jgs.constraints.{TypeVars, TypeDomain, CTypes}
-import CTypes.CType
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Internal, Ret, Cx, Param}
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Pub, Dyn, Lit}
-import de.unifreiburg.cs.proglang.jgs.constraints._
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain._
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags._
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Cx, Internal, Param, Ret}
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Lit, Pub}
+import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, ConstraintKind, TypeDomain, TypeVars, _}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
 import de.unifreiburg.cs.proglang.jgs.typing._
@@ -18,11 +16,6 @@ import org.kiama.output.PrettyPrinter._
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
-
-import TypeVars._
-import TypeDomain._
-
-import scala.util.{Success, Failure, Try}
 
 object Format {
 

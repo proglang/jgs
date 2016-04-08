@@ -1,14 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import scala.Option;
 import soot.SootField;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 
 public class FieldTable<Level> {
 
@@ -18,8 +18,8 @@ public class FieldTable<Level> {
         this.fieldTable = new HashMap<>(fieldTable);
     }
 
-    public Optional<Type<Level>> get(SootField f) {
-        return Optional.ofNullable(fieldTable.get(f));
+    public Option<Type<Level>> get(SootField f) {
+        return Option.apply(fieldTable.get(f));
     }
 
     public Map<SootField, Type<Level>> getRawTable() {

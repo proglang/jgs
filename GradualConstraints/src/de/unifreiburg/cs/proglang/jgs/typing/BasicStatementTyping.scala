@@ -1,25 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.typing
 
-import de.unifreiburg.cs.proglang.jgs.constraints._
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags.TypeVarTag
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.{literal, variable}
+import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, TypeDomain, TypeVars, _}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
 import de.unifreiburg.cs.proglang.jgs.signatures._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
-import de.unifreiburg.cs.proglang.jgs.util.Interop
-import scala.Option
+import de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv
 import soot._
 import soot.jimple._
 import soot.toolkits.scalar.LocalDefs
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable
-import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
-import de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv
-import java.util.Collections.unmodifiableList
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
@@ -114,7 +103,7 @@ class BasicStatementTyping[LevelT](
     }
 
     private def getFieldType(f: SootField): TypeDomain.Type[LevelT] = {
-      return Interop.asScalaOption(fields.get(f)).getOrElse(
+      return fields.get(f).getOrElse(
         throw new TypingAssertionFailure(
           "No field type found for field "
             + f.toString()))
