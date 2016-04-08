@@ -16,6 +16,7 @@ import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.javafp.parsecj.Reply;
 import org.javafp.parsecj.State;
+import scala.util.parsing.combinator.Parsers;
 import soot.*;
 import soot.options.Options;
 
@@ -56,10 +57,10 @@ public class TestMain {
         return result;
     }
 
-    private static <T> T getReplyOrThrow(Reply<?, T> reply, Function<Exception, RuntimeException> re) {
+    private static <T> T getReplyOrThrow(Parsers.ParseResult<T> reply, Function<Exception, RuntimeException> re) {
         T result;
         try {
-            result = reply.getResult();
+            result = reply.get();
         } catch (Exception e) {
             throw re.apply(e);
         }
@@ -69,7 +70,7 @@ public class TestMain {
     private static Stream<SigConstraint<Level>> parseConstraints(List<String> constraintStrings) {
         Stream<SigConstraint<Level>> constraints =
                 constraintStrings.stream().map((String s) -> {
-                    return getReplyOrThrow(new ConstraintParser<Level>(types.typeParser()).constraintParser().parse(State.of(s)),
+                    return getReplyOrThrow(new ConstraintParser<Level>(types.typeParser()).parseConstraints(s),
                                            e -> new RuntimeException(String.format("Error parsing constraint %s;\n%s", s, e.getMessage())))
                             ;
                 });

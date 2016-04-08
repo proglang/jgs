@@ -14,5 +14,14 @@
     <orderEntry type="library" scope="TEST" name="testing" level="project" />
     <orderEntry type="library" name="utils" level="project" />
     <orderEntry type="module" module-name="GradualConstraints_InstrumentationSupport" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$JGS_DEPS$/scala-parser-combinators_2.11-1.0.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

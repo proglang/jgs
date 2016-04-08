@@ -302,7 +302,7 @@ object JgsCheck {
     }
 
     private def parseConstraints(constraintStrings: List[String]): List[SigConstraint[Level]] =
-      constraintStrings.map(s => new ConstraintParser(types.typeParser()).constraintParser().parse(State.of(s)).getResult)
+      constraintStrings.map(s => new ConstraintParser(types.typeParser()).parseConstraints(s).get)
 
     private def parseEffects(effectStrings: List[String]): List[Type[Level]] =
       effectStrings.map(s => types.typeParser().parse(s) match {

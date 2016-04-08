@@ -6,9 +6,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.javafp.parsecj.*;
 import org.junit.Before;
 import org.junit.Test;
+import scala.util.parsing.combinator.Parsers;
 
 import java.util.Optional;
 
@@ -25,18 +25,18 @@ public class ConstraintParserTest {
 
     @Before
     public void setUp() {
-        parsers = new ConstraintParser<>(types.typeParser());
+        parsers = new ConstraintParser<Level>(types.typeParser());
     }
 
-    private <T> T parse(Parser<Character, T> parser, String input) throws Exception {
-        return parser.parse(State.of(input)).getResult();
+    private <T> T parse(Parsers.Parser<T> parser, String input) throws Exception {
+        return (T)parsers.parseAll(parser, input).get();
     }
 
-    private <T> Matcher<Parser<Character, T>> parses(String input, T result) {
-        return new TypeSafeMatcher<Parser<Character, T>>() {
+    private <T> Matcher<Parsers.Parser<T>> parses(String input, T result) {
+        return new TypeSafeMatcher<Parsers.Parser<T>>() {
 
 
-            private Reply<Character, T> reply;
+            private Parsers.ParseResult<T> reply;
             private Optional<T> parseResult;
 
             @Override
@@ -45,10 +45,10 @@ public class ConstraintParserTest {
             }
 
             @Override
-            protected boolean matchesSafely(Parser<Character, T> p) {
-                reply = p.parse(State.of(input));
+            protected boolean matchesSafely(Parsers.Parser<T> p) {
+                reply = parsers.parse(p, input);
                 try {
-                    parseResult = Optional.of(reply.getResult());
+                    parseResult = Optional.of(reply.get());
                 } catch (Exception e) {
                     parseResult = Optional.empty();
                 }
@@ -56,21 +56,23 @@ public class ConstraintParserTest {
             }
 
             @Override
-            protected void describeMismatchSafely(Parser<Character, T> item, Description mismatchDescription) {
+            protected void describeMismatchSafely(Parsers.Parser<T> item, Description mismatchDescription) {
                 if (parseResult.isPresent()) {
                    mismatchDescription.appendText(" parsed ").appendValue(parseResult.get());
                 } else {
-                    mismatchDescription.appendText(" failed with ").appendValue(reply.getMsg());
+                    mismatchDescription.appendText(" failed with ").appendValue(reply.toString());
                 }
             }
         };
 
     }
 
+    /*
     @Test
     public void testTakeString() throws Exception {
         assertThat(parsers.takeString(Text.digit), parses("1234", "1234"));
     }
+    */
 
     @Test
     public void test() throws Exception {
@@ -80,13 +82,13 @@ public class ConstraintParserTest {
         assertThat(parsers.symbolParser(), parses("?", literal(DYN)));
         assertThat(parsers.symbolParser(), parses("@ret", ret()));
         assertThat(parsers.symbolParser(), parses("@1", param(1)));
-        assertThat(parsers.constraintParser().parse(State.of("HIGH <= LOW")).getResult(),
+        assertThat(parsers.parse(parsers.constraintParser(), "HIGH <= LOW").get(),
                    is(equalTo(leS(literal(THIGH), literal(TLOW)))));
-        assertThat(parsers.constraintParser().parse(State.of("? <= LOW")).getResult(),
+        assertThat(parsers.parse(parsers.constraintParser(), "? <= LOW").get(),
                    is(equalTo(leS(literal(DYN), literal(TLOW)))));
-        assertThat(parsers.constraintParser().parse(State.of("@1 <= LOW")).getResult(),
+        assertThat(parsers.parse(parsers.constraintParser(), ("@1 <= LOW")).get(),
                    is(equalTo(leS(param(1), literal(TLOW)))));
-        assertThat(parsers.constraintParser().parse(State.of("@ret <= @2")).getResult(),
+        assertThat(parsers.parse(parsers.constraintParser(), ("@ret <= @2")).get(),
                    is(equalTo(leS(ret(), param(2)))));
     }
 
