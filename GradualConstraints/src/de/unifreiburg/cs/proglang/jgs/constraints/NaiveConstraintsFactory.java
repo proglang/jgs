@@ -15,7 +15,7 @@ public class NaiveConstraintsFactory<Level> implements ConstraintSetFactory<Leve
 
     @Override
     public ConstraintSet<Level> empty() {
-        return new NaiveConstraints<>(types, Collections.emptySet());
+        return new NaiveConstraints<Level>(types, Collections.<Constraint<Level>>emptySet());
     }
 
     @Override

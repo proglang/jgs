@@ -19,6 +19,7 @@
       <element id="extracted-dir" path="$JGS_DEPS$/json4s-native_2.11-3.3.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$JGS_DEPS$/json4s-scalap_2.11-3.3.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$JGS_DEPS$/json4s-ast_2.11-3.3.0.jar" path-in-jar="/" />
+      <element id="module-output" name="GradualConstraints_InstrumentationSupport" />
     </root>
   </artifact>
 </component>

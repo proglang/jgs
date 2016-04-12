@@ -42,7 +42,7 @@ public class EnvironmentTest {
         // join (v1, v2);
         Environment.JoinResult<Level> joinResult = Environment.join(tvars, first, second);
         Environment newEnv = joinResult.env;
-        ConstraintSet<Level> cs = makeNaive(joinResult.constraints.collect(toList()));
+        ConstraintSet<Level> cs = makeNaive(joinResult.constraints);
         TypeVar freshTv = joinResult.env.get(v);
         assertThat(freshTv, not(anyOf(is(tv1), is(tv2))));
 

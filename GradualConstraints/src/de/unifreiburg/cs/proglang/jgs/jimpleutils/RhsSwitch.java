@@ -8,10 +8,10 @@ import soot.jimple.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
-import static java.util.Collections.singleton;
 
 /**
  * A Value-Switch that abstracts over the concreteConstraints expressions and is only
@@ -84,12 +84,12 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      */
     @Override
     public void caseLocal(Local v) {
-        caseLocalExpr(singleton(v));
+        caseLocalExpr(Collections.<Value>singleton(v));
     }
 
     @Override
     public void caseParameterRef(ParameterRef v) {
-        caseLocalExpr(singleton(v));
+        caseLocalExpr(Collections.<Value>singleton(v));
     }
 
     @Override public void caseArrayRef(ArrayRef v) {
@@ -104,13 +104,13 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
     @Override
     public void caseStaticFieldRef(StaticFieldRef v) {
-        caseGetField(v, Option.empty());
+        caseGetField(v, Option.<Var<?>>empty());
     }
 
     @Override
     public void caseInstanceFieldRef(InstanceFieldRef v) {
         // the base of a field ref is always a local in Jimple
-        caseGetField(v, Option.apply(Var.fromLocal((Local)v.getBase())));
+        caseGetField(v, Option.<Var<?>>apply(Var.fromLocal((Local)v.getBase())));
     }
 
 
@@ -119,13 +119,13 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
      */
     private void caseCall(InvokeExpr m, Option<Value> baseValue) {
         Option<Var<?>> base =
-                baseValue.isDefined() ? Vars.getAll(baseValue.get()).find(FunctionsForJava.constantTrue()) : Option.empty();
+                baseValue.isDefined() ? Vars.getAll(baseValue.get()).find(FunctionsForJava.<Var<?>>constantTrue()) : Option.<Var<?>>empty();
                 // baseValue.flatMap(v -> Interop.asJavaStream().findFirst());
         List<Option<Var<?>>> args = new ArrayList<>();
         for (soot.Value v : m.getArgs()) {
             List<Var<?>> vars = (List<Var<?>>)JavaConverters.seqAsJavaListConverter(Vars.getAll(v).toSeq()).asJava();
             if (vars.isEmpty()) {
-                args.add(Option.empty());
+                args.add(Option.<Var<?>>empty());
             } else if (vars.size() == 1) {
                 args.add(Option.<Var<?>>apply(vars.get(0)));
             } else {
@@ -156,7 +156,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
         if (c.isDefined()) {
             caseCast(c.get());
         } else {
-            caseCall(v, Option.empty());
+            caseCall(v, Option.<Value>empty());
         }
     }
 

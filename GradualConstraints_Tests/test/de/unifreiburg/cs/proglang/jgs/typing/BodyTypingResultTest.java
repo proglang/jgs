@@ -59,7 +59,8 @@ public class BodyTypingResultTest {
         assertThat("Simple constraints problem: ", tmpcs.equals(cs), is(true));
         assertThat("Constraints problem: ", result.getConstraints(), is(expected.getConstraints()));
         assertThat("Effect problem: ", result.getEffects(), is(expected.getEffects()));
-        assertThat("Other probelem: ", result, is(equalTo(expected)));
+        assertThat("Other problem: (constraints)", result.constraints(), is(equalTo(expected.constraints())));
+        assertThat("Other problem: (env)", result.getFinalEnv(), is(equalTo(expected.getFinalEnv())));
 
         assertThat(BodyTypingResult.join(BodyTypingResult.trivialCase(csets), r1, csets, tvars, "test"), is(r1));
         assertThat(BodyTypingResult.join(r1, BodyTypingResult.trivialCase(csets), csets, tvars, "test"), is(r1));

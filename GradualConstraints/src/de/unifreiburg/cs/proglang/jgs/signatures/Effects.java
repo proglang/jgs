@@ -17,7 +17,7 @@ public final class Effects<Level> implements Iterable<Type<Level>> {
 
      /* Effects */
      public static <Level> Effects<Level> emptyEffect() {
-         return new Effects<>(new HashSet<>());
+         return new Effects<>(new HashSet<Type<Level>>());
      }
 
      @SafeVarargs

@@ -21,7 +21,6 @@ import soot.toolkits.scalar.SmartLocalDefs;
 import java.util.*;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.MethodTypeVars;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import static de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.addConstraints;
@@ -62,9 +61,9 @@ public class MethodBodyTyping<Level> {
     }
 
     Set<Constraint<Level>> constraintsForBranches(Unit s,
-                                                  Environment env,
-                                                  TypeVar oldPc,
-                                                  TypeVar newPc) throws TypingException {
+                                                  final Environment env,
+                                                  final TypeVar oldPc,
+                                                  final TypeVar newPc) throws TypingException {
         AbstractStmtSwitch g = new AbstractStmtSwitch() {
 
             @Override
@@ -78,10 +77,10 @@ public class MethodBodyTyping<Level> {
                 Set<Constraint<Level>> cs = new HashSet<>();
 
                 // add new pc as upper bound to old pc
-                cs.add(Constraints.le(variable(oldPc), variable(newPc)));
+                cs.add(Constraints.<Level>le(CTypes.<Level>variable(oldPc), CTypes.<Level>variable(newPc)));
 
                 for (Var<?> v : ((List<Var<?>>)seqAsJavaListConverter(Vars.getAllFromValueBoxes(stmt.getUseBoxes()).toSeq()).asJava())) {
-                        cs.add(Constraints.le(variable(env.get(v)), variable(newPc)));
+                        cs.add(Constraints.le(CTypes.<Level>variable(env.get(v)), CTypes.<Level>variable(newPc)));
                 }
                 setResult(cs);
             }
@@ -116,7 +115,7 @@ public class MethodBodyTyping<Level> {
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
 
 
-        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g), g, localDefs, postdoms, s, BodyTypingResult.fromEnv(csets, env), signatures, fields, pc, Collections.emptySet(), Option.empty());
+        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g), g, localDefs, postdoms, s, BodyTypingResult.fromEnv(csets, env), signatures, fields, pc, Collections.<Pair<TypeVar, Unit>>emptySet(), Option.<Unit>empty());
 
         return r;
     }
@@ -181,11 +180,11 @@ public class MethodBodyTyping<Level> {
             r = generateResult(sTvars, g, localDefs, postdoms, startOfCast, previous, signatures, fields, newPc, visited, Option.apply(endOfCast));
 
             // add constraints: oldPc <= source, dest <= newPc, dest <= {effects}
-            Constraint<Level> srcConstraint = Constraints.le(variable(topLevelContext), literal(cxCast.sourceType));
-            Constraint<Level> destConstraint = Constraints.le(literal(cxCast.destType), variable(newPc));
+            Constraint<Level> srcConstraint = Constraints.<Level>le(CTypes.<Level>variable(topLevelContext), literal(cxCast.sourceType));
+            Constraint<Level> destConstraint = Constraints.<Level>le(literal(cxCast.destType), CTypes.<Level>variable(newPc));
             List<Constraint<Level>> additionalConstraintsList = new LinkedList<>(Arrays.asList(srcConstraint, destConstraint));
             for (TypeDomain.Type<Level> e : r.getEffects()) {
-                additionalConstraintsList.add(Constraints.le(literal(cxCast.destType), literal(e)));
+                additionalConstraintsList.add(Constraints.<Level>le(literal(cxCast.destType), literal(e)));
             }
             Map<Constraint<Level>, TypeVarTags.TypeVarTag> tagMap = new HashMap<>();
             for (Constraint<Level> c : additionalConstraintsList) {
@@ -218,8 +217,8 @@ public class MethodBodyTyping<Level> {
             // a branching statement. When the graph is checked with Assumptions.validUnitGraph then result should never be null
             Option<Unit> end = postdoms.getDominators(s).equals(Collections.singletonList(s)) ?
                     // if we are our only postdom, then there will be no join point, i.e. no point where we can lower pc again. This property is ensured ruling out that an if is an exit node (in Assumptions.validUnitGraph)
-                    Option.empty() :
-                    Option.apply(postdoms.getImmediateDominator(s));
+                    Option.<Unit>empty() :
+                    Option.<Unit>apply(postdoms.getImmediateDominator(s));
 
 
             // get condition constrains and the new context

@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Symbols.methodParameters;
 
 /**
@@ -149,16 +148,16 @@ public class MethodTyping<Level> {
         Environment init = Environments.forParamMap(tvars, paramMapping);
 
 
-        BodyTypingResult<Level> r =
+        final BodyTypingResult<Level> r =
                 new MethodBodyTyping<>(method, tvars, csets, cstrs, casts, signatures, fields).generateResult(method.retrieveActiveBody(), tvars.topLevelContext(), init);
 
         // Symbol map is the parameter map plus an entry that maps "@ret" to "ret"
         Map<Symbol<Level>, CType<Level>> symbolMapping = new HashMap<>();
 
         for (Map.Entry<Param<Level>, TypeVar> e : paramMapping.entrySet()) {
-            symbolMapping.put(e.getKey(), variable(e.getValue()));
+            symbolMapping.put(e.getKey(), CTypes.<Level>variable(e.getValue()));
         }
-        symbolMapping.put(Symbol.ret(), variable(tvars.ret()));
+        symbolMapping.put(Symbol.<Level>ret(), CTypes.<Level>variable(tvars.ret()));
 
         ConstraintSet<Level> sigConstraints =
                 csets.fromCollection(JavaConversions.asJavaCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).toSeq()));
@@ -176,12 +175,16 @@ public class MethodTyping<Level> {
                             bodyConstraints.refines(sigConstraints),
                             signatureToCheck.effects,
                             r.getEffects(), r.getEffects().refines(cstrs.types(), signatureToCheck.effects).missingEffects,
-                            () -> {
-                                List<ConflictCause<Level>> causes = r.getConstraints().findConflictCause(r.getTags());
-                                if (causes.isEmpty()) {
-                                    Logger.getGlobal().info(r.getTags().toString());
+                            new ConflictResult<Level>() {
+                                @Override
+                                public List<ConflictCause<Level>> get() {
+                                    List<ConflictCause<Level>> causes =
+                                            r.getConstraints().findConflictCause(r.getTags());
+                                    if (causes.isEmpty()) {
+                                        Logger.getGlobal().info(r.getTags().toString());
+                                    }
+                                    return causes;
                                 }
-                                return causes;
                             });
     }
 

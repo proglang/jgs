@@ -1,15 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import scala.Option;
 
 import java.util.*;
-import java.util.stream.Stream;
-
-import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 
 /**
  * Environments: immutable maps from Locals to type variables.
@@ -20,10 +19,10 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.variable;
 public class Environment {
 
     public static class JoinResult<Level> {
-        public final Stream<Constraint<Level>> constraints;
+        public final List<Constraint<Level>> constraints;
         public final Environment env;
 
-        public JoinResult(Stream<Constraint<Level>> constraints, Environment env) {
+        public JoinResult(List<Constraint<Level>> constraints, Environment env) {
             this.constraints = constraints;
             this.env = env;
         }
@@ -41,15 +40,16 @@ public class Environment {
      */
     public static <Level> JoinResult<Level> join(TypeVars tvars, Environment r1, Environment r2) {
         Map<Var<?>, TypeVar> joinedEnv = new HashMap<>();
-        Stream.Builder<Constraint<Level>> cs = Stream.builder();
-        r1.env.entrySet().stream().forEach( e -> {
+        List<Constraint<Level>> cs = new LinkedList<>();
+        for (Map.Entry<Var<?>, TypeVar> e : r1.env.entrySet()) {
             Var<?> k = e.getKey();
             TypeVar v1 = e.getValue();
             if (r2.env.containsKey(k)) {
                 TypeVar v2 = r2.get(k);
                 if (!v1.equals(v2)) {
                     TypeVar vNew = tvars.join(v1, v2);
-                    Stream.<Constraint<Level>>of(Constraints.le(variable(v1), variable(vNew)), Constraints.le(variable(v2), variable(vNew))).forEach(cs);
+                    cs.add(Constraints.<Level>le(CTypes.<Level>variable(v1), CTypes.<Level>variable(vNew)));
+                    cs.add(Constraints.<Level>le(CTypes.<Level>variable(v2), CTypes.<Level>variable(vNew)));
                     joinedEnv.put(k, vNew);
                 } else {
                     joinedEnv.put(k, v1);
@@ -57,14 +57,14 @@ public class Environment {
             } else {
                 joinedEnv.put(k, v1);
             }
-        });
-        r2.env.entrySet().stream().forEach(e -> {
+        }
+        for (Map.Entry<Var<?>, TypeVar> e : r2.env.entrySet()) {
             Var<?> k = e.getKey();
             if (!r1.env.containsKey(k)) {
                 joinedEnv.put(k, e.getValue());
             }
-        });
-        return new JoinResult<>(cs.build(), Environments.fromMap(joinedEnv));
+        }
+        return new JoinResult<>(cs, Environments.fromMap(joinedEnv));
     }
 
     public Environment(Map<Var<?>, TypeVar> env) {
@@ -77,7 +77,7 @@ public class Environment {
     }
 
     public Environment add(Var<?> k, TypeVar v) {
-        return new Environment(this.env, Collections.singletonMap(k, v));
+        return new Environment(this.env, Collections.<Var<?>, TypeVar>singletonMap(k, v));
     }
 
     public Environment add(Environment other) {
@@ -85,12 +85,15 @@ public class Environment {
     }
 
     public TypeVar get(Var<?> local) {
-        return this.tryGet(local)
-                   .orElseThrow(() -> new NoSuchElementException(local.toString()));
+        Option<TypeVar> mv = this.tryGet(local);
+        if (mv.isEmpty()) {
+            throw new NoSuchElementException(local.toString());
+        }
+        return mv.get();
     }
 
-    public Optional<TypeVar> tryGet(Var<?> local) {
-        return Optional.ofNullable(this.env.get(local));
+    public Option<TypeVar> tryGet(Var<?> local) {
+        return Option.apply(this.env.get(local));
     }
 
     public Map<Var<?>, TypeVar> debug_getMap() {

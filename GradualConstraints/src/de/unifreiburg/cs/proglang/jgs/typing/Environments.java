@@ -5,10 +5,8 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 
@@ -20,7 +18,7 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 public class Environments {
     
     public static Environment makeEmpty() {
-        return new Environment(Collections.emptyMap());
+        return new Environment(Collections.<Var<?>, TypeVar>emptyMap());
     }
 
     public static Environment fromMap(Map<Var<?>, TypeVars.TypeVar> m) {
@@ -29,9 +27,10 @@ public class Environments {
 
 
     public static <Level> Environment forParamMap(TypeVars tvars, Map<Symbol.Param<Level>, TypeVar> symbolMapping) {
-        Function<Map.Entry<Symbol.Param<Level>, TypeVar>, Var<?>> getKey = e -> Var.fromParam(e.getKey());
-        Stream<Map.Entry<Symbol.Param<Level>, TypeVar>> s = symbolMapping.entrySet().stream();
-        Map<Var<?>, TypeVar> m = s.collect(Collectors.toMap(getKey, Map.Entry::getValue));
+        Map<Var<?>, TypeVar> m = new HashMap<>();
+        for (Map.Entry<Symbol.Param<Level>, TypeVar> e : symbolMapping.entrySet()) {
+            m.put(Var.fromParam(e.getKey()), e.getValue());
+        }
        return fromMap(m);
     }
 }

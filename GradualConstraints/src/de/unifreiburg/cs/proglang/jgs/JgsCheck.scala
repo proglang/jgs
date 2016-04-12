@@ -297,6 +297,7 @@ object JgsCheck {
     }
 
     private def parseConstraints(constraintStrings: List[String]): List[SigConstraint[Level]] =
+    // TODO: good error message when parsing fails
       constraintStrings.map(s => new ConstraintParser(types.typeParser()).parseConstraints(s).get)
 
     private def parseEffects(effectStrings: List[String]): List[Type[Level]] =
