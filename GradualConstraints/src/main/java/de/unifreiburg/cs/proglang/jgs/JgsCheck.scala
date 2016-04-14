@@ -24,6 +24,7 @@ import scala.collection.JavaConversions._
 import scala.io.Source
 import scala.util.control.Exception.catching
 import scala.util.{Failure, Success, Try}
+import scala.util.control.Exception._
 
 object JgsCheck {
 
@@ -54,6 +55,14 @@ object JgsCheck {
 
   val log: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.log")
   val debugLog: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.debug")
+
+  def die(msg : String, exitCode : Int = -1): Unit = {
+    System.err.println(msg)
+    System.err.println(
+            "Soot'classpath is: " + Scene.v().getSootClassPath + "\n" +
+            "Working Directory is " + System.getProperty("user.dir"))
+    System.exit(exitCode)
+  }
 
   def main(args: Array[String]): Unit = {
     val defOpt = Opt(
@@ -106,14 +115,18 @@ object JgsCheck {
         val s: Scene = Scene.v()
         log.info(s"Soot classpath: ${s.getSootClassPath}")
 
-        s.loadNecessaryClasses()
+        try {
+          s.loadNecessaryClasses()
+        } catch {
+          // TODO: check if this loading error can be detected earlier and more precicely.
+          case e : NullPointerException =>
+            die("ERROR loading classes to analyze. Aborting.\n"
+                + s"  maybe the source tree is wrong? (${sourcetree.getPath}) ")
+        }
         log.info(f"Number of classes found: ${s.getClasses.size()}%d")
         // Abort when no classes where found
         if (s.getClasses.isEmpty) {
-          System.err.println("WARNING: did not find any classes to type-check. Aborting \n" +
-            "Soot'classpath is: " + s.getSootClassPath + "\n" +
-            "Working Directory is " + System.getProperty("user.dir"))
-          System.exit(-1)
+          die("WARNING: did not find any classes to type-check. Aborting \n")
         }
 
         val classes: List[SootClass] = s.getApplicationClasses.toList
