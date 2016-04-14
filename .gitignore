@@ -22,6 +22,8 @@ lib/
 # For IDEA
 
 ## compilation output
+*.iml
+.idea/
 out/
 bin/
 
