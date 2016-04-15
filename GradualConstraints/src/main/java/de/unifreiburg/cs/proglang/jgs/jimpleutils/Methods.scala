@@ -70,9 +70,4 @@ object Methods {
     }
     return extractAnntotation(annotationType, extract, tags).toList.asJava
   }
-
-  def extractSignatureFromTags[Level](parser: ConstraintParser[Level], tags: java.util.List[Tag]): Signature[Level] = {
-    val atags = tags.asScala.filter(t => t.isInstanceOf[AnnotationTag]).map((t : Tag) => t.asInstanceOf[AnnotationTag])
-    throw new RuntimeException("Not implemented")
-  }
 }

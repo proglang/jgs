@@ -5,6 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import org.apache.commons.lang3.tuple.Pair;
 import scala.Option;
 import soot.Body;
@@ -68,7 +69,7 @@ public class MethodBodyTyping<Level> {
 
             @Override
             public void defaultCase(Object obj) {
-                throw new RuntimeException("Case not implemented: " + obj);
+                throw new NotImplemented(String.format("Branching statement %s not supported yet.", obj));
             }
 
             @Override

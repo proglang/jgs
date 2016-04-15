@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
 import de.unifreiburg.cs.proglang.jgs.util.FunctionsForJava;
+import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import scala.Option;
 import scala.collection.JavaConverters;
 import soot.*;
@@ -72,7 +73,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     }
 
     @Override public void defaultCase(Object v) {
-        throw new RuntimeException(String.format("Case for %s NOT IMPLEMENTED", v.toString()));
+        throw new NotImplemented(String.format("%s not supported as a RHS-expression yet.", v.toString()));
     }
 
     /*

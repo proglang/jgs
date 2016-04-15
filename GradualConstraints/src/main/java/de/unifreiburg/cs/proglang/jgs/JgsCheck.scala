@@ -14,6 +14,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
 import de.unifreiburg.cs.proglang.jgs.signatures._
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.typing.{ClassHierarchyTyping, MethodTyping, TypingAssertionFailure, TypingException}
+import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import org.json4s._
 import org.json4s.native.JsonMethods.{parse => parseJson}
 import scopt.OptionParser
@@ -302,7 +303,12 @@ object JgsCheck {
       println("Checking method bodies: ")
       for (c <- classes if !c.isInterface; m <- c.getMethods if !m.isAbstract) {
         val methodTyping = new MethodTyping(csets, cstrs, casts)
-        val mresult = catching(classOf[TypingException], classOf[TypingAssertionFailure]).either(methodTyping.check(new TypeVars(), signatures, fieldTable, m))
+        // TODO: clarify the difference between TypingException and TypingAssertionFailure
+        val mresult = catching(classOf[TypingException],
+                               classOf[TypingAssertionFailure],
+                               classOf[NotImplemented]).either {
+          methodTyping.check(new TypeVars(), signatures, fieldTable, m)
+        }
         val resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
         println(s"* Type checking method ${m.toString}: ${resultReport}")
         println()

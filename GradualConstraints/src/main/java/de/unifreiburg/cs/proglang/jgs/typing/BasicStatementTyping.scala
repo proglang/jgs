@@ -6,6 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
 import de.unifreiburg.cs.proglang.jgs.signatures._
 import de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv
+import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import soot._
 import soot.jimple._
 import soot.toolkits.scalar.LocalDefs
@@ -87,7 +88,7 @@ class BasicStatementTyping[LevelT](
         }
 
         override def defaultCase(v: AnyRef) {
-          throw new RuntimeException("Effect extraction not implemented for case: " + v.toString)
+          throw new NotImplemented("Effect extraction not implemented for case: " + v.toString)
         }
       }
       rhs.apply(effectCases)
@@ -272,7 +273,7 @@ class BasicStatementTyping[LevelT](
         caseFieldDefinition((lhs.asInstanceOf[FieldRef]), stmt)
       }
       else {
-        throw new TypingAssertionFailure("Extracting write locations for statement " + stmt + " is not implemented!")
+        throw new TypingAssertionFailure("Extracting write locations for statement " + stmt + " is not supported yet.")
       }
     }
 
@@ -335,7 +336,7 @@ class BasicStatementTyping[LevelT](
     }
 
     override def defaultCase(obj: AnyRef) {
-      throw new RuntimeException("Case not implemented: " + obj)
+      throw new NotImplemented("Typing basic statement $obj is not supported yet")
     }
 
     override def getResult: BodyTypingResult[LevelT] = {
