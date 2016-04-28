@@ -1,0 +1,7 @@
+>> APPLICATION CLASSES VS LIBRARY CLASSES <<
+Application classes:
+  - explicitly stated on command line
+  - classes, that reside in a directory referred to via --process-dir
+  
+ --app <- process all classes referenced by these classes. But not of java.* or com.sun.* packages
+   -> if you wish them too, use -i

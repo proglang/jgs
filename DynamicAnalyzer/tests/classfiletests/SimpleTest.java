@@ -21,9 +21,11 @@ public class SimpleTest{
     try {
       ClassRunner.runClass2("Simple");
     } catch (Exception e) {
-      assertEquals(e.getCause().getClass(), IllegalFlowException.class);
+      assertEquals(e.getCause().getClass(),
+    	        IllegalFlowException.class);
       logger.info("Successfully found an illegal flow");
     }
+
     logger.info("Finished executing main.testclasses.Simple");
   }
 }

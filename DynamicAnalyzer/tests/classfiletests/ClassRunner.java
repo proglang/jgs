@@ -1,5 +1,7 @@
 package classfiletests;
 
+import utils.logging.L1Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
-import utils.logging.L1Logger;
 
 
 public class ClassRunner {

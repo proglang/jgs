@@ -25,13 +25,13 @@ public class ExampleFailScenarios {
 		int x = 0;
 		int high = 0;
 		
-		hs.checkCondition("int_high");
+		hs.checkCondition(123, "int_high");
 		if(high == 0) {
 			
 			hs.setLevelOfLocal("int_x");
 			x = 1;
 			
-			hs.exitInnerScope();
+			hs.exitInnerScope(123);
 		}
 		
 		hs.close();

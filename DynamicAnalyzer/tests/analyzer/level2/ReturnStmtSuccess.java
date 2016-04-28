@@ -30,7 +30,7 @@ public class ReturnStmtSuccess {
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addObjectToObjectMap(this);
-		hs.setLocalPC(SecurityLevel.LOW);
+		hs.pushLocalPC(SecurityLevel.LOW, 123);
 		hs.addLocal("int_res1");
 		hs.addLocal("int_res2");
 		hs.addLocal("int_res3");
@@ -49,20 +49,27 @@ public class ReturnStmtSuccess {
 		res1 = tsc.methodWithConstReturn();
 		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res1");
+		// After reading the returnlevel should be set to HIGH again
+		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 		
 		res2 = tsc.methodWithLowLocalReturn();
 		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res2");
+		// After reading the returnlevel should be set to HIGH again
+		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 		
 		res3 = tsc.methodWithHighLocalReturn();
 		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res3");
+		// After reading the returnlevel should be set to HIGH again
+		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
 
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res1"));
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res2"));
 		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_res3"));
 		
+		hs.popLocalPC(123);
 	    hs.close();	
 	    
 	    LOGGER.log(Level.INFO, "RETURN TEST FINISHED");

@@ -58,11 +58,12 @@ public class ArraysSuccess {
 		 * x = Join(i,a, lpc, a_i)
 		 */
 		int i = 2;
-		hs.addLevelOfArrayField(a, i);
+		hs.addLevelOfArrayField(a, Integer.toString(i));
 		hs.addLevelOfLocal("int_i");
 		hs.addLevelOfLocal("String[]_a");
 		hs.addLocal("String_x");
 		hs.setLevelOfLocal("String_x");
+		@SuppressWarnings("unused")
 		String x = a[i];
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("String_x"));
@@ -94,7 +95,7 @@ public class ArraysSuccess {
 		 * level(a_i) = join(gpc,local, i)
 		 */
 		int i = 2;
-		hs.setLevelOfArrayField(a, i, "String[]_a", "int_i");
+		hs.setLevelOfArrayField(a, Integer.toString(i), "String[]_a", "int_i");
 		a[i] = "3";
 		
 		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(a, Integer.toString(i)));

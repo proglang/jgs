@@ -11,10 +11,6 @@ import utils.logging.L1Logger;
 import java.util.logging.Logger;
 
 
-/**
- * 
- * @author koenigr
- */
 public class ArrayRefTest {
 
   Logger logger = L1Logger.getLogger();
@@ -22,12 +18,15 @@ public class ArrayRefTest {
   @Test
   public void test() {
     logger.info("Start of executing main.testclasses.ArrayRef");
+    Exception catchedException = null;
     try {
       ClassRunner.runClass2("ArrayRef");
     } catch (Exception e) {
-      assertEquals(e.getCause().getClass(), IllegalFlowException.class);
+      catchedException = e;
       logger.info("Successfully found an illegal flow");
     }
+    assertEquals(catchedException.getCause().getClass(),
+        IllegalFlowException.class);
     logger.info("Finished executing main.testclasses.ArrayRef");
   }
 }

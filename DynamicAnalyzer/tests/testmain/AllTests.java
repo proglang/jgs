@@ -1,5 +1,6 @@
 package testmain;
 
+import analyzer.level1.DominatorFinderTest;
 import analyzer.level1.JimpleInjectorTest;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
@@ -9,7 +10,6 @@ import analyzer.level2.ForStmtFail;
 import analyzer.level2.ForStmtSuccess;
 import analyzer.level2.IfStmtFail;
 import analyzer.level2.IfStmtSuccess;
-import analyzer.level2.InternalMethods;
 import analyzer.level2.InvokeSuccess;
 import analyzer.level2.MultiArrayFail;
 import analyzer.level2.MultiArraySuccess;
@@ -25,7 +25,7 @@ import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
 import classfiletests.ArrayRefTest;
 import classfiletests.ExtClassesTest;
-import classfiletests.GotoStmtTest;
+import classfiletests.FieldsSuccessTest;
 import classfiletests.IfStmtTest;
 import classfiletests.InvokeInternalMethodTest;
 import classfiletests.InvokeLibMethodTest;
@@ -41,6 +41,7 @@ import tests.ExampleFailScenarios;
 
 @RunWith(Suite.class)
 @SuiteClasses({ 
+    // Tests for public HandleStmt methods
     LocalMapTest.class, 
     AssignLocalsSuccess.class,
     AssignLocalsFail.class,
@@ -64,20 +65,25 @@ import tests.ExampleFailScenarios;
 
     ExampleFailScenarios.class,
     analyzer.level2.storage.ObjectMapTest.class, 
+    
+    // Tests for level 1
     JimpleInjectorTest.class, 
+    DominatorFinderTest.class,
 
-    InternalMethods.class,
+    // Tests for protected HandleStmt methods
     ObjectMapTest.class,
     LocalMapTest.class,
 
+    // Tests for vaild bytecode of testclasses
     ArrayRefTest.class,
     ExtClassesTest.class,
-    GotoStmtTest.class,
+    
+    FieldsSuccessTest.class,
     IfStmtTest.class,
     InvokeInternalMethodTest.class,
     InvokeLibMethodTest.class,
     MulArrayTest.class,
-    SimpleTest.class
+    SimpleTest.class,
     })
 
 public class AllTests {

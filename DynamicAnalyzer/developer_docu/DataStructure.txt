@@ -1,0 +1,18 @@
+LOCALS are stored in LocalMap as a String. The String for a local can be retrieved with getSignatureForLocal(..)
+INSTANCEFIELDS are stored in ObjectMap as String (getSignatureForField(..))  with the containing object as key
+STATICFIELDS are stored in ObjectMap as String (getSignatureForField). The key is the class-object.
+ARRAYS are objects (the key) in the object-map. The elements(array-fields) are stored as index.toString
+
+
+OBJECTMAP
+private static ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>> innerMap;
+private static LinkedList<SecurityLevel> globalPC;
+private static ObjectMap instance = null;
+private static SecurityLevel actualReturnLevel;
+private static ArrayList<SecurityLevel> actualArguments;
+private static SecurityLevel assignStmtLevel = SecurityLevel.UNDEF;
+
+LOCALMAP
+private LinkedList<SecurityLevel> localPC = new LinkedList<SecurityLevel>();
+private HashMap<String, SecurityLevel> lMap = new HashMap<String, SecurityLevel>();
+private SecurityLevel returnLevel = SecurityLevel.LOW;

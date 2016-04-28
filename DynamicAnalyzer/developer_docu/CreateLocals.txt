@@ -1,0 +1,6 @@
+  >> CREATE A NEW STRING LOCAL
+  static Local local_for_Strings = Jimple.v().newLocal(
+      "local_for_Strings", RefType.v("java.lang.String"));
+      
+  >> ADD IT TO THE LOCALS. THE Chain<Local> can be retrieved from the methods body
+  locals.add(local_for_Strings);

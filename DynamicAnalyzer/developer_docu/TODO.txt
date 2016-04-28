@@ -1,28 +1,36 @@
 Start with:
-Try to run ArrayRefTest successfully
---- JimpleInjector.setLevelOfAssignStmt adjust the method invokes. Better Comments.
---- Javadoc Comment.
+Refactor HandleStmt
 
+PROGRAMMIERUNG
+>> Run all Classtests automatically  
+>> main(arg) arg = low
+>> Add a chain for arguments of the superconstructor
+>> addLevelOfArrayField in HandleStmt fertig machen
+
+KONFIGURATION
 >> Define sootClassPath for rt.jar in Main which works globally
->> Dominator or PointsTo in if else
+>> URL = classLoader.getSystemResource
+>> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)
+
+TESTS
+>> All Unit tests should be correct
+>> Benchmarktests
+>> Add all classfiletests to testmain
+>> Fail/Success testclasses
+
+ZUM SCHLUSS
+>> konsistente variablenbezeichnung
+>> Gute Javadoc Kommentare
+>> bessere handleStmt logs
+>> Überall Fehlerchecks einbauen
 >> Remove all System.outs
 >> Check all TODOs
->> One Exception with System.out and one without
 >> Exit Code not 0
->> All Unit tests should be correct
->> 	public static void makeFieldHigh(Object o, String signature, Unit pos) {}
-	public static void makeFieldLow(Object o, String signature, Unit pos) {}
-	public static void makeArrayFieldHigh(Object o, String index, Unit pos) {
-	public static void makeArrayFieldLow(Object o, String index, Unit pos) {
->> makeHigh
->> Benchmarktests
->> URL = classLoader.getSystemResource
->> Standard von Return sollte High sein, bei Return const auf Low setzen
->> Klassen zum Laufen bringen
->> main(arg) arg = low
->> Wenn alle Argumente erst in einer Local gespeichert werden,ist makeFieldHigh... wahrscheinlich gar nicht nötig??
->> BCEL um Bytecode zu validieren
->> Add a chain for arguments of the superconstructor
+>> InternalAnalyzerException richtige Fehlermeldung
+>> thorough refactoring of handleStmt.
+>> Move more parts to visitorhelper, HandleStmtUtils??
 
-
-Fragen:
+<<<<<<<<<  FRAGEN >>>>>>>>>>
+Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?
+	Oder ist die Wahrscheinlichkeit gering genug? Mehr Daten zusätzlich zu Hashwert?
+What to do with length expression?

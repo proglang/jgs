@@ -1,5 +1,5 @@
 package main.testclasses;
 
-public class GotoStmt {
+public class FieldWriteFail {
 
 }

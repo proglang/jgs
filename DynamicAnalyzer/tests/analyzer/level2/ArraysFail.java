@@ -33,7 +33,7 @@ public class ArraysFail {
 		hs.addLocal("String[]_a");
 		int i = 2;
 		hs.addLocal("int_i");
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 12);
 		
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
@@ -43,10 +43,11 @@ public class ArraysFail {
 		 * check x >= lpc
 		 * level(x) = (i, a, gpc, a_i)
 		 */
-		hs.addLevelOfArrayField(a, i);
+		hs.addLevelOfArrayField(a, Integer.toString(i));
 		hs.addLevelOfLocal("int_i");
 		hs.addLevelOfLocal("String[]_a");
 		hs.setLevelOfLocal("String_x");
+		@SuppressWarnings("unused")
 		String x = a[i];
 		
 		

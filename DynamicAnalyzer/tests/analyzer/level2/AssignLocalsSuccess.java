@@ -1,22 +1,21 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.SecurityLevel;
+import org.junit.Before;
+import org.junit.Test;
+import tests.testClasses.TestSubClass;
+import utils.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utils.logging.L2Logger;
-import tests.testClasses.TestSubClass;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
-
 public class AssignLocalsSuccess {
 	
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
@@ -26,7 +25,7 @@ public class AssignLocalsSuccess {
 	@Test
 	public void assignConstantToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x", SecurityLevel.LOW);
@@ -42,18 +41,19 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfLocal("int_x")); // x = HIGH, lpc = LOW
 		
 		hs.makeLocalHigh("int_x");
-		hs.setLocalPC(SecurityLevel.HIGH);
-		assertEquals(SecurityLevel.HIGH, hs.setLevelOfLocal("int_x")); // x = HIGH, lpc = HIGH
+		hs.pushLocalPC(SecurityLevel.HIGH, 123);
+		assertEquals(SecurityLevel.HIGH, hs.setLevelOfLocal("int_x")); //x = HIGH,lpc = HIGH
 		
-	    hs.close();
+		hs.popLocalPC(123);
+		hs.close();
 
-	    LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignLocalsToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("int_x");
@@ -66,7 +66,7 @@ public class AssignLocalsSuccess {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
-		hs.setLocalPC(SecurityLevel.LOW);
+		hs.pushLocalPC(SecurityLevel.LOW, 123);
 		// x = LOW, lpc = LOW
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_x"));
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
@@ -86,7 +86,7 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_z"));
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfLocal("int_x"));
 		
-		hs.setLocalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.HIGH, 123);
 		hs.makeLocalHigh("int_x");
 		// x = HIGH, lpc = HIGH
 		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_x"));
@@ -97,15 +97,17 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_z"));
 		assertEquals(SecurityLevel.HIGH, hs.setLevelOfLocal("int_x"));
 		
-	    hs.close();	
+		hs.popLocalPC(123);
+		hs.popLocalPC(123);
+		hs.close();	
 
-	    LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignFieldToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
 
@@ -140,15 +142,15 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.LOW, hs.addLevelOfField(this, "String_field"));
 		assertEquals(SecurityLevel.LOW, hs.setLevelOfLocal("String_local"));
 		
-	    hs.close();	
+		hs.close();	
 
-	    LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignNewObjectToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		hs.addLocal("TestSubClass_xy");
@@ -169,16 +171,16 @@ public class AssignLocalsSuccess {
 		hs.setLevelOfLocal("TestSubClass_xy");
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("TestSubClass_xy"));
 		
-	    hs.close();	
+		hs.close();	
 
-	    LOGGER.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL TEST FINISHED");
 	}
 	
 	@SuppressWarnings("unused")
 	@Test
 	public void assignMethodResultToLocal() {
 
-		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -209,16 +211,16 @@ public class AssignLocalsSuccess {
 		hs.assignReturnLevelToLocal("int_res");
 		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_res"));
 		
-	    hs.close();	
+		hs.close();	
 	    
 
-	    LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
 	@Test
 	public void assignArgumentToLocal() {
 
-		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -241,17 +243,17 @@ public class AssignLocalsSuccess {
 		hs.assignArgumentToLocal(2, "int_res");
 		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_res"));
 		
-	    hs.close();	
+		hs.close();	
 	    
 
-	    LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
 	
 	@SuppressWarnings("unused")
 	@Test
 	public void assignConstantAndLocalToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL SUCCESS TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL SUCCESS TEST STARTED");
 				
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
@@ -268,7 +270,7 @@ public class AssignLocalsSuccess {
 		
 		hs.close();
 				
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL SUCCESS TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL SUCCESS TEST FINISHED");
 	}
 
 }
