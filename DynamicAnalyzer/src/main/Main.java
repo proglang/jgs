@@ -7,6 +7,7 @@ import soot.Transform;
 import utils.logging.L1Logger;
 import utils.parser.ArgumentParser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -42,10 +43,17 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		String javaHome = System.getProperty("java.home");
+		if (javaHome == null) {
+		    throw new IllegalStateException("System property `java.home' is undefined");
+		}
     	
+		// TODO: specify the standard library classpath as a command line argument
 		Scene.v().setSootClassPath(Scene.v().getSootClassPath()
-				+ ":.:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/"
-				+ "usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar");
+				+ ":.:"
+				+ new File(javaHome, "lib/jce.jar").toString()
+				+ new File(javaHome, "lib/rt.jar").toString());
 		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
