@@ -10,5 +10,9 @@ import soot.jimple.Stmt;
  */
 public interface VarTyping<Level> {
 
-    TypeView<Level> get(Stmt s, Local l);
+    /**
+     *
+     * Given an @{code instantiation}, return the type for local @{code l} at statement @{code s}.
+     */
+    TypeView<Level> get(Instantiation<Level> instantiation, Stmt s, Local l);
 }

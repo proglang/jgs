@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
+import soot.baf.Inst;
 import soot.jimple.Stmt;
 
 /**
@@ -9,7 +10,11 @@ import soot.jimple.Stmt;
  */
 public interface CxTyping<Level> {
 
-    TypeView<Level> get(Stmt s);
+    /**
+     *
+     * Given an @{code instantiation}, return the type for local @{code l} at statement @{code s}.
+     */
+    TypeView<Level> get(Instantiation<Level> instantiation, Stmt s);
 
 
 }
