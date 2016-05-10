@@ -1,6 +1,6 @@
 <classpath>
-  <classpathentry kind="src" path="src/main/java"/>
-  <classpathentry kind="src" path="/GradualConstraints_InstrumentationSupport" exported="true" combineaccessrules="false"/>
+  <classpathentry kind="src" path="src/test/java"/>
+  <classpathentry kind="src" path="/GradualConstraints" exported="true" combineaccessrules="false"/>
   <classpathentry kind="lib" path="../lib/soot-2.5.0.jar"/>
   <classpathentry kind="con" path="org.scala-ide.sdt.launching.SCALA_CONTAINER"/>
   <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.4.jar"/>
@@ -20,6 +20,12 @@
   <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/org.bitbucket.inkytonik.dsprofile/dsprofile_2.11/jars/dsprofile_2.11-0.4.0.jar"/>
   <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/org.rogach/scallop_2.11/jars/scallop_2.11-0.9.5.jar"/>
   <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/jline/jline/jars/jline-2.12.jar"/>
+  <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/org.scalactic/scalactic_2.11/bundles/scalactic_2.11-2.2.6.jar"/>
+  <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/com.novocode/junit-interface/jars/junit-interface-0.11.jar"/>
+  <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/junit/junit/jars/junit-4.11.jar"/>
+  <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.3.jar"/>
+  <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/org.scala-sbt/test-interface/jars/test-interface-1.0.jar"/>
+  <classpathentry kind="lib" path="/home/fennell/.ivy2/cache/org.scalatest/scalatest_2.11/bundles/scalatest_2.11-2.2.6.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="output" path="bin"/>
 </classpath>

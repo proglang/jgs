@@ -1,0 +1,119 @@
+/home/fennell/.nix-profile/lib/openjdk/bin/java -Didea.launcher.port=7533 -Didea.launcher.bin.path=/nix/store/9zmr9a65kyq30b5sy5ckmj2gsy4ps3h7-idea-community-15.0.1/idea-community-15.0.1/bin -Dfile.encoding=UTF-8 -classpath /home/fennell/.nix-profile/lib/openjdk/jre/lib/jsse.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/rt.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/resources.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/management-agent.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/charsets.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/jce.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/zipfs.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/sunec.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/nashorn.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/sunpkcs11.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/jaccess.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/sunjce_provider.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/cldrdata.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/dnsns.jar:/home/fennell/.nix-profile/lib/openjdk/jre/lib/ext/localedata.jar:/home/fennell/uni/gradual-java/github/GradualConstraints/test-bin:/home/fennell/uni/gradual-java/github/GradualConstraints/bin:/home/fennell/uni/gradual-java/workspace/junit-4.12.jar:/home/fennell/uni/gradual-java/workspace/jasmin-2.5.0/lib/jasminclasses-2.5.0.jar:/home/fennell/uni/gradual-java/workspace/polyglot-1.3.5/lib/polyglot.jar:/home/fennell/uni/gradual-java/workspace/soot-2.5.0/lib/soot-2.5.0.jar:/home/fennell/uni/gradual-java/workspace/hamcrest-core-1.3.jar:/home/fennell/uni/gradual-java/workspace/commons-lang3-3.4/commons-lang3-3.4.jar:/nix/store/9zmr9a65kyq30b5sy5ckmj2gsy4ps3h7-idea-community-15.0.1/idea-community-15.0.1/lib/junit-4.12.jar:/home/fennell/uni/gradual-java/workspace/parsecj-0.2.jar:/home/fennell/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.7.jar:/home/fennell/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.7.jar:/home/fennell/uni/gradual-java/workspace/kiama_2.11-1.8.0.jar:/nix/store/9zmr9a65kyq30b5sy5ckmj2gsy4ps3h7-idea-community-15.0.1/idea-community-15.0.1/lib/idea_rt.jar com.intellij.rt.execution.application.AppMain Main
+Application classes and methods:
+pkg.Scratch
+ <pkg.Scratch: int answer>
+ security level: PUB
+ <pkg.Scratch: int high>
+ security level: [HIGH]
+ <pkg.Scratch: java.lang.Object highObject>
+ security level: [HIGH]
+ <pkg.Scratch: int aStatic>
+ security level: PUB
+ <pkg.Scratch: void <clinit>()>
+  sig:C:[@return LE @return], E:{[]}
+  active body? no
+ <pkg.Scratch: int aStaticMethod(int)>
+  sig:C:[@param0 LE [LOW], @param0 LE @return, @param0 LE @param0, @return LE @return], E:{[]}
+  active body? no
+ <pkg.Scratch: int returnAStatic()>
+  sig:C:[@return LE @return], E:{[]}
+  active body? no
+ <pkg.Scratch: int aVirtualMethod(int)>
+  sig:C:[@param0 LE @return, @param0 LE @param0, @return LE @return], E:{[]}
+  active body? no
+ <pkg.Scratch: int aVirtualMethodWithForgottenImplicitFlows(int)>
+  sig:C:[PUB LE @return, @param0 LE @param0, @return LE @return], E:{[]}
+  active body? no
+ <pkg.Scratch: int aVirtualMethodUsingThis(int)>
+  sig:C:[@param0 LE @return, @param0 LE @param0, @return LE @return], E:{[]}
+  active body? no
+ <pkg.Scratch: int aVirtualMethodUsingThisWhereSignatureWasForgotten(int)>
+  sig:C:[@param0 LE @param0, @return LE @return], E:{[]}
+  active body? no
+ <pkg.Scratch: void <init>()>
+  sig:C:[@return LE @return], E:{[]}
+  active body? no
+
+pkg.ScratchDerived
+ <pkg.ScratchDerived: int aVirtualMethod(int)>
+  sig:C:[? LE @return, @param0 LE @param0, @return LE @return], E:{[]}
+  active body? no
+ <pkg.ScratchDerived: void <init>()>
+  sig:C:[@return LE @return], E:{[]}
+  active body? no
+
+Checking class hierarchy: Failed:
+  methods: <pkg.ScratchDerived: int aVirtualMethod(int)>  overrides  <pkg.Scratch: int aVirtualMethod(int)>
+  constraint refinement:
+    Counterexample: {ret=PUB, $@param0=PUB}
+    Abstract: {$@param0 <= $@param0, $@param0 <= ret, ret <= ret, }
+    Concrete: {$@param0 <= $@param0, ? <= ret, ret <= ret, }
+    Conflicting: [? <= ret]
+  effect refinement: ok
+
+Checking method bodies: * Type checking method <pkg.Scratch: void <clinit>()>:  Failed for the following reasons:
+  Signature misses following effects detected in the body:  {[PUB]}
+
+* Type checking method <pkg.Scratch: int aStaticMethod(int)>:  Success 
+
+* Type checking method <pkg.Scratch: int returnAStatic()>:  Success 
+
+* Type checking method <pkg.Scratch: int aVirtualMethod(int)>:  Success 
+
+* Type checking method <pkg.Scratch: int aVirtualMethodWithForgottenImplicitFlows(int)>:  Failed for the following reasons:
+  
+  Method body violates constraints in the signature: 
+    
+      Counterexample: {ret=PUB, $@param0=?}
+      Abstract: {PUB <= ret, $@param0 <= $@param0, ret <= ret, }
+      Concrete: {$@param0 <= ret, cx <= ret, $@param0 ~ cx, cx ~ $@param0, }
+      Conflicting: [$@param0 ~ cx, $@param0 <= ret, cx ~ $@param0, cx <= ret]
+  
+  
+
+* Type checking method <pkg.Scratch: int aVirtualMethodUsingThis(int)>:  Success 
+
+* Type checking method <pkg.Scratch: int aVirtualMethodUsingThisWhereSignatureWasForgotten(int)>:  Failed for the following reasons:
+  
+  Method body violates constraints in the signature: 
+    
+      Counterexample: {ret=PUB, $@param0=?}
+      Abstract: {$@param0 <= $@param0, ret <= ret, }
+      Concrete: {PUB <= ret, $@param0 <= ret, cx <= ret, cx ~ PUB, $@param0 ~ cx, cx ~ $@param0, PUB ~ cx, $@param0 ~ PUB, PUB ~ $@param0, }
+      Conflicting: [cx ~ PUB, $@param0 ~ cx, $@param0 <= ret, cx ~ $@param0, PUB ~ cx, cx <= ret]
+  
+  
+
+* Type checking method <pkg.Scratch: void <init>()>:  Failed for the following reasons:
+  
+  
+  Signature misses following effects detected in the body:  {[[HIGH], PUB]}
+  
+
+* Type checking method <pkg.ScratchDerived: int aVirtualMethod(int)>:  Success 
+
+* Type checking method <pkg.ScratchDerived: void <init>()>:  Success 
+
+Feb 29, 2016 11:11:04 AM Main main
+
+INFO:  Checking body of method: <pkg.Scratch: java.lang.Object returnDynWithCast()>
+Feb 29, 2016 11:11:04 AM de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch caseStaticInvokeExpr
+
+INFO: Statically call: staticinvoke <de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)>(temp$0)
+Feb 29, 2016 11:11:04 AM de.unifreiburg.cs.proglang.jgs.jimpleutils.RhsSwitch caseStaticInvokeExpr
+
+INFO: Casts:
+CastsFromMapping(Map(de.unifreiburg.cs.proglang.jgs.support.Casts.castLowToDyn
+-> Conversion([LOW],?),
+de.unifreiburg.cs.proglang.jgs.support.Casts.castCxLowToDyn ->
+Conversion([LOW],?),
+de.unifreiburg.cs.proglang.jgs.support.Casts.castCxHighToDyn ->
+Conversion([HIGH],?),
+de.unifreiburg.cs.proglang.jgs.support.Casts.castHighToDyn ->
+Conversion([HIGH],?)),Map(),de.unifreiburg.cs.proglang.jgs.support.Casts.castCxEnd)
+
+de.unifreiburg.cs.proglang.jgs.support.Casts.castHighToDyn
+de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)
+
+Exception in thread "main" de.unifreiburg.cs.proglang.jgs.typing.TypingAssertionFailure: No signature found for method <de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)>
+	at de.uni
