@@ -34,7 +34,7 @@ class UserDefined private (levels : Set[Level],
     override def parse(input: String): Option[Level] = levels.find(l => l.name == input)
   }
 
-  override def le(l1: Level, l2: Level): Boolean = lt.contains(l1 -> l2)
+  override def le(l1: Level, l2: Level): Boolean = l1 == l2 || lt.contains(l1 -> l2)
 
   override def lub(l1: Level, l2: Level): Level = lubMap(l1, l2)
 
@@ -64,7 +64,7 @@ object UserDefined {
     val glbMap = bounds(levels, (l1, l2) => gt.contains((l1, l2)))
     val top = levels.find(l => levels.forall(otherL => otherL == l || lt(otherL, l)))
     if (top.isEmpty) throw new IllegalArgumentException("Unable to find top element for lattice")
-    val bottom = levels.find(l => levels.forall(otherL => otherL == l || gt(l, otherL)))
+    val bottom = levels.find(l => levels.forall(otherL => otherL == l || lt(l, otherL)))
     if (bottom.isEmpty) throw new IllegalArgumentException("Unable to find bottom element for lattice")
     new UserDefined(levels, lt, lubMap, glbMap, top.get, bottom.get)
   }
@@ -75,7 +75,7 @@ object UserDefined {
     (for {l1 <- levels
           l2 <- levels }
       yield {
-        val ubs = for (l <- levels; if le(l1, l) && le(l2, l)) yield l
+        val ubs = upperBounds(levels, le, l1, l2)
         // TODO: improve error messages... at least state that this is a "lattice-error" or something
         if (ubs.isEmpty) throw new IllegalArgumentException(s"No upper bound found for levels ${l1} and ${l2}")
         val lub = ubs.min(Ordering.fromLessThan(lt))
@@ -83,13 +83,18 @@ object UserDefined {
       }).toMap
   }
 
+  def upperBounds(levels : Set[Level], le : (Level, Level) => Boolean, l1 : Level, l2 : Level) : Set[Level] = {
+    for (l <- levels; if le(l1, l) && le(l2, l)) yield l
+  }
+
 
   def closeTransitively(edges : Set[Tuple2[Level, Level]]) : Set[Tuple2[Level, Level]] = {
-    val next =
-      for { (lhs, mid1) <- edges
+    val next : Set[Tuple2[Level, Level]] =
+      edges ++
+      (for { (lhs, mid1) <- edges
             (mid2, rhs) <- edges
             if mid1 == mid2 }
-        yield (lhs, rhs)
+        yield (lhs, rhs))
     if (next == edges) next else closeTransitively(next)
   }
 
