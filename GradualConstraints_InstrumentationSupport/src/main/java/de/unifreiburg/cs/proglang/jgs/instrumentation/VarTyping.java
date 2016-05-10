@@ -6,7 +6,7 @@ import soot.Local;
 import soot.jimple.Stmt;
 
 /**
- * A map for the variable typing in a method
+ * A map for the variable typing in a method.
  */
 public interface VarTyping<Level> {
 

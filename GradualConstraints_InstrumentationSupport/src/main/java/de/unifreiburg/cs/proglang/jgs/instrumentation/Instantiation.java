@@ -9,7 +9,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 public interface Instantiation<Level> {
 
     /**
-     *
      * Return the type for parameter number @{code param}.
      */
     TypeView<Level> get(int param);
