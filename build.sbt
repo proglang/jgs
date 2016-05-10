@@ -1,8 +1,9 @@
+lazy val setScalaVersion = scalaVersion := "2.11.7"
+
 lazy val commonSettings = Seq(
 
-    scalaVersion := "2.11.7",
+    setScalaVersion,
     organization := "de.unifreiburg.cs.proglang",
-
     unmanagedBase := file("lib"),
     
     libraryDependencies ++= Seq(
@@ -43,3 +44,5 @@ lazy val GradualConstraints_Tests =
 lazy val GradualConstraints_InstrumentationSupport = 
   (project in file("GradualConstraints_InstrumentationSupport")).
     settings(commonSettings:_*)
+
+lazy val JGSSupport = project.settings(setScalaVersion)
