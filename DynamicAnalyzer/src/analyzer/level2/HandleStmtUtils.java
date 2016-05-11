@@ -163,10 +163,8 @@ public class HandleStmtUtils {
 	
 	/**
 	 * @param signature
-	 * @param type 
-	 * 		0 = Local expected
 	 */
-	protected void checkIfLocalExists(String signature, int type) {
+	protected void checkIfLocalExists(String signature) {
 		if (!lm.contains(signature)) {
 			new InternalAnalyzerException("Missing local " 
 				+ signature + " in LocalMap");

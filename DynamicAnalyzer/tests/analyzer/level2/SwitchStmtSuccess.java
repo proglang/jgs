@@ -34,20 +34,20 @@ public class SwitchStmtSuccess {
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		
-		hs.checkCondition(123, "int_x");
+		hs.checkCondition("123", "int_x");
 		switch(x) {
 		
 		case 0: 
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		case 1:  
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		default:  
 			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		
 		} 
@@ -69,7 +69,7 @@ public class SwitchStmtSuccess {
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		
-		hs.checkCondition(123,"int_x");
+		hs.checkCondition("123","int_x");
 		switch(x) {
 		
 		case 0: 
@@ -77,15 +77,15 @@ public class SwitchStmtSuccess {
 			
 			hs.setLevelOfLocal("int_x");
 			
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		case 1:  
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		default:  
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		
 		} 

@@ -1,7 +1,8 @@
 Start with:
+ExtClasses more testcases
 Refactor HandleStmt
 
-PROGRAMMIERUNG
+PROGRAMMING
 >> Run all Classtests automatically  
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
@@ -18,7 +19,7 @@ TESTS
 >> Add all classfiletests to testmain
 >> Fail/Success testclasses
 
-ZUM SCHLUSS
+FINALLY
 >> konsistente variablenbezeichnung
 >> Gute Javadoc Kommentare
 >> bessere handleStmt logs

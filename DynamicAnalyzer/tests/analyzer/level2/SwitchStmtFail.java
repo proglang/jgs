@@ -39,7 +39,7 @@ public class SwitchStmtFail {
 		
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		
-		hs.checkCondition(123, "int_x");
+		hs.checkCondition("123", "int_x");
 		switch(x) {
 		
 		case 0: 
@@ -48,15 +48,15 @@ public class SwitchStmtFail {
 			hs.setLevelOfLocal("int_y");
 			x += 2;
 			
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		case 1:  
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		default:  
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 			break;
 		
 		} 

@@ -1,10 +1,11 @@
 package main.testclasses;
 
 public class ExtClasses {
-    static void main(String[] args) {
+    public static void main(String[] args) {
+    	m("ab", "cd");
     }
     
-    void m(String arg1, String arg2) {
+    static void m(String arg1, String arg2) {
 
     	System.out.println(arg1);
     }
