@@ -1,8 +1,20 @@
 Start with:
 ExtClasses more testcases
-Refactor HandleStmt
+InvokeInternalMethod
+InvokeLibMethod
+SwitchStmtFail:
+	       tableswitch(i2)
+        {
+            case 1: goto label0;
+            case 2: goto label1;
+            default: goto label2;
+        };
+	
+
+
 
 PROGRAMMING
+>> Refactor HandleStmt
 >> Run all Classtests automatically  
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
@@ -34,4 +46,5 @@ FINALLY
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?
 	Oder ist die Wahrscheinlichkeit gering genug? Mehr Daten zusätzlich zu Hashwert?
-What to do with length expression?
+Was tun mit LengthExpr?? zB in ForLoop.java
+TableSwitch vs LookupSwitch

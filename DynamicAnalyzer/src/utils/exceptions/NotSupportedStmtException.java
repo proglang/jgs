@@ -10,6 +10,8 @@ public class NotSupportedStmtException extends Exception {
 
 	public NotSupportedStmtException(String message) {
 		super(message);
+		printStackTrace();
+		System.exit(0);
 	}
 
 
