@@ -5,7 +5,26 @@ import utils.analyzer.HelperClass;
 public class SwitchStmtFail {
 
 	public static void main(String[] args) {
-		simpleSwitch(3);
+		simpleLookupSwitch(2);
+		simpleTableSwitch(3);
+	}
+	
+	
+	public static int simpleLookupSwitch(int x) {
+		int y = 0;
+		x = HelperClass.makeHigh(x);
+		switch (x) {
+		  case 1: 
+			  y = x++; 
+			  break;
+		  case 100: 
+			  y--; 
+			  break;
+		  default: 
+			  y = 100; 
+			  break;
+		}
+		return y;
 	}
 	
 	/**
@@ -13,7 +32,7 @@ public class SwitchStmtFail {
 	 * @param x input
 	 * @return output
 	 */
-	public static int simpleSwitch(int x) {
+	public static int simpleTableSwitch(int x) {
 		int y = 0;
 		x = HelperClass.makeHigh(x);
 		switch (x) {
@@ -29,5 +48,6 @@ public class SwitchStmtFail {
 		}
 		return y;
 	}
+
 
 }

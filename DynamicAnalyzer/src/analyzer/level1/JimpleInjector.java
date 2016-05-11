@@ -983,7 +983,7 @@ public class JimpleInjector {
 		paramTypes.add(RefType.v("java.lang.String"));
 		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
 		
-		// Add hashvalue for immerdiate dominator
+		// Add hashvalue for immediate dominator
 		String domHash = DominatorFinder.getImmediateDominatorHashValue(pos);
 		logger.info("HashVal for Dominator: " + domHash);
 		Stmt assignHashVal = Jimple.v().newAssignStmt(

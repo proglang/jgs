@@ -47,4 +47,3 @@ FINALLY
 Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?
 	Oder ist die Wahrscheinlichkeit gering genug? Mehr Daten zusätzlich zu Hashwert?
 Was tun mit LengthExpr?? zB in ForLoop.java
-TableSwitch vs LookupSwitch
