@@ -234,7 +234,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseNopStmt(NopStmt stmt) {
 		logger.fine("\n > > > Nop statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("NopStmt");
+		// new NotSupportedStmtException("NopStmt");
 	}
 
 	@Override
