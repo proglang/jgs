@@ -28,7 +28,7 @@ public class ObjectMap{
 	private static ObjectMap instance = null;
 	private static SecurityLevel actualReturnLevel;
 	private static ArrayList<SecurityLevel> actualArguments;
-	private static SecurityLevel assignStmtLevel = SecurityLevel.UNDEF;
+	private static SecurityLevel assignStmtLevel = SecurityLevel.LOW;
 
 
 

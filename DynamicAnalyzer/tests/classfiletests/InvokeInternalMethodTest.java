@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import classfiletests.utils.ClassRunner;
 import utils.exceptions.IllegalFlowException;
 import utils.logging.L1Logger;
 
@@ -19,7 +20,7 @@ public class InvokeInternalMethodTest {
   public void test() {
     logger.info("Start of executing main.testclasses.InvokeInternalMethod");
     try {
-      ClassRunner.runClass2("InvokeInternalMethod");
+      ClassRunner.runClass("InvokeInternalMethod");
     } catch (Exception e) {
         assertEquals(e.getCause().getClass(), IllegalFlowException.class);
         logger.info("Successfully found an illegal flow");

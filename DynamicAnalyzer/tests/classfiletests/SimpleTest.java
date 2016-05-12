@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import classfiletests.utils.ClassRunner;
 import utils.exceptions.IllegalFlowException;
 import utils.logging.L1Logger;
 
@@ -19,7 +20,7 @@ public class SimpleTest{
   public void test() {
     logger.info("Start of executing main.testclasses.Simple");
     try {
-      ClassRunner.runClass2("Simple");
+      ClassRunner.runClass("Simple");
     } catch (Exception e) {
       assertEquals(e.getCause().getClass(),
     	        IllegalFlowException.class);

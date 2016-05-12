@@ -1,7 +1,13 @@
 Start with:
+
+>> Run all Classtests automatically 
+		Add tests for ALL Classes
+		Check Code
+
 ExtClasses more testcases
 InvokeInternalMethod
 InvokeLibMethod
+AccessFieldsOfObjects
 SwitchStmtFail:
 	       tableswitch(i2)
         {
@@ -14,11 +20,15 @@ SwitchStmtFail:
 
 
 PROGRAMMING
+>> Analyze all testclasses at once
+>> Hash -> Identifier
 >> Refactor HandleStmt
->> Run all Classtests automatically  
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
 >> addLevelOfArrayField in HandleStmt fertig machen
+>> Read Paper
+>> Scala Tutorial
+>> Use SecDomain Interface
 
 KONFIGURATION
 >> Define sootClassPath for rt.jar in Main which works globally
