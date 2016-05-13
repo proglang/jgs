@@ -9,6 +9,10 @@ import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
 
+/**
+ * @author Regina Koenig
+ *
+ */
 public class ClassRunner {
 
 	static String s = null;
@@ -16,14 +20,18 @@ public class ClassRunner {
 	static String fileName = "";
 	static Logger logger = L1Logger.getLogger();
 
+	/**
+	 * @param className
+	 */
 	public static void runClass(String className) {
 		
 		Project project = new Project();
+		project.setName("ClassRunner");
 		project.setUserProperty("ant.file", ".");
 		project.init();
 		
 		Target target = new Target();
-		target.setName("abc");
+		target.setName("exec");
 		
 		Java task = new Java();
 		Path path = new Path(project);

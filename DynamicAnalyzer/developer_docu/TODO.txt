@@ -1,9 +1,11 @@
 Start with:
+ANT TEST NOT RUNNING
 
 >> Run all Classtests automatically 
 		Add tests for ALL Classes
 		Check Code
 
+>> Refactor HandleStmt
 ExtClasses more testcases
 InvokeInternalMethod
 InvokeLibMethod
@@ -20,9 +22,7 @@ SwitchStmtFail:
 
 
 PROGRAMMING
->> Analyze all testclasses at once
 >> Hash -> Identifier
->> Refactor HandleStmt
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
 >> addLevelOfArrayField in HandleStmt fertig machen
@@ -54,6 +54,4 @@ FINALLY
 >> Move more parts to visitorhelper, HandleStmtUtils??
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
-Dominator arbeitet mit HashValue. Kann das zu Problemen (Kollisionen) führen?
-	Oder ist die Wahrscheinlichkeit gering genug? Mehr Daten zusätzlich zu Hashwert?
-Was tun mit LengthExpr?? zB in ForLoop.java
+

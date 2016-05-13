@@ -1,22 +1,25 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import utils.logging.L2Logger;
-import tests.testClasses.TestSubClass;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import tests.testClasses.TestSubClass;
+import utils.logging.L2Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+
 public class InvokeSuccess {
 
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
@@ -26,7 +29,7 @@ public class InvokeSuccess {
 	@Test
 	public void invokeNewObject() {
 		
-		LOGGER.log(Level.INFO, "INVOKE TEST STARTED");
+		logger.log(Level.INFO, "INVOKE TEST STARTED");
 
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
@@ -41,15 +44,15 @@ public class InvokeSuccess {
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(2, hs.getNumberOfFields(xy)); // The third fiel is static
-	    hs.close();	
+		hs.close();	
 	    
-	    LOGGER.log(Level.INFO, "INVOKE TEST FINISHED");
+		logger.log(Level.INFO, "INVOKE TEST FINISHED");
 	}
 	
 	@Test
 	public void invokeMethodWithoutArguments() {
 		
-		LOGGER.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
+		logger.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
 		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		/*
@@ -57,22 +60,27 @@ public class InvokeSuccess {
 		 *  1. Create new LocalMap
 		 *  2. Add Locals to LocalMap
 		 */
-	    hs.close();	
+		hs.close();	
 	    
-	    LOGGER.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
+		logger.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
 		
     	}
 	
 	@Test
 	public void invokeMethodWithArguments() {		
 		
-		LOGGER.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");
+		logger.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");
 	    
 		HandleStmtForTests hs = new HandleStmtForTests();
-    	TestSubClass xy = new TestSubClass();
-    	int a = 0;
-    	int b = 1;
-    	int c = 2;
+		TestSubClass xy = new TestSubClass();
+		int a = 0;
+		int b = 1;
+		int c = 2;
+		hs.addLocal("int_a");
+		hs.addLocal("int_b");
+		hs.addLocal("int_c");
+			
+		
 		/*
 		 *  Invoke Method With Arguments
 		 *  1. Store argument levels in argument list
@@ -80,25 +88,25 @@ public class InvokeSuccess {
 		 *  3. Add it to LocalMapStack
 		 *  4. Update gpc
 		 */
-    	hs.storeArgumentLevels("int_a", "int_b", "int_c");
-    	xy.methodWithParams(a, b, c);
-    	assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
+		hs.storeArgumentLevels("int_a", "int_b", "int_c");
+		xy.methodWithParams(a, b, c);
+		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
     	
     	
-    	hs.makeLocalHigh("int_b");
-    	hs.storeArgumentLevels("int_a", "int_b", "int_c");
-    	xy.methodWithParams(a, b, c);
-    	assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
+		hs.makeLocalHigh("int_b");
+		hs.storeArgumentLevels("int_a", "int_b", "int_c");
+		xy.methodWithParams(a, b, c);
+		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
     	
-	    hs.close();
+		hs.close();
 	    
-	    LOGGER.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");		
+		logger.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");		
 	}
 	
 	@Test
 	public void nestedMethodsTest() {
 		
-		LOGGER.log(Level.INFO, "INVOKE NESTED METHODS TEST STARTED");
+		logger.log(Level.INFO, "INVOKE NESTED METHODS TEST STARTED");
 		
 		
 		class SomeClass {
@@ -138,6 +146,7 @@ public class InvokeSuccess {
 			}
 			
 		}
+		
 		HandleStmtForTests hs = new HandleStmtForTests();
 		
 		assertEquals(0, hs.getNumberOfElements());
@@ -156,7 +165,7 @@ public class InvokeSuccess {
 		
 		hs.close();
 
-		LOGGER.log(Level.INFO, "INVOKE NESTED METHODS TEST FINISHED");
+		logger.log(Level.INFO, "INVOKE NESTED METHODS TEST FINISHED");
 	}
 
 }

@@ -1,11 +1,9 @@
 package classfiletests;
 
-
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-
 import classfiletests.utils.ClassRunner;
+import org.junit.Test;
 import utils.exceptions.IllegalFlowException;
 import utils.logging.L1Logger;
 
@@ -19,14 +17,15 @@ public class ArrayRefTest {
 	@Test
 	public void test() {
 		logger.info("Start of executing main.testclasses.ArrayRef");
-	       System.out.println("Working Directory = " +
-	               System.getProperty("user.dir"));
+	        System.out.println("Working Directory = " 
+	        		+ System.getProperty("user.dir"));
 		Exception catchedException = null;
 		try {
 			ClassRunner.runClass("ArrayRef");
 		} catch (Exception e) {
 			catchedException = e;
-			logger.info("Successfully found an illegal flow");
+			System.out.println(e.toString());
+			e.printStackTrace();
 		}
 		assertEquals(catchedException.getCause().getClass(),
 				IllegalFlowException.class);

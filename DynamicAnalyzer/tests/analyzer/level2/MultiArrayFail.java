@@ -58,6 +58,7 @@ public class MultiArrayFail {
 		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
 		
+		hs.addLocal("String[]_arr");
 		hs.addLevelOfLocal("String[]_inner1");
 		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[]_arr");
 		arr[0] = inner1;
@@ -66,6 +67,7 @@ public class MultiArrayFail {
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[]_arr");
 		arr[1] = inner2;
 		
+		hs.addLocal("String[]_tmp");
 		hs.addLevelOfArrayField(arr, Integer.toString(1));
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[1];
@@ -105,11 +107,11 @@ public class MultiArrayFail {
 		hs.addArrayToObjectMap(arr);
 		
 		String[] inner1 = new String[1];
-		hs.addLocal("String[][]_inner1");
+		hs.addLocal("String[]_inner1");
 		hs.addArrayToObjectMap(inner1);
 		
 		String[] inner2 = new String[1];
-		hs.addLocal("String[][]_inner2");
+		hs.addLocal("String[]_inner2");
 		hs.addArrayToObjectMap(inner2);
 		
 		hs.setLevelOfArrayField(inner1, Integer.toString(0), "String[]_inner1");
