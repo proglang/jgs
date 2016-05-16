@@ -13,9 +13,17 @@ testclasses-*/
 /generate-jimple-testclasses.sh
 /result
 
+# sbt
+
+target/
+lib/
+.cache-main
+
 # For IDEA
 
 ## compilation output
+*.iml
+.idea/
 out/
 bin/
 
