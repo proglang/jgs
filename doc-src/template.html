@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>$title$</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" lang="en" content="$description$">
+    <meta name="author" content="$author$">
+    <meta name="robots" content="index, follow">
+
+    <!-- icons -->
+
+    <!-- TODO: add some icons -->
+    <!-- <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png"> -->
+    <!-- <link rel="shortcut icon" href="favicon.ico"> -->
+
+    <!-- Override CSS file - add your own CSS rules -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/prism.css">
+    <script type="text/javascript" src="assets/js/prism.js"></script>
+  </head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="header-heading">$title$</h1>
+    </div>
+    <!-- <div class="nav-bar"> -->
+    <!--   $if(item)$ -->
+    <!--   <ul class="nav"> -->
+    <!-- 	$for(item)$ -->
+    <!-- 	<li><a href="$item.href$">$item.text$</a></li> -->
+    <!-- 	$endfor$ -->
+    <!--   </ul> -->
+    <!--   $endif$ -->
+    <!-- </div> -->
+    <div class="content">
+      <div class="main">
+	$body$
+      </div>
+    </div>
+    <div class="footer">
+      $if(copyright)$
+      &copy; Copyright $copyright$
+      $endif$
+    </div>
+  </div>
+</body>
+</html>
