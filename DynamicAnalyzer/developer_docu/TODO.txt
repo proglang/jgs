@@ -1,5 +1,5 @@
 Start with:
-ANT TEST NOT RUNNING
+ANT TEST NOT RUNNING. DOES NOT CATCH ILLEGALFLOWEXCEPTIONS
 
 >> Run all Classtests automatically 
 		Add tests for ALL Classes

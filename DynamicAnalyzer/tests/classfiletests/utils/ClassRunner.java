@@ -1,50 +1,44 @@
 package classfiletests.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
-import utils.exceptions.IllegalFlowException;
 import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
 
 /**
+ * Runs given classes.
  * @author Regina Koenig
- *
  */
 public class ClassRunner {
 
-	static String s = null;
-	static boolean error_recognized = false;
-	static String fileName = "";
 	static Logger logger = L1Logger.getLogger();
-	static String targetName = "exec";
+	static final String TARGET_NAME = "exec";
 
 	/**
-	 * @param className
+	 * Runs the given class via Apache Ant.
+	 * @param className class to be run
 	 */
-	public static void runClass(String className) {
-		Exception catchedException = null;
-		try {
+	private static void runClass(String className) {
 		
 		Project project = new Project();
 		project.setName("ClassRunner");
-		// project.setUserProperty("ant.file", ".");
 		project.init();
 		
 		Target target = new Target();
-		target.setName(targetName);
+		target.setName(TARGET_NAME);
 		
 		Java task = new Java();
 		Path path = new Path(project);
 		path.setPath("./sootOutput:./bin/"
 				+ ":./../../dependencies/commons-collections4-4.0/"
 				+ "commons-collections4-4.0.jar");
-		System.out.println("Path: " + path.toString());
 		task.setClasspath(path);
 		task.setClassname("main.testclasses." + className);
 		task.setFork(false);
@@ -53,18 +47,45 @@ public class ClassRunner {
 		target.addTask(task);
 		
 		project.addTarget(target);
-		project.setDefault(targetName);
-
-		System.out.println("Class: " + project.getTargets().toString());
+		project.setDefault(TARGET_NAME);
 
 		target.execute();
 		project.executeTarget(project.getDefaultTarget());
-	} catch (Exception e) {
-		catchedException = e;
-		assertEquals(catchedException.getCause().getClass(),
-				IllegalFlowException.class);
-		System.out.println(e.toString());
-		e.printStackTrace();
+
 	}
+	
+	/**
+	 * @param className
+	 * @param expectedException
+	 */
+	public static void testClass(String className, Exception expectedException) {
+
+		Exception catchedException = null;
+		
+		try {
+			runClass(className);
+		} catch (Exception e) {
+			catchedException = e;
+			assertEquals(catchedException.getCause().getClass(),
+					expectedException);
+			System.out.println(e.toString());
+			e.printStackTrace();
+		}
 	}
+	
+	/**
+	 * @param className
+	 */
+	public static void testClass(String className) {
+		
+		try {
+			runClass(className);
+		} catch (Exception e) {
+			System.out.println("blablabla");
+			e.printStackTrace();
+			fail();
+		}
+	}
+	
+	
 }

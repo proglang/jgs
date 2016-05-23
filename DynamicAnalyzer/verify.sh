@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# This file should be located at the folder sootOutput. bcel-5.2.jar Should also be in sootOutput
 
 if [ "$2" = "-v" ]
 then
@@ -43,6 +42,11 @@ then
 	echo "End of Jimple file compilation"
 
 else 
-    	echo "Usage: ./verify.sh ClassName -v (for verify) OR -e (for execute) OR -b (to show bytecode)"
+    	echo "Usage: ./verify.sh ClassName -option"
+	echo "Options:"
+	echo "-v to verify the bytecode" 
+	echo "-e to execute the class"
+	echo "-b to show the bytecode"
+	echo "-j to compile Jimple Files"
 fi
 

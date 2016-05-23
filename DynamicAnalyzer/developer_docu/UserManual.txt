@@ -1,0 +1,7 @@
+TEST IF THE CLASSFILES PRODUCED BY THE DYNAMIC ANALYZER ARE RUNNING (THE CLASSFILES
+ARE LOCATED IN THE FOLDER SOOTOUTPUT):
+- Move into the directory DynamicAnalyzer
+- type ./verify main.testclasses.{ClassName} -e
+
+RUN ALL JUNIT TESTS:
+- Run AllTests.java in tests/testmain
