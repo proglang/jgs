@@ -984,8 +984,9 @@ public class JimpleInjector {
 		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
 		
 		// Add hashvalue for immediate dominator
-		String domHash = DominatorFinder.getImmediateDominatorHashValue(pos);
-		logger.info("HashVal for Dominator: " + domHash);
+		String domHash = DominatorFinder.getImmediateDominatorIdentity(pos);
+		logger.info("Identity of Dominator \"" + pos.toString()
+				+ "\" is " + domHash);
 		Stmt assignHashVal = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(domHash));
 		
@@ -1037,8 +1038,9 @@ public class JimpleInjector {
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 		
-		String domHash = DominatorFinder.getHashValueFor(pos);
-		logger.info("Dominator hash value: " + domHash);
+		String domHash = DominatorFinder.getIdentityForUnit(pos);
+		logger.info("Dominator \"" + pos.toString()
+				+ "\" has identity " + domHash);
 		
 		Stmt assignHashVal = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(domHash));

@@ -5,17 +5,18 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;
+import utils.exceptions.MaximumNumberExceededException;
 import utils.logging.L1Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.Long;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class DominatorFinder {
 	private static MHGPostDominatorsFinder pdfinder;
 	private static UnitGraph graph;
-	private static List<Unit> domList;
-	
+	private static HashMap<Unit, String> domList;
+	private static long identity;
 	private static Logger logger = L1Logger.getLogger();
   
 	/**
@@ -25,7 +26,8 @@ public class DominatorFinder {
 	public static void init(Body body) {
 		graph = new BriefUnitGraph(body);
 		pdfinder = new MHGPostDominatorsFinder(graph);
-		domList = new ArrayList<Unit>();
+		domList = new HashMap<Unit, String>();
+		identity = 0;
 	}
 
 	/**
@@ -35,13 +37,16 @@ public class DominatorFinder {
 	 * @param node IfStmt.
 	 * @return Hashvalue of immerdiate dominator.
 	 */
-	public static String getImmediateDominatorHashValue(Unit node) {
-		Object dom = pdfinder.getImmediateDominator(node);
-		logger.info("Dominator :" + dom.toString());
-		if (!containsStmt((Unit) dom)) {
-			domList.add((Unit) dom);
-		}
-		return getHashValueFor(dom);
+	public static String getImmediateDominatorIdentity(Unit node) {
+		Unit dom = (Unit) pdfinder.getImmediateDominator(node);
+		if (!containsStmt(dom)) {
+			domList.put(dom, getIdentityForUnit(dom));
+			System.out.println(domList.toString());
+		} 
+
+		logger.info("Dominator \"" + dom.toString()
+				+ "\" has Identity " + domList.get(dom));
+		return domList.get(dom);
 	}
 
 	/**
@@ -52,7 +57,7 @@ public class DominatorFinder {
 	 *     called ifStmt.
 	 */
 	public static boolean containsStmt(Unit node) {
-		if (domList.contains(node)) {
+		if (domList.containsKey(node)) {
 			domList.remove(node);
 			return true;
 		}
@@ -63,8 +68,20 @@ public class DominatorFinder {
 	 * @param dom The Object.
 	 * @return The hash-value for given object.
 	 */
-	public static String getHashValueFor(Object dom) {
-		return Integer.toString(System.identityHashCode(dom));
+	public static String getIdentityForUnit(Unit dom) {
+		if (domList.containsKey(dom)) {
+			return domList.get(dom);
+		} else {
+			if (identity < Long.MAX_VALUE) {
+				identity++;
+				domList.put(dom, Long.toString(identity));
+			} else {
+				new MaximumNumberExceededException("You have exceeded the maximum number"
+					+ "of allowed if-statements within a method which is "
+					+ Long.toString(identity));
+			}
+		}
+		return domList.get(dom);
 	}
   
 }
