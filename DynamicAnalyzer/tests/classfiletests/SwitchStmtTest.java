@@ -7,7 +7,7 @@ import utils.logging.L1Logger;
 import java.util.logging.Logger;
 
 
-public class ArrayRefTest {
+public class SwitchStmtTest {
 
 	Logger logger = L1Logger.getLogger();
 
@@ -17,8 +17,8 @@ public class ArrayRefTest {
 		System.out.println("Working Directory = " 
 	        		+ System.getProperty("user.dir"));
 	        
-		ClassRunner.runClass("ArrayRef");
+		ClassRunner.runClass("SwitchStmt");
 
-		logger.info("Finished executing main.testclasses.ArrayRef");
+		logger.info("Finished executing main.testclasses.SwitchStmt");
 	}
 }

@@ -54,4 +54,10 @@ FINALLY
 >> Move more parts to visitorhelper, HandleStmtUtils??
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
+Ant path
 
+
+
+
+<<<<<<<<< VERBESSERUNGSVORSCHLAEGE >>>>>>>>>
+Ant nicht über ein build file starten sondern im code selbst
