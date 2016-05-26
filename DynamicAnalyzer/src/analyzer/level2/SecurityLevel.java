@@ -1,10 +1,12 @@
 package analyzer.level2;
 
+
 public enum SecurityLevel {
 	LOW, HIGH
 }
 
-/*import java.util.Arrays;
+/*
+import java.util.Arrays;
 import java.util.Iterator;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;

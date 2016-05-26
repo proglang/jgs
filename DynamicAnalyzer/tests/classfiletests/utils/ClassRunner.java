@@ -66,7 +66,7 @@ public class ClassRunner {
 		try {
 			runClass(className);
 			if (expectedException) {
-				System.out.println("ABCDEF"); 
+				System.out.println("Expected exception not found"); 
 				fail();
 			}
 		} catch (Exception e) {
@@ -76,7 +76,6 @@ public class ClassRunner {
 			assertEquals(catchedException.getCause().getClass(),
 					IllegalFlowException.class);
 			System.out.println(e.toString());
-			System.out.println("GHIJKLM");
 			e.printStackTrace();
 			if (!expectedException) {
 				fail();

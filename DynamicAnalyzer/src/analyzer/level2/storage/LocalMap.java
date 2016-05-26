@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
+// import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
+
 
 public class LocalMap {
 	
@@ -18,7 +20,7 @@ public class LocalMap {
 	private HashMap<String, SecurityLevel> localMap = new HashMap<String, SecurityLevel>();
 	
 	public LocalMap() {
-		localPC.push(new LPCDominatorPair(SecurityLevel.LOW, -1));
+		localPC.push(new LPCDominatorPair(SecurityLevel.LOW , -1));
 		localMap.put("DEFAULT_LOW", SecurityLevel.LOW);
 	}
 	

@@ -10,14 +10,6 @@ ExtClasses more testcases
 InvokeInternalMethod
 InvokeLibMethod
 AccessFieldsOfObjects
-SwitchStmtFail:
-	       tableswitch(i2)
-        {
-            case 1: goto label0;
-            case 2: goto label1;
-            default: goto label2;
-        };
-	
 
 
 
@@ -61,4 +53,5 @@ Ant path
 
 
 <<<<<<<<< VERBESSERUNGSVORSCHLAEGE >>>>>>>>>
-Ant nicht über ein build file starten sondern im code selbst
+Ant - exceptions
+Length

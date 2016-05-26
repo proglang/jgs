@@ -10,6 +10,11 @@ public class SwitchStmtFail {
 	}
 	
 	
+	/**
+	 * Simple llokup-switch-testcase.
+	 * @param x input
+	 * @return output
+	 */
 	public static int simpleLookupSwitch(int x) {
 		int y = 0;
 		x = HelperClass.makeHigh(x);
@@ -28,7 +33,7 @@ public class SwitchStmtFail {
 	}
 	
 	/**
-	 * Simple switch-testcase.
+	 * Simple table-switch-testcase.
 	 * @param x input
 	 * @return output
 	 */

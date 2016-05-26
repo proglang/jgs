@@ -1,8 +1,10 @@
 package analyzer.level2.storage;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import analyzer.level2.SecurityLevel;
 
 public class LPCDominatorPair {
+	
 	
 	SecurityLevel secLevel;
 	int postDom;

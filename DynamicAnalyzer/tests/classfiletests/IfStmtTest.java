@@ -1,9 +1,7 @@
 package classfiletests;
 
-
 import classfiletests.utils.ClassRunner;
 import org.junit.Test;
-import utils.exceptions.IllegalFlowException;
 import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
@@ -17,7 +15,7 @@ public class IfStmtTest {
 	public void test() {
 		logger.info("Start of executing main.testclasses.IfStmt");
 
-		ClassRunner.testClass("IfStmt", IllegalFlowException.class);
+		ClassRunner.testClass("IfStmt", true);
 
 		logger.info("Finished executing main.testclasses.IfStmt");
 	}
