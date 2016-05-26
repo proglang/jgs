@@ -22,7 +22,6 @@ SwitchStmtFail:
 
 
 PROGRAMMING
->> Hash -> Identifier. In BodyAnalyzer Hashmethode nicht direkt aufrufen. Eigene Identities?
 >> Length = Array(Level) Context
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor

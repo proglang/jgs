@@ -17,7 +17,7 @@ public class ArrayRefTest {
 		System.out.println("Working Directory = " 
 	        		+ System.getProperty("user.dir"));
 	        
-		ClassRunner.runClass("ArrayRef");
+		ClassRunner.testClass("ArrayRef");
 
 		logger.info("Finished executing main.testclasses.ArrayRef");
 	}

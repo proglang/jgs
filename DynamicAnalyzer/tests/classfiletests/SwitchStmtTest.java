@@ -19,7 +19,7 @@ public class SwitchStmtTest {
 		System.out.println("Working Directory = " 
 	        		+ System.getProperty("user.dir"));
 	        
-		ClassRunner.testClass("SwitchStmt");
+		ClassRunner.testClass("SwitchStmt", true);
 
 		logger.info("Finished executing main.testclasses.SwitchStmt");
 	}

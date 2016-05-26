@@ -8,6 +8,7 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
+import utils.exceptions.IllegalFlowException;
 import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
@@ -34,6 +35,7 @@ public class ClassRunner {
 		Target target = new Target();
 		target.setName(TARGET_NAME);
 		
+		
 		Java task = new Java();
 		Path path = new Path(project);
 		path.setPath("./sootOutput:./bin/"
@@ -58,34 +60,29 @@ public class ClassRunner {
 	 * @param className
 	 * @param expectedException
 	 */
-	public static void testClass(String className, Exception expectedException) {
+	public static void testClass(String className, boolean expectedException) {
 
 		Exception catchedException = null;
-		
 		try {
 			runClass(className);
+			if (expectedException) {
+				System.out.println("ABCDEF"); 
+				fail();
+			}
 		} catch (Exception e) {
+			System.out.println("Exception"); 
 			catchedException = e;
+			System.out.println(e.getClass());
 			assertEquals(catchedException.getCause().getClass(),
-					expectedException);
+					IllegalFlowException.class);
 			System.out.println(e.toString());
+			System.out.println("GHIJKLM");
 			e.printStackTrace();
+			if (!expectedException) {
+				fail();
+			}
 		}
-	}
-	
-	/**
-	 * @param className
-	 */
-	public static void testClass(String className) {
-		
-		try {
-			runClass(className);
-		} catch (Exception e) {
-			System.out.println("blablabla");
-			e.printStackTrace();
-			fail();
-		}
-	}
-	
+
+	}	
 	
 }

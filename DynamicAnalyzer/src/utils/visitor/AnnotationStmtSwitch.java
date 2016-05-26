@@ -227,7 +227,31 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
 		logger.fine("\n > > > Lookup switch statement identified < < <");
 		valueSwitch.callingStmt = stmt; 
-		new NotSupportedStmtException("Lookup Switch Stmt");
+		logger.finest("Use and def boxes of SwitchStmt: " 
+				+ stmt.getUseAndDefBoxes().toString());
+		
+		// Check for all values in the condition if they are a constant value
+		// or if they are stored in a local. In the second case the local is added 
+		// to a list for the locals. 
+		List<ValueBox> valueList = stmt.getUseBoxes();
+		ArrayList<Local> localList = new ArrayList<Local>();
+		for (ValueBox v : valueList) {
+			Value val = v.getValue();
+			if (val instanceof Local) {
+				localList.add((Local) val );
+				logger.fine("New local added to local-list of SwitchStmt: " + val);
+			}
+		}
+		
+		int localListLength = localList.size();
+		
+		Local[] arguments = new Local[localListLength];
+		
+		for (int i = 0; i < localListLength; i++) {
+			arguments[i] = localList.get(i);
+		}
+
+		JimpleInjector.checkCondition(stmt, arguments);
 	}
 
 	@Override
@@ -267,7 +291,31 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
 		logger.fine("\n > > > Table switch statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("TableSwitchStmt");
+		logger.finest("Use and def boxes of SwitchStmt: " 
+				+ stmt.getUseAndDefBoxes().toString());
+		
+		// Check for all values in the condition if they are a constant value
+		// or if they are stored in a local. In the second case the local is added 
+		// to a list for the locals. 
+		List<ValueBox> valueList = stmt.getUseBoxes();
+		ArrayList<Local> localList = new ArrayList<Local>();
+		for (ValueBox v : valueList) {
+			Value val = v.getValue();
+			if (val instanceof Local) {
+				localList.add((Local) val );
+				logger.fine("New local added to local-list of SwitchStmt: " + val);
+			}
+		}
+		
+		int localListLength = localList.size();
+		
+		Local[] arguments = new Local[localListLength];
+		
+		for (int i = 0; i < localListLength; i++) {
+			arguments[i] = localList.get(i);
+		}
+
+		JimpleInjector.checkCondition(stmt, arguments);
 
 	}
 

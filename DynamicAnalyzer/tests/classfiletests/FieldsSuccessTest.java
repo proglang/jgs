@@ -23,12 +23,7 @@ public class FieldsSuccessTest {
   @Test
   public void test() {
     logger.info("Start of executing main.testclasses.FieldsSuccess");
-    try {
-      ClassRunner.runClass("FieldsSuccess");
-    } catch (Exception e) {
-      assertEquals(e.getCause().getClass(), IllegalFlowException.class);
-      logger.info("Successfully found an illegal flow");
-    }
-    logger.info("Finished executing main.testclasses.FieldsSuccess");
-  }
+
+      ClassRunner.testClass("FieldsSuccess", IllegalFlowException.class);
+
 }

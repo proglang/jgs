@@ -1,11 +1,7 @@
 package classfiletests;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import classfiletests.utils.ClassRunner;
-import utils.exceptions.IllegalFlowException;
+import org.junit.Test;
 import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
@@ -14,19 +10,14 @@ import java.util.logging.Logger;
 
 public class SimpleTest{
 
-  Logger logger = L1Logger.getLogger();
+	Logger logger = L1Logger.getLogger();
 
-  @Test
-  public void test() {
-    logger.info("Start of executing main.testclasses.Simple");
-    try {
-      ClassRunner.runClass("Simple");
-    } catch (Exception e) {
-      assertEquals(e.getCause().getClass(),
-    	        IllegalFlowException.class);
-      logger.info("Successfully found an illegal flow");
-    }
+	@Test
+	public void test() {
+		logger.info("Start of executing main.testclasses.Simple");
 
-    logger.info("Finished executing main.testclasses.Simple");
-  }
+		ClassRunner.testClass("Simple", true);
+
+		logger.info("Finished executing main.testclasses.Simple");
+	}
 }
