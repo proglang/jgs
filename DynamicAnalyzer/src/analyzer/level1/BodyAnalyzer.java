@@ -140,6 +140,8 @@ public class BodyAnalyzer extends BodyTransformer{
 				JimpleInjector.exitInnerScope(item);
 				logger.log(Level.INFO, "Exit inner scope with identity {0}", 
 					DominatorFinder.getIdentityForUnit(item));
+
+				DominatorFinder.removeStmt(item);
 			}
 			
 			// Add further statements using JimpleInjector.

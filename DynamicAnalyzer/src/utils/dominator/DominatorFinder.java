@@ -41,7 +41,6 @@ public class DominatorFinder {
 		Unit dom = (Unit) pdfinder.getImmediateDominator(node);
 		if (!containsStmt(dom)) {
 			domList.put(dom, getIdentityForUnit(dom));
-			System.out.println(domList.toString());
 		} 
 
 		logger.info("Dominator \"" + dom.toString()
@@ -50,21 +49,27 @@ public class DominatorFinder {
 	}
 
 	/**
-	 * Check whether the given unit is a dominator of an IfStmt. If it is
-	 * contained in the list this element is simultaneously removed from the list.
+	 * Check whether the given unit is a dominator of an IfStmt.
 	 * @param node A Unit.
 	 * @return Returns true if the given unit is a dominator of a previously 
 	 *     called ifStmt.
 	 */
 	public static boolean containsStmt(Unit node) {
-		if (domList.containsKey(node)) {
-			domList.remove(node);
-			return true;
-		}
-		return false;
+		return domList.containsKey(node);
 	}
 	
-	/** Just get the hash-value for the object without storing it in a list.
+	/**
+	 * Remove given Unit from DominatorList.
+	 * @param node A Unit.
+	 *     called ifStmt.
+	 */
+	public static void removeStmt(Unit node) {
+		if (domList.containsKey(node)) {
+			domList.remove(node);
+		}
+	}
+	
+	/** Get the identity for given Unit or create a new identity.
 	 * @param dom The Object.
 	 * @return The hash-value for given object.
 	 */
@@ -76,12 +81,17 @@ public class DominatorFinder {
 				identity++;
 				domList.put(dom, Long.toString(identity));
 			} else {
-				new MaximumNumberExceededException("You have exceeded the maximum number"
-					+ "of allowed if-statements within a method which is "
+				new MaximumNumberExceededException("You have exceeded the maximum "
+					+ "number of allowed if-statements "
+					+ "within a method which is "
 					+ Long.toString(identity));
 			}
 		}
 		return domList.get(dom);
+	}
+	
+	public static void printDomList() {
+		System.out.println(domList.toString());
 	}
   
 }

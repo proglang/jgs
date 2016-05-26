@@ -984,11 +984,11 @@ public class JimpleInjector {
 		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
 		
 		// Add hashvalue for immediate dominator
-		String domHash = DominatorFinder.getImmediateDominatorIdentity(pos);
-		logger.info("Identity of Dominator \"" + pos.toString()
-				+ "\" is " + domHash);
+		String domIdentity = DominatorFinder.getImmediateDominatorIdentity(pos);
+		logger.info("Identity of Dominator of \"" + pos.toString()
+				+ "\" is " + domIdentity);
 		Stmt assignHashVal = Jimple.v().newAssignStmt(
-				local_for_Strings, StringConstant.v(domHash));
+				local_for_Strings, StringConstant.v(domIdentity));
 		
 		// Add all locals to string array
 		Expr newStringArray = Jimple.v().newNewArrayExpr(
@@ -1038,12 +1038,12 @@ public class JimpleInjector {
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 		
-		String domHash = DominatorFinder.getIdentityForUnit(pos);
+		String domIdentity = DominatorFinder.getIdentityForUnit(pos);
 		logger.info("Dominator \"" + pos.toString()
-				+ "\" has identity " + domHash);
+				+ "\" has identity " + domIdentity);
 		
 		Stmt assignHashVal = Jimple.v().newAssignStmt(
-				local_for_Strings, StringConstant.v(domHash));
+				local_for_Strings, StringConstant.v(domIdentity));
 		
 		
 		Expr specialIn = Jimple.v().newVirtualInvokeExpr(
