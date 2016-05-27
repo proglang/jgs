@@ -111,13 +111,25 @@ Building JGS-check from source requires the following components installed on th
 ````
 > cd gradual-java/GradualConstraints
 ````
-- Run `sbt packageForVM` (initially, this will take quite some time)
+- Run `sbt packageForVM` (initially, this will take quite some
+  time). This command will produce a zip archive called
+  `ecoop2016-artifact-update.zip`.
 
 ### Updating JGS-check in the VM
-TODO
 
-Copy the archive into the VM (e.g. by using the *Shared Folder*
-feature of VirtualBox) and unpack it there. 
+- Copy the archive `ecoop2016-artifact-update.zip` produced in the
+previous step into the VM (e.g. by using the *Shared Folder* feature
+of VirtualBox) 
+- In the artifact VM, unpack the archive, e.g. by starting a terminal
+  and running
+
+````
+> cd ~/Desktop
+> unzip /media/sf_vm-data/ecoop2016-artifact-update.zip 
+> cd ecoop2016-artifact-update
+````
+
+- Now, you should be able to run the examples by running `make`.
 
 ## Fixes
 
