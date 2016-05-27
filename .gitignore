@@ -16,7 +16,6 @@ testclasses-*/
 # sbt
 
 target/
-lib/
 .cache-main
 
 # For IDEA

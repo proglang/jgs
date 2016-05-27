@@ -51,18 +51,18 @@ Building JGS-check from source requires the following components installed on th
   `System Tools > Super User Mode - Terminal`). The password is `toor`.
 - To free up disk space, delete the folder `/home/guest/Desktop/ecoop2016-ae-submission` 
 ````
-rm -rf /home/guest/Desktop/ecoop2016-ae-submission
+> rm -rf /home/guest/Desktop/ecoop2016-ae-submission
 ````
 - Mount the Shared Folder using the following commands
 ```
-mkdir -p /media/sf_vm-data
-mount -o uid=1000 -t vboxsf vm-data /media/sf_vm-data
+> mkdir -p /media/sf_vm-data
+> mount -o uid=1000 -t vboxsf vm-data /media/sf_vm-data
 ```
 - Close the super-user terminal and open a regular terminal, (e.g., by selecting `Accessories > LXTerminal` from the start menu)
 - Unpack the Java-7 SDK to the Desktop
 ```
-cd Desktop
-tar xvf /media/sf_vm-data/<name-of-downloaded-sdk>.tar.gz
+> cd Desktop
+> tar xvf /media/sf_vm-data/<name-of-downloaded-sdk>.tar.gz
 ```
 - Update PATH in `~/.bashrc` to include the JDK binaries. 
     - run `leafpad ~/.bashrc`
@@ -83,10 +83,13 @@ tar xvf /media/sf_vm-data/<name-of-downloaded-sdk>.tar.gz
 	- save the file (select `File > Save` in the menu), close leafpad and LXTerminal
 
 - To check if everything went well, open a new terminal and type 
+
   ```` 
-  java -version
+  > java -version
   ````
+
   The output should be something similar to
+
   ````
   java version "1.7.0_79"
   Java(TM) SE Runtime Environment (build 1.7.0_79-b15)
@@ -94,7 +97,21 @@ tar xvf /media/sf_vm-data/<name-of-downloaded-sdk>.tar.gz
   ````
 
 ### Building JGS-check 
-TODO
+
+- Make sure `sbt` is in your path. 
+- Clone the `ecoop2016-ae` branch of this repository, e.g. from a
+  Linux terminal, run
+
+````
+> cd ~/Desktop
+> git clone -b ecoop2016-ae https://github.com/luminousfennell/gradual-java.git
+````
+- Enter the `GradualConstraints` directory:
+
+````
+> cd gradual-java/GradualConstraints
+````
+- Run `sbt packageForVM` (initially, this will take quite some time)
 
 ### Updating JGS-check in the VM
 TODO

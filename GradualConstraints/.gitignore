@@ -1,2 +1,3 @@
 ecoop2016-artifact-update.zip
 target/
+!lib/soot*.jar
