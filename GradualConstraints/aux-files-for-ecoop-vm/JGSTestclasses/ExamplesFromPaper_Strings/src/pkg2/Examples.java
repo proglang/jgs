@@ -1,4 +1,4 @@
-package pkg;
+package pkg2;
 
 import de.unifreiburg.cs.proglang.jgs.support.*;
 import de.unifreiburg.cs.proglang.jgs.support.SString;
