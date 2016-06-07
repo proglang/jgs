@@ -20,15 +20,15 @@ lazy val jgsCheckDeps = Seq(
 )
 
 lazy val GradualConstraints = 
-  (project in file("GradualConstraints")).
-    dependsOn(GradualConstraints_InstrumentationSupport).
+  (project in file(".")).
+    dependsOn(InstrumentationSupport).
     settings(commonSettings:_*).
     settings(
       libraryDependencies ++= jgsCheckDeps
     )
 
-lazy val GradualConstraints_Tests =
-  (project in file("GradualConstraints_Tests")).
+lazy val Tests =
+  (project in file("Tests")).
     dependsOn(GradualConstraints).
     settings(commonSettings:_*).
     settings(
@@ -41,8 +41,8 @@ lazy val GradualConstraints_Tests =
         )
     )
 
-lazy val GradualConstraints_InstrumentationSupport = 
-  (project in file("GradualConstraints_InstrumentationSupport")).
+lazy val InstrumentationSupport = 
+  (project in file("InstrumentationSupport")).
     settings(commonSettings:_*)
 
 lazy val JGSSupport = project.settings(setScalaVersion)
