@@ -2,20 +2,23 @@
 JAVAC=javac
 JAVA=java
 
-TESTCLASSES = "JGSTestclasses/ExamplesFromPaper" "JGSTestclasses/MethodBodies" "JGSTestclasses/ClassHierarchy"
+TESTCLASSES = "JGSTestclasses/ExamplesFromPaper" "JGSTestclasses/MethodBodies"  "JGSTestclasses/ClassHierarchy"
 
-.PHONY: all build clean $(TESTCLASSES)
+GRADUAL_CONSTRAINTS = $(JAVA) -jar GradualConstraints.jar --support-classes jgs-support.jar
 
-all: $(TESTCLASSES)
+.PHONY: all build clean JGSTestclasses/PersonalDomain $(TESTCLASSES)
+
+all: $(TESTCLASSES) JGSTestclasses/PersonalDomain
+
+JGSTestclasses/PersonalDomain: build
+	$(GRADUAL_CONSTRAINTS) --generic-casts --security-domain secdomain-alice-bob-charlie.yaml $@/src > $(subst /,_,$@).output.txt
 
 $(TESTCLASSES): build
-	$(JAVA) -jar GradualConstraints.jar $@/src > $(subst /,_,$@).output.txt
+	$(GRADUAL_CONSTRAINTS) $@/src > $(subst /,_,$@).output.txt
 
 build:
-	mkdir -p JGSSupport/bin
-	$(JAVAC) -d JGSSupport/bin JGSSupport/src/de/unifreiburg/cs/proglang/jgs/support/*.java
 	mkdir -p JGSTestclasses/bin
-	find JGSTestclasses/ -name '*.java' | xargs $(JAVAC) -cp JGSSupport/bin  -d JGSTestclasses/bin
+	find JGSTestclasses/ -name '*.java' | xargs $(JAVAC) -cp jgs-support.jar  -d JGSTestclasses/bin
 
 clean: 
 	rm -rf JGSSupport/bin

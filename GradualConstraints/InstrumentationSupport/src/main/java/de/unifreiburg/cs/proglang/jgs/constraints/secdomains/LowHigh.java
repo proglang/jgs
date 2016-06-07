@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.ParseUtils;
 import scala.Option;
 
 /**
@@ -12,11 +13,25 @@ import scala.Option;
  * @author Luminous Fennell 
  *
  */
-public class LowHigh implements SecDomain<LowHigh.Level> {
-    
+public class LowHigh extends SecDomain<LowHigh.Level> {
+
     public static enum Level {
         LOW, HIGH
     }
+
+    private final AnnotationParser<Level> parser =
+            ParseUtils.addDefaults(this, new AnnotationParser<Level>() {
+                @Override
+                public Option<Level> parse(String s) {
+                    if (s.equals("LOW")) {
+                        return Option.apply(Level.LOW);
+                    } else if (s.equals("HIGH")) {
+                        return Option.apply(Level.HIGH);
+                    } else {
+                        return Option.empty();
+                    }
+                }
+            });
 
     @Override
     public Level bottom() {
@@ -45,18 +60,7 @@ public class LowHigh implements SecDomain<LowHigh.Level> {
 
     @Override
     public AnnotationParser<Level> levelParser() {
-        return new AnnotationParser<Level>() {
-            @Override
-            public Option<Level> parse(String s) {
-            if (s.equals("LOW")) {
-               return Option.apply(Level.LOW);
-            } else if (s.equals("HIGH")) {
-                return Option.apply(Level.HIGH);
-            } else {
-                return Option.empty();
-            }
-            }
-        };
+        return parser;
     }
 
     @Override

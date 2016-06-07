@@ -87,6 +87,10 @@ class BasicStatementTyping[LevelT](
           setResult(emptyEffect)
         }
 
+        def caseFail(e : Throwable) {
+          throw new TypingAssertionFailure(s"Error analysing rhs for effects: ${rhs}\n  ${e.getMessage}")
+        }
+
         override def defaultCase(v: AnyRef) {
           throw new NotImplemented("Effect extraction not implemented for case: " + v.toString)
         }
@@ -184,9 +188,13 @@ class BasicStatementTyping[LevelT](
         mcstr.foreach(constraints += _)
         val destC: Constraint[LevelT] = Constraints.le(literal(cast.destType), destCType)
         constraints.add(destC)
-        val conv: CastsFromMapping.Conversion[LevelT] = new CastsFromMapping.Conversion[LevelT](cast.sourceType, cast.destType)
+        val conv: CastUtils.Conversion[LevelT] = new CastUtils.Conversion[LevelT](cast.sourceType, cast.destType)
         val tag: TypeVarTags.TypeVarTag = new TypeVarTags.Cast(conv)
         tags = TagMap.of(destC, tag).addAll(mcstr.map(c => TagMap.of(c, tag)).getOrElse(TagMap.empty[LevelT]))
+      }
+
+      def caseFail(e : Throwable) {
+        errorMsg.add(e.getMessage)
       }
 
       def caseNew(`type`: RefType) {

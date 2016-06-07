@@ -4,7 +4,6 @@ import de.unifreiburg.cs.proglang.jgs.constraints.{ConstraintSet, ConstraintSetF
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Supertypes
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
 import de.unifreiburg.cs.proglang.jgs.signatures.{Signature, SignatureTable}
-import org.apache.commons.lang3.tuple.Pair
 import soot.{SootClass, SootMethod}
 
 import scala.collection.JavaConversions._
@@ -54,7 +53,7 @@ object ClassHierarchyTyping {
     val sig2: Signature[Level] = signatures.get(superMethod).getOrElse(
       throw new TypingAssertionFailure(String.format("No signature found for %s %s", superMethod.toString(), errorMsgTail)))
 
-    val result: Pair[ConstraintSet.RefinementCheckResult[Level], EffectRefinementResult[Level]] = sig1.refines(csets, types, sig2)
+    val result: org.apache.commons.lang3.tuple.Pair[ConstraintSet.RefinementCheckResult[Level], EffectRefinementResult[Level]] = sig1.refines(csets, types, sig2)
     if (result.getLeft.isSuccess && result.getRight.isSuccess) {
       Result(None)
     }

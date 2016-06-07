@@ -4,6 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.util.FunctionsForJava;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import scala.Option;
 import scala.collection.JavaConverters;
+import scala.util.Try;
 import soot.*;
 import soot.jimple.*;
 
@@ -56,6 +57,12 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     public abstract void caseCast(ValueCast<Level> cast);
 
     public abstract void caseNew(RefType type);
+
+    /**
+     * Case called on a user-error (e.g. bad cast syntax) that prevents distinguishing the actual rhs case.
+     * @param e The exception identifying the user-error
+     */
+    public abstract void caseFail(Throwable e);
 
 
     /*
@@ -153,11 +160,16 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     @Override
     public void caseStaticInvokeExpr(StaticInvokeExpr v) {
 
-        Option<ValueCast<Level>> c = casts.detectValueCastFromCall(v);
-        if (c.isDefined()) {
-            caseCast(c.get());
+        Try<Option<ValueCast<Level>>> tc = casts.detectValueCastFromCall(v);
+        if (tc.isSuccess()) {
+            Option<ValueCast<Level>> c = tc.get();
+            if (c.isDefined()) {
+                caseCast(c.get());
+            } else {
+                caseCall(v, Option.<Value>empty());
+            }
         } else {
-            caseCall(v, Option.<Value>empty());
+            caseFail(tc.failed().get());
         }
     }
 

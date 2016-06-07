@@ -3,10 +3,13 @@ package de.unifreiburg.cs.proglang.jgs
 import java.io.File
 import java.util.logging.Logger
 
+import com.fasterxml.jackson.dataformat.yaml.{YAMLFactory, YAMLMapper}
+import de.unifreiburg.cs.proglang.jgs.TestCollector.{Exceptional, UnexpectedFailure, UnexpectedSuccess}
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh, UserDefined, UserDefinedUtils}
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Casts, _}
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.{emptyEffect, makeEffects}
@@ -15,8 +18,9 @@ import de.unifreiburg.cs.proglang.jgs.signatures._
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.typing.{ClassHierarchyTyping, MethodTyping, TypingAssertionFailure, TypingException}
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
+import de.unifreiburg.cs.proglang.jgs.Util._
 import org.json4s._
-import org.json4s.native.JsonMethods.{parse => parseJson}
+import org.json4s.jackson.{Json, Json4sScalaModule}
 import scopt.OptionParser
 import soot.options.Options
 import soot.{Scene, SootClass, SootField, SootMethod}
@@ -40,6 +44,8 @@ object JgsCheck {
 
   case object LowHigh extends SecDomainChoice
 
+  case object AliceBobCharlie extends SecDomainChoice
+
   case class UserDomain(val secDomainClass: File) extends SecDomainChoice
 
 
@@ -49,13 +55,23 @@ object JgsCheck {
    val runtime: String,
    val externalAnnotations: File,
    val castMethods: File,
-   // TODO: figure out how to
+   val genericCasts: Boolean,
    val secdomainChoice: SecDomainChoice,
-   val verbosity: Verbosity
+   val verbosity: Verbosity,
+   testMode: Boolean
   )
 
   val log: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.log")
   val debugLog: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.debug")
+
+
+  // configure a json4s capable yaml parser
+  val parseJson = {
+    val yamlMapper = new YAMLMapper()
+    yamlMapper.registerModule(new Json4sScalaModule)
+    val json = Json(DefaultFormats, yamlMapper)
+    (s : String) => json.parse(s)
+  }
 
   def die(msg : String, exitCode : Int = -1): Unit = {
     System.err.println(msg)
@@ -71,16 +87,19 @@ object JgsCheck {
       support = new File("JGSSupport/bin"),
       runtime = sys.props.get("sun.boot.class.path")
         .getOrElse(sys.error("Unable to look up system property `sun.boot.class.path'")),
-      externalAnnotations = new File("JGSSupport/external-annotations.json"),
-      castMethods = new File("JGSSupport/cast-methods.json"),
+      externalAnnotations = new File("external-annotations.yaml"),
+      castMethods = new File("cast-methods.yaml"),
+      genericCasts = false,
       secdomainChoice = LowHigh,
-      verbosity = Warn
+      verbosity = Warn,
+      testMode = false
     )
 
     val addDefault = (s: String, get: Opt => Object) => s + s" (default: ${get(defOpt).toString})"
 
     val parser = new OptionParser[Opt]("jgs-check") {
       head("jgs-check", "0.1")
+      // TODO: try to "built-in" the support classes (at least when doing assembly)
       opt[File]("support-classes")
         .action { (x, c) => c.copy(support = x) }
         .text(addDefault("directory containing support classes", _.support))
@@ -95,7 +114,17 @@ object JgsCheck {
       opt[File]("cast-methods")
         .action { (x, c) => c.copy(castMethods = x) }
         .text(addDefault("json file specificying the cast methods", _.castMethods))
-      help("help")
+      opt[Unit]("alice-bob-charlie")
+        .action { (x, c) => c.copy(secdomainChoice = AliceBobCharlie) }
+        .text("Use the {bottom, alice, bob, charlie, top} security domain instead of {LOW, HIGH}")
+      opt[File]("security-domain")
+          .action { (f, c) => c.copy(secdomainChoice = UserDomain(f))}
+      opt[Unit]("generic-casts")
+        .action { (_, c) => c.copy(genericCasts = true)}
+        .text("Use the generic casts from cast-methods")
+      opt[Unit]("test-mode")
+        .action { (_, c) => c.copy(testMode = true) }
+        .text("Enable test mode (only useful for unit-tests)")
       arg[File]("SOURCETREE")
         .action { (x, c) => c.copy(sourcetree = Some(x)) }
         .text("directory of sources subject to typechecking")
@@ -145,8 +174,37 @@ object JgsCheck {
             val csets = new NaiveConstraintsFactory(types)
             new Config(types, csets, opt)
           }
+          case AliceBobCharlie => {
+            val secdomain = ExampleDomains.aliceBobCharlie
+            val types = new TypeDomain(secdomain)
+            val csets =new NaiveConstraintsFactory(types)
+            new Config(types, csets, opt)
+          }
           case UserDomain(secDomainClass) =>
-            throw new IllegalArgumentException("User defined security domains are not implemented yet.")
+            val domainSpecJson = Try(parseJson(Source.fromFile(secDomainClass).mkString)) match {
+              case Failure(exc) =>
+                throw new IllegalArgumentException(
+                  s"Error parsing security domain specification ${secDomainClass}: ${exc.getMessage}"
+                )
+              case Success(json) => json
+            }
+            val domainSpec = UserDefinedUtils.fromJSon(domainSpecJson)
+            // a little validation
+            if (domainSpec.levels.isEmpty) {
+              throw new IllegalArgumentException(
+                s"No security levels found in ${secDomainClass}"
+              )
+            }
+            if (domainSpec.edges.isEmpty) {
+              throw new IllegalArgumentException(
+                s"No less-than edges found in ${secDomainClass}"
+              )
+            }
+            // create the domains
+            val secdomain = UserDefined(domainSpec.levels, domainSpec.edges)
+            val types = new TypeDomain(secdomain)
+            val csets = new NaiveConstraintsFactory(types)
+            new Config(types, csets, opt)
         }
         import cfg._
         typeCheck(s, classes)
@@ -158,6 +216,7 @@ object JgsCheck {
   class Config[Level](val types: TypeDomain[Level],
                       val csets: ConstraintSetFactory[Level],
                       val opt: Opt) {
+    val testCollector : TestCollector[Level] = TestCollector()
 
     val cstrs = new Constraints(types)
 
@@ -178,20 +237,26 @@ object JgsCheck {
       log.info("Field types: " + fieldMap.toString())
 
       val signatureMap: Map[SootMethod, Signature[Level]] =
-        (for (c <- classes;
-              m <- c.getMethods)
-          yield {
-            val constraintStrings: List[String] =
-              getSingleAnnotation(
-                extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().iterator).toList.map(_.toList),
-                new IllegalArgumentException("Found more than one constraint annotation on " + m.getName())
-              ).getOrElse(Nil)
-            val effectStrings: List[String] = getSingleAnnotation(
-              extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().iterator()).toList.map(_.toList),
-              new IllegalArgumentException("Found more than one effect annotation on " + m.getName())).getOrElse(Nil)
-            val sig = makeSignature[Level](m.getParameterCount, parseConstraints(constraintStrings), makeEffects(parseEffects(effectStrings)))
-            (m, sig)
-          }).toMap
+        (for {
+          c <- classes
+          m <- c.getMethods
+          sig <- { val constraintStrings: List[String] =
+                     getSingleAnnotation(
+                       extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().iterator).toList.map(_.toList),
+                       new IllegalArgumentException("Found more than one constraint annotation on " + m.getName())
+                     ).getOrElse(Nil)
+                   val effectStrings: List[String] = getSingleAnnotation(
+                     extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().iterator()).toList.map(_.toList),
+                     new IllegalArgumentException("Found more than one effect annotation on " + m.getName())).getOrElse(Nil)
+                   val maybeEntry =
+                     for {
+                       cs <- parseConstraints(constraintStrings)
+                       effs <- parseEffects(effectStrings)
+                     } yield makeSignature[Level](m.getParameterCount, cs, makeEffects(effs))
+                   skipAndReportFailure(log, s"Error parsing signature for method ${m}: ", maybeEntry)
+                }
+        } yield m -> sig).toMap
+
       log.info("Signature map: " + signatureMap.toString())
 
       // add signatures for constructors
@@ -205,9 +270,11 @@ object JgsCheck {
         * Read configured signatures from file
         * *****************************/
       val annotationsJsonStr = Source.fromFile(opt.externalAnnotations).mkString
+
+
       val annotationsJson = Try(parseJson(annotationsJsonStr)) match {
         case Failure(exception) =>
-          throw new IllegalArgumentException(s"Error parsing external annotations (${opt.castMethods}): ${exception.getMessage}")
+          throw new IllegalArgumentException(s"Error parsing external annotations (${opt.externalAnnotations}): ${exception.getMessage}")
         case Success(value) => value
       }
 
@@ -216,14 +283,21 @@ object JgsCheck {
           JObject(entries) <- annotationsJson \\ "methods"
           JField(name, JObject(JField("constraints", cs) :: JField("effects", effs) :: Nil)) <- entries
           m <- Try(s.getMethod(name)).map(m => List(m)).getOrElse(List())
+          sig <- {
+            // TODO: emit a warning when a method cannot be found
+            //          val m : SootMethod = Try(s.getMethod(name)).getOrElse(
+            //            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find method ${name}")
+            //          )
+            val constraintStrings : List[String] = for (JArray(entries) <- cs; JString(s) <- entries) yield s
+            val effectStrings : List[String] = for (JArray(entries) <- effs; JString(s) <- entries) yield s
+            val maybeEntry =
+              for {
+                constraints <- parseConstraints(constraintStrings)
+                effects <- parseEffects(effectStrings)
+              } yield makeSignature[Level](m.getParameterCount, constraints, makeEffects(effects))
+            skipAndReportFailure(log, s"Error parsing external annotation for method ${m}:", maybeEntry)
+          }
         } yield {
-          // TODO: emit a warning when a method cannot be found
-//          val m : SootMethod = Try(s.getMethod(name)).getOrElse(
-//            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find method ${name}")
-//          )
-          val constraintStrings : List[String] = for (JArray(entries) <- cs; JString(s) <- entries) yield s
-          val effectStrings : List[String] = for (JArray(entries) <- effs; JString(s) <- entries) yield s
-          val sig : Signature[Level] = makeSignature[Level](m.getParameterCount, parseConstraints(constraintStrings), makeEffects(parseEffects(effectStrings)))
           m -> sig
         }
 
@@ -235,15 +309,16 @@ object JgsCheck {
           JObject(entries) <- annotationsJson \\ "fields"
           JField(name, JString(typeString)) <- entries
           f <- Try(s.getField(name)).map(f => List(f)).getOrElse(List())
+          fieldType <- {
+            val t : Try[Type[Level]] = asTry(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}", types.typeParser().parse(typeString))
+            skipAndReportFailure(log, "", t)
+          }
         } yield {
           // TODO: emit a warning when a field cannot be found
 //          val f : SootField = Try(s.getField(name)).getOrElse(
 //            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find field ${name}")
 //          )
-          val t : Type[Level] = types.typeParser().parse(typeString).getOrElse(
-            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}")
-          )
-          f -> t
+          f -> fieldType
         }
 
 
@@ -263,29 +338,57 @@ object JgsCheck {
         case Success(value) => value
       }
 
-      val getAssocs: String => List[(String, String)] = sel =>
-        for {
-          JObject(entries) <- castJson \\ sel
-          JField(name, JString(conv)) <- entries
-        } yield name -> conv
+      def constructMappingCasts = {
+        val getAssocs: String => List[(String, String)] = sel =>
+          for {
+            JObject(entries) <- castJson \\ sel
+            JField(name, JString(conv)) <- entries
+          } yield name -> conv
 
-      val valueCasts: Map[String, String] = getAssocs("valuecasts").toMap
-      val contextCasts: Map[String, String] = getAssocs("contextcasts").toMap
-      val contextCastEnd = (castJson \\ "contextcastend") match {
-        case JString(s) => s
-        case _ => throw new IllegalArgumentException(s"Cannot find entry for contextcastend in ${opt.castMethods}")
-      }
+        val valueCasts: Map[String, String] = getAssocs("valuecasts").toMap
+        val contextCasts: Map[String, String] = getAssocs("contextcasts").toMap
+        val contextCastEnd = (castJson \\ "contextcastend") match {
+          case JString(s) => s
+          case _ => throw new IllegalArgumentException(s"Cannot find entry for contextcastend in ${opt.castMethods}")
+        }
 
-      // TODO: some validation would be nice
-      /*
+        // TODO: some validation would be nice: (i) method exists in CP? (ii) conversion could be parsed? (iii) conversion is compatible?
+        /*
       println(valueCasts)
       println(contextCasts)
       println(contextCastEnd)
       */
+        def makeCastMap(casts: Map[String, String]): Map[String, Conversion[Level]] = {
+          for {
+            (m, convString) <- casts
+            conv <- skipAndReportFailure(log, s"Error parsing conversion for cast-method ${m}",
+              CastUtils.parseConversion(types.typeParser(), convString))
+          } yield m -> conv
+        }
+        CastsFromMapping(makeCastMap(valueCasts), makeCastMap(contextCasts), contextCastEnd)
+      }
 
-      val casts: Casts[Level] = CastsFromMapping(
-        CastsFromMapping.parseConversionMap(types.typeParser(), valueCasts).get,
-        CastsFromMapping.parseConversionMap(types.typeParser(), contextCasts).get, contextCastEnd)
+      def constructGenericCasts = {
+        def getString(key : String) : String =
+          castJson \\ key match {
+            case JString(s) => s
+            case _ => throw new IllegalArgumentException(s"Cannot find string entry ${key} in cast-method file ${opt.castMethods}")
+          }
+        new CastsFromConstants(
+          types.typeParser(),
+          getString("valuecast-generic"),
+          getString("contextcast-generic"),
+          getString("contextcastend")
+        )
+      }
+
+      // TODO: combine generic casts and mapping casts.. generic ones should have precedence (?)
+      val casts: Casts[Level] =
+        if (opt.genericCasts) {
+          constructGenericCasts
+        } else {
+          constructMappingCasts
+        }
 
       /** ***********************
         * Class hierarchy check
@@ -311,21 +414,57 @@ object JgsCheck {
                                classOf[NotImplemented]).either {
           methodTyping.check(new TypeVars(), signatures, fieldTable, m)
         }
-        val resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
-        println(s"* Type checking method ${m.toString}: ${resultReport}")
-        println()
+        if (opt.testMode) {
+          mresult.fold(testCollector.observeError(m, _), testCollector.observe(m, _))
+        } else {
+          val resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
+          println(s"* Type checking method ${m.toString}: ${resultReport}")
+          println()
+        }
+      }
+      if (opt.testMode) {
+        val failures = testCollector.getFailures
+        val errors = testCollector.getErrors
+        val obeserved = testCollector.getObserved
+
+        val retVal =
+          if (failures.isEmpty && errors.isEmpty) {
+            0
+          } else {
+            for (fail <- failures) {
+              fail match {
+                case UnexpectedSuccess(method) =>
+                  println(s" !! Method ${method} succeeded unexpectedly")
+                case UnexpectedFailure(method, result) =>
+                  val resultReport = Format.pprint(Format.methodTypingResult(result))
+                  println(s" !! Method ${method} failed unexpecedly: ${resultReport}\n")
+              }
+            }
+            for (Exceptional(method, exc) <- errors) {
+              val excMessage = Format.pprint(Format.typingException(exc))
+              println(s" !! Error while checking method ${method}: ${excMessage}\n")
+            }
+            -1
+          }
+        println(s"(Tested ${obeserved.size} methods, ${failures.size} failures, ${errors.size} errors)")
+        sys.exit(retVal)
       }
     }
 
-    private def parseConstraints(constraintStrings: List[String]): List[SigConstraint[Level]] =
+    private def parseConstraints(constraintStrings: List[String]): Try[List[SigConstraint[Level]]] =
     // TODO: good error message when parsing fails
-      constraintStrings.map(s => new ConstraintParser(types.typeParser()).parseConstraints(s).get)
+      Try(constraintStrings.map(s => {
+        new ConstraintParser(types.typeParser()).parseConstraints(s) match {
+          case Failure(exception) => throw exception
+          case Success(value) => value
+        }
+      }))
 
-    private def parseEffects(effectStrings: List[String]): List[Type[Level]] =
-      effectStrings.map(s => types.typeParser().parse(s) match {
+    private def parseEffects(effectStrings: List[String]): Try[List[Type[Level]]] =
+      Try(effectStrings.map(s => types.typeParser().parse(s) match {
         case Some(t) => t
         case None => throw new RuntimeException(String.format("Error parsing type %s", s))
-      })
+      }))
   }
 
   private def getSingleAnnotation[A](annotations: List[A], tooManyError: RuntimeException): Option[A] =

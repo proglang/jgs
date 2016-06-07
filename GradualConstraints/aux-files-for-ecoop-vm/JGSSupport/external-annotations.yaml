@@ -1,2 +1,0 @@
-methods: 
-  "<de.unifreiburg.cs.proglang.jgs.support.IO: void printInt(int)>": { constraints: ["@0 <= LOW"], effects: ["LOW"] }

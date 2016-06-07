@@ -1,0 +1,4 @@
+JGSSupport/package
+run --test-mode --support-classes JGSSupport/target/scala-2.11/jgssupport_2.11-0.1-SNAPSHOT.jar JGSTestclasses/MethodBodies/src
+run --test-mode --generic-casts --security-domain secdomain-alice-bob-charlie.yaml --support-classes JGSSupport/target/scala-2.11/jgssupport_2.11-0.1-SNAPSHOT.jar JGSTestclasses/PersonalDomain/src
+run --test-mode --support-classes JGSSupport/target/scala-2.11/jgssupport_2.11-0.1-SNAPSHOT.jar JGSTestclasses/ExamplesFromPaper/src

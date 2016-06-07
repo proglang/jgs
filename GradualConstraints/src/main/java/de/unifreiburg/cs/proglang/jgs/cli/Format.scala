@@ -9,7 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Cx, Internal, Pa
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Lit, Pub}
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, ConstraintKind, TypeDomain, TypeVars, _}
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
 import de.unifreiburg.cs.proglang.jgs.typing._
 import org.kiama.output.PrettyPrinter._
