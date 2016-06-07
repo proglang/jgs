@@ -46,7 +46,7 @@ object JgsCheck {
   sealed case class Opt
   (val sourcetree: Option[File],
    val support: File,
-   val runtime: File,
+   val runtime: String,
    val externalAnnotations: File,
    val castMethods: File,
    // TODO: figure out how to
@@ -69,7 +69,8 @@ object JgsCheck {
     val defOpt = Opt(
       sourcetree = Some(new File("JGSTestclasses/src")),
       support = new File("JGSSupport/bin"),
-      runtime = new File("JGSSupport/rt.jar"),
+      runtime = sys.props.get("sun.boot.class.path")
+        .getOrElse(sys.error("Unable to look up system property `sun.boot.class.path'")),
       externalAnnotations = new File("JGSSupport/external-annotations.json"),
       castMethods = new File("JGSSupport/cast-methods.json"),
       secdomainChoice = LowHigh,
@@ -80,12 +81,13 @@ object JgsCheck {
 
     val parser = new OptionParser[Opt]("jgs-check") {
       head("jgs-check", "0.1")
+      // TODO: try to "built-in" the support classes (at least when doing assembly)
       opt[File]("support-classes")
         .action { (x, c) => c.copy(support = x) }
         .text(addDefault("directory containing support classes", _.support))
-      opt[File]("runtime")
+      opt[String]("boot-classes")
         .action { (x, c) => c.copy(runtime = x) }
-        .text(addDefault("path to a Java 7 rt.jar runtime library", _.runtime))
+        .text("Classpath with Java 7 boot classes. (default: value of the sun.boot.class.path system property)")
       opt[Unit]("verbose")
         .action { (_, c) => c.copy(verbosity = Debug) }
       opt[File]("external-annotations")
@@ -99,7 +101,7 @@ object JgsCheck {
         .text("directory of sources subject to typechecking")
         .required()
     }
-
+    
     val optParse = parser.parse(args, defOpt)
     optParse match {
       case None => System.exit(-1)
@@ -110,7 +112,7 @@ object JgsCheck {
         log.setLevel(if (opt.verbosity == Debug) java.util.logging.Level.INFO else java.util.logging.Level.WARNING)
 
         val o: Options = Options.v()
-        o.set_soot_classpath(raw"${opt.support.getPath}:${sourcetree.getPath}:${opt.runtime.getPath}")
+        o.set_soot_classpath(raw"${opt.support.getPath}:${sourcetree.getPath}:${opt.runtime}")
         o.set_process_dir(List(sourcetree.getPath))
 
         val s: Scene = Scene.v()
