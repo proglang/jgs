@@ -139,7 +139,14 @@ TODO
 
 ### Support for `java.lang.String`
 
-TODO
+The original ECOOP2016 submission was unable to type-check most
+programs that used `java.lang.String`. This problem was (probably)
+caused by an incompatibility of the Soot framework when running under
+Java-8.
+
+JGS-check now runs under Java-7 which fixes the problem; thus programs
+using `java.lang.String` should now work. Also, the examples in
+`JGSTestclasses/ExamplesFromPaper` now use `java.lang.String`.
 
 ### Parsing of Constraint Syntax
 
