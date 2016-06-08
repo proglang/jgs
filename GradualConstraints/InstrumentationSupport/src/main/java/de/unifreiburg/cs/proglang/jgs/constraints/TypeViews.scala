@@ -10,14 +10,6 @@ object TypeViews {
   case class Dyn[Level]() extends TypeView[Level]
   case class Pub[Level]() extends TypeView[Level]
 
-  /**
-    * A visitor for types. Implement this interface to handle the different cases for Types.
-    */
-  trait TypeViewSwitch[Level,T] {
-    def caseLit(level : Level) : T
-    def caseDyn() : T
-    def casePub() : T
-  }
 
   /**
     * Apply a TypeViewSwitch to a TypeView, returning the result
