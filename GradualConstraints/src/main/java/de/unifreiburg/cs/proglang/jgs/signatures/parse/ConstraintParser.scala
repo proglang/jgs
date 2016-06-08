@@ -6,6 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSigConstraint
 import de.unifreiburg.cs.proglang.jgs.signatures.SigConstraint
 
+import scala.util.Try
 import scala.util.parsing.combinator.RegexParsers
 
 class ConstraintParser[Level](val typeParser : AnnotationParser[Type[Level]])
@@ -32,6 +33,10 @@ class ConstraintParser[Level](val typeParser : AnnotationParser[Type[Level]])
       case sym1 ~ k ~ sym2 => makeSigConstraint(sym1, sym2, k)
     }
 
-  def parseConstraints(s : String) : ParseResult[SigConstraint[Level]] = parseAll(constraintParser, s)
+  def parseConstraints(s : String) : Try[SigConstraint[Level]] =
+    parseAll(constraintParser, s) match {
+      case Success(result, next) => scala.util.Success(result)
+      case err: NoSuccess => scala.util.Failure(new RuntimeException(s"Error parsing constraint $s: ${err.msg}"))
+    }
 }
 
