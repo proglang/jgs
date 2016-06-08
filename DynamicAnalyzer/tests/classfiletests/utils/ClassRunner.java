@@ -44,6 +44,7 @@ public class ClassRunner {
 		task.setClasspath(path);
 		task.setClassname("main.testclasses." + className);
 		task.setFork(false);
+		task.setFailonerror(true);
 		task.setProject(project);
 		
 		target.addTask(task);
@@ -73,8 +74,8 @@ public class ClassRunner {
 			System.out.println("Exception"); 
 			catchedException = e;
 			System.out.println(e.getClass());
-			assertEquals(catchedException.getCause().getClass(),
-					IllegalFlowException.class);
+			assertEquals(catchedException.getCause().getClass().toString(),
+					IllegalFlowException.class.toString());
 			System.out.println(e.toString());
 			e.printStackTrace();
 			if (!expectedException) {

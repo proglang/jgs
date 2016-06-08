@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
-// import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 
 public class LocalMap {

@@ -23,14 +23,7 @@ import analyzer.level2.WhileStmtFail;
 import analyzer.level2.WhileStmtSuccess;
 import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
-import classfiletests.ArrayRefTest;
-import classfiletests.ExtClassesTest;
-import classfiletests.FieldsSuccessTest;
-import classfiletests.IfStmtTest;
-import classfiletests.InvokeInternalMethodTest;
-import classfiletests.InvokeLibMethodTest;
-import classfiletests.MulArrayTest;
-import classfiletests.SimpleTest;
+import classfiletests.ClassTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -75,15 +68,7 @@ import tests.ExampleFailScenarios;
     LocalMapTest.class,
 
     // Tests for vaild bytecode of testclasses
-    ArrayRefTest.class,
-    ExtClassesTest.class,
-    
-    FieldsSuccessTest.class,
-    IfStmtTest.class,
-    InvokeInternalMethodTest.class,
-    InvokeLibMethodTest.class,
-    MulArrayTest.class,
-    SimpleTest.class,
+    ClassTest.class,
     })
 
 public class AllTests {

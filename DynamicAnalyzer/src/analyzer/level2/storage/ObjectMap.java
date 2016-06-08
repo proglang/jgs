@@ -2,6 +2,7 @@ package analyzer.level2.storage;
 
 
 import analyzer.level2.SecurityLevel;
+import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 import utils.exceptions.InternalAnalyzerException;
@@ -29,7 +30,6 @@ public class ObjectMap{
 	private static SecurityLevel actualReturnLevel;
 	private static ArrayList<SecurityLevel> actualArguments;
 	private static SecurityLevel assignStmtLevel = SecurityLevel.LOW;
-
 
 
 	/**

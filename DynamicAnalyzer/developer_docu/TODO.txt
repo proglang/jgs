@@ -11,13 +11,19 @@ InvokeInternalMethod
 InvokeLibMethod
 AccessFieldsOfObjects
 
+Tests: 
+Variablen prüfen
+Tags Codeursprung
+ClassRunner besser schreiben
+Alle Klassen testen
+Man darf bei test kein abort benutzen(wegen System.exit) sondern nur eine reine IllegalFlowException
 
+SecurityLevel-> Object, ".LOW .bottom()
 
 PROGRAMMING
 >> Length = Array(Level) Context
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
->> addLevelOfArrayField in HandleStmt fertig machen
 >> Read Paper
 >> Scala Tutorial
 >> Use SecDomain Interface
@@ -48,10 +54,5 @@ FINALLY
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Ant path
+Wie wird die richtige Klasse eingebunden (SecurityLevel)
 
-
-
-
-<<<<<<<<< VERBESSERUNGSVORSCHLAEGE >>>>>>>>>
-Ant - exceptions
-Length
