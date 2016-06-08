@@ -44,7 +44,7 @@ class UserDefined private (levels : Set[Level],
 object UserDefined {
 
   /**
-    * Phantom/dummy type for UserDefined security levels
+    * Type for UserDefined security levels which are described by strings
     */
   sealed case class Level(name : String)
 
