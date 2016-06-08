@@ -30,6 +30,9 @@ public class LowHighTest {
         assertThat(levels.levelParser().parse("LOW"), is(equalTo(Option.apply(LOW))));
         assertThat(levels.levelParser().parse("HIGH"), is(equalTo(Option.apply(HIGH))));
         assertThat(levels.levelParser().parse("lkjas"), is(equalTo(Option.empty())));
+        assertThat(levels.readLevel("LOW"), is(equalTo(LOW)));
+        assertThat(levels.readLevel("HIGH"), is(equalTo(HIGH)));
     }
+
 
 }

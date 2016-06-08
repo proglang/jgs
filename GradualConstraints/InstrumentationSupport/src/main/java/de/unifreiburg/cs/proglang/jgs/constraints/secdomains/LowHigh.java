@@ -12,7 +12,7 @@ import scala.Option;
  * @author Luminous Fennell 
  *
  */
-public class LowHigh implements SecDomain<LowHigh.Level> {
+public class LowHigh extends SecDomain<LowHigh.Level> {
     
     public static enum Level {
         LOW, HIGH
