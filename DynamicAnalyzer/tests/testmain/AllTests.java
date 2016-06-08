@@ -24,6 +24,7 @@ import analyzer.level2.WhileStmtSuccess;
 import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
 import classfiletests.ClassTest;
+import classfiletests.SingleTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -69,6 +70,7 @@ import tests.ExampleFailScenarios;
 
     // Tests for vaild bytecode of testclasses
     ClassTest.class,
+    SingleTest.class
     })
 
 public class AllTests {

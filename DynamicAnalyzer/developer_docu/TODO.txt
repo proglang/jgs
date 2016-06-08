@@ -40,6 +40,8 @@ TESTS
 >> Add all classfiletests to testmain
 >> Fail/Success testclasses
 
+./verify bearbeiten
+
 FINALLY
 >> konsistente variablenbezeichnung
 >> Gute Javadoc Kommentare
