@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh}
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Casts, _}
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.{emptyEffect, makeEffects}
@@ -225,7 +226,7 @@ object JgsCheck {
       val annotationsJsonStr = Source.fromFile(opt.externalAnnotations).mkString
       val annotationsJson = Try(parseJson(annotationsJsonStr)) match {
         case Failure(exception) =>
-          throw new IllegalArgumentException(s"Error parsing external annotations (${opt.castMethods}): ${exception.getMessage}")
+          throw new IllegalArgumentException(s"Error parsing external annotations (${opt.externalAnnotations}): ${exception.getMessage}")
         case Success(value) => value
       }
 
@@ -260,15 +261,16 @@ object JgsCheck {
           JObject(entries) <- annotationsJson \\ "fields"
           JField(name, JString(typeString)) <- entries
           f <- Try(s.getField(name)).map(f => List(f)).getOrElse(List())
+          fieldType <- {
+            val t : Try[Type[Level]] = withErrorNote(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}", types.typeParser().parse(typeString))
+            skipAndReportFailure(log, "", t)
+          }
         } yield {
           // TODO: emit a warning when a field cannot be found
 //          val f : SootField = Try(s.getField(name)).getOrElse(
 //            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find field ${name}")
 //          )
-          val t : Type[Level] = types.typeParser().parse(typeString).getOrElse(
-            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}")
-          )
-          f -> t
+          f -> fieldType
         }
 
 
@@ -308,9 +310,15 @@ object JgsCheck {
       println(contextCastEnd)
       */
 
-      val casts: Casts[Level] = CastsFromMapping(
-        CastsFromMapping.parseConversionMap(types.typeParser(), valueCasts).get,
-        CastsFromMapping.parseConversionMap(types.typeParser(), contextCasts).get, contextCastEnd)
+      def makeCastMap(casts : Map[String, String]) : Map[String, Conversion[Level]] = {
+        for {
+          (m, convString) <- casts
+          conv <- skipAndReportFailure(log, s"Error parsing conversion for cast-method ${m}",
+            CastsFromMapping.parseConversion(types.typeParser(), convString))
+        } yield m -> conv
+      }
+
+      val casts: Casts[Level] = CastsFromMapping(makeCastMap(valueCasts), makeCastMap(contextCasts), contextCastEnd)
 
       /** ***********************
         * Class hierarchy check
