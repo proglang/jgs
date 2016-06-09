@@ -34,7 +34,7 @@ public class LocalMap {
 		localPC.pop();
 		if (!localPC.isEmpty()) {
 			int n = localPC.size();
-			new InternalAnalyzerException("LocalPC stack is not empty at the "
+			throw new InternalAnalyzerException("LocalPC stack is not empty at the "
 					+ "end of the method. There are still " 
 					+ n + " elements.");
 		}
@@ -54,7 +54,7 @@ public class LocalMap {
 	public void popLocalPC(int domHash) {
 		int n = localPC.size();
 		if (!domHashEquals(domHash)) {
-			new InternalAnalyzerException("Trying to pop LPC with wrong hashvalue");
+			throw new InternalAnalyzerException("Trying to pop LPC with wrong hashvalue");
 		}
 		localPC.pop();
 		logger.finer("Reduced stack size from " + n 
@@ -96,7 +96,7 @@ public class LocalMap {
 			/*logger.warning("Expected local " + signature + " not found in lMap. "
 					+ "It's going to be inserted.");
 			localMap.put(signature, SecurityLevel.LOW);*/
-			new InternalAnalyzerException("Expected local " 
+			throw new InternalAnalyzerException("Expected local " 
 			+ signature + " not found in LocalMap");
 		}
 		return localMap.get(signature);

@@ -245,7 +245,7 @@ public class JimpleInjector {
 		if (!(units.getFirst() instanceof IdentityStmt) 
 				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
 				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
+			throw new InternalAnalyzerException("Expected @this reference");
 		}
 
 		String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
@@ -304,7 +304,7 @@ public class JimpleInjector {
 		if (!(units.getFirst() instanceof IdentityStmt) 
 				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
 				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
+			throw new InternalAnalyzerException("Expected @this reference");
 		}
 		
 		String fieldSignature = getSignatureForField(field);
@@ -499,7 +499,7 @@ public class JimpleInjector {
 		if (!(units.getFirst() instanceof IdentityStmt) 
 				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
 				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
+			throw new InternalAnalyzerException("Expected @this reference");
 		}
 		
 		String fieldSignature = getSignatureForField(f.getField());
@@ -635,7 +635,7 @@ public class JimpleInjector {
 		if (!(units.getFirst() instanceof IdentityStmt) 
 				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
 				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
+			throw new InternalAnalyzerException("Expected @this reference");
 		}
 		
 		String fieldSignature = getSignatureForField(f.getField());
@@ -943,7 +943,7 @@ public class JimpleInjector {
 		logger.info("Check that " + l + " is not high");
 		
 		if (l == null)	{
-			new InternalAnalyzerException("Argument is null");
+			throw new InternalAnalyzerException("Argument is null");
 		}
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
@@ -1154,9 +1154,7 @@ public class JimpleInjector {
 		if (a.getIndex().getType().toString() == "int") {
 			result = a.getIndex().toString();
 		} else {
-			logger.log(Level.SEVERE, "Unexpected type of index",
-					new InternalAnalyzerException("Unexpected type of index")); 
-			System.exit(0);
+			throw new InternalAnalyzerException("Unexpected type of index"); 
 		}
 		logger.info("Signature of array field in jimple injector is: " + result);
 		return result; 

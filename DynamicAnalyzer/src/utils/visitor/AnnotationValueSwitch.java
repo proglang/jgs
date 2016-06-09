@@ -305,7 +305,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		rightElement = RightElement.NOT;
 		logger.fine("Invoke expression is of type InterfaceInvoke");
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException("Unexpected InterfaceInvokeExpression");
+			throw new InternalAnalyzerException("Unexpected InterfaceInvokeExpression");
 		}
 	}
 
@@ -327,7 +327,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
-			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+			throw new InternalAnalyzerException("Unexpected Context for Invoke Expression");
 		}
 	}
 
@@ -349,7 +349,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
-			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+			throw new InternalAnalyzerException("Unexpected Context for Invoke Expression");
 		}
 	}
 
@@ -371,7 +371,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
-			new InternalAnalyzerException("Unexpected Context for Invoke Expression");
+			throw new InternalAnalyzerException("Unexpected Context for Invoke Expression");
 		}		
 	}
 
@@ -509,7 +509,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseParameterRef(ParameterRef v) {
 		logger.finest("Parameter reference identified " + v.toString());
-		new InternalAnalyzerException("Unhandled case of ParameterRef");
+		throw new InternalAnalyzerException("Unhandled case of ParameterRef");
 	}
 
 	@Override
@@ -523,7 +523,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseThisRef(ThisRef v) {
 		logger.finer("@This reference identified " + v.toString());
-		new InternalAnalyzerException("Unhandled case of ThisRef");
+		throw new InternalAnalyzerException("Unhandled case of ThisRef");
 	}
 
 	@Override

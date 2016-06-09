@@ -82,7 +82,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		
 		if (aStmt.getDefBoxes().size() != 1) {
-			new InternalAnalyzerException("Unexpected number of elements on the left "
+			throw new InternalAnalyzerException("Unexpected number of elements on the left "
 					+ "side of assign statement");
 		}
 		
@@ -158,7 +158,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		} else if (stmt.getRightOp() instanceof CaughtExceptionRef) {
 			logger.fine("Right operand in IdentityStmt is a CaughtException");
 		} else {
-			new InternalAnalyzerException("Unexpected type of right value "
+			throw new InternalAnalyzerException("Unexpected type of right value "
 					+ stmt.getRightOp().toString() + " in IdentityStmt");
 		}
 		

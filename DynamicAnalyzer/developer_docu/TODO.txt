@@ -1,9 +1,11 @@
 Start with:
 Alle Anttests sollten laufen
+Das kompilieren sollte laufen
 Plan erstellen welche methode wie aussehen wird
-
->> Run all Classtests automatically 
-		Check Code
+Length = Array(Level) Context
+All Unit tests should be correct
+Read Paper
+Variablen prüfen
 
 >> Refactor HandleStmt
 ExtClasses more testcases
@@ -12,7 +14,6 @@ InvokeLibMethod
 AccessFieldsOfObjects
 
 Tests: 
-Variablen prüfen
 Tags Codeursprung
 ClassRunner besser schreiben
 Man darf bei test kein abort benutzen(wegen System.exit) sondern nur eine reine IllegalFlowException
@@ -20,10 +21,8 @@ Man darf bei test kein abort benutzen(wegen System.exit) sondern nur eine reine 
 SecurityLevel-> Object, ".LOW .bottom()
 
 PROGRAMMING
->> Length = Array(Level) Context
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
->> Read Paper
 >> Scala Tutorial
 >> Use SecDomain Interface
 
@@ -34,7 +33,6 @@ KONFIGURATION
 >> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)
 
 TESTS
->> All Unit tests should be correct
 >> Benchmarktests
 >> Add all classfiletests to testmain
 >> Fail/Success testclasses
@@ -48,12 +46,11 @@ FINALLY
 >> Überall Fehlerchecks einbauen
 >> Remove all System.outs
 >> Check all TODOs
->> Exit Code not 0
 >> InternalAnalyzerException richtige Fehlermeldung
 >> thorough refactoring of handleStmt.
 >> Move more parts to visitorhelper, HandleStmtUtils??
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
-Ant path - configuration??
+Ant path - configuration?? Oder allgemein Konfiguration von Pfaden
 Wie wird die richtige Klasse eingebunden (SecurityLevel)?
 External methods no high arguments - and now?

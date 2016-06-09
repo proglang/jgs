@@ -1,6 +1,7 @@
 package classfiletests;
 
 import classfiletests.utils.ClassRunner;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -9,6 +10,7 @@ import org.junit.runners.Parameterized.Parameters;
 import utils.logging.L1Logger;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -18,16 +20,18 @@ public class ClassTest{
     
 	private final String name;
 	private final boolean hasIllegalFlow;
+	private final String[] involvedVars;
     
 
 	/**
 	 * @param name
 	 * @param hasIllegalFlow
 	 */
-	public ClassTest(String name, boolean hasIllegalFlow) {
+	public ClassTest(String name, boolean hasIllegalFlow, String... involvedVars) {
     
 		this.name = name;
 		this.hasIllegalFlow = hasIllegalFlow;
+		this.involvedVars = involvedVars;
 	}
     
 	Logger logger = L1Logger.getLogger();
@@ -35,27 +39,27 @@ public class ClassTest{
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
-				new Object[] { "AccessFieldsOfObjectsFail", true}, 
-				new Object[] { "AccessFieldsOfObjectsSuccess", false}, 
-				new Object[] { "ArithmeticExpressionsFail", true},
-				new Object[] { "ArithmeticExpressionsSuccess", false},
-				new Object[] { "ArrayRef", true},
-				new Object[] { "ExtClasses", true}, 
-				new Object[] { "FieldsSuccess", false},
-				new Object[] { "FieldWriteFail", true}, 
-				new Object[] { "ForLoop", true},
-				new Object[] { "IfStmt", true}, 
-				new Object[] { "InvokeInternalMethod", true}, 
-				new Object[] { "InvokeLibMethod", true},
-				new Object[] { "MakeHigh", true},
-				new Object[] { "MulArray", true}, 
-				new Object[] { "NonStaticMethods", true}, 
-				new Object[] { "Simple", true}, 
-				new Object[] { "StaticMethods", true}, 
-				new Object[] { "SwitchStmt", false},
-				new Object[] { "SwitchStmtFail", true},
-				new Object[] { "WhileLoop", false},
-				new Object[] { "WhileLoopFail", true});
+				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] {}}, 
+				new Object[] { "AccessFieldsOfObjectsSuccess",false,new String[]{}},
+				new Object[] { "ArithmeticExpressionsFail", true, new String[] {}},
+				new Object[] { "ArithmeticExpressionsSuccess",false,new String[]{}},
+				new Object[] { "ArrayRef", true, new String[] {}},
+				new Object[] { "ExtClasses", true, new String[] {}}, 
+				new Object[] { "FieldsSuccess", false, new String[] {}},
+				new Object[] { "FieldWriteFail", true, new String[] {}}, 
+				new Object[] { "ForLoop", true, new String[] {}},
+				new Object[] { "IfStmt", true, new String[] {}}, 
+				new Object[] { "InvokeInternalMethod", true, new String[] {}}, 
+				new Object[] { "InvokeLibMethod", true, new String[] {}},
+				new Object[] { "MakeHigh", true, new String[] {}},
+				new Object[] { "MulArray", true, new String[] {}}, 
+				new Object[] { "NonStaticMethods", true, new String[] {}}, 
+				new Object[] { "Simple", true, new String[]{"java.lang.String_r1"}},
+				new Object[] { "StaticMethods", true, new String[] {}}, 
+				new Object[] { "SwitchStmt", false, new String[] {}},
+				new Object[] { "SwitchStmtFail", true, new String[] {}},
+				new Object[] { "WhileLoop", false, new String[] {}},
+				new Object[] { "WhileLoopFail", true, new String[] {}});
 	}
 
 	@Test

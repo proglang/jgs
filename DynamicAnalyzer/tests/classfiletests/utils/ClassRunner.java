@@ -1,6 +1,7 @@
 package classfiletests.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.tools.ant.Project;
@@ -14,7 +15,7 @@ import utils.logging.L1Logger;
 import java.util.logging.Logger;
 
 /**
- * Runs given classes.
+ * Runs given class.
  * @author Regina Koenig
  */
 public class ClassRunner {
@@ -58,27 +59,40 @@ public class ClassRunner {
 	}
 	
 	/**
-	 * @param className
-	 * @param expectedException
+	 * Run class and check whether the expected exception is found.
+	 * @param className Name of the class.
+	 * @param expectedException true if an exception is expected
 	 */
-	public static void testClass(String className, boolean expectedException) {
+	public static void testClass(String className, 
+			boolean expectedException, String... involvedVars) {
 
-		Exception catchedException = null;
 		try {
 			runClass(className);
+			
+			// Fail if the class was running but an exception was expected
 			if (expectedException) {
-				System.out.println("Expected exception not found"); 
+				logger.severe("Expected exception is not found"); 
 				fail();
 			}
 		} catch (Exception e) {
-			System.out.println("Exception"); 
-			catchedException = e;
+			logger.severe("Found exception " + e.getClass().toString()); 
 			e.printStackTrace();
-			assertEquals(catchedException.getCause().getClass().toString(),
-					IllegalFlowException.class.toString());
+			
+			// Fail if an exception is thrown but no exception was expected
 			if (!expectedException) {
+				logger.severe("Fail because exception was not expected");
 				fail();
 			}
+			
+			// Fail an exception is thrown which is not the expected exception
+			assertEquals(e.getCause().getClass().toString(),
+					IllegalFlowException.class.toString());
+			
+			// Check if the expected variables are involved
+			for (String var : involvedVars) {
+				assertTrue(e.getMessage().contains(var));
+			}
+
 		}
 
 	}	
