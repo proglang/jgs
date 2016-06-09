@@ -82,8 +82,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		
 		if (aStmt.getDefBoxes().size() != 1) {
-			throw new InternalAnalyzerException("Unexpected number of elements on the left "
-					+ "side of assign statement");
+			throw new InternalAnalyzerException("Unexpected number of elements on "
+					+ "the left side of assign statement");
 		}
 		
 		logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
@@ -100,7 +100,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		Value leftOperand = aStmt.getLeftOp();
 
 		switch (AnnotationValueSwitch.rightElement) {
-		  case NOT: break;
+		  case NOT: break; // That means that the right element is already handeled
 		  case NEW_ARRAY: 
 			  JimpleInjector.addArrayToObjectMap((Local) leftOperand, aStmt);
 			  break;

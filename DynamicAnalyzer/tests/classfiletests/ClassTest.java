@@ -23,9 +23,13 @@ public class ClassTest{
 	private final String[] involvedVars;
     
 
+
 	/**
-	 * @param name
-	 * @param hasIllegalFlow
+	 * Constructor.
+	 * @param name Name of the class
+	 * @param hasIllegalFlow true if an exception is expected
+	 * @param involvedVars variables which are expected to be involved
+	 *     in the exception
 	 */
 	public ClassTest(String name, boolean hasIllegalFlow, String... involvedVars) {
     
@@ -36,6 +40,10 @@ public class ClassTest{
     
 	Logger logger = L1Logger.getLogger();
 	
+	/**
+	 * Create an Iterable for all testclasses.
+	 * @return Iterable
+	 */
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
@@ -55,11 +63,13 @@ public class ClassTest{
 				new Object[] { "MulArray", true, new String[] {}}, 
 				new Object[] { "NonStaticMethods", true, new String[] {}}, 
 				new Object[] { "Simple", true, new String[]{"java.lang.String_r1"}},
-				new Object[] { "StaticMethods", true, new String[] {}}, 
+				new Object[] { "StaticMethods", true, new String[] {}},
 				new Object[] { "SwitchStmt", false, new String[] {}},
-				new Object[] { "SwitchStmtFail", true, new String[] {}},
+				new Object[] { "SwitchStmtFail", true, 
+					      new String[] {"int_i4"}},
 				new Object[] { "WhileLoop", false, new String[] {}},
-				new Object[] { "WhileLoopFail", true, new String[] {}});
+				new Object[] { "WhileLoopFail", true, new String[] {"int_$i3"}}
+				);
 	}
 
 	@Test
@@ -67,7 +77,7 @@ public class ClassTest{
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
 
-		ClassRunner.testClass(name, hasIllegalFlow);
+		ClassRunner.testClass(name, hasIllegalFlow, involvedVars);
 
 		logger.info("Finished executing main.testclasses." + name + "");
 	}

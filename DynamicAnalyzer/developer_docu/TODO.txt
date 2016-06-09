@@ -15,12 +15,12 @@ AccessFieldsOfObjects
 
 Tests: 
 Tags Codeursprung
-ClassRunner besser schreiben
-Man darf bei test kein abort benutzen(wegen System.exit) sondern nur eine reine IllegalFlowException
+Tests für alle value und statement arten
 
 SecurityLevel-> Object, ".LOW .bottom()
 
 PROGRAMMING
+>> Value und Stmt Switch prüfen
 >> main(arg) arg = low
 >> Add a chain for arguments of the superconstructor
 >> Scala Tutorial
@@ -54,3 +54,18 @@ FINALLY
 Ant path - configuration?? Oder allgemein Konfiguration von Pfaden
 Wie wird die richtige Klasse eingebunden (SecurityLevel)?
 External methods no high arguments - and now?
+In ValueSwitch: 	@Override
+	public void caseParameterRef(ParameterRef v) {
+		logger.finest("Parameter reference identified " + v.toString());
+		throw new InternalAnalyzerException("Unhandled case of ParameterRef");
+	}
+
+	@Override
+	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
+		rightElement = RightElement.NOT;
+		if (actualContext == StmtContext.ASSIGNRIGHT) {
+			new NotSupportedStmtException("CaughtExceptionRef");
+		}
+	} einmal geht throw und einmal nicht
+	
+Length:  > > > right side: [ImmediateBox(r0), LinkedRValueBox(lengthof r0)] < < <
