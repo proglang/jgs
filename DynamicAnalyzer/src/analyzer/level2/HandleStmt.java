@@ -74,9 +74,9 @@ public class HandleStmt {
 	 * @param sink the variable which is written in a HIGH context.
 	 */
 	protected void abort(String sink) {
-		new IllegalFlowException(
+		throw new IllegalFlowException(
 				"System.exit because of illegal flow to " + sink);
-		System.exit(0);
+		// System.exit(0);
 	}
 
 	/**
@@ -628,8 +628,7 @@ public class HandleStmt {
 				+ " is not HIGH");
 		if (lm.getLevel(signature) == SecurityLevel.HIGH) {
 			logger.info("it's high");
-			throw new IllegalFlowException(
-					"Passed argument " + signature
+			abort("Passed argument " + signature
 					+ " with a high security level to a method "
 					+ "which doesn't allow it.");
 		}

@@ -1,8 +1,8 @@
 Start with:
-ANT TEST NOT RUNNING. DOES NOT CATCH ILLEGALFLOWEXCEPTIONS
+Alle Anttests sollten laufen
+Plan erstellen welche methode wie aussehen wird
 
 >> Run all Classtests automatically 
-		Add tests for ALL Classes
 		Check Code
 
 >> Refactor HandleStmt
@@ -15,7 +15,6 @@ Tests:
 Variablen prüfen
 Tags Codeursprung
 ClassRunner besser schreiben
-Alle Klassen testen
 Man darf bei test kein abort benutzen(wegen System.exit) sondern nur eine reine IllegalFlowException
 
 SecurityLevel-> Object, ".LOW .bottom()
@@ -55,6 +54,6 @@ FINALLY
 >> Move more parts to visitorhelper, HandleStmtUtils??
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
-Ant path
-Wie wird die richtige Klasse eingebunden (SecurityLevel)
-
+Ant path - configuration??
+Wie wird die richtige Klasse eingebunden (SecurityLevel)?
+External methods no high arguments - and now?

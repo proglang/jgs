@@ -23,13 +23,19 @@ public class ExternalClasses {
 	protected static HashMap<String, Command> methodMap = new HashMap<String,Command>();
 
 	static {
+		
+		// Methods where the return level is the join of the arguments levels
 		methodMap.put("<java.lang.StringBuilder: java.lang.StringBuilder "
 					+ "append(java.lang.String)>",
 					new JoinLevels());
 		methodMap.put("<java.lang.String: java.lang.String "
 				+ "substring(int,int)>", new JoinLevels());
+		
+		// Methods where the argument cannot have a High argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
 				 new NoHighLevelAllowed());
+		
+		
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeHigh(java.lang.Object)>", new MakeHigh());

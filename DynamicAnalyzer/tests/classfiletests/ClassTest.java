@@ -35,13 +35,14 @@ public class ClassTest{
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
-				new Object[] { "AccessFieldsFromObjects", true}, 
+				new Object[] { "AccessFieldsOfObjectsFail", true}, 
+				new Object[] { "AccessFieldsOfObjectsSuccess", false}, 
 				new Object[] { "ArithmeticExpressionsFail", true},
-				new Object[] { "ArithmeticExpressionsSuccess", true},
+				new Object[] { "ArithmeticExpressionsSuccess", false},
 				new Object[] { "ArrayRef", true},
 				new Object[] { "ExtClasses", true}, 
 				new Object[] { "FieldsSuccess", false},
-				new Object[] { "FieldsWriteFail", true}, 
+				new Object[] { "FieldWriteFail", true}, 
 				new Object[] { "ForLoop", true},
 				new Object[] { "IfStmt", true}, 
 				new Object[] { "InvokeInternalMethod", true}, 

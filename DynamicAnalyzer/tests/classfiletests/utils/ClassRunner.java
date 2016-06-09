@@ -73,11 +73,9 @@ public class ClassRunner {
 		} catch (Exception e) {
 			System.out.println("Exception"); 
 			catchedException = e;
-			System.out.println(e.getClass());
+			e.printStackTrace();
 			assertEquals(catchedException.getCause().getClass().toString(),
 					IllegalFlowException.class.toString());
-			System.out.println(e.toString());
-			e.printStackTrace();
 			if (!expectedException) {
 				fail();
 			}
