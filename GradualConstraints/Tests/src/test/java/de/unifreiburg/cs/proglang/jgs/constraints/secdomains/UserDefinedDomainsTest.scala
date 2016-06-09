@@ -64,6 +64,20 @@ class UserDefinedDomainsTest extends FlatSpec with Matchers {
     }
   }
 
+  "Level.toString" should "give parseable results" in {
+    import personalDomain._
+    for (l <- personalPrincipals) {
+      readLevel(l.toString) should be (l)
+    }
+  }
+
+  "Parsing a string to level and printing" should "yield the original string" in {
+    import personalDomain._
+    for (s <- Seq("Alice", "Bob", "Charlie")) {
+      readLevel(s).toString should be (s)
+    }
+  }
+
 
 
 

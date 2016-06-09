@@ -13,7 +13,7 @@ import scala.collection.JavaConversions._
   *
   * `levels`, `lt`, `lubMap`, `glbMap`, `topLevel`, `bottomLevel` should form a lattice
   */
-class UserDefined private (levels : Set[Level],
+class UserDefined private (val levels : Set[Level],
                            lt : Set[Tuple2[Level, Level]],
                            lubMap : Map[Tuple2[Level, Level], Level],
                            glbMap : Map[Tuple2[Level, Level], Level],
@@ -39,6 +39,7 @@ class UserDefined private (levels : Set[Level],
   override def lub(l1: Level, l2: Level): Level = lubMap(l1, l2)
 
   override def glb(l1: Level, l2: Level): Level = glbMap(l1, l2)
+
 }
 
 object UserDefined {
@@ -46,7 +47,9 @@ object UserDefined {
   /**
     * Type for UserDefined security levels which are described by strings
     */
-  sealed case class Level(name : String)
+  sealed case class Level(name : String) {
+    override def toString = name
+  }
 
   /**
     * Construct a UserDefined lattice of security levels.

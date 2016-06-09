@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import scala.Option;
 
 import java.util.Iterator;
 
@@ -27,7 +28,12 @@ public abstract class SecDomain<Level> {
      */
    public Level readLevel(String levelString) {
       // TODO: throw a recognizable exception here (for debugging purposes)
-      return this.levelParser().parse(levelString).get();
+      Option<Level> maybeLevel = this.levelParser().parse(levelString);
+      if (maybeLevel.isDefined()) {
+         return maybeLevel.get();
+      } else {
+         throw new IllegalArgumentException(String.format("Error parsing string %s to a level", levelString));
+      }
    }
 
    /**
