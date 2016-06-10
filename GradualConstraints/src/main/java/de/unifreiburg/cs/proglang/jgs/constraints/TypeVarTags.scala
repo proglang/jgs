@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
 import soot.{SootField, SootMethod}
 
 import scala.language.existentials

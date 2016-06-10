@@ -189,7 +189,7 @@ public class MethodBodyTyping<Level> {
             }
             Map<Constraint<Level>, TypeVarTags.TypeVarTag> tagMap = new HashMap<>();
             for (Constraint<Level> c : additionalConstraintsList) {
-                tagMap.put(c, new TypeVarTags.CxCast(new CastsFromMapping.Conversion<Level>(cxCast.sourceType, cxCast.destType)));
+                tagMap.put(c, new TypeVarTags.CxCast(new CastUtils.Conversion<Level>(cxCast.sourceType, cxCast.destType)));
             }
 
             // modify effects: remove dest and add source

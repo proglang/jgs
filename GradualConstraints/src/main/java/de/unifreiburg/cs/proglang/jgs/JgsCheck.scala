@@ -7,7 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh}
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastsFromMapping.Conversion
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Casts, _}
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.{emptyEffect, makeEffects}
@@ -314,7 +314,7 @@ object JgsCheck {
         for {
           (m, convString) <- casts
           conv <- skipAndReportFailure(log, s"Error parsing conversion for cast-method ${m}",
-            CastsFromMapping.parseConversion(types.typeParser(), convString))
+            CastUtils.parseConversion(types.typeParser(), convString))
         } yield m -> conv
       }
 

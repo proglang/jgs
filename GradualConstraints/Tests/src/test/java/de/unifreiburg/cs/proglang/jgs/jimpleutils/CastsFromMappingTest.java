@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -64,6 +65,14 @@ public class CastsFromMappingTest {
         };
     }
 
+    private static <Level> Map<String, CastUtils.Conversion<Level>> parseConversionMap(AnnotationParser<Type<Level>> typeParser, Map<String,String> casts) {
+        Map<String, CastUtils.Conversion<Level>> result = new HashMap<>();
+        for (Map.Entry<String, String> e : casts.entrySet()) {
+           result.put(e.getKey(), CastUtils.<Level>parseConversion(typeParser, e.getValue()).get());
+        }
+        return result;
+    }
+
     @Test
     public void testValid() {
         StaticInvokeExpr callCastHighToDyn = makeCall_1("castHighToDyn");
@@ -87,9 +96,10 @@ public class CastsFromMappingTest {
         cxCasts.put(callCxCastLowToDyn.getMethod().toString(), "LOW ~> ?");
         String cxCastEnd = callCxCastEnd.getMethod().toString();
 
-        Casts<Level> casts = new CastsFromMapping<>(CastsFromMapping.<Level>parseConversionMap(types.typeParser(), valueCasts).get(),
-                                                            CastsFromMapping.<Level>parseConversionMap(types.typeParser(), cxCasts).get(),
-                                                            cxCastEnd);
+        Casts<Level> casts =
+                CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types.typeParser(), valueCasts),
+                                              parseConversionMap(types.typeParser(), cxCasts),
+                                              cxCastEnd);
 
         assertThat(String.format("wrong conversion for %s", callCxCastHighToDyn.getMethod().toString()), Interop.asJavaOptional(casts.detectValueCastFromCall(callCastHighToDyn)),
                    convertsBetween(THIGH, DYN));
@@ -108,9 +118,10 @@ public class CastsFromMappingTest {
         cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxLowToDyn", "L ~> ?");
         String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.Casts.castCxEnd";
 
-        Casts<Level> casts = new CastsFromMapping<>(CastsFromMapping.<Level>parseConversionMap(types.typeParser(), valueCasts).get(),
-                                                    CastsFromMapping.<Level>parseConversionMap(types.typeParser(), cxCasts).get(),
-                                                    cxCastEnd);
+        Casts<Level> casts =
+                CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types.typeParser(), valueCasts),
+                                                       parseConversionMap(types.typeParser(), cxCasts),
+                                                       cxCastEnd);
 
     }
 }
