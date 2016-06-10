@@ -1,11 +1,9 @@
 Start with:
 Alle Anttests sollten laufen
-Das kompilieren sollte laufen
 Plan erstellen welche methode wie aussehen wird
-Length = Array(Level) Context
 All Unit tests should be correct
 Read Paper
-Variablen prüfen
+Beispiel fur SecurityLevel einbindung
 
 >> Refactor HandleStmt
 ExtClasses more testcases
@@ -34,7 +32,6 @@ KONFIGURATION
 
 TESTS
 >> Benchmarktests
->> Add all classfiletests to testmain
 >> Fail/Success testclasses
 
 ./verify bearbeiten
@@ -50,10 +47,16 @@ FINALLY
 >> thorough refactoring of handleStmt.
 >> Move more parts to visitorhelper, HandleStmtUtils??
 
+
+
+
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Ant path - configuration?? Oder allgemein Konfiguration von Pfaden
-Wie wird die richtige Klasse eingebunden (SecurityLevel)?
+
+Wie wird die richtige Klasse eingebunden (SecurityLevel)? Problem mit static
+
 External methods no high arguments - and now?
+
 In ValueSwitch: 	@Override
 	public void caseParameterRef(ParameterRef v) {
 		logger.finest("Parameter reference identified " + v.toString());
@@ -69,3 +72,6 @@ In ValueSwitch: 	@Override
 	} einmal geht throw und einmal nicht
 	
 Length:  > > > right side: [ImmediateBox(r0), LinkedRValueBox(lengthof r0)] < < <
+
+Wenn das Object nicht analysiert wird, aber auf das Feld zugegriffen wird, wird trotzdem ein
+Level gesetzt... was ist aber, wenn sich der Wert über unbeobachtete Operationen ändert?

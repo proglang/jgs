@@ -453,6 +453,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		if (actualContext == StmtContext.INVOKE 
 				|| actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			// System.out.println("Arguments" + args[0]);
 			String method = v.getMethod().toString();
 
 			if (ExternalClasses.methodMap.containsKey(method)) {

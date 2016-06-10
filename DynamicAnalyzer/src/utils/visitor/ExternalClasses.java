@@ -3,6 +3,7 @@ package utils.visitor;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Unit;
+import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationValueSwitch.RightElement;
 
@@ -56,7 +57,9 @@ public class ExternalClasses {
 		public void execute(Unit pos, Local[] params) {
 			logger.fine("Join levels for external class arguments");
 			for (Local param : params) {
-				JimpleInjector.addLevelInAssignStmt(param, pos);
+				if (param != null) {
+					JimpleInjector.addLevelInAssignStmt(param, pos);
+				}
 			}
 		}
 	}
@@ -64,6 +67,10 @@ public class ExternalClasses {
 	static class NoHighLevelAllowed implements Command {
 		public void execute(Unit pos, Local[] params) {
 			logger.fine("Check that external class has no high argument");
+			if (params == null || pos == null) {
+				throw new InternalAnalyzerException(
+						"Received a null-pointer as argument");
+			}
 			for (Local param: params) {
 				if (param != null) {
 					JimpleInjector.checkThatNotHigh(pos, param);

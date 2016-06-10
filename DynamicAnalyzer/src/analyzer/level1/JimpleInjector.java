@@ -489,18 +489,20 @@ public class JimpleInjector {
 	
 	
 	/**
-	 * @param f
-	 * @param pos
+	 * Add the level of a field of an object. It can be the field of the actually
+	 * analyzed object or the field
+	 * @param f Reference to the instance field
+	 * @param pos The statement where this field occurs
 	 */
 	public static void addLevelInAssignStmt(InstanceFieldRef f, Unit pos) {
 		logger.log(Level.INFO, "Adding level of field {0} in assignStmt in method {1}", 
 				new Object[] {f.getField().getSignature(),b.getMethod().getName()});
 		
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
-				instanceof ThisRef)) {
-			throw new InternalAnalyzerException("Expected @this reference");
-		}
+//		if (!(units.getFirst() instanceof IdentityStmt) 
+//				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
+//				instanceof ThisRef)) {
+//			throw new InternalAnalyzerException("Expected @this reference");
+//		}
 		
 		String fieldSignature = getSignatureForField(f.getField());
 		
@@ -625,18 +627,21 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param f
-	 * @param pos
+	 * Set the level of a field of an object. It can be the field of the actually
+	 * analyzed object or the field
+	 * @param f Reference to the instance field
+	 * @param pos The statement where this field occurs
 	 */
 	public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
 		logger.log(Level.INFO, "Set level to field {0} in assignStmt in method {1}", 
 				new Object[] {f.getField().getSignature(),b.getMethod().getName()});
 		
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
-				instanceof ThisRef)) {
-			throw new InternalAnalyzerException("Expected @this reference");
-		}
+//		if (!(units.getFirst() instanceof IdentityStmt) 
+//				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
+//				instanceof ThisRef)) {
+//			System.out.println(units.getFirst().getUseBoxes().toString());
+//			throw new InternalAnalyzerException("Expected @this reference");
+//		}
 		
 		String fieldSignature = getSignatureForField(f.getField());
 		
@@ -645,7 +650,11 @@ public class JimpleInjector {
 		parameterTypes.add(RefType.v("java.lang.String"));
 		
 		// units.getFirst is already a reference to @this
-		Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+		// Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+		
+		// Retrieve the object it belongs to
+		Local tmpLocal = (Local) f.getBase();
+		
 		Unit assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(fieldSignature));
 		
