@@ -1,4 +1,4 @@
-package tests.testClasses;
+package tests.testclasses;
 
 import analyzer.level2.HandleStmt;
 

@@ -3,6 +3,7 @@ package utils.visitor;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Unit;
+import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationValueSwitch.RightElement;
 
@@ -23,13 +24,19 @@ public class ExternalClasses {
 	protected static HashMap<String, Command> methodMap = new HashMap<String,Command>();
 
 	static {
+		
+		// Methods where the return level is the join of the arguments levels
 		methodMap.put("<java.lang.StringBuilder: java.lang.StringBuilder "
 					+ "append(java.lang.String)>",
 					new JoinLevels());
 		methodMap.put("<java.lang.String: java.lang.String "
 				+ "substring(int,int)>", new JoinLevels());
+		
+		// Methods where the argument cannot have a High argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
 				 new NoHighLevelAllowed());
+		
+		
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeHigh(java.lang.Object)>", new MakeHigh());
@@ -50,7 +57,9 @@ public class ExternalClasses {
 		public void execute(Unit pos, Local[] params) {
 			logger.fine("Join levels for external class arguments");
 			for (Local param : params) {
-				JimpleInjector.addLevelInAssignStmt(param, pos);
+				if (param != null) {
+					JimpleInjector.addLevelInAssignStmt(param, pos);
+				}
 			}
 		}
 	}
@@ -58,6 +67,10 @@ public class ExternalClasses {
 	static class NoHighLevelAllowed implements Command {
 		public void execute(Unit pos, Local[] params) {
 			logger.fine("Check that external class has no high argument");
+			if (params == null || pos == null) {
+				throw new InternalAnalyzerException(
+						"Received a null-pointer as argument");
+			}
 			for (Local param: params) {
 				if (param != null) {
 					JimpleInjector.checkThatNotHigh(pos, param);

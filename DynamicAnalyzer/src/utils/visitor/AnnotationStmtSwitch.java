@@ -82,8 +82,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		
 		if (aStmt.getDefBoxes().size() != 1) {
-			new InternalAnalyzerException("Unexpected number of elements on the left "
-					+ "side of assign statement");
+			throw new InternalAnalyzerException("Unexpected number of elements on "
+					+ "the left side of assign statement");
 		}
 		
 		logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
@@ -100,7 +100,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		Value leftOperand = aStmt.getLeftOp();
 
 		switch (AnnotationValueSwitch.rightElement) {
-		  case NOT: break;
+		  case NOT: break; // That means that the right element is already handeled
 		  case NEW_ARRAY: 
 			  JimpleInjector.addArrayToObjectMap((Local) leftOperand, aStmt);
 			  break;
@@ -158,7 +158,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		} else if (stmt.getRightOp() instanceof CaughtExceptionRef) {
 			logger.fine("Right operand in IdentityStmt is a CaughtException");
 		} else {
-			new InternalAnalyzerException("Unexpected type of right value "
+			throw new InternalAnalyzerException("Unexpected type of right value "
 					+ stmt.getRightOp().toString() + " in IdentityStmt");
 		}
 		
@@ -227,14 +227,38 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
 		logger.fine("\n > > > Lookup switch statement identified < < <");
 		valueSwitch.callingStmt = stmt; 
-		new NotSupportedStmtException("Lookup Switch Stmt");
+		logger.finest("Use and def boxes of SwitchStmt: " 
+				+ stmt.getUseAndDefBoxes().toString());
+		
+		// Check for all values in the condition if they are a constant value
+		// or if they are stored in a local. In the second case the local is added 
+		// to a list for the locals. 
+		List<ValueBox> valueList = stmt.getUseBoxes();
+		ArrayList<Local> localList = new ArrayList<Local>();
+		for (ValueBox v : valueList) {
+			Value val = v.getValue();
+			if (val instanceof Local) {
+				localList.add((Local) val );
+				logger.fine("New local added to local-list of SwitchStmt: " + val);
+			}
+		}
+		
+		int localListLength = localList.size();
+		
+		Local[] arguments = new Local[localListLength];
+		
+		for (int i = 0; i < localListLength; i++) {
+			arguments[i] = localList.get(i);
+		}
+
+		JimpleInjector.checkCondition(stmt, arguments);
 	}
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
 		logger.fine("\n > > > Nop statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("NopStmt");
+		// new NotSupportedStmtException("NopStmt");
 	}
 
 	@Override
@@ -267,7 +291,31 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
 		logger.fine("\n > > > Table switch statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("TableSwitchStmt");
+		logger.finest("Use and def boxes of SwitchStmt: " 
+				+ stmt.getUseAndDefBoxes().toString());
+		
+		// Check for all values in the condition if they are a constant value
+		// or if they are stored in a local. In the second case the local is added 
+		// to a list for the locals. 
+		List<ValueBox> valueList = stmt.getUseBoxes();
+		ArrayList<Local> localList = new ArrayList<Local>();
+		for (ValueBox v : valueList) {
+			Value val = v.getValue();
+			if (val instanceof Local) {
+				localList.add((Local) val );
+				logger.fine("New local added to local-list of SwitchStmt: " + val);
+			}
+		}
+		
+		int localListLength = localList.size();
+		
+		Local[] arguments = new Local[localListLength];
+		
+		for (int i = 0; i < localListLength; i++) {
+			arguments[i] = localList.get(i);
+		}
+
+		JimpleInjector.checkCondition(stmt, arguments);
 
 	}
 

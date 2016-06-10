@@ -35,6 +35,7 @@ public class LocalMapTest {
 	@Test
 	public void testGetLevel() {
 		LocalMap lm = new LocalMap();
+		lm.insertElement("a");
 		assertSame(SecurityLevel.LOW, lm.getLevel("a"));
 	}
 

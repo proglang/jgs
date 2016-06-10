@@ -74,9 +74,8 @@ public class HandleStmt {
 	 * @param sink the variable which is written in a HIGH context.
 	 */
 	protected void abort(String sink) {
-		new IllegalFlowException(
-				"System.exit because of illegal flow to " + sink);
-		System.exit(0);
+		throw new IllegalFlowException(
+				"Found an illegal flow to " + sink);
 	}
 
 	/**
@@ -104,7 +103,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Insert Object {0} to ObjectMap", o);
 		om.insertNewObject(o);		
 		if (!om.containsObject(o)) {
-			new InternalAnalyzerException("Add object " + o + " to ObjectMap failed.");
+			throw new InternalAnalyzerException("Add object " + o + " to ObjectMap failed.");
 		}
 	}
 
@@ -120,7 +119,7 @@ public class HandleStmt {
 		hsu.checkIfObjectExists(o);
 		SecurityLevel fieldLevel = om.setField(o, signature);
 		if (!om.containsField(o, signature)) {
-			new InternalAnalyzerException("Add field " 
+			throw new InternalAnalyzerException("Add field " 
 				+ signature + " to ObjectMap failed");
 		}
 		return fieldLevel;
@@ -140,7 +139,7 @@ public class HandleStmt {
 		}
 
 		if (!containsObjectInObjectMap(a)) {
-			new InternalAnalyzerException("Add Object " + a
+			throw new InternalAnalyzerException("Add Object " + a
 					+ " to ObjectMap failed");
 		}
 	}
@@ -227,7 +226,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap",
 				new Object[] { signature, level });
 		if (lm.contains(signature)) {
-			new InternalAnalyzerException("Trying to add local " + signature 
+			throw new InternalAnalyzerException("Trying to add local " + signature 
 				+ " to LocalMap, but it is already in the LocalMap.");
 		}
 		lm.insertElement(signature, level);
@@ -241,7 +240,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Add Local {0} with Level LOW to LocalMap",
 				signature);
 		if (lm.contains(signature)) {
-			new InternalAnalyzerException("Trying to add local " + signature 
+			throw new InternalAnalyzerException("Trying to add local " + signature 
 				+ " to LocalMap, but it is already in the LocalMap.");
 		}
 		lm.insertElement(signature, SecurityLevel.LOW);
@@ -254,7 +253,7 @@ public class HandleStmt {
 	 */
 	protected SecurityLevel getLocalLevel(String signature) {
 		if (!lm.contains(signature)) {
-			new InternalAnalyzerException("Local " 
+			throw new InternalAnalyzerException("Local " 
 				+ signature + " is missing in LocalMap");
 		}
 		return lm.getLevel(signature);
@@ -267,7 +266,7 @@ public class HandleStmt {
 	public void makeLocalHigh(String signature) {
 		logger.info("Set level of local " + signature + " to HIGH");
 		if (!lm.contains(signature)) {
-			new InternalAnalyzerException("Missing local " 
+			throw new InternalAnalyzerException("Missing local " 
 				+ signature + " in LocalMap");
 		}
 		lm.setLevel(signature, SecurityLevel.HIGH);
@@ -286,7 +285,7 @@ public class HandleStmt {
 	public void makeLocalLow(String signature) {
 		logger.info("Set level of " + signature + " to LOW");
 		if (!lm.contains(signature)) {
-			new InternalAnalyzerException("Missing local " 
+			throw new InternalAnalyzerException("Missing local " 
 				+ signature + " in LocalMap");
 		}
 		lm.setLevel(signature, SecurityLevel.LOW);
@@ -368,7 +367,7 @@ public class HandleStmt {
 	 */
 	public SecurityLevel assignArgumentToLocal(int pos, String local) {
 		if (!lm.contains(local)) {
-			new InternalAnalyzerException("Local " + local + " is missing in LocalMap");
+			throw new InternalAnalyzerException("Local " + local + " is missing in LocalMap");
 		}
 		lm.setLevel(local, hsu.joinWithLPC(om.getArgLevelAt(pos)));
 		return lm.getLevel(local);
@@ -382,7 +381,7 @@ public class HandleStmt {
 	 */
 	public void assignReturnLevelToLocal(String local) {
 		if (!lm.contains(local)) {
-			new InternalAnalyzerException("Missing local " + local + " in LocalMap");
+			throw new InternalAnalyzerException("Missing local " + local + " in LocalMap");
 		}
 		if (!hsu.checkLocalPC(local)) {
 			abort(local);
@@ -462,6 +461,7 @@ public class HandleStmt {
 	}
 
 	/**
+	 * 
 	 * @param local
 	 * @return
 	 */
@@ -627,8 +627,7 @@ public class HandleStmt {
 				+ " is not HIGH");
 		if (lm.getLevel(signature) == SecurityLevel.HIGH) {
 			logger.info("it's high");
-			throw new IllegalFlowException(
-					"Passed argument " + signature
+			abort("Passed argument " + signature
 					+ " with a high security level to a method "
 					+ "which doesn't allow it.");
 		}

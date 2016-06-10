@@ -19,7 +19,7 @@ public class HandleStmtUtils {
 	protected HandleStmtUtils(LocalMap lm, ObjectMap om) {
 		this.lm = lm;
 		if (lm == null) {
-			new InternalAnalyzerException("LocalMap initialization has failed.");
+			throw new InternalAnalyzerException("LocalMap initialization has failed.");
 		}
 		HandleStmtUtils.om = om;		
 		if (om == null) {
@@ -37,7 +37,7 @@ public class HandleStmtUtils {
 	 */
 	protected boolean checkLocalPC(String signature) {		
 		if (lm == null) {
-			new InternalAnalyzerException("LocalMap is not assigned");
+			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
 		SecurityLevel level = lm.getLevel(signature);
 		SecurityLevel lpc = lm.getLocalPC();
@@ -163,26 +163,24 @@ public class HandleStmtUtils {
 	
 	/**
 	 * @param signature
-	 * @param type 
-	 * 		0 = Local expected
 	 */
-	protected void checkIfLocalExists(String signature, int type) {
+	protected void checkIfLocalExists(String signature) {
 		if (!lm.contains(signature)) {
-			new InternalAnalyzerException("Missing local " 
+			throw new InternalAnalyzerException("Missing local " 
 				+ signature + " in LocalMap");
 		}
 	}
 
 	protected void checkIfObjectExists(Object o) {
 		if (!om.containsObject(o)) {
-			new InternalAnalyzerException("Missing object " 
+			throw new InternalAnalyzerException("Missing object " 
 				+ o + " in ObjectMap");
 		}
 	}
 	
 	protected void checkIfFieldExists(Object o, String signature) {
 		if (!om.containsField(o, signature)) {
-			new InternalAnalyzerException("Missing field " 
+			throw new InternalAnalyzerException("Missing field " 
 				+ signature + " in ObjectMap");
 		}
 	}

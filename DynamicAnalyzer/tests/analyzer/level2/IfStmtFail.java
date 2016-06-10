@@ -40,7 +40,7 @@ public class IfStmtFail {
 		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
 		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
 		
-		hs.checkCondition(123, "int_x");
+		hs.checkCondition("123", "int_x");
 		if (x == 1) {
 			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
 			assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
@@ -48,7 +48,7 @@ public class IfStmtFail {
 			hs.setLevelOfLocal("int_y");
 			y = 2;
 			
-			hs.exitInnerScope(123);
+			hs.exitInnerScope("123");
 		}
 		
 

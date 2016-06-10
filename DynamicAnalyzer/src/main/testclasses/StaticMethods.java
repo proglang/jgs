@@ -3,8 +3,7 @@ package main.testclasses;
 public class StaticMethods {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		int x = SimpleObject.add(2, 3);
 	}
 
 }

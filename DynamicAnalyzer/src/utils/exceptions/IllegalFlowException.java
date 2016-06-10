@@ -8,10 +8,5 @@ public class IllegalFlowException extends RuntimeException {
 		super(message);
 		printStackTrace();
 	}
-
-	public IllegalFlowException(String message, Throwable cause) {
-		super(message, cause);
-		printStackTrace();
-	}
 		
 }

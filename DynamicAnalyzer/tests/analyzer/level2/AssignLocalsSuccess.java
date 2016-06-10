@@ -262,6 +262,8 @@ public class AssignLocalsSuccess {
 		 */
 		
 		hs.addLocal("int_x");
+		hs.addLocal("TestSubClass_xy"); // TODO Ergibt das überhaupt sinn?
+		hs.addLocal("int_res");
 		int x = 0;
 
 		hs.addLevelOfLocal("TestSubClass_xy");

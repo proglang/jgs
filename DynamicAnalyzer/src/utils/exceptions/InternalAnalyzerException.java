@@ -13,7 +13,6 @@ public class InternalAnalyzerException extends RuntimeException {
 	public InternalAnalyzerException(String message) {
 		super(message);
 		printMessage();
-		System.exit(0);
 	}
 
 	public InternalAnalyzerException(String message, Throwable cause) {

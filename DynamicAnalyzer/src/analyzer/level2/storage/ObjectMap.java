@@ -2,6 +2,7 @@ package analyzer.level2.storage;
 
 
 import analyzer.level2.SecurityLevel;
+import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 import utils.exceptions.InternalAnalyzerException;
@@ -28,8 +29,7 @@ public class ObjectMap{
 	private static ObjectMap instance = null;
 	private static SecurityLevel actualReturnLevel;
 	private static ArrayList<SecurityLevel> actualArguments;
-	private static SecurityLevel assignStmtLevel = SecurityLevel.UNDEF;
-
+	private static SecurityLevel assignStmtLevel = SecurityLevel.LOW;
 
 
 	/**
@@ -66,7 +66,7 @@ public class ObjectMap{
 	public ArrayList<SecurityLevel> setActualArguments(ArrayList<SecurityLevel> args) {
 		actualArguments = args;
 		if (actualArguments.size() != args.size()) {
-			new InternalAnalyzerException("Wrong number of Arguments");
+			throw new InternalAnalyzerException("Wrong number of Arguments");
 		}
 		return actualArguments;
 	}
@@ -87,7 +87,7 @@ public class ObjectMap{
 	 */
 	public SecurityLevel getArgLevelAt(int i) {
 		if (actualArguments.size() <= i ) {
-			new InternalAnalyzerException(
+			throw new InternalAnalyzerException(
 				"You are trying to get argument level at position " + i 
 				+ " but the arguments have only size "
 				+ actualArguments.size() );	
@@ -114,7 +114,7 @@ public class ObjectMap{
 	 */
 	public SecurityLevel popGlobalPC() {
 		if (globalPC.size() == 0) {
-			new InternalAnalyzerException("GPC-stack is empty");
+			throw new InternalAnalyzerException("GPC-stack is empty");
 		}
 		if (globalPC.size() > 1) {
 			return globalPC.pop();

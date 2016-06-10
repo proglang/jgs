@@ -245,7 +245,7 @@ public class JimpleInjector {
 		if (!(units.getFirst() instanceof IdentityStmt) 
 				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
 				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
+			throw new InternalAnalyzerException("Expected @this reference");
 		}
 
 		String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
@@ -304,7 +304,7 @@ public class JimpleInjector {
 		if (!(units.getFirst() instanceof IdentityStmt) 
 				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
 				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
+			throw new InternalAnalyzerException("Expected @this reference");
 		}
 		
 		String fieldSignature = getSignatureForField(field);
@@ -489,18 +489,20 @@ public class JimpleInjector {
 	
 	
 	/**
-	 * @param f
-	 * @param pos
+	 * Add the level of a field of an object. It can be the field of the actually
+	 * analyzed object or the field
+	 * @param f Reference to the instance field
+	 * @param pos The statement where this field occurs
 	 */
 	public static void addLevelInAssignStmt(InstanceFieldRef f, Unit pos) {
 		logger.log(Level.INFO, "Adding level of field {0} in assignStmt in method {1}", 
 				new Object[] {f.getField().getSignature(),b.getMethod().getName()});
 		
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
-				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
-		}
+//		if (!(units.getFirst() instanceof IdentityStmt) 
+//				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
+//				instanceof ThisRef)) {
+//			throw new InternalAnalyzerException("Expected @this reference");
+//		}
 		
 		String fieldSignature = getSignatureForField(f.getField());
 		
@@ -625,18 +627,21 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param f
-	 * @param pos
+	 * Set the level of a field of an object. It can be the field of the actually
+	 * analyzed object or the field
+	 * @param f Reference to the instance field
+	 * @param pos The statement where this field occurs
 	 */
 	public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
 		logger.log(Level.INFO, "Set level to field {0} in assignStmt in method {1}", 
 				new Object[] {f.getField().getSignature(),b.getMethod().getName()});
 		
-		if (!(units.getFirst() instanceof IdentityStmt) 
-				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
-				instanceof ThisRef)) {
-			new InternalAnalyzerException("Expected @this reference");
-		}
+//		if (!(units.getFirst() instanceof IdentityStmt) 
+//				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
+//				instanceof ThisRef)) {
+//			System.out.println(units.getFirst().getUseBoxes().toString());
+//			throw new InternalAnalyzerException("Expected @this reference");
+//		}
 		
 		String fieldSignature = getSignatureForField(f.getField());
 		
@@ -645,7 +650,11 @@ public class JimpleInjector {
 		parameterTypes.add(RefType.v("java.lang.String"));
 		
 		// units.getFirst is already a reference to @this
-		Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+		// Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+		
+		// Retrieve the object it belongs to
+		Local tmpLocal = (Local) f.getBase();
+		
 		Unit assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(fieldSignature));
 		
@@ -943,7 +952,7 @@ public class JimpleInjector {
 		logger.info("Check that " + l + " is not high");
 		
 		if (l == null)	{
-			new InternalAnalyzerException("Argument is null");
+			throw new InternalAnalyzerException("Argument is null");
 		}
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
@@ -983,11 +992,12 @@ public class JimpleInjector {
 		paramTypes.add(RefType.v("java.lang.String"));
 		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
 		
-		// Add hashvalue for immerdiate dominator
-		String domHash = DominatorFinder.getImmediateDominatorHashValue(pos);
-		logger.info("HashVal for Dominator: " + domHash);
+		// Add hashvalue for immediate dominator
+		String domIdentity = DominatorFinder.getImmediateDominatorIdentity(pos);
+		logger.info("Identity of Dominator of \"" + pos.toString()
+				+ "\" is " + domIdentity);
 		Stmt assignHashVal = Jimple.v().newAssignStmt(
-				local_for_Strings, StringConstant.v(domHash));
+				local_for_Strings, StringConstant.v(domIdentity));
 		
 		// Add all locals to string array
 		Expr newStringArray = Jimple.v().newNewArrayExpr(
@@ -1037,11 +1047,12 @@ public class JimpleInjector {
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 		
-		String domHash = DominatorFinder.getHashValueFor(pos);
-		logger.info("Dominator hash value: " + domHash);
+		String domIdentity = DominatorFinder.getIdentityForUnit(pos);
+		logger.info("Dominator \"" + pos.toString()
+				+ "\" has identity " + domIdentity);
 		
 		Stmt assignHashVal = Jimple.v().newAssignStmt(
-				local_for_Strings, StringConstant.v(domHash));
+				local_for_Strings, StringConstant.v(domIdentity));
 		
 		
 		Expr specialIn = Jimple.v().newVirtualInvokeExpr(
@@ -1152,9 +1163,7 @@ public class JimpleInjector {
 		if (a.getIndex().getType().toString() == "int") {
 			result = a.getIndex().toString();
 		} else {
-			logger.log(Level.SEVERE, "Unexpected type of index",
-					new InternalAnalyzerException("Unexpected type of index")); 
-			System.exit(0);
+			throw new InternalAnalyzerException("Unexpected type of index"); 
 		}
 		logger.info("Signature of array field in jimple injector is: " + result);
 		return result; 

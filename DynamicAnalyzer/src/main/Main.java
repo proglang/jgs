@@ -46,7 +46,7 @@ public class Main {
 		
 		String javaHome = System.getProperty("java.home");
 		if (javaHome == null) {
-		    throw new IllegalStateException("System property `java.home' is undefined");
+			throw new IllegalStateException("System property `java.home' is undefined");
 		}
     	
 		// TODO: specify the standard library classpath as a command line argument
