@@ -54,7 +54,7 @@ object JgsCheck {
    val runtime: String,
    val externalAnnotations: File,
    val castMethods: File,
-   // TODO: figure out how to
+   val genericCasts: Boolean,
    val secdomainChoice: SecDomainChoice,
    val verbosity: Verbosity
   )
@@ -78,6 +78,7 @@ object JgsCheck {
         .getOrElse(sys.error("Unable to look up system property `sun.boot.class.path'")),
       externalAnnotations = new File("JGSSupport/external-annotations.json"),
       castMethods = new File("JGSSupport/cast-methods.json"),
+      genericCasts = true,
       secdomainChoice = LowHigh,
       verbosity = Warn
     )
@@ -103,6 +104,10 @@ object JgsCheck {
         .text(addDefault("json file specificying the cast methods", _.castMethods))
       opt[Unit]("alice-bob-charlie")
         .action { (x, c) => c.copy(secdomainChoice = AliceBobCharlie) }
+        .text("Use the {bottom, alice, bob, charlie, top} security domain instead of {LOW, HIGH}")
+      opt[Unit]("generic-casts")
+        .action { (_, c) => c.copy(genericCasts = true)}
+        .text("Use the generic casts from cast-methods")
       arg[File]("SOURCETREE")
         .action { (x, c) => c.copy(sourcetree = Some(x)) }
         .text("directory of sources subject to typechecking")
@@ -290,35 +295,57 @@ object JgsCheck {
         case Success(value) => value
       }
 
-      val getAssocs: String => List[(String, String)] = sel =>
-        for {
-          JObject(entries) <- castJson \\ sel
-          JField(name, JString(conv)) <- entries
-        } yield name -> conv
+      def constructMappingCasts = {
+        val getAssocs: String => List[(String, String)] = sel =>
+          for {
+            JObject(entries) <- castJson \\ sel
+            JField(name, JString(conv)) <- entries
+          } yield name -> conv
 
-      val valueCasts: Map[String, String] = getAssocs("valuecasts").toMap
-      val contextCasts: Map[String, String] = getAssocs("contextcasts").toMap
-      val contextCastEnd = (castJson \\ "contextcastend") match {
-        case JString(s) => s
-        case _ => throw new IllegalArgumentException(s"Cannot find entry for contextcastend in ${opt.castMethods}")
-      }
+        val valueCasts: Map[String, String] = getAssocs("valuecasts").toMap
+        val contextCasts: Map[String, String] = getAssocs("contextcasts").toMap
+        val contextCastEnd = (castJson \\ "contextcastend") match {
+          case JString(s) => s
+          case _ => throw new IllegalArgumentException(s"Cannot find entry for contextcastend in ${opt.castMethods}")
+        }
 
-      // TODO: some validation would be nice
-      /*
+        // TODO: some validation would be nice
+        /*
       println(valueCasts)
       println(contextCasts)
       println(contextCastEnd)
       */
 
-      def makeCastMap(casts : Map[String, String]) : Map[String, Conversion[Level]] = {
-        for {
-          (m, convString) <- casts
-          conv <- skipAndReportFailure(log, s"Error parsing conversion for cast-method ${m}",
-            CastUtils.parseConversion(types.typeParser(), convString))
-        } yield m -> conv
+        def makeCastMap(casts: Map[String, String]): Map[String, Conversion[Level]] = {
+          for {
+            (m, convString) <- casts
+            conv <- skipAndReportFailure(log, s"Error parsing conversion for cast-method ${m}",
+              CastUtils.parseConversion(types.typeParser(), convString))
+          } yield m -> conv
+        }
+        CastsFromMapping(makeCastMap(valueCasts), makeCastMap(contextCasts), contextCastEnd)
       }
 
-      val casts: Casts[Level] = CastsFromMapping(makeCastMap(valueCasts), makeCastMap(contextCasts), contextCastEnd)
+      def constructGenericCasts = {
+        def getString(key : String) : String =
+          castJson \\ key match {
+            case JString(s) => s
+            case _ => throw new IllegalArgumentException(s"Cannot find string entry ${key} in cast-method file ${opt.castMethods}")
+          }
+        new CastsFromConstants(
+          types.typeParser(),
+          getString("valuecast-generic"),
+          getString("contextcast-generic"),
+          getString("contextcastend")
+        )
+      }
+
+      val casts: Casts[Level] =
+        if (opt.genericCasts) {
+          constructGenericCasts
+        } else {
+          constructMappingCasts
+        }
 
       /** ***********************
         * Class hierarchy check

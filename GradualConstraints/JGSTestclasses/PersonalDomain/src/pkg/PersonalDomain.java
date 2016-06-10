@@ -131,12 +131,13 @@ public class PersonalDomain {
         }
         return z;
     }
-/*
     // OK: just making the result dynamic
     @Constraints({"? <= @ret"})
     int OK_returnDynWithCast() {
-        return Casts.castHighToDyn(this.highField);
+        return Casts.cast("alice ~> ?", this.aliceField);
     }
+
+/*
 
     // ERROR: but it is not allowed to downgrade first
     @Constraints({"? <= @ret"})
