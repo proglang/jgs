@@ -16,8 +16,7 @@ public class Casts {
     /**
      * The generic context casts.
      */
-    public static <T> T cxCast(String conversion, T x){
-        return x;
+    public static void castCx(String conversion){
     }
 
     /**

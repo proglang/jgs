@@ -137,25 +137,24 @@ public class PersonalDomain {
         return Casts.cast("alice ~> ?", this.aliceField);
     }
 
-/*
 
     // ERROR: but it is not allowed to downgrade first
     @Constraints({"? <= @ret"})
     int ERROR_returnDynWithCast_illegal() {
-        return Casts.castLowToDyn(this.highField);
+        return Casts.cast("bottom ~> ?", this.aliceField);
     }
 
     // OK: returning from a context casts
     @Constraints({"? <= @ret"})
-    @Effects({"HIGH"})
+    @Effects({"top"})
     int OK_returnFromDynCastCx() {
         int result;
-        if (this.highField == 1) {
-            Casts.castCxHighToDyn();
+        if (this.topField == 1) {
+            Casts.castCx("top ~> ?");
             result = 1;
             Casts.castCxEnd();
         } else {
-            Casts.castCxHighToDyn();
+            Casts.castCx("top ~> ?");
             result = 0;
             Casts.castCxEnd();
         }
@@ -164,11 +163,11 @@ public class PersonalDomain {
 
     // OK: same as above
     @Constraints({"? <= @ret"})
-    @Effects({"HIGH"})
+    @Effects({"top"})
     int OK_returnFromDynCastCx_shorter() {
         int result = 0;
-        if (this.highField == 1) {
-            Casts.castCxHighToDyn();
+        if (this.topField == 1) {
+            Casts.castCx("top ~> ?");
             result = 1;
             Casts.castCxEnd();
         }
@@ -177,11 +176,11 @@ public class PersonalDomain {
 
     // ERROR: trying something like above, but with a wrong cast
     @Constraints({"? <= @ret"})
-    @Effects({"HIGH"})
+    @Effects({"top"})
     int ERROR_returnFromDynCastCx_illegalInIf() {
         int result;
-        if (this.highField == 1) {
-            Casts.castCxLowToDyn();
+        if (this.topField == 1) {
+            Casts.castCx("");
             result = 1;
             Casts.castCxEnd();
         } else {
@@ -194,16 +193,14 @@ public class PersonalDomain {
 
     // ERROR: typing conflicts at a join point
     @Constraints({"? <= @ret"})
-    @Effects({"HIGH"})
+    @Effects({"top"})
     int ERROR_returnFromDynCastCx_illegalInJoin() {
-        int result = this.highField;
-        if (this.highField == 1) {
-            Casts.castCxHighToDyn();
+        int result = this.topField;
+        if (this.topField == 1) {
+            Casts.castCx("top ~> ?");
             result = 1;
             Casts.castCxEnd();
         }
         return result;
     }
-
-*/
 }

@@ -22,7 +22,7 @@
     "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToPub()>": "? ~> pub",
     "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToHigh()>": "? ~> HIGH"
   },
-  "contextcast-generic": "<de.unifreiburg.cs.proglang.jgs.support.Casts: void cxCast(java.lang.String)>",
+  "contextcast-generic": "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCx(java.lang.String)>",
   "contextcastend": "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxEnd()>"
 }
     
