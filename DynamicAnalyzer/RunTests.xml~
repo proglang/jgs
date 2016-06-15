@@ -1,0 +1,5 @@
+<project name="ClassRunner" default="execute" basedir=".">
+	<target name="execute">
+		<echo message="Hello World" />
+	</target>
+</project>
