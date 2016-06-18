@@ -434,8 +434,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 			if (ExternalClasses.methodMap.containsKey(method)) {
 				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
 				ExternalClasses.receiveCommand(method, callingStmt, args);
 			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -618,7 +621,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLocal(Local l) {	
-		rightElement = RightElement.NOT;
 		logger.finest("Local identified " + l.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			JimpleInjector.addLevelInAssignStmt(l, callingStmt);

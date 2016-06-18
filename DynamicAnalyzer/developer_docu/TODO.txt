@@ -24,6 +24,10 @@ PROGRAMMING
 >> Scala Tutorial
 >> Use SecDomain Interface
 
+Test internal classes
+Check all not Supported Statements
+ValueSwitch: CaseNewExpr
+Check all "Flags"
 
 KONFIGURATION
 >> Define sootClassPath for rt.jar in Main which works globally
@@ -52,26 +56,5 @@ FINALLY
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Ant path - configuration?? Oder allgemein Konfiguration von Pfaden
-
-Wie wird die richtige Klasse eingebunden (SecurityLevel)? Problem mit static
-
-External methods no high arguments - and now?
-
-In ValueSwitch: 	@Override
-	public void caseParameterRef(ParameterRef v) {
-		logger.finest("Parameter reference identified " + v.toString());
-		throw new InternalAnalyzerException("Unhandled case of ParameterRef");
-	}
-
-	@Override
-	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		rightElement = RightElement.NOT;
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("CaughtExceptionRef");
-		}
-	} einmal geht throw und einmal nicht
 	
-Length:  > > > right side: [ImmediateBox(r0), LinkedRValueBox(lengthof r0)] < < <
-
-Wenn das Object nicht analysiert wird, aber auf das Feld zugegriffen wird, wird trotzdem ein
-Level gesetzt... was ist aber, wenn sich der Wert über unbeobachtete Operationen ändert?
+Zwei methoden von SecDomain

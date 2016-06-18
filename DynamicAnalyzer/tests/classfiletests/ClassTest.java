@@ -62,7 +62,7 @@ public class ClassTest{
 				new Object[] { "MakeHigh", true, new String[] {}},
 				new Object[] { "MulArray", true, new String[] {}}, 
 				new Object[] { "NonStaticMethods", true, new String[] {}}, 
-				new Object[] { "Simple", true, new String[]{"java.lang.String_r1"}},
+				new Object[] { "Simple", true, new String[]{"java.lang.String_r3"}},
 				new Object[] { "StaticMethods", true, new String[] {}},
 				new Object[] { "SwitchStmt", false, new String[] {}},
 				new Object[] { "SwitchStmtFail", true, 

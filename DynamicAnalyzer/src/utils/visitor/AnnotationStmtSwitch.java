@@ -133,8 +133,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		}
 		
 
+		// Information of rightElement must be reset after the assignstatement.
 		AnnotationValueSwitch.rightElement = RightElement.NOT;
-
+		// Reset actualContext to UNDEF
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 

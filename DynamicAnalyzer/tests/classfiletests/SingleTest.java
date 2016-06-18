@@ -26,7 +26,7 @@ public class SingleTest{
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
 
-		ClassRunner.testClass(name, hasIllegalFlow, "java.lang.String_r1");
+		ClassRunner.testClass(name, hasIllegalFlow, "java.lang.String_r3");
 
 		logger.info("Finished executing main.testclasses." + name + "");
 	}
