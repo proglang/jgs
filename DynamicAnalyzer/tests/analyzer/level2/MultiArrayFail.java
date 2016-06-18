@@ -72,6 +72,7 @@ public class MultiArrayFail {
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[1];
 		
+		hs.addLocal("String_x");
 		hs.addLevelOfArrayField(tmp, Integer.toString(0));
 		hs.setLevelOfLocal("String_x");
 		@SuppressWarnings("unused")

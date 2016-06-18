@@ -2,7 +2,7 @@ package main.testclasses;
 
 
 
-public class MulArray {
+public class MulArrayFail {
    
 	public static void main(String[] args) {
 		method(2);

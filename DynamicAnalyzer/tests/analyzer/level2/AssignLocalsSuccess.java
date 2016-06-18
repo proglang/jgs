@@ -7,7 +7,7 @@ import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
-import tests.testClasses.TestSubClass;
+import tests.testclasses.TestSubClass;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;

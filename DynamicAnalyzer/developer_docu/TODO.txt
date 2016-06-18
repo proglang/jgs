@@ -1,5 +1,9 @@
 Start with:
 Alle Anttests sollten laufen
+
+
+
+
 Plan erstellen welche methode wie aussehen wird
 All Unit tests should be correct
 Read Paper
