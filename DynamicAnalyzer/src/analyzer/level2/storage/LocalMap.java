@@ -86,16 +86,8 @@ public class LocalMap {
 	 * @param signature The signature of the local.
 	 * @param securityLevel Its securitylevel.
 	 */
-	public void insertElement(String signature, Object securityLevel) {
+	public void insertLocal(String signature, Object securityLevel) {
 		localMap.put(signature, securityLevel);
-	}
-	
-	/**
-	 * Insert a new local into localMap with default securitylevel bottom().
-	 * @param signature The signature of the local.
-	 */
-	public void insertElement(String signature) {
-		insertElement(signature, SecurityLevel.bottom());
 	}
 	
 	/**
