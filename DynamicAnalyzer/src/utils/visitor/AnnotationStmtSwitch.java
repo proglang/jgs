@@ -66,7 +66,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		invokeExpr.apply(valueSwitch);
 
-		// TODO das ist eher interessant bei AssignStmt
 		logger.finer("Method has return type: " + invokeExpr.getType());
 		
 		valueSwitch.actualContext = StmtContext.UNDEF;
@@ -258,8 +257,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
 		logger.fine("\n > > > Nop statement identified < < <"); 
-		valueSwitch.callingStmt = stmt;
-		// new NotSupportedStmtException("NopStmt");
 	}
 
 	@Override

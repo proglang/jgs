@@ -23,6 +23,8 @@ public class HandleStmt {
 	private LocalMap lm;
 	private static ObjectMap om;
 	private HandleStmtUtils hsu;
+	
+	private final String ASSIGNMENT_ERROR_MESSAGE = "Found an illegal flow to ";
 
 	/**
 	 * This must be called at the beginning of every method in the analyzed
@@ -73,9 +75,8 @@ public class HandleStmt {
 	 * the analysis aborts with an {@link IllegalFlowException} and a System.exit.
 	 * @param sink the variable which is written in a HIGH context.
 	 */
-	protected void abort(String sink) {
-		throw new IllegalFlowException(
-				"Found an illegal flow to " + sink);
+	protected void abort(String message) {
+		throw new IllegalFlowException(message);
 	}
 
 	/**
@@ -384,7 +385,7 @@ public class HandleStmt {
 			throw new InternalAnalyzerException("Missing local " + local + " in LocalMap");
 		}
 		if (!hsu.checkLocalPC(local)) {
-			abort(local);
+			abort(ASSIGNMENT_ERROR_MESSAGE + local);
 		}
 		setLevelOfLocal(local, om.getActualReturnLevel());
 
@@ -528,7 +529,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Set level of local {0} to {1}",
 				new Object[] {signature, hsu.joinWithLPC(om.getAssignmentLevel())});
 		if (!hsu.checkLocalPC(signature)) {
-			abort(signature);
+			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
 		}
 		lm.setLevel(signature, hsu.joinWithLPC(om.getAssignmentLevel()));
 		logger.log(Level.INFO, "New level of local {0} is {1}",
@@ -548,7 +549,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Set level of field {0} to {1}",
 				new Object[] {field, hsu.joinWithGPC(om.getAssignmentLevel())});
 		if (!hsu.checkGlobalPC(o, field)) {
-			abort(o.toString() + field);
+			abort(ASSIGNMENT_ERROR_MESSAGE + o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		logger.log(Level.INFO, "New level of field {0} is {1}",
@@ -580,7 +581,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Set level of array-field {0} to {1}",
 				new Object[] {field, hsu.joinWithGPC(om.getAssignmentLevel())});
 		if (!hsu.checkArrayWithGlobalPC(o, field, localForObject, localForIndex)) {
-			abort(o.toString() + field);
+			abort(ASSIGNMENT_ERROR_MESSAGE + o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		logger.log(Level.INFO, "New level of array-field {0} is {1}",
@@ -610,7 +611,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Set level of array-field {0} to {1}",
 				new Object[] {field, hsu.joinWithGPC(om.getAssignmentLevel())});
 		if (!hsu.checkArrayWithGlobalPC(o, field, localForObject)) {
-			abort(o.toString() + field);
+			abort(ASSIGNMENT_ERROR_MESSAGE + o.toString() + field);
 		}
 		om.setField(o, field, hsu.joinWithGPC(om.getAssignmentLevel()));
 		logger.log(Level.INFO, "New level of array-field {0} is {1}",
@@ -620,7 +621,9 @@ public class HandleStmt {
 	}
 
 	/**
-	 * @param signature
+	 * This method is used if an argument with a HIGH value is passed to
+	 * a method which doesn't allow it.
+	 * @param signature signature of the argument
 	 */
 	public void checkThatNotHigh(String signature) {
 		logger.info("Check that " + lm.getLevel(signature)

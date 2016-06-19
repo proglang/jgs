@@ -1,6 +1,6 @@
 Start with:
 Alle Anttests sollten laufen
-
+	Fehlermeldung, wenn Klasse nicht gefunden wird
 
 
 
@@ -31,7 +31,7 @@ PROGRAMMING
 Test internal classes
 Check all not Supported Statements
 ValueSwitch: CaseNewExpr
-Check all "Flags"
+Check all "Flags". Do I need all of them?
 
 KONFIGURATION
 >> Define sootClassPath for rt.jar in Main which works globally

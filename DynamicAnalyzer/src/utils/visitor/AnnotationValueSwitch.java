@@ -55,10 +55,6 @@ import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
 
-/**
- * @author koenigr
- *
- */
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
 	Logger logger = L1Logger.getLogger();
@@ -411,8 +407,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 			if (ExternalClasses.methodMap.containsKey(method)) {
 				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
 				ExternalClasses.receiveCommand(method, callingStmt, args);
 			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -456,13 +455,15 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		if (actualContext == StmtContext.INVOKE 
 				|| actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			// System.out.println("Arguments" + args[0]);
 			String method = v.getMethod().toString();
 
 			if (ExternalClasses.methodMap.containsKey(method)) {
 				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
 				ExternalClasses.receiveCommand(method, callingStmt, args);
 			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -473,10 +474,27 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		rightElement = RightElement.NOT;
 		logger.fine("Invoke expression is of type DynamicInvoke");
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			throw new NotSupportedStmtException("DynamicInvoke");
+		logger.finest(v.toString());
+		rightElement = RightElement.NOT;
+	
+		if (actualContext == StmtContext.INVOKE 
+				|| actualContext == StmtContext.ASSIGNRIGHT ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			String method = v.getMethod().toString();
+
+			if (ExternalClasses.methodMap.containsKey(method)) {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
+				ExternalClasses.receiveCommand(method, callingStmt, args);
+			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
+				JimpleInjector.storeArgumentLevels(callingStmt, args);
+			}
+		} else {
+			throw new InternalAnalyzerException(
+					"Unexpected Context for Invoke Expression");
 		}
 	}
 

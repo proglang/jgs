@@ -35,6 +35,8 @@ public class ExternalClasses {
 		// Methods where the argument cannot have a High argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
 				 new NoHighLevelAllowed());
+		methodMap.put("<java.io.PrintStream: void println(int)>", 
+				 new NoHighLevelAllowed());
 		
 		
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());

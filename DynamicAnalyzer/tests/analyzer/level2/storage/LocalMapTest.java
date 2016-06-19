@@ -1,13 +1,13 @@
 package analyzer.level2.storage;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertSame;
 
 import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LocalMap;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class LocalMapTest {
 	

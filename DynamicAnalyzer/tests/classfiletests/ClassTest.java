@@ -58,7 +58,7 @@ public class ClassTest{
 				new Object[] { "ForLoop", true, new String[] {}},
 				new Object[] { "IfStmt", true, new String[] {}}, 
 				new Object[] { "InvokeInternalMethod", true, new String[] {}}, 
-				new Object[] { "InvokeLibMethod", true, new String[] {}},
+				new Object[] { "InvokeLibMethod", true, new String[] {"int_i0"}},
 				new Object[] { "MakeHigh", false, new String[] {}},
 				new Object[] { "MulArray", false, new String[] {}},
 				new Object[] { "MulArrayFail", true, new String[] {}}, 
