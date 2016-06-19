@@ -402,7 +402,8 @@ public class HandleStmt {
 	public void checkCondition(String dominatorIdentity, String... args) {
 		logger.info("Check condition of ifStmt");
 		localmap.pushLocalPC(
-				handleStatementUtils.joinWithLPC(handleStatementUtils.joinLocals(args)),
+				handleStatementUtils.joinWithLPC(
+				handleStatementUtils.joinLocals(args)),
 				Integer.valueOf(dominatorIdentity));
 		objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
 		logger.info("New LPC is " + localmap.getLocalPC().toString());

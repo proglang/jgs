@@ -10,7 +10,6 @@ import utils.logging.L2Logger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class HandleStmtUtils {
 	
 	Logger logger = L2Logger.getLogger();
@@ -45,83 +44,71 @@ public class HandleStmtUtils {
 	//
 
 	/**
-	 * 
-	 * @param signature
-	 * @return
+	 * Check if level of given local is greater than localPC.
+	 * @param signature signature of the local
 	 */
 	protected void checkLocalPC(String signature) {		
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
-		SecurityLevel level = localmap.getLevel(signature);
-		SecurityLevel lpc = localmap.getLocalPC();
+		Object level = localmap.getLevel(signature);
+		Object lpc = localmap.getLocalPC();
 		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2})", 
 				new Object[] {signature, level, lpc });
-		boolean res = true;
-		if (level == SecurityLevel.LOW && lpc == SecurityLevel.HIGH) {
-			res = false;
-		}
-
-		if (!res) {
+		if (!SecurityLevel.le(lpc, level)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
 		}
 	}
 	
 	/**
-	 * @param o
-	 * @param signature
-	 * @return
+	 * Check if level of given field is greater than globalPC.
+	 * @param signature signature of the field
 	 */
-	protected void checkGlobalPC(Object o, String signature) {
+	protected void checkGlobalPC(Object object, String signature) {
 		logger.log(Level.INFO, "Check if level of field {0} ({1}) >= gpc ({1})",
 				new Object[] {
-				 signature, objectmap.getFieldLevel(o, signature), objectmap.getGlobalPC()
+				 signature, objectmap.getFieldLevel(object, signature),
+				 objectmap.getGlobalPC()
 				});
-		boolean res = true;
-		if (objectmap.getFieldLevel(o, signature) == SecurityLevel.LOW 
-				&& objectmap.getGlobalPC() == SecurityLevel.HIGH) {
-			res = false;
-		}
-		if (!res) {
-			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
+		Object fieldLevel = objectmap.getFieldLevel(object, signature);
+		Object globalPC = objectmap.getGlobalPC();
+		if (!SecurityLevel.le(globalPC, fieldLevel)) {
+			abort(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature);
 		}	
 	}
 	
 	/**
-	 * @param o
-	 * @param field
-	 * @param localForObject
-	 * @param localForIndex
-	 * @return
+	 * Check if level of given array field is greater than globalPC.
+	 * This method is for the case, that the index is stored in a variable.
 	 */
-	protected boolean checkArrayWithGlobalPC(Object o, String field,
+	protected void checkArrayWithGlobalPC(Object object, String signature,
 			String localForObject, String localForIndex) {
-		boolean res = true;
-		SecurityLevel localsAndGPC = joinWithGPC(joinLocals(localForObject, localForIndex));
-		if (objectmap.getFieldLevel(o, field) == SecurityLevel.LOW 
-				&& localsAndGPC == SecurityLevel.HIGH) {
-			res = false;
-		}
-		if (!res) {
+		logger.log(Level.INFO, "Check if level of array-field {0} ({1}) >= gpc ({1})",
+				new Object[] {
+				 signature, objectmap.getFieldLevel(object, signature),
+				 objectmap.getGlobalPC()
+				});
+		Object localsAndGPC = joinWithGPC(joinLocals(localForObject, localForIndex));
+		Object fieldLevel = objectmap.getFieldLevel(object, signature);
+		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
 		}	
 	}
 	
 	/**
-	 * @param o
-	 * @param field
-	 * @param localForObject
-	 * @return
+	 * Check if level of given array field is greater than globalPC.
+	 * This method is for the case, that the index is given as a constant.
 	 */
-	protected void checkArrayWithGlobalPC(Object o, String field,
+	protected void checkArrayWithGlobalPC(Object object, String signature,
 			String localForObject) {
-		boolean res = true;
-		SecurityLevel localsAndGPC = joinWithGPC(localmap.getLevel(localForObject));
-		if (objectmap.getFieldLevel(o, field) == SecurityLevel.LOW 
-				&& localsAndGPC == SecurityLevel.HIGH) {
-			res = false;
-		}
-		if (!res) {
+		logger.log(Level.INFO, "Check if level of array-field {0} ({1}) >= gpc ({1})",
+					new Object[] {
+					 signature, objectmap.getFieldLevel(object, signature),
+					 objectmap.getGlobalPC()
+					});
+		Object localsAndGPC = joinWithGPC(localmap.getLevel(localForObject));
+		Object fieldLevel = objectmap.getFieldLevel(object, signature);
+		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
 		}
 	}
@@ -132,62 +119,46 @@ public class HandleStmtUtils {
 	//
 	
 	/**
-	 * Joins the Levels of the given locals and the local pc
-	 * @param stringList 
-	 * @return
+	 * Joins the Levels of the given locals and the local pc.
+	 * @param stringList list of singatures of the locals
+	 * @return the new security-level
 	 */
-	protected SecurityLevel joinLocals(String... stringList) {
-		SecurityLevel result = SecurityLevel.LOW;
+	protected Object joinLocals(String... stringList) {
+		Object result = SecurityLevel.bottom();
 		for (String op: stringList) {
-			if (localmap.getLevel(op) == SecurityLevel.HIGH) {
-				result = SecurityLevel.HIGH;
-			}
+			result = SecurityLevel.lub(result, localmap.getLevel(op));
 		}
 		return result;
 	}
 	
 	/**
-	 * @param object
-	 * @return
+	 * Join given security-level with localPC.
+	 * @param securityLevel security-level
+	 * @return new security-level
 	 */
-	protected SecurityLevel joinWithLPC(Object object) {
-		SecurityLevel result = SecurityLevel.LOW;
-		if (localmap.getLocalPC() == SecurityLevel.HIGH || object == SecurityLevel.HIGH) {
-			result = SecurityLevel.HIGH;
-		}
+	protected Object joinWithLPC(Object securityLevel) {
+		Object localPC = localmap.getLocalPC();
+		Object result = SecurityLevel.lub(localPC, securityLevel);
 		return result;
 	}
 	
-	/**
-	 * @param securityLevel
-	 * @return
-	 */
-	protected SecurityLevel joinWithGPC(Object securityLevel) {
-		SecurityLevel result = SecurityLevel.LOW;
-		if (objectmap.getGlobalPC() == SecurityLevel.HIGH || securityLevel == SecurityLevel.HIGH) {
-			result = SecurityLevel.HIGH;
-		}
+
+	protected Object joinWithGPC(Object securityLevel) {
+		Object globalPC = objectmap.getGlobalPC();
+		Object result = SecurityLevel.lub(globalPC, securityLevel);
 		return result;
 	}
 	
-	/**
-	 * @param levels
-	 * @return
-	 */
-	protected SecurityLevel joinLevels(Object... levels) {
-		// TODO !!!!!!!!!!!!!!! lub
-		SecurityLevel res = SecurityLevel.LOW;
-		for (SecurityLevel l: levels) {
-			if ( l == SecurityLevel.HIGH) {
-				res = SecurityLevel.HIGH;
-			}
+
+	protected Object joinLevels(Object... levels) {
+		Object res = SecurityLevel.bottom();
+		for (Object securityLevel: levels) {
+			res = SecurityLevel.lub(res, securityLevel);
 		}
 		return res;
 	}
 	
-	/**
-	 * @param signature
-	 */
+
 	protected void checkIfLocalExists(String signature) {
 		if (!localmap.contains(signature)) {
 			throw new InternalAnalyzerException("Missing local " 
