@@ -539,11 +539,10 @@ public class HandleStmt {
 	}
 
 	/**
-	 * This method is for instance-fields and for static-fields
-	 * 
-	 * @param o
-	 * @param field
-	 * @return
+	 * This method is for instance-fields and for static-fields.
+	 * @param o Object of the field.
+	 * @param field signature of the field.
+	 * @return The securitylevel of the field.
 	 */
 	public SecurityLevel setLevelOfField(Object o, String field) {		
 		logger.log(Level.INFO, "Set level of field {0} to {1}",

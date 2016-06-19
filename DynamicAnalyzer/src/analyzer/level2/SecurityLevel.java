@@ -1,7 +1,15 @@
 package analyzer.level2;
 
 public enum SecurityLevel {
-	LOW, HIGH
+	LOW, HIGH;
+	
+	public Object bottom() {
+		return LOW;
+	}
+	
+	public Object top() {
+		return HIGH;
+	}
 }
 
 //import analyzer.level2.storage.LowHigh;
