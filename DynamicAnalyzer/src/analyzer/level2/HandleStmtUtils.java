@@ -32,6 +32,7 @@ public class HandleStmtUtils {
 	//
 
 	/**
+	 * 
 	 * @param signature
 	 * @return
 	 */
@@ -151,7 +152,8 @@ public class HandleStmtUtils {
 	 * @param levels
 	 * @return
 	 */
-	protected SecurityLevel joinLevels(SecurityLevel... levels) {
+	protected SecurityLevel joinLevels(Object... levels) {
+		// TODO !!!!!!!!!!!!!!! lub
 		SecurityLevel res = SecurityLevel.LOW;
 		for (SecurityLevel l: levels) {
 			if ( l == SecurityLevel.HIGH) {

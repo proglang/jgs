@@ -1,14 +1,14 @@
 package analyzer.level2;
 
 public enum SecurityLevel {
-	LOW, HIGH;
+	LOW1, HIGH1;
 	
-	public Object bottom() {
-		return LOW;
+	public static Object bottom() {
+		return LOW1;
 	}
 	
-	public Object top() {
-		return HIGH;
+	public static Object top() {
+		return HIGH1;
 	}
 }
 

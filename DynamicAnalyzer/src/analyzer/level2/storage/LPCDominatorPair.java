@@ -1,25 +1,30 @@
 package analyzer.level2.storage;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
-import analyzer.level2.SecurityLevel;
 
+/**
+ * Class to store the local PC with its corresponding dominator. When this dominator
+ * occurs in the method body, the local PC is popped from the lPC stack. postDom is the
+ * identity-value for the dominator.
+ * @author Regina Koenig (2016)
+ *
+ */
 public class LPCDominatorPair {
 	
 	
-	SecurityLevel secLevel;
-	int postDom;
+	Object secLevel;
+	int postDominatorIdentity;
 	
-	public LPCDominatorPair(SecurityLevel secLevel, int postDom) {
-		this.secLevel = secLevel;
-		this.postDom = postDom;
+	public LPCDominatorPair(Object securityLevel, int postDominatorIdentity) {
+		this.secLevel = securityLevel;
+		this.postDominatorIdentity = postDominatorIdentity;
 	}
 
-	public SecurityLevel getSecurityLevel() {
+	public Object getSecurityLevel() {
 		return secLevel;
 	}
 	
-	public int getPostDomHashValue() {
-		return postDom;
+	public int getPostDominatorIdentity() {
+		return postDominatorIdentity;
 	}
 	
 }

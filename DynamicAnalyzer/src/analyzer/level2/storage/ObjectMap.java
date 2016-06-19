@@ -24,24 +24,24 @@ import java.util.LinkedList;
  */
 public class ObjectMap{
 	
-	private static ReferenceIdentityMap<Object, HashMap<String, SecurityLevel>> innerMap;
-	private static LinkedList<SecurityLevel> globalPC;
+	private static ReferenceIdentityMap<Object, HashMap<String, Object>> innerMap;
+	private static LinkedList<Object> globalPC;
 	private static ObjectMap instance = null;
-	private static SecurityLevel actualReturnLevel;
-	private static ArrayList<SecurityLevel> actualArguments;
-	private static SecurityLevel assignStmtLevel = SecurityLevel.LOW;
+	private static Object actualReturnLevel;
+	private static ArrayList<Object> actualArguments;
+	private static Object assignStmtLevel = SecurityLevel.bottom();
 
 
 	/**
 	 * Constructor.
 	 */
 	private ObjectMap() {
-		globalPC = new LinkedList<SecurityLevel>();
-		globalPC.push(SecurityLevel.LOW); 
-		actualReturnLevel = SecurityLevel.HIGH;
-		actualArguments = new ArrayList<SecurityLevel>();
+		globalPC = new LinkedList<Object>();
+		globalPC.push(SecurityLevel.bottom()); 
+		actualReturnLevel = SecurityLevel.top();
+		actualArguments = new ArrayList<Object>();
 		innerMap = new ReferenceIdentityMap<Object, 
-				HashMap<String, SecurityLevel>>(
+				HashMap<String, Object>>(
 				AbstractReferenceMap.ReferenceStrength.WEAK, 
 				AbstractReferenceMap.ReferenceStrength.WEAK);	
 	}
@@ -63,11 +63,12 @@ public class ObjectMap{
 	 * @param args ArrayList containing {@link SecurityLevel} s of the arguments
 	 * @return The ArrayList of currently set argument levels
 	 */
-	public ArrayList<SecurityLevel> setActualArguments(ArrayList<SecurityLevel> args) {
-		actualArguments = args;
-		if (actualArguments.size() != args.size()) {
-			throw new InternalAnalyzerException("Wrong number of Arguments");
+	public ArrayList<Object> setActualArguments(ArrayList<Object> args) {		
+		if (args == null) {
+			throw new InternalAnalyzerException(
+					"Received a null pointer as argument list.");
 		}
+		actualArguments = args;
 		return actualArguments;
 	}
 
@@ -245,16 +246,16 @@ public class ObjectMap{
 		return innerMap.get(o).size();
 	}
   
-	public void setAssignmentLevel(SecurityLevel l) {
-		assignStmtLevel = l;
+	public void setAssignmentLevel(Object SecurityLevel) {
+		assignStmtLevel = SecurityLevel;
 	}
 
-	public SecurityLevel getAssignmentLevel() {
+	public Object getAssignmentLevel() {
 		return assignStmtLevel;
 	}
 
 	public void clearAssignmentLevel() {
-		assignStmtLevel = SecurityLevel.LOW;
+		assignStmtLevel = SecurityLevel.bottom();
 	}
   
 }

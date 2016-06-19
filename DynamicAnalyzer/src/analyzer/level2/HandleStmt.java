@@ -223,7 +223,7 @@ public class HandleStmt {
 	 * @param signature signature of the local
 	 * @param level SecurityLevel for the new local
 	 */
-	public void addLocal(String signature, SecurityLevel level) {
+	public void addLocal(String signature, Object level) {
 		logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap",
 				new Object[] { signature, level });
 		if (lm.contains(signature)) {
@@ -335,12 +335,12 @@ public class HandleStmt {
 
 	/**
 	 * Add a GPC to GPC-stack.
-	 * @param l SecurityLevel of GPC.
+	 * @param securityLevel SecurityLevel of GPC.
 	 * @return new SecurityLevel
 	 */
-	protected SecurityLevel pushGlobalPC(SecurityLevel l) {
-		logger.log(Level.INFO, "Set globalPC to {0}", l);
-		om.pushGlobalPC(l);
+	protected SecurityLevel pushGlobalPC(Object securityLevel) {
+		logger.log(Level.INFO, "Set globalPC to {0}", securityLevel);
+		om.pushGlobalPC(securityLevel);
 		return om.getGlobalPC();
 	}
 
@@ -462,12 +462,12 @@ public class HandleStmt {
 	}
 
 	/**
-	 * 
-	 * @param local
-	 * @return
+	 * Join the level of the local to the assignment-level.
+	 * @param local signature of the local.
+	 * @return SecurityLevel of the local.
 	 */
-	public SecurityLevel addLevelOfLocal(String local) {
-		SecurityLevel localLevel = lm.getLevel(local);
+	public Object addLevelOfLocal(String local) {
+		Object localLevel = lm.getLevel(local);
 		logger.log(Level.INFO, "Add level {0} of local {1} to assignment-level",
 				new Object[] {localLevel, local });
 		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
@@ -477,30 +477,29 @@ public class HandleStmt {
 
 	/**
 	 * This method is for instance fields and for static fields.
-	 * 
-	 * @param o
-	 * @param field
-	 * @return
+	 * Join the level of the field to the assignment-level.
+	 * @param o The object of the field.
+	 * @param field Signature of the field.
+	 * @return SecurityLevel of the field.
 	 */
-	public SecurityLevel addLevelOfField(Object o, String field) {
-		SecurityLevel fieldLevel = om.getFieldLevel(o, field);
+	public Object addLevelOfField(Object o, String field) {
+		Object fieldLevel = om.getFieldLevel(o, field);
 		logger.log(Level.INFO, "Add level {0} of field {1} to assignment-level",
 				new Object[] {
-				fieldLevel, field });
+				    fieldLevel, field });
 		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
 				fieldLevel));
 		return om.getAssignmentLevel();
 	}
 
 	/**
-	 * @param o
-	 * @param field
-	 * @return
+	 * Join the level of the field to the assignment-level.
+	 * @param o The object of the field.
+	 * @param field Signature of the field.
+	 * @return SecurityLevel of the field.
 	 */
-	public SecurityLevel addLevelOfArrayField(Object o, String field) {
-
-		// TODO
-		SecurityLevel fieldLevel = om.getFieldLevel(o, field);		
+	public Object addLevelOfArrayField(Object o, String field) {
+		Object fieldLevel = om.getFieldLevel(o, field);		
 		logger.log(Level.INFO, "Add level {0} of array-field {1} to assignment-level",
 				new Object[] {fieldLevel, field });
 		om.setAssignmentLevel(hsu.joinLevels(om.getAssignmentLevel(),
@@ -509,15 +508,16 @@ public class HandleStmt {
 	}
 	
 	/**
-	 * @param signature
-	 * @param level
-	 * @return
+	 * Set the level of the local to given security level.
+	 * @param signature Signature of the local.
+	 * @param level SecurityLevel.
+	 * @return The new SecurityLevel.
 	 */
-	protected SecurityLevel setLevelOfLocal(String signature,
-			SecurityLevel level) {
+	protected Object setLevelOfLocal(String signature,
+			Object securitylevel) {
 		logger.log(Level.INFO, "Set level of local {0} to {1}", 
-				new Object[] {signature, level});
-		lm.setLevel(signature, level);
+				new Object[] {signature, securitylevel});
+		lm.setLevel(signature, securitylevel);
 		return lm.getLevel(signature);
 	}
 	
