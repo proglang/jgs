@@ -2,9 +2,10 @@ package analyzer.level2.storage;
 
 
 import analyzer.level2.SecurityLevel;
-import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
+
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
+
 import utils.exceptions.InternalAnalyzerException;
 
 import java.util.ArrayList;
@@ -59,8 +60,8 @@ public class ObjectMap{
 	}
 
 	/**
-	 * Store the argument {@link SecurityLevel} s for the next method which will be invoked.
-	 * @param args ArrayList containing {@link SecurityLevel} s of the arguments
+	 * Store the arguments security-levels for the next method which will be invoked.
+	 * @param args ArrayList containing the security-levels of the arguments
 	 * @return The ArrayList of currently set argument levels
 	 */
 	public ArrayList<Object> setActualArguments(ArrayList<Object> args) {		
@@ -73,20 +74,20 @@ public class ObjectMap{
 	}
 
 	/**
-	 * Returns ArrayList of {@link SecurityLevel} s of the arguments for the least
+	 * Returns ArrayList of the security-levels of the arguments for the least
 	 * recently invoked method.
-	 * @return ArrayList of {@link SecurityLevel}s
+	 * @return ArrayList of the security-levels
 	 */
-	public ArrayList<SecurityLevel> getActualArguments() {
+	public ArrayList<Object> getActualArguments() {
 		return actualArguments;
 	}
 
 	/**
-	 * Get the {@link SecurityLevel} of the argument on the i-th position.
+	 * Get the security-level of the argument on the i-th position.
 	 * @param i position of the argument
 	 * @return SecurityLevel of i-th argument
 	 */
-	public SecurityLevel getArgLevelAt(int i) {
+	public Object getArgLevelAt(int i) {
 		if (actualArguments.size() <= i ) {
 			throw new InternalAnalyzerException(
 				"You are trying to get argument level at position " + i 
@@ -100,11 +101,11 @@ public class ObjectMap{
 	/**
 	 * Push a new globalPC on the stack. This is needed when a method
 	 * is invoked in the analyzed code.
-	 * @param l {@link SecurityLevel} 
+	 * @param securityLevel new security-level for globalPC
 	 * @return recently pushed {@link SecurityLevel} 
 	 */
-	public SecurityLevel pushGlobalPC(SecurityLevel l) {
-		globalPC.push(l);
+	public Object pushGlobalPC(Object securityLevel) {
+		globalPC.push(securityLevel);
 		return globalPC.getFirst();
 	}
 
@@ -113,8 +114,8 @@ public class ObjectMap{
 	 * This is needed when a method in the analyzed code is closed.
 	 * @return the last globalPC before it was changed.
 	 */
-	public SecurityLevel popGlobalPC() {
-		if (globalPC.size() == 0) {
+	public Object popGlobalPC() {
+		if (globalPC.size() < 1 || globalPC == null) {
 			throw new InternalAnalyzerException("GPC-stack is empty");
 		}
 		if (globalPC.size() > 1) {
@@ -126,17 +127,17 @@ public class ObjectMap{
 	/** Returns SecurityLevel of the global PC without removing it.
 	 * @return SecurityLevel
 	 */
-	public SecurityLevel getGlobalPC() {
+	public Object getGlobalPC() {
 		return globalPC.getFirst();
 	}
 
 	/**
 	 * Set the return level of the actual return operation.
-	 * @param l Level of actual return-operation.
+	 * @param securityLevel Level of actual return-operation.
 	 * @return The return-level.
 	 */
-	public SecurityLevel setActualReturnLevel(SecurityLevel l) {
-		actualReturnLevel = l;
+	public Object setActualReturnLevel(Object securityLevel) {
+		actualReturnLevel = securityLevel;
 		return actualReturnLevel;
 	}
 
@@ -144,8 +145,8 @@ public class ObjectMap{
 	 * Get the return level of least recently called method.
 	 * @return The return-level of the last return-operation.
 	 */
-	public SecurityLevel getActualReturnLevel() {
-		SecurityLevel returnL = actualReturnLevel;
+	public Object getActualReturnLevel() {
+		Object returnL = actualReturnLevel;
 		return returnL;
 	}
   
@@ -156,58 +157,48 @@ public class ObjectMap{
  	 */
 	public void insertNewObject(Object o) {
 		if (!innerMap.containsKey(o)) {
-			innerMap.put(o, new HashMap<String, SecurityLevel>());
+			innerMap.put(o, new HashMap<String, Object>());
 		}
 	}
   
 	/**
 	 * Clear the Object map. This operation removes all elements from innerMap 
 	 * and globalPC stack. The stack then contains only one element 
-	 * {@link SecurityLevel}.LOW.
+	 * {@link SecurityLevel}.bottom().
 	 */
 	public void flush() {
 		innerMap.clear();
 		globalPC.clear();
-		globalPC.push(SecurityLevel.LOW);
+		globalPC.push(SecurityLevel.bottom());
 	}
  
   
 	/**
-	 * Get the {@link SecurityLevel} of a field.
-	 * @param o The Object it belongs to
-	 * @param f The signature of the field
-	 * @return {@link SecurityLevel} 
+	 * Get the security-level of a field.
+	 * @param object The Object it belongs to
+	 * @param field The signature of the field
+	 * @return security-level 
 	 */ 
-	public SecurityLevel getFieldLevel(Object o, String f) {
-		if (!innerMap.containsKey(o)) {
-			insertNewObject(o);
+	public Object getFieldLevel(Object object, String field) {
+		if (!innerMap.containsKey(object)) {
+			insertNewObject(object);
 		}
-		if (!innerMap.get(o).containsKey(f)) {
-			setField(o, f);
+		if (!innerMap.get(object).containsKey(field)) {
+			setField(object, field, SecurityLevel.bottom());
 		}
-		return innerMap.get(o).get(f);
+		return innerMap.get(object).get(field);
 	}
 
 	/**
-	 * Get the {@link SecurityLevel} of a field.
-	 * @param o The Object it belongs to
-	 * @param f The signature of the field
-	 * @param l The {@link Security Level} of the field
-	 * @return {@link SecurityLevel} 
+	 * Set the security-level of a field.
+	 * @param object The Object it belongs to
+	 * @param field The signature of the field
+	 * @param securityLevel The security-level of the field
+	 * @return security-level 
 	 */
-	public SecurityLevel setField(Object o, String f, SecurityLevel l) {
-		innerMap.get(o).put(f, l);
-		return innerMap.get(o).get(f);
-	}
-
-	/**
-	 * Calls {@link setField(Object,String,SecurityLevel)} with {@link SecurityLevel}.LOW.
-	 * @param o Object which contains the field.
-	 * @param f The field.
-	 * @return The new {@link SecurityLevel} of the field.
-	 */
-	public SecurityLevel setField(Object o, String f) {
-		return setField(o, f, SecurityLevel.LOW);
+	public Object setField(Object object, String field, Object securityLevel) {
+		innerMap.get(object).put(field, securityLevel);
+		return innerMap.get(object).get(field);
 	}
   
 	/**
@@ -220,40 +211,51 @@ public class ObjectMap{
 
 	/**
 	 * Returns true if the object is contained in the map.
-	 * @param o The Object.
+	 * @param object The Object.
 	 * @return A boolean. It's true if the object is in the map.
 	 */
-	public boolean containsObject(Object o) {
-		return innerMap.containsKey(o);
+	public boolean containsObject(Object object) {
+		return innerMap.containsKey(object);
 	}
 
 	/**
 	 * Returns true if the field is contained in the map.
-	 * @param o The Object.
-	 * @param signature The signature of the field.
+	 * @param object The Object.
+	 * @param fieldSignature The signature of the field.
 	 * @return A boolean. It's true it the field is in the map.
 	 */
-	public boolean containsField(Object o, String signature) {
-		return innerMap.get(o).containsKey(signature);
+	public boolean containsField(Object object, String fieldSignature) {
+		return innerMap.get(object).containsKey(fieldSignature);
 	}
 
 	/**
 	 * Get the number of fields of an object.
-	 * @param o The Object.
+	 * @param object The Object.
 	 * @return Returns number of fields belonging to the given object.
 	 */
-	public int getNumberOfFields(Object o) {
-		return innerMap.get(o).size();
+	public int getNumberOfFields(Object object) {
+		return innerMap.get(object).size();
 	}
   
-	public void setAssignmentLevel(Object SecurityLevel) {
-		assignStmtLevel = SecurityLevel;
+	/**
+	 * Set the security-level of the actual assign statement.
+	 * @param securityLevel the security-level
+	 */
+	public void setAssignmentLevel(Object securityLevel) {
+		assignStmtLevel = securityLevel;
 	}
 
+	/**
+	 * Get the security-level of the actual assign statement.
+	 * @param securityLevel the security-level
+	 */
 	public Object getAssignmentLevel() {
 		return assignStmtLevel;
 	}
 
+	/**
+	 * Set the security-level of the actual assign statement to default-vaule.
+	 */
 	public void clearAssignmentLevel() {
 		assignStmtLevel = SecurityLevel.bottom();
 	}
