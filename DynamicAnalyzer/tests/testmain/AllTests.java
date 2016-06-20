@@ -1,7 +1,5 @@
 package testmain;
 
-import analyzer.level1.DominatorFinderTest;
-import analyzer.level1.JimpleInjectorTest;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
 import analyzer.level2.AssignLocalsFail;
@@ -30,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import tests.ExampleFailScenarios;
 
 
 @RunWith(Suite.class)
@@ -57,12 +54,8 @@ import tests.ExampleFailScenarios;
     StaticFieldsSuccess.class,
     StaticFieldsFail.class,
 
-    ExampleFailScenarios.class,
     analyzer.level2.storage.ObjectMapTest.class, 
-    
-    // Tests for level 1
-    JimpleInjectorTest.class, 
-    DominatorFinderTest.class,
+   
 
     // Tests for protected HandleStmt methods
     ObjectMapTest.class,

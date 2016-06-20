@@ -200,6 +200,18 @@ public class ObjectMap{
 		innerMap.get(object).put(field, securityLevel);
 		return innerMap.get(object).get(field);
 	}
+	
+	/**
+	 * Add a new field to the objectMap.
+	 * @param object The Object it belongs to
+	 * @param field The signature of the field
+	 * @param securityLevel The security-level of the field
+	 * @return security-level 
+	 */
+	public Object addField(Object object, String field) {
+		innerMap.get(object).put(field, SecurityLevel.bottom());
+		return innerMap.get(object).get(field);
+	}
   
 	/**
 	 * Count the number of elements in innerMap.

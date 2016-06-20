@@ -1,18 +1,17 @@
 package analyzer.level2.storage;
 
-import static org.junit.Assert.*;
-
-import java.util.logging.Logger;
-
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 
 import analyzer.level2.HandleStmt;
-import analyzer.level2.HandleStmtForTests;
 import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.ObjectMap;
+import org.junit.Before;
+import org.junit.Test;
+import utils.logging.L2Logger;
+
+import java.util.logging.Logger;
 
 public class ObjectMapTest {
 
@@ -42,9 +41,9 @@ public class ObjectMapTest {
 		logger.info("GLOBAL PC TEST STARTED");
 		
 		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(SecurityLevel.LOW, m.getGlobalPC());
-		m.pushGlobalPC(SecurityLevel.HIGH);
-		assertEquals(SecurityLevel.HIGH, m.getGlobalPC());
+		assertEquals(SecurityLevel.bottom(), m.getGlobalPC());
+		m.pushGlobalPC(SecurityLevel.top());
+		assertEquals(SecurityLevel.top(), m.getGlobalPC());
 
 		logger.info("GLOBAL PC TEST FINISHED");
 	}
@@ -84,16 +83,16 @@ public class ObjectMapTest {
 		String f2 = "<int i2>";
 		String f3 = "<String s1>";
 		
-		m.setField(o, f1, SecurityLevel.LOW);
-		m.setField(o, f2);
-		m.setField(o, f3, SecurityLevel.HIGH);
+		m.addField(o, f1);
+		m.addField(o, f2);
+		m.setField(o, f3, SecurityLevel.top());
 		
 		Object o2 = new Object();
 		m.insertNewObject(o2);
 		
-		m.setField(o2, f1, SecurityLevel.HIGH);
-		m.setField(o2, f2, SecurityLevel.LOW);
-		m.setField(o2, f3);
+		m.setField(o2, f1, SecurityLevel.top());
+		m.setField(o2, f2, SecurityLevel.bottom());
+		m.addField(o2, f3);
 
 		logger.info("FIELDS IN OBJECT MAP TEST FINISHED");
 	}
@@ -104,7 +103,7 @@ public class ObjectMapTest {
 		logger.info("MULTIPLE OBJECTS TEST STARTED");
 		
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		ObjectMap m = ObjectMap.getInstance();
 		int numOfEl = m.getNumberOfElements();
 		hs.addObjectToObjectMap(this);

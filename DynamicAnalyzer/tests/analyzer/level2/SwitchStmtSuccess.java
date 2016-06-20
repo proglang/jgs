@@ -1,17 +1,15 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import analyzer.level2.HandleStmt;
+import analyzer.level2.SecurityLevel;
+import org.junit.Before;
+import org.junit.Test;
+import utils.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
 
 public class SwitchStmtSuccess {
 	
@@ -19,7 +17,7 @@ public class SwitchStmtSuccess {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test
@@ -27,32 +25,32 @@ public class SwitchStmtSuccess {
 		
 		LOGGER.log(Level.INFO, "SWITCH STMT LOW TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		hs.addLocal("int_x");
 		int x = 0;
 		
-		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
 		
 		hs.checkCondition("123", "int_x");
-		switch(x) {
+		switch (x) {
 		
-		case 0: 
-			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
-			hs.exitInnerScope("123");
-			break;
-		case 1:  
-			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
-			hs.exitInnerScope("123");
-			break;
-		default:  
-			assertEquals(SecurityLevel.LOW, hs.getLocalPC()); 
-			hs.exitInnerScope("123");
-			break;
+		  case 0: 
+			  assertEquals(SecurityLevel.bottom(), hs.getLocalPC()); 
+			  hs.exitInnerScope("123");
+			  break;
+		  case 1:  
+			  assertEquals(SecurityLevel.bottom(), hs.getLocalPC()); 
+			  hs.exitInnerScope("123");
+			  break;
+		  default:  
+			  assertEquals(SecurityLevel.bottom(), hs.getLocalPC()); 
+			  hs.exitInnerScope("123");
+			  break;
 		
 		} 
 
-		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
 
 		LOGGER.log(Level.INFO, "SWITCH STMT LOW TEST FINISHED");
 	}
@@ -62,35 +60,32 @@ public class SwitchStmtSuccess {
 		
 		LOGGER.log(Level.INFO, "SWITCH STMT HIGH TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
-		hs.addLocal("int_x", SecurityLevel.HIGH);
+		hs.addLocal("int_x", SecurityLevel.top());
 		int x = 0;
 		
-		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
 		
 		hs.checkCondition("123","int_x");
-		switch(x) {
+		switch (x) {
 		
-		case 0: 
-			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
-			
-			hs.setLevelOfLocal("int_x");
-			
-			hs.exitInnerScope("123");
-			break;
-		case 1:  
-			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
-			hs.exitInnerScope("123");
-			break;
-		default:  
-			assertEquals(SecurityLevel.HIGH, hs.getLocalPC()); 
-			hs.exitInnerScope("123");
-			break;
-		
+		  case 0: 
+			  assertEquals(SecurityLevel.top(), hs.getLocalPC()); 
+			  hs.setLevelOfLocal("int_x");
+			  hs.exitInnerScope("123");
+			  break;
+		  case 1:  
+			  assertEquals(SecurityLevel.top(), hs.getLocalPC()); 
+			  hs.exitInnerScope("123");
+			  break;
+		  default:  
+			  assertEquals(SecurityLevel.top(), hs.getLocalPC()); 
+			  hs.exitInnerScope("123");
+			  break;
 		} 
 
-		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
 
 		LOGGER.log(Level.INFO, "SWITCH STMT HIGH TEST FINISHED");
 	}

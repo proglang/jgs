@@ -2,7 +2,7 @@ package analyzer.level2.storage;
 
 import static org.junit.Assert.assertSame;
 
-import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.HandleStmt;
 import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LocalMap;
 
@@ -13,18 +13,18 @@ public class LocalMapTest {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test
 	public void testInsertElementStringLevel() {
 		LocalMap lm = new LocalMap();
-		lm.insertElement("a1", SecurityLevel.LOW);
-		lm.insertElement("a2");
-		lm.insertElement("a3", SecurityLevel.HIGH);
-		assertSame(SecurityLevel.LOW, lm.getLevel("a1"));
-		assertSame(SecurityLevel.LOW, lm.getLevel("a2"));
-		assertSame(SecurityLevel.HIGH, lm.getLevel("a3"));	
+		lm.insertLocal("a1", SecurityLevel.bottom());
+		lm.insertLocal("a2");
+		lm.insertLocal("a3", SecurityLevel.top());
+		assertSame(SecurityLevel.bottom(), lm.getLevel("a1"));
+		assertSame(SecurityLevel.bottom(), lm.getLevel("a2"));
+		assertSame(SecurityLevel.top(), lm.getLevel("a3"));	
 	}
 
 	@Test
@@ -35,8 +35,8 @@ public class LocalMapTest {
 	@Test
 	public void testGetLevel() {
 		LocalMap lm = new LocalMap();
-		lm.insertElement("a");
-		assertSame(SecurityLevel.LOW, lm.getLevel("a"));
+		lm.insertLocal("a");
+		assertSame(SecurityLevel.bottom(), lm.getLevel("a"));
 	}
 
 	@Test

@@ -2,13 +2,13 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.logging.Logger;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import utils.exceptions.IllegalFlowException;
 import utils.logging.L2Logger;
+
+import java.util.logging.Logger;
 
 public class CheckThatNotHigh {
 

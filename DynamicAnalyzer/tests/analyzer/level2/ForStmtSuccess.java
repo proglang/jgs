@@ -1,12 +1,12 @@
 package analyzer.level2;
 
+import org.junit.Before;
+import org.junit.Test;
+import utils.logging.L2Logger;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class ForStmtSuccess {
 	
@@ -14,7 +14,7 @@ public class ForStmtSuccess {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@SuppressWarnings("unused")
@@ -23,14 +23,14 @@ public class ForStmtSuccess {
 		
 		LOGGER.log(Level.INFO, "FOR STMT LOCAL TEST SUCCESS STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_i");
 		hs.addLocal("int_res");
 		
 		int res = 0;
 		
 		hs.checkCondition("123", "int_i");
-		for(int i = 0;i < 1; i++){
+		for (int i = 0;i < 1; i++) {
 			
 			hs.setLevelOfLocal("int_res");
 			res = 2;
@@ -49,7 +49,7 @@ public class ForStmtSuccess {
 		
 		LOGGER.log(Level.INFO, "FOR STMT FIELD TEST SUCCESS STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_i");
 		hs.addFieldToObjectMap(this, "int_res");
@@ -58,7 +58,7 @@ public class ForStmtSuccess {
 		int res; // Field
 		
 		hs.checkCondition("123", "int_i");
-		for(i = 0;i < 1; i++){
+		for (i = 0;i < 1; i++) {
 			
 			hs.setLevelOfField(this, "int_res");
 			res = 2;

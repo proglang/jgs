@@ -1,18 +1,18 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import analyzer.level2.HandleStmt;
+import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
 
-import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
 
 public class IfStmtSuccess {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test
@@ -20,73 +20,73 @@ public class IfStmtSuccess {
 		
 		System.out.println("SIMPLE IF STMT TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_x");
 		
 		hs.setLevelOfLocal("int_x");
 		int x = 1;
-		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_x"));
+		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_x"));
 
-		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
-		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
+		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 		
 		hs.checkCondition("123", "int_x");
 		if (x == 1) {
-			assertEquals(SecurityLevel.LOW, hs.getLocalPC());
-			assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
+			assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
+			assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 			
 			hs.makeLocalHigh("int_x");
 			
 			hs.checkCondition("123", "int_x");
 			if (x == 1) {
 
-				assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
-				assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
+				assertEquals(SecurityLevel.top(), hs.getLocalPC());
+				assertEquals(SecurityLevel.top(), hs.getGlobalPC());	
 				
 				hs.exitInnerScope("123");
 			}
 			
-			assertEquals(SecurityLevel.LOW, hs.getLocalPC());
-			assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
+			assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
+			assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 			
 			hs.exitInnerScope("123");
 		}
 		
 
-		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
-		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
+		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 		
 		hs.makeLocalHigh("int_x");
 		
 		hs.checkCondition("123", "int_x");
 		if (x == 1) {
 
-			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
-			assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
+			assertEquals(SecurityLevel.top(), hs.getLocalPC());
+			assertEquals(SecurityLevel.top(), hs.getGlobalPC());	
 			
 			hs.exitInnerScope("123");
 		}
 		
 
-		assertEquals(SecurityLevel.LOW, hs.getLocalPC());
-		assertEquals(SecurityLevel.LOW, hs.getGlobalPC());	
+		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 		
 		hs.makeLocalLow("int_x");
-		hs.pushLocalPC(SecurityLevel.HIGH, 234);
-		hs.pushGlobalPC(SecurityLevel.HIGH);
+		hs.pushLocalPC(SecurityLevel.top(), 234);
+		hs.pushGlobalPC(SecurityLevel.top());
 		
 		hs.checkCondition("123", "int_x");
 		if (x == 1) {
 
-			assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
-			assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());	
+			assertEquals(SecurityLevel.top(), hs.getLocalPC());
+			assertEquals(SecurityLevel.top(), hs.getGlobalPC());	
 			
 			hs.exitInnerScope("123");
 		}
 		
-		assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
-		assertEquals(SecurityLevel.HIGH, hs.getGlobalPC());
+		assertEquals(SecurityLevel.top(), hs.getLocalPC());
+		assertEquals(SecurityLevel.top(), hs.getGlobalPC());
 		
 		hs.popLocalPC(234);
 		hs.close();

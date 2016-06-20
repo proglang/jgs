@@ -91,6 +91,14 @@ public class LocalMap {
 	}
 	
 	/**
+	 * Insert a new local into localMap with default security-level.
+	 * @param signature The signature of the local.
+	 */
+	public void insertLocal(String signature) {
+		localMap.put(signature, SecurityLevel.bottom());
+	}
+	
+	/**
 	 * Get the level of a local
 	 * @param signature The signature of a local.
 	 * @return The new securitylevel.

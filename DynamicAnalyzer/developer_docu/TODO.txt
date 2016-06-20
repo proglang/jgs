@@ -62,3 +62,15 @@ FINALLY
 Ant path - configuration?? Oder allgemein Konfiguration von Pfaden
 	
 Zwei methoden von SecDomain
+
+		if (!SecurityLevel.le(lpc, level)) {
+			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
+		}
+		
+	protected Object joinLocals(String... stringList) {
+		Object result = SecurityLevel.bottom();
+		for (String op: stringList) {
+			result = SecurityLevel.lub(result, localmap.getLevel(op));
+		}
+		return result;
+	}
