@@ -38,8 +38,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author koenigr
- *
+ * JimpleInjector is called by the AnnotatorStmtSwitch and AnnotatorValueSwitch.
+ * Inserts additional statements into a methods body.
+ * @author Regina Koenig (2015)
  */
 public class JimpleInjector {
 	
@@ -106,13 +107,13 @@ public class JimpleInjector {
 			"local_for_Strings3", RefType.v("java.lang.String"));
 
 	/**
-	 * 
+	 * Local where String arrays can be stored. Needed to store arguments for injected methods.
 	 */
 	static Local local_for_String_Arrays = Jimple.v().newLocal(
 			"local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 
 	/**
-	 * 
+	 * Local where Objects can be stored as arguments for injected methods.
 	 */
 	static Local local_for_Objects = Jimple.v().newLocal(
 			"local_for_Objects", RefType.v("java.lang.Object"));
@@ -212,16 +213,17 @@ public class JimpleInjector {
 	
 	
 	/**
-	 * @param l
+	 * Add a new local.
+	 * @param local The Local
 	 */
-	public static void addLocal(Local l) {
+	public static void addLocal(Local local) {
 		logger.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
-				getSignatureForLocal(l), b.getMethod().getName()});
+				getSignatureForLocal(local), b.getMethod().getName()});
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 
-		String signature = getSignatureForLocal(l);
+		String signature = getSignatureForLocal(local);
 		Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
 		
 		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
@@ -269,7 +271,8 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param sc
+	 * Add a class object. Needed for static fields.
+	 * @param sc SootClass.
 	 */
 	public static void addClassObjectToObjectMap(SootClass sc) {
 	
@@ -295,7 +298,8 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param field
+	 * Add a field to the object map.
+	 * @param field the SootField.
 	 */
 	public static void addInstanceFieldToObjectMap(SootField field) {
 		logger.log(Level.INFO, "Adding field {0} to ObjectMap in method {1}", 
@@ -335,7 +339,8 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param field
+	 * Add a static field. This field is added to its corresponding class object.
+	 * @param field SootField
 	 */
 	public static void addStaticFieldToObjectMap(SootField field) {
 		logger.info( "Adding static Field " + field.toString() + " to Object Map");
@@ -372,8 +377,9 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param a
-	 * @param pos
+	 * Add a new array to objectMap.
+	 * @param a The Local where the array is stored.
+	 * @param pos Unit where the array occurs.
 	 */
 	public static void addArrayToObjectMap(Local a, Unit pos) {
 		logger.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
@@ -404,17 +410,18 @@ public class JimpleInjector {
 	 */
 	
 	/**
-	 * @param l
-	 * @param pos
+	 * Set the security-level of a local to HIGH.
+	 * @param local Local
+	 * @param pos Unit where this local occurs
 	 */
-	public static void makeLocalHigh(Local l, Unit pos) {
+	public static void makeLocalHigh(Local local, Unit pos) {
 		logger.log(Level.INFO, "Make Local {0} high in method {1}",
-				new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+			new Object[] {getSignatureForLocal(local), b.getMethod().getName()});
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 		
-		String signature = getSignatureForLocal(l);
+		String signature = getSignatureForLocal(local);
 		Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
 		
 		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
@@ -430,17 +437,18 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * @param l
-	 * @param pos
+	 * Set the security-level of a local to LOW.
+	 * @param local Local
+	 * @param pos Unit where this local occurs
 	 */
-	public static void makeLocalLow(Local l, Unit pos) {
+	public static void makeLocalLow(Local local, Unit pos) {
 		logger.log(Level.INFO, "Make Local {0} low in method {1}",
-				new Object[] {getSignatureForLocal(l), b.getMethod().getName()});
+			new Object[] {getSignatureForLocal(local), b.getMethod().getName()});
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 		
-		String signature = getSignatureForLocal(l);
+		String signature = getSignatureForLocal(local);
 		Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
 		
 		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
@@ -455,16 +463,17 @@ public class JimpleInjector {
 	}
 
 	/**
-	 * @param l
-	 * @param pos
+	 * Add the level of a local on the right side of an assign statement.
+	 * @param local Local
+	 * @param pos Unit where the local occurs
 	 */
-	public static void addLevelInAssignStmt(Local l, Unit pos) {
+	public static void addLevelInAssignStmt(Local local, Unit pos) {
 		logger.info("Adding level in assign statement");
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
 		
-		String signature = getSignatureForLocal(l);
+		String signature = getSignatureForLocal(local);
 		
 		Stmt assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(signature));
@@ -497,12 +506,6 @@ public class JimpleInjector {
 	public static void addLevelInAssignStmt(InstanceFieldRef f, Unit pos) {
 		logger.log(Level.INFO, "Adding level of field {0} in assignStmt in method {1}", 
 				new Object[] {f.getField().getSignature(),b.getMethod().getName()});
-		
-//		if (!(units.getFirst() instanceof IdentityStmt) 
-//				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
-//				instanceof ThisRef)) {
-//			throw new InternalAnalyzerException("Expected @this reference");
-//		}
 		
 		String fieldSignature = getSignatureForField(f.getField());
 		
