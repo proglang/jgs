@@ -13,6 +13,8 @@ import scala.collection.JavaConversions._
 
 import TestDomain._
 
+import scala.util.Success
+
 class CastsFromConstantsTest extends FlatSpec with Matchers{
   import CastsFromConstantsTest._
 
@@ -29,7 +31,7 @@ class CastsFromConstantsTest extends FlatSpec with Matchers{
   }
 
   it should "not be a context casts" in {
-    casts.detectContextCastStartFromCall(lowToHigh) shouldBe empty
+    casts.detectContextCastStartFromCall(lowToHigh) should be (Success(None))
     casts.detectContextCastEndFromCall(lowToHigh) should be (false)
   }
 
@@ -39,11 +41,11 @@ class CastsFromConstantsTest extends FlatSpec with Matchers{
   }
 
   "cxCast(? ~> LOW)" should "convert cx from ? to LOW" in {
-    casts.detectContextCastStartFromCall(cxDynToLow) should be (Some (new CxCast[LowHigh.Level](DYN, TLOW)))
+    casts.detectContextCastStartFromCall(cxDynToLow) should be (Success(Some (new CxCast[LowHigh.Level](DYN, TLOW))))
   }
 
   it should "not be a value cast or cx-cast end" in {
-    casts.detectValueCastFromCall(cxDynToLow)  shouldBe empty
+    casts.detectValueCastFromCall(cxDynToLow)  should be (Success(None))
     casts.detectContextCastEndFromCall(cxDynToLow) should be (false)
   }
 
@@ -52,8 +54,8 @@ class CastsFromConstantsTest extends FlatSpec with Matchers{
   }
 
   it should "not be a value cast or context cast" in {
-    casts.detectValueCastFromCall(cxEnd) shouldBe empty
-    casts.detectContextCastStartFromCall(cxEnd) shouldBe empty
+    casts.detectValueCastFromCall(cxEnd) should be (Success(None))
+    casts.detectContextCastStartFromCall(cxEnd) should be (Success(None))
   }
 
 }

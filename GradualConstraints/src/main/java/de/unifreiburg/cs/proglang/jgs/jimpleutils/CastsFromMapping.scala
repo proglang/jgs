@@ -22,11 +22,11 @@ case class CastsFromMapping[Level](valueCasts: Map[String, Conversion[Level]],
                                    cxCastEnd: String)
   extends Casts[Level] {
 
-  override def detectValueCastFromCall(e: StaticInvokeExpr): Option[ValueCast[Level]] = {
+  override def detectValueCastFromCall(e: StaticInvokeExpr): Try[Option[ValueCast[Level]]] = {
     val key = e.getMethod.toString
-    valueCasts.get(key)
+    Success(valueCasts.get(key)
       .map(c => new ValueCast[Level](c.source, c.dest, getCallArgument(e))
-    )
+    ))
   }
 
   override def detectContextCastEndFromCall(e: StaticInvokeExpr): Boolean = {
@@ -34,10 +34,11 @@ case class CastsFromMapping[Level](valueCasts: Map[String, Conversion[Level]],
     key == cxCastEnd
   }
 
-  override def detectContextCastStartFromCall(e: StaticInvokeExpr): Option[CxCast[Level]] = {
+  override def detectContextCastStartFromCall(e: StaticInvokeExpr): Try[Option[CxCast[Level]]] = {
     val key = e.getMethod.toString
-    cxCastBegins.get(key)
+    Success(cxCastBegins.get(key)
       .map(c => new CxCast[Level](c.source, c.dest))
+    )
   }
 }
 

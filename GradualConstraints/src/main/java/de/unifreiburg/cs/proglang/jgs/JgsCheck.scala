@@ -267,7 +267,7 @@ object JgsCheck {
           JField(name, JString(typeString)) <- entries
           f <- Try(s.getField(name)).map(f => List(f)).getOrElse(List())
           fieldType <- {
-            val t : Try[Type[Level]] = withErrorNote(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}", types.typeParser().parse(typeString))
+            val t : Try[Type[Level]] = asTry(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}", types.typeParser().parse(typeString))
             skipAndReportFailure(log, "", t)
           }
         } yield {

@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 /**
- * Created by fennell on 11/15/15.
+ * An Exception class for "user errors" during (security) type checking, e.g. syntax errors in casts and constraints.
  */
 public class TypingException extends Exception {
 

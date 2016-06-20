@@ -22,6 +22,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import scala.Option;
+import scala.util.Success;
+import scala.util.Try;
 import soot.*;
 import soot.jimple.StaticInvokeExpr;
 
@@ -85,13 +87,13 @@ public class TestDomain {
         }
 
         @Override
-        public Option<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e) {
+        public Try<Option<ValueCast<Level>>> detectValueCastFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Option<ValueCast<Level>>>
+            BiFunction<Type<Level>, Type<Level>, Try<Option<ValueCast<Level>>>>
                     makeCast =
                     (t1, t2) -> {
                         Optional<ValueCast<Level>> result = Interop.asJavaStream(Vars.getAll(e.getArg(0))).findFirst().map(value -> makeValueCast(t1, t2, Option.apply(value)));
-                        return Interop.asScalaOption(result);
+                        return new Success<>(Interop.asScalaOption(result));
                     };
             if (castEquals(castHighToDyn, m)) {
                 return makeCast.apply(THIGH, DYN);
@@ -102,22 +104,22 @@ public class TestDomain {
             } else if (castEquals(castDynToHigh, m)) {
                 return makeCast.apply(DYN, THIGH);
             } else {
-                return Option.empty();
+                return new Success<>(Option.empty());
             }
         }
 
         @Override
-        public Option<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e) {
+        public Try<Option<CxCast<Level>>> detectContextCastStartFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Option<CxCast<Level>>>
+            BiFunction<Type<Level>, Type<Level>, Try<Option<CxCast<Level>>>>
                     makeCast =
-                    (t1, t2) -> Option.apply(makeContextCast(t1, t2));
+                    (t1, t2) -> new Success<>(Option.apply(makeContextCast(t1, t2)));
             if (castEquals(castCxDynToHigh, m)) {
                 return makeCast.apply(DYN, THIGH);
             } else if (castEquals(castCxHighToDyn, m)) {
                 return makeCast.apply(THIGH, DYN);
             } else {
-                return Option.empty();
+                return new Success<>(Option.empty());
             }
         }
 

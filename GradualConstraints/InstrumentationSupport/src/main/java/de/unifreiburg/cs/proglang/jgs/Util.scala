@@ -13,11 +13,13 @@ object Util {
    * Error handling
    ***********************/
 
-  def withErrorNote[A](msg : String, maybeVal : Option[A]) : Try[A] =
+  def asTry[A](exc : RuntimeException, maybeVal : Option[A]) : Try[A] =
     maybeVal match {
       case Some(x) => Success(x)
-      case None => Failure(new RuntimeException(msg))
+      case None => Failure(exc)
     }
+
+  def asTry[A](msg : String, maybeVal : Option[A]) : Try[A] = asTry(new RuntimeException(msg), maybeVal)
 
 
   def skipAndReportFailure[A](log : Logger, msg : String, maybeValue : Try[A]) : Option[A] =

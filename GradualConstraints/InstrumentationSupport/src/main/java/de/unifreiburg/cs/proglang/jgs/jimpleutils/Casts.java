@@ -1,6 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
+import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
 import scala.Option;
+import scala.util.Try;
 import soot.jimple.InvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
@@ -85,11 +87,17 @@ public abstract class Casts<Level> {
         }
     }
 
-    public Option<CxCast<Level>> detectContextCastStartFromStmt(Stmt s) {
+    public Option<CxCast<Level>> detectContextCastStartFromStmt(Stmt s)
+            throws TypingException {
         if (s.containsInvokeExpr()) {
             InvokeExpr e = s.getInvokeExpr();
             if (e instanceof StaticInvokeExpr) {
-                return this.detectContextCastStartFromCall((StaticInvokeExpr) e);
+                Try<Option<CxCast<Level>>> result = this.detectContextCastStartFromCall((StaticInvokeExpr) e);
+                if (result.isSuccess()) {
+                    return result.get();
+                } else {
+                    throw new TypingException(result.failed().get().getMessage());
+                }
             }
         }
         return Option.empty();
@@ -105,9 +113,9 @@ public abstract class Casts<Level> {
         return false;
     }
 
-    public abstract Option<ValueCast<Level>> detectValueCastFromCall(StaticInvokeExpr e);
+    public abstract Try<Option<ValueCast<Level>>> detectValueCastFromCall(StaticInvokeExpr e);
 
-    public abstract Option<CxCast<Level>> detectContextCastStartFromCall(StaticInvokeExpr e);
+    public abstract Try<Option<CxCast<Level>>> detectContextCastStartFromCall(StaticInvokeExpr e);
 
     public abstract boolean detectContextCastEndFromCall(StaticInvokeExpr e);
 
