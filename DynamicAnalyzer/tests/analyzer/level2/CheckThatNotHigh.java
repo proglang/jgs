@@ -16,7 +16,7 @@ public class CheckThatNotHigh {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 	
 	@Test
@@ -24,7 +24,7 @@ public class CheckThatNotHigh {
 		
 		LOGGER.info("CheckThatNotHigh-successTest started");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		hs.addLocal("String_low");
 		
@@ -41,13 +41,13 @@ public class CheckThatNotHigh {
 		
 		LOGGER.info("CheckThatNotHigh-failTest started");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		hs.addLocal("String_high");
 		
-		hs.setLevelOfLocal("String_high", SecurityLevel.HIGH);
+		hs.setLevelOfLocal("String_high", SecurityLevel.top());
 		
-		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("String_high"));
+		assertEquals(SecurityLevel.top(), hs.getLocalLevel("String_high"));
 		
 		hs.checkThatNotHigh("String_high");
 		

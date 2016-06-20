@@ -2,7 +2,7 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.HandleStmt;
 import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,14 +19,14 @@ public class AssignFieldsFail {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantToField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		
 		hs.addFieldToObjectMap(this, "int_field");
@@ -49,7 +49,7 @@ public class AssignFieldsFail {
 	public void assignLocalsToField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		
 		hs.addFieldToObjectMap(this, "int_field");
@@ -73,7 +73,7 @@ public class AssignFieldsFail {
 	public void assignLocalToForeignField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_local");

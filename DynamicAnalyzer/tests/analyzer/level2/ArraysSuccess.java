@@ -1,49 +1,48 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+import utils.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
 public class ArraysSuccess {
 	
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test
 	public void createArrayTest() {
 
-		LOGGER.log(Level.INFO, "CREATE ARRAY SUCCESS TEST STARTED");
+		logger.log(Level.INFO, "CREATE ARRAY SUCCESS TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		hs.addLocal("String[]_a");
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
-		hs.addLocal("String[]_a");
 		
-		assertEquals(3, hs.getNumberOfFields(a));
+		assertEquals(3, hs.getNumberOfFieldsInObjectMap(a));
 		
 		hs.close();
 
-		LOGGER.log(Level.INFO, "CREATE ARRAY SUCCESS TEST FINISHED");
+		logger.log(Level.INFO, "CREATE ARRAY SUCCESS TEST FINISHED");
 	}
 	
 	@Test
 	public void readArray() {
 		
-		LOGGER.log(Level.INFO, "READ ARRAY SUCCESS TEST STARTED");
+		logger.log(Level.INFO, "READ ARRAY SUCCESS TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
@@ -51,7 +50,7 @@ public class ArraysSuccess {
 		hs.addLocal("int_i");
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
-		assertEquals(3, hs.getNumberOfFields(a));
+		assertEquals(3, hs.getNumberOfFieldsInObjectMap(a));
 		
 		/*
 		 * check ( x >= lpc)
@@ -66,26 +65,26 @@ public class ArraysSuccess {
 		@SuppressWarnings("unused")
 		String x = a[i];
 		
-		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("String_x"));
+		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("String_x"));
 		
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "READ ARRAY SUCCESS TEST FINISHED");
+		logger.log(Level.INFO, "READ ARRAY SUCCESS TEST FINISHED");
 		
 	}
 	
 	@Test
 	public void writeArray() {
 
-		LOGGER.log(Level.INFO, "WRITE ARRAY SUCCESS TEST STARTED");
+		logger.log(Level.INFO, "WRITE ARRAY SUCCESS TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		String[] a = new String[] {"a", "b", "c"};
 		assertEquals(3, a.length);
 		hs.addArrayToObjectMap(a);
 		assertTrue(hs.containsObjectInObjectMap(a));
-		assertEquals(3, hs.getNumberOfFields(a));
+		assertEquals(3, hs.getNumberOfFieldsInObjectMap(a));
 		
 		hs.addLocal("String[]_a");
 		hs.addLocal("int_i");
@@ -98,11 +97,11 @@ public class ArraysSuccess {
 		hs.setLevelOfArrayField(a, Integer.toString(i), "String[]_a", "int_i");
 		a[i] = "3";
 		
-		assertEquals(SecurityLevel.LOW, hs.getFieldLevel(a, Integer.toString(i)));
+		assertEquals(SecurityLevel.bottom(), hs.getFieldLevel(a, Integer.toString(i)));
 		
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "WRITE ARRAY SUCCESS TEST FINISHED");
+		logger.log(Level.INFO, "WRITE ARRAY SUCCESS TEST FINISHED");
 		
 	}
 

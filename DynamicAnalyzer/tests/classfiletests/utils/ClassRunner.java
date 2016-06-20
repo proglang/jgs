@@ -85,8 +85,8 @@ public class ClassRunner {
 			}
 			
 			// Fail an exception is thrown which is not the expected exception
-			assertEquals(e.getCause().getClass().toString(),
-					IllegalFlowException.class.toString());
+			assertEquals(IllegalFlowException.class.toString(),
+					e.getCause().getClass().toString());
 			
 			// Check if the expected variables are involved
 			for (String var : involvedVars) {
