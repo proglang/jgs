@@ -78,7 +78,7 @@ object JgsCheck {
         .getOrElse(sys.error("Unable to look up system property `sun.boot.class.path'")),
       externalAnnotations = new File("JGSSupport/external-annotations.json"),
       castMethods = new File("JGSSupport/cast-methods.json"),
-      genericCasts = true,
+      genericCasts = false,
       secdomainChoice = LowHigh,
       verbosity = Warn
     )
@@ -309,13 +309,12 @@ object JgsCheck {
           case _ => throw new IllegalArgumentException(s"Cannot find entry for contextcastend in ${opt.castMethods}")
         }
 
-        // TODO: some validation would be nice
+        // TODO: some validation would be nice: (i) method exists in CP? (ii) conversion could be parsed? (iii) conversion is compatible?
         /*
       println(valueCasts)
       println(contextCasts)
       println(contextCastEnd)
       */
-
         def makeCastMap(casts: Map[String, String]): Map[String, Conversion[Level]] = {
           for {
             (m, convString) <- casts
@@ -340,6 +339,7 @@ object JgsCheck {
         )
       }
 
+      // TODO: combine generic casts and mapping casts.. generic ones should have precedence (?)
       val casts: Casts[Level] =
         if (opt.genericCasts) {
           constructGenericCasts
