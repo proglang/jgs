@@ -1174,7 +1174,7 @@ public class JimpleInjector {
 
 	/**
 	 * Method which calculates the start position for inserting further units.
-	 * It depends on the number of arguments and wheter it is a static method,
+	 * It depends on the number of arguments and whether it is a static method,
 	 * or not, because there are statements, which shouldn't be preceeded by
 	 * other statements.
 	 * @return the computed start position as int.
