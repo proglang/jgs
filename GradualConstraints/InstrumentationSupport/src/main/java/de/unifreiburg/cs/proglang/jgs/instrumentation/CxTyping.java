@@ -11,7 +11,7 @@ import soot.jimple.Stmt;
 public interface CxTyping<Level> {
 
     /**
-     * Given an @{code instantiation}, return the type for local @{code l} at statement @{code s}.
+     * Return the context type for statement @{code s}, given a particular instantiation.
      */
     TypeView<Level> get(Instantiation<Level> instantiation, Stmt s);
 
