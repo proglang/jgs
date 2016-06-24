@@ -35,6 +35,8 @@ public class ExternalClasses {
 		// Methods where the argument cannot have a High argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
 				 new NoHighLevelAllowed());
+		methodMap.put("<java.io.PrintStream: void println(int)>", 
+				 new NoHighLevelAllowed());
 		
 		
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
@@ -89,6 +91,7 @@ public class ExternalClasses {
 	static class MakeHigh implements Command {
 		@Override
 		public void execute(Unit pos, Local[] params) {
+			logger.info("Right element is a makeHigh method");
 			/*assert (params.length == 1);
 			logger.fine("Variable" + params[0].toString() + " is set to high");
 			JimpleInjector.makeLocalHigh(params[0], pos);*/

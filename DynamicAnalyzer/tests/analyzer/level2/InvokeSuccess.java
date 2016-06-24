@@ -3,13 +3,13 @@ package analyzer.level2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.HandleStmt;
 import analyzer.level2.SecurityLevel;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import tests.testClasses.TestSubClass;
+import tests.testclasses.TestSubClass;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -23,7 +23,7 @@ public class InvokeSuccess {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class InvokeSuccess {
 		logger.log(Level.INFO, "INVOKE TEST STARTED");
 
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addLocal("TestSubClass_xy");
 		/*
 		 * Invoke New Stmt
@@ -43,7 +43,7 @@ public class InvokeSuccess {
 		hs.setLevelOfLocal("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
-		assertEquals(2, hs.getNumberOfFields(xy)); // The third fiel is static
+		assertEquals(2, hs.getNumberOfFieldsInObjectMap(xy)); // The third field is static
 		hs.close();	
 	    
 		logger.log(Level.INFO, "INVOKE TEST FINISHED");
@@ -54,7 +54,7 @@ public class InvokeSuccess {
 		
 		logger.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		/*
 		 *  Invoke Method
 		 *  1. Create new LocalMap
@@ -71,7 +71,7 @@ public class InvokeSuccess {
 		
 		logger.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");
 	    
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		TestSubClass xy = new TestSubClass();
 		int a = 0;
 		int b = 1;
@@ -90,13 +90,13 @@ public class InvokeSuccess {
 		 */
 		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 		xy.methodWithParams(a, b, c);
-		assertEquals(SecurityLevel.LOW, hs.getActualReturnLevel());
+		assertEquals(SecurityLevel.bottom(), hs.getActualReturnLevel());
     	
     	
 		hs.makeLocalHigh("int_b");
 		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 		xy.methodWithParams(a, b, c);
-		assertEquals(SecurityLevel.HIGH, hs.getActualReturnLevel());
+		assertEquals(SecurityLevel.top(), hs.getActualReturnLevel());
     	
 		hs.close();
 	    
@@ -112,14 +112,14 @@ public class InvokeSuccess {
 		class SomeClass {
 
 			public SomeClass() {
-				HandleStmtForTests hs = new HandleStmtForTests();
+				HandleStmt hs = new HandleStmt();
 				hs.addObjectToObjectMap(this);
 				
 				hs.close();
 			}
 			
 			public void method1() {
-				HandleStmtForTests hs = new HandleStmtForTests();
+				HandleStmt hs = new HandleStmt();
 				
 				
 				method2();
@@ -129,7 +129,7 @@ public class InvokeSuccess {
 			}
 			
 			public void method2() {
-				HandleStmtForTests hs = new HandleStmtForTests();
+				HandleStmt hs = new HandleStmt();
 
 				
 				method3();
@@ -139,7 +139,7 @@ public class InvokeSuccess {
 			}
 			
 			public void method3() {
-				HandleStmtForTests hs = new HandleStmtForTests();
+				HandleStmt hs = new HandleStmt();
 
 				
 				hs.close();
@@ -147,18 +147,18 @@ public class InvokeSuccess {
 			
 		}
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
-		assertEquals(0, hs.getNumberOfElements());
+		assertEquals(0, hs.getNumberOfElementsInObjectMap());
 		
 		hs.addObjectToObjectMap(this);		
 		hs.addFieldToObjectMap(this, "SomeClass_sc");
 		
-		assertEquals(1, hs.getNumberOfElements());
+		assertEquals(1, hs.getNumberOfElementsInObjectMap());
 		
 		SomeClass sc = new SomeClass();
 		
-		assertEquals(2, hs.getNumberOfElements());
+		assertEquals(2, hs.getNumberOfElementsInObjectMap());
 		
 		sc.method1();
 		

@@ -1,9 +1,6 @@
 package analyzer.level2;
 
-
 import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,13 +8,15 @@ import org.junit.Test;
 import utils.exceptions.IllegalFlowException;
 import utils.logging.L2Logger;
 
+import java.util.logging.Logger;
+
 public class MultiArrayFail {
 
 	Logger logger = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 	
 
@@ -27,7 +26,7 @@ public class MultiArrayFail {
 		
 		logger.info("readArray fail test started");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		/*
 		 * x = a[i]
 		 * check x >= lpc
@@ -37,7 +36,7 @@ public class MultiArrayFail {
 		 * String[][] arr = new String[][]{{"a"},{"b"}};
 		 * String x = arr[1][0];
 		 */ 
-		hs.pushLocalPC(SecurityLevel.HIGH, 123);
+		hs.pushLocalPC(SecurityLevel.top(), 123);
 		
 		String[][] arr = new String[2][];
 		hs.addArrayToObjectMap(arr);
@@ -72,6 +71,7 @@ public class MultiArrayFail {
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[1];
 		
+		hs.addLocal("String_x");
 		hs.addLevelOfArrayField(tmp, Integer.toString(0));
 		hs.setLevelOfLocal("String_x");
 		@SuppressWarnings("unused")
@@ -88,7 +88,7 @@ public class MultiArrayFail {
 
 		logger.info("writeArray fail test started");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 
 		/*
 		 * a[i] = x;
@@ -125,7 +125,7 @@ public class MultiArrayFail {
 		arr[0] = inner1;
 		
 		hs.addLevelOfLocal("String[]_inner2");
-		hs.setLevelOfLocal("String[][]_arr", SecurityLevel.HIGH);
+		hs.setLevelOfLocal("String[][]_arr", SecurityLevel.top());
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;
 		

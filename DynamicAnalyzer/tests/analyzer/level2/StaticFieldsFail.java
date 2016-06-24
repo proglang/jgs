@@ -1,21 +1,18 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
+import analyzer.level2.HandleStmt;
+import analyzer.level2.SecurityLevel;
+import org.junit.Before;
+import org.junit.Test;
+import tests.testclasses.TestSubClass;
 import utils.exceptions.IllegalFlowException;
+import utils.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import tests.testClasses.TestSubClass;
-
-import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
 
 public class StaticFieldsFail {
 	
@@ -23,7 +20,7 @@ public class StaticFieldsFail {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test(expected = IllegalFlowException.class)
@@ -31,12 +28,12 @@ public class StaticFieldsFail {
 		
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD FAIL TEST STARTED");
 
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addObjectToObjectMap(this.getClass());
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
 		
-		hs.pushGlobalPC(SecurityLevel.HIGH);
+		hs.pushGlobalPC(SecurityLevel.top());
 		hs.setLevelOfField(this.getClass(), "int_field");
 			
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD FAIL TEST STARTED");
@@ -49,7 +46,7 @@ public class StaticFieldsFail {
 		
 		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD FAIL TEST STARTED");
 
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addObjectToObjectMap(this.getClass());
 		
@@ -59,7 +56,7 @@ public class StaticFieldsFail {
 		assertTrue(hs.containsFieldInObjectMap(TestSubClass.class, "int_sField"));
 		assertTrue(hs.containsFieldInObjectMap(tsc.getClass(), "int_sField"));
 		
-		hs.pushGlobalPC(SecurityLevel.HIGH);
+		hs.pushGlobalPC(SecurityLevel.top());
 		
 		hs.setLevelOfField(tsc.getClass(), "int_sField");
 		TestSubClass.sField = 2;

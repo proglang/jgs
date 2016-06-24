@@ -55,10 +55,6 @@ import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
 
-/**
- * @author koenigr
- *
- */
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
 	Logger logger = L1Logger.getLogger();
@@ -180,7 +176,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		logger.finest("ClassConstant identified " + callingStmt.toString());
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new InternalAnalyzerException();
+			throw new InternalAnalyzerException();
 		}
 	}
 
@@ -188,7 +184,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void defaultCase(Object object) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("defaultCase");
+			throw new NotSupportedStmtException("defaultCase");
 		}
 	}
 
@@ -218,7 +214,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseCmpExpr(CmpExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("CmpExpr");
+			throw new NotSupportedStmtException("CmpExpr");
 		}
 	}
 
@@ -226,7 +222,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseCmpgExpr(CmpgExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("CmpgExpr");
+			throw new NotSupportedStmtException("CmpgExpr");
 		}
 	}
 
@@ -234,7 +230,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseCmplExpr(CmplExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("CmplExpr");
+			throw new NotSupportedStmtException("CmplExpr");
 		}
 	}
 
@@ -264,7 +260,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseNeExpr(NeExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("NeExpr");
+			throw new NotSupportedStmtException("NeExpr");
 		}
 	}
 
@@ -272,7 +268,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseGeExpr(GeExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("GeExpr");
+			throw new NotSupportedStmtException("GeExpr");
 		}
 	}
 
@@ -280,7 +276,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseGtExpr(GtExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("GtExpr");
+			throw new NotSupportedStmtException("GtExpr");
 		}
 	}
 
@@ -288,7 +284,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseLeExpr(LeExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("LeExpr");
+			throw new NotSupportedStmtException("LeExpr");
 		}
 	}
 
@@ -296,7 +292,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseLtExpr(LtExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("LtExpr");
+			throw new NotSupportedStmtException("LtExpr");
 		}
 	}
 
@@ -328,7 +324,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseRemExpr(RemExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("RemExpr");
+			throw new NotSupportedStmtException("RemExpr");
 		}
 	}
 
@@ -394,7 +390,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		rightElement = RightElement.NOT;
 		logger.fine("Invoke expression is of type InterfaceInvoke");
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("InterfaceInvokeExpression");
+			throw new NotSupportedStmtException("InterfaceInvokeExpression");
 		}
 	}
 
@@ -411,8 +407,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 			if (ExternalClasses.methodMap.containsKey(method)) {
 				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
 				ExternalClasses.receiveCommand(method, callingStmt, args);
 			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -434,8 +433,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 			if (ExternalClasses.methodMap.containsKey(method)) {
 				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
 				ExternalClasses.receiveCommand(method, callingStmt, args);
 			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -453,13 +455,15 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		if (actualContext == StmtContext.INVOKE 
 				|| actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
-			// System.out.println("Arguments" + args[0]);
 			String method = v.getMethod().toString();
 
 			if (ExternalClasses.methodMap.containsKey(method)) {
 				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
 				ExternalClasses.receiveCommand(method, callingStmt, args);
 			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -470,10 +474,27 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
-		rightElement = RightElement.NOT;
 		logger.fine("Invoke expression is of type DynamicInvoke");
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("DynamicInvoke");
+		logger.finest(v.toString());
+		rightElement = RightElement.NOT;
+	
+		if (actualContext == StmtContext.INVOKE 
+				|| actualContext == StmtContext.ASSIGNRIGHT ) {
+			Local[] args = vh.getArgumentsForInvokedMethod(v);
+			String method = v.getMethod().toString();
+
+			if (ExternalClasses.methodMap.containsKey(method)) {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated in a special way");
+				ExternalClasses.receiveCommand(method, callingStmt, args);
+			} else {
+				logger.fine("Found an external class " + method);
+				logger.fine("This class is treated as an internal class");
+				JimpleInjector.storeArgumentLevels(callingStmt, args);
+			}
+		} else {
+			throw new InternalAnalyzerException(
+					"Unexpected Context for Invoke Expression");
 		}
 	}
 
@@ -490,7 +511,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("InstanceOf");
+			throw new NotSupportedStmtException("InstanceOf");
 		}
 	}
 
@@ -552,7 +573,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseNegExpr(NegExpr v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("NegExpr");
+			throw new NotSupportedStmtException("NegExpr");
 		}
 	}
 
@@ -564,7 +585,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
 		} else {
-			new InternalAnalyzerException();			
+			throw new InternalAnalyzerException();			
 		}
 	}
 
@@ -599,26 +620,25 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseParameterRef(ParameterRef v) {
 		logger.finest("Parameter reference identified " + v.toString());
-		new NotSupportedStmtException("ParameterRef");
+		throw new NotSupportedStmtException("ParameterRef");
 	}
 
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
 		rightElement = RightElement.NOT;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			new NotSupportedStmtException("CaughtExceptionRef");
+			throw new NotSupportedStmtException("CaughtExceptionRef");
 		}
 	}
 
 	@Override
 	public void caseThisRef(ThisRef v) {
 		logger.finer("@This reference identified " + v.toString());
-		new NotSupportedStmtException("ThisRef");
+		throw new NotSupportedStmtException("ThisRef");
 	}
 
 	@Override
 	public void caseLocal(Local l) {	
-		rightElement = RightElement.NOT;
 		logger.finest("Local identified " + l.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			JimpleInjector.addLevelInAssignStmt(l, callingStmt);

@@ -9,25 +9,29 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 
+/**
+ * The LocalMap stores the locals of a methodbody and its corresponding security levels.
+ * @author Regina König (2015)
+ *
+ */
 public class LocalMap {
 	
 	private Logger logger = L2Logger.getLogger();
 	
 	private LinkedList<LPCDominatorPair> localPC = new LinkedList<LPCDominatorPair>();
-	private HashMap<String, SecurityLevel> localMap = new HashMap<String, SecurityLevel>();
+	private HashMap<String, Object> localMap = new HashMap<String, Object>();
 	
 	public LocalMap() {
-		localPC.push(new LPCDominatorPair(SecurityLevel.LOW , -1));
-		localMap.put("DEFAULT_LOW", SecurityLevel.LOW);
+		localPC.push(new LPCDominatorPair(SecurityLevel.bottom() , -1));
+		localMap.put("DEFAULT_BOTTOM", SecurityLevel.bottom());
 	}
 	
 	/**
 	 * Check whether the lpc stack is empty. This method is invoked at the end of every method.
 	 * If the stack is not empty, than the program is closed with an InternalAnalyzerException.
-	 * At the end there should be only one element left since there is one LOW 
+	 * At the end there should be only one element left since there is one bottom() 
 	 * element at the beginning.
 	 */
 	public void checkisLPCStackEmpty() {
@@ -43,18 +47,25 @@ public class LocalMap {
 	/**
 	 * @return The first element of the LPC stack without removing it.
 	 */
-	public SecurityLevel getLocalPC() {
+	public Object getLocalPC() {
+		if (localPC == null || localPC.size() < 1) {
+			throw new InternalAnalyzerException("LocalPCStack is empty");
+		}
 		return localPC.getFirst().getSecurityLevel();
 	}
 	
 	/**
-	 * Remove first element of LPC-list if the given hashvalue matches.
-	 * @param domHash Hashvalue of the expected first element in LPC-list.
+	 * Remove first element of LPC-list if the given identity-value matches.
+	 * @param dominatorIdentity Identity of the expected first element in LPC-list.
 	 */
-	public void popLocalPC(int domHash) {
+	public void popLocalPC(int dominatorIdentity) {
 		int n = localPC.size();
-		if (!domHashEquals(domHash)) {
-			throw new InternalAnalyzerException("Trying to pop LPC with wrong hashvalue");
+		if (n < 1) {
+			throw new InternalAnalyzerException("localPC-stack is empty");
+		}
+		if (!dominatorIdentityEquals(dominatorIdentity)) {
+			throw new InternalAnalyzerException(
+					"Trying to pop LPC with wrong identity");
 		}
 		localPC.pop();
 		logger.finer("Reduced stack size from " + n 
@@ -62,61 +73,60 @@ public class LocalMap {
 	}
 	
 	/**
-	 * Push a localPC and its corresponding hash-value to the LPC-stack.
-	 * @param l New Securitylevel for the LPC.
-	 * @param domHash Its hashvalue.
+	 * Push a localPC and its corresponding identity-value to the LPC-stack.
+	 * @param securityLevel New security-level for the LPC.
+	 * @param dominatorIdentity Its identity.
 	 */
-	public void pushLocalPC(SecurityLevel l, int domHash) {
-		localPC.push(new LPCDominatorPair(l, domHash));
+	public void pushLocalPC(Object securityLevel, int dominatorIdentity) {
+		localPC.push(new LPCDominatorPair(securityLevel, dominatorIdentity));
 	}
 	
 	/**
 	 * Insert a new local into localMap.
 	 * @param signature The signature of the local.
-	 * @param level Its securitylevel.
+	 * @param securityLevel Its securitylevel.
 	 */
-	public void insertElement(String signature, SecurityLevel level) {
-		localMap.put(signature, level);
+	public void insertLocal(String signature, Object securityLevel) {
+		localMap.put(signature, securityLevel);
 	}
 	
 	/**
-	 * Insert a new local into localMap with default securitylevel LOW.
+	 * Insert a new local into localMap with default security-level.
 	 * @param signature The signature of the local.
 	 */
-	public void insertElement(String signature) {
-		insertElement(signature, SecurityLevel.LOW);
+	public void insertLocal(String signature) {
+		localMap.put(signature, SecurityLevel.bottom());
 	}
 	
 	/**
+	 * Get the level of a local
 	 * @param signature The signature of a local.
-	 * @return The locals securitylevel.
+	 * @return The new securitylevel.
 	 */
-	public SecurityLevel getLevel(String signature) {
+	public Object getLevel(String signature) {
 		if (!localMap.containsKey(signature)) {
-			/*logger.warning("Expected local " + signature + " not found in lMap. "
-					+ "It's going to be inserted.");
-			localMap.put(signature, SecurityLevel.LOW);*/
 			throw new InternalAnalyzerException("Expected local " 
 			+ signature + " not found in LocalMap");
 		}
 		return localMap.get(signature);
 	}
 	
-	public void setLevel(String signature, SecurityLevel level) {
-		localMap.put(signature, level);
+	public void setLevel(String signature, Object securitylevel) {
+		localMap.put(signature, securitylevel);
 	}
 	
 	/**
 	 * Print elements of localmap in a readable form.
 	 */
 	public void printElements() {
-		for (Map.Entry<String, SecurityLevel> entry : localMap.entrySet()) {
+		for (Map.Entry<String, Object> entry : localMap.entrySet()) {
 			System.out.println("Key " + entry.getKey() + " , Value: " 
 					+ entry.getValue());
 		}
 	}
 	
 	/**
+	 * Check whether the localMap contains the given local.
 	 * @param local The signature of a local.
 	 * @return Returns true if the localMap contains the given local.
 	 *     Else returns false.
@@ -125,7 +135,12 @@ public class LocalMap {
 		return localMap.containsKey(local);
 	}
 	
-	public boolean domHashEquals(int domHash) {
-		return localPC.getFirst().getPostDomHashValue() == domHash;	
+	/**
+	 * Compare the given identity value with the first element on the LPC stack.
+	 * @param dominatorIdentity The identity.
+	 * @return true if the identity equals to the first element on the stack.
+	 */
+	public boolean dominatorIdentityEquals(int dominatorIdentity) {
+		return localPC.getFirst().getPostDominatorIdentity() == dominatorIdentity;	
 	}
 }

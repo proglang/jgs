@@ -66,7 +66,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		
 		invokeExpr.apply(valueSwitch);
 
-		// TODO das ist eher interessant bei AssignStmt
 		logger.finer("Method has return type: " + invokeExpr.getType());
 		
 		valueSwitch.actualContext = StmtContext.UNDEF;
@@ -133,8 +132,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		}
 		
 
+		// Information of rightElement must be reset after the assignstatement.
 		AnnotationValueSwitch.rightElement = RightElement.NOT;
-
+		// Reset actualContext to UNDEF
 		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
@@ -169,14 +169,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
 		logger.fine("\n > > > Enter monitor statement identified < < <");
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("EnterMonitorStmt");
+		throw new NotSupportedStmtException("EnterMonitorStmt");
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
 		logger.fine("\n > > > Exit monitor statement identified < < <");
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("ExitMonitorStmt");
+		throw new NotSupportedStmtException("ExitMonitorStmt");
 	}
 
 	@Override
@@ -257,15 +257,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
 		logger.fine("\n > > > Nop statement identified < < <"); 
-		valueSwitch.callingStmt = stmt;
-		// new NotSupportedStmtException("NopStmt");
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
 		logger.fine("\n > > > Ret statement identified < < <"); 
 		valueSwitch.callingStmt = stmt;
-		new NotSupportedStmtException("RetStmt");
+		throw new NotSupportedStmtException("RetStmt");
 	}
 
 	@Override
@@ -328,7 +326,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void defaultCase(Object obj) {
 		logger.fine("\n > > > Default case of statements identified < < <"); 
-		new NotSupportedStmtException("DefaultCase");
+		throw new NotSupportedStmtException("DefaultCase");
 		// valueSwitch.callingStmt = stmt;
 	
 	}

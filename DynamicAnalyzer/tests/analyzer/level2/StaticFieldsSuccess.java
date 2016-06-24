@@ -1,18 +1,16 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import analyzer.level2.HandleStmt;
+import org.junit.Before;
+import org.junit.Test;
+import tests.testclasses.TestSubClass;
+import utils.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import tests.testClasses.TestSubClass;
-
-import analyzer.level2.HandleStmtForTests;
 
 public class StaticFieldsSuccess {
 	
@@ -21,7 +19,7 @@ public class StaticFieldsSuccess {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test
@@ -29,7 +27,7 @@ public class StaticFieldsSuccess {
 		
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST STARTED");
 
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addObjectToObjectMap(this.getClass());
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
@@ -46,7 +44,7 @@ public class StaticFieldsSuccess {
 		
 		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD SUCCESS TEST STARTED");
 
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addObjectToObjectMap(this.getClass());
 		

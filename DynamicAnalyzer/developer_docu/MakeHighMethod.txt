@@ -1,17 +1,5 @@
 >> HOW HelperClass.MakeHigh() works<<
 
-Jimple stores every variable in a local when passing it as an argument to a method. 
-So even if you want set a field-level to high, the field value first is stored in
-a local. 
-
-Conclusions:
-
-1. You must assign the return-value of MakeHigh method to the original vairable,
-	e.g. field = makeHigh(field)
-	
-2. The returnvalue of the method must be set to high, because in Jimple, the result
-	is assigned to an other temporal local than the original one. So it doesn't make sense
-    to set the argument's local to high. Even the local isn't stored in the same local again...
 	Example: 
 		String field;
 		...
@@ -19,15 +7,8 @@ Conclusions:
 		$r1 = makeHigh($r0) // You can't just set $r0 to high
 		field = $r1
 		
-3. Is it neccessary, that the makeHigh method has an argument?
-	Another approach could be to detect this method as the right argument in an
-	assign statement and directly set the securitylevel of the left argument
-
-4. Which kinds of variable types can be set to high?
-	fields, locals, arrays?
-
-
-
+detect this method as the right argument in an assign statement 
+and directly set the securitylevel of the left argument
 
 <<<<< EXAMPLE FOR JIMPLE >>>>>>>>>
  java.lang.String[] r0, r2, $r3;
@@ -49,5 +30,26 @@ Conclusions:
         $r9 = (java.lang.String) $r8;
         <main.testclasses.MakeHigh: java.lang.String field> = $r9;
         return;
-        
-SOLUTION
+
+
+<<<<<<<<<<<<<<<<<<<<<< PROCEDURE IN THE ANALYZER >>>>>>>>>>>>>>>>>>>>>>>>>>
+																	3.
+			      [[AnnotationStmtSwitch.caseAssignStmt]]----------------------|
+									|										   |	
+									|									StmtContext = ASSIGNLEFT
+						StmtContext = ASSIGNRIGHT										|
+									|													|
+									|											switch RightElement
+			 [[AnnotationValueSwitch]] over 2 elements in UseBox						|
+			  |					|												case MAKE_HIGH:
+			  |1.				|2.														|
+			  |					|										JimpleInjector.makeLocalHigh
+		  caseLocal		caseStaticInvoke
+		  	  |					|
+		AddLocalLevel			|is in MethodMap?
+								|yes
+					 ExternalClasses.MakeHigh
+					 			|
+					 RightElement = MAKE_HIGH
+						
+						   

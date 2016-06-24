@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class SingleTest{
     
 	// If you want to test a single class then define its name here
-	public String name = "Simple";
+	public String name = "InvokeLibMethod";
 	public boolean hasIllegalFlow = true;
     
 	Logger logger = L1Logger.getLogger();
@@ -26,7 +26,7 @@ public class SingleTest{
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
 
-		ClassRunner.testClass(name, hasIllegalFlow, "java.lang.String_r1");
+		ClassRunner.testClass(name, hasIllegalFlow, "int_i0");
 
 		logger.info("Finished executing main.testclasses." + name + "");
 	}

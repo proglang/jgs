@@ -2,11 +2,11 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import analyzer.level2.HandleStmtForTests;
+import analyzer.level2.HandleStmt;
 import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
-import tests.testClasses.TestSubClass;
+import tests.testclasses.TestSubClass;
 import utils.exceptions.IllegalFlowException;
 import utils.logging.L2Logger;
 
@@ -19,14 +19,14 @@ public class AssignFieldsFail {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantToField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		
 		hs.addFieldToObjectMap(this, "int_field");
@@ -39,7 +39,7 @@ public class AssignFieldsFail {
 
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
-		hs.pushGlobalPC(SecurityLevel.HIGH);
+		hs.pushGlobalPC(SecurityLevel.top());
 		hs.setLevelOfField(this, "int_field");
 		
 		hs.close();	
@@ -49,11 +49,11 @@ public class AssignFieldsFail {
 	public void assignLocalsToField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		
 		hs.addFieldToObjectMap(this, "int_field");
-		hs.addLocal("int_local", SecurityLevel.LOW);
+		hs.addLocal("int_local", SecurityLevel.bottom());
 		
 		/* Assign Local to Field
 		 *  int field = local;
@@ -63,7 +63,7 @@ public class AssignFieldsFail {
 
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
-		hs.pushGlobalPC(SecurityLevel.HIGH);
+		hs.pushGlobalPC(SecurityLevel.top());
 		hs.setLevelOfField(this, "int_field");
 		
 		hs.close();	
@@ -73,7 +73,7 @@ public class AssignFieldsFail {
 	public void assignLocalToForeignField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_local");
@@ -92,9 +92,9 @@ public class AssignFieldsFail {
 		
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(o, "int_pField");
-		hs.pushGlobalPC(SecurityLevel.HIGH);
+		hs.pushGlobalPC(SecurityLevel.top());
 		
-		assertEquals(SecurityLevel.LOW, hs.addLevelOfLocal("int_local"));
+		assertEquals(SecurityLevel.bottom(), hs.addLevelOfLocal("int_local"));
 		hs.setLevelOfField(o, "int_pField");
 		o.pField = local;
 		

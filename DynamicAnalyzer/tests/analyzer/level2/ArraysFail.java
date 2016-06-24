@@ -1,39 +1,42 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
-
-import utils.exceptions.IllegalFlowException;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import utils.logging.L2Logger;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import utils.exceptions.IllegalFlowException;
+import utils.logging.L2Logger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class ArraysFail {
 	
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 	
 	@Test(expected = IllegalFlowException.class)
 	public void readArray() {
 		
-		LOGGER.log(Level.INFO, "READ ARRAY FAIL TEST STARTED");
+		logger.log(Level.INFO, "READ ARRAY FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
-		
+		HandleStmt hs = new HandleStmt();
+
+		hs.addLocal("int_i");
+		hs.addLocal("String[]_a");
+		hs.addLocal("String_x");
+
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
-		hs.addLocal("String[]_a");
+		
 		int i = 2;
-		hs.addLocal("int_i");
-		hs.pushLocalPC(SecurityLevel.HIGH, 12);
+		hs.pushLocalPC(SecurityLevel.top(), 12);
 		
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
@@ -53,23 +56,23 @@ public class ArraysFail {
 		
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "READ ARRAY FAIL TEST FINISHED");
+		logger.log(Level.INFO, "READ ARRAY FAIL TEST FINISHED");
 		
 	}
 	
 	@Test(expected = IllegalFlowException.class)
 	public void writeArray() {
 
-		LOGGER.log(Level.INFO, "WRITE ARRAY FAIL TEST STARTED");
+		logger.log(Level.INFO, "WRITE ARRAY FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		String[] a = new String[] {"asd", "v", "v"};
 		assertEquals(3, a.length);
 		hs.addArrayToObjectMap(a);
 		assertTrue(hs.containsObjectInObjectMap(a));
-		assertEquals(3, hs.getNumberOfFields(a));
-		hs.setLevelOfLocal("String[]_a", SecurityLevel.HIGH);
+		assertEquals(3, hs.getNumberOfFieldsInObjectMap(a));
+		hs.setLevelOfLocal("String[]_a", SecurityLevel.top());
 		
 		
 		/*
@@ -83,7 +86,7 @@ public class ArraysFail {
 		
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "WRITE ARRAY FAIL TEST FINISHED");
+		logger.log(Level.INFO, "WRITE ARRAY FAIL TEST FINISHED");
 		
 	}
 

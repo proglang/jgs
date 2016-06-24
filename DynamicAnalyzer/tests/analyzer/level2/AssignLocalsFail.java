@@ -1,56 +1,54 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import analyzer.level2.HandleStmt;
+import analyzer.level2.SecurityLevel;
+import org.junit.Before;
+import org.junit.Test;
+import tests.testclasses.TestSubClass;
+import utils.exceptions.IllegalFlowException;
+import utils.logging.L2Logger;
+
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utils.logging.L2Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import tests.testClasses.TestSubClass;
-
-import analyzer.level2.HandleStmtForTests;
-import analyzer.level2.SecurityLevel;
-import utils.exceptions.IllegalFlowException;
-
 public class AssignLocalsFail {
 	
-	Logger LOGGER = L2Logger.getLogger();
+	Logger logger = L2Logger.getLogger();
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
-		hs.addLocal("int_x", SecurityLevel.LOW);
-		hs.pushLocalPC(SecurityLevel.HIGH, 123);
+		HandleStmt hs = new HandleStmt();
+		hs.addLocal("int_x", SecurityLevel.bottom());
+		hs.pushLocalPC(SecurityLevel.top(), 123);
 		// x = LOW, lpc = HIGH
 		hs.setLevelOfLocal("int_x");
 		hs.popLocalPC(123);
 		hs.close();
 		
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST FINISHED");
 	}
 	
 
 	@Test(expected = IllegalFlowException.class)
 	public void assignLocalsToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
-		hs.addLocal("int_z", SecurityLevel.HIGH);
+		hs.addLocal("int_z", SecurityLevel.top());
 		
 		/*
 		 *  Assign Locals to Local
@@ -58,12 +56,12 @@ public class AssignLocalsFail {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
-		hs.pushLocalPC(SecurityLevel.HIGH, 123);
+		hs.pushLocalPC(SecurityLevel.top(), 123);
 		// x = LOW, lpc = HIGH
-		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_x"));
-		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("int_y"));
-		assertEquals(SecurityLevel.HIGH, hs.getLocalLevel("int_z"));
-		assertEquals(SecurityLevel.HIGH, hs.getLocalPC());
+		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_x"));
+		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_y"));
+		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_z"));
+		assertEquals(SecurityLevel.top(), hs.getLocalPC());
 		hs.addLevelOfLocal("int_y");
 		hs.addLevelOfLocal("int_z");
 		hs.setLevelOfLocal("int_x");
@@ -75,22 +73,22 @@ public class AssignLocalsFail {
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalFlowException.class)
 	public void assignNewObjectToLocal() {
-		LOGGER.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		hs.addLocal("TestSubClass_xy");
 		
 		TestSubClass xy;
 		
-		hs.pushLocalPC(SecurityLevel.HIGH, 123);
+		hs.pushLocalPC(SecurityLevel.top(), 123);
 		
 		hs.setLevelOfLocal("TestSubClass_xy");
 		xy = new TestSubClass();
 		
 		hs.popLocalPC(123);
-	    hs.close();	
+		hs.close();	
 
-		LOGGER.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST FINISHED");
 		
 	}
 	
@@ -98,13 +96,13 @@ public class AssignLocalsFail {
 	@Test(expected = IllegalFlowException.class)
 	public void assignMethodResultToLocal() {
 
-		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
-		hs.addLocal("int_high", SecurityLevel.HIGH);
+		hs.addLocal("int_high", SecurityLevel.top());
 		TestSubClass ts = new TestSubClass();
 		int res ;
 		int high = 0;
@@ -123,30 +121,30 @@ public class AssignLocalsFail {
 		
 		hs.close();
 
-		LOGGER.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 	
 	}
 	
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantAndLocalToLocal() {
 		
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST STARTED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST STARTED");
 				
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		/*
 		 * x++; or x += 1;  or x = x + 1;
 		 */
 		
 		hs.addLocal("int_x");
-		hs.pushLocalPC(SecurityLevel.HIGH, 123);
+		hs.pushLocalPC(SecurityLevel.top(), 123);
 		hs.addLevelOfLocal("int_x");
 		hs.setLevelOfLocal("int_x"); // Just ignore the constants
 		
 		hs.popLocalPC(123);
 		hs.close();
 				
-		LOGGER.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST FINISHED");
+		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST FINISHED");
 	}
 
 }

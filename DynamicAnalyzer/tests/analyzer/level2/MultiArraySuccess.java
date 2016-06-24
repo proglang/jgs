@@ -1,13 +1,12 @@
 package analyzer.level2;
 
-import static org.junit.Assert.*;
-
-import java.util.logging.Logger;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import utils.logging.L2Logger;
+
+import java.util.logging.Logger;
 
 public class MultiArraySuccess {
 
@@ -15,7 +14,7 @@ public class MultiArraySuccess {
 	
 	@Before
 	public void init() {
-		HandleStmtForTests.init();
+		HandleStmt.init();
 	}
 	
 	@Test
@@ -23,13 +22,13 @@ public class MultiArraySuccess {
 		
 		logger.info("createArray success test started");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
 
-		assertEquals(1, hs.getNumberOfElements());
-		assertEquals(2, hs.getNumberOfFields(twoD));
+		assertEquals(1, hs.getNumberOfElementsInObjectMap());
+		assertEquals(2, hs.getNumberOfFieldsInObjectMap(twoD));
 		
 		/*
 		 * The following is the Jimple representation of:
@@ -52,9 +51,6 @@ public class MultiArraySuccess {
 		tmp3[0] = tmp6;
 		threeD[2] = tmp3;
 		
-		
-		// TODO
-		
 		hs.close();
 		
 		logger.info("createArray success test finished");
@@ -64,14 +60,14 @@ public class MultiArraySuccess {
 	public void findNewInstancesOfElements() {
 		logger.info("createArray success test started");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
 		hs.addLocal("String[][]_twoD");
 
-		assertEquals(1, hs.getNumberOfElements());
-		assertEquals(2, hs.getNumberOfFields(twoD));
+		assertEquals(1, hs.getNumberOfElementsInObjectMap());
+		assertEquals(2, hs.getNumberOfFieldsInObjectMap(twoD));
 		
 		/*
 		 * The following is the Jimple representation of:
@@ -102,7 +98,7 @@ public class MultiArraySuccess {
 		hs.setLevelOfArrayField(twoD, Integer.toString(1), "String[][]_twoD");
 		twoD[1] = tmp2;
 
-		assertEquals(SecurityLevel.LOW, hs.getLocalLevel("String[][]_twoD"));
+		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("String[][]_twoD"));
 		
 		hs.close();
 		
@@ -114,7 +110,7 @@ public class MultiArraySuccess {
 		
 		logger.info("readArray success test started");
 		
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		/*
 		 * x = a[i]
@@ -174,7 +170,7 @@ public class MultiArraySuccess {
 
 		logger.info("writeArray success test started");
 
-		HandleStmtForTests hs = new HandleStmtForTests();
+		HandleStmt hs = new HandleStmt();
 		
 		/*
 		 * a[i] = x;

@@ -5,7 +5,7 @@ package utils.exceptions;
  * supported by the analyzer.
  * @author koenigr
  */
-public class NotSupportedStmtException extends Exception {
+public class NotSupportedStmtException extends RuntimeException {
 	private static final long serialVersionUID = -3912857162841002393L;
 
 	public NotSupportedStmtException(String message) {
