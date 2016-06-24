@@ -3,7 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints.secdomains
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.SecLevel
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Level
-import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.{ParseUtils, AnnotationParser}
 
 import scala.collection.JavaConversions._
 
@@ -30,9 +30,9 @@ class UserDefined private (val levels : Set[Level],
 
   override def top(): Level = topLevel
 
-  override def levelParser(): AnnotationParser[Level] = new AnnotationParser[Level] {
+  override def levelParser(): AnnotationParser[Level] = ParseUtils.addDefaults(this, new AnnotationParser[Level] {
     override def parse(input: String): Option[Level] = levels.find(l => l.name == input)
-  }
+  })
 
   override def le(l1: Level, l2: Level): Boolean = l1 == l2 || lt.contains(l1 -> l2)
 
@@ -53,6 +53,7 @@ object UserDefined {
 
   /**
     * Construct a UserDefined lattice of security levels.
+ *
     * @param levels The set of levels
     * @param ltEgdes The essential less-than pairs that induce the ordering on `levels` by closing transitively
     *

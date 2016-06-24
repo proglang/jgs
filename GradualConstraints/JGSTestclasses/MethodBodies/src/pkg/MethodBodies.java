@@ -27,9 +27,13 @@ public class MethodBodies {
     //The security type of fields are given by the @Sec annotation
     @Sec("LOW")
     int lowField;
+    @Sec("LOW")
+    String lowStringField;
 
     @Sec("HIGH")
     int highField;
+    @Sec("HIGH")
+    String highStringField;
     @Sec("?")
     int dynamicField;
 
@@ -66,16 +70,34 @@ public class MethodBodies {
         this.lowField = 0;
     }
 
+    // OK: if there is an externally specified annotation in
+    // "external-annotations.json" then we can use methods from unanalyzed
+    // libraries
+    @Effects({"[top]"})
+    void Ok_copyFromExternal() {
+        this.highStringField = IOUtils.readSecret();
+    }
+
     // ERROR: Omitting such an annotation yields an error.
     void ERROR_zeroOutLowField_quietly() {
         this.lowField = 0;
     }
 
-    // ERROR: Also writing a high securiy value to a low field directly yields an error
+    // ERROR: Also writing a high securiy value to a low field directly
+    // yields an error
     @Effects({"LOW"})
     void ERROR_leakyCopy() {
          this.lowField = this.highField;
     }
+
+    // ERROR: Writing the value of an externally defined field that has a
+    // high-security level according to "external-annotations.json" instead
+    // also yields an error
+    @Effects({"LOW"})
+    void ERROR_leakyCopy2() {
+        this.lowStringField = IOUtils.readSecret();
+    }
+
 
     // ERROR: explicit illegal flow through fields using variables
     void ERROR_explicitWithVars() {
@@ -104,7 +126,8 @@ public class MethodBodies {
 
     // OK: Similar leak using context casts
     //  ATTENTION:
-    //  - due to a shorcoming of the implementation, implicit conversions can be problematic inside context casts.
+    //  - due to a shorcoming of the implementation, implicit conversions can
+    //    be problematic inside context casts.
     //  - thus the use of "Integer" for dynH
     @Effects({"?"})
     void OK_dynamicLeakWithContextCast() {

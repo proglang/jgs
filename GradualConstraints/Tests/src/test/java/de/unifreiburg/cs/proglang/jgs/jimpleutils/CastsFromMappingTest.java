@@ -11,6 +11,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import scala.Option;
+import scala.util.Success;
 import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.NullConstant;
@@ -105,7 +106,7 @@ public class CastsFromMappingTest {
                    convertsBetween(THIGH, DYN));
         assertThat(String.format("wrong conversion for %s", callCxCastLowToDyn.getMethod().toString()), Interop.asJavaOptional(casts.detectValueCastFromCall(callCastLowToDyn)),
                    convertsBetween(TLOW, DYN));
-        assertThat(casts.detectValueCastFromCall(callCxCastHighToDyn), is(Option.empty()));
+        assertThat(casts.detectValueCastFromCall(callCxCastHighToDyn), is(Success.apply(Option.empty())));
     }
 
     @Test(expected=IllegalArgumentException.class)
