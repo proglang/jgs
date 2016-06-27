@@ -21,11 +21,22 @@ public class Environment {
     public static class JoinResult<Level> {
         public final List<Constraint<Level>> constraints;
         public final Environment env;
+        private final Map<TypeVar, TypeVar> translations;
 
-        public JoinResult(List<Constraint<Level>> constraints, Environment env) {
+        public JoinResult(List<Constraint<Level>> constraints, Environment env, Map<TypeVar, TypeVar> translations) {
             this.constraints = constraints;
             this.env = env;
+            this.translations = translations;
         }
+
+        public TypeVar translate(TypeVar v) {
+            if (this.translations.containsKey(v)) {
+                return this.translations.get(v);
+            } else {
+                return v;
+            }
+        }
+
     }
 
     /**
@@ -36,10 +47,14 @@ public class Environment {
     private final Map<Var<?>, TypeVar> env;
 
     /**
-     * Joint two environments. Returns a <code>BodyTypingResult</code> that contains the joined environment and constraints that force unification of local variables. The effects of the result are not needed (left trivialCase) which is a bit of a hack...
+     * Joint two environments. Returns a <code>JoinResult</code> that
+     * contains the joined environment, the constraints that force
+     * unification of local variables, and a translation map that records
+     * which original variables were replaced by joins.
      */
     public static <Level> JoinResult<Level> join(TypeVars tvars, Environment r1, Environment r2) {
         Map<Var<?>, TypeVar> joinedEnv = new HashMap<>();
+        Map<TypeVar, TypeVar> translations = new HashMap<>();
         List<Constraint<Level>> cs = new LinkedList<>();
         for (Map.Entry<Var<?>, TypeVar> e : r1.env.entrySet()) {
             Var<?> k = e.getKey();
@@ -51,6 +66,8 @@ public class Environment {
                     cs.add(Constraints.<Level>le(CTypes.<Level>variable(v1), CTypes.<Level>variable(vNew)));
                     cs.add(Constraints.<Level>le(CTypes.<Level>variable(v2), CTypes.<Level>variable(vNew)));
                     joinedEnv.put(k, vNew);
+                    translations.put(v1, vNew);
+                    translations.put(v2, vNew);
                 } else {
                     joinedEnv.put(k, v1);
                 }
@@ -64,7 +81,7 @@ public class Environment {
                 joinedEnv.put(k, e.getValue());
             }
         }
-        return new JoinResult<>(cs, Environments.fromMap(joinedEnv));
+        return new JoinResult<>(cs, Environments.fromMap(joinedEnv), translations);
     }
 
     public Environment(Map<Var<?>, TypeVar> env) {
@@ -96,7 +113,7 @@ public class Environment {
         return Option.apply(this.env.get(local));
     }
 
-    public Map<Var<?>, TypeVar> debug_getMap() {
+    public Map<Var<?>, TypeVar> getMap() {
         return Collections.unmodifiableMap(this.env);
     }
 

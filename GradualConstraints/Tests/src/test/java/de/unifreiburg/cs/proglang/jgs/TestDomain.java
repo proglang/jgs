@@ -624,4 +624,23 @@ public class TestDomain {
         };
 
     }
+
+    public static <A> Matcher<Option<A>> defined() {
+        return new TypeSafeMatcher<Option<A>>() {
+            @Override
+            protected boolean matchesSafely(Option<A> item) {
+                return item.isDefined();
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText( "defined");
+            }
+
+            @Override
+            protected void describeMismatchSafely(Option<A> item, Description mismatchDescription) {
+                mismatchDescription.appendText("was undefined");
+            }
+        };
+    }
 }

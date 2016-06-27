@@ -38,9 +38,6 @@ class BasicStatementTyping[LevelT](
     return g.getResult
   }
 
-  private def makeResult(constraints: ConstraintSet[LevelT], env: Environment, effects: Effects[LevelT], tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
-    return new BodyTypingResult[LevelT](constraints, effects, env, tags)
-  }
 
   /**
     * A statement switch that generates typing constraints.
@@ -60,6 +57,11 @@ class BasicStatementTyping[LevelT](
 
     def getErrorMsg: List[String] = errorMsg.toList
 
+
+    // Make a result with the env map for a single statement
+    private def makeResult(s : Stmt, constraints: ConstraintSet[LevelT], finalEnv: Environment, effects: Effects[LevelT], tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
+      return new BodyTypingResult[LevelT](constraints, effects, finalEnv, tags, EnvMap(s -> (env, finalEnv)))
+    }
 
     private def extractEffects(rhs: Value): Effects[LevelT] = {
       val effectCases: RhsSwitch[LevelT] = new RhsSwitch[LevelT]((casts)) {
@@ -218,7 +220,7 @@ class BasicStatementTyping[LevelT](
         constraints += (leDest.apply(variable(pc)));
       })
       val fin: Environment = env.add(Var.fromLocal(writeVar), destTVar)
-      setResult(makeResult(csets.fromCollection(constraints), fin, extractEffects(rhs), sw.getTags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), fin, extractEffects(rhs), sw.getTags))
     }
 
     private def caseFieldDefinition(fieldRef: FieldRef, stmt: DefinitionStmt) {
@@ -269,7 +271,7 @@ class BasicStatementTyping[LevelT](
       else {
         Effects.emptyEffect[LevelT].add(fieldType)
       }
-      setResult(makeResult(csets.fromCollection(constraints), env, effects, tags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), env, effects, tags))
     }
 
     private def caseDefinitionStmt(stmt: DefinitionStmt) {
@@ -312,7 +314,7 @@ class BasicStatementTyping[LevelT](
     override def caseReturnStmt(stmt: ReturnStmt) {
       if (stmt.getOp.isInstanceOf[Local]) {
         val r: Var[_] = Var.fromLocal(stmt.getOp.asInstanceOf[Local])
-        setResult(makeResult(csets.fromCollection((Iterator(Constraints.le[LevelT](variable(env.get(r)), variable(tvars.ret))) ++ this.pcs.iterator.map(pcVar => Constraints.le[LevelT](variable(pcVar), variable(tvars.ret())))).toList.asJavaCollection), env, emptyEffect[LevelT], TagMap.empty[LevelT]))
+        setResult(makeResult(stmt, csets.fromCollection((Iterator(Constraints.le[LevelT](variable(env.get(r)), variable(tvars.ret))) ++ this.pcs.iterator.map(pcVar => Constraints.le[LevelT](variable(pcVar), variable(tvars.ret())))).toList.asJavaCollection), env, emptyEffect[LevelT], TagMap.empty[LevelT]))
       }
       else if (stmt.getOp.isInstanceOf[Constant]) {
         noRestrictions
@@ -332,7 +334,7 @@ class BasicStatementTyping[LevelT](
       val toCType: Function[Var[_], CTypes.CType[LevelT]] = v => variable(env.get(v))
       val sw: BasicStatementTyping[LevelT]#Gen#ExprSwitch = new ExprSwitch(leDest, toCType, constraints, destTVar, destCType)
       e.apply(sw)
-      setResult(makeResult(csets.fromCollection(constraints), env, extractEffects(e), sw.getTags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), env, extractEffects(e), sw.getTags))
     }
 
     override def caseIfStmt(stmt: IfStmt) {

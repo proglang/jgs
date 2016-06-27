@@ -17,36 +17,45 @@ import scala.collection.mutable.ListBuffer
   */
 object BodyTypingResult {
   def trivialCase[Level](csets: ConstraintSetFactory[Level]): BodyTypingResult[Level] = {
-    return new BodyTypingResult[Level](csets.empty, emptyEffect[Level], Environments.makeEmpty, TagMap.empty[Level])
+    trivialCase(csets, EnvMap())
+  }
+
+  def trivialCase[Level](csets: ConstraintSetFactory[Level], envMap : EnvMap): BodyTypingResult[Level] = {
+    return new BodyTypingResult[Level](csets.empty, emptyEffect[Level], Environments.makeEmpty, TagMap.empty[Level], envMap)
   }
 
   def fromEnv[Level](csets: ConstraintSetFactory[Level], env: Environment): BodyTypingResult[Level] = {
-    return new BodyTypingResult[Level](csets.empty, emptyEffect[Level], env, TagMap.empty[Level])
+    return new BodyTypingResult[Level](csets.empty, emptyEffect[Level], env, TagMap.empty[Level], EnvMap())
   }
 
-  def join[Level](r1: BodyTypingResult[Level], r2: BodyTypingResult[Level], csets: ConstraintSetFactory[Level], tvars: TypeVars, condition: String): BodyTypingResult[Level] = {
+  def join[Level](r1: BodyTypingResult[Level], r2: BodyTypingResult[Level],
+                  csets: ConstraintSetFactory[Level], tvars: TypeVars, condition: String): BodyTypingResult[Level] = {
     val envJoin: Environment.JoinResult[Level] = Environment.join(tvars, r1.getFinalEnv, r2.getFinalEnv)
     val csList: List[Constraint[Level]] = envJoin.constraints.toList
     val joinTags: TagMap.Builder[Level] = TagMap.builder[Level]
     csList.foreach(c => joinTags.add(c, new TypeVarTags.Join(condition)))
     val cs: ConstraintSet[Level] = r1.constraints.add(r2.constraints).add(csets.fromCollection(csList))
-    return new BodyTypingResult[Level](cs, r1.effects.add(r2.effects), envJoin.env, r1.tags.addAll(r2.tags).addAll(joinTags.build))
+    return new BodyTypingResult[Level](cs, r1.effects.add(r2.effects), envJoin.env, r1.tags.addAll(r2.tags).addAll(joinTags.build), r1.envMap.join(r2.envMap))
   }
 
   def addConstraints[Level](r: BodyTypingResult[Level], constraints: ConstraintSet[Level]): BodyTypingResult[Level] = {
-    return new BodyTypingResult[Level](r.constraints.add(constraints), r.effects, r.env, r.tags)
+    return r.copy(constraints = r.constraints.add(constraints))
   }
 
   def addEffects[Level](r: BodyTypingResult[Level], effects: Effects[Level]): BodyTypingResult[Level] = {
-    return new BodyTypingResult[Level](r.constraints, r.effects.add(effects), r.env, r.tags)
+    return r.copy(effects = r.effects.add(effects))
   }
+
 }
 
 case class BodyTypingResult[LevelT](
   val constraints: ConstraintSet[LevelT],
   val effects: Effects[LevelT],
   val env: Environment,
-  val tags: TagMap[LevelT]
+  // for error messages
+  val tags: TagMap[LevelT],
+  // maps statements to pre- and post environments; for instrumentation
+  val envMap: EnvMap
 ) {
 
   def getConstraints: ConstraintSet[LevelT] = {

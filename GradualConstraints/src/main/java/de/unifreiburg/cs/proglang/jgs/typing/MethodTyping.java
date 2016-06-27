@@ -4,6 +4,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.TypingUtils;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
@@ -42,7 +45,11 @@ public class MethodTyping<Level> {
         public final Effects<Level> inferredEffects;
         public final ConflictResult<Level> conflictCauses;
 
-        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects, ConflictResult<Level> conflicCauses) {
+        // Detailed typing information for contexts and variables for instrumentation
+        public final VarTyping<Level> variableTyping;
+        public final CxTyping<Level> cxTyping;
+
+        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects, ConflictResult<Level> conflicCauses, VarTyping<Level> variableTyping, CxTyping<Level> cxTyping) {
             this.types = types;
             this.completeBodyConstraints = completeBodyConstraints;
             this.refinementCheckResult = refinementCheckResult;
@@ -50,6 +57,8 @@ public class MethodTyping<Level> {
             this.inferredEffects = inferredEffects;
             this.sigEffects = sigEffects;
             this.conflictCauses = conflicCauses;
+            this.variableTyping = variableTyping;
+            this.cxTyping = cxTyping;
         }
 
         /**
@@ -185,7 +194,9 @@ public class MethodTyping<Level> {
                                     }
                                     return causes;
                                 }
-                            });
+                            },
+                            TypingUtils.varTypingFromEnvMap(r.envMap(), r.constraints()),
+                            TypingUtils.cxTypingFromEnvMap(r.envMap(), r.constraints()));
     }
 
 

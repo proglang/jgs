@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
+import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
 import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Graphs.*;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.asList;
@@ -29,6 +30,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
+import static de.unifreiburg.cs.proglang.jgs.Functions.*;
 
 
 public class MethodBodyTypingTest {
@@ -55,6 +57,7 @@ public class MethodBodyTypingTest {
                                      j.newAddExpr(code.localX, code.localY));
         Stmt last = j.newAssignStmt(code.localY,
                                     j.newAddExpr(code.localX, code.localZ));
+        BodyTypingResult<Level> r;
         // x = x + y;
         // y = x + z;
         Body b = BodyBuilder
@@ -62,7 +65,9 @@ public class MethodBodyTypingTest {
                 .seq(first)
                 .seq(last)
                 .build();
+        r = analyze(b);
 
+        // TODO: translate to Junit-Matchers (projectedEquivalent, or so)
         assertEquivalentConstraints(
                 b,
                 (BodyTypingResult<Level> finalResult) -> makeNaive(asList(
@@ -72,6 +77,8 @@ public class MethodBodyTypingTest {
                         leC(pc, finalResult.finalTypeVariableOf(code.varY)))),
                 finalResult -> new HashSet<>(asList(pc, code.init.get(code.varX), code.init.get(code.varY),
                                                     code.init.get(code.varZ), finalResult.finalTypeVariableOf(code.varY))));
+        assertThat("Post 'first' undefined: " + r.envMap(), r.envMap().getPost(first), is(defined()));
+        assertThat("Pre 'last' undefined: " + r.envMap(), r.envMap().getPre(first), is(defined()));
 
         // x = x + y;
         // y = o.ignoreSnd_int_int__int(x, z);
@@ -114,7 +121,7 @@ public class MethodBodyTypingTest {
                         code.init.get(code.varZ), code.init.get(code.varO), finalResult.finalTypeVariableOf(code.varY))));
 
     }
-    // TODO: fix and re-enable tests w/ BodyBuilder
+
     @Test
     public void testIfBranches() throws TypingException {
 
@@ -316,16 +323,32 @@ public class MethodBodyTypingTest {
         Assumptions.validUnitGraph(g);
     }
 
-    @Test
-    public void testTrivialIf() throws TypingException {
+    /*
+         if (0 == 0) goto l0
+     l0: return 0
+     */
+    private Body trivialIf() {
         Stmt ret = j.newReturnStmt(IntConstant.v(0));
         Body b = BodyBuilder.begin()
-                .seq(j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), ret))
-                .seq(ret).build();
+                            .seq(j.newIfStmt(j.newEqExpr(IntConstant.v(0), IntConstant.v(0)), ret))
+                            .seq(ret).build();
+        return b;
+    }
+
+    @Test
+    public void testTrivialIf() throws TypingException {
+        Body b = trivialIf();
         BodyTypingResult<Level> r = analyze(b);
         assertThat(r, is(BodyTypingResult.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
     }
 
+
+
+    /*
+     l1: x = y
+         if (z == 0) goto l1
+         return 42
+     */
     @Test
     public void testDoWhileLoop() throws TypingException {
         Stmt nSet = j.newAssignStmt(code.localX, code.localY);
@@ -340,6 +363,11 @@ public class MethodBodyTypingTest {
         assertEquivalentConstraints(b,
                 r -> makeNaive(asList(leC(code.init.get(code.varY), r.finalTypeVariableOf(code.varX)), leC(code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)))),
                 r -> Stream.of(code.init.get(code.varY), code.init.get(code.varZ), r.finalTypeVariableOf(code.varX)).collect(Collectors.toSet()));
+        BodyTypingResult<Level> r = analyze(b);
+        assertThat(r.envMap().toString(), r.envMap().getPost(nIf), is(defined()));
+        ConstraintSet<Level> cs = makeNaive(r.envMap().preAsConstraints(isLe(literal(PUB)), nIf, code.varX));
+        assertThat(r.constraints().add(leC(literal(THIGH), r.finalTypeVariableOf(code.varZ)))
+                                  .add(cs), not(sat()));
     }
 
     @Test

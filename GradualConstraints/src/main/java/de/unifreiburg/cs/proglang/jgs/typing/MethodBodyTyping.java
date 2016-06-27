@@ -196,15 +196,23 @@ public class MethodBodyTyping<Level> {
             Set<TypeDomain.Type<Level>> newEffects = new HashSet<>();
             newEffects.add(cxCast.sourceType);
             // TODO: why not a factory method?
-            return new BodyTypingResult<Level>(r.getConstraints().add(csets.fromCollection(additionalConstraintsList)), Effects.makeEffects(newEffects), r.getFinalEnv(), r.getTags().addAll(TagMap.of(tagMap)));
+            return new BodyTypingResult<Level>(r.getConstraints().add(csets.fromCollection(additionalConstraintsList)),
+                                               Effects.makeEffects(newEffects),
+                                               r.getFinalEnv(),
+                                               r.getTags().addAll(TagMap.of(tagMap)),
+                                               r.envMap());
         } else if (successors.size() <= 1) {
             // a basic (non-branching) unit in a straight-line sequence
 
             BasicStatementTyping<Level> bsTyping = new BasicStatementTyping<Level>(csets, sTvars, cstrs, method);
             BodyTypingResult<Level> atomic = bsTyping.generate(s, localDefs, previous.getFinalEnv(), Collections.singleton(topLevelContext), signatures, fields, casts);
-            // TODO: the following two statements are so unclear because we need to include all the tags.. abstract away the sequencing to make this clearer (or more transparent)
+            // TODO: the following two statements are so unclear because we need to include all the tags and all the previous environments.. abstract away the sequencing to make this clearer (or more transparent)
             r = BodyTypingResult.addEffects(BodyTypingResult.addConstraints(atomic, previous.getConstraints()), previous.getEffects());
-            r = new BodyTypingResult<>(r.getConstraints(), r.getEffects(), r.getFinalEnv(), r.getTags().addAll(previous.getTags()).addAll(atomic.getTags()));
+            r = new BodyTypingResult<>(r.getConstraints(),
+                                       r.getEffects(),
+                                       r.getFinalEnv(),
+                                       r.getTags().addAll(previous.getTags()).addAll(atomic.getTags()),
+                                       r.envMap().join(previous.envMap()));
             // if the unit is the end of a sequence, stop
             if (successors.isEmpty()) {
                 return r;
@@ -228,7 +236,7 @@ public class MethodBodyTyping<Level> {
 
             BodyTypingResult<Level> conditionResult = addConstraints(previous, csets.fromCollection(conditionConstraints));
             // generate results for each branch and join to final results
-            r = trivialCase(csets);
+            r = trivialCase(csets, conditionResult.envMap().putNew(s, conditionResult.env(), conditionResult.env()));
             for (Unit uBranch : successors) {
                 // do not recurse into visited branches again
                 if (visited.contains(Pair.of(newPc, uBranch))) {
