@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
-import de.unifreiburg.cs.proglang.jgs.BodyBuilder;
+import de.unifreiburg.cs.proglang.jgs.examples.BodyBuilder;
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;

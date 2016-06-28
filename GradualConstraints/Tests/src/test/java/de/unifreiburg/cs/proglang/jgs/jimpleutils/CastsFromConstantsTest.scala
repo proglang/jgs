@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{CxCast, ValueCast}
-import de.unifreiburg.cs.proglang.jgs.{TestDomain, BodyBuilder}
+import de.unifreiburg.cs.proglang.jgs.TestDomain
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, secdomains}
 import org.scalatest.{Matchers, FlatSpec}

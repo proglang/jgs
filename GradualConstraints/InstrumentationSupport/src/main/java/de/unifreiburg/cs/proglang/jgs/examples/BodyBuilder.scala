@@ -1,10 +1,10 @@
-package de.unifreiburg.cs.proglang.jgs
+package de.unifreiburg.cs.proglang.jgs.examples
 
-import soot.{Body, SootClass, SootMethod, Scene, VoidType, PatchingChain}
+import soot.jimple.{Expr, IfStmt, Jimple, Stmt}
+import soot.{Body, PatchingChain, Scene, SootClass, SootMethod, VoidType}
 
 import scala.collection.JavaConverters._
-
-import soot.jimple.{Expr, Jimple, Stmt, JimpleBody}
+import scala.collection.JavaConversions._
 
 
 class BodyBuilder private  {
@@ -25,7 +25,10 @@ class BodyBuilder private  {
 
   private var finalized = false
 
+  def viewChain() : java.util.List[Stmt] = (for (s <- chain) yield (s.asInstanceOf[Stmt])).toList
+
   def build() : Body = { finalized = true; body }
+
 
   def seq(s : Stmt) : BodyBuilder = {
     addToChain(s)
@@ -36,10 +39,11 @@ class BodyBuilder private  {
     return ite(cond, BodyBuilder.begin().seq(thn), BodyBuilder.begin().seq(els))
   }
 
-  def ite(cond : Expr, thn : BodyBuilder, els : BodyBuilder) : BodyBuilder = {
+  def ite(cond : IfStmt, thn : BodyBuilder, els : BodyBuilder) : BodyBuilder = {
     val thnChain = thn.chain
     val thnStmt = thn.chain.getFirst
-    val head = Jimple.v().newIfStmt(cond, thnStmt)
+    cond.setTarget(thnStmt)
+    val head = cond
     val end = Jimple.v().newNopStmt()
     val gotoEnd = Jimple.v().newGotoStmt(end)
     addToChain(head)
@@ -50,6 +54,11 @@ class BodyBuilder private  {
 
 
     return this
+  }
+
+  def ite(cond : Expr, thn : BodyBuilder, els : BodyBuilder) : BodyBuilder = {
+    val placeholder = Jimple.v().newNopStmt() // filled in by ite(Stmt, ...)
+    ite(Jimple.v().newIfStmt(cond, placeholder), thn, els)
   }
 
   def whileLoop(cond : Expr, body : Stmt) : BodyBuilder = {
