@@ -1,6 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import soot.SootMethod;
 
 /**
@@ -16,6 +15,6 @@ public interface Methods<Level> {
     /**
      * Return the effect type (i.e. global context) of method {@code m}.
      */
-    TypeViews.TypeView<Level> getEffectType(SootMethod m);
+    Type<Level> getEffectType(SootMethod m);
 
 }

@@ -1,7 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains
 
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.SecLevel
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Level
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.{ParseUtils, AnnotationParser}
 

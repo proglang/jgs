@@ -32,6 +32,27 @@ public abstract class Casts<Level> {
                     this.destType,
                     this.sourceType);
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            CxCast<?> cxCast = (CxCast<?>) o;
+
+            if (sourceType != null ? !sourceType.equals(cxCast.sourceType) :
+                cxCast.sourceType != null) return false;
+            return destType != null ? destType.equals(cxCast.destType) :
+                   cxCast.destType == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = sourceType != null ? sourceType.hashCode() : 0;
+            result = 31 * result + (destType != null ? destType.hashCode() : 0);
+            return result;
+        }
     }
 
     public static class ValueCast<Level> {

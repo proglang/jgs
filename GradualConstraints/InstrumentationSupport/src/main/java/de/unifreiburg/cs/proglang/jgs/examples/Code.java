@@ -15,27 +15,27 @@ import static java.util.Arrays.asList;
  */
 public class Code {
 
-    Jimple j = Jimple.v();
+    static Jimple j = Jimple.v();
 
     // Class to hold exmaple methods and fields
-    SootClass exClass = makeClass("InstrumentationExamples");
+    static SootClass exClass = makeClass("InstrumentationExamples");
 
     // Fields
-    SootField fieldA = makeField("fieldA", IntType.v(), exClass);
-    SootField fieldB = makeField("fieldB", RefType.v("java.lang.String"), exClass);
-    SootField fieldC = makeField("fieldC", RefType.v("java.lang.Object"), exClass);
+    static SootField fieldA = makeField("fieldA", IntType.v(), exClass);
+    static SootField fieldB = makeField("fieldB", RefType.v("java.lang.String"), exClass);
+    static SootField fieldC = makeField("fieldC", RefType.v("java.lang.Object"), exClass);
 
     // Generic local variable
-    Local localX = j.newLocal("x", IntType.v());
-    Local localY = j.newLocal("y", IntType.v());
-    Local localZ = j.newLocal("z", IntType.v());
+    static Local localX = j.newLocal("x", IntType.v());
+    static Local localY = j.newLocal("y", IntType.v());
+    static Local localZ = j.newLocal("z", IntType.v());
 
     // Generic parameters
-    ParameterRef param0 = j.newParameterRef(IntType.v(), 0);
-    ParameterRef param1 = j.newParameterRef(IntType.v(), 1);
+    static ParameterRef param0 = j.newParameterRef(IntType.v(), 0);
+    static ParameterRef param1 = j.newParameterRef(IntType.v(), 1);
 
     // A placeholder for the targets of if statements
-    Stmt placeholder = j.newNopStmt();
+    static Stmt placeholder = j.newNopStmt();
 
     // Methods
     /*
@@ -48,12 +48,12 @@ public class Code {
         4: return z;
       }
      */
-    Stmt max_1_assign_Z_p0 = j.newAssignStmt(localZ, param0);
-    IfStmt max_2_if_Z_lt_p1 = j.newIfStmt(j.newCmplExpr(localZ, param1), placeholder);
-    Stmt max_3_assign_Z_p1 = j.newAssignStmt(localZ, param1);
-    Stmt max_4_return_Z = j.newReturnStmt(localZ);
+    public static final Stmt max_1_assign_Z_p0 = j.newAssignStmt(localZ, param0);
+    public static final IfStmt max_2_if_Z_lt_p1 = j.newIfStmt(j.newCmplExpr(localZ, param1), placeholder);
+    public static final Stmt max_3_assign_Z_p1 = j.newAssignStmt(localZ, param1);
+    public static final Stmt max_4_return_Z = j.newReturnStmt(localZ);
     //BodyBuilder max_3_assign_
-    SootMethod max = makeMethod(exClass,
+    public static SootMethod max = makeMethod(exClass,
                                 "max",
                                 asList(IntType.v(), IntType.v()),
                                 IntType.v(),

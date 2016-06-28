@@ -1,8 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
-import soot.baf.Inst;
 import soot.jimple.Stmt;
 
 /**
@@ -13,7 +10,7 @@ public interface CxTyping<Level> {
     /**
      * Return the context type for statement @{code s}, given a particular instantiation.
      */
-    TypeView<Level> get(Instantiation<Level> instantiation, Stmt s);
+    Type<Level> get(Instantiation<Level> instantiation, Stmt s);
 
 
 }

@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import TypeVars.TypeVar
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
 
 /**
   * Created by fennell on 2/29/16.

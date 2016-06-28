@@ -2,6 +2,9 @@ package de.unifreiburg.cs.proglang.jgs.signatures
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 
+/**
+  * Created by fennell on 6/28/16.
+  */
 object SymbolViews {
 
   abstract sealed trait SymbolView[Level]

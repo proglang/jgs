@@ -31,6 +31,7 @@ public class MethodTyping<Level> {
     final private ConstraintSetFactory<Level> csets;
     final private Constraints<Level> cstrs;
     private final Casts<Level> casts;
+    final private TypingUtils<Level> typingUtils;
 
     public interface ConflictResult<Level> {
          List<ConflictCause<Level>> get();
@@ -127,6 +128,7 @@ public class MethodTyping<Level> {
         this.csets = csets;
         this.casts = casts;
         this.cstrs = cstrs;
+        this.typingUtils = new TypingUtils<>(cstrs.types().getSecDomain());
     }
 
     /**
@@ -195,8 +197,8 @@ public class MethodTyping<Level> {
                                     return causes;
                                 }
                             },
-                            TypingUtils.varTypingFromEnvMap(r.envMap(), r.constraints()),
-                            TypingUtils.cxTypingFromEnvMap(r.envMap(), r.constraints()));
+                            typingUtils.varTypingFromEnvMap(r.envMap(), r.constraints()),
+                            typingUtils.cxTypingFromEnvMap(r.envMap(), r.constraints()));
     }
 
 

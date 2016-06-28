@@ -1,6 +1,5 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import soot.SootField;
 
 /**
@@ -11,5 +10,5 @@ public interface FieldTyping<Level> {
     /**
      * Return the type of field {@code f}.
      */
-    TypeViews.TypeView<Level> get(SootField f);
+    Type<Level> get(SootField f);
 }
