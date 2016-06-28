@@ -19,7 +19,7 @@ class CastsFromConstantsTest extends FlatSpec with Matchers{
   import CastsFromConstantsTest._
 
   val casts = new CastsFromConstants(types.typeParser(),"<testCasts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
-          "<testCasts: void castCx(java.lang.String)>", "<void castEnd()>")
+          "<testCasts: void castCx(java.lang.String)>", "<testCasts: void castCxEnd()>")
 
 
   "valueCastMethod.toString" should "be <testCasts: java.lang.Object cast(java.lang.String,java.lang.Object)>" in {
@@ -27,7 +27,7 @@ class CastsFromConstantsTest extends FlatSpec with Matchers{
   }
 
   "cast(LOW ~> HIGH, x)" should "convert from LOW to HIGH" in {
-    casts.detectValueCastFromCall(lowToHigh) should be (Some(new ValueCast[LowHigh.Level](TLOW, THIGH, Some(varX))))
+    casts.detectValueCastFromCall(lowToHigh) should be (Success(Some(new ValueCast[LowHigh.Level](TLOW, THIGH, Some(varX)))))
   }
 
   it should "not be a context casts" in {
@@ -36,7 +36,7 @@ class CastsFromConstantsTest extends FlatSpec with Matchers{
   }
 
   "cast(y,x)" should "throw an exception" in {
-    an [IllegalArgumentException] should be thrownBy casts.detectValueCastFromCall(wrongLowToHigh)
+    an [IllegalArgumentException] should be thrownBy casts.detectValueCastFromCall(wrongLowToHigh).get
 
   }
 
@@ -70,10 +70,13 @@ object CastsFromConstantsTest {
   val varX = Var.fromLocal(localX)
   val valueCastMethod = new SootMethod("cast", List(tString, tObject),tObject,Modifier.STATIC)
   castClass.addMethod(valueCastMethod)
-  val cxCastMethod = new SootMethod("cxCast", List(tString), tVoid, Modifier.STATIC)
+  val cxCastMethod = new SootMethod("castCx", List(tString), tVoid, Modifier.STATIC)
   castClass.addMethod(cxCastMethod)
-  val cxCastEndMethod = new SootMethod("cxCastEnd", List(), tVoid, Modifier.STATIC)
-  castClass.addMethod(cxCastEndMethod)
+
+  // ATTENTION: do not add cxCastEnd, as it is already present in TestDomain
+  //
+  // val cxCastEndMethod = new SootMethod("castCxEnd", List(), tVoid, Modifier.STATIC)
+  // castClass.addMethod(cxCastEndMethod)
 
 
   // LOW ~> HIGH
@@ -91,7 +94,7 @@ object CastsFromConstantsTest {
 
   // cx end
   val cxEnd = Jimple.v().newStaticInvokeExpr((
-    cxCastEndMethod.makeRef()
+    castCxEnd.makeRef()
     ))
 
 }
