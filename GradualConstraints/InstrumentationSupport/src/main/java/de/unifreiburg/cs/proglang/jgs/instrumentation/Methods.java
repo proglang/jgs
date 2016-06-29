@@ -15,6 +15,6 @@ public interface Methods<Level> {
     /**
      * Return the effect type (i.e. global context) of method {@code m}.
      */
-    Type<Level> getEffectType(SootMethod m);
+    Effect<Level> getEffectType(SootMethod m);
 
 }

@@ -38,31 +38,39 @@ public class Code {
     static Stmt placeholder = j.newNopStmt();
 
     // Methods
+
     /*
       int max(int p0, int p1) {
+        int x;
+        int y;
         int z;
-        1: z = p0;
-        2: if (z < p1) {
-        3:   z = p1;
-           }
+       01: x := p0;
+       02: y := p1;
+        1: z = x;
+        2: if (z < y) goto 3;
+       22:   goto 4;
+        3:   z = y;
         4: return z;
       }
      */
-    public static final Stmt max_1_assign_Z_p0 = j.newAssignStmt(localZ, param0);
-    public static final IfStmt max_2_if_Z_lt_p1 = j.newIfStmt(j.newCmplExpr(localZ, param1), placeholder);
-    public static final Stmt max_3_assign_Z_p1 = j.newAssignStmt(localZ, param1);
+    public static final Stmt max_01_id_X_p0 = j.newIdentityStmt(localX, param0);
+    public static final Stmt max_02_id_Y_p1 = j.newIdentityStmt(localY, param1);
+    public static final Stmt max_1_assign_Z_X = j.newAssignStmt(localZ, localX);
     public static final Stmt max_4_return_Z = j.newReturnStmt(localZ);
-    //BodyBuilder max_3_assign_
+    public static final Stmt max_22_goto_4 = j.newGotoStmt(max_4_return_Z);
+    public static final IfStmt max_2_if_Z_lt_Y = j.newIfStmt(j.newLtExpr(localZ, localY), max_22_goto_4);
+    public static final Stmt max_3_assign_Z_Y = j.newAssignStmt(localZ, localY);
     public static SootMethod max = makeMethod(exClass,
                                 "max",
                                 asList(IntType.v(), IntType.v()),
                                 IntType.v(),
                                 BodyBuilder.begin()
-                                           .seq(max_1_assign_Z_p0)
-                                           .ite(max_2_if_Z_lt_p1,
-                                                BodyBuilder.begin()
-                                                           .seq(max_3_assign_Z_p1),
-                                                BodyBuilder.begin())
+                                           .seq(max_01_id_X_p0)
+                                           .seq(max_02_id_Y_p1)
+                                           .seq(max_1_assign_Z_X)
+                                           .seq(max_2_if_Z_lt_Y)
+                                           .seq(max_22_goto_4)
+                                           .seq(max_3_assign_Z_Y)
                                            .seq(max_4_return_Z)
                                            .build()
                                 );

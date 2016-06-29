@@ -7,7 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Type
   */
 object ExampleTypes {
 
-  sealed abstract case class ExampleType[Level]() extends Type[Level] {
+  sealed abstract class ExampleType[Level]() extends Type[Level] {
     override def isStatic: Boolean = false
 
     override def isDynamic: Boolean = false
@@ -29,16 +29,16 @@ object ExampleTypes {
     override def isPublic : Boolean = true
   }
 
-  def lub[Level](t1 : Type[Level], t2 : Type[Level]) = {
+  def lub[Level](t1 : Type[Level], t2 : Type[Level]) : Type[Level] = {
     lub(t1.asInstanceOf[ExampleType[Level]], t2.asInstanceOf[ExampleType[Level]])
   }
 
-  def lub[Level](t1 : ExampleType[Level], t2 : ExampleType[Level]) = {
+  def lub[Level](t1 : ExampleType[Level], t2 : ExampleType[Level]) : Type[Level] = {
     if (t1 == t2) {
       t1
-    } else if (t1 == Public) {
+    } else if (t1 == Public()) {
       t2
-    } else if (t2 == Public) {
+    } else if (t2 == Public()) {
       t1
     } else {
       throw new RuntimeException(s"Types cannot be joind: ${t1}, ${t2}")
