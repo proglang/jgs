@@ -3,6 +3,7 @@ package de.unifreiburg.cs.proglang.jgs
 import java.io.File
 import java.util.logging.Logger
 
+import com.fasterxml.jackson.dataformat.yaml.{YAMLFactory, YAMLMapper}
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh}
@@ -17,9 +18,8 @@ import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.typing.{ClassHierarchyTyping, MethodTyping, TypingAssertionFailure, TypingException}
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import de.unifreiburg.cs.proglang.jgs.Util._
-
 import org.json4s._
-import org.json4s.native.JsonMethods.{parse => parseJson}
+import org.json4s.jackson.{Json4sScalaModule, Json}
 import scopt.OptionParser
 import soot.options.Options
 import soot.{Scene, SootClass, SootField, SootMethod}
@@ -62,6 +62,15 @@ object JgsCheck {
   val log: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.log")
   val debugLog: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.debug")
 
+
+  // configure a json4s capable yaml parser
+  val parseJson = {
+    val yamlMapper = new YAMLMapper()
+    yamlMapper.registerModule(new Json4sScalaModule)
+    val json = Json(DefaultFormats, yamlMapper)
+    (s : String) => json.parse(s)
+  }
+
   def die(msg : String, exitCode : Int = -1): Unit = {
     System.err.println(msg)
     System.err.println(
@@ -76,8 +85,8 @@ object JgsCheck {
       support = new File("JGSSupport/bin"),
       runtime = sys.props.get("sun.boot.class.path")
         .getOrElse(sys.error("Unable to look up system property `sun.boot.class.path'")),
-      externalAnnotations = new File("JGSSupport/external-annotations.json"),
-      castMethods = new File("JGSSupport/cast-methods.json"),
+      externalAnnotations = new File("JGSSupport/external-annotations.yaml"),
+      castMethods = new File("JGSSupport/cast-methods.yaml"),
       genericCasts = false,
       secdomainChoice = LowHigh,
       verbosity = Warn
@@ -229,6 +238,8 @@ object JgsCheck {
         * Read configured signatures from file
         * *****************************/
       val annotationsJsonStr = Source.fromFile(opt.externalAnnotations).mkString
+
+
       val annotationsJson = Try(parseJson(annotationsJsonStr)) match {
         case Failure(exception) =>
           throw new IllegalArgumentException(s"Error parsing external annotations (${opt.externalAnnotations}): ${exception.getMessage}")

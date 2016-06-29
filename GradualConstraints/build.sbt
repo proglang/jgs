@@ -14,7 +14,9 @@ lazy val commonSettings = Seq(
 
 lazy val jgsCheckDeps = Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-  "org.json4s" %% "json4s-native" % "3.3.0",
+  // "org.json4s" %% "json4s-native" % "3.3.0",
+  "org.json4s" %% "json4s-jackson" % "3.3.0",
+  "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.7.4",
   "com.github.scopt" %% "scopt" % "3.4.0",
   "com.googlecode.kiama" %% "kiama" % "1.8.0"
 )
@@ -43,6 +45,10 @@ lazy val Tests =
 
 lazy val InstrumentationSupport = 
   (project in file("InstrumentationSupport")).
-    settings(commonSettings:_*)
+    settings(commonSettings:_*).
+    settings(
+      libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
+    )
+
 
 lazy val JGSSupport = project.settings(setScalaVersion)
