@@ -1,0 +1,15 @@
+levels:
+  - bot
+  - alice
+  - bob
+  - charlie
+  - top
+
+lt-edges:
+  - [ bot , alice ]
+  - [ bot , bob ]
+  - [ bot , charlie ]
+  - [ alice , top ]
+  - [ bob, top ]
+  - [ charlie, top ]
+

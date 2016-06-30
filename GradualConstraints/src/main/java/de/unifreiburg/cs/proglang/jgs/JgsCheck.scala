@@ -6,7 +6,7 @@ import java.util.logging.Logger
 import com.fasterxml.jackson.dataformat.yaml.{YAMLFactory, YAMLMapper}
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh}
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh, UserDefined, UserDefinedUtils}
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
@@ -19,7 +19,7 @@ import de.unifreiburg.cs.proglang.jgs.typing.{ClassHierarchyTyping, MethodTyping
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import de.unifreiburg.cs.proglang.jgs.Util._
 import org.json4s._
-import org.json4s.jackson.{Json4sScalaModule, Json}
+import org.json4s.jackson.{Json, Json4sScalaModule}
 import scopt.OptionParser
 import soot.options.Options
 import soot.{Scene, SootClass, SootField, SootMethod}
@@ -114,6 +114,8 @@ object JgsCheck {
       opt[Unit]("alice-bob-charlie")
         .action { (x, c) => c.copy(secdomainChoice = AliceBobCharlie) }
         .text("Use the {bottom, alice, bob, charlie, top} security domain instead of {LOW, HIGH}")
+      opt[File]("security-domain")
+          .action { (f, c) => c.copy(secdomainChoice = UserDomain(f))}
       opt[Unit]("generic-casts")
         .action { (_, c) => c.copy(genericCasts = true)}
         .text("Use the generic casts from cast-methods")
@@ -173,7 +175,30 @@ object JgsCheck {
             new Config(types, csets, opt)
           }
           case UserDomain(secDomainClass) =>
-            throw new IllegalArgumentException("User defined security domains are not implemented yet.")
+            val domainSpecJson = Try(parseJson(Source.fromFile(secDomainClass).mkString)) match {
+              case Failure(exc) =>
+                throw new IllegalArgumentException(
+                  s"Error parsing security domain specification ${secDomainClass}: ${exc.getMessage}"
+                )
+              case Success(json) => json
+            }
+            val domainSpec = UserDefinedUtils.fromJSon(domainSpecJson)
+            // a little validation
+            if (domainSpec.levels.isEmpty) {
+              throw new IllegalArgumentException(
+                s"No security levels found in ${secDomainClass}"
+              )
+            }
+            if (domainSpec.edges.isEmpty) {
+              throw new IllegalArgumentException(
+                s"No less-than edges found in ${secDomainClass}"
+              )
+            }
+            // create the domains
+            val secdomain = UserDefined(domainSpec.levels, domainSpec.edges)
+            val types = new TypeDomain(secdomain)
+            val csets = new NaiveConstraintsFactory(types)
+            new Config(types, csets, opt)
         }
         import cfg._
         typeCheck(s, classes)
