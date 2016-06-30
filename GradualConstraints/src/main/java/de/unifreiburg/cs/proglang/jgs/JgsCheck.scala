@@ -4,6 +4,7 @@ import java.io.File
 import java.util.logging.Logger
 
 import com.fasterxml.jackson.dataformat.yaml.{YAMLFactory, YAMLMapper}
+import de.unifreiburg.cs.proglang.jgs.TestCollector.{Exceptional, UnexpectedFailure, UnexpectedSuccess}
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh, UserDefined, UserDefinedUtils}
@@ -56,7 +57,8 @@ object JgsCheck {
    val castMethods: File,
    val genericCasts: Boolean,
    val secdomainChoice: SecDomainChoice,
-   val verbosity: Verbosity
+   val verbosity: Verbosity,
+   testMode: Boolean
   )
 
   val log: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.log")
@@ -89,7 +91,8 @@ object JgsCheck {
       castMethods = new File("JGSSupport/cast-methods.yaml"),
       genericCasts = false,
       secdomainChoice = LowHigh,
-      verbosity = Warn
+      verbosity = Warn,
+      testMode = false
     )
 
     val addDefault = (s: String, get: Opt => Object) => s + s" (default: ${get(defOpt).toString})"
@@ -119,6 +122,9 @@ object JgsCheck {
       opt[Unit]("generic-casts")
         .action { (_, c) => c.copy(genericCasts = true)}
         .text("Use the generic casts from cast-methods")
+      opt[Unit]("test-mode")
+        .action { (_, c) => c.copy(testMode = true) }
+        .text("Enable test mode (only useful for unit-tests)")
       arg[File]("SOURCETREE")
         .action { (x, c) => c.copy(sourcetree = Some(x)) }
         .text("directory of sources subject to typechecking")
@@ -210,6 +216,7 @@ object JgsCheck {
   class Config[Level](val types: TypeDomain[Level],
                       val csets: ConstraintSetFactory[Level],
                       val opt: Opt) {
+    val testCollector : TestCollector[Level] = TestCollector()
 
     val cstrs = new Constraints(types)
 
@@ -407,9 +414,40 @@ object JgsCheck {
                                classOf[NotImplemented]).either {
           methodTyping.check(new TypeVars(), signatures, fieldTable, m)
         }
-        val resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
-        println(s"* Type checking method ${m.toString}: ${resultReport}")
-        println()
+        if (opt.testMode) {
+          mresult.fold(testCollector.observeError(m, _), testCollector.observe(m, _))
+        } else {
+          val resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
+          println(s"* Type checking method ${m.toString}: ${resultReport}")
+          println()
+        }
+      }
+      if (opt.testMode) {
+        val failures = testCollector.getFailures
+        val errors = testCollector.getErrors
+        val obeserved = testCollector.getObserved
+
+        val retVal =
+          if (failures.isEmpty && errors.isEmpty) {
+            0
+          } else {
+            for (fail <- failures) {
+              fail match {
+                case UnexpectedSuccess(method) =>
+                  println(s" !! Method ${method} succeeded unexpectedly")
+                case UnexpectedFailure(method, result) =>
+                  val resultReport = Format.pprint(Format.methodTypingResult(result))
+                  println(s" !! Method ${method} failed unexpecedly: ${resultReport}\n")
+              }
+            }
+            for (Exceptional(method, exc) <- errors) {
+              val excMessage = Format.pprint(Format.typingException(exc))
+              println(s" !! Error while checking method ${method}: ${excMessage}\n")
+            }
+            -1
+          }
+        println(s"(Tested ${obeserved.size} methods, ${failures.size} failures, ${errors.size} errors)")
+        sys.exit(retVal)
       }
     }
 
