@@ -180,11 +180,11 @@ public class PersonalDomain {
     int ERROR_returnFromDynCastCx_illegalInIf() {
         int result;
         if (this.topField == 1) {
-            Casts.castCx("");
+            Casts.castCx("[bot] ~> ?");
             result = 1;
             Casts.castCxEnd();
         } else {
-            Casts.castCxHighToDyn();
+            Casts.castCx("top ~> ?");
             result = 0;
             Casts.castCxEnd();
         }
@@ -197,7 +197,7 @@ public class PersonalDomain {
     int ERROR_returnFromDynCastCx_illegalInJoin() {
         int result = this.topField;
         if (this.topField == 1) {
-            Casts.castCx("top ~~> ?");
+            Casts.castCx("top ~> ?");
             result = 1;
             Casts.castCxEnd();
         }

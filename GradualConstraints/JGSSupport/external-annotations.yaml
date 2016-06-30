@@ -1,4 +1,4 @@
-"methods":
+methods:
   - "<de.unifreiburg.cs.proglang.jgs.support.IO: void printInt(int)>": { "constraints": ["@0 <= [bot]"], "effects": ["[bot]"] }
   - "<java.lang.Integer: java.lang.Integer valueOf(int)>": { "constraints": ["@0 <= @ret"], "effects": [] }
   - "<java.lang.Integer: int intValue()>": { "constraints": [], "effects": [] }
@@ -7,8 +7,9 @@
   - "<java.lang.StringBuffer: void <init>()>" : {"constraints": [], "effects": []}
   - "<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.Object)>" : {"constraints": ["@0 <= pub"], "effects": [ "[bot]" ]}
   - "<java.lang.StringBuffer: java.lang.String toString()>" : {"constraints": [], "effects": []}
+  - "<de.unifreiburg.cs.proglang.jgs.support.IOUtils: java.lang.String readSecret()>" : { constraints: ["[top] <= @ret"], effects: [] }
 
-"fields":
+fields:
   - "<de.unifreiburg.cs.proglang.jgs.support.SString: de.unifreiburg.cs.proglang.jgs.support.SString MAX_WAS_CALLED>": "pub"
   - "<de.unifreiburg.cs.proglang.jgs.support.SString: de.unifreiburg.cs.proglang.jgs.support.SString PUBLIC_RESULT>": "pub"
   - "<de.unifreiburg.cs.proglang.jgs.support.SString: de.unifreiburg.cs.proglang.jgs.support.SString SECRET_RESULT>": "pub"
