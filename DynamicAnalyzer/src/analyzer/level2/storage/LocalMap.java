@@ -25,7 +25,7 @@ public class LocalMap {
 	
 	public LocalMap() {
 		localPC.push(new LPCDominatorPair(SecurityLevel.bottom() , -1));
-		localMap.put("DEFAULT_BOTTOM", SecurityLevel.bottom());
+		localMap.put("DEFAULT_LOW", SecurityLevel.bottom());
 	}
 	
 	/**

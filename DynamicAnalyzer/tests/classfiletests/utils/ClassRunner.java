@@ -41,7 +41,7 @@ public class ClassRunner {
 		Path path = new Path(project);
 		path.setPath("./sootOutput:./bin/"
 				+ ":./../../dependencies/commons-collections4-4.0/"
-				+ "commons-collections4-4.0.jar");
+				+ "commons-collections4-4.0.jar:./../../dependencies/instrumentationsupport_2.11-0.1-SNAPSHOT.jar");
 		task.setClasspath(path);
 		task.setClassname("main.testclasses." + className);
 		task.setFork(false);

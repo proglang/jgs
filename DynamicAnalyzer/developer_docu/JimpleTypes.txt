@@ -4,3 +4,4 @@ VoidType.v()
 RefType.v("analyzer.level2.SecurityLevel")
 IntType.v()
 ArrayType.v(RefType.v("java.lang.String"), i)  // i is an int
+Scene.v().getObjectType()

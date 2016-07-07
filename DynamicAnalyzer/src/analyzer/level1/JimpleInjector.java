@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.org.apache.bcel.internal.generic.ObjectType;
+
 /**
  * JimpleInjector is called by the AnnotatorStmtSwitch and AnnotatorValueSwitch.
  * Inserts additional statements into a methods body.
@@ -327,7 +329,7 @@ public class JimpleInjector {
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addFieldToObjectMap", 
-				parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false), 
+				parameterTypes, Scene.v().getObjectType(), false), 
 				tmpLocal, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
@@ -362,7 +364,7 @@ public class JimpleInjector {
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"addFieldToObjectMap", parameterTypes, 
-				RefType.v("analyzer.level2.SecurityLevel"), false),
+				Scene.v().getObjectType(), false),
 				local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
@@ -481,7 +483,7 @@ public class JimpleInjector {
 		Expr invokeAddLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
 				"addLevelOfLocal", paramTypes, 
-				RefType.v("analyzer.level2.SecurityLevel"),
+				Scene.v().getObjectType(),
 				false), local_for_Strings);
 		Unit invoke = Jimple.v().newInvokeStmt(invokeAddLevel);
 		
@@ -524,7 +526,7 @@ public class JimpleInjector {
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "addLevelOfField", 
-				parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false), 
+				parameterTypes, Scene.v().getObjectType(), false), 
 				local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
@@ -560,7 +562,7 @@ public class JimpleInjector {
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"addLevelOfField", parameterTypes, 
-				RefType.v("analyzer.level2.SecurityLevel"), false),
+				Scene.v().getObjectType(), false),
 				local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
@@ -593,7 +595,7 @@ public class JimpleInjector {
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"addLevelOfArrayField", parameterTypes, 
-				RefType.v("analyzer.level2.SecurityLevel"), false),
+				Scene.v().getObjectType(), false),
 				a.getBase(), local_for_Strings);
 		
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
@@ -620,7 +622,7 @@ public class JimpleInjector {
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
 				"setLevelOfLocal", paramTypes, 
-				RefType.v("analyzer.level2.SecurityLevel"),
+				Scene.v().getObjectType(),
 				false), local_for_Strings);
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
@@ -664,7 +666,7 @@ public class JimpleInjector {
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField", 
-				parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false), 
+				parameterTypes, Scene.v().getObjectType(), false), 
 				tmpLocal, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
@@ -700,7 +702,7 @@ public class JimpleInjector {
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"setLevelOfField", parameterTypes, 
-				RefType.v("analyzer.level2.SecurityLevel"), false),
+				Scene.v().getObjectType(), false),
 				local_for_Objects, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		
@@ -787,7 +789,7 @@ public class JimpleInjector {
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"setLevelOfArrayField", parameterTypes, 
-				RefType.v("analyzer.level2.SecurityLevel"), false), args);
+				Scene.v().getObjectType(), false), args);
 
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 		unitStore_Before.insertElement(
@@ -835,7 +837,7 @@ public class JimpleInjector {
 		Expr assignArg = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "assignArgumentToLocal",
-				parameterTypes, RefType.v("analyzer.level2.SecurityLevel"), false),
+				parameterTypes, Scene.v().getObjectType(), false),
 				IntConstant.v(posInArgList), 
 				StringConstant.v(getSignatureForLocal(local))
 		);
