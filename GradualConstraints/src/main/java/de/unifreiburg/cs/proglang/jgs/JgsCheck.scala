@@ -87,8 +87,8 @@ object JgsCheck {
       support = new File("JGSSupport/bin"),
       runtime = sys.props.get("sun.boot.class.path")
         .getOrElse(sys.error("Unable to look up system property `sun.boot.class.path'")),
-      externalAnnotations = new File("JGSSupport/external-annotations.yaml"),
-      castMethods = new File("JGSSupport/cast-methods.yaml"),
+      externalAnnotations = new File("external-annotations.yaml"),
+      castMethods = new File("cast-methods.yaml"),
       genericCasts = false,
       secdomainChoice = LowHigh,
       verbosity = Warn,
