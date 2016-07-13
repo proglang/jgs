@@ -21,7 +21,7 @@ testcases that did not fit into the paper. The user should also be
 able to check custom code as long as it corresponds the subset of Java
 that is covered by LJGS.
 
-([usage and more details here](doc/index.html))
+([usage and more details here](doc/README.md))
 
 **This repository** (resp. this branch of the `gradual-java`
 repository) is a "maintenance branch" for the artifact; it includes
