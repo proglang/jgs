@@ -133,6 +133,11 @@ of VirtualBox)
 
 ## Fixes
 
+1. [Configurable Section Domain](#configurable-security-domain)
+2. [Support for `java.lang.String`](#support-for-javalangstring)
+3. [Parsing of Constraint Syntax](#parsing-constraint-syntax)
+4. [Detecting Context Casts](#detecting-content-casts)
+
 ### Configurable Security Domain
 
 Although the functionality was already implemented in principle, the
