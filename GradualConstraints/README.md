@@ -149,8 +149,10 @@ It is now possible to define a custom security domain using
 #### Specifying Security Domains
 
 The configuration file for a security domain contains an object with two attributes:
+
 1. `level`: An array of the *security levels* (strings)
-2. `lt-edges`: An array of 2-element arrays specifying set of "less-than" relationships between security levels. 
+2. `lt-edges`: An array of 2-element arrays specifying set of
+   "less-than" relationships between security levels.
 
 JGS-check constructs the ordering of the lattice by taking the
 reflexive-transitive closure of `lt-egdes`. Construction will fail if
@@ -160,7 +162,7 @@ levels).
 
 Example (`secdomain-alice-bob-charlie.ya ml`):
 
-````
+````yaml
 # This is the alice-bob-charlie lattice. 
 #
 # Getting greater from left to right:
@@ -197,7 +199,7 @@ project `JGSSupport`).
 As this becomes cumbersome for lattices of more than two or three
 elements, JGS-check now supports the following *generic cast methods*: 
 
-```
+```java
 // for value casts
 public static <T> T cast(String conversion, T x) 
 
@@ -215,7 +217,7 @@ type `b` is `a ~> b`.
 
 Example:
 
-```
+```java
 // convert from type dynamic to alice
 int forAlice = Casts.cast("? ~> alice", this.dynamicField);
 ```
