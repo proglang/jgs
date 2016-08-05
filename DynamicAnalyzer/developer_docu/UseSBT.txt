@@ -1,0 +1,6 @@
+cd GradualConstraints
+<LOCATION OF SBT>/sbt/bin/sbt InstrumentationSupport/package
+
+Note: soot-2.5.0.jar must be in GradualConstraints/lib
+
+Targetlocation of the jar is: InstrumentationSupport/target/scala-2.11/*.jar

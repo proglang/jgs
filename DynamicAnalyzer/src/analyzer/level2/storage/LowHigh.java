@@ -6,7 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class LowHigh implements SecDomain<LowHigh.Level> {
+public class LowHigh extends SecDomain<LowHigh.Level> {
     
 	public static enum Level {
         LOW, HIGH

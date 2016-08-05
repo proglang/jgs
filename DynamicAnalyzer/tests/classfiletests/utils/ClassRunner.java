@@ -12,6 +12,8 @@ import org.apache.tools.ant.types.Path;
 import utils.exceptions.IllegalFlowException;
 import utils.logging.L1Logger;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.logging.Logger;
 
 /**
@@ -38,10 +40,13 @@ public class ClassRunner {
 		
 		
 		Java task = new Java();
-		Path path = new Path(project);
-		path.setPath("./sootOutput:./bin/"
-				+ ":./../../dependencies/commons-collections4-4.0/"
-				+ "commons-collections4-4.0.jar");
+		Path path = task.createClasspath();
+		path.createPathElement().setPath("./sootOutput");
+		path.createPathElement().setPath("./bin");
+		
+		for (URL url : ((URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs()) {
+			path.createPathElement().setPath(url.getPath());
+		}
 		task.setClasspath(path);
 		task.setClassname("main.testclasses." + className);
 		task.setFork(false);

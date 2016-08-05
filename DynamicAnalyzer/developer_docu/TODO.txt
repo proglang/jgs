@@ -60,6 +60,8 @@ FINALLY
 
 <<<<<<<<<  FRAGEN >>>>>>>>>>
 Ant path - configuration?? Oder allgemein Konfiguration von Pfaden
+
+Grund für analyzer_input... und möglicher Grund für Fehlermeldung
 	
 Zwei methoden von SecDomain
 
