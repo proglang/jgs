@@ -1,7 +1,7 @@
-package pkg;
+package pkg2;
 
 import de.unifreiburg.cs.proglang.jgs.support.*;
-import de.unifreiburg.cs.proglang.jgs.support.SString;
+import static de.unifreiburg.cs.proglang.jgs.support.StringUtil.*;
 
 public class Examples {
 
@@ -65,10 +65,10 @@ public class Examples {
 
     @Constraints({"HIGH <= @2", "@3 <= LOW", "@1 <= ?", "@1 <= LOW", "@0 <= LOW", "@0 <= ?"})
     @Effects({"?", "LOW"})
-    static void logResults(Logger log, boolean privMode, SString h, SString l) {
-        log.dbuf = "public result " + Casts.castLowToDyn(l);
+    static void logResults(Logger log, boolean privMode, String h, String l) {
+        log.dbuf = append("public result ", Casts.castLowToDyn(l));
         if (privMode) {
-            log.dbuf = "secret result " + Casts.castHighToDyn(h);
+            log.dbuf = append("secret result ", Casts.castHighToDyn(h));
         }
         if (!privMode) {
             log.buf = Casts.castDynToLow(log.dbuf);

@@ -1,14 +1,14 @@
 valuecasts:
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)>": "HIGH ~> ?"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castHighToDyn(int)>": "HIGH ~> ?"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castLowToDyn(java.lang.Object)>": "LOW ~> ?"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castLowToDyn(int)>": "LOW ~> ?"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)>": "[top] ~> ?"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castHighToDyn(int)>": "[top] ~> ?"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castLowToDyn(java.lang.Object)>": "[bot] ~> ?"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castLowToDyn(int)>": "[bot] ~> ?"
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castPubToDyn(java.lang.Object)>": "pub ~> ?"
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castPubToDyn(int)>": "pub ~> ?"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castDynToLow(java.lang.Object)>": "? ~> LOW"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castDynToLow(int)>": "? ~> LOW"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castDynToHigh(java.lang.Object)>": "? ~> HIGH"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castDynToHigh(int)>": "? ~> HIGH"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castDynToLow(java.lang.Object)>": "? ~> [bot]"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castDynToLow(int)>": "? ~> [bot]"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castDynToHigh(java.lang.Object)>": "? ~> [top]"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castDynToHigh(int)>": "? ~> [top]"
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castDynToPub(java.lang.Object)>": "? ~> pub"
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castDynToPub(int)>": "? ~> pub"
 
@@ -16,12 +16,12 @@ valuecast-generic:
   "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>"
 
 contextcasts:
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxHighToDyn()>": "HIGH ~> ?"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxLowToDyn()>": "LOW ~> ?"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxHighToDyn()>": "[top] ~> ?"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxLowToDyn()>": "[bot] ~> ?"
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxPubToDyn()>": "pub ~> ?"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToLow()>": "? ~> LOW"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToLow()>": "? ~> [bot]"
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToPub()>": "? ~> pub"
-  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToHigh()>": "? ~> HIGH"
+  - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToHigh()>": "? ~> [top]"
 
 contextcast-generic: "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCx(java.lang.String)>"
 

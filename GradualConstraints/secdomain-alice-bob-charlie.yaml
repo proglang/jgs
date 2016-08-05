@@ -1,3 +1,13 @@
+# This is the alice-bob-charlie lattice.
+#
+# Getting greater from left to right:
+#
+#           +->  alice  -+
+#           |            |
+#   bottom -+->  bob   --+-> top
+#           |            |
+#           +-> charlie -+
+
 levels:
   - bottom
   - alice
@@ -12,4 +22,5 @@ lt-edges:
   - [ alice , top ]
   - [ bob, top ]
   - [ charlie, top ]
+
 
