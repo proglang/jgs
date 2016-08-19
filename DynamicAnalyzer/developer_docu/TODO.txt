@@ -76,3 +76,5 @@ Zwei methoden von SecDomain
 		}
 		return result;
 	}
+	
+Soot kann mit java7 nicht ausgeführt werden aber die Gradual_Constraints wurden mit java 8 kompiliert...
