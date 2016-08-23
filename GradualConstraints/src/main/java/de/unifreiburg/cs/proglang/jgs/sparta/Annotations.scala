@@ -33,4 +33,11 @@ object Annotations {
   sealed case object PolyR extends SigPermissions
   sealed case class Mono(permissions : Permissions) extends SigPermissions
 
+  // Policies are a set of edges between Permissions. They are interpreted intransitively.
+  class Policy(edges : Set[(Permission, Permission)]) {
+
+    def allowsFlow(p1 : Permission, p2 : Permission) = edges.contains(p1 -> p2)
+
+  }
+
 }
