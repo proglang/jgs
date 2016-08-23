@@ -12,7 +12,7 @@ object Annotations {
 
   // Permissions are either ANY or a set of explicit PermissionS
   sealed trait Permissions
-  sealed case object Any extends Permissions
+  case object Any extends Permissions
   sealed case class PermSet(perms : Set[Permission])
 
   // An explicit permission consists of a name and a list of parameters
@@ -29,8 +29,8 @@ object Annotations {
 
   // Permissions in signatures can be polymorphic, polymorphic wrt the receiver, or regular permissions
   sealed trait SigPermissions
-  sealed case object Poly extends SigPermissions
-  sealed case object PolyR extends SigPermissions
+  case object Poly extends SigPermissions
+  case object PolyR extends SigPermissions
   sealed case class Mono(permissions : Permissions) extends SigPermissions
 
   // Policies are a set of edges between Permissions. They are interpreted intransitively.

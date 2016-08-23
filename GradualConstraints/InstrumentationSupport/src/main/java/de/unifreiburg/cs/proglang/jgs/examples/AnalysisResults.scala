@@ -37,7 +37,7 @@ class AnalysisResults[Level] {
     )))
   }
 
-  private[examples] val max_cxTyping: CxTyping[Level] = {
+  val max_cxTyping: CxTyping[Level] = {
     import Code._
     makeCxTyping(instantiation => Map(
       max_01_id_X_p0 -> Public[Level](),
@@ -59,7 +59,7 @@ class AnalysisResults[Level] {
 
     }
 
-  private[examples] val max_methods_D_D__D: Methods[Level] =
+  val max_methods_D_D__D: Methods[Level] =
     new Methods[Level] {
       override def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
 

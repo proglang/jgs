@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.examples
 
 import soot.jimple.{Expr, IfStmt, Jimple, Stmt}
-import soot.{Body, PatchingChain, Scene, SootClass, SootMethod, VoidType}
+import soot.{ Body, SootClass, SootMethod, Scene, VoidType, PatchingChain, Local, ValueBox}
 
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
@@ -82,11 +82,22 @@ class BodyBuilder private  {
     return this
   }
 
+  private def addLocals(locals: Set[Local]) : Unit = {
+    val oldLocals = body.getLocals.toSet
+    body.getLocals.clear()
+    body.getLocals.addAll(locals ++ oldLocals)
+  }
+
   private def addToChain(s : Stmt) : Unit = {
     if (finalized) {
       throw new IllegalStateException("Attempt to modify a finalyzed BodyBuilder")
     }
     val result = chain.add(s)
+    val locals = for {b <- s.getUseAndDefBoxes.toSeq
+                      v = b.asInstanceOf[ValueBox].getValue
+                      if v.isInstanceOf[Local]
+                     } yield v.asInstanceOf[Local]
+    addLocals(locals.toSet)
     if (!result) {
       throw new IllegalArgumentException(s"Failed adding statement `${s}' to chain ${chain}")
     }

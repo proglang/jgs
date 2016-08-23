@@ -26,9 +26,9 @@ public class Code {
     static SootField fieldC = makeField("fieldC", RefType.v("java.lang.Object"), exClass);
 
     // Generic local variable
-    static Local localX = j.newLocal("x", IntType.v());
-    static Local localY = j.newLocal("y", IntType.v());
-    static Local localZ = j.newLocal("z", IntType.v());
+    public static Local localX = j.newLocal("x", IntType.v());
+    public static Local localY = j.newLocal("y", IntType.v());
+    public static Local localZ = j.newLocal("z", IntType.v());
 
     // Generic parameters
     static ParameterRef param0 = j.newParameterRef(IntType.v(), 0);
