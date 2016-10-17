@@ -58,8 +58,7 @@ public class Main {
 		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-		System.out.println(Scene.v().getSootClassPath());
-        
+		
 		BodyAnalyzer banalyzer = new BodyAnalyzer();
         
 
