@@ -19,6 +19,9 @@ target/
 lib/
 .cache-main
 
+# For MacOS system Files
+*.DS_STORE
+
 # For IDEA
 
 ## compilation output
