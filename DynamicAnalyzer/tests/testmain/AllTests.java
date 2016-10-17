@@ -13,6 +13,7 @@ import analyzer.level2.MultiArrayFail;
 import analyzer.level2.MultiArraySuccess;
 import analyzer.level2.ReturnStmtFail;
 import analyzer.level2.ReturnStmtSuccess;
+import analyzer.level2.SimpleSuccess;
 import analyzer.level2.StaticFieldsFail;
 import analyzer.level2.StaticFieldsSuccess;
 import analyzer.level2.SwitchStmtFail;
@@ -53,6 +54,7 @@ import org.junit.runners.Suite.SuiteClasses;
     SwitchStmtFail.class,
     StaticFieldsSuccess.class,
     StaticFieldsFail.class,
+    SimpleSuccess.class,
 
     analyzer.level2.storage.ObjectMapTest.class, 
    
@@ -61,7 +63,7 @@ import org.junit.runners.Suite.SuiteClasses;
     ObjectMapTest.class,
     LocalMapTest.class,
 
-    // Tests for vaild bytecode of testclasses
+    // Tests for valid bytecode of testclasses
     ClassTest.class,
     SingleTest.class
     })
