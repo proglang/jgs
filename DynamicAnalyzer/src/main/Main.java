@@ -53,10 +53,12 @@ public class Main {
 		Scene.v().setSootClassPath(Scene.v().getSootClassPath()
 				+ ":.:"
 				+ new File(javaHome, "lib/jce.jar").toString()
+			    + ":"
 				+ new File(javaHome, "lib/rt.jar").toString());
 		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
+		System.out.println(Scene.v().getSootClassPath());
         
 		BodyAnalyzer banalyzer = new BodyAnalyzer();
         
