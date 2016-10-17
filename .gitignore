@@ -23,6 +23,8 @@ lib/
 *.DS_STORE
 
 # For IDEA
+.metadata
+.recommenders
 
 ## compilation output
 *.iml
