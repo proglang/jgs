@@ -1,0 +1,115 @@
+================================================
+=
+=   Tutorial about Dominators and Control Flow
+=   revised version of Dominator.txt by koenigr
+= 
+================================================
+
+
+
+1) Definition of Dominator and Postdominator
+================================================
+
+A statement d dominates a statement t if every path going to t has to go trough d.                             
+A statement p postdominates a statement t if every path starting at t has to go through p.
+
+See https://en.wikipedia.org/wiki/Dominator_(graph_theory) 
+
+
+Examples:
+
+
+
+                 (stmt) -------->(stmt)
+                  /                 \
+                 /                   \
+                /                     \
+---------> (ifStmt t) ------------> (stmt p)------> (stmt)
+          			           p is postdominator of t
+          
+
+
+                 (stmt) -------->(stmt)
+                  /                 \
+                 /                   \
+                /                     \
+---------> (ifStmt d) ------------> (stmt t)------> (stmt)
+            d is dominator of t
+
+
+
+2) Dominators in the Source-Code: List of possibly interesting files
+====================================================================
+
+- MHGDominatorsFinder<N> (DirectedGraph<N> graph)
+- MHGPostDominatorsFinder(DirectedGraph<N< graph)
+- MHGPostDominatorsFinder.getDominators
+- MHGPostDominatorsFinder.getImmediateDominator
+- postdominatorfinder.getDominators(stmt).contains(s)
+- UnitGraph graph = new BriefUnitGraph(body)
+- soot.toolkits.graph.UnitGraph+
+- soot.toolkits.graph.BriefUnitGraph.
+- BriefUnitGraph(Body body)
+
+
+
+3) Control flow in Java vs Jimple
+======================================================
+
+Consider the following java code, where b0, b1, ... etc are boolean
+expressions like x < 3 or y > 0 and stm0, stm1, ... are statements like
+x = 4, y = x + 7.
+
+if (b0) {
+	stm0
+} else if (b1) {
+	stm1
+} else {
+	stm2
+}
+
+This is translated to the following Jimple Code:
+
+	if !b0 goto label0
+	stm0
+	goto label2
+  
+  label 0:
+    if !b1 goto label1
+    stm1
+    goto label2
+  
+  label1:
+    stm2
+  
+  label2:
+    ... 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
