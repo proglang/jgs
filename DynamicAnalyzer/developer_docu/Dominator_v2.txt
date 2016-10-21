@@ -86,16 +86,41 @@ This is translated to the following Jimple Code:
     ... 
 
 
+4) Multiple IFs vs Seperated IFs
+=======================================================
+
+ There can be two kinds of "several IFs": Multiple Ifs (if, else if, else)
+ and seperated ifs:
+
+ MULTIPLE IF:
+                     
+              /-----(if)------\
+             /                 \
+ -----(ifStmt)----(else if)----( )------ 
+             \                 / 
+              \-----(else)----/
 
 
 
+SEPARATED IFS:
+
+----(ifStmt)--------------()----(ifStmt)---------()------
+          \              /          \           /
+           \----------- /            \---------/
 
 
+4.1) Multiple IFS and Seperated IFs in Jimple:
+======================================================
+A multiple-If looks like this in Jimple (compare Section3, the Jimpelised If/IfElse/Else)
 
-
-
-
-
+             								actions of else-clause							
+ ---(!b0)----true--->(!b1)----true------------>(stm2)-------------->(label2)----->
+ 	  \					\                                              / /
+ 	   \				 \         actions of else-if-clause          / /
+ 	    \				  \------------------->(stm1)----------------/ /
+       	 \                                                            /
+       	  \                        actions of if-clause              /
+           \---------------------------------->(stm01)--------------/
 
 
 
