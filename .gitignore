@@ -22,7 +22,7 @@ lib/
 # For MacOS system Files
 *.DS_STORE
 
-# For IDEA
+# For IDEA (Eclipse)
 .metadata
 .recommenders
 
