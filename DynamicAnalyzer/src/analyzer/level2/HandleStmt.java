@@ -427,6 +427,12 @@ public class HandleStmt {
 
 	/**
 	 * Join the level of the local to the assignment-level.
+	 * 
+	 * As far as i understand: This method is called when an assign happens.
+	 * We need to know the level of this assign, eg the programm counter: Are we
+	 * in a high-sec PC or not? This is what is found out here and transfered to
+	 * the output.
+	 * 
 	 * @param local signature of the local.
 	 * @return security-level of the local.
 	 */
@@ -490,6 +496,7 @@ public class HandleStmt {
 	
 	/**
 	 * Set the level of a local to default security-level.
+	 * Checks if local's security-level is >= local PC, if not: Throws IllegalFlowException (via checkLocalPC method)
 	 * @param signature signature of the local
 	 * @return new security-level
 	 */

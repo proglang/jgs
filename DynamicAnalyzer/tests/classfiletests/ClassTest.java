@@ -68,8 +68,7 @@ public class ClassTest{
 				new Object[] { "StaticMethods", false, new String[] {}},
 				new Object[] { "StaticMethodsFail", true, new String[] {}},
 				new Object[] { "SwitchStmt", false, new String[] {}},
-				new Object[] { "SwitchStmtFail", true, 
-					      new String[] {"int_i4"}},
+				new Object[] { "SwitchStmtFail", true, new String[] {"int_i4"}},
 				new Object[] { "WhileLoop", false, new String[] {}},
 				new Object[] { "WhileLoopFail", true, new String[] {"int_$i3"}}
 				);

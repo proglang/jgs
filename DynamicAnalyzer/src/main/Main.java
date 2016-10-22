@@ -22,7 +22,7 @@ public class Main {
 	private static ArgumentParser argparser;
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {	// this is the entry point!
 		execute(args);
 	}
 
@@ -32,10 +32,10 @@ public class Main {
      */
 	private static void execute(String[] args) {
     	
-		argparser = new ArgumentParser(args);
+		argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
     	
 		LOGGER_LEVEL = argparser.getLoggerLevel();
-		String[] sootOptions = argparser.getSootOptions();
+		String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
     	
 		try {
 			System.out.println("Logger Init1");
@@ -44,7 +44,8 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		String javaHome = System.getProperty("java.home");
+		String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
+
 		if (javaHome == null) {
 			throw new IllegalStateException("System property `java.home' is undefined");
 		}

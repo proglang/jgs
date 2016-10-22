@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class SingleTest{
     
 	// If you want to test a single class then define its name here
-	public String name = "InvokeLibMethod";
+	public String name = "MakeHigh";
 	public boolean hasIllegalFlow = true;
     
 	Logger logger = L1Logger.getLogger();
