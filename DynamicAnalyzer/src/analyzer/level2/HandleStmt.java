@@ -426,6 +426,7 @@ public class HandleStmt {
 	}
 
 	/**
+	 * Set assignment-level to: join(local-level, assignment-level).
 	 * Join the level of the local to the assignment-level.
 	 * 
 	 * As far as i understand: This method is called when an assign happens.
@@ -437,13 +438,13 @@ public class HandleStmt {
 	 * @return security-level of the local.
 	 */
 	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
-		logger.log(Level.FINEST, "--- addLevelOfLocal called for local: {0}---", local);
+		logger.log(Level.FINEST, "--- joinLevelOfLocalAndAssignmentLevel called for local: {0}---", local);
 		Object localLevel = localmap.getLevel(local);
-		logger.log(Level.INFO, "- addLevelOfLocal-: Add level {0} of local {1} to assignment-level --- addLevelOfLocal",
+		logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of local {1}) --- joinLevelOfLocalAndAssignmentLevel",
 				new Object[] {localLevel, local });
 		objectmap.setAssignmentLevel(
 				handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(),
-				localLevel));	// this sets assignmentLevel
+				localLevel));	
 		return objectmap.getAssignmentLevel();
 	}
 
@@ -456,7 +457,7 @@ public class HandleStmt {
 	 */
 	public Object joinLevelOfFieldAndAssignmentLevel(Object object, String field) {
 		Object fieldLevel = objectmap.getFieldLevel(object, field);
-		logger.log(Level.INFO, "Add level {0} of field {1} to assignment-level",
+		logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of local {1})",
 				new Object[] {
 				    fieldLevel, field });
 		objectmap.setAssignmentLevel(
@@ -473,7 +474,7 @@ public class HandleStmt {
 	 */
 	public Object joinLevelOfArrayFieldAndAssignmentLevel(Object object, String field) {
 		Object fieldLevel = objectmap.getFieldLevel(object, field);		
-		logger.log(Level.INFO, "Add level {0} of array-field {1} to assignment-level",
+		logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of local {1})",
 				new Object[] {fieldLevel, field });
 		objectmap.setAssignmentLevel(
 				handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(),

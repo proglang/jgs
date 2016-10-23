@@ -16,6 +16,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.logging.Logger;
 
+import junit.framework.Test;
+
 /**
  * Runs given class.
  * @author Regina Koenig
@@ -95,6 +97,12 @@ public class ClassRunner {
 			
 			// Check if the expected variables are involved
 			for (String var : involvedVars) {
+				System.out.print("Assert: Is " + var + " contained in: " + e.getMessage() + " ... ");
+				if (e.getMessage().contains(var)) {
+					System.out.println("Yes, it is!");
+				} else {
+					System.out.println("No, it is not! This makes the test fail!");
+				}
 				assertTrue(e.getMessage().contains(var));
 			}
 

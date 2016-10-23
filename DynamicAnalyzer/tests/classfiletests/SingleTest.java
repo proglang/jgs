@@ -1,6 +1,7 @@
 package classfiletests;
 
 import classfiletests.utils.ClassRunner;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -11,11 +12,29 @@ import utils.logging.L1Logger;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+/**
+ * Class to run a single test. Note that three pieces of information need to be supplied:
+ * Name, hasIllegalFlow, and involvedVars!
+ * @author NicolasM
+ *
+ */
 public class SingleTest{
     
 	// If you want to test a single class then define its name here
-	public String name = "MakeHigh";
+	public String name = "AccessFieldsOfObjectsFail";
+	
+	// Define its illegal FLow Value here
 	public boolean hasIllegalFlow = true;
+	
+	/** Define the involved vars here. Involved vars are those that are present in the Exceptions.
+	 *  Example for testmethod "AccessFieldsOfObjectsFail" : 
+	 *  
+	 *  "Assert: Is java.lang.String_$r6 contained in: utils.exceptions.IllegalFlowException: 
+	 *   Passed argument java.lang.String_$r6 with a high security level to a method which doesn't allow it."
+	 *   
+	 *   Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
+	 */
+	public String[] involvedVars = new String[] {"java.lang.String_$r6"};
     
 	Logger logger = L1Logger.getLogger();
 	
@@ -26,7 +45,7 @@ public class SingleTest{
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
 
-		ClassRunner.testClass(name, hasIllegalFlow, "int_i0");
+		ClassRunner.testClass(name, hasIllegalFlow, involvedVars);
 
 		logger.info("Finished executing main.testclasses." + name + "");
 	}

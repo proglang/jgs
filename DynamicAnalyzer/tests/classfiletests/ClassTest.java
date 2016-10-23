@@ -42,12 +42,13 @@ public class ClassTest{
 	
 	/**
 	 * Create an Iterable for all testclasses.
+	 * Arguments: String name, boolean hasIllegalFlow, String... involvedVars
 	 * @return Iterable
 	 */
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
-				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] {}}, 
+				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] {"java.lang.String_$r6"}}, 
 				new Object[] { "AccessFieldsOfObjectsSuccess",false,new String[]{}},
 				new Object[] { "ArithmeticExpressionsFail", true, new String[] {}},
 				new Object[] { "ArithmeticExpressionsSuccess",false,new String[]{}},
