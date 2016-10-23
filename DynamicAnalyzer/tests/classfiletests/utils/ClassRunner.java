@@ -15,6 +15,7 @@ import utils.logging.L1Logger;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.logging.Logger;
+import java.io.File;
 
 import junit.framework.Test;
 
@@ -66,12 +67,25 @@ public class ClassRunner {
 	}
 	
 	/**
+	 * @author NicolasM
+	 * 
 	 * Run class and check whether the expected exception is found.
+	 * Note that compiled binary must exist in sootOutput, else it will perform the following bug:
+	 * a) If no invalid flow is specified, test will always pass.
+	 * b) If invalid flow is specified, test will always pass.
+	 * This is why we add a check that the compiled source file must exist, else we fail the test completely!
 	 * @param className Name of the class.
 	 * @param expectedException true if an exception is expected
 	 */
 	public static void testClass(String className, 
 			boolean expectedException, String... involvedVars) {
+	
+		String fullPath = System.getProperty("user.dir") + "/sootOutput/main/testclasses/" + className + ".class";
+		
+		if(!new File(fullPath).isFile()) { 
+			logger.severe("File " + fullPath + " not found. Please compile with soot and try again!"); 
+			// fail();
+		}
 
 		try {
 			runClass(className);
