@@ -59,11 +59,11 @@ public class TestSubClass {
 		hs.assignArgumentToLocal(0, "int_a1");
 		hs.assignArgumentToLocal(1, "int_b1");
 		hs.assignArgumentToLocal(2, "int_c1");
-		hs.addLevelOfLocal("int_b1");
-		hs.addLevelOfLocal("int_c1");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_b1");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_c1");
 		hs.setLevelOfLocal("int_tmp");
-		hs.addLevelOfLocal("int_tmp");
-		hs.addLevelOfLocal("int_a1");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_tmp");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_a1");
 		hs.setLevelOfLocal("int_tmp2");
 		
 		hs.returnLocal("int_tmp2");

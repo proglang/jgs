@@ -62,8 +62,8 @@ public class AssignLocalsFail {
 		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_y"));
 		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_z"));
 		assertEquals(SecurityLevel.top(), hs.getLocalPC());
-		hs.addLevelOfLocal("int_y");
-		hs.addLevelOfLocal("int_z");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_y");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_z");
 		hs.setLevelOfLocal("int_x");
 		
 		
@@ -110,7 +110,7 @@ public class AssignLocalsFail {
 		hs.checkCondition("123", "int_high");
 		if (high == 0) {
 		
-			hs.addLevelOfLocal("TestSubClass_ts");
+			hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");
 			hs.setLevelOfLocal("int_res");
 			res = ts.methodWithConstReturn();
 			hs.assignReturnLevelToLocal("int_res");
@@ -138,7 +138,7 @@ public class AssignLocalsFail {
 		
 		hs.addLocal("int_x");
 		hs.pushLocalPC(SecurityLevel.top(), 123);
-		hs.addLevelOfLocal("int_x");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 		hs.setLevelOfLocal("int_x"); // Just ignore the constants
 		
 		hs.popLocalPC(123);

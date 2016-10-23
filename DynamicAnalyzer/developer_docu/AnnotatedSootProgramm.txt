@@ -83,13 +83,13 @@ public class main.testclasses.Simple extends java.lang.Object
         
         
         
-        	// addLevelOfLocal finds out if we are in highPC or lowPC, and puts return value (LOW/HIGH, which is an object)
+        	// joinLevelOfLocalAndAssignmentLevel finds out if we are in highPC or lowPC, and puts return value (LOW/HIGH, which is an object)
         	// on top of the stack?!
         	INFO: Add level LOW of local java.lang.String_r1 to assignment-level
         	
         r1 = "Hello World";
         local_for_Strings = "java.lang.String_r1";
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object addLevelOfLocal(java.lang.String)>(local_for_Strings);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>(local_for_Strings);
         
         
         
@@ -107,7 +107,7 @@ public class main.testclasses.Simple extends java.lang.Object
         local_for_Strings = "java.lang.Object_$r2";
         	// find out the value of the PC, which here should still be low, and take the least upper bound, and return (should be HIGH,
         	// since variable has level HIGH)
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object addLevelOfLocal(java.lang.String)>(local_for_Strings);   
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>(local_for_Strings);   
         local_for_Strings = "java.lang.String_r3";
         	// probably 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfLocal(java.lang.String)>(local_for_Strings);

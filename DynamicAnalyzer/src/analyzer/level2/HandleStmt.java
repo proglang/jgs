@@ -436,13 +436,14 @@ public class HandleStmt {
 	 * @param local signature of the local.
 	 * @return security-level of the local.
 	 */
-	public Object addLevelOfLocal(String local) {
+	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
+		logger.log(Level.FINEST, "--- addLevelOfLocal called for local: {0}---", local);
 		Object localLevel = localmap.getLevel(local);
-		logger.log(Level.INFO, "Add level {0} of local {1} to assignment-level",
+		logger.log(Level.INFO, "- addLevelOfLocal-: Add level {0} of local {1} to assignment-level --- addLevelOfLocal",
 				new Object[] {localLevel, local });
 		objectmap.setAssignmentLevel(
 				handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(),
-				localLevel));
+				localLevel));	// this sets assignmentLevel
 		return objectmap.getAssignmentLevel();
 	}
 
@@ -453,7 +454,7 @@ public class HandleStmt {
 	 * @param field Signature of the field.
 	 * @return SecurityLevel of the field.
 	 */
-	public Object addLevelOfField(Object object, String field) {
+	public Object joinLevelOfFieldAndAssignmentLevel(Object object, String field) {
 		Object fieldLevel = objectmap.getFieldLevel(object, field);
 		logger.log(Level.INFO, "Add level {0} of field {1} to assignment-level",
 				new Object[] {
@@ -470,7 +471,7 @@ public class HandleStmt {
 	 * @param field Signature of the field.
 	 * @return SecurityLevel of the field.
 	 */
-	public Object addLevelOfArrayField(Object object, String field) {
+	public Object joinLevelOfArrayFieldAndAssignmentLevel(Object object, String field) {
 		Object fieldLevel = objectmap.getFieldLevel(object, field);		
 		logger.log(Level.INFO, "Add level {0} of array-field {1} to assignment-level",
 				new Object[] {fieldLevel, field });
@@ -500,14 +501,16 @@ public class HandleStmt {
 	 * @param signature signature of the local
 	 * @return new security-level
 	 */
-	public Object setLevelOfLocal(String signature) {		
-		logger.log(Level.INFO, "Set level of local {0} to {1}",
+	public Object setLevelOfLocal(String signature) {
+		logger.log(Level.FINEST, "setLevelOfLocal called--- for Local {0}. Current assignmentLevel ist {1}"
+				, new Object[] {signature, objectmap.getAssignmentLevel()});
+		logger.log(Level.INFO, "Set level of local {0} to {1} -- setLevelOfLocal",
 				new Object[] {signature, handleStatementUtils.joinWithLPC(
 						objectmap.getAssignmentLevel())});
 		handleStatementUtils.checkLocalPC(signature);
 		localmap.setLevel(signature, handleStatementUtils.joinWithLPC(
 				objectmap.getAssignmentLevel()));
-		logger.log(Level.INFO, "New level of local {0} is {1}",
+		logger.log(Level.INFO, "New level of local {0} is {1} -- setLevelOfLocal",
 				new Object[] {signature, localmap.getLevel(signature)});
 		objectmap.clearAssignmentLevel();
 		return localmap.getLevel(signature);
