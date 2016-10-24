@@ -1,0 +1,8 @@
+Week1:
+- Introduction and getting to know the project 
+- find out why JUnit Tests fail
+
+Week2:
+- ClassCompile written: Compile end-to-end tests automatically before testrun
+- Output folder now configurable
+- Fixed bug that IllegalFlowExcpetion could be thrown, but no involved variable was given and test still passed

@@ -75,13 +75,13 @@ public class ClassRunner {
 	 * 
 	 * @param className
 	 *            Name of the class.
-	 * @param expectedException
+	 * @param exceptionExpected
 	 *            true if an exception is expected
 	 * 
 	 * @author Regina Koenig, Nicolas Müller
 	 */
 	public static void testClass(String className, String outputDir,
-			boolean expectedException, String... involvedVars) {
+			boolean exceptionExpected, String... involvedVars) {
 
 		String fullPath = System.getProperty("user.dir") + "/sootOutput/"
 				+ outputDir + "/main/testclasses/" + className + ".class";
@@ -98,7 +98,7 @@ public class ClassRunner {
 			runClass(className, outputDir);
 
 			// Fail if the class was running but an exception was expected
-			if (expectedException) {
+			if (exceptionExpected) {
 				logger.severe("Expected exception is not found");
 				fail();
 			}
@@ -107,7 +107,7 @@ public class ClassRunner {
 			e.printStackTrace();
 
 			// Fail if an exception is thrown but no exception was expected
-			if (!expectedException) {
+			if (!exceptionExpected) {
 				logger.severe("Fail because exception was not expected");
 				fail();
 			}
@@ -116,6 +116,16 @@ public class ClassRunner {
 			// exception
 			assertEquals(IllegalFlowException.class.toString(), e.getCause()
 					.getClass().toString());
+			
+			// Fail if illegalFlowException is thrown, expected, but no
+			// involvedVars are supplied
+			if (exceptionExpected && e.getCause().getClass().toString().contains("IllegalFlow")) {
+				if (involvedVars.length < 1) {
+					logger.severe("Fail because no variables supplied for IllegalFlowException");
+					fail();
+				}
+			}
+			
 
 			// Check if the expected variables are involved
 			for (String var : involvedVars) {
