@@ -1,6 +1,7 @@
 package main;
 
 import analyzer.level1.BodyAnalyzer;
+import soot.G;
 import soot.PackManager;
 import soot.Scene;
 import soot.Transform;
@@ -34,7 +35,6 @@ public class Main {
      */
 	private static void execute(String[] args) {
 		
-    	
 		argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
     	
 		LOGGER_LEVEL = argparser.getLoggerLevel();
@@ -72,6 +72,9 @@ public class Main {
         	   
 		// soot.options.Options.v().process_dir()
 		soot.Main.main(sootOptions);
+		
+		// for multiple runs, soot needs to be reset
+		G.reset();
 
 	}
 }
