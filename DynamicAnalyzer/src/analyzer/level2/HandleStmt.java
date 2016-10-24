@@ -521,7 +521,7 @@ public class HandleStmt {
 	 * This method is for instance-fields and for static-fields.
 	 * @param object Object of the field.
 	 * @param field signature of the field.
-	 * @return The securitylevel of the field.
+	 * @return The security-level of the field.
 	 */
 	public Object setLevelOfField(Object object, String field) {		
 		logger.log(Level.INFO, "Set level of field {0} to {1}",
@@ -571,7 +571,7 @@ public class HandleStmt {
 
 	/**
 	 * Check the array-field and the local-level of the object against the gpc,
-	 * and read the level stored as Assignmentlevel. This level - joined with
+	 * and read the level stored as assignment-level. This level - joined with
 	 * the gpc - is set as the new level for given array-field. This method is
 	 * needed if the index is a constant and it is not needed to be checked
 	 * against the gpc.

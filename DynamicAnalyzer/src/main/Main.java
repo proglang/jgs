@@ -24,8 +24,22 @@ public class Main {
 
 	private static ArgumentParser argparser;
 
-
-	public static void main(String[] args) {	// this is the entry point!
+	/**
+	 * The entry point for compilation and instrumentation (that is, adding the appropriate
+	 * code to check for information leak). Use appropriate arguments to indicate
+	 * which test will be compiled, and what the output format should be.
+	 * 
+	 * Note for eclipse users: Comfortable execution via different run configurations,
+	 * where you can choose between compilation to instrumented binary (RunMainAnalyzerSingleC) 
+	 * and compilation to the intermediate, instrumented jimple formate (RunMainAnalyzerSingleJ)
+	 * 
+	 * For illustration, we supply the command line arguments to compile a single file to 
+	 * instrumented binary code:
+	 * -f c --classes main.testclasses.Simple  --main_class main.testclasses.Simple
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
 		execute(args);
 	}
 
@@ -40,8 +54,6 @@ public class Main {
 		LOGGER_LEVEL = argparser.getLoggerLevel();
 		String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
 		
-
-    	
 		try {
 			System.out.println("Logger Init1");
 			L1Logger.setup(LOGGER_LEVEL);
@@ -72,10 +84,9 @@ public class Main {
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
 
         	   
-		// soot.options.Options.v().process_dir()
 		soot.Main.main(sootOptions);
 		
-		// for multiple runs, soot needs to be reset
+		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
 
 	}

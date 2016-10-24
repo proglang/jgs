@@ -1,1 +1,25 @@
 - i think some tests are unfinished. some are just empty, some just plain stupid.
+- forgot to ask from week one, question01, see below:
+
+
+
+
+
+
+
+
+___question01___
+what is:
+- assignment level
+- security level
+- local Program Counter
+- global PC
+
+it seems to me, that:
+
+assignmentLevel 	localPc
+	\				/
+	 \			   /
+	new level of local
+
+correct? and assignment-level == security level?!

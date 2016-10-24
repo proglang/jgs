@@ -27,19 +27,21 @@ public class ArgumentParser {
 	
 	/**
 	 * Definition of command-line options and parsing of given arguments.
+	 * Note that it "allows" only those arguments that we specify here. It does not,
+	 * by default, take the whole range of argument which soot allows! Every argument to
+	 * be accepted must be set here.
 	 * @param args Command-line arguments
 	 */
 	@SuppressWarnings({ })
 	public ArgumentParser(String[] args) {
 		formater = new HelpFormatter();
 		
+		// Set which commandline arguments we want to allow. 
 		Option outputFormat = new Option("f", true, "Determine output format");
-		Option mainClass = new Option("m", "main_class", true, 
-				"Class containing the main method.");
+		Option mainClass = new Option("m", "main_class", true, "Class containing the main method.");
 		Option classes = new Option("c","classes", true,"List of classes to be analyzed.");
 		classes.setArgs(Option.UNLIMITED_VALUES);
-		Option directories = new Option("process_dir", true, 
-						"Analyze all processes inside process-dir");
+		Option directories = new Option("process_dir", true, "Analyze all processes inside process-dir");
 		Option outputDir = new Option("d", true, "Set output directory");
 		Option levelAll = new Option("la", "lvl_all");
 		Option levelInfo = new Option("li", "lvl_info");
@@ -103,14 +105,18 @@ public class ArgumentParser {
 	
 	/**
 	 * Extract arguments for soot.
-	 * It should have one of following formats:
+	 * It should have one of following three formats:
 	 * new String[]{"-f","c", "-main-class", "main.testclasses.Simple", 
 	 * 		"main.testclasses.Simple"}	
 	 * or 
 	 * new String[]{"-f","c", "-main-class", "main.testclasses.Simple", 
 	 * 		"--process-dir", "src/main/testclasses"}
+	 * or new String[]{"-f","c", "-main-class", "main.testclasses.Simple", 
+	 * 		"main.testclasses.Simple", "--d", "sootOutput/outputDir"}	
 	 * 
 	 * @return Array with arguments for Soot.
+	 * 
+	 * @author Regina König, Nicolas Müller
 	 */
 	public String[] getSootOptions() {
 		LinkedList<String> sootOptions = new LinkedList<String>();
@@ -124,9 +130,6 @@ public class ArgumentParser {
 			sootOptions.add("-process-dir");
 			sootOptions.add(cmd.getOptionValue("process_dir"));
 		}
-		/**
-		 * If --setOutputInArgumentParser is a command line argument, we can set the appropriate path here!
-		 */
 		if (cmd.hasOption("d")) {
 			sootOptions.add("-d");
 			sootOptions.add(cmd.getOptionValue("d"));
