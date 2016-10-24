@@ -32,7 +32,7 @@ public class ClassRunner {
 	 * Runs the given class via Apache Ant.
 	 * @param className class to be run
 	 */
-	private static void runClass(String className) {
+	private static void runClass(String className, String outputDir) {
 		
 		Project project = new Project();
 		project.setName("ClassRunner");
@@ -44,7 +44,7 @@ public class ClassRunner {
 		
 		Java task = new Java();
 		Path path = task.createClasspath();
-		path.createPathElement().setPath("./sootOutput");
+		path.createPathElement().setPath("./sootOutput/" + outputDir);
 		path.createPathElement().setPath("./bin");
 		
 		for (URL url : ((URLClassLoader)ClassLoader.getSystemClassLoader()).getURLs()) {
@@ -77,10 +77,10 @@ public class ClassRunner {
 	 * @param className Name of the class.
 	 * @param expectedException true if an exception is expected
 	 */
-	public static void testClass(String className, 
+	public static void testClass(String className, String outputDir,
 			boolean expectedException, String... involvedVars) {
 	
-		String fullPath = System.getProperty("user.dir") + "/sootOutput/main/testclasses/" + className + ".class";
+		String fullPath = System.getProperty("user.dir") + "/sootOutput/" + outputDir + "/main/testclasses/" + className + ".class";
 		
 		if(!new File(fullPath).isFile()) { 
 			logger.severe("File " + fullPath + " not found. Please compile with soot and try again!"); 
@@ -88,7 +88,7 @@ public class ClassRunner {
 		}
 
 		try {
-			runClass(className);
+			runClass(className, outputDir);
 			
 			// Fail if the class was running but an exception was expected
 			if (expectedException) {

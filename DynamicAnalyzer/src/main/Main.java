@@ -39,6 +39,8 @@ public class Main {
     	
 		LOGGER_LEVEL = argparser.getLoggerLevel();
 		String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
+		
+
     	
 		try {
 			System.out.println("Logger Init1");

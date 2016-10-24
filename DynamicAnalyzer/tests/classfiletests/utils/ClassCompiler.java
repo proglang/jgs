@@ -14,10 +14,12 @@ public class ClassCompiler {
 	
 	static Logger logger = L1Logger.getLogger();
 	
-	public static void compile(String name) {
-		String[] args = {"-f", "c", "--classes", "main.testclasses." + name, "--main_class", "main.testclasses." + name};
+	public static void compile(String name, String outputDir) {
+		
+		String[] args = {"-f", "c", "--classes", 
+				"main.testclasses." + name, "--main_class", "main.testclasses." + name, "--d", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started");
 		Main.main(args);
-		logger.info("Compilatoin successful");
+		logger.info("Compilation successful");
 	}
 }

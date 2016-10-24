@@ -19,10 +19,10 @@ import java.util.logging.Logger;
  * @author NicolasM
  *
  */
-public class RunSingleEndToEndTest{
+public class SingleEndToEndTest{
     
 	// If you want to test a single class then define its name here
-	public String name = "AccessFieldsOfObjectsFail";
+	public String name = "ArithmeticExpressionsFail";
 	
 	// Define its illegal FLow Value here
 	public boolean hasIllegalFlow = true;
@@ -35,7 +35,7 @@ public class RunSingleEndToEndTest{
 	 *   
 	 *   Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] {"java.lang.String_$r6"};
+	public String[] involvedVars = new String[] {"java.lang.Integer_$r4"};
     
 	Logger logger = L1Logger.getLogger();
 	
@@ -46,9 +46,9 @@ public class RunSingleEndToEndTest{
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
 
-		// TODO set Output directory
-		ClassCompiler.compile(name);
-		ClassRunner.testClass(name, hasIllegalFlow, involvedVars);
+		String outputDir = "junit";
+		ClassCompiler.compile(name, outputDir);
+		ClassRunner.testClass(name, outputDir, hasIllegalFlow, involvedVars);
 
 		logger.info("Finished executing main.testclasses." + name + "");
 	}

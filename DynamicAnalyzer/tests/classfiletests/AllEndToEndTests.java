@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 
 @RunWith(Parameterized.class)
-public class RunAllEndToEndTests{
+public class AllEndToEndTests{
     
 	private final String name;
 	private final boolean hasIllegalFlow;
@@ -32,7 +32,7 @@ public class RunAllEndToEndTests{
 	 * @param involvedVars variables which are expected to be involved
 	 *     in the exception
 	 */
-	public RunAllEndToEndTests(String name, boolean hasIllegalFlow, String... involvedVars) {
+	public AllEndToEndTests(String name, boolean hasIllegalFlow, String... involvedVars) {
     
 		this.name = name;
 		this.hasIllegalFlow = hasIllegalFlow;
@@ -53,21 +53,21 @@ public class RunAllEndToEndTests{
 				new Object[] { "AccessFieldsOfObjectsSuccess",false,new String[]{}},
 				new Object[] { "ArithmeticExpressionsFail", true, new String[] {}},
 				new Object[] { "ArithmeticExpressionsSuccess",false,new String[]{}},
-				new Object[] { "ArrayRef", true, new String[] {}},
-				new Object[] { "ExtClasses", true, new String[] {}}, 
+				new Object[] { "ArrayRef", true, new String[] {}}, // fails, does not throw excpetion. i think: hasIllegalFlow = false!
+				new Object[] { "ExtClasses", true, new String[] {}}, // fails
 				new Object[] { "FieldsSuccess", false, new String[] {}},
 				new Object[] { "FieldWriteFail", true, new String[] {}}, 
-				new Object[] { "ForLoop", true, new String[] {}},
-				new Object[] { "IfStmt", true, new String[] {}}, 
-				new Object[] { "InvokeInternalMethod", true, new String[] {}}, 
+				new Object[] { "ForLoop", true, new String[] {}}, //fails
+				new Object[] { "IfStmt", true, new String[] {}}, //fails
+				new Object[] { "InvokeInternalMethod", true, new String[] {}}, //fails 
 				new Object[] { "InvokeLibMethod", true, new String[] {"int_i0"}},
 				new Object[] { "MakeHigh", false, new String[] {}},
 				new Object[] { "MulArray", false, new String[] {}},
-				new Object[] { "MulArrayFail", true, new String[] {}}, 
-				new Object[] { "NonStaticMethods", false, new String[] {}},
-				new Object[] { "NonStaticMethodsFail", true, new String[] {}}, 
+				new Object[] { "MulArrayFail", true, new String[] {}}, //fails
+				new Object[] { "NonStaticMethods", false, new String[] {}},	
+				new Object[] { "NonStaticMethodsFail", true, new String[] {}}, // 
 				new Object[] { "Simple", true, new String[]{"java.lang.String_r3"}},
-				new Object[] { "StaticMethods", false, new String[] {}},
+				new Object[] { "StaticMethods", false, new String[] {}}, //fail
 				new Object[] { "StaticMethodsFail", true, new String[] {}},
 				new Object[] { "SwitchStmt", false, new String[] {}},
 				new Object[] { "SwitchStmtFail", true, new String[] {"int_i4"}},
@@ -81,9 +81,9 @@ public class RunAllEndToEndTests{
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
 		
-		
-		ClassCompiler.compile(name);
-		ClassRunner.testClass(name, hasIllegalFlow, involvedVars);
+		String outputDir = "junit";
+		ClassCompiler.compile(name, outputDir);
+		ClassRunner.testClass(name, outputDir, hasIllegalFlow, involvedVars);
 
 		logger.info("Finished executing main.testclasses." + name + "");
 	}

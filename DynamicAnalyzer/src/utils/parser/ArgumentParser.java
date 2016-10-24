@@ -38,8 +38,9 @@ public class ArgumentParser {
 				"Class containing the main method.");
 		Option classes = new Option("c","classes", true,"List of classes to be analyzed.");
 		classes.setArgs(Option.UNLIMITED_VALUES);
-		Option directories = new Option("d", "process_dir", true, 
+		Option directories = new Option("process_dir", true, 
 						"Analyze all processes inside process-dir");
+		Option outputDir = new Option("d", true, "Set output directory");
 		Option levelAll = new Option("la", "lvl_all");
 		Option levelInfo = new Option("li", "lvl_info");
 		Option levelSevere = new Option("ls", "lvl_severe");
@@ -49,7 +50,12 @@ public class ArgumentParser {
 		inputOptions.addOption(classes); 
 		inputOptions.addOption(directories);
 		inputOptions.setRequired(true);
-			
+		
+		
+		OptionGroup outputOptions = new OptionGroup();
+		outputOptions.addOption(outputDir);
+		outputOptions.setRequired(false);
+		
 		
 		OptionGroup levelOptions = new OptionGroup();
 		levelOptions.addOption(levelAll);
@@ -62,6 +68,7 @@ public class ArgumentParser {
 		options.addOption(outputFormat);
 		options.addOption(mainClass);
 		options.addOptionGroup(inputOptions);
+		options.addOptionGroup(outputOptions);
 		options.addOptionGroup(levelOptions);
 		
 		
@@ -116,6 +123,13 @@ public class ArgumentParser {
 		} else if (cmd.hasOption("process_dir")) {
 			sootOptions.add("-process-dir");
 			sootOptions.add(cmd.getOptionValue("process_dir"));
+		}
+		/**
+		 * If --setOutputInArgumentParser is a command line argument, we can set the appropriate path here!
+		 */
+		if (cmd.hasOption("d")) {
+			sootOptions.add("-d");
+			sootOptions.add(cmd.getOptionValue("d"));
 		}
 		String[] result = new String[sootOptions.size()];
 		sootOptions.toArray(result);
