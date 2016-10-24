@@ -18,6 +18,9 @@ target/
 lib/
 .cache-main
 
+# Nicos Questions dont need to be public
+/DynamicAnalyzer/QuestionsFromNico
+
 # For MacOS system Files
 *.DS_STORE
 
