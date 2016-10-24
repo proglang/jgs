@@ -1,5 +1,6 @@
 package classfiletests;
 
+import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
 import org.junit.Test;
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 
 
 @RunWith(Parameterized.class)
-public class ClassTest{
+public class RunAllEndToEndTests{
     
 	private final String name;
 	private final boolean hasIllegalFlow;
@@ -31,7 +32,7 @@ public class ClassTest{
 	 * @param involvedVars variables which are expected to be involved
 	 *     in the exception
 	 */
-	public ClassTest(String name, boolean hasIllegalFlow, String... involvedVars) {
+	public RunAllEndToEndTests(String name, boolean hasIllegalFlow, String... involvedVars) {
     
 		this.name = name;
 		this.hasIllegalFlow = hasIllegalFlow;
@@ -79,7 +80,9 @@ public class ClassTest{
 	public void test() {
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
-
+		
+		
+		ClassCompiler.compile(name);
 		ClassRunner.testClass(name, hasIllegalFlow, involvedVars);
 
 		logger.info("Finished executing main.testclasses." + name + "");

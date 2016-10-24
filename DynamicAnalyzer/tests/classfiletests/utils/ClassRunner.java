@@ -84,7 +84,7 @@ public class ClassRunner {
 		
 		if(!new File(fullPath).isFile()) { 
 			logger.severe("File " + fullPath + " not found. Please compile with soot and try again!"); 
-			// fail();
+			fail();
 		}
 
 		try {

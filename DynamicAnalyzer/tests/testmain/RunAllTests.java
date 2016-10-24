@@ -22,8 +22,8 @@ import analyzer.level2.WhileStmtFail;
 import analyzer.level2.WhileStmtSuccess;
 import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
-import classfiletests.ClassTest;
-import classfiletests.SingleTest;
+import classfiletests.RunAllEndToEndTests;
+import classfiletests.RunSingleEndToEndTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -64,10 +64,10 @@ import org.junit.runners.Suite.SuiteClasses;
     LocalMapTest.class,
 
     // Tests for valid bytecode of testclasses
-    ClassTest.class,
-    SingleTest.class
+    RunAllEndToEndTests.class,
+    RunSingleEndToEndTest.class
     })
 
-public class AllTests {
+public class RunAllTests {
 
 }

@@ -1,5 +1,6 @@
 package classfiletests;
 
+import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
 import org.junit.Test;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
  * @author NicolasM
  *
  */
-public class SingleTest{
+public class RunSingleEndToEndTest{
     
 	// If you want to test a single class then define its name here
 	public String name = "AccessFieldsOfObjectsFail";
@@ -45,6 +46,8 @@ public class SingleTest{
 		System.out.println("\n\n\n");
 		logger.info("Start of executing main.testclasses." + name + "");
 
+		// TODO set Output directory
+		ClassCompiler.compile(name);
 		ClassRunner.testClass(name, hasIllegalFlow, involvedVars);
 
 		logger.info("Finished executing main.testclasses." + name + "");

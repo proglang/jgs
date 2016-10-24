@@ -48,6 +48,14 @@ what is:
 - local Program Counter
 - global PC
 
+it seems to me, that:
+
+assignmentLevel 	localPc
+	\				/
+	 \			   /
+	new level of local
+
+correct? and assignment-level == security level?!
 
 
 6__

@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import oracle.jrockit.jfr.Options;
+
 /**
  * @author Regina Koenig
  * @version 0.6
@@ -31,6 +33,7 @@ public class Main {
      * @param args This arguments are delivered by Main.main.
      */
 	private static void execute(String[] args) {
+		
     	
 		argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
     	
@@ -67,7 +70,7 @@ public class Main {
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
 
         	   
-
+		// soot.options.Options.v().process_dir()
 		soot.Main.main(sootOptions);
 
 	}
