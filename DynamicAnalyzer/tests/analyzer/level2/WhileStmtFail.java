@@ -39,10 +39,10 @@ public class WhileStmtFail {
 		hs.checkCondition("123", "int_y");
 		while (y == 0) {
 			
-			hs.addLevelOfLocal("int_x");
+			hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 			hs.setLevelOfLocal("int_x");
 			x += 1;
-			hs.addLevelOfLocal("int_y");
+			hs.joinLevelOfLocalAndAssignmentLevel("int_y");
 			hs.setLevelOfLocal("int_y");
 			y += 1;
 			

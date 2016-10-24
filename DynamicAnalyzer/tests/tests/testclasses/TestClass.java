@@ -25,7 +25,7 @@ public class TestClass {
         TestSubClass newObj;
         newObj = new TestSubClass();
         
-        hs.addLevelOfLocal("int_High");
+        hs.joinLevelOfLocalAndAssignmentLevel("int_High");
         hs.setLevelOfField(TestClass.class, "int_intField");
     	intField = High;
 		hs.close();
@@ -48,13 +48,13 @@ public class TestClass {
     	int a2 = 23;
     	
     	hs.makeLocalHigh("int_a2");
-    	hs.addLevelOfLocal("int_a1");
-    	hs.addLevelOfLocal("int_a2");
+    	hs.joinLevelOfLocalAndAssignmentLevel("int_a1");
+    	hs.joinLevelOfLocalAndAssignmentLevel("int_a2");
     	hs.setLevelOfLocal("int_res");
     	int res = a1 + a2;
     	
-    	hs.addLevelOfLocal("int_res");
-    	hs.addLevelOfLocal("int_res");
+    	hs.joinLevelOfLocalAndAssignmentLevel("int_res");
+    	hs.joinLevelOfLocalAndAssignmentLevel("int_res");
     	hs.setLevelOfLocal("int_anotherRes");
     	int anotherRes = res + res;
     	
@@ -64,7 +64,7 @@ public class TestClass {
     	
     	s = "ghj";
     	
-    	hs.addLevelOfLocal("String_d");
+    	hs.joinLevelOfLocalAndAssignmentLevel("String_d");
     	hs.setLevelOfLocal("String_s");
     	s = d;
     	

@@ -14,7 +14,6 @@ testclasses-*/
 /result
 
 # sbt
-
 target/
 lib/
 .cache-main
@@ -22,7 +21,9 @@ lib/
 # For MacOS system Files
 *.DS_STORE
 
-# For IDEA
+# For IDEA (Eclipse)
+.metadata
+.recommenders
 
 ## compilation output
 *.iml

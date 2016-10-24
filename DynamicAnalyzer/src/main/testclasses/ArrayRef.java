@@ -1,5 +1,10 @@
 package main.testclasses;
 
+/**
+ * This test not written by NicolasM. I think it should not throw an exception?!
+ * @author Regina
+ *
+ */
 public class ArrayRef {
 
 	/**

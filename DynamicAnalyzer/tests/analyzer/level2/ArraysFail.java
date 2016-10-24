@@ -46,9 +46,9 @@ public class ArraysFail {
 		 * check x >= lpc
 		 * level(x) = (i, a, gpc, a_i)
 		 */
-		hs.addLevelOfArrayField(a, Integer.toString(i));
-		hs.addLevelOfLocal("int_i");
-		hs.addLevelOfLocal("String[]_a");
+		hs.joinLevelOfArrayFieldAndAssignmentLevel(a, Integer.toString(i));
+		hs.joinLevelOfLocalAndAssignmentLevel("int_i");
+		hs.joinLevelOfLocalAndAssignmentLevel("String[]_a");
 		hs.setLevelOfLocal("String_x");
 		@SuppressWarnings("unused")
 		String x = a[i];

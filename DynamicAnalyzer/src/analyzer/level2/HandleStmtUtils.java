@@ -47,13 +47,14 @@ public class HandleStmtUtils {
 	 * Check if level of given local is greater than localPC.
 	 * @param signature signature of the local
 	 */
-	protected void checkLocalPC(String signature) {		
+	protected void checkLocalPC(String signature) {
+		logger.log(Level.FINEST, "--- checkLocalPC called ---");
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
 		Object level = localmap.getLevel(signature);
 		Object lpc = localmap.getLocalPC();
-		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2})", 
+		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC", 
 				new Object[] {signature, level, lpc });
 		if (!SecurityLevel.le(lpc, level)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
@@ -133,12 +134,14 @@ public class HandleStmtUtils {
 	
 	/**
 	 * Join given security-level with localPC.
-	 * @param securityLevel security-level
+	 * @param securityLevel security-level - is retrieved via objectmap.getAssignmentLevel()
 	 * @return new security-level
 	 */
 	protected Object joinWithLPC(Object securityLevel) {
 		Object localPC = localmap.getLocalPC();
 		Object result = SecurityLevel.lub(localPC, securityLevel);
+		logger.log(Level.INFO, "Local PC is {0}, security Level/assignementLevel is {1}, results in {2} --- joinWithLPC",
+				new Object[] { localPC, securityLevel, result });
 		return result;
 	}
 	
