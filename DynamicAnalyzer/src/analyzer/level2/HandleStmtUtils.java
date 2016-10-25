@@ -140,7 +140,7 @@ public class HandleStmtUtils {
 	protected Object joinWithLPC(Object securityLevel) {
 		Object localPC = localmap.getLocalPC();
 		Object result = SecurityLevel.lub(localPC, securityLevel);
-		logger.log(Level.INFO, "Local PC is {0}, security Level/assignementLevel is {1}, results in {2} --- joinWithLPC",
+		logger.log(Level.INFO, "Local PC is {0}, security Level/assignementLevel is {1}, results in {2}",
 				new Object[] { localPC, securityLevel, result });
 		return result;
 	}

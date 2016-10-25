@@ -51,12 +51,18 @@ public class AllEndToEndTests {
 		return Arrays.asList(
 				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } },
 				new Object[] { "AccessFieldsOfObjectsSuccess", false, new String[] {} },
-				new Object[] { "ArithmeticExpressionsFail", true, new String[] {} },
+				
+				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "java.lang.Integer_$r4" } }, // set involved variable
 				new Object[] { "ArithmeticExpressionsSuccess", false, new String[] {} },
-				new Object[] { "ArrayRef", true, new String[] {} }, // fails,
+				
+				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, // fails, rewrite non-expressive (?!) test
+				new Object[] { "ArrayRefSuccess", false, new String[] {} },
+				
 				new Object[] { "ExtClasses", true, new String[] {} }, // fails
+				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {} },
+				
 				new Object[] { "ForLoop", true, new String[] {} }, // fails
 				new Object[] { "IfStmt", true, new String[] {} }, // fails
 				new Object[] { "InvokeInternalMethod", true, new String[] {} }, // fails
@@ -64,13 +70,18 @@ public class AllEndToEndTests {
 				new Object[] { "MakeHigh", false, new String[] {} },
 				new Object[] { "MulArray", false, new String[] {} },
 				new Object[] { "MulArrayFail", true, new String[] {} }, // fails
+				
 				new Object[] { "NonStaticMethods", false, new String[] {} },
 				new Object[] { "NonStaticMethodsFail", true, new String[] {} }, //
+				
 				new Object[] { "Simple", true, new String[] { "java.lang.String_r3" } },
+				
 				new Object[] { "StaticMethods", false, new String[] {} }, // fail
 				new Object[] { "StaticMethodsFail", true, new String[] {} },
+				
 				new Object[] { "SwitchStmt", false, new String[] {} },
 				new Object[] { "SwitchStmtFail", true,new String[] { "int_i4" } }, 
+				
 				new Object[] { "WhileLoop", false, new String[] {} }, 
 				new Object[] { "WhileLoopFail", true, new String[] { "int_$i3" } });
 	}

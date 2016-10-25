@@ -1,6 +1,8 @@
 Week1:
 - Introduction and getting to know the project 
 - find out why JUnit Tests fail
+- fixed a bug where end-to-end test passed because no compiled binary was present, and failed
+	if an outdated binary was present
 
 Week2:
 - ClassCompile written: Compile end-to-end tests automatically before testrun

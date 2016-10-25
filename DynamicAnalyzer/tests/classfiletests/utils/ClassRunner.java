@@ -82,6 +82,8 @@ public class ClassRunner {
 	 */
 	public static void testClass(String className, String outputDir,
 			boolean exceptionExpected, String... involvedVars) {
+		
+		logger.info("Trying to run test " + className);
 
 		String fullPath = System.getProperty("user.dir") + "/sootOutput/"
 				+ outputDir + "/main/testclasses/" + className + ".class";

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "ArithmeticExpressionsFail";
+	public String name = "ArrayRef";
 
 	public boolean hasIllegalFlow = true;
 
@@ -43,7 +43,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] { "java.lang.Integer_$r4" };
+	public String[] involvedVars = new String[] { };
 
 	Logger logger = L1Logger.getLogger();
 
