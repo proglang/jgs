@@ -49,16 +49,17 @@ public class AllEndToEndTests {
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
-				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } },
+				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } }, // set involved variable
 				new Object[] { "AccessFieldsOfObjectsSuccess", false, new String[] {} },
 				
-				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "java.lang.Integer_$r4" } }, // set involved variable
+				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "java.lang.Integer_$r4" } }, 	// set involved variable
 				new Object[] { "ArithmeticExpressionsSuccess", false, new String[] {} },
 				
-				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, // fails, rewrite non-expressive (?!) test
-				new Object[] { "ArrayRefSuccess", false, new String[] {} },
+				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					// fails, rewrote non-expressive (?!) test
+				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									// rewritten (was one testfile ExtClasses)
 				
-				new Object[] { "ExtClasses", true, new String[] {} }, // fails
+				new Object[] { "ExtClassesFail", true, new String[] {} }, 										//Todo: write external, manually instrumented class for this test
+				new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// same
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {} },

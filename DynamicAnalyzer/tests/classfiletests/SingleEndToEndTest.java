@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "ArrayRef";
+	public String name = "ExtClassesFail";
 
 	public boolean hasIllegalFlow = true;
 

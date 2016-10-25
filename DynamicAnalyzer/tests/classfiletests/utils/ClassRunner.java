@@ -131,7 +131,7 @@ public class ClassRunner {
 
 			// Check if the expected variables are involved
 			for (String var : involvedVars) {
-				logger.info("Check wheter " + var + "is contained in: "
+				logger.info("Check wheter " + var + " is contained in: "
 						+ e.getMessage() + " ... ");
 				if (e.getMessage().contains(var)) {
 					logger.info("Success!");

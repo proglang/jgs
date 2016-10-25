@@ -6,5 +6,8 @@ Week1:
 
 Week2:
 - ClassCompile written: Compile end-to-end tests automatically before testrun
-- Output folder now configurable
-- Fixed bug that IllegalFlowExcpetion could be thrown, but no involved variable was given and test still passed
+- Output folder now configurable via "-d desiredDir" for both the JUnit test and main method / run configurations
+- Fixed bug that for some IllegalFlowExcpetion, even though no involved variable was given, the test still passed
+- some testclasses need to be rewritten (about 10): Some are invomplete, some do not provide the desired information leak, some are empty, some miss involved variables
+-- added involvedVars to "ArithmeticExpressionsFail"
+-- Rewrote ArrayRef: Split up in two files (*Fail, *Success), made sure desired information leak is present/not present
