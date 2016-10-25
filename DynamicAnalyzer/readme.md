@@ -1,5 +1,5 @@
 # Dynamic Analyzer
-Enforcing non-interference using run-time security labels.
+Enforcing non-interference using run-time security labels: An implementation of dynamic information flow control, based on the no-sensitive-upgrade (NSU) policy.
 
 ## Setup
 Setting up the Dynamic Analyzer (DA) is not complicated, although not yet trivial. Follow these steps:
@@ -12,7 +12,7 @@ Setting up the Dynamic Analyzer (DA) is not complicated, although not yet trivia
   - jasminclasses-2.5.0.jar
   - java_cup.jar
   - commons-collections4-4.0.jar from "Apache Commons Collections
-- add the file '`gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar` to the DEPS folder. TODO: Dont know anymore how to create it
+- add the file `gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar` to the DEPS folder. TODO: Dont know anymore how to create it
 - add folder DEPS to your buildpath: Right-click on DynamicAnalyzer in the Package Explorer -> BuildPath -> Configure Build Path -> Add variable, pointing to your DEPS directory
 
 ## Purpose of the Dynamic Analyzer
@@ -47,7 +47,7 @@ and throws an "IllegalFlowException" if executed.
 ```
 java -cp .:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar   main.testclasses.NameOfTest
 ```
-Note on the `.:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar` part:
+Note on `.:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar`:
 To run the class file successfully, we have to provide more that just the file, because it contains instrumented code: methods and classes 
 which also have to be available to the program at runtime!
 
@@ -62,3 +62,4 @@ To get you started, here is a very brief introduction into the source code:
 - main entry point is main.Main
 - `analyzer.level1` contains the classes necessary for correct instrumentation, eg contains the code that is responsible for instrumenting an existing java program.
 - `analyzer.level2` contains the classes which are executed on runtime. These check if the information flow is valid, and throw appropriate Exceptions (IllegalFlowException) if not.
+
