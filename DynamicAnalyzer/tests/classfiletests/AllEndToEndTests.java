@@ -58,14 +58,18 @@ public class AllEndToEndTests {
 				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					// fails, rewrote non-expressive (?!) test
 				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									// rewritten (was one testfile ExtClasses)
 				
-				new Object[] { "ExtClassesFail", true, new String[] {} }, 										//Todo: write external, manually instrumented class for this test
+				new Object[] { "ExtClassesFail", true, new String[] {} }, 										// Todo: write external, manually instrumented class for this test
 				new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// same
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {} },
 				
-				new Object[] { "ForLoop", true, new String[] {} }, // fails
-				new Object[] { "IfStmt", true, new String[] {} }, // fails
+				new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError:
+				new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails
+				
+				new Object[] { "IfStmtSuccess", false, new String[] {} }, 										// split up from one test IfStmt 
+				new Object[] { "IfStmtFail", true, new String[] { "byte_b1" } }, 
+				
 				new Object[] { "InvokeInternalMethod", true, new String[] {} }, // fails
 				new Object[] { "InvokeLibMethod", true, new String[] { "int_i0" } },
 				new Object[] { "MakeHigh", false, new String[] {} },

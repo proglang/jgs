@@ -40,7 +40,7 @@ and throws an "IllegalFlowException" if executed.
 
 ## Compiling via main:
 - Choose your Run Configurations (for example, if we want to compile to instrumented binary, use the RunMainAnalyzerSingleC, which has the following arguments: `-f c --classes main.testclasses.WhileLoopFail --main_class main.testclasses.WhileLoopFail)` 
--  Execute `DynamicAnalyser.src.main.Main.java.` from within Eclipse. This produces a file in 'sootOutput' which is instrumented, meaning
+-  Execute `DynamicAnalyser.src.main.Main.java` from within Eclipse. This produces a file in 'sootOutput' which is instrumented, meaning
    that it has the original program PLUS more code that checks - on runtime - if the flow is valid or if there is information leakage.
 - Go to folder `sootOutput/`
 - Run the compiled file using:
