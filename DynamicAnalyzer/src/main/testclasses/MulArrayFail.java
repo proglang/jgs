@@ -1,6 +1,6 @@
 package main.testclasses;
 
-
+import utils.analyzer.HelperClass;
 
 public class MulArrayFail {
    
@@ -11,8 +11,8 @@ public class MulArrayFail {
 	static void method(int x) {
 		String[][] twoD = new String[][] {{"e"},{"f"},{"g"}};
 		System.out.println("Old val: " + twoD[1][0]);
-		twoD[1][0] = "newVal";
-		String val = twoD[0][0];
+		twoD[1][0] = HelperClass.makeHigh("secretVal");
+		String val = twoD[1][0];
 		System.out.println("Value of MulArray: " + val);
 	}
 }

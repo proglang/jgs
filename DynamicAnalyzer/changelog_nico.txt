@@ -13,6 +13,7 @@ Week2:
 -- added involvedVars to "ArithmeticExpressionsFail"
 -- Rewrote ArrayRef: Split up in two files (*Fail, *Success), made sure desired information leak is present/not present
 -- Fixed IfStmt test: Split it up, supplied illegal flow in *Fail, supplied appropriate variable.
+- documented which tests fail, and why. also fixed some tests.
 
 
 -- Todo: write external classes test using hand-instrumented external class. check and fix other tests.

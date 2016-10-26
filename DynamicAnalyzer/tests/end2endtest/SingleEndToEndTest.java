@@ -1,4 +1,4 @@
-package classfiletests;
+package end2endtest;
 
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "IfStmtFail";
+	public String name = "NonStaticMethodsFail";
 
 	public boolean hasIllegalFlow = true;
 
@@ -38,7 +38,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] { "byte_b1"};
+	public String[] involvedVars = new String[] {"int_i0"};
 
 	Logger logger = L1Logger.getLogger();
 

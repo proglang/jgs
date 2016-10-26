@@ -1,9 +1,9 @@
 package main.testclasses;
 
-public class NonStaticMethods {
+public class NonStaticMethodsSuccess {
 
 	public static void main(String[] args) {
-		NonStaticMethods nsm = new NonStaticMethods();
+		NonStaticMethodsSuccess nsm = new NonStaticMethodsSuccess();
 		nsm.nonStatic();
 	}
 	

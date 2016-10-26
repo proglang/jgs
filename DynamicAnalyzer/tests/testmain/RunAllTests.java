@@ -22,12 +22,13 @@ import analyzer.level2.WhileStmtFail;
 import analyzer.level2.WhileStmtSuccess;
 import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
-import classfiletests.AllEndToEndTests;
-import classfiletests.SingleEndToEndTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+
+import end2endtest.AllEndToEndTests;
+import end2endtest.SingleEndToEndTest;
 
 
 
