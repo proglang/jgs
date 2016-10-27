@@ -62,7 +62,7 @@ public class AllEndToEndTests {
 				new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// fails: same
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
-				new Object[] { "FieldWriteFail", true, new String[] {} },										// fails
+				new Object[] { "FieldWriteFail", true, new String[] {"int_$i2"} },								// failed because variable was missing
 				
 				new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError:
 				new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails, same reason
