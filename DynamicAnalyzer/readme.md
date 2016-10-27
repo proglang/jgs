@@ -27,7 +27,7 @@ Consider the following java class:
 ```
 public class Simple {
 	public static void main(String[] args) {
-		String message = "Hello World, by you";
+		String message = "Hello World";
 		message = HelperClass.makeHigh(message);
 		System.out.println(message);
 	}
