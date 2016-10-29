@@ -2,6 +2,12 @@ package tests.testclasses;
 
 import analyzer.level2.HandleStmt;
 
+/**
+ * TestClass used by TestSubClass.writeToCallerField method, which is currently no used anywhere in the whole programm.
+ * TODO clean this up? 
+ * @author Nicolas Müller
+ *
+ */
 public class TestClass {
 
 	public static int intField;

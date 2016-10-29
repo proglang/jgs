@@ -2,6 +2,11 @@ package tests.testclasses;
 
 import analyzer.level2.HandleStmt;
 
+/**
+ * Methods which are used by the JUnit tests in test.analyzer.level2
+ * @author Regina Koenig, NicolasM
+ *
+ */
 public class TestSubClass {
 	
 	int field;
@@ -31,6 +36,11 @@ public class TestSubClass {
 		return 2;
 	}
 	
+	/**
+	 * Weird method, never used anywhere
+	 * @param ts 	Argument TestClass used ever only by this method in whole project
+	 * TODO clean this up? not needed method?!
+	 */
 	@SuppressWarnings("static-access")
 	public void writeToCallerField(TestClass ts) {
 		ts.intField = 4;

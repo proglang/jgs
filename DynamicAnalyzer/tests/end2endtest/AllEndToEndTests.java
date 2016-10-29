@@ -83,7 +83,7 @@ public class AllEndToEndTests {
 				new Object[] { "Simple", true, new String[] { "java.lang.String_r3" } },
 				
 				new Object[] { "StaticMethodsSuccess", false, new String[] {} }, 
-				new Object[] { "StaticMethodsFail", true, new String[] {} },									// failes: Unfinished test by Regina. Take closer look!
+				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
 				
 				new Object[] { "SwitchStmt", false, new String[] {} },
 				new Object[] { "SwitchStmtFail", true,new String[] { "int_i4" } }, 
