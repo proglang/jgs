@@ -51,3 +51,12 @@ Dann methode: GetLevel: {if initialized, then ..; else throw}
 und methode: isInitialised() { return initialised; }
 
 Also mit neuer Klasse ist das besser!!
+
+NOTES, week 3:
+- check if illegal flow (via local-sec-value > localPC) is contained in
+	setLevelOfLocal method. I find this confusing, and not adhering to
+	the seperation of concerns
+- global PC, only one, propagated down, reset after
+	method is done
+- local PC, implemented as a stack, used to different-
+	iate between different ifs

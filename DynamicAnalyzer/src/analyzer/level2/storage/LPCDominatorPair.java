@@ -26,5 +26,12 @@ public class LPCDominatorPair {
 	public int getPostDominatorIdentity() {
 		return postDominatorIdentity;
 	}
-	
+
+	/**
+	 * Overridden toString for easier observation in debugger
+	 */
+	@Override
+	public String toString() { 
+		return secLevel.toString();
+	}
 }

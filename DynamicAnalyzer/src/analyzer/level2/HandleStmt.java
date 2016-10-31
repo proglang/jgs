@@ -504,11 +504,20 @@ public class HandleStmt {
 	 * @return new security-level
 	 */
 	public Object setLevelOfLocal(String signature) {
+		// first, check if no IllegalFlow
+		handleStatementUtils.checkLocalPC(signature);
+		
+		// Then, calc new level:
+		// for assignments like a = x + y, we need to calculate the
+		// new security-value of a: this sec-value depends either on
+		// the local PC (for example, if inside a high-if), or on either
+		// of the right-hand variables' sec-value, which is accumulated 
+		// in the assignmentLevel
 		Object newSecValue = handleStatementUtils.joinWithLPC(
 				objectmap.getAssignmentLevel());
-				logger.log(Level.INFO, "Set level of local {0} to {1}",
+		logger.log(Level.INFO, "Set level of local {0} to {1}",
 						new Object[] {signature, newSecValue});
-		handleStatementUtils.checkLocalPC(signature);
+		
 		localmap.setLevel(signature, newSecValue);
 		logger.log(Level.INFO, "New level of local {0} is {1} ",
 				new Object[] {signature, localmap.getLevel(signature)});
