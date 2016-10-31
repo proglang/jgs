@@ -10,7 +10,7 @@ public class Simple {
 	 * @param args Arguments will be ignored.
 	 */
 	public static void main(String[] args) {
-		String message = "Hello World";
+		String message = "Hello World, by you";
 		message = HelperClass.makeHigh(message);
 		System.out.println(message);
 	}

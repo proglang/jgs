@@ -1,6 +1,8 @@
 package main.testclasses;
 
-public class ForLoop {
+import utils.analyzer.HelperClass;
+
+public class ForLoopSuccess {
 
 	/**
 	 * Test various for loops.
@@ -9,6 +11,10 @@ public class ForLoop {
 	public static void main(String[] args) {
 		simpleFor(5);
 		arrayIterator(new String[]{"hg", "jh", "kj", "ef"});
+		
+		int secret = HelperClass.makeHigh(42);
+		simpleFor(secret);
+		arrayIterator(new String[] {HelperClass.makeHigh("secret1"), HelperClass.makeHigh("secret2")});
 
 	}
 
@@ -31,7 +37,7 @@ public class ForLoop {
 	 */
 	public static int arrayIterator(String[] x) {
 		int z = 0;
-		for (String y : x) {
+		for (@SuppressWarnings("unused") String y : x) {
 			z++;
 		}
 		return z;

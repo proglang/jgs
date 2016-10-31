@@ -14,12 +14,19 @@ testclasses-*/
 /result
 
 # sbt
-
 target/
 lib/
 .cache-main
 
-# For IDEA
+# Nicos Questions dont need to be public
+/DynamicAnalyzer/QuestionsFromNico
+
+# For MacOS system Files
+*.DS_STORE
+
+# For IDEA (Eclipse)
+.metadata
+.recommenders
 
 ## compilation output
 *.iml

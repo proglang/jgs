@@ -94,7 +94,7 @@ public class AssignFieldsFail {
 		hs.makeFieldLow(o, "int_pField");
 		hs.pushGlobalPC(SecurityLevel.top());
 		
-		assertEquals(SecurityLevel.bottom(), hs.addLevelOfLocal("int_local"));
+		assertEquals(SecurityLevel.bottom(), hs.joinLevelOfLocalAndAssignmentLevel("int_local"));
 		hs.setLevelOfField(o, "int_pField");
 		o.pField = local;
 		

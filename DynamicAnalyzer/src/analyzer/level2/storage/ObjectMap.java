@@ -25,7 +25,8 @@ import java.util.LinkedList;
  */
 public class ObjectMap{
 	
-	private static ReferenceIdentityMap<Object, HashMap<String, Object>> innerMap;
+	private static ReferenceIdentityMap<Object, HashMap<String, Object>> innerMap;		// maps objects to 2nd map: field -> security type
+																						// example: ob1 -> map1, and map1: this.myInt -> LOW
 	private static LinkedList<Object> globalPC;
 	private static ObjectMap instance = null;
 	private static Object actualReturnLevel;

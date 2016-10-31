@@ -37,9 +37,32 @@ public class BodyAnalyzer extends BodyTransformer{
 				@SuppressWarnings("rawtypes") Map arg2) {
 		SootMethod method;
 		Body body;	
+		
+		/*
+		 * Chain<Unit> units contains for TestProgramm Simple:
+		 * 
+		 * [r0 := @parameter0: java.lang.String[], r1 = "Hello World", 
+		 * $r2 = staticinvoke <utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>(r1), 
+		 * r3 = (java.lang.String) $r2, $r4 = <java.lang.System: java.io.PrintStream out>, 
+		 * virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r3), return]
+		 * Invoke HandleStmt in method main
+		 */
 		Chain<Unit> units;
+		
+		/*
+		 * Chain<Local> locals contains for TestProgramm Simple:
+		 * 
+		 * [r0, r1, $r2, r3, $r4]
+		 */
 		Chain<Local> locals;
 		AnnotationStmtSwitch stmtSwitch;
+		
+		
+		/*
+		 * hain<SootField> fields contains for TestProgramm Simple:
+		 *
+		 * []		//empty
+		 */
 		Chain<SootField> fields;
 
 

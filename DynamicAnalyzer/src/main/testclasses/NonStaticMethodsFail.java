@@ -1,14 +1,18 @@
 package main.testclasses;
 
+import utils.analyzer.HelperClass;
+
 public class NonStaticMethodsFail {
 
 	public static void main(String[] args) {
-		NonStaticMethods nsm = new NonStaticMethods();
+		NonStaticMethodsFail nsm = new NonStaticMethodsFail();
 		nsm.nonStatic();
 	}
 	
 	public void nonStatic() {
-		System.out.println("Called a non-static method");
+		int x = HelperClass.makeHigh(4);
+		System.out.println("Called a non-static method..");
+		System.out.println(x);
 	}
 
 }

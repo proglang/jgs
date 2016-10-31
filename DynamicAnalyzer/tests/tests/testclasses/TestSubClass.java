@@ -2,6 +2,11 @@ package tests.testclasses;
 
 import analyzer.level2.HandleStmt;
 
+/**
+ * Methods which are used by the JUnit tests in test.analyzer.level2
+ * @author Regina Koenig, NicolasM
+ *
+ */
 public class TestSubClass {
 	
 	int field;
@@ -31,6 +36,11 @@ public class TestSubClass {
 		return 2;
 	}
 	
+	/**
+	 * Weird method, never used anywhere
+	 * @param ts 	Argument TestClass used ever only by this method in whole project
+	 * TODO clean this up? not needed method?!
+	 */
 	@SuppressWarnings("static-access")
 	public void writeToCallerField(TestClass ts) {
 		ts.intField = 4;
@@ -59,11 +69,11 @@ public class TestSubClass {
 		hs.assignArgumentToLocal(0, "int_a1");
 		hs.assignArgumentToLocal(1, "int_b1");
 		hs.assignArgumentToLocal(2, "int_c1");
-		hs.addLevelOfLocal("int_b1");
-		hs.addLevelOfLocal("int_c1");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_b1");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_c1");
 		hs.setLevelOfLocal("int_tmp");
-		hs.addLevelOfLocal("int_tmp");
-		hs.addLevelOfLocal("int_a1");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_tmp");
+		hs.joinLevelOfLocalAndAssignmentLevel("int_a1");
 		hs.setLevelOfLocal("int_tmp2");
 		
 		hs.returnLocal("int_tmp2");

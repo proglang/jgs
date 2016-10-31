@@ -426,17 +426,24 @@ public class HandleStmt {
 	}
 
 	/**
+	 * Set assignment-level to: join(local-level, assignment-level).
 	 * Join the level of the local to the assignment-level.
+	 * 
+	 * As far as i understand: This method is called when an assign happens.
+	 * We need to know the level of this assign, eg the programm counter: Are we
+	 * in a high-sec PC or not? This is what is found out here and transfered to
+	 * the output.
+	 * 
 	 * @param local signature of the local.
 	 * @return security-level of the local.
 	 */
-	public Object addLevelOfLocal(String local) {
+	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
 		Object localLevel = localmap.getLevel(local);
-		logger.log(Level.INFO, "Add level {0} of local {1} to assignment-level",
+		logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of local {1})",
 				new Object[] {localLevel, local });
 		objectmap.setAssignmentLevel(
 				handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(),
-				localLevel));
+				localLevel));	
 		return objectmap.getAssignmentLevel();
 	}
 
@@ -447,9 +454,9 @@ public class HandleStmt {
 	 * @param field Signature of the field.
 	 * @return SecurityLevel of the field.
 	 */
-	public Object addLevelOfField(Object object, String field) {
+	public Object joinLevelOfFieldAndAssignmentLevel(Object object, String field) {
 		Object fieldLevel = objectmap.getFieldLevel(object, field);
-		logger.log(Level.INFO, "Add level {0} of field {1} to assignment-level",
+		logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of local {1})",
 				new Object[] {
 				    fieldLevel, field });
 		objectmap.setAssignmentLevel(
@@ -464,9 +471,9 @@ public class HandleStmt {
 	 * @param field Signature of the field.
 	 * @return SecurityLevel of the field.
 	 */
-	public Object addLevelOfArrayField(Object object, String field) {
+	public Object joinLevelOfArrayFieldAndAssignmentLevel(Object object, String field) {
 		Object fieldLevel = objectmap.getFieldLevel(object, field);		
-		logger.log(Level.INFO, "Add level {0} of array-field {1} to assignment-level",
+		logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of local {1})",
 				new Object[] {fieldLevel, field });
 		objectmap.setAssignmentLevel(
 				handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(),
@@ -490,17 +497,18 @@ public class HandleStmt {
 	
 	/**
 	 * Set the level of a local to default security-level.
+	 * Checks if local's security-level is >= local PC, if not: Throws IllegalFlowException (via checkLocalPC method)
 	 * @param signature signature of the local
 	 * @return new security-level
 	 */
-	public Object setLevelOfLocal(String signature) {		
-		logger.log(Level.INFO, "Set level of local {0} to {1}",
-				new Object[] {signature, handleStatementUtils.joinWithLPC(
-						objectmap.getAssignmentLevel())});
+	public Object setLevelOfLocal(String signature) {
+				logger.log(Level.INFO, "Set level of local {0} to {1}",
+						new Object[] {signature, handleStatementUtils.joinWithLPC(
+								objectmap.getAssignmentLevel())});
 		handleStatementUtils.checkLocalPC(signature);
 		localmap.setLevel(signature, handleStatementUtils.joinWithLPC(
 				objectmap.getAssignmentLevel()));
-		logger.log(Level.INFO, "New level of local {0} is {1}",
+		logger.log(Level.INFO, "New level of local {0} is {1} ",
 				new Object[] {signature, localmap.getLevel(signature)});
 		objectmap.clearAssignmentLevel();
 		return localmap.getLevel(signature);
@@ -510,7 +518,7 @@ public class HandleStmt {
 	 * This method is for instance-fields and for static-fields.
 	 * @param object Object of the field.
 	 * @param field signature of the field.
-	 * @return The securitylevel of the field.
+	 * @return The security-level of the field.
 	 */
 	public Object setLevelOfField(Object object, String field) {		
 		logger.log(Level.INFO, "Set level of field {0} to {1}",
@@ -560,7 +568,7 @@ public class HandleStmt {
 
 	/**
 	 * Check the array-field and the local-level of the object against the gpc,
-	 * and read the level stored as Assignmentlevel. This level - joined with
+	 * and read the level stored as assignment-level. This level - joined with
 	 * the gpc - is set as the new level for given array-field. This method is
 	 * needed if the index is a constant and it is not needed to be checked
 	 * against the gpc.

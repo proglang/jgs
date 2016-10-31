@@ -1,17 +1,17 @@
 package main.testclasses;
 
-public class IfStmt {
+import utils.analyzer.HelperClass;
+
+public class IfStmtFail {
 
 	/**
 	 * Main method. Calls multIfs with different arguments.
 	 * @param args args is ignored in this method.
 	 */
 	public static void main(String[] args) {
-		IfStmt thisObj = new IfStmt();
-		thisObj.multIfs(1);
-		thisObj.multIfs(3);
-		thisObj.multIfs(5);
-		thisObj.nestedIfs(4);
+		IfStmtFail thisObj = new IfStmtFail();
+		int sec = thisObj.multIfs(HelperClass.makeHigh(42));
+		System.out.println(sec);
 	}
 
 	/**

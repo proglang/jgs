@@ -58,21 +58,21 @@ public class MultiArrayFail {
 		inner2[0] = "b";
 		
 		hs.addLocal("String[]_arr");
-		hs.addLevelOfLocal("String[]_inner1");
+		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner1");
 		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[]_arr");
 		arr[0] = inner1;
 		
-		hs.addLevelOfLocal("String[]_inner2");
+		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[]_arr");
 		arr[1] = inner2;
 		
 		hs.addLocal("String[]_tmp");
-		hs.addLevelOfArrayField(arr, Integer.toString(1));
+		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(1));
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[1];
 		
 		hs.addLocal("String_x");
-		hs.addLevelOfArrayField(tmp, Integer.toString(0));
+		hs.joinLevelOfArrayFieldAndAssignmentLevel(tmp, Integer.toString(0));
 		hs.setLevelOfLocal("String_x");
 		@SuppressWarnings("unused")
 		String x = tmp[0];
@@ -120,16 +120,16 @@ public class MultiArrayFail {
 		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
 		
-		hs.addLevelOfLocal("String[]_inner1");
+		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner1");
 		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[][]_arr");
 		arr[0] = inner1;
 		
-		hs.addLevelOfLocal("String[]_inner2");
+		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
 		hs.setLevelOfLocal("String[][]_arr", SecurityLevel.top());
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;
 		
-		hs.addLevelOfArrayField(arr, Integer.toString(0));
+		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(0));
 		hs.addLocal("String[]_tmp");
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[0];

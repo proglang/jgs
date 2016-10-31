@@ -2,6 +2,9 @@ package main.testclasses;
 
 import utils.analyzer.HelperClass;
 
+/**
+ * Simple test that should fail, since it leaks a high Field
+ */
 public class AccessFieldsOfObjectsFail {
 
 	public static void main(String[] args) {
