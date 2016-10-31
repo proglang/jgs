@@ -20,6 +20,9 @@ import java.util.LinkedList;
  * Additionally the ObjectMap holds the SecurityLevels of the arguments and 
  * return variable of the least recently called method.
  * 
+ * if we analyze an assignment, assignmentStmtLevel accumulates the security level 
+ * of the right-hand-side of the current assignment.
+ * 
  * @author Regina König
  * @version 1.0
  */

@@ -11,6 +11,7 @@ import analyzer.level2.IfStmtSuccess;
 import analyzer.level2.InvokeSuccess;
 import analyzer.level2.MultiArrayFail;
 import analyzer.level2.MultiArraySuccess;
+import analyzer.level2.Nico;
 import analyzer.level2.ReturnStmtFail;
 import analyzer.level2.ReturnStmtSuccess;
 import analyzer.level2.SimpleSuccess;
@@ -45,6 +46,7 @@ import end2endtest.SingleEndToEndTest;
     InvokeSuccess.class,
     MultiArrayFail.class,
     MultiArraySuccess.class,
+    Nico.class,
     ReturnStmtSuccess.class,
     ReturnStmtFail.class,
     IfStmtSuccess.class,
@@ -66,7 +68,7 @@ import end2endtest.SingleEndToEndTest;
 
     // Tests for valid bytecode of testclasses
     AllEndToEndTests.class,
-    SingleEndToEndTest.class
+    // SingleEndToEndTest.class		// SingleE2E is subset of AllE2E-Tests, so no need to rerun!
     })
 
 public class RunAllTests {

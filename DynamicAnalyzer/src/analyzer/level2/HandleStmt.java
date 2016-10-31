@@ -229,7 +229,8 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Add Local {0} with SecurityLevel.bottom() to LocalMap",
 				signature);
 		handleStatementUtils.checkThatLocalDoesNotExist(signature);
-		localmap.insertLocal(signature, SecurityLevel.bottom());
+		localmap.insertLocal(signature, SecurityLevel.bottom());	// möglich. trage NULL ein.
+																	// besser: Gar nicht erst einfügen, 
 	}
 
 	/**
@@ -498,16 +499,17 @@ public class HandleStmt {
 	/**
 	 * Set the level of a local to default security-level.
 	 * Checks if local's security-level is >= local PC, if not: Throws IllegalFlowException (via checkLocalPC method)
+	 * Probably is the security level of the right hand side of an assignment
 	 * @param signature signature of the local
 	 * @return new security-level
 	 */
 	public Object setLevelOfLocal(String signature) {
+		Object newSecValue = handleStatementUtils.joinWithLPC(
+				objectmap.getAssignmentLevel());
 				logger.log(Level.INFO, "Set level of local {0} to {1}",
-						new Object[] {signature, handleStatementUtils.joinWithLPC(
-								objectmap.getAssignmentLevel())});
+						new Object[] {signature, newSecValue});
 		handleStatementUtils.checkLocalPC(signature);
-		localmap.setLevel(signature, handleStatementUtils.joinWithLPC(
-				objectmap.getAssignmentLevel()));
+		localmap.setLevel(signature, newSecValue);
 		logger.log(Level.INFO, "New level of local {0} is {1} ",
 				new Object[] {signature, localmap.getLevel(signature)});
 		objectmap.clearAssignmentLevel();

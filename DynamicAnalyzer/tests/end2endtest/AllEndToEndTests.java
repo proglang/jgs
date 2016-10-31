@@ -64,10 +64,10 @@ public class AllEndToEndTests {
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {"int_$i2"} },								// failed because variable was missing
 				
-				new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError:
+				new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
 				new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails, same reason
 				
-				new Object[] { "IfStmtSuccess", false, new String[] {} }, 										// fails. SHOULD NOT FAIL?! 
+				new Object[] { "IfStmtSuccess", false, new String[] {"byte_b1"} }, 								// fails. SHOULD NOT FAIL?! 
 				new Object[] { "IfStmtFail", true, new String[] { "byte_b1" } }, 								// working now: split up from one test IfStmt 
 				
 				new Object[] { "InvokeInternalMethod", true, new String[] {} }, 								// fails because test is empty

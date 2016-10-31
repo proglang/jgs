@@ -18,4 +18,36 @@ Week2:
 
 -- Todo: write external classes test using hand-instrumented external class. check and fix other tests.
 
--- Questoins: AssignmentLevel ==(?) seucirtyLevel? Global and Local PC?!
+# Questions: 
+- AssignmentLevel ==(?) seucirtyLevel? Global and Local PC?!
+- Is level.low() == level.bottom() ? My problem: Paper says no, IfStmtSuccess (or Nico.class) test says yes
+
+week 3:
+
+
+m(int i) {
+	int b0;
+	if(i > 0) {
+		b0 = i;
+	}
+}
+
+wir haben: localmap(bo) = Low, aber lpc = high. Ist error!
+Wollen aber: localmap(b0) = ?, und lpc = high.
+
+alternativ: b0 nicht aus lokalmap.
+
+für b0 sollte nur setLocal aufgerufen werden in assignArgumentToLocal oder in
+setLevelOfLocal, nicht aber in addLocal
+
+betrachte alle aufrufe von "getLevel"
+
+Im Moment: Haben localmap: String -> SecurityLevel
+Wollen eig: String -> Level ODER uninititalised
+	könnte level + uninit zusammenfassen als: PossibleLevel.
+
+PossibleLevel hat privates bool initialised.
+Dann methode: GetLevel: {if initialized, then ..; else throw}
+und methode: isInitialised() { return initialised; }
+
+Also mit neuer Klasse ist das besser!!

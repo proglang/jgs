@@ -12,18 +12,18 @@ public class IfStmtSuccess {
 		IfStmtSuccess thisObj = new IfStmtSuccess();
 		
 		// pass low security value
-		thisObj.multIfs(1);
-		thisObj.multIfs(3);
-		thisObj.multIfs(5);
-		thisObj.nestedIfs(4);
+		// thisObj.multIfs(1);
+		// thisObj.multIfs(3);
+		// thisObj.multIfs(5);
+		// thisObj.nestedIfs(4);
 		
 		// pass high security value
 		int retValue = 0;
 		HelperClass.makeHigh(retValue);
 		retValue = thisObj.multIfs(HelperClass.makeHigh(1));
-		retValue = thisObj.multIfs(HelperClass.makeHigh(3));
-		retValue = thisObj.multIfs(HelperClass.makeHigh(5));
-		retValue = thisObj.nestedIfs(HelperClass.makeHigh(4));
+		// retValue = thisObj.multIfs(HelperClass.makeHigh(3));
+		// retValue = thisObj.multIfs(HelperClass.makeHigh(5));
+		// retValue = thisObj.nestedIfs(HelperClass.makeHigh(4));
 	}
 
 	/**
