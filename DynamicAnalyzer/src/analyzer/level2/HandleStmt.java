@@ -7,6 +7,7 @@ import utils.logging.L2Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -381,7 +382,7 @@ public class HandleStmt {
 	 * @param arguments List of arguments
 	 */
 	public void storeArgumentLevels(String... arguments) {
-		logger.info("Store arguments " + arguments.toString() + " in LocalMap");
+		logger.info("Store arguments " + Arrays.toString(arguments) + " in LocalMap");
 		ArrayList<Object> levelArr = new ArrayList<Object>();
 		for (String el : arguments) {
 			handleStatementUtils.checkIfLocalExists(el);
