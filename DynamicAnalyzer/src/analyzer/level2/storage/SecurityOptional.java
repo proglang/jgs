@@ -26,7 +26,7 @@ public class SecurityOptional {
 
 	/**
 	 * get Security Level of Optional. Throw Exception if variable is uninitialised
-	 * @return 
+	 * @return Security Level of Optional
 	 */
 	public Object getSecurityLevel() {
 		if (!initialized) {
