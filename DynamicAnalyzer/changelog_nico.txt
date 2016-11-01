@@ -60,3 +60,6 @@ NOTES, week 3:
 	method is done
 - local PC, implemented as a stack, used to different-
 	iate between different ifs
+	
+Questions:
+- what are objectmac.actualArgumentsLevel

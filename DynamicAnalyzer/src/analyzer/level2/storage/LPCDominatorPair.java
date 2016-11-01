@@ -32,6 +32,6 @@ public class LPCDominatorPair {
 	 */
 	@Override
 	public String toString() { 
-		return secLevel.toString();
+		return secLevel.toString() + "@ID:" + postDominatorIdentity;
 	}
 }

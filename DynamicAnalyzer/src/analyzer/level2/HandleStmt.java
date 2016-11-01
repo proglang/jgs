@@ -224,6 +224,7 @@ public class HandleStmt {
 
 	/**
 	 * Add a local to LocalMap with default SecurityLevel LOW.
+	 * Used for declaration, e.g: "int i;"
 	 * @param signature signature of the local
 	 */
 	public void addLocal(String signature) {
@@ -428,20 +429,17 @@ public class HandleStmt {
 	}
 
 	/**
-	 * Set assignment-level to: join(local-level, assignment-level).
 	 * Join the level of the local to the assignment-level.
+	 * This possibly increases, never decreases, the assignment-level.
 	 * 
-	 * As far as i understand: This method is called when an assign happens.
-	 * We need to know the level of this assign, eg the programm counter: Are we
-	 * in a high-sec PC or not? This is what is found out here and transfered to
-	 * the output.
+	 * This method is called when an assign happens.
 	 * 
 	 * @param local signature of the local.
 	 * @return security-level of the local.
 	 */
 	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
 		Object localLevel = localmap.getLevel(local);
-		logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of local {1})",
+		logger.log(Level.INFO, "Set assignment-level to level {0} (local {1} is HIGH)",
 				new Object[] {localLevel, local });
 		objectmap.setAssignmentLevel(
 				handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(),
@@ -498,9 +496,11 @@ public class HandleStmt {
 	}
 	
 	/**
-	 * Set the level of a local to default security-level.
-	 * Checks if local's security-level is >= local PC, if not: Throws IllegalFlowException (via checkLocalPC method)
-	 * Probably is the security level of the right hand side of an assignment
+	 * Set the level of a local to default security-level. Called
+	 * on every assignment, and on initialization; but not on declaration.
+	 * Checks if local's security-level is >= local PC, if not: Throws IllegalFlowException
+	 * (via checkLocalPC method)
+	 * 
 	 * @param signature signature of the local
 	 * @return new security-level
 	 */

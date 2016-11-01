@@ -49,7 +49,6 @@ public class HandleStmtUtils {
 	 * @param signature signature of the local
 	 */
 	protected void checkLocalPC(String signature) {
-		logger.log(Level.FINEST, "--- checkLocalPC called ---");
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
@@ -164,6 +163,11 @@ public class HandleStmtUtils {
 	}
 	
 
+	/**
+	 * Check if given local exists in localmap. 
+	 * Throw InternalAanalyzerException if not.
+	 * @param signature
+	 */
 	protected void checkIfLocalExists(String signature) {
 		if (!localmap.contains(signature)) {
 			throw new InternalAnalyzerException("Missing local " 
