@@ -121,6 +121,15 @@ public class LocalMap {
 	}
 	
 	/**
+	 * Return local's initialized flag.
+	 * @param signature
+	 * @return true iff local is initialized
+	 */
+	public boolean checkIfInitialized(String signature) {
+		return localMap.get(signature).isInitialized();
+	}
+	
+	/**
 	 * Get the level of a local
 	 * @param signature The signature of a local.
 	 * @return The new securitylevel.

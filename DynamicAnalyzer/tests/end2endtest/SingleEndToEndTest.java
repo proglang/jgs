@@ -22,9 +22,9 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "IfStmtSuccess";
+	public String name = "Simple";
 
-	public boolean hasIllegalFlow = false;
+	public boolean hasIllegalFlow = true;
 
 	/**
 	 * Define the involved vars here. Involved vars are those that are present

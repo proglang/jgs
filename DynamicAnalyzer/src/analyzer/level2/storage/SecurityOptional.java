@@ -46,4 +46,8 @@ public class SecurityOptional {
 	public void initialize() {
 		initialized = true;
 	}
+	
+	public String toString() {
+		return initialized ? securityLevel.toString() : "Not-Init:" + securityLevel.toString();
+	}
 }

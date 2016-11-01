@@ -44,7 +44,7 @@ public class HandleStmtUtils {
 	//
 
 	/**
-	 * Check if level of given local is greater than localPC. If not,
+	 * For initialized locals, check if level of given local is greater than localPC. If not,
 	 * throw IllegalFlowException
 	 * @param signature signature of the local
 	 */
@@ -52,8 +52,15 @@ public class HandleStmtUtils {
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
-		Object level = localmap.getLevel(signature); 	// erstmal checken, ob das level überhaupt da ist.
-							// wenn level nicht da, ist der automatisch bestanden.
+		//check if local is initialized
+		if (!localmap.checkIfInitialized(signature)) {
+			logger.log(Level.INFO, "Local {0} has not yet been initialized", signature);
+			localmap.initializeLocal(signature);
+			// return;
+		}
+		
+		// the following check must only be executed if local is initialised
+		Object level = localmap.getLevel(signature); 
 		Object lpc = localmap.getLocalPC();
 		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC", 
 				new Object[] {signature, level, lpc });
