@@ -223,7 +223,7 @@ public class HandleStmt {
 	}
 
 	/**
-	 * Add a local to LocalMap with default SecurityLevel LOW.
+	 * Add an uninitialized local to LocalMap with default SecurityLevel LOW.
 	 * Used for declaration, e.g: "int i;"
 	 * @param signature signature of the local
 	 */
@@ -231,8 +231,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Add Local {0} with SecurityLevel.bottom() to LocalMap",
 				signature);
 		handleStatementUtils.checkThatLocalDoesNotExist(signature);
-		localmap.insertLocal(signature, SecurityLevel.bottom());	// möglich. trage NULL ein.
-																	// besser: Gar nicht erst einfügen, 
+		localmap.insertUninitializedLocal(signature);	// add uninit local with default sec-level bottom 
 	}
 
 	/**
@@ -242,6 +241,7 @@ public class HandleStmt {
 	 */
 	protected Object getLocalLevel(String signature) {
 		handleStatementUtils.checkIfLocalExists(signature);
+		localmap.initializeLocal(signature);
 		return localmap.getLevel(signature);
 	}
 
@@ -252,6 +252,7 @@ public class HandleStmt {
 	public void makeLocalHigh(String signature) {
 		logger.info("Set level of local " + signature + " to SecurityLevel.top()");
 		handleStatementUtils.checkIfLocalExists(signature);
+		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, SecurityLevel.top());
 		logger.info("New securitylevel of local "
 				+ signature + " is " + localmap.getLevel(signature));
@@ -341,6 +342,8 @@ public class HandleStmt {
 		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.setLevel(signature, handleStatementUtils.joinWithLPC(
 				objectmap.getArgLevelAt(pos)));
+		// if not initialized, initialize it:
+		localmap.initializeLocal(signature);
 		return localmap.getLevel(signature);
 	}
 
@@ -387,6 +390,7 @@ public class HandleStmt {
 		ArrayList<Object> levelArr = new ArrayList<Object>();
 		for (String el : arguments) {
 			handleStatementUtils.checkIfLocalExists(el);
+			localmap.initializeLocal(el);
 			levelArr.add(localmap.getLevel(el));
 		}
 		objectmap.setActualArguments(levelArr);
@@ -438,6 +442,7 @@ public class HandleStmt {
 	 * @return security-level of the local.
 	 */
 	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
+		localmap.initializeLocal(local);
 		Object localLevel = localmap.getLevel(local);
 		logger.log(Level.INFO, "Set assignment-level to level {0} (local {1} is HIGH)",
 				new Object[] {localLevel, local });
@@ -491,6 +496,7 @@ public class HandleStmt {
 			Object securitylevel) {
 		logger.log(Level.INFO, "Set level of local {0} to {1}", 
 				new Object[] {signature, securitylevel});
+		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, securitylevel);
 		return localmap.getLevel(signature);
 	}
@@ -519,6 +525,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Set level of local {0} to {1}",
 						new Object[] {signature, newSecValue});
 		
+		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, newSecValue);
 		logger.log(Level.INFO, "New level of local {0} is {1} ",
 				new Object[] {signature, localmap.getLevel(signature)});

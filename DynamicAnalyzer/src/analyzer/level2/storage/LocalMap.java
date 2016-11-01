@@ -110,6 +110,17 @@ public class LocalMap {
 	}
 	
 	/**
+	 * Initialize a local. Check if initialized is actually redundant, but logger needs it.
+	 * @param signature
+	 */
+	public void initializeLocal(String signature) {
+		if (!localMap.get(signature).isInitialized()) {
+			logger.info("Local " + signature + " initialized");
+			localMap.get(signature).initialize();
+		}
+	}
+	
+	/**
 	 * Get the level of a local
 	 * @param signature The signature of a local.
 	 * @return The new securitylevel.
@@ -119,6 +130,7 @@ public class LocalMap {
 			throw new InternalAnalyzerException("Expected local " 
 			+ signature + " not found in LocalMap");
 		}
+		initializeLocal(signature);
 		return localMap.get(signature).getSecurityLevel();
 	}
 	
