@@ -219,7 +219,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap",
 				new Object[] { signature, level });
 		handleStatementUtils.checkThatLocalDoesNotExist(signature);
-		localmap.insertInitializedLocal(signature, level);
+		localmap.insertLocal(signature, level);
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Add Local {0} with SecurityLevel.bottom() to LocalMap",
 				signature);
 		handleStatementUtils.checkThatLocalDoesNotExist(signature);
-		localmap.insertInitializedLocal(signature, SecurityLevel.bottom());	// möglich. trage NULL ein.
+		localmap.insertLocal(signature, SecurityLevel.bottom());	// möglich. trage NULL ein.
 																	// besser: Gar nicht erst einfügen, 
 	}
 

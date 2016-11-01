@@ -89,7 +89,7 @@ public class LocalMap {
 	 * @param signature The signature of the local.
 	 * @param securityLevel Its securitylevel.
 	 */
-	public void insertInitializedLocal(String signature, Object securityLevel) {
+	public void insertLocal(String signature, Object securityLevel) {
 		localMap.put(signature, new SecurityOptional(securityLevel, true) );
 	}
 	
@@ -97,8 +97,16 @@ public class LocalMap {
 	 * Insert a new local into localMap with default security-level.
 	 * @param signature The signature of the local.
 	 */
-	public void insertInitializedLocal(String signature) {
+	public void insertLocal(String signature) {
 		localMap.put(signature, new SecurityOptional(SecurityLevel.bottom(), true) );
+	}
+
+	/**
+	 * Insert an uninitialized local into localMap with default security-level. 
+	 * @param signature
+	 */
+	public void insertUninitializedLocal(String signature) {
+		localMap.put(signature, new SecurityOptional(SecurityLevel.bottom(), false));
 	}
 	
 	/**

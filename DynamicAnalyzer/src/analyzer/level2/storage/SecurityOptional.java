@@ -39,4 +39,11 @@ public class SecurityOptional {
 	public boolean isInitialized() {
 		return initialized;
 	}
+
+	/**
+	 * Set internal initialized flag to true
+	 */
+	public void initialize() {
+		initialized = true;
+	}
 }

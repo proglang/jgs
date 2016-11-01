@@ -19,9 +19,9 @@ public class LocalMapTest {
 	@Test
 	public void testInsertElementStringLevel() {
 		LocalMap lm = new LocalMap();
-		lm.insertInitializedLocal("a1", SecurityLevel.bottom());
-		lm.insertInitializedLocal("a2");
-		lm.insertInitializedLocal("a3", SecurityLevel.top());
+		lm.insertLocal("a1", SecurityLevel.bottom());
+		lm.insertLocal("a2");
+		lm.insertLocal("a3", SecurityLevel.top());
 		assertSame(SecurityLevel.bottom(), lm.getLevel("a1"));
 		assertSame(SecurityLevel.bottom(), lm.getLevel("a2"));
 		assertSame(SecurityLevel.top(), lm.getLevel("a3"));	
@@ -35,7 +35,7 @@ public class LocalMapTest {
 	@Test
 	public void testGetLevel() {
 		LocalMap lm = new LocalMap();
-		lm.insertInitializedLocal("a");
+		lm.insertLocal("a");
 		assertSame(SecurityLevel.bottom(), lm.getLevel("a"));
 	}
 

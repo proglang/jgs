@@ -23,6 +23,7 @@ import analyzer.level2.WhileStmtFail;
 import analyzer.level2.WhileStmtSuccess;
 import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
+import analyzer.level2.storage.SecurityOptionalTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -36,7 +37,6 @@ import end2endtest.SingleEndToEndTest;
 @RunWith(Suite.class)
 @SuiteClasses({ 
     // Tests for public HandleStmt methods
-    LocalMapTest.class, 
     AssignLocalsSuccess.class,
     AssignLocalsFail.class,
     AssignFieldsSuccess.class,
@@ -65,6 +65,9 @@ import end2endtest.SingleEndToEndTest;
     // Tests for protected HandleStmt methods
     ObjectMapTest.class,
     LocalMapTest.class,
+    
+    // Test for SecurityOptinal Container
+    SecurityOptionalTest.class,
 
     // Tests for valid bytecode of testclasses
     AllEndToEndTests.class,
