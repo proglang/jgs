@@ -512,6 +512,8 @@ public class HandleStmt {
 	 */
 	public Object setLevelOfLocal(String signature) {
 		
+		// first, check if no IllegalFlow
+		handleStatementUtils.checkLocalPC(signature);
 		
 		// Then, calc new level:
 		// for assignments like a = x + y, we need to calculate the
@@ -527,9 +529,7 @@ public class HandleStmt {
 		localmap.setLevel(signature, newSecValue);
 		logger.log(Level.INFO, "New level of local {0} is {1} ",
 				new Object[] {signature, localmap.getLevel(signature)});
-		
-		// first, check if no IllegalFlow
-		handleStatementUtils.checkLocalPC(signature);
+
 		
 		objectmap.clearAssignmentLevel();
 		return localmap.getLevel(signature);

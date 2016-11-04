@@ -1,7 +1,5 @@
 package main.testclasses;
 
-import com.sun.org.apache.xerces.internal.impl.dv.xs.YearDV;
-
 import utils.analyzer.HelperClass;
 
 
@@ -13,8 +11,9 @@ public class Simple {
 	 */
 	public static void main(String[] args) {
 		int x = HelperClass.makeHigh(3);
-		int y = HelperClass.makeLow(3);
-		if (x > 0) {
+		int y;
+		if (x > 0) {	// int y is not initialised, thus there is no check
+						// if high_x flows into low_y
 			y = x;
 		}
 	}

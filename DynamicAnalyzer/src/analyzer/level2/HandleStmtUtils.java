@@ -56,7 +56,7 @@ public class HandleStmtUtils {
 		if (!localmap.checkIfInitialized(signature)) {
 			logger.log(Level.INFO, "Local {0} has not yet been initialized", signature);
 			localmap.initializeLocal(signature);
-			// return;
+			return;
 		}
 		
 		// the following check must only be executed if local is initialised

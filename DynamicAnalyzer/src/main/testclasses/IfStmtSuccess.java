@@ -33,13 +33,13 @@ public class IfStmtSuccess {
 	 * @return Calculated value
 	 */
 	public int multIfs(int x) {	// Gets compiled to:
-		if (x < 0) {			// if(x < 0) {
+		if (x < 0) {			// if (x < 0) {
 			x = 0;				//		b1 = 0;
 		} else if (x < 2) {		// } else if (x < 2) {
 			x = 2;				//		b1 = 2;	
 		} else if (x < 4) {		// } ..
 			x = 4;				//
-		} else {				// Tricky: b1 is uninitialised, throws IlFlowEx
+		} else {				// Tricky: b1 is uninitialized, throws IlFlowEx
 			x = 6;
 		}
 		return x;

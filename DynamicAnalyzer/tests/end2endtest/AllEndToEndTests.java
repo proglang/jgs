@@ -79,6 +79,11 @@ public class AllEndToEndTests {
 				
 				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								// rename for consistency
 				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						// failed because no illegal flow was supplied
+			
+				new Object[] { "PrivateVariableSuccess", false, new String[] {} }, 
+				new Object[] { "PrivateVariableFail", true, new String[] {"int_i0"} },
+				// PrivateVariableFail and PrintMethodReturn are nearly the same! but behave differently!!
+				new Object[] { "PrintMethodReturn", true, new String[] {"int_i2"} },							// does not fail even though it should!!
 				
 				new Object[] { "Simple", true, new String[] { "java.lang.String_r3" } },
 				
@@ -89,7 +94,7 @@ public class AllEndToEndTests {
 				new Object[] { "SwitchStmtFail", true,new String[] { "int_i4" } }, 
 				
 				new Object[] { "WhileLoop", false, new String[] {} }, 
-				new Object[] { "WhileLoopFail", true, new String[] { "int_$i3" } });
+				new Object[] { "WhileLoopFail", true, new String[] { "int_i1" } });
 	}
 
 	@Test
