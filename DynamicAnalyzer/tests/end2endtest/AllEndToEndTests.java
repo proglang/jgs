@@ -81,9 +81,10 @@ public class AllEndToEndTests {
 				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						// failed because no illegal flow was supplied
 			
 				new Object[] { "PrivateVariableSuccess", false, new String[] {} }, 
-				new Object[] { "PrivateVariableFail", true, new String[] {"int_i0"} },
-				// PrivateVariableFail and PrintMethodReturn are nearly the same! but behave differently!!
-				new Object[] { "PrintMethodReturn", true, new String[] {"int_i2"} },							// does not fail even though it should!!
+				
+				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
+				new Object[] { "SystemOut1", true, new String[] {"int_i0"} },
+				new Object[] { "SystemOut2", true, new String[] {"int_i0"} },							// does not fail even though it should!!
 				
 				new Object[] { "Simple", true, new String[] { "java.lang.String_r3" } },
 				

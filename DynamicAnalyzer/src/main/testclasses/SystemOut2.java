@@ -7,7 +7,7 @@ import utils.analyzer.HelperClass;
  * @author Nicolas Müller
  *
  */
-public class PrintMethodReturn {
+public class SystemOut2 {
 	
 	public static void main(String[] args) {
 		System.out.println(HelperClass.makeHigh(3));
