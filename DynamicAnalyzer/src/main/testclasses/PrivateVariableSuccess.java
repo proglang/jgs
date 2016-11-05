@@ -10,6 +10,7 @@ import utils.analyzer.HelperClass;
  */
 public class PrivateVariableSuccess {
 	public static void main(String[] args) {
+		int z = HelperClass.makeHigh(4);
 		int x = HelperClass.makeHigh(3);
 		int y = HelperClass.makeLow(2);
 		
@@ -20,16 +21,26 @@ public class PrivateVariableSuccess {
 			y =+ 42;
 		}
 		
-		int secret = func(x,  y);
+		// assign a high-sec variable to a low-sec, private one multiple times
+		// gets called multpile times: Check the output!
+		int low = func(x,  y);
+		low = func(x,  low);
+		low = func(x,  z);
+		
+		
 	}
 	
 	// and the implicit flow outside main, using func(int x, int y)
 	public static int func(int x, int y) {
 		if (x > 0) { 
-			y =+ x;
+			y = x;
 		} else {
-			y =+ 42;
+			y = 42;
 		}
+		System.out.println("Func called");
 		return y;
 	}
+	
+	// NullPointer if this method is not commented out?!
+	
 }
