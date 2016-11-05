@@ -52,7 +52,7 @@ public class AllEndToEndTests {
 				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } }, 	// set involved variable
 				new Object[] { "AccessFieldsOfObjectsSuccess", false, new String[] {} },
 				
-				new Object[] { "ArithmeticExpressionsFail", true, new String[] {  } }, 							// weird test	
+				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "int_i0" } }, 							// weird test	
 				new Object[] { "ArithmeticExpressionsSuccess", false, new String[] {} },
 				
 				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					// working now: rewrote non-expressive (?!) test
