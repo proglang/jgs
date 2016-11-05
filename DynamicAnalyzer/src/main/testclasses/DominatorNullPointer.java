@@ -1,9 +1,6 @@
-package main.testclasses;
-
 import utils.analyzer.HelperClass;
 
-
-public class SimpleDebug {
+public class DominatorNullPointer {
 	public static void main(String[] args) {
 		int secret = HelperClass.makeHigh(42);
 		int y = returnInt(secret);

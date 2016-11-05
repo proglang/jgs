@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "PrivateVariableSuccess";
+	public String name = "SimpleDebug";
 
 	public boolean hasIllegalFlow = false;
 

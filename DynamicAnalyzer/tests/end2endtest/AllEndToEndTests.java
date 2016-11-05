@@ -61,6 +61,8 @@ public class AllEndToEndTests {
 				// new Object[] { "ExtClassesFail", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
 				// new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// fails: same
 				
+				// new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
+				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },								// failed because variable was missing
 				
