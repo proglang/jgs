@@ -5,13 +5,15 @@ import utils.analyzer.HelperClass;
 public class SwitchStmtFail {
 
 	public static void main(String[] args) {
-		simpleLookupSwitch(2);
-		simpleTableSwitch(3);
+		int r = simpleLookupSwitch(1);	// what if we call it with arg 2?!
+		int q = simpleTableSwitch(3);
+		System.out.println(r);
+		System.out.println(q);
 	}
 	
 	
 	/**
-	 * Simple llokup-switch-testcase.
+	 * Simple lokup-switch-testcase.
 	 * @param x input
 	 * @return output
 	 */
@@ -20,7 +22,7 @@ public class SwitchStmtFail {
 		x = HelperClass.makeHigh(x);
 		switch (x) {
 		  case 1: 
-			  y = x++; 
+			  y = ++x; 
 			  break;
 		  case 100: 
 			  y--; 

@@ -19,6 +19,17 @@ Week2:
 -- Todo: write external classes test using hand-instrumented external class. check and fix other tests.
 
 Week 3:
+	
+Questions:
+- what are objectmac.actualArgumentsLevel
+- SimpleSwitchStmtFail: Should throw IllegalFlowEx, right?!
+- SimpleSwitchStmtFail: What if we set argument in first method to 2? Can DA possibly
+  catch illegal flow?!
+
+Bugs:
+- See ImplicitFlow{2, 3}
+- See SystemOut1 and SystemOut2
+
 Notes:
 - check if illegal flow (via local-sec-value > localPC) is contained in
 	setLevelOfLocal method. I find this confusing, and not adhering to
@@ -27,9 +38,3 @@ Notes:
 	method is done
 - local PC, implemented as a stack, used to different-
 	iate between different ifs
-	
-Questions:
-- what are objectmac.actualArgumentsLevel
-
-Bugs:
-- 
