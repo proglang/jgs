@@ -14,6 +14,8 @@ public class PrivateVariableSuccess {
 		int y;
 		if (x > 0) { 
 			y = x;
+		} else {
+			y = 42;
 		}
 	}
 }
