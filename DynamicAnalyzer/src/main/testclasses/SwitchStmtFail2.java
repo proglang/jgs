@@ -10,7 +10,8 @@ import utils.analyzer.HelperClass;
 public class SwitchStmtFail2 {
 
 	public static void main(String[] args) {
-		simpleLookupSwitchVoid(1); // what if we call it with arg 2?!
+		simpleLookupSwitchVoid(2); // what if we call it with arg 2?!
+								   // The DA throws IFExcep with x = 2;
 	}
 	
 	/**

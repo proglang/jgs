@@ -11,11 +11,25 @@ import utils.analyzer.HelperClass;
 public class PrivateVariableSuccess {
 	public static void main(String[] args) {
 		int x = HelperClass.makeHigh(3);
-		int y;
+		int y = HelperClass.makeLow(2);
+		
+		// we test both the implicit flow inside main (below)
 		if (x > 0) { 
-			y = x;
+			y =+ x;
 		} else {
-			y = 42;
+			y =+ 42;
 		}
+		
+		int secret = func(x,  y);
+	}
+	
+	// and the implicit flow outside main, using func(int x, int y)
+	public static int func(int x, int y) {
+		if (x > 0) { 
+			y =+ x;
+		} else {
+			y =+ 42;
+		}
+		return y;
 	}
 }
