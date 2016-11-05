@@ -19,17 +19,22 @@ Week2:
 -- Todo: write external classes test using hand-instrumented external class. check and fix other tests.
 
 Week 3:
+Fazit => Was wollen wir?
+a) Non-interference: High-Values dürfen nie in low-sec variablen landen!
+b) Kein Output von High-Values über System.out.println() 
 	
 Questions:
 - what are objectmac.actualArgumentsLevel
 - SimpleSwitchStmtFail: Should throw IllegalFlowEx, right?!
 - SimpleSwitchStmtFail: What if we set argument in first method to 2? Can DA possibly
   catch illegal flow?!
+- SimpleWhileLoop: Why exception?!
 
 Bugs:
 - See ImplicitFlow{2, 3}
 - See SystemOut1 and SystemOut2
 - SwitchStmtFail{1, 2}
+- NullPointer Exception: See DominatorNullPointer end2end test
 
 Notes:
 - check if illegal flow (via local-sec-value > localPC) is contained in

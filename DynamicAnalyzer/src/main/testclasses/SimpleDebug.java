@@ -5,16 +5,13 @@ import utils.analyzer.HelperClass;
 
 public class SimpleDebug {
 	public static void main(String[] args) {
-		int secret = HelperClass.makeHigh(42);
-		int y = returnInt(secret);
-		
+		returnsHigh(3);
 	}
 	
-	public static int returnInt(int x) {
-		if (x > 0) {
-			return x;
-		} else {
-			return 5;
-		}
+	public static int returnsHigh(int i) {
+		i = HelperClass.makeHigh(i);
+		return i;
 	}
+	
+	
 }
