@@ -68,7 +68,7 @@ public class AllEndToEndTests {
 				// new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails, same reason
 				
 				new Object[] { "IfStmtSuccess", false, new String[] {"byte_b1"} }, 								// fails. SHOULD NOT FAIL?! 
-				new Object[] { "IfStmtFail", true, new String[] { "byte_b1" } }, 								// working now: split up from one test IfStmt 
+				new Object[] { "IfStmtFail", true, new String[] { "int_i0" } }, 								// working now: split up from one test IfStmt 
 				
 				// new Object[] { "InvokeInternalMethod", true, new String[] {} }, 								// fails because test is empty
 				new Object[] { "InvokeLibMethod", true, new String[] { "int_i0" } },

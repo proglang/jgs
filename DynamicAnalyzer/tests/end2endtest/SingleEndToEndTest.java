@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "FieldWriteFail";
+	public String name = "IfStmtFail";
 
 	public boolean hasIllegalFlow = true;
 
@@ -38,7 +38,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"};
+	public String[] involvedVars = new String[] {"int_i0"};
 
 	Logger logger = L1Logger.getLogger();
 
