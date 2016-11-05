@@ -29,6 +29,7 @@ Questions:
 Bugs:
 - See ImplicitFlow{2, 3}
 - See SystemOut1 and SystemOut2
+- SwitchStmtFail{1, 2}
 
 Notes:
 - check if illegal flow (via local-sec-value > localPC) is contained in

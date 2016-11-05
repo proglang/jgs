@@ -101,8 +101,10 @@ public class AllEndToEndTests {
 				new Object[] { "StaticMethodsSuccess", false, new String[] {} }, 
 				// new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
 				
+				// SwitchStmtFail{1, 2} are very similar, but behave differently
 				new Object[] { "SwitchStmt", false, new String[] {} },
-				new Object[] { "SwitchStmtFail", true,new String[] { "int_i4" } }, 
+				new Object[] { "SwitchStmtFail1", true, new String[] { "int_i2" } }, 
+				new Object[] { "SwitchStmtFail2", true, new String[] { "int_i2" } },
 				
 				new Object[] { "WhileLoop", false, new String[] {} }, 
 				new Object[] { "WhileLoopFail", true, new String[] { "int_i1" } });
