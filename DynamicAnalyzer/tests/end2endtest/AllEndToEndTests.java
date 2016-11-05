@@ -75,7 +75,8 @@ public class AllEndToEndTests {
 				
 				// Implicit flow from high-if guard to low-sec return
 				new Object[] { "ImplicitFlow1", true, new String[] {"byte_b1"} },
-				new Object[] { "ImplicitFlow2", true, new String[] {"byte_b1"} },
+				new Object[] { "ImplicitFlow2", true, new String[] {"java.lang.String_$r7"} },
+				new Object[] { "ImplicitFlow3", true, new String[] {"java.lang.String_r1"} },
 				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
