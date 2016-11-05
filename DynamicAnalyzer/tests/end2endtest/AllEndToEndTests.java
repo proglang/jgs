@@ -72,6 +72,11 @@ public class AllEndToEndTests {
 				
 				new Object[] { "InvokeInternalMethod", true, new String[] {} }, 								// fails because test is empty
 				new Object[] { "InvokeLibMethod", true, new String[] { "int_i0" } },
+				
+				// Implicit flow from high-if guard to low-sec return
+				new Object[] { "ImplicitFlow1", true, new String[] {"byte_b1"} },
+				new Object[] { "ImplicitFlow2", true, new String[] {"byte_b1"} },
+				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
 				new Object[] { "MulArray", false, new String[] {} },
@@ -80,13 +85,17 @@ public class AllEndToEndTests {
 				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								// rename for consistency
 				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						// failed because no illegal flow was supplied
 			
+				// This is a collection of expressions that are not currently supported
+				// new Object[] { "NotSupported", false, new String[] {} }, 
+				
 				new Object[] { "PrivateVariableSuccess", false, new String[] {} }, 
 				
 				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
 				new Object[] { "SystemOut1", true, new String[] {"int_i0"} },
 				new Object[] { "SystemOut2", true, new String[] {"int_i0"} },							// does not fail even though it should!!
 				
-				new Object[] { "Simple", true, new String[] { "java.lang.String_r3" } },
+				// SimpleDebug is the test to try out stuff with - sort of a playground
+				new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 				
 				new Object[] { "StaticMethodsSuccess", false, new String[] {} }, 
 				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
