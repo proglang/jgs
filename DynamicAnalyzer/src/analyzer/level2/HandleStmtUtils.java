@@ -44,8 +44,8 @@ public class HandleStmtUtils {
 	//
 
 	/**
-	 * For initialized locals, check if level of given local is greater than localPC. If not,
-	 * throw IllegalFlowException
+	 * NSU policy: For initialized locals, check if level of given local is greater 
+	 * than localPC. If it's not, throw IllegalFlowException
 	 * @param signature signature of the local
 	 */
 	protected void checkLocalPC(String signature) {

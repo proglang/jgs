@@ -80,6 +80,8 @@ public class AllEndToEndTests {
 				new Object[] { "ImplicitFlow2", true, new String[] {"java.lang.String_$r7"} },
 				new Object[] { "ImplicitFlow3", true, new String[] {"java.lang.String_r1"} },
 				
+				new Object[] { "NSUPolicy", true, new String[] {"int_i3"} },
+				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
 				new Object[] { "MulArray", false, new String[] {} },

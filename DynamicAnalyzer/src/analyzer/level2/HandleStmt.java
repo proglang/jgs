@@ -511,15 +511,15 @@ public class HandleStmt {
 	/**
 	 * Set the level of a local to default security-level. Called
 	 * on every assignment, and on initialization; but not on declaration.
-	 * Checks if local's security-level is >= local PC, if not: Throws IllegalFlowException
-	 * (via checkLocalPC method)
+	 * NSU policy: Check if local's security-level is >= local PC, if not: 
+	 * Throws IllegalFlowException (via checkLocalPC method)
 	 * 
 	 * @param signature signature of the local
 	 * @return new security-level
 	 */
 	public Object setLevelOfLocal(String signature) {
 		
-		// first, check if no IllegalFlow
+		// first, check NSU policy
 		handleStatementUtils.checkLocalPC(signature);
 		
 		// Then, calc new level:

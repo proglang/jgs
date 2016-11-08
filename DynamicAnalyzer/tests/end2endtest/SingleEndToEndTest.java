@@ -22,9 +22,9 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "SystemOut2";
+	public String name = "NSUPolicy";
 
-	public boolean hasIllegalFlow = false;
+	public boolean hasIllegalFlow = true;
 
 	/**
 	 * Define the involved vars here. Involved vars are those that are present
@@ -38,7 +38,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] {"int_i2"};
+	public String[] involvedVars = new String[] {"int_i3"};
 
 	Logger logger = L1Logger.getLogger();
 
