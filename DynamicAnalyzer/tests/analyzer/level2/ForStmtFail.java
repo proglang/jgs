@@ -16,7 +16,41 @@ public class ForStmtFail {
 	public void init() {
 		HandleStmt.init();
 	}
+	
+	/**
+	 * Would be an IllegalFlowException because of NSU, but since int res is
+	 * not initialized, it's not. See also forStmtLocalTestFail.
+	 */
+	@SuppressWarnings("unused")
+	@Test
+	public void forStmtLocalTestSuccess() {
+		
+		logger.log(Level.INFO, "FOR STMT LOCAL TEST FAIL STARTED");
+		
+		HandleStmt hs = new HandleStmt();
+		hs.addLocal("int_i");
+		hs.makeLocalHigh("int_i");
+		hs.addLocal("int_res");
+		
+		int res = 0;
+		
+		hs.checkCondition("123", "int_i");
+		for (int i = 0;i < 1; i++) {
+			
+			hs.setLevelOfLocal("int_res");
+			res = 2;
+			
+			hs.exitInnerScope("123");
+		}
+		
+		hs.close();
+		
+		logger.log(Level.INFO, "FOR STMT LOCAL TEST FAIL FINISHED");
+	}
 
+	/**
+	 * Same test as forStmtLocalTestSuccess, but this time, int res gets initialized.
+	 */
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalFlowException.class)
 	public void forStmtLocalTestFail() {
@@ -29,6 +63,8 @@ public class ForStmtFail {
 		hs.addLocal("int_res");
 		
 		int res = 0;
+		
+		hs.initializeVariable("int_res");
 		
 		hs.checkCondition("123", "int_i");
 		for (int i = 0;i < 1; i++) {

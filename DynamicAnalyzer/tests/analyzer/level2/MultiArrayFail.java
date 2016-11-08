@@ -20,7 +20,9 @@ public class MultiArrayFail {
 	}
 	
 
-
+	/**
+	 * NSU IFExept. Test with arrays.
+	 */
 	@Test(expected = IllegalFlowException.class)
 	public void readArray() {
 		
@@ -41,6 +43,7 @@ public class MultiArrayFail {
 		String[][] arr = new String[2][];
 		hs.addArrayToObjectMap(arr);
 		hs.addLocal("String[][]_arr");
+		
 		
 		
 		String[] inner1 = new String[1];
@@ -73,9 +76,11 @@ public class MultiArrayFail {
 		
 		hs.addLocal("String_x");
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(tmp, Integer.toString(0));
-		hs.setLevelOfLocal("String_x");
+		
 		@SuppressWarnings("unused")
 		String x = tmp[0];
+		hs.initializeVariable("String_x");		// Comment out to remove NSU IFExept
+		hs.setLevelOfLocal("String_x");			// IllegalFlowException thrown here, NSU
 		
 		hs.popLocalPC(123);
 		hs.close();
