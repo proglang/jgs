@@ -185,6 +185,14 @@ public class HandleStmt {
 		handleStatementUtils.checkIfObjectExists(object);
 		return objectmap.getFieldLevel(object, signature);
 	}
+	
+	/**
+	 * Initialize a given variable
+	 * @param signature	Name of the variable
+	 */
+	public void initializeVariable(String signature) {
+		localmap.initializeLocal(signature);
+	}
 
 	/**
 	 * Set the level of a field to SecurityLevel.top().
@@ -444,11 +452,10 @@ public class HandleStmt {
 	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
 		localmap.initializeLocal(local);
 		Object localLevel = localmap.getLevel(local);
-		logger.log(Level.INFO, "Set assignment-level to level {0} (local {1} is HIGH)",
-				new Object[] {localLevel, local });
 		objectmap.setAssignmentLevel(
 				handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(),
 				localLevel));	
+		logger.log(Level.INFO, "Set assignment-level to level "+ objectmap.getAssignmentLevel() );
 		return objectmap.getAssignmentLevel();
 	}
 

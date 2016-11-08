@@ -16,7 +16,7 @@ public class PrivateVariableSuccess {
 		
 		// we test both the implicit flow inside main (below)
 		if (x > 0) { 
-			y =+ x;
+			y =+ x;	//y wird hier high (fluss - sensitivität)
 		} else {
 			y =+ 42;
 		}

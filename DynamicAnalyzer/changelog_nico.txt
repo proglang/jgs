@@ -19,22 +19,22 @@ Week2:
 -- Todo: write external classes test using hand-instrumented external class. check and fix other tests.
 
 Week 3:
+Note: All test auskommentiert, die sicher nichts mit akt. Problemstellung zu tun haben
+
 Fazit => Was wollen wir?
 a) Non-interference: High-Values dürfen nie in low-sec variablen landen!
 b) Kein Output von High-Values über System.out.println() 
 	
-Questions:
-- what are objectmac.actualArgumentsLevel
-- SimpleSwitchStmtFail: Should throw IllegalFlowEx, right?!
-- SimpleSwitchStmtFail: What if we set argument in first method to 2? Can DA possibly
-  catch illegal flow?!
-- SimpleWhileLoop: Why exception?!
-
 Bugs:
 - See ImplicitFlow{2, 3}
-- See SystemOut1 and SystemOut2
+- See SystemOut1 and SystemOut2		(problem not caused by initialize - present even w/o initi.)
 - SwitchStmtFail{1, 2}
 - NullPointer Exception: See DominatorNullPointer end2end test
+	
+Questions:
+- what are objectmac.actualArgumentsLevel
+- SimpleWhileLoop: Why IllegalFlowException?!
+
 
 Notes:
 - check if illegal flow (via local-sec-value > localPC) is contained in
@@ -44,3 +44,8 @@ Notes:
 	method is done
 - local PC, implemented as a stack, used to different-
 	iate between different ifs
+	
+	
+None-sensitive upgrade: (checkPC...)
+- system verliert informationen (ist theoretische beschränkung)
+- wirft vorsorglich fehler
