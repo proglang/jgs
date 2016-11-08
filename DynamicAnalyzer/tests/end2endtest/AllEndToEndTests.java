@@ -52,27 +52,27 @@ public class AllEndToEndTests {
 				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } }, 	// set involved variable
 				new Object[] { "AccessFieldsOfObjectsSuccess", false, new String[] {} },
 				
-				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "int_i0" } }, 							// weird test	
+				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "int_i0" } }, 						
 				new Object[] { "ArithmeticExpressionsSuccess", false, new String[] {} },
 				
 				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					// working now: rewrote non-expressive (?!) test
 				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									// working now: rewritten (was one testfile ExtClasses)
 				
-				// new Object[] { "ExtClassesFail", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
-				// new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// fails: same
+				new Object[] { "ExtClassesFail", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
+				new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// fails: same
 				
-				// new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
+				//new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },								// failed because variable was missing
 				
-				// new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
-				// new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails, same reason
+				new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
+				new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails, same reason
 				
 				new Object[] { "IfStmtSuccess", false, new String[] {"byte_b1"} }, 								// fails. SHOULD NOT FAIL?! 
 				new Object[] { "IfStmtFail", true, new String[] { "int_i0" } }, 								// working now: split up from one test IfStmt 
 				
-				// new Object[] { "InvokeInternalMethod", true, new String[] {} }, 								// fails because test is empty
+				new Object[] { "InvokeInternalMethod", true, new String[] {} }, 								// fails because test is empty
 				new Object[] { "InvokeLibMethod", true, new String[] { "int_i0" } },
 				
 				// Implicit flow from high-if guard to low-sec return
@@ -103,7 +103,7 @@ public class AllEndToEndTests {
 				new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 				
 				new Object[] { "StaticMethodsSuccess", false, new String[] {} }, 
-				// new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
+				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently
 				new Object[] { "SwitchStmt", false, new String[] {} },
