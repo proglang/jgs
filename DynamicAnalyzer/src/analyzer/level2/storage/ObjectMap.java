@@ -14,11 +14,15 @@ import java.util.LinkedList;
 
 /**
  * The ObjectMap holds all objects which are created in the analyzed code. 
- * To each object belongs a HashMap with the SercurityLevel of the respective fields.
- * The ObjectMap should never used directly. For each action exists an appropriate 
- * method in {@link analyzer.level2.HandleStmt}.
+ * To each object belongs a HashMap with the SercurityLevel of the respective 
+ * fields.
+ * The ObjectMap should never used directly. For each action exists an 
+ * appropriate method in {@link analyzer.level2.HandleStmt}.
  * Additionally the ObjectMap holds the SecurityLevels of the arguments and 
  * return variable of the least recently called method.
+ * 
+ * If we analyze an assignment, assignmentStmtLevel accumulates the security level 
+ * of the right-hand-side of the current assignment.
  * 
  * @author Regina König
  * @version 1.0
@@ -259,7 +263,8 @@ public class ObjectMap{
 	}
 
 	/**
-	 * Get the security-level of the actual assign statement.
+	 * Get the security-level of the actual assign statement. the assignmentLevel 
+	 * accumulates the security level of the right-hand-side of the current assignment.
 	 * @param securityLevel the security-level
 	 */
 	public Object getAssignmentLevel() {

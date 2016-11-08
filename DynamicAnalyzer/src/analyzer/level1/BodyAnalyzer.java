@@ -32,6 +32,10 @@ import java.util.logging.Logger;
  */
 public class BodyAnalyzer extends BodyTransformer{
 
+	/**
+	 * internalTransform is an internal soot method, which is called somewhere along the way.
+	 * for us, it serves as an entry point to the instrumentation process
+	 */
 	@Override
 	protected void internalTransform(Body arg0, String arg1,
 				@SuppressWarnings("rawtypes") Map arg2) {

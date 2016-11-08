@@ -2,8 +2,11 @@ package utils.analyzer;
 
 /**
  * Class to set the security-level of locals, fields and array-fields.
- * Note, that the return value must be assigned to the original value,
+ * Note that the return value must be assigned to the original value,
  * otherwise the security-level won't be assigned to the original field.
+ * 
+ * This method itself does not do much, but its existence allows the jimple
+ * injector to inject appropriate code.
  * @author koenigr
  */
 public class HelperClass {

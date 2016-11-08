@@ -18,4 +18,34 @@ Week2:
 
 -- Todo: write external classes test using hand-instrumented external class. check and fix other tests.
 
--- Questoins: AssignmentLevel ==(?) seucirtyLevel? Global and Local PC?!
+Week 3:
+Note: All test auskommentiert, die sicher nichts mit akt. Problemstellung zu tun haben
+
+Fazit => Was wollen wir?
+a) Non-interference: High-Values dürfen nie in low-sec variablen landen!
+b) Kein Output von High-Values über System.out.println() 
+	
+Bugs:
+- See ImplicitFlow{2, 3}
+- See SystemOut1 and SystemOut2		(problem not caused by initialize - present even w/o initi.)
+- SwitchStmtFail{1, 2}
+- NullPointer Exception: See DominatorNullPointer end2end test
+	
+Questions:
+- what are objectmac.actualArgumentsLevel
+- SimpleWhileLoop: Why IllegalFlowException?!
+
+
+Notes:
+- check if illegal flow (via local-sec-value > localPC) is contained in
+	setLevelOfLocal method. I find this confusing, and not adhering to
+	the seperation of concerns -> Split?
+- global PC, only one, propagated down, reset after
+	method is done
+- local PC, implemented as a stack, used to different-
+	iate between different ifs
+	
+	
+None-sensitive upgrade: (checkPC...)
+- system verliert informationen (ist theoretische beschränkung)
+- wirft vorsorglich fehler
