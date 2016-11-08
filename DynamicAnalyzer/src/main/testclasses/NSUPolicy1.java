@@ -9,7 +9,7 @@ import utils.analyzer.HelperClass;
  * @author Nicolas Müller
  *
  */
-public class NSUPolicy {
+public class NSUPolicy1 {
 	
 	public static void main(String[] args) {
 		int y = 5;
