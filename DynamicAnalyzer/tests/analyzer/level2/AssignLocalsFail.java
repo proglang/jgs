@@ -147,7 +147,7 @@ public class AssignLocalsFail {
 		
 		if (high == 0) {
 		
-			hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");	//assignment level is low here. why needed?!
+			//hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");	//assignment level is low here. why needed?!
 			hs.setLevelOfLocal("int_res"); //exception expected here!
 			res = ts.methodWithConstReturn();	// res is low, ts
 			hs.assignReturnLevelToLocal("int_res");
@@ -184,7 +184,7 @@ public class AssignLocalsFail {
 		
 		if (high == 0) {
 		
-			hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");
+			// hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");
 			hs.setLevelOfLocal("int_res"); //exception expected here!
 			res = ts.methodWithConstReturn();
 			hs.assignReturnLevelToLocal("int_res");

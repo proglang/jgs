@@ -1,5 +1,7 @@
 package main.testclasses;
 
+import org.junit.Ignore;
+
 import utils.analyzer.HelperClass;
 
 /**
@@ -25,6 +27,7 @@ public class NSUPolicy {
 		 * throw away the updates of y inside the if, which will circumvent the
 		 * IllegalFlowException
 		 */
+		@SuppressWarnings("unused")
 		int x = 3 + y;
 		
 	}
