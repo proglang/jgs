@@ -69,10 +69,12 @@ public class AssignLocalsFail {
 		
 	}
 	
-	
+	/*
+	 * TestSubClass xy is not initialized here, so no NSU IllegalFlowException.
+	 */
 	@SuppressWarnings("unused")
-	@Test(expected = IllegalFlowException.class)
-	public void assignNewObjectToLocal() {
+	@Test
+	public void assignNewObjectToLocalSuccess() {
 		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
@@ -92,10 +94,34 @@ public class AssignLocalsFail {
 		
 	}
 	
-	// Todo: Test ist ok. 2 Varianten: Dieser hier, der passt.
-	// zweiter, der nicht durchgeht. -> oben setLevelOfLocal
-	// NSU
-	// Trennung initialisiert / nicht initialisiert.
+	/*
+	 * TestSubClass xy is d initialized here, so no NSU policy forces
+	 * an IllegalFlowException.
+	 */
+	@SuppressWarnings("unused")
+	@Test(expected = IllegalFlowException.class)
+	public void assignNewObjectToLocalFail() {
+		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
+		
+		HandleStmt hs = new HandleStmt();
+		hs.addLocal("TestSubClass_xy");
+		hs.initializeVariable("TestSubClass_xy");
+		
+		TestSubClass xy;
+		
+		hs.pushLocalPC(SecurityLevel.top(), 123);
+		
+		hs.setLevelOfLocal("TestSubClass_xy");
+		xy = new TestSubClass();
+		
+		hs.popLocalPC(123);
+		hs.close();	
+
+		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST FINISHED");
+		
+	}
+	
+	
 	
 	/**
 	 * Testing IllegalFlowException thrown by the NSU Policy:
