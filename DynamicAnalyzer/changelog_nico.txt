@@ -1,22 +1,7 @@
-Week1:
-- Introduction and getting to know the project 
-- find out why JUnit Tests fail
-- fixed a bug where end-to-end test passed because no compiled binary was present, and failed
-	if an outdated binary was present
+Week 4:
+- does not work at all on classes, even explicit leak is not noticed
+- example gets run two times?! see SimpleDebug.
 
-Week2:
-- ClassCompile written: Compile end-to-end tests automatically before testrun
-- Output folder now configurable via "-d desiredDir" for both the JUnit test and main method / run configurations
-- Fixed bug that for some IllegalFlowExcpetion, even though no involved variable was given, the test still passed
-- wrote readme.md with setup instructions, code overview and most important command line commands
-- some testclasses need to be rewritten (about 10): Some are incomplete, some do not provide the desired information leak, some are empty, some miss involved variables
--- added involvedVars to "ArithmeticExpressionsFail"
--- Rewrote ArrayRef: Split up in two files (*Fail, *Success), made sure desired information leak is present/not present
--- Fixed IfStmt test: Split it up, supplied illegal flow in *Fail, supplied appropriate variable.
-- documented which tests fail, and why. also fixed some tests.
-
-
--- Todo: write external classes test using hand-instrumented external class. check and fix other tests.
 
 Week 3:
 Note: All test auskommentiert, die sicher nichts mit akt. Problemstellung zu tun haben
@@ -49,3 +34,24 @@ Notes:
 None-sensitive upgrade: (checkPC...)
 - system verliert informationen (ist theoretische beschränkung)
 - wirft vorsorglich fehler
+
+Week2:
+- ClassCompile written: Compile end-to-end tests automatically before testrun
+- Output folder now configurable via "-d desiredDir" for both the JUnit test and main method / run configurations
+- Fixed bug that for some IllegalFlowExcpetion, even though no involved variable was given, the test still passed
+- wrote readme.md with setup instructions, code overview and most important command line commands
+- some testclasses need to be rewritten (about 10): Some are incomplete, some do not provide the desired information leak, some are empty, some miss involved variables
+-- added involvedVars to "ArithmeticExpressionsFail"
+-- Rewrote ArrayRef: Split up in two files (*Fail, *Success), made sure desired information leak is present/not present
+-- Fixed IfStmt test: Split it up, supplied illegal flow in *Fail, supplied appropriate variable.
+- documented which tests fail, and why. also fixed some tests.
+
+
+-- Todo: write external classes test using hand-instrumented external class. check and fix other tests.
+
+
+Week1:
+- Introduction and getting to know the project 
+- find out why JUnit Tests fail
+- fixed a bug where end-to-end test passed because no compiled binary was present, and failed
+	if an outdated binary was present
