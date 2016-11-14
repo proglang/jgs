@@ -174,7 +174,7 @@ Example (`secdomain-alice-bob-charlie.ya ml`):
 #
 #           +->  alice  -+
 #           |            |
-#   bottom -+->  bob   --+-> top
+#   bottom -|->  bob   --|-> top
 #           |            |
 #           +-> charlie -+
 
@@ -250,6 +250,9 @@ Java-8.
 JGS-check now runs under Java-7 which fixes the problem; thus programs
 using `java.lang.String` should now work. Also, the examples in
 `JGSTestclasses/ExamplesFromPaper` now use `java.lang.String`.
+
+Due to (conceptual) limitations of JGScheck the examples use the static helper method `de.unifreiburg.cs.proglang.jgs.support.StringUtil.append` to
+concatentate strings. (A very brief explanation: The fact that JGScheck handles fields flow insensitively prevents the use of the standard `java.lang.StringBuilder` pattern for static code. The `+` operator expands to such a pattern.) 
 
 ### Parsing of Constraint Syntax
 
