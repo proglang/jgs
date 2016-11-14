@@ -11,6 +11,7 @@ import analyzer.level2.IfStmtSuccess;
 import analyzer.level2.InvokeSuccess;
 import analyzer.level2.MultiArrayFail;
 import analyzer.level2.MultiArraySuccess;
+import analyzer.level2.Nico;
 import analyzer.level2.ReturnStmtFail;
 import analyzer.level2.ReturnStmtSuccess;
 import analyzer.level2.SimpleSuccess;
@@ -22,6 +23,7 @@ import analyzer.level2.WhileStmtFail;
 import analyzer.level2.WhileStmtSuccess;
 import analyzer.level2.storage.LocalMapTest;
 import analyzer.level2.storage.ObjectMapTest;
+import analyzer.level2.storage.SecurityOptionalTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -35,7 +37,6 @@ import end2endtest.SingleEndToEndTest;
 @RunWith(Suite.class)
 @SuiteClasses({ 
     // Tests for public HandleStmt methods
-    LocalMapTest.class, 
     AssignLocalsSuccess.class,
     AssignLocalsFail.class,
     AssignFieldsSuccess.class,
@@ -45,6 +46,7 @@ import end2endtest.SingleEndToEndTest;
     InvokeSuccess.class,
     MultiArrayFail.class,
     MultiArraySuccess.class,
+    Nico.class,
     ReturnStmtSuccess.class,
     ReturnStmtFail.class,
     IfStmtSuccess.class,
@@ -63,10 +65,13 @@ import end2endtest.SingleEndToEndTest;
     // Tests for protected HandleStmt methods
     ObjectMapTest.class,
     LocalMapTest.class,
+    
+    // Test for SecurityOptinal Container
+    SecurityOptionalTest.class,
 
     // Tests for valid bytecode of testclasses
     AllEndToEndTests.class,
-    SingleEndToEndTest.class
+    // SingleEndToEndTest.class		// SingleE2E is subset of AllE2E-Tests, so no need to rerun!
     })
 
 public class RunAllTests {

@@ -1,5 +1,6 @@
 package main.testclasses;
 
+import java_cup.internal_error;
 import utils.analyzer.HelperClass;
 
 public class IfStmtSuccess {
@@ -12,18 +13,18 @@ public class IfStmtSuccess {
 		IfStmtSuccess thisObj = new IfStmtSuccess();
 		
 		// pass low security value
-		thisObj.multIfs(1);
-		thisObj.multIfs(3);
-		thisObj.multIfs(5);
-		thisObj.nestedIfs(4);
+		// thisObj.multIfs(1);
+		// thisObj.multIfs(3);
+		// thisObj.multIfs(5);
+		// thisObj.nestedIfs(4);
 		
 		// pass high security value
-		int retValue = 0;
-		HelperClass.makeHigh(retValue);
-		retValue = thisObj.multIfs(HelperClass.makeHigh(1));
-		retValue = thisObj.multIfs(HelperClass.makeHigh(3));
-		retValue = thisObj.multIfs(HelperClass.makeHigh(5));
-		retValue = thisObj.nestedIfs(HelperClass.makeHigh(4));
+		int high = 1;
+		high = HelperClass.makeHigh(high);
+		thisObj.multIfs(high);
+		// retValue = thisObj.multIfs(HelperClass.makeHigh(3));
+		// retValue = thisObj.multIfs(HelperClass.makeHigh(5));
+		// retValue = thisObj.nestedIfs(HelperClass.makeHigh(4));
 	}
 
 	/**
@@ -31,14 +32,14 @@ public class IfStmtSuccess {
 	 * @param x A value of type int
 	 * @return Calculated value
 	 */
-	public int multIfs(int x) {
-		if (x < 0) {
-			x = 0;
-		} else if (x < 2) {
-			x = 2;
-		} else if (x < 4) {
-			x = 4;
-		} else {
+	public int multIfs(int x) {	// Gets compiled to:
+		if (x < 0) {			// if (x < 0) {
+			x = 0;				//		b1 = 0;
+		} else if (x < 2) {		// } else if (x < 2) {
+			x = 2;				//		b1 = 2;	
+		} else if (x < 4) {		// } ..
+			x = 4;				//
+		} else {				// Tricky: b1 is uninitialized, throws IlFlowEx
 			x = 6;
 		}
 		return x;

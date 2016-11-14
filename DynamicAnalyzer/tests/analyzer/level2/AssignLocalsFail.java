@@ -69,10 +69,12 @@ public class AssignLocalsFail {
 		
 	}
 	
-	
+	/*
+	 * TestSubClass xy is not initialized here, so no NSU IllegalFlowException.
+	 */
 	@SuppressWarnings("unused")
-	@Test(expected = IllegalFlowException.class)
-	public void assignNewObjectToLocal() {
+	@Test
+	public void assignNewObjectToLocalSuccess() {
 		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
@@ -92,27 +94,62 @@ public class AssignLocalsFail {
 		
 	}
 	
+	/*
+	 * TestSubClass xy is d initialized here, so no NSU policy forces
+	 * an IllegalFlowException.
+	 */
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalFlowException.class)
-	public void assignMethodResultToLocal() {
+	public void assignNewObjectToLocalFail() {
+		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
+		
+		HandleStmt hs = new HandleStmt();
+		hs.addLocal("TestSubClass_xy");
+		hs.initializeVariable("TestSubClass_xy");
+		
+		TestSubClass xy;
+		
+		hs.pushLocalPC(SecurityLevel.top(), 123);
+		
+		hs.setLevelOfLocal("TestSubClass_xy");
+		xy = new TestSubClass();
+		
+		hs.popLocalPC(123);
+		hs.close();	
+
+		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST FINISHED");
+		
+	}
+	
+	
+	
+	/**
+	 * Testing IllegalFlowException thrown by the NSU Policy:
+	 * int high has high security value, and thus we cannot upgrade
+	 * the security-value of res from low to high.
+	 */
+	@SuppressWarnings("unused")
+	@Test
+	public void assignMethodResultToLocalSuccess() {
 
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
 		hs.addLocal("int_high", SecurityLevel.top());
+		
 		TestSubClass ts = new TestSubClass();
 		int res ;
 		int high = 0;
 		
 		hs.checkCondition("123", "int_high");
+		
 		if (high == 0) {
 		
-			hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");
-			hs.setLevelOfLocal("int_res");
-			res = ts.methodWithConstReturn();
+			//hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");	//assignment level is low here. why needed?!
+			hs.setLevelOfLocal("int_res"); //exception expected here!
+			res = ts.methodWithConstReturn();	// res is low, ts
 			hs.assignReturnLevelToLocal("int_res");
 			
 			hs.exitInnerScope("123");
@@ -125,6 +162,42 @@ public class AssignLocalsFail {
 	
 	}
 	
+	
+	@SuppressWarnings("unused")
+	@Test(expected = IllegalFlowException.class)
+	public void assignMethodResultToLocalFail() {
+
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
+		
+		HandleStmt hs = new HandleStmt();
+		
+		hs.addLocal("TestSubClass_ts");
+		hs.addLocal("int_res");
+		hs.addLocal("int_high", SecurityLevel.top());
+		TestSubClass ts = new TestSubClass();
+		int res ;
+		int high = 0;
+		
+		hs.initializeVariable("int_res");
+		
+		hs.checkCondition("123", "int_high");
+		
+		if (high == 0) {
+		
+			// hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");
+			hs.setLevelOfLocal("int_res"); //exception expected here!
+			res = ts.methodWithConstReturn();
+			hs.assignReturnLevelToLocal("int_res");
+			
+			hs.exitInnerScope("123");
+		
+		}
+		
+		hs.close();
+
+		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
+	
+	}
 	@Test(expected = IllegalFlowException.class)
 	public void assignConstantAndLocalToLocal() {
 		

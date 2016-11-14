@@ -63,3 +63,45 @@ To get you started, here is a very brief introduction into the source code:
 - `analyzer.level1` contains the classes necessary for correct instrumentation, eg contains the code that is responsible for instrumenting an existing java program.
 - `analyzer.level2` contains the classes which are executed on runtime. These check if the information flow is valid, and throw appropriate Exceptions (IllegalFlowException) if not.
 
+## How to cause an IllegalFlowException
+IllegalFlowExceptions are at the core of DA: They indicate a possible leak of information, and terminate execution of the program. There are two conceptually different ways to cause an IllegalFlowException in this implementation:
+
+### Public Outputs
+The easiest way to leak data is to leak it to a public output. Currently, public outputs are `System.out.println` and `System.out.print`. See the HelloWorld Example above.
+
+### Non sensitive upgrade (NSU) policy
+The NSU policy enforces IllegalFlowExceptions in a certain kind of context, even if information has not yet been leaked. This is a theoretical limitation: In a certain context, the type system "gets confused" and doesn't really know what label to assign to a local. Consider the following example:
+```
+y = makeLow(5);						// y is LOW
+	
+if (secret == 42) {					// PC is HIGH
+	y += 1;							// IllegalFlowException!
+}									
+```
+The local `y` would be upgraded from LOW to HIGH, because the high guard (`secret == 42`) sets the localPC to HIGH inside the if statement. This upgrade will not pass: An IllegalFlowException will be thrown, even though no information has yet been leaked. If the PC is HIGH, we cannot update a LOW variable and have it upgraded to HIGH. The reason for this is purely technical, and can be understood when studying the NSU policy.
+
+This example can be found in code unter `main.testclasses.NSUPolicy`.
+
+### Further example
+Consider the following code:
+```
+o1 = new C();
+o2 = new C();
+o1.f = true;
+o2.f = false;
+// o1, o2, o1.f, o2.f are LOW
+
+if (secret) {
+	o = o1;
+} else {
+	o = o2;
+}
+// o ist HIGH
+
+println(o1.f)		// Ok, since o1.f is public
+println(o.f)		// IllegalFlowException, leaks information about secret
+
+o1.f = 5			// Ok	
+o.f = 5				// IllegalFlowException cause by NSU		 									
+```
+Note that the level of `o.f` is the join of Level(o) and Level(f).

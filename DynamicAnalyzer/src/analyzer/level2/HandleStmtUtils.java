@@ -44,15 +44,23 @@ public class HandleStmtUtils {
 	//
 
 	/**
-	 * Check if level of given local is greater than localPC.
+	 * NSU policy: For initialized locals, check if level of given local is greater 
+	 * than localPC. If it's not, throw IllegalFlowException
 	 * @param signature signature of the local
 	 */
 	protected void checkLocalPC(String signature) {
-		logger.log(Level.FINEST, "--- checkLocalPC called ---");
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
-		Object level = localmap.getLevel(signature);
+		//check if local is initialized
+		if (!localmap.checkIfInitialized(signature)) {
+			logger.log(Level.INFO, "Local {0} has not yet been initialized", signature);
+			localmap.initializeLocal(signature);
+			return;
+		}
+		
+		// the following check must only be executed if local is initialised
+		Object level = localmap.getLevel(signature); 
 		Object lpc = localmap.getLocalPC();
 		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC", 
 				new Object[] {signature, level, lpc });
@@ -162,6 +170,11 @@ public class HandleStmtUtils {
 	}
 	
 
+	/**
+	 * Check if given local exists in localmap. 
+	 * Throw InternalAanalyzerException if not.
+	 * @param signature
+	 */
 	protected void checkIfLocalExists(String signature) {
 		if (!localmap.contains(signature)) {
 			throw new InternalAnalyzerException("Missing local " 
@@ -169,6 +182,11 @@ public class HandleStmtUtils {
 		}
 	}
 	
+	/**
+	 * Called when trying to add a new local to localmap via addLocal(String signature)
+	 * Throws InternalAnalyzerException if already present
+	 * @param signature
+	 */
 	protected void checkThatLocalDoesNotExist(String signature) {
 		if (localmap.contains(signature)) {
 			throw new InternalAnalyzerException("Trying to add local " + signature 
