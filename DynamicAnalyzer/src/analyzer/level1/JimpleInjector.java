@@ -950,6 +950,7 @@ public class JimpleInjector {
 	}
 
 	/**
+	 * Insert the following check: If Local l is high, throw new IllegalFlowException
 	 * @param pos
 	 * @param l
 	 */
@@ -976,6 +977,27 @@ public class JimpleInjector {
 		
 
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+		lastPos = pos;
+	}
+	
+	/**
+	 * Method to check that PC is not high. Called when calling System.out.println(), 
+	 * which must always be called in low context because of its side effects.
+	 * @param pos
+	 */
+	public static void checkThatPCNotHigh(Unit pos) {
+		logger.info("Check that context is not high");
+		
+		if (pos == null) {
+			throw new InternalAnalyzerException("Position is Null");
+		}
+		
+		Expr checkPC = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+						"checkThatPCNotHigh", new ArrayList<Type>(), VoidType.v(), false));
+		Unit invoke = Jimple.v().newInvokeStmt(checkPC);
+		
 		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
 		lastPos = pos;
 	}

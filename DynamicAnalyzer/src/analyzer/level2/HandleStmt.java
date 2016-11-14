@@ -639,4 +639,16 @@ public class HandleStmt {
 					+ "which doesn't allow it.");
 		}
 	}
+	
+	/**
+	 * This method is used if a print statement is identified. Print statements
+	 * must never be called in high sec context. Thus, we must check the context;
+	 */
+	public void checkThatPCNotHigh() {
+		logger.info("About to print something to public output. Thus, check that PC is not HIGH");
+		if (localmap.getLocalPC() == SecurityLevel.top()) {
+			logger.info("Trying to print with HIGH PC!");
+			handleStatementUtils.abort("Tried to print in high-security context: LocalPC was HIGH!");
+		}
+	}
 }

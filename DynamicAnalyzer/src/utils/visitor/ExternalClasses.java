@@ -34,13 +34,13 @@ public class ExternalClasses {
 		
 		// Methods where the argument cannot have a High argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
-				 new NoHighLevelAllowed());
+				 new NoHighAllowedForPrintOutput());
 		methodMap.put("<java.io.PrintStream: void println(int)>", 
-				 new NoHighLevelAllowed());
+				 new NoHighAllowedForPrintOutput());
 		methodMap.put("<java.io.PrintStream: void println(boolean)>", 
-				 new NoHighLevelAllowed());
+				 new NoHighAllowedForPrintOutput());
 		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
-				 new NoHighLevelAllowed());
+				 new NoHighAllowedForPrintOutput());
 		
 		
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
@@ -70,18 +70,24 @@ public class ExternalClasses {
 		}
 	}
 	
-	static class NoHighLevelAllowed implements Command {
+	static class NoHighAllowedForPrintOutput implements Command {
 		public void execute(Unit pos, Local[] params) {
-			logger.fine("Check that external class has no high argument");
+			logger.fine("Insert check that external class has no high argument");
 			if (params == null || pos == null) {
 				throw new InternalAnalyzerException(
 						"Received a null-pointer as argument");
 			}
+			
+			// If print Statement is called, context must not be high: This, we can always check
+			JimpleInjector.checkThatPCNotHigh(pos);
+			
+			// Also, we might print in low context: If so, we mustn't print a high-sec param
 			for (Local param: params) {
 				if (param != null) {
 					JimpleInjector.checkThatNotHigh(pos, param);
+					
 				}
-			}
+			} 
 		}
 	}
 
