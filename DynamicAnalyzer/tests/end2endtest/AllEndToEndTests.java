@@ -58,6 +58,8 @@ public class AllEndToEndTests {
 				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					// working now: rewrote non-expressive (?!) test
 				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									// working now: rewritten (was one testfile ExtClasses)
 				
+				new Object[] { "BooleanPrintFail", false, new String[] {"boolean_z1"} }, 									// working now: rewritten (was one testfile ExtClasses)
+				
 				new Object[] { "ExtClassesFail", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
 				new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// fails: same
 				
