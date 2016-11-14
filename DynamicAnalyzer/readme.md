@@ -67,7 +67,12 @@ To get you started, here is a very brief introduction into the source code:
 IllegalFlowExceptions are at the core of DA: They indicate a possible leak of information, and terminate execution of the program. There are two conceptually different ways to cause an IllegalFlowException in this implementation:
 
 ### Public Outputs
-The easiest way to leak data is to leak it to a public output. Currently, public outputs are `System.out.println` and `System.out.print`. See the HelloWorld Example above.
+The easiest way to leak data is to leak it to a public output. Public outputs are defined in `utils.visitor.ExternalClasses`. Currently, these are:
+- `<java.io.PrintStream: void println(java.lang.String)>`
+- `<java.io.PrintStream: void println(int)>`
+- `<java.io.PrintStream: void println(boolean)>`
+- `<java.io.PrintStream: void println(java.lang.Object)>`
+This is just a temporary solution. Note that an explicit leak of a secret double would not be caught, since it's not defined.
 
 ### Non sensitive upgrade (NSU) policy
 The NSU policy enforces IllegalFlowExceptions in a certain kind of context, even if information has not yet been leaked. This is a theoretical limitation: In a certain context, the type system "gets confused" and doesn't really know what label to assign to a local. Consider the following example:
@@ -105,3 +110,24 @@ o1.f = 5			// Ok
 o.f = 5				// IllegalFlowException cause by NSU		 									
 ```
 Note that the level of `o.f` is the join of Level(o) and Level(f).
+
+## Soot overview
+At its heart, soot is a compiler: It takes an input (mostly Java Source Code) and returns bytecode 
+or intermediate representation (Jimple). Let's consider the process of compiling java source code to 
+jimple intermediate representation: Every piece of java code has its counterpart in Soot:
+
+Java 		| Soot
+-----		|-----
+method body | `body` class (JimpleBody)
+
+
+
+
+
+
+
+
+
+
+
+ 
