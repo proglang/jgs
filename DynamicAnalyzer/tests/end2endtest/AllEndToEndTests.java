@@ -91,7 +91,7 @@ public class AllEndToEndTests {
 				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r19"} }, 					// failed because there was no illegal flow, fixed now
 				
 				// Testing implicit and explicit flow with classes (which is unimplemented currently)
-				new Object[] { "NewClassFail1", true, new String[] {} },
+				new Object[] { "NewClassFail1", true, new String[] {"main.testclasses.C_r4"} },
 				
 				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								// rename for consistency
 				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						// failed because no illegal flow was supplied

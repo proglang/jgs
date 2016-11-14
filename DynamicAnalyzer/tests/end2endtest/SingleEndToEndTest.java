@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "SimpleDebug";
+	public String name = "NewClassFail1";
 
 	public boolean hasIllegalFlow = true;
 
@@ -38,7 +38,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] {"int_i3"};
+	public String[] involvedVars = new String[] {"main.testclasses.C_r4"};
 
 	Logger logger = L1Logger.getLogger();
 

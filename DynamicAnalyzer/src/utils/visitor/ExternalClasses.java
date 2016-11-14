@@ -37,6 +37,8 @@ public class ExternalClasses {
 				 new NoHighLevelAllowed());
 		methodMap.put("<java.io.PrintStream: void println(int)>", 
 				 new NoHighLevelAllowed());
+		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
+				 new NoHighLevelAllowed());
 		
 		
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());

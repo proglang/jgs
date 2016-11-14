@@ -13,8 +13,8 @@ public class NewClassFail1 {
 	public static void main(String[] args) {
 
 		C b = new C();
-		C c = HelperClass.makeHigh(b);
-		System.out.println(c);
+		b = HelperClass.makeHigh(b);
+		System.out.println(b);
 
 	}
 }

@@ -85,12 +85,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 					+ "the left side of assign statement");
 		}
 		
-		logger.fine("\n > > > ASSIGN STATEMENT identified < < <" );
-		logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() + " < < <");
-		logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() + " < < <");
+		logger.fine("\n > > > ASSIGN STATEMENT identified: " + aStmt + " < < <" );
+		// two lines below are useless information?!
+		// logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() + " < < <");
+		// logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() + " < < <");
  
 		for (int i = 0; i < aStmt.getUseBoxes().size(); i++) {
-			aStmt.getUseBoxes().get(i).getValue().apply(valueSwitch);
+			aStmt.getUseBoxes().get(i).getValue()
+			.apply(valueSwitch);
 		}
 		
 		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
