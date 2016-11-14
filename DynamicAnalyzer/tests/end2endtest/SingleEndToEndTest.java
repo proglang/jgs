@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "ImplicitFlow3";
+	public String name = "SystemOut2";
 
 	public boolean hasIllegalFlow = true;
 
