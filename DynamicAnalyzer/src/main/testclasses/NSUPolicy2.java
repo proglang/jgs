@@ -1,10 +1,10 @@
 package main.testclasses;
 
-import utils.analyzer.HelperClass;
-import utils.test.*; 
+import utils.analyzer.HelperClass; 
 /**
- * Test using an external class (from utils.test)
- * @author NicolasM
+ * Working example from readme. Since two exceptions are to be thrown, also see NSUPolicy3
+ * @author Nicolas Müller
+ *
  */
 public class NSUPolicy2 {
 
@@ -31,8 +31,8 @@ public class NSUPolicy2 {
 		System.out.println(o1.f); // Okay
 		System.out.println(o.f);  // Not okay! Leaks information!
 		
-		o1.f = false;
-		o.f = true; 			// Not okay! NSU IllegalFlowException
+		o1.f = false;			// Okay
+		// o.f = true; 			// Not okay! NSU IllegalFlowException -> Test online in NSUPolicy3
 		
 	}
 	

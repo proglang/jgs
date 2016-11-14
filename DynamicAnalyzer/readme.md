@@ -116,9 +116,25 @@ At its heart, soot is a compiler: It takes an input (mostly Java Source Code) an
 or intermediate representation (Jimple). Let's consider the process of compiling java source code to 
 jimple intermediate representation: Every piece of java code has its counterpart in Soot:
 
-Java 		| Soot
------		|-----
-method body | `body` class (JimpleBody)
+Java 				| Soot
+-----				|-----
+method body 		| `body` class (JimpleBody)
+local variables 	| Locals, `getLocals()`
+Statements			| Units, `getUnits()`
+Exceptions			| Traps, `getTraps()`
+					| Packs (are the phases of execution of Soot)
+
+### Statement
+A statement is the smallest standalone element of an imperative programming language that expresses some
+ action to be carried out. Examples:
+- Assertions, eg: `assert(x > 0)`
+- Assignments, eg: `a = a + 42`
+- Goto
+- Return, eg: `return 42;`
+- call, eg: `println("Hello World")`
+A statement in Soot is represented by the interface `Unit`, of which there are different implementations. 
+Jimple uses `Stmt`. We can perform a variety of analysis on a given Unit, for example `getUseBoxes()`,
+which returns all values used in this unit/statement. 
 
 
 
