@@ -16,7 +16,6 @@
 
         <manifest>
          <attribute name="Main-Class" value="${mainClass}"/>
-         
         </manifest>
 
         <include name="main/testclasses/**"/>
