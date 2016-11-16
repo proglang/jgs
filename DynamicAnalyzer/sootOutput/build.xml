@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+   <project name="Compile to Jar" default="build-jar">
+   
+    
+  <property name="mainClass" value ="main/testclasses/ImplicitFlow1"/>
+    <property file="build.properties"/>
+
+    <path id="master-classpath">
+     <pathelement path="."/>
+  </path>
+  <pathconvert property="mm" refid="master-classpath"/>
+
+    <target name="build-jar">
+     <jar destfile="output/out.jar"
+        basedir=".">
+
+        <manifest>
+         <attribute name="Main-Class" value="${mainClass}"/>
+         
+        </manifest>
+
+        <include name="main/testclasses/**"/>
+        <include name="utils/**"/>
+        <include name="analyzer/**"/>
+        <include name="de/**"/>
+        <include name="org/**"/>
+
+     </jar>
+  </target>
+</project>
