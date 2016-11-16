@@ -15,8 +15,7 @@ import java.util.logging.Level;
 import oracle.jrockit.jfr.Options;
 
 /**
- * @author Regina Koenig
- * @version 0.6
+ * @author Regina Koenig, Nicolas Müller
  */
 public class Main {
 
