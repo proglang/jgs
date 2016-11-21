@@ -1,27 +1,28 @@
 package utils.ant;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-
 import org.apache.tools.ant.*;
 
-/**
- * Helper to run ant for us.
- * 
- * @author Nicolas Müller
- *
- */
+
 public class AntRunner {
 	public static void main(String[] args) {
 		
-		createProperties("main/testclasses/ImplicitFlow2", "sootOutput/ant");
+		String mainClass = "main/testclasses/ImplicitFlow2";
+		String pathToMainClass ="sootOutput";
+		String outputFolder = "ant";
+		
+		run(mainClass, pathToMainClass, outputFolder);
+	}
+	
+	/***
+	 * Helper to run ant	
+	 * @param mainClass				mainClass
+	 * @param pathToMainClass		path to the mainClass
+	 * @param outputFolder			output folder
+	 */
+	protected static void run(String mainClass, String pathToMainClass, String outputFolder) {
+		createProperties(mainClass, pathToMainClass, outputFolder);
 		File buildFile = new File("src/utils/ant/build.xml");
 		
 		
@@ -48,14 +49,16 @@ public class AntRunner {
 
 	/**
 	 * Helper method to create properties for our ant file
-	 * @param mainClass		which file to compile
-	 * @param outputFolder 	where to output
+	 * @param mainClass			which file to compile
+	 * @param pathToMainClass	folder where the mainClass is located
+	 * @param outputFolder 		where to output
 	 */
-	private static void createProperties(String mainClass, String outputFolder) {
+	private static void createProperties(String mainClass, String pathToMainClass, String outputFolder) {
 		try  { 
 			PrintWriter writer = new PrintWriter("src/utils/ant/build.properties", "UTF-8");
 			writer.write("# File to set mainClass and outputFolder\n");
 			writer.write("mainClass=" + mainClass + "\n");
+			writer.write("pathToMainClass=" + pathToMainClass + "\n");
 			writer.write("outputFolder=" + outputFolder + "\n");	
 			writer.close();
 		} catch (Exception e) {

@@ -10,7 +10,7 @@
          <attribute name="Main-Class" value="${mainClass}"/>
         </manifest>
     	
-    	<fileset dir="../../../sootOutput">
+    	<fileset dir="../../../${pathToMainClass}">
     	   <include name="${mainClass}.class"/>	
     	</fileset>
     	

@@ -85,7 +85,8 @@ public class Main {
         	   
 		soot.Main.main(sootOptions);
 		
-		utils.ant.AntRunner.main(null);
+		//currently, sootOptions has mainClass as arg[3]
+		utils.ant.AntRunner.main(new String[] {sootOptions[3], "antOutput"});
 		
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
