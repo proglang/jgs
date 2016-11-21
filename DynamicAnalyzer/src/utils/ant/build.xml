@@ -1,15 +1,10 @@
 <?xml version="1.0"?>
   <project name="Compile to Jar" default="build-jar">
    
-  <property name="mainClass" value ="ImplicitFlow2"/>
-
-  <path id="master-classpath">
-     <pathelement path="."/>
-  </path>
-  <pathconvert property="mm" refid="master-classpath"/>
+  <property file="build.properties"/>
 
   <target name="build-jar">
-    <jar destfile="../../../sootOutput/ant/${mainClass}.jar" basedir=".">
+    <jar destfile="../../../sootOutput/${outputFolder}/${mainClass}.jar" basedir=".">
 
         <manifest>
          <attribute name="Main-Class" value="main/testclasses/${mainClass}"/>
