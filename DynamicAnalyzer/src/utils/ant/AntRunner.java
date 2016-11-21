@@ -21,7 +21,7 @@ import org.apache.tools.ant.*;
 public class AntRunner {
 	public static void main(String[] args) {
 		
-		createProperties("ImplicitFlow2", "ant");
+		createProperties("main/testclasses/ImplicitFlow2", "sootOutput/ant");
 		File buildFile = new File("src/utils/ant/build.xml");
 		
 		

@@ -4,14 +4,14 @@
   <property file="build.properties"/>
 
   <target name="build-jar">
-    <jar destfile="../../../sootOutput/${outputFolder}/${mainClass}.jar" basedir=".">
+    <jar destfile="../../../${outputFolder}/${mainClass}.jar" basedir=".">
 
         <manifest>
-         <attribute name="Main-Class" value="main/testclasses/${mainClass}"/>
+         <attribute name="Main-Class" value="${mainClass}"/>
         </manifest>
     	
     	<fileset dir="../../../sootOutput">
-    	   <include name="main/testclasses/${mainClass}.class"/>	
+    	   <include name="${mainClass}.class"/>	
     	</fileset>
     	
     	<fileset dir="../../../bin">
