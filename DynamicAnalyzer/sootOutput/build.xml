@@ -1,28 +1,37 @@
 <?xml version="1.0"?>
-   <project name="Compile to Jar" default="build-jar">
+  <project name="Compile to Jar" default="build-jar">
    
-    
-  <property name="mainClass" value ="main/testclasses/ImplicitFlow1"/>
-    <property file="build.properties"/>
+  <property name="mainClass" value ="ImplicitFlow1"/>
 
-    <path id="master-classpath">
+  <path id="master-classpath">
      <pathelement path="."/>
   </path>
   <pathconvert property="mm" refid="master-classpath"/>
 
-    <target name="build-jar">
-     <jar destfile="output/out.jar"
-        basedir=".">
+  <target name="build-jar">
+    <jar destfile="output/${mainClass}.jar" basedir=".">
 
         <manifest>
-         <attribute name="Main-Class" value="${mainClass}"/>
+         <attribute name="Main-Class" value="main/testclasses/${mainClass}"/>
         </manifest>
 
         <include name="main/testclasses/**"/>
-        <include name="utils/**"/>
-        <include name="analyzer/**"/>
-        <include name="de/**"/>
-        <include name="org/**"/>
+    	
+    	<fileset dir="../bin">
+    		<include name="analyzer/**"/>	
+    	</fileset>	
+    	
+    	<fileset dir="../bin">
+    	    <include name="utils/**"/>	
+    	</fileset>
+    	
+    	<zipgroupfileset dir="../../../DEPS" includes="gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar">
+    	   	<include name="de/**"/>	
+    	</zipgroupfileset>	
+    	
+    	<zipgroupfileset dir="../../../DEPS/commons-collections4-4.0" includes="commons-collections4-4.0.jar">
+    	   <include name="org/**"/>
+    	</zipgroupfileset>
 
      </jar>
   </target>
