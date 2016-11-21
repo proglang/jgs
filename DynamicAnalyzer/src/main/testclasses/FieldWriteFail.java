@@ -1,6 +1,6 @@
 package main.testclasses;
 
-import utils.HelperClass.HelperClass;
+import utils.analyzer.HelperClass;
 
 public class FieldWriteFail {
 	static int field = 0;

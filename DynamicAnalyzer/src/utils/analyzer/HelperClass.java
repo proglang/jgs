@@ -1,4 +1,4 @@
-package utils.HelperClass;
+package utils.analyzer;
 
 /**
  * Class to set the security-level of locals, fields and array-fields.

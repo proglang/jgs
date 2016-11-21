@@ -19,7 +19,7 @@
     	 </fileset>
     	
     	<fileset dir="../../../bin">
-    	    <include name="utils/HelperClass/HelperClass.class"/>	
+    	    <include name="utils/analyzer/HelperClass.class"/>	
     	</fileset>
     	
     	<fileset dir="../../../bin">

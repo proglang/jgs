@@ -1,6 +1,6 @@
 package main.testclasses;
 
-import utils.HelperClass.HelperClass;
+import utils.analyzer.HelperClass;
 
 /**
  * Most basic case of implicit information flow from x to y.
