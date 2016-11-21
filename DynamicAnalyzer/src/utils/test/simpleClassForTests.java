@@ -1,6 +1,7 @@
 package utils.test;
 
-import utils.analyzer.HelperClass;
+import utils.HelperClass.HelperClass;
+
 
 /**
  * We want end-to-end tests with external classes, so here we manually instrument

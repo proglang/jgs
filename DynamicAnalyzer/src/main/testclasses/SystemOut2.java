@@ -1,6 +1,6 @@
 package main.testclasses;
 
-import utils.analyzer.HelperClass;
+import utils.HelperClass.HelperClass;
 
 /**
  * Must fail. Currently, does not fail.

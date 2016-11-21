@@ -1,6 +1,6 @@
 package main.testclasses;
 
-import utils.analyzer.HelperClass;
+import utils.HelperClass.HelperClass;
 
 /**
  * Testing explicit information leak of a class. Was not implemented until

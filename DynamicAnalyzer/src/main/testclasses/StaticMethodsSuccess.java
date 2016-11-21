@@ -1,5 +1,7 @@
 package main.testclasses;
 
+import utils.test.SimpleObject;
+
 public class StaticMethodsSuccess {
 
 	public static void main(String[] args) {

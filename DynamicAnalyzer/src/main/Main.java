@@ -85,8 +85,10 @@ public class Main {
         	   
 		soot.Main.main(sootOptions);
 		
-		//currently, sootOptions has mainClass as arg[3]
-		utils.ant.AntRunner.main(new String[] {sootOptions[3], "antOutput"});
+		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
+		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
+		// we want to output it to ant/main/testclasses/test1.jar
+		utils.ant.AntRunner.run(sootOptions[3], "sootOutput/junit", "ant");
 		
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();

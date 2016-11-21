@@ -1,6 +1,6 @@
 package main.testclasses;
 
-import utils.analyzer.HelperClass; 
+import utils.HelperClass.HelperClass;
 /**
  * Working example from readme. Since two exceptions are to be thrown, also see NSUPolicy3
  * @author Nicolas Müller

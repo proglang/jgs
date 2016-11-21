@@ -15,6 +15,14 @@
     	</fileset>
     	
     	<fileset dir="../../../bin">
+    	   	<include name="utils/test/*.class"/>	
+    	 </fileset>
+    	
+    	<fileset dir="../../../bin">
+    	    <include name="utils/HelperClass/HelperClass.class"/>	
+    	</fileset>
+    	
+    	<fileset dir="../../../bin">
     		<include name="analyzer/**"/>	
     	</fileset>	
     	

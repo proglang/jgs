@@ -33,6 +33,7 @@ lib/
 .idea/
 out/
 bin/
+ant/
 
 ## user specific files
 **/.idea/workspace.xml

@@ -1,6 +1,7 @@
-package main.testclasses;
+package utils.test;
 
-import utils.analyzer.HelperClass;
+import utils.HelperClass.HelperClass;
+
 
 public class SimpleObject {
 	

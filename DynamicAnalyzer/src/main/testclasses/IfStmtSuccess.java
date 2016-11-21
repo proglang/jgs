@@ -1,7 +1,7 @@
 package main.testclasses;
 
 import java_cup.internal_error;
-import utils.analyzer.HelperClass;
+import utils.HelperClass.HelperClass;
 
 public class IfStmtSuccess {
 

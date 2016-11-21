@@ -8,7 +8,7 @@ import org.apache.tools.ant.*;
 public class AntRunner {
 	public static void main(String[] args) {
 		
-		String mainClass = "main/testclasses/ImplicitFlow2";
+		String mainClass = "main/testclasses/AccessFieldsOfObjectsFail";
 		String pathToMainClass ="sootOutput";
 		String outputFolder = "ant";
 		
@@ -21,7 +21,13 @@ public class AntRunner {
 	 * @param pathToMainClass		path to the mainClass
 	 * @param outputFolder			output folder
 	 */
-	protected static void run(String mainClass, String pathToMainClass, String outputFolder) {
+	public static void run(String mainClass, String pathToMainClass, String outputFolder) {
+		
+		// replace "." by "/", eg: main.testclasses.test1 => main/testclasses/test1
+		mainClass = mainClass.replace(".", "/");
+		pathToMainClass = pathToMainClass.replace(".", "/");
+		outputFolder = outputFolder.replace(".", "/");
+		
 		createProperties(mainClass, pathToMainClass, outputFolder);
 		File buildFile = new File("src/utils/ant/build.xml");
 		
