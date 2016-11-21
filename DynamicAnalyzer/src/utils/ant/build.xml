@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
   <project name="Compile to Jar" default="build-jar">
    
-  <property name="mainClass" value ="ImplicitFlow1"/>
+  <property name="mainClass" value ="ImplicitFlow2"/>
 
   <path id="master-classpath">
      <pathelement path="."/>
@@ -9,27 +9,29 @@
   <pathconvert property="mm" refid="master-classpath"/>
 
   <target name="build-jar">
-    <jar destfile="output/${mainClass}.jar" basedir=".">
+    <jar destfile="../../../sootOutput/ant/${mainClass}.jar" basedir=".">
 
         <manifest>
          <attribute name="Main-Class" value="main/testclasses/${mainClass}"/>
         </manifest>
-
-        <include name="main/testclasses/**"/>
     	
-    	<fileset dir="../bin">
+    	<fileset dir="../../../sootOutput">
+    	   <include name="main/testclasses/${mainClass}.class"/>	
+    	</fileset>
+    	
+    	<fileset dir="../../../bin">
     		<include name="analyzer/**"/>	
     	</fileset>	
     	
-    	<fileset dir="../bin">
+    	<fileset dir="../../../bin">
     	    <include name="utils/**"/>	
     	</fileset>
     	
-    	<zipgroupfileset dir="../../../DEPS" includes="gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar">
+    	<zipgroupfileset dir="../../../../../DEPS" includes="gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar">
     	   	<include name="de/**"/>	
     	</zipgroupfileset>	
     	
-    	<zipgroupfileset dir="../../../DEPS/commons-collections4-4.0" includes="commons-collections4-4.0.jar">
+    	<zipgroupfileset dir="../../../../../DEPS/commons-collections4-4.0" includes="commons-collections4-4.0.jar">
     	   <include name="org/**"/>
     	</zipgroupfileset>
 

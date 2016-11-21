@@ -12,6 +12,7 @@ Setting up the Dynamic Analyzer (DA) is not complicated, although not yet trivia
   - jasminclasses-2.5.0.jar
   - java_cup.jar
   - commons-collections4-4.0.jar from "Apache Commons Collections
+  - apache-ant-1.9.7
 - add the file `gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar` to the DEPS folder. TODO: Dont know anymore how to create it
 - add folder DEPS to your buildpath: Right-click on DynamicAnalyzer in the Package Explorer -> BuildPath -> Configure Build Path -> Add variable, pointing to your DEPS directory
 
