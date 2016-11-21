@@ -1,6 +1,7 @@
 package main.testclasses;
 
 import utils.analyzer.HelperClass;
+import utils.test.C;
 /**
  * Working example from readme. Since two exceptions are to be thrown, also see NSUPolicy3
  * @author Nicolas Müller
@@ -36,16 +37,8 @@ public class NSUPolicy2 {
 		
 	}
 	
-	
 }
 
-/**
- * Testclass 
- * @author Nicolas Müller
- *
- */
-class C { 
-	boolean f;
-}
+
 
 
