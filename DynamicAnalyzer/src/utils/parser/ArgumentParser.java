@@ -119,6 +119,14 @@ public class ArgumentParser {
 	 * @author Regina König, Nicolas Müller
 	 */
 	public String[] getSootOptions() {
+		
+		// we want the following behavoir: For argument
+		// len == 1: path/to/mainclasses, both mainclass and path to it are set 	-> compile to class
+		// len == 2: mainclass, path/to/mainclass									-> compile to class
+		// flag --jimple															-> compile to jimple
+		
+		
+		
 		LinkedList<String> sootOptions = new LinkedList<String>();
 		sootOptions.add("-f");
 		sootOptions.add(cmd.getOptionValue("f"));

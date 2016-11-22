@@ -34,7 +34,7 @@ public class NSUPolicy3 {
 		// System.out.println(o1.f);  // Not okay! Leaks information! -> Test online in NSUPolicy2
 		
 		o1.f = false;
-		o.f = true; 			// Doch ok 
+		o.f = true; 			// not ok.
 		//System.out.println(o1.f);  // Not okay! Leaks information! -> Test online in NSUPolicy2
 
 		

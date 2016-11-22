@@ -86,7 +86,9 @@ public class AllEndToEndTests {
 				new Object[] { "NSUPolicy1", true, new String[] {"int_i3"} },
 				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
 				new Object[] { "NSUPolicy3", true, new String[] {"int_i3"} },
-				new Object[] { "NSUPolicy4", true, new String[] {"int_i3"} },
+				
+				new Object[] { "NSU_FieldAccess", true, new String[] {"int_i3"} },
+				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"int_i3"} },
 				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				

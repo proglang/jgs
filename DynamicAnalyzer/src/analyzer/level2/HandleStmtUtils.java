@@ -84,6 +84,8 @@ public class HandleStmtUtils {
 		if (!SecurityLevel.le(globalPC, fieldLevel)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature);
 		}	
+		
+		
 	}
 	
 	/**
