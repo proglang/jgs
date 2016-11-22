@@ -7,6 +7,7 @@ import soot.Scene;
 import soot.Transform;
 import utils.logging.L1Logger;
 import utils.parser.ArgumentParser;
+import utils.parser.Parser2;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,10 +49,13 @@ public class Main {
      */
 	private static void execute(String[] args) {
 		
-		argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
+		//argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
     	
-		LOGGER_LEVEL = argparser.getLoggerLevel();
-		String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
+		// LOGGER_LEVEL = argparser.getLoggerLevel();
+		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
+		
+		LOGGER_LEVEL = Level.ALL;
+		String[] sootOptions = Parser2.getSootOptions(args);
 		
 		try {
 			System.out.println("Logger Init1");
@@ -88,7 +92,7 @@ public class Main {
 		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
 		// we want to output it to ant/main/testclasses/test1.jar
-		utils.ant.AntRunner.run(sootOptions[3], "sootOutput/junit", "antOutput");
+		utils.ant.AntRunner.run(sootOptions[3], "sootOutput", "antOutput");
 		
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
