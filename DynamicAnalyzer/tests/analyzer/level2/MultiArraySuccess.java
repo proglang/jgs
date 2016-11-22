@@ -80,6 +80,7 @@ public class MultiArraySuccess {
 		String[] tmp1 = new String[1];
 		hs.addArrayToObjectMap(tmp1);
 		
+		hs.checkArrayWithGlobalPC(tmp1, Integer.toString(0), "String[]_tmp1");
 		hs.setLevelOfArrayField(tmp1, Integer.toString(0), "String[]_tmp1");
 		tmp1[0] = "first element";
 		
@@ -87,14 +88,17 @@ public class MultiArraySuccess {
 		String[] tmp2 = new String[1];
 		hs.addArrayToObjectMap(tmp2);
 		
+		hs.checkArrayWithGlobalPC(tmp1, Integer.toString(0), "String[]_tmp2");
 		hs.setLevelOfArrayField(tmp1, Integer.toString(0), "String[]_tmp2");
 		tmp2[0] = "second element";
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_tmp1");
+		hs.checkArrayWithGlobalPC(twoD, Integer.toString(0),  "String[][]_twoD" );
 		hs.setLevelOfArrayField(twoD, Integer.toString(0),  "String[][]_twoD" );
 		twoD[0] = tmp1;
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_tmp2");
+		hs.checkArrayWithGlobalPC(twoD, Integer.toString(1),  "String[][]_twoD" );
 		hs.setLevelOfArrayField(twoD, Integer.toString(1), "String[][]_twoD");
 		twoD[1] = tmp2;
 
@@ -135,17 +139,21 @@ public class MultiArraySuccess {
 		hs.addArrayToObjectMap(inner2);
 		hs.addLocal("String[]_inner2");
 		
+		hs.checkArrayWithGlobalPC(inner1, Integer.toString(0),  "String[]_inner1" );
 		hs.setLevelOfArrayField(inner1, Integer.toString(0), "String[]_inner1");
 		inner1[0] = "a";
 		
+		hs.checkArrayWithGlobalPC(inner2, Integer.toString(0),  "String[]_inner2" );
 		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner1");
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(0),  "String[][]_arr" );
 		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[][]_arr");
 		arr[0] = inner1;
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(1),  "String[][]_arr" );
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;
 		
@@ -196,17 +204,21 @@ public class MultiArraySuccess {
 		hs.addLocal("String[]_inner2");
 		hs.addArrayToObjectMap(inner2);
 		
+		hs.checkArrayWithGlobalPC(inner1, Integer.toString(0),  "String[]_inner1" );
 		hs.setLevelOfArrayField(inner1, Integer.toString(0), "String[]_inner1");
 		inner1[0] = "a";
 		
+		hs.checkArrayWithGlobalPC(inner2, Integer.toString(0),  "String[]_inner2" );
 		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner1");
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(0),  "String[][]_arr" );
 		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[][]_arr");
 		arr[0] = inner1;
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(1),  "String[][]_arr" );
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;
 		
@@ -216,6 +228,7 @@ public class MultiArraySuccess {
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[0];
 		
+		hs.checkArrayWithGlobalPC(tmp, Integer.toString(0), "String[]_tmp");
 		hs.setLevelOfArrayField(tmp, Integer.toString(0), "String[]_tmp");
 		tmp[0] = "a";
 		

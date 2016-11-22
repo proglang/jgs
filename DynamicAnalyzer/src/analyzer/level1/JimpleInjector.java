@@ -816,16 +816,27 @@ public class JimpleInjector {
 			
 		} 
 		
+		// checkArrayWithGlobalPC
+		Expr checkArrayGlobalPC = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+				"checkArrayWithGlobalPC", parameterTypes, 
+				VoidType.v(), false), args);
+		Unit checkArrayGlobalPCExpr = Jimple.v().newInvokeStmt(checkArrayGlobalPC);
+		
+		
+		// setLevelOfArrayField
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"setLevelOfArrayField", parameterTypes, 
 				Scene.v().getObjectType(), false), args);
-
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+		
 		unitStore_Before.insertElement(
 				unitStore_Before.new Element(assignFieldSignature, pos));
 		unitStore_Before.insertElement(
 				unitStore_Before.new Element(assignObjectSignature, pos));
+		unitStore_Before.insertElement(
+				unitStore_Before.new Element(checkArrayGlobalPCExpr, pos));
 		unitStore_Before.insertElement(
 				unitStore_Before.new Element(assignExpr, pos));
 		lastPos = pos;

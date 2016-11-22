@@ -54,18 +54,22 @@ public class MultiArrayFail {
 		hs.addArrayToObjectMap(inner2);
 		hs.addLocal("String[]_inner2");
 		
+		hs.checkArrayWithGlobalPC(inner1, Integer.toString(0), "String[]_inner1");
 		hs.setLevelOfArrayField(inner1, Integer.toString(0), "String[]_inner1");
 		inner1[0] = "a";
 		
+		hs.checkArrayWithGlobalPC(inner2, Integer.toString(0), "String[]_inner2");
 		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
 		
 		hs.addLocal("String[]_arr");
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner1");
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(0), "String[]_arr");
 		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[]_arr");
 		arr[0] = inner1;
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(1), "String[]_arr");
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[]_arr");
 		arr[1] = inner2;
 		
@@ -121,18 +125,22 @@ public class MultiArrayFail {
 		hs.addLocal("String[]_inner2");
 		hs.addArrayToObjectMap(inner2);
 		
+		hs.checkArrayWithGlobalPC(inner1, Integer.toString(0), "String[]_inner1");
 		hs.setLevelOfArrayField(inner1, Integer.toString(0), "String[]_inner1");
 		inner1[0] = "a";
 		
+		hs.checkArrayWithGlobalPC(inner2, Integer.toString(0), "String[]_inner2");
 		hs.setLevelOfArrayField(inner2, Integer.toString(0), "String[]_inner2");
 		inner2[0] = "b";
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner1");
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(0), "String[][]_arr");
 		hs.setLevelOfArrayField(arr, Integer.toString(0), "String[][]_arr");
 		arr[0] = inner1;
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
 		hs.setLevelOfLocal("String[][]_arr", SecurityLevel.top());
+		hs.checkArrayWithGlobalPC(arr, Integer.toString(1), "String[][]_arr");
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;
 		
@@ -142,6 +150,7 @@ public class MultiArrayFail {
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[0];
 		
+		hs.checkArrayWithGlobalPC(tmp, Integer.toString(0), "String[][]_tmp");
 		hs.setLevelOfArrayField(tmp, Integer.toString(0), "String[]_tmp");
 		tmp[0] = "a";
 		
