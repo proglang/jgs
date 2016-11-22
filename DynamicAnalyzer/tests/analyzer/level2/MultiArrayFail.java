@@ -71,6 +71,7 @@ public class MultiArrayFail {
 		
 		hs.addLocal("String[]_tmp");
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(1));
+		hs.checkLocalPC("String[]_tmp");
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[1];
 		
@@ -80,6 +81,7 @@ public class MultiArrayFail {
 		@SuppressWarnings("unused")
 		String x = tmp[0];
 		hs.initializeVariable("String_x");		// Comment out to remove NSU IFExept
+		hs.checkLocalPC("String_x");
 		hs.setLevelOfLocal("String_x");			// IllegalFlowException thrown here, NSU
 		
 		hs.popLocalPC(123);
@@ -136,6 +138,7 @@ public class MultiArrayFail {
 		
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(0));
 		hs.addLocal("String[]_tmp");
+		hs.checkLocalPC("String[]_tmp");
 		hs.setLevelOfLocal("String[]_tmp");
 		String[] tmp = arr[0];
 		

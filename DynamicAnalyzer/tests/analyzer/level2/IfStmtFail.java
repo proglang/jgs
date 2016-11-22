@@ -25,12 +25,14 @@ public class IfStmtFail {
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_x");
+		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x");
 		int x = 1;
 		hs.makeLocalHigh("int_x");
 		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_x"));
 		
 		hs.addLocal("int_y");
+		hs.checkLocalPC("int_y");
 		hs.setLevelOfLocal("int_y");
 		@SuppressWarnings("unused")
 		int y = 1;
@@ -44,6 +46,7 @@ public class IfStmtFail {
 			assertEquals(SecurityLevel.top(), hs.getLocalPC());
 			assertEquals(SecurityLevel.top(), hs.getGlobalPC());	
 			
+			hs.checkLocalPC("int_y");
 			hs.setLevelOfLocal("int_y");
 			y = 2;
 			

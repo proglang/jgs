@@ -88,6 +88,7 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.bottom(), hs.joinLevelOfLocalAndAssignmentLevel("int_var2"));
 		assertEquals(SecurityLevel.bottom(), hs.setLevelOfField(this, "int_field"));
 		
+		// hs.checkLocalPC("int_var2");
 		hs.setLevelOfLocal("int_var2", SecurityLevel.top());
 		assertEquals(SecurityLevel.bottom(), hs.joinLevelOfLocalAndAssignmentLevel("int_var1"));
 		assertEquals(SecurityLevel.top(), hs.joinLevelOfLocalAndAssignmentLevel("int_var2"));
@@ -121,6 +122,7 @@ public class AssignFieldsSuccess {
 		assertEquals(SecurityLevel.bottom(), hs.setLevelOfField(
 				this.getClass(), "int_sField"));
 		
+		
 		hs.setLevelOfLocal("int_var1", SecurityLevel.top());
 		assertEquals(SecurityLevel.top(), hs.joinLevelOfLocalAndAssignmentLevel("int_var1"));
 		assertEquals(SecurityLevel.top(), hs.setLevelOfField(
@@ -148,6 +150,7 @@ public class AssignFieldsSuccess {
 		 */
 		
 		hs.addLocal("int_local");
+		hs.checkLocalPC("int_local");
 		hs.setLevelOfLocal("int_local");
 		int local = 2;
 		

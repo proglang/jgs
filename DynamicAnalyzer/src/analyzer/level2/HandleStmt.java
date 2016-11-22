@@ -511,17 +511,11 @@ public class HandleStmt {
 	/**
 	 * Set the level of a local to default security-level. Called
 	 * on every assignment, and on initialization; but not on declaration.
-	 * NSU policy: Check if local's security-level is >= local PC, if not: 
-	 * Throws IllegalFlowException (via checkLocalPC method)
 	 * 
 	 * @param signature signature of the local
 	 * @return new security-level
 	 */
 	public Object setLevelOfLocal(String signature) {
-		
-		// first, check NSU policy
-		handleStatementUtils.checkLocalPC(signature);
-		
 		// Then, calc new level:
 		// for assignments like a = x + y, we need to calculate the
 		// new security-value of a: this sec-value depends either on
@@ -631,6 +625,14 @@ public class HandleStmt {
 	 */
 	public void checkGlobalPC(Object object, String field) {
 		handleStatementUtils.checkGlobalPC(object, field);
+	}
+	
+	/**
+	 * Check if local > localPC
+	 * @param signature		the local to test against the localPC
+	 */
+	public void checkLocalPC(String signature) {
+		handleStatementUtils.checkLocalPC(signature);
 	}
 
 	/**

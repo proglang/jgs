@@ -619,6 +619,7 @@ public class JimpleInjector {
 		Stmt assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(signature));
 		
+		// insert setLevelOfLOcal
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
 				"setLevelOfLocal", paramTypes, 
@@ -626,7 +627,16 @@ public class JimpleInjector {
 				false), local_for_Strings);
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
+		// insert checkLocalPC
+		Expr checkLocalPC = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+				"checkLocalPC", paramTypes, 
+				VoidType.v(),
+				false), local_for_Strings);
+		Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
+		
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
 		lastPos = pos;
 	}

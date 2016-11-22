@@ -37,6 +37,7 @@ public class ForStmtFail {
 		hs.checkCondition("123", "int_i");
 		for (int i = 0;i < 1; i++) {
 			
+			hs.checkLocalPC("int_res");
 			hs.setLevelOfLocal("int_res");
 			res = 2;
 			
@@ -69,6 +70,7 @@ public class ForStmtFail {
 		hs.checkCondition("123", "int_i");
 		for (int i = 0;i < 1; i++) {
 			
+			hs.checkLocalPC("int_res");
 			hs.setLevelOfLocal("int_res");
 			res = 2;
 			

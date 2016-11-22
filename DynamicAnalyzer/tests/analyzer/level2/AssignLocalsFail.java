@@ -32,6 +32,7 @@ public class AssignLocalsFail {
 		hs.addLocal("int_x", SecurityLevel.bottom());
 		hs.pushLocalPC(SecurityLevel.top(), 123);
 		// x = LOW, lpc = HIGH
+		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x");
 		hs.popLocalPC(123);
 		hs.close();
@@ -64,6 +65,7 @@ public class AssignLocalsFail {
 		assertEquals(SecurityLevel.top(), hs.getLocalPC());
 		hs.joinLevelOfLocalAndAssignmentLevel("int_y");
 		hs.joinLevelOfLocalAndAssignmentLevel("int_z");
+		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x");
 		
 		
@@ -84,6 +86,7 @@ public class AssignLocalsFail {
 		
 		hs.pushLocalPC(SecurityLevel.top(), 123);
 		
+		hs.checkLocalPC("TestSubClass_xy");
 		hs.setLevelOfLocal("TestSubClass_xy");
 		xy = new TestSubClass();
 		
@@ -110,7 +113,7 @@ public class AssignLocalsFail {
 		TestSubClass xy;
 		
 		hs.pushLocalPC(SecurityLevel.top(), 123);
-		
+		hs.checkLocalPC("TestSubClass_xy");
 		hs.setLevelOfLocal("TestSubClass_xy");
 		xy = new TestSubClass();
 		
@@ -148,6 +151,7 @@ public class AssignLocalsFail {
 		if (high == 0) {
 		
 			//hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");	//assignment level is low here. why needed?!
+			hs.checkLocalPC("int_res");
 			hs.setLevelOfLocal("int_res"); //exception expected here!
 			res = ts.methodWithConstReturn();	// res is low, ts
 			hs.assignReturnLevelToLocal("int_res");
@@ -185,6 +189,7 @@ public class AssignLocalsFail {
 		if (high == 0) {
 		
 			// hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");
+			hs.checkLocalPC("int_res");
 			hs.setLevelOfLocal("int_res"); //exception expected here!
 			res = ts.methodWithConstReturn();
 			hs.assignReturnLevelToLocal("int_res");
@@ -212,6 +217,7 @@ public class AssignLocalsFail {
 		hs.addLocal("int_x");
 		hs.pushLocalPC(SecurityLevel.top(), 123);
 		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
+		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x"); // Just ignore the constants
 		
 		hs.popLocalPC(123);
