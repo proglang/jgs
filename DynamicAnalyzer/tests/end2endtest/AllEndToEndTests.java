@@ -94,7 +94,7 @@ public class AllEndToEndTests {
 				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r19"} }, 					
 				
 				// Testing implicit and explicit flow with classes (which is unimplemented currently)
-				new Object[] { "NewClassFail1", true, new String[] {"main.testclasses.C_r4"} },
+				new Object[] { "NewClassFail1", true, new String[] {"utils.test.C_r4"} },
 				
 				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								
 				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						

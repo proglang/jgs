@@ -34,6 +34,7 @@ lib/
 out/
 bin/
 ant/
+build.properties
 
 ## user specific files
 **/.idea/workspace.xml
