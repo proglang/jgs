@@ -552,7 +552,7 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Set level of field {0} to {1}",
 				new Object[] {field, handleStatementUtils.joinWithGPC(
 						objectmap.getAssignmentLevel())});
-		handleStatementUtils.checkGlobalPC(object, field);
+		// handleStatementUtils.checkGlobalPC(object, field);
 		objectmap.setField(object, field, handleStatementUtils.joinWithGPC(
 				objectmap.getAssignmentLevel()));
 		logger.log(Level.INFO, "New level of field {0} is {1}",
@@ -622,6 +622,15 @@ public class HandleStmt {
 				new Object[] {field, objectmap.getFieldLevel(object, field)});
 		objectmap.clearAssignmentLevel();
 		return objectmap.getFieldLevel(object, field);
+	}
+	
+	/**
+	 * Check if level of field is greater then global PC
+	 * @param object
+	 * @param field
+	 */
+	public void checkGlobalPC(Object object, String field) {
+		handleStatementUtils.checkGlobalPC(object, field);
 	}
 
 	/**

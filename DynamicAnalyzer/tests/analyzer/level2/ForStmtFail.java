@@ -98,6 +98,7 @@ public class ForStmtFail {
 		hs.checkCondition("123", "int_i");
 		for (i = 0;i < 1; i++) {
 			
+			hs.checkGlobalPC(this, "int_res");
 			hs.setLevelOfField(this, "int_res");
 			res = 2;
 			

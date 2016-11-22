@@ -663,6 +663,15 @@ public class JimpleInjector {
 		Unit assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(fieldSignature));
 		
+		// insert: checkGlobalPC(Object, String)
+		Expr checkGlobalPC	= Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "checkGlobalPC", 
+				parameterTypes, VoidType.v(), false), 
+				tmpLocal, local_for_Strings);
+		Unit checkGlobalPCExpr = Jimple.v().newInvokeStmt(checkGlobalPC);
+		
+		// insert setLevelOfField
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField", 
@@ -670,6 +679,7 @@ public class JimpleInjector {
 				tmpLocal, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
+		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
 		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
 		lastPos = pos;
@@ -699,6 +709,15 @@ public class JimpleInjector {
 		Unit assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(signature));
 		
+		// insert: checkGlobalPC(Object, String)
+		Expr checkGlobalPC	= Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(
+				Scene.v().getSootClass(HANDLE_CLASS), "checkGlobalPC", 
+				parameterTypes, VoidType.v(), false), 
+				local_for_Objects, local_for_Strings);
+		Unit checkGlobalPCExpr = Jimple.v().newInvokeStmt(checkGlobalPC);
+		
+		// Add setLevelOfField
 		Expr addObj = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"setLevelOfField", parameterTypes, 
@@ -709,6 +728,7 @@ public class JimpleInjector {
 		unitStore_Before.insertElement(
 				unitStore_Before.new Element(assignDeclaringClass, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(checkGlobalPCExpr, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
 		lastPos = pos;
 	}

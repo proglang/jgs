@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "AccessFieldsOfObjectsFail";
+	public String name = "ForLoopSuccess";
 
 	public boolean hasIllegalFlow = true;
 
