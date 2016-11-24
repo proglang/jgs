@@ -1,3 +1,12 @@
+Week 6:
+- setLevelOf.. und check... auseinadnergezogen (handlestatement und jimpleinjector)
+- neue fancy argumente: java DynamicAnazlyzerMain pathToFile (-j) (-o outputPath) (-p pathToFile)
+
+Todo:
+- mit ant builder alles super syncron machen
+- NSU{3, 4, Static}: Problem noch ungelöst wie ich das machen soll.
+
+
 Week 4:
 - does not work at all on classes, even explicit leak is not noticed
 - example gets run two times?! see SimpleDebug.
