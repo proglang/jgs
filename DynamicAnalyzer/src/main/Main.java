@@ -13,7 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import oracle.jrockit.jfr.Options;
+import org.apache.commons.cli.ParseException;
+
 
 /**
  * @author Regina Koenig, Nicolas Müller
@@ -38,6 +39,7 @@ public class Main {
 	 * -f c --classes main.testclasses.Simple  --main_class main.testclasses.Simple
 	 * 
 	 * @param args
+	 * @throws ParseException 
 	 */
 	public static void main(String[] args) {
 		execute(args);
@@ -46,6 +48,7 @@ public class Main {
 	/**
      * Method which configures and executes soot.Main.
      * @param args This arguments are delivered by Main.main.
+	 * @throws ParseException 
      */
 	private static void execute(String[] args) {
 		
