@@ -8,7 +8,7 @@ import org.apache.commons.cli.*;
 
 import utils.exceptions.IllegalArgumentsException;
 
-public class Parser2 {
+public class ArgParser {
 	
 	public static void printHelp() {
 		System.out.println(" ====== POSSIBLE FLAGS =======");

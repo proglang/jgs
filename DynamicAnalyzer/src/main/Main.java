@@ -6,8 +6,7 @@ import soot.PackManager;
 import soot.Scene;
 import soot.Transform;
 import utils.logging.L1Logger;
-import utils.parser.ArgumentParser;
-import utils.parser.Parser2;
+import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,6 @@ public class Main {
 
 	private static Level LOGGER_LEVEL;
 
-	private static ArgumentParser argparser;
 
 	/**
 	 * The entry point for compilation and instrumentation (that is, adding the appropriate
@@ -58,7 +56,7 @@ public class Main {
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
 		
 		LOGGER_LEVEL = Level.ALL;
-		String[] sootOptions = Parser2.getSootOptions(args);
+		String[] sootOptions = ArgParser.getSootOptions(args);
 		
 		try {
 			System.out.println("Logger Init1");
