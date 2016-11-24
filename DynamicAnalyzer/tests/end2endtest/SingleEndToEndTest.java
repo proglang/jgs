@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "NSU_FieldAccessStatic";
+	public String name = "NSU_FieldAccess";
 
 	public boolean hasIllegalFlow = true;
 
