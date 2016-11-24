@@ -68,7 +68,7 @@ public class ArgParser {
 	        }
 	        
 	        if (cmd.hasOption("o")) {
-	        	template[6] = cmd.getOptionValue("p");
+	        	template[6] = cmd.getOptionValue("o");
 	        }
 	        		
 			return template;
