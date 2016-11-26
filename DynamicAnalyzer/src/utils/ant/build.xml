@@ -4,13 +4,13 @@
   <property file="build.properties"/>
 
   <target name="build-jar">
-    <jar destfile="${outputFolder}/${mainClass}.jar" basedir=".">
+    <jar destfile="${pathToMainClass}.jar" basedir=".">
 
         <manifest>
          <attribute name="Main-Class" value="${mainClass}"/>
         </manifest>
     	
-    	<fileset dir="../../../${pathToMainClass}">
+    	<fileset dir="${outputFolder}">
     	   <include name="${mainClass}.class"/>	
     	</fileset>
     	

@@ -49,7 +49,9 @@ public class AntRunner {
 			p.executeTarget(p.getDefaultTarget());
 			p.fireBuildFinished(null);
 		} catch (BuildException e) {
+			System.err.println(e);
 			p.fireBuildFinished(e);
+			
 		}
 	}
 
