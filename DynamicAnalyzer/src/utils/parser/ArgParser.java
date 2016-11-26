@@ -1,10 +1,9 @@
 package utils.parser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.cli.*;
+
+import java.io.File;
+import java.nio.file.*;
 
 import utils.exceptions.IllegalArgumentsException;
 
@@ -68,7 +67,15 @@ public class ArgParser {
 	        }
 	        
 	        if (cmd.hasOption("o")) {
-	        	template[6] = cmd.getOptionValue("o");
+	        	File out = new File(cmd.getOptionValue("o"));
+	        		        	
+	        	if (out.isAbsolute()) {
+	        		template[6] = out.getAbsolutePath();
+	        	} else {
+	        		File parent = new File(System.getProperty("user.dir"));
+	        		File fullPath = new File(parent,cmd.getOptionValue("o") );
+	        		template[6] = fullPath.getAbsolutePath();
+	        	}
 	        }
 	        		
 			return template;

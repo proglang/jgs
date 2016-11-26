@@ -93,7 +93,8 @@ public class Main {
 		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
 		// we want to output it to ant/main/testclasses/test1.jar
-		utils.ant.AntRunner.run(sootOptions[3], "sootOutput", "antOutput");
+		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
+		utils.ant.AntRunner.run(sootOptions[3], "sootOutput", sootOptions[6]);
 		
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
