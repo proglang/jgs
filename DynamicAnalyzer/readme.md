@@ -1,6 +1,14 @@
 # Dynamic Analyzer
 Enforcing non-interference using run-time security labels: An implementation of dynamic information flow control, based on the no-sensitive-upgrade (NSU) policy.
 
+## Purpose of the Dynamic Analyzer
+The DA's purpose is to take a java file and compile it to one of the following formats: Jimple, or bytecode.
+Jimple can be thought of as an intermediate representation between java and java bytecode.
+This task is accomplished using the [Soot](https://github.com/Sable/soot/) compiler framework. If the java file has
+been annotated by the programmer with security-levels, DA adds run-time checks to ensure non-interference. This process
+is called "instrumentation".
+
+
 ## Setup
 Setting up the Dynamic Analyzer (DA) is not complicated, although not yet trivial. Follow these steps:
 - Clone the full repository to your hard drive
@@ -16,12 +24,19 @@ Setting up the Dynamic Analyzer (DA) is not complicated, although not yet trivia
 - add the file `gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar` to the DEPS folder. TODO: Dont know anymore how to create it
 - add folder DEPS to your buildpath: Right-click on DynamicAnalyzer in the Package Explorer -> BuildPath -> Configure Build Path -> Add variable, pointing to your DEPS directory
 
-## Purpose of the Dynamic Analyzer
-The DA's purpose is to take a java file and compile it to one of the following formats: Jimple, or bytecode.
-Jimple can be thought of as an intermediate representation between java and java bytecode.
-This task is accomplished using the [Soot](https://github.com/Sable/soot/) compiler framework. If the java file has
-been annotated by the programmer with security-levels, DA adds run-time checks to ensure non-interference. This process
-is called "instrumentation".
+## Command line arguments
+The following flags are supported:
+- `-j`, indication output to the jimple format. if omitted, output will be a classfile
+- `-o`, the output directory. May be absolute or relative. If omitted, output will be in current folder
+- `-p`, the path to src directory. May be absolute or relative. If omitted, source must be in current folder
+
+Sample arguments for main method (see tests.CommandLineArgsTest.CmdArgsTest):
+- `main.testclasses.NSUPolicy1`
+- `main.testclasses.NSUPolicy1 -j`
+- `main.testclasses.NSUPolicy1 -o /path/to/outdir`
+- `main.testclasses.NSUPolicy1 -o relativepath/to/outputdir`
+- `main.testclasses.NSUPolicy1 -p /path/to/inputdir`
+- `main.testclasses.NSUPolicy1 -p relativepath/to/inputdir -o /path/to/outdir -j`
 
 ## Example
 Consider the following java class:
