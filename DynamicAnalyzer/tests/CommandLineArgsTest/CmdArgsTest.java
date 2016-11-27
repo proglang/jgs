@@ -25,18 +25,33 @@ public class CmdArgsTest {
 		
 		assertTrue(outFile.exists());
 		assertTrue(outJar.exists());
+		
+		// delete for valid run next time
+		outFile.delete();
+		outJar.delete();
+				
+		assertTrue(!outFile.exists());
+		assertTrue(!outJar.exists());
 	}
 	
+	@Test
 	public void pathTestJimple() {
 		String testFile = "NSUPolicy1";
 		
-		main.Main.main(new String[] {"main.testclasses." + testFile, "-j", outputPath});
+		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-j"});
 		File outParent = new File(System.getProperty("user.dir"));
-		File outFile = new File(outParent, outputPath + "/main/testclasses/"+ testFile +".jimple");
+		File outFile = new File(outParent, outputPath + "/main.testclasses."+ testFile +".jimple");
 		File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
 		
 		assertTrue(outFile.exists());
 		assertTrue(outJar.exists());
+		
+		// delete for valid run next time
+		outFile.delete();
+		outJar.delete();
+		
+		assertTrue(!outFile.exists());
+		assertTrue(!outJar.exists());
 	}
 	
 	
