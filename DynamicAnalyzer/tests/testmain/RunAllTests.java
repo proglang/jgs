@@ -1,5 +1,6 @@
 package testmain;
 
+import CommandLineArgsTest.CmdArgsTest;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
 import analyzer.level2.AssignLocalsFail;
@@ -68,6 +69,9 @@ import end2endtest.SingleEndToEndTest;
     
     // Test for SecurityOptinal Container
     SecurityOptionalTest.class,
+    
+    // Test for commandline arguments and correct path output
+    CmdArgsTest.class,
 
     // Tests for valid bytecode of testclasses
     AllEndToEndTests.class,
