@@ -3,10 +3,20 @@ package utils.parser;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.*;
 
 import utils.exceptions.IllegalArgumentsException;
+import utils.exceptions.InternalAnalyzerException;
 
+/**
+ * Parses the arguments from cmd into soot format. Soot format is like this:
+ * [-f, c, -main-class, 
+ * 	/Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer/testing_external,
+ *  main.testclasses.NSUPolicy1, --d, /Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer]
+ * @author Nicolas Müller
+ *
+ */
 public class ArgParser {
 
 	public static void printHelp() {
@@ -73,12 +83,19 @@ public class ArgParser {
 				template[3] = args[0]; // set mainclass
 
 				if (path.isAbsolute()) {
-					template[4] = args[0];
+					try {
+						template[3] = path.getCanonicalPath();
+					} catch (IOException e) {
+						throw new InternalAnalyzerException(e.getMessage());
+					} 
 				} else {
 					File parent = new File(System.getProperty("user.dir"));
 					File fullPath = new File(parent, cmd.getOptionValue("p"));
-					template[4] = fullPath.getAbsolutePath(); // set path to
-																// file
+					try {
+						template[3] = fullPath.getCanonicalPath();
+					} catch (IOException e) {
+						throw new InternalAnalyzerException(e.getMessage());
+					} 
 				}
 			}
 
