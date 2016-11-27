@@ -17,12 +17,9 @@ public class ArgParser {
 		System.out.println("\nExamples:");
 		System.out.println("main.testclasses.NSUPolicy1");
 		System.out.println("main.testclasses.NSUPolicy1 -j");
-		System.out
-				.println("main.testclasses.NSUPolicy1 -o /Users/NicolasM/myOutputFolder");
-		System.out
-				.println("main.testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads");
-		System.out
-				.println("main.testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads -j");
+		System.out.println("main.testclasses.NSUPolicy1 -o /Users/NicolasM/myOutputFolder");
+		System.out.println("main.testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads");
+		System.out.println("main.testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads -j");
 	}
 
 	public static String[] getSootOptions(String[] args) {
