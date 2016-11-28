@@ -61,7 +61,9 @@ public class AllEndToEndTests {
 				new Object[] { "BooleanPrintFail", true, new String[] {"boolean_z1"} }, 						
 				
 				new Object[] { "ExternalFail1", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
-				new Object[] { "ExternalFail2", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
+				new Object[] { "ExternalFail2", true, new String[] {} },										// fails: TODO: write external, manually instrumented class for this test
+				
+				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },							// used to throw java.lang.verify error
 				
 				//new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
 				
@@ -83,13 +85,13 @@ public class AllEndToEndTests {
 				new Object[] { "ImplicitFlow3", true, new String[] {"high-security context"} },
 			
 				// Examples from readme.md
-				new Object[] { "NSUPolicy1", true, new String[] {"int_i3"} },
+				new Object[] { "NSUPolicy", true, new String[] {"int_i3"} },
 				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
 				new Object[] { "NSUPolicy3", true, new String[] {"<utils.test.C: boolean f>"} },
 				
 				// More NSU Tests
 				new Object[] { "NSU_FieldAccess", true, new String[] {"<utils.test.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"int f"} },
 				new Object[] { "NSU_FieldAccess2", false, new String[] {} },
 				new Object[] { "NSU_FieldAccess3", true, new String[] {"<utils.test.C: boolean f>"} },
 				new Object[] { "NSU_FieldAccess4", true, new String[] {"<utils.test.C: boolean f>"} },

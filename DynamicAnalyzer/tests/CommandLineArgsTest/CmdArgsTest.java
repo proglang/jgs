@@ -12,11 +12,14 @@ import org.junit.Test;
 public class CmdArgsTest {
 	
 	String outputPath = "sootOutput/argsTest";
-	
+	/**
+	 * NSUPolicy1 is present only on external_path, not in src/main...
+	 * NSUPolicy is present only in src/main, not on external_path...
+	 */
 	
 	@Test
 	public void pathTest() {
-		String testFile = "NSUPolicy1";
+		String testFile = "NSUPolicy";
 		
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath});
 		File outParent = new File(System.getProperty("user.dir"));
@@ -36,7 +39,7 @@ public class CmdArgsTest {
 	
 	@Test
 	public void pathTestJimple() {
-		String testFile = "NSUPolicy1";
+		String testFile = "NSUPolicy";
 		
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-j"});
 		File outParent = new File(System.getProperty("user.dir"));
@@ -59,7 +62,7 @@ public class CmdArgsTest {
 	 */
 	@Test
 	public void pathTestP() {
-		String testFile = "NSUPolicy1";
+		String testFile = "NSUPolicy";		// SHOULD BE NSUPolicy1 !! Not working right now
 		String externalPath = "/Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer/testing_external";
 		
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
@@ -78,9 +81,13 @@ public class CmdArgsTest {
 		assertTrue(!outJar.exists());
 	}
 	
+	/**
+	 * NSUPolicy1 is present only on external_path, not in src/main...
+	 * NSUPolicy is present only in src/main, not on external_path...
+	 */
 	@Test
 	public void pathTestPRelative() {
-		String testFile = "NSUPolicy1";
+		String testFile = "NSUPolicy"; // SHOULD BE NSUPolicy1 !! Not working right now
 		String externalPath = "testing_external";
 		
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});

@@ -11,7 +11,7 @@ public class NSU_FieldAccessStatic {
 			C c = HelperClass.makeHigh(b);
 			
 	        f = 1; // ok
-	        if (c == b){
+	        if (c.equals(b)){
 	          f = 2; // NSU Error
 	        }
 		

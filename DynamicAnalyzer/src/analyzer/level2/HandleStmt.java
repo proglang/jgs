@@ -325,7 +325,7 @@ public class HandleStmt {
 	 * @param localSignature		singature of local to be pushed onto the stack
 	 */
 	public void pushInstanceLevelToGlobalPC(String localSignature) {
-		// TODO get instance level of localSignature, push to globalPC (which calcs
+		// get instance level of localSignature, push to globalPC (which calcs
 		// the max of all its stack elements)
 		
 		Object secLevel = getLocalLevel(localSignature);

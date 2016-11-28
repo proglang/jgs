@@ -676,7 +676,7 @@ public class JimpleInjector {
 				local_for_Strings, StringConstant.v(fieldSignature));
 		
 		// push and pop security level of instance to globalPC
-		Unit pushRef = Jimple.v().newInvokeStmt(
+		Unit pushInstanceLevelToGlobalPC = Jimple.v().newInvokeStmt(
 				Jimple.v().newVirtualInvokeExpr(
 						hs, Scene.v().makeMethodRef(
 								Scene.v().getSootClass(HANDLE_CLASS), "pushInstanceLevelToGlobalPC", 
@@ -685,7 +685,7 @@ public class JimpleInjector {
 								StringConstant.v(getSignatureForLocal(tmpLocal)))
 				);
 		
-		Unit popRef = Jimple.v().newInvokeStmt(
+		Unit popGlobalPC = Jimple.v().newInvokeStmt(
 				Jimple.v().newVirtualInvokeExpr(
 						hs, Scene.v().makeMethodRef(
 								Scene.v().getSootClass(HANDLE_CLASS), "popGlobalPC", 
@@ -708,11 +708,13 @@ public class JimpleInjector {
 				tmpLocal, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
-		unitStore_Before.insertElement(unitStore_Before.new Element(pushRef, pos));
+		// pushInstanceLevelToGlobalPC and popGlobalPC take the instance, push to global pc; and pop afterwards.
+		// see NSU_FieldAccess tests why this is needed
+		unitStore_Before.insertElement(unitStore_Before.new Element(pushInstanceLevelToGlobalPC, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
 		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
 		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(popRef, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(popGlobalPC, pos));
 		lastPos = pos;
 	}
 	

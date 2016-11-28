@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "NSUPolicy3";
+	public String name = "EqualObjectsVerifySuccess";
 
 	public boolean hasIllegalFlow = true;
 
