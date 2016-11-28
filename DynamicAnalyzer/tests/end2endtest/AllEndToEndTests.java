@@ -85,10 +85,14 @@ public class AllEndToEndTests {
 				// Examples from readme.md
 				new Object[] { "NSUPolicy1", true, new String[] {"int_i3"} },
 				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
-				new Object[] { "NSUPolicy3", true, new String[] {"int_i3"} },
+				new Object[] { "NSUPolicy3", true, new String[] {"<utils.test.C: boolean f>"} },
 				
-				new Object[] { "NSU_FieldAccess", true, new String[] {"int_i3"} },
-				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"int_i3"} },
+				// More NSU Tests
+				new Object[] { "NSU_FieldAccess", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess2", false, new String[] {} },
+				new Object[] { "NSU_FieldAccess3", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess4", true, new String[] {"<utils.test.C: boolean f>"} },
 				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				

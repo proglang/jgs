@@ -32,6 +32,8 @@ import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -673,6 +675,23 @@ public class JimpleInjector {
 		Unit assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(fieldSignature));
 		
+		// push and pop security level of instance to globalPC
+		Unit pushRef = Jimple.v().newInvokeStmt(
+				Jimple.v().newVirtualInvokeExpr(
+						hs, Scene.v().makeMethodRef(
+								Scene.v().getSootClass(HANDLE_CLASS), "pushInstanceLevelToGlobalPC", 
+								Arrays.<Type>asList(RefType.v("java.lang.String")), 
+								VoidType.v(), false), 
+								StringConstant.v(getSignatureForLocal(tmpLocal)))
+				);
+		
+		Unit popRef = Jimple.v().newInvokeStmt(
+				Jimple.v().newVirtualInvokeExpr(
+						hs, Scene.v().makeMethodRef(
+								Scene.v().getSootClass(HANDLE_CLASS), "popGlobalPC", 
+								Collections.<Type>emptyList(), RefType.v("java.lang.Object"), false))
+				);
+		
 		// insert: checkGlobalPC(Object, String)
 		Expr checkGlobalPC	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
@@ -689,9 +708,11 @@ public class JimpleInjector {
 				tmpLocal, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
-		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(pushRef, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
 		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(popRef, pos));
 		lastPos = pos;
 	}
 	

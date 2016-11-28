@@ -321,6 +321,21 @@ public class HandleStmt {
 	}
 
 	/**
+	 * Push the level of a given instance to the globalPC (e.g. on top of its stack)
+	 * @param localSignature		singature of local to be pushed onto the stack
+	 */
+	public void pushInstanceLevelToGlobalPC(String localSignature) {
+		// TODO get instance level of localSignature, push to globalPC (which calcs
+		// the max of all its stack elements)
+		
+		Object secLevel = getLocalLevel(localSignature);
+		pushGlobalPC(secLevel);
+	
+	}
+	
+	// make PopGlobalPC public
+	
+	/**
 	 * Push a new localPC and the indentity for its corresponding postdominator
 	 * unit to the LPCList.
 	 * 
@@ -384,7 +399,7 @@ public class HandleStmt {
 	 * 
 	 * @return SecurityLevel of last GPC
 	 */
-	protected Object popGlobalPC() {
+	public Object popGlobalPC() {
 		return objectmap.popGlobalPC();
 	}
 
