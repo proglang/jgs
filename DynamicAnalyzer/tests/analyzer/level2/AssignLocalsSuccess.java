@@ -36,6 +36,7 @@ public class AssignLocalsSuccess {
 		 *  2. Assign level of lpc to local
 		 */
 		// x = LOW, lpc = LOW
+		// hs.checkLocalPC("int_x");
 		assertEquals(SecurityLevel.bottom(), hs.setLevelOfLocal("int_x")); 
 		
 		hs.makeLocalHigh("int_x");
@@ -197,18 +198,21 @@ public class AssignLocalsSuccess {
 		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_res"));
 
 		hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_xy");
+		hs.checkLocalPC("int_res");
 		hs.setLevelOfLocal("int_res");
 		res = xy.methodWithConstReturn();
 		hs.assignReturnLevelToLocal("int_res");
 		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_res"));
 
 		hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_xy");
+		hs.checkLocalPC("int_res");
 		hs.setLevelOfLocal("int_res");
 		res = xy.methodWithLowLocalReturn();
 		hs.assignReturnLevelToLocal("int_res");
 		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_res"));
 
 		hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_xy");
+		hs.checkLocalPC("int_res");
 		hs.setLevelOfLocal("int_res");
 		res = xy.methodWithHighLocalReturn();
 		hs.assignReturnLevelToLocal("int_res");
@@ -269,6 +273,7 @@ public class AssignLocalsSuccess {
 		int x = 0;
 
 		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
+		hs.checkLocalPC("int_res");
 		hs.setLevelOfLocal("int_res"); // Just ignore the constants
 		x++;
 		

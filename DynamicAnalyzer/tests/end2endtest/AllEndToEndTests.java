@@ -49,46 +49,57 @@ public class AllEndToEndTests {
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
-				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } }, 	// set involved variable
+				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } }, 	
 				new Object[] { "AccessFieldsOfObjectsSuccess", false, new String[] {} },
 				
 				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "int_i0" } }, 						
 				new Object[] { "ArithmeticExpressionsSuccess", false, new String[] {} },
 				
-				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					// working now: rewrote non-expressive (?!) test
-				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									// working now: rewritten (was one testfile ExtClasses)
+				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					
+				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									
 				
-				new Object[] { "ExtClassesFail", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
-				new Object[] { "ExtClassesSuccess", false, new String[] {} }, 									// fails: same
+				new Object[] { "BooleanPrintFail", true, new String[] {"boolean_z1"} }, 						
+				
+				new Object[] { "ExternalFail1", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
+				new Object[] { "ExternalFail2", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
 				
 				//new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
-				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },								// failed because variable was missing
+				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },					
 				
 				new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
 				new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails, same reason
 				
-				new Object[] { "IfStmtSuccess", false, new String[] {"byte_b1"} }, 								// fails. SHOULD NOT FAIL?! 
-				new Object[] { "IfStmtFail", true, new String[] { "int_i0" } }, 								// working now: split up from one test IfStmt 
+				new Object[] { "IfStmtSuccess", false, new String[] {"byte_b1"} }, 								
+				new Object[] { "IfStmtFail", true, new String[] { "int_i0" } }, 								
 				
 				new Object[] { "InvokeInternalMethod", true, new String[] {} }, 								// fails because test is empty
 				new Object[] { "InvokeLibMethod", true, new String[] { "int_i0" } },
 				
 				// Implicit flow from high-if guard to low-sec return
 				new Object[] { "ImplicitFlow1", true, new String[] {"byte_b1"} },
-				new Object[] { "ImplicitFlow2", true, new String[] {"java.lang.String_$r7"} },
-				new Object[] { "ImplicitFlow3", true, new String[] {"java.lang.String_r1"} },
+				new Object[] { "ImplicitFlow2", true, new String[] {"high-security context"} },
+				new Object[] { "ImplicitFlow3", true, new String[] {"high-security context"} },
+			
+				// Examples from readme.md
+				new Object[] { "NSUPolicy1", true, new String[] {"int_i3"} },
+				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
+				new Object[] { "NSUPolicy3", true, new String[] {"int_i3"} },
 				
-				new Object[] { "NSUPolicy", true, new String[] {"int_i3"} },
+				new Object[] { "NSU_FieldAccess", true, new String[] {"int_i3"} },
+				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"int_i3"} },
 				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
 				new Object[] { "MulArray", false, new String[] {} },
-				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r19"} }, 					// failed because there was no illegal flow, fixed now
+				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r19"} }, 					
 				
-				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								// rename for consistency
-				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						// failed because no illegal flow was supplied
+				// Testing implicit and explicit flow with classes (which is unimplemented currently)
+				new Object[] { "NewClassFail1", true, new String[] {"utils.test.C_r4"} },
+				
+				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								
+				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						
 			
 				// This is a collection of expressions that are not currently supported
 				// new Object[] { "NotSupported", false, new String[] {} }, 
@@ -97,10 +108,10 @@ public class AllEndToEndTests {
 				
 				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
 				new Object[] { "SystemOut1", true, new String[] {"int_i0"} },
-				new Object[] { "SystemOut2", true, new String[] {"int_i0"} },							// does not fail even though it should!!
+				new Object[] { "SystemOut2", true, new String[] {"java.lang.Object_$r3"} },						
 				
-				// SimpleDebug is the test to try out stuff with - sort of a playground
-				new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
+				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
+				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 				
 				new Object[] { "StaticMethodsSuccess", false, new String[] {} }, 
 				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!

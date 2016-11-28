@@ -30,6 +30,7 @@ public class WhileStmtFail {
 		HandleStmt hs = new HandleStmt();
 		
 		hs.addLocal("int_x");
+		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x");
 		int x = 0;
 		
@@ -40,9 +41,11 @@ public class WhileStmtFail {
 		while (y == 0) {
 			
 			hs.joinLevelOfLocalAndAssignmentLevel("int_x");
+			hs.checkLocalPC("int_x");
 			hs.setLevelOfLocal("int_x");
 			x += 1;
 			hs.joinLevelOfLocalAndAssignmentLevel("int_y");
+			hs.checkLocalPC("int_y");
 			hs.setLevelOfLocal("int_y");
 			y += 1;
 			

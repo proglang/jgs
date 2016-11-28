@@ -24,6 +24,7 @@ public class IfStmtSuccess {
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_x");
 		
+		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x");
 		int x = 1;
 		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_x"));

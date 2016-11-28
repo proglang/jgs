@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+  <project name="Compile to Jar" default="build-jar">
+   
+  <property file="build.properties"/>
+
+  <target name="build-jar">
+    <jar destfile="${pathToMainClass}.jar" basedir=".">
+
+        <manifest>
+         <attribute name="Main-Class" value="${mainClass}"/>
+        </manifest>
+    	
+    	<fileset dir="${outputFolder}">
+    	   <include name="${mainClass}.class"/>	
+    	</fileset>
+    	
+    	<fileset dir="../../../bin">
+    	   	<include name="utils/test/*.class"/>	
+    	 </fileset>
+    	
+    	<fileset dir="../../../bin">
+    	    <include name="utils/analyzer/HelperClass.class"/>	
+    	</fileset>
+    	
+    	<fileset dir="../../../bin">
+    		<include name="analyzer/**"/>	
+    	</fileset>	
+    	
+    	<fileset dir="../../../bin">
+    	    <include name="utils/**"/>	
+    	</fileset>
+    	
+    	<zipgroupfileset dir="../../../../../DEPS" includes="gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar">
+    	   	<include name="de/**"/>	
+    	</zipgroupfileset>	
+    	
+    	<zipgroupfileset dir="../../../../../DEPS/commons-collections4-4.0" includes="commons-collections4-4.0.jar">
+    	   <include name="org/**"/>
+    	</zipgroupfileset>
+
+     </jar>
+  </target>
+</project>

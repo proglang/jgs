@@ -40,6 +40,7 @@ public class AssignFieldsFail {
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
 		hs.pushGlobalPC(SecurityLevel.top());
+		hs.checkGlobalPC(this, "int_field");
 		hs.setLevelOfField(this, "int_field");
 		
 		hs.close();	
@@ -64,6 +65,7 @@ public class AssignFieldsFail {
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
 		hs.pushGlobalPC(SecurityLevel.top());
+		hs.checkGlobalPC(this, "int_field");
 		hs.setLevelOfField(this, "int_field");
 		
 		hs.close();	
@@ -95,6 +97,7 @@ public class AssignFieldsFail {
 		hs.pushGlobalPC(SecurityLevel.top());
 		
 		assertEquals(SecurityLevel.bottom(), hs.joinLevelOfLocalAndAssignmentLevel("int_local"));
+		hs.checkGlobalPC(o, "int_field");
 		hs.setLevelOfField(o, "int_pField");
 		o.pField = local;
 		

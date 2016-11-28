@@ -1,11 +1,12 @@
 package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
-
 import analyzer.level2.HandleStmt;
 import analyzer.level2.SecurityLevel;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -72,6 +73,7 @@ public class SwitchStmtSuccess {
 		
 		  case 0: 
 			  assertEquals(SecurityLevel.top(), hs.getLocalPC()); 
+			  hs.checkLocalPC("int_x");
 			  hs.setLevelOfLocal("int_x");
 			  hs.exitInnerScope("123");
 			  break;

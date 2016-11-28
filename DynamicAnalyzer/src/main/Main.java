@@ -6,23 +6,22 @@ import soot.PackManager;
 import soot.Scene;
 import soot.Transform;
 import utils.logging.L1Logger;
-import utils.parser.ArgumentParser;
+import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import oracle.jrockit.jfr.Options;
+import org.apache.commons.cli.ParseException;
+
 
 /**
- * @author Regina Koenig
- * @version 0.6
+ * @author Regina Koenig, Nicolas Müller
  */
 public class Main {
 
 	private static Level LOGGER_LEVEL;
 
-	private static ArgumentParser argparser;
 
 	/**
 	 * The entry point for compilation and instrumentation (that is, adding the appropriate
@@ -38,6 +37,7 @@ public class Main {
 	 * -f c --classes main.testclasses.Simple  --main_class main.testclasses.Simple
 	 * 
 	 * @param args
+	 * @throws ParseException 
 	 */
 	public static void main(String[] args) {
 		execute(args);
@@ -46,13 +46,17 @@ public class Main {
 	/**
      * Method which configures and executes soot.Main.
      * @param args This arguments are delivered by Main.main.
+	 * @throws ParseException 
      */
 	private static void execute(String[] args) {
 		
-		argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
+		//argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
     	
-		LOGGER_LEVEL = argparser.getLoggerLevel();
-		String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
+		// LOGGER_LEVEL = argparser.getLoggerLevel();
+		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
+		
+		LOGGER_LEVEL = Level.ALL;
+		String[] sootOptions = ArgParser.getSootOptions(args);
 		
 		try {
 			System.out.println("Logger Init1");
@@ -85,6 +89,13 @@ public class Main {
 
         	   
 		soot.Main.main(sootOptions);
+		
+		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
+		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
+		// we want to output it to ant/main/testclasses/test1.jar
+		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
+		File pathToMain = new File(new File(sootOptions[6]).getAbsolutePath(), sootOptions[4]);
+		utils.ant.AntRunner.run(args[0], pathToMain.getAbsolutePath(), sootOptions[6]);
 		
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
