@@ -1,6 +1,6 @@
 package main.testclasses;
 
-public class ForLoopFail {
+public class NSU_ForLoopFail {
 
 	/**
 	 * Test various for loops.
@@ -18,10 +18,11 @@ public class ForLoopFail {
 	 * @return output
 	 */
 	public static int simpleFor(int x) {
-		for (int i = 0; i < x; i++) {
-			x--;
+		int i = 0;
+		for (int j = 0; j < x; j++) {
+			i--;
 		}
-		return x;
+		return i;
 	}
 	
 	/**

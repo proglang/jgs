@@ -2,7 +2,7 @@ package main.testclasses;
 
 import utils.analyzer.HelperClass;
 
-public class ForLoopSuccess {
+public class NSU_ForLoopSuccess {
 
 	/**
 	 * Test various for loops.
@@ -25,7 +25,7 @@ public class ForLoopSuccess {
 	 */
 	public static int simpleFor(int x) {
 		for (int i = 0; i < x; i++) {
-			x--;
+			x--;		
 		}
 		return x;
 	}

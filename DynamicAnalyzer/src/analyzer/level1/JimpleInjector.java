@@ -1086,7 +1086,7 @@ public class JimpleInjector {
 		int numberOfLocals = locals.length;
 		ArrayList<Type>	paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
-		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
+		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1)); // here
 		
 		// Add hashvalue for immediate dominator
 		String domIdentity = DominatorFinder.getImmediateDominatorIdentity(pos);

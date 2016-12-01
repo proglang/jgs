@@ -42,9 +42,12 @@ public class DominatorFinder {
 		if (!containsStmt(dom)) {
 			domList.put(dom, getIdentityForUnit(dom));
 		} 
-
-		logger.info("Dominator \"" + dom.toString()
+		if (dom != null) {
+		 logger.info("Dominator \"" + dom.toString()
 				+ "\" has Identity " + domList.get(dom));
+		} else {
+		 logger.info("No immediate dominator for node:" + node.toString());
+		}
 		return domList.get(dom);
 	}
 

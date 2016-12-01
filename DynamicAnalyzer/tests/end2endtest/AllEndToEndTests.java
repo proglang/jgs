@@ -65,19 +65,13 @@ public class AllEndToEndTests {
 				
 				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },							// throws java.lang.verify error
 				
-				//new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
+				new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },					
 				
-				new Object[] { "ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
-				new Object[] { "ForLoopFail", true, new String[] {} }, 											// fails, same reason
-				
 				new Object[] { "IfStmtSuccess", false, new String[] {"byte_b1"} }, 								
 				new Object[] { "IfStmtFail", true, new String[] { "int_i0" } }, 								
-				
-				new Object[] { "InvokeInternalMethod", true, new String[] {} }, 								// fails because test is empty
-				new Object[] { "InvokeLibMethod", true, new String[] { "int_i0" } },
 				
 				// Implicit flow from high-if guard to low-sec return
 				new Object[] { "ImplicitFlow1", true, new String[] {"byte_b1"} },
@@ -95,6 +89,10 @@ public class AllEndToEndTests {
 				new Object[] { "NSU_FieldAccess2", false, new String[] {} },
 				new Object[] { "NSU_FieldAccess3", true, new String[] {"<utils.test.C: boolean f>"} },
 				new Object[] { "NSU_FieldAccess4", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess5", true, new String[] {"<utils.test.C: boolean f>"} },
+				
+				new Object[] { "NSU_ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
+				new Object[] { "NSU_ForLoopFail", true, new String[] {} }, 	
 				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
