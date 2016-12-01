@@ -280,9 +280,11 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		valueSwitch.callingStmt = stmt;
 		logger.finer("Use boxes: " + stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
+		// JimpleInjector.popGlobalPC();
 		if (val instanceof Constant) {
 			JimpleInjector.returnConstant(stmt);
 		} else if (val instanceof Local) {
+			
 			JimpleInjector.returnLocal((Local) val, stmt);
 		}
 	}

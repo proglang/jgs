@@ -457,14 +457,16 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			String method = v.getMethod().toString();
 
-			if (ExternalClasses.methodMap.containsKey(method)) {
+			if (ExternalClasses.methodMap.containsKey(method)) {		// methodMap sind spezielle methoden, 
+					// die nicht instrumentiert werden (beispiel: makeHigh)
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated in a special way");
-				ExternalClasses.receiveCommand(method, callingStmt, args);
+				ExternalClasses.receiveCommand(method, callingStmt, args);	
 			} else {
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated as an internal class");
-				JimpleInjector.storeArgumentLevels(callingStmt, args);
+				// JimpleInjector.pushToGlobalPC(LocalPC JOIN GlobalPC)
+				JimpleInjector.storeArgumentLevels(callingStmt, args);	// this is where we could push a global pc
 			}
 		} else {
 			throw new InternalAnalyzerException(

@@ -329,7 +329,7 @@ public class HandleStmt {
 		// the max of all its stack elements)
 		
 		Object secLevel = getLocalLevel(localSignature);
-		pushGlobalPC(secLevel);
+		pushGlobalPC(handleStatementUtils.joinWithGPC(secLevel));
 	
 	}
 	
@@ -512,7 +512,7 @@ public class HandleStmt {
 				.valueOf(dominatorIdentity))) {
 			logger.info("Pop LPC for identity " + dominatorIdentity);
 			localmap.popLocalPC(Integer.valueOf(dominatorIdentity));
-			objectmap.popGlobalPC();
+			objectmap.popGlobalPC(); 	// pop needs to be removed
 		}
 	}
 
@@ -752,7 +752,8 @@ public class HandleStmt {
 	 * @param object
 	 * @param field
 	 */
-	public void checkGlobalPC(Object object, String field) {
+	public void checkGlobalPC(Object object, String field) { // weiteres arg: Object addLevel
+							// localpc bei statischen feldern, localpc + referenz bei instanzfeldern
 		handleStatementUtils.checkGlobalPC(object, field);
 	}
 

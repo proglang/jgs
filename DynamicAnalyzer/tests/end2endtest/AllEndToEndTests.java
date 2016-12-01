@@ -63,7 +63,7 @@ public class AllEndToEndTests {
 				new Object[] { "ExternalFail1", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
 				new Object[] { "ExternalFail2", true, new String[] {} },										// fails: TODO: write external, manually instrumented class for this test
 				
-				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },							// used to throw java.lang.verify error
+				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },							// throws java.lang.verify error
 				
 				//new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
 				

@@ -13,7 +13,7 @@ public class EqualObjectsVerifySuccess {
 		public static void main(String[] args) {
 			C a = new C();
 			C b = new C();
-			if (a == b) {
+			if (a == b) { // if (3 == retrun3()) 		works fine!
 				System.out.println("this will never print");
 			}
 		}

@@ -962,6 +962,11 @@ public class JimpleInjector {
 	 * @param pos position of actual statement
 	 * @param lArguments list of arguments
 	 */
+	
+	// obect map ist global erreichbar. dahin lege temporär die argumente.
+	// dann beim aufruf schaut die neue local map in der neuen methode in die global
+	// map und nimmt sich von da die level der gerade übergebenen argumente.
+	
 	public static void storeArgumentLevels(Unit pos, Local... lArguments) {
  
 		logger.log(Level.INFO, "Store Arguments for next method in method {0}",
