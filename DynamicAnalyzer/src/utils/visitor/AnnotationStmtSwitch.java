@@ -295,6 +295,10 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		valueSwitch.callingStmt = stmt;
 	}
 
+	/*
+	 * If an IfStmt is identified the condition must be checked. At this
+	 * procedure a new lpc is added to the lpc stack.
+	 */
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
 		logger.fine("\n > > > Table switch statement identified < < <");

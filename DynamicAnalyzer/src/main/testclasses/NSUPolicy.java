@@ -15,7 +15,7 @@ public class NSUPolicy {
 		int y = 5;
 		int secret = 42;
 		
-		y = HelperClass.makeLow(5);		// just for clarity
+		//y = HelperClass.makeLow(5);		// just for clarity
 		secret = HelperClass.makeHigh(5);
 		
 		if (secret > 0) {

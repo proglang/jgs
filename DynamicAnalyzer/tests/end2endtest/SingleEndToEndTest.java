@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "ExternalFail1";
+	public String name = "NSUPolicy4";
 
 	public boolean hasIllegalFlow = true;
 

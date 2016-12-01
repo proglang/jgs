@@ -10,27 +10,23 @@ import utils.analyzer.HelperClass;
 public class SwitchStmtFail1 {
 
 	public static void main(String[] args) {
-		int r = simpleLookupSwitch(1);	// what if we call it with arg 2?!
-		System.out.println(r);
-	}
-	
-	
-	/**
-	 * Simple lookup switch testcase.
-	 * @param x input
-	 * @return output
-	 */
-	public static int simpleLookupSwitch(int x) {
-		int y = 0;
-		x = HelperClass.makeHigh(x);
+		String y = "";
+		int x = HelperClass.makeHigh(1);
 		switch (x) {
 		  case 1: 
-			  y = x; 
+			  y = "Case 1"; 
 			  break;
 		  default: 
-			  y = 100; 
+			  y = "Case Def"; 
 			  break;
 		}
-		return y;
+		
+		/**
+		 * This is necessary, because otherwise the compiler will just
+		 * throw away the updates of y inside the if, which will circumvent the
+		 * IllegalFlowException
+		 */
+		@SuppressWarnings("unused")
+		String z = y + "i exist only so that the compiler wont optimize y away";
 	}
 }

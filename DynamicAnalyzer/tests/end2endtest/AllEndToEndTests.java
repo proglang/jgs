@@ -82,7 +82,8 @@ public class AllEndToEndTests {
 				new Object[] { "NSUPolicy", true, new String[] {"int_i3"} },
 				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
 				new Object[] { "NSUPolicy3", true, new String[] {"<utils.test.C: boolean f>"} },
-				
+				new Object[] { "NSUPolicy4", true, new String[] {"<utils.test.C: boolean f>"} },
+
 				// More NSU Tests
 				new Object[] { "NSU_FieldAccess", true, new String[] {"<utils.test.C: boolean f>"} },
 				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"int f"} },
@@ -122,7 +123,7 @@ public class AllEndToEndTests {
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently
 				new Object[] { "SwitchStmt", false, new String[] {} },
-				new Object[] { "SwitchStmtFail1", true, new String[] { "int_i2" } }, 
+				new Object[] { "SwitchStmtFail1", true, new String[] { "int_i0" } }, 
 				new Object[] { "SwitchStmtFail2", true, new String[] { "int_i2" } },
 				
 				new Object[] { "WhileLoop", false, new String[] {} }, 
