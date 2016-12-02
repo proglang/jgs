@@ -2,23 +2,24 @@ package main.testclasses;
 
 import utils.analyzer.HelperClass;
 
+/**
+ * Weird behavoir of compiler:
+ * If Else clause is removed, the y in line 15 and the y in line 21 are not
+ * different variables after compilation, which is why no illegal flow is
+ * detected.
+ * @author Nicolas Müller
+ *
+ */
 public class NSUPolicy4 {
 	public static void main(String[] args) {
 		String y = "";
 		int x = HelperClass.makeHigh(1);
 		if (x == 1) {
-			y = "Case 1"; // NSU
+			y = "Case 1"; 
 		} else {
-			y = "Case Def";		// weird bug: if else clause exists, no illegal flow.
-								// if remove else clause, illegal flow is correctly thrown
+			y = "Case Def";		
 		}
 
-		/**
-		 * This is necessary, because otherwise the compiler will just throw
-		 * away the updates of y inside the if, which will circumvent the
-		 * IllegalFlowException
-		 */
-		@SuppressWarnings("unused")
-		String z = y + "i exist only so that the compiler wont optimize y away";
+		System.out.println(y);  
 	}
 }

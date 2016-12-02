@@ -79,10 +79,10 @@ public class AllEndToEndTests {
 				new Object[] { "ImplicitFlow3", true, new String[] {"high-security context"} },
 			
 				// Examples from readme.md
-				new Object[] { "NSUPolicy", true, new String[] {"int_i3"} },
+				new Object[] { "NSUPolicy", true, new String[] {"int_i0"} },
 				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
 				new Object[] { "NSUPolicy3", true, new String[] {"<utils.test.C: boolean f>"} },
-				new Object[] { "NSUPolicy4", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSUPolicy4", true, new String[] {"java.lang.String_r5"} },
 
 				// More NSU Tests
 				new Object[] { "NSU_FieldAccess", true, new String[] {"<utils.test.C: boolean f>"} },
@@ -93,7 +93,7 @@ public class AllEndToEndTests {
 				new Object[] { "NSU_FieldAccess5", true, new String[] {"<utils.test.C: boolean f>"} },
 				
 				new Object[] { "NSU_ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
-				new Object[] { "NSU_ForLoopFail", true, new String[] {} }, 	
+				new Object[] { "NSU_ForLoopFail", true, new String[] {"int_i1"} }, 	
 				
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
@@ -123,7 +123,7 @@ public class AllEndToEndTests {
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently
 				new Object[] { "SwitchStmt", false, new String[] {} },
-				new Object[] { "SwitchStmtFail1", true, new String[] { "int_i0" } }, 
+				new Object[] { "SwitchStmtFail1", true, new String[] { "java.lang.String_r5" } }, 
 				new Object[] { "SwitchStmtFail2", true, new String[] { "int_i2" } },
 				
 				new Object[] { "WhileLoop", false, new String[] {} }, 

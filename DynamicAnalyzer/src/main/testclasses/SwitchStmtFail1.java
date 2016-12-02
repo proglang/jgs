@@ -14,19 +14,13 @@ public class SwitchStmtFail1 {
 		int x = HelperClass.makeHigh(1);
 		switch (x) {
 		  case 1: 
-			  y = "Case 1"; 
+			  y = "Case 1"; 		// Should NSU!
 			  break;
 		  default: 
 			  y = "Case Def"; 
 			  break;
 		}
 		
-		/**
-		 * This is necessary, because otherwise the compiler will just
-		 * throw away the updates of y inside the if, which will circumvent the
-		 * IllegalFlowException
-		 */
-		@SuppressWarnings("unused")
-		String z = y + "i exist only so that the compiler wont optimize y away";
+		System.out.println(y);
 	}
 }

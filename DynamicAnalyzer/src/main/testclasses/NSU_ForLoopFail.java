@@ -1,5 +1,7 @@
 package main.testclasses;
 
+import utils.analyzer.HelperClass;
+
 public class NSU_ForLoopFail {
 
 	/**
@@ -7,9 +9,9 @@ public class NSU_ForLoopFail {
 	 * @param args Not used
 	 */
 	public static void main(String[] args) {
-		simpleFor(5);
-		arrayIterator(new String[]{"hg", "jh", "kj", "ef"});
-
+		int secret = HelperClass.makeHigh(42);
+		int res = simpleFor(secret);
+		System.out.println(res);
 	}
 
 	/**
@@ -23,18 +25,5 @@ public class NSU_ForLoopFail {
 			i--;
 		}
 		return i;
-	}
-	
-	/**
-	 * Test array iterator.
-	 * @param x input
-	 * @return output
-	 */
-	public static int arrayIterator(String[] x) {
-		int z = 0;
-		for (@SuppressWarnings("unused") String y : x) {
-			z++;
-		}
-		return z;
 	}
 }
