@@ -10,17 +10,18 @@ import utils.analyzer.HelperClass;
 public class SwitchStmtFail1 {
 
 	public static void main(String[] args) {
-		String y = "";
+		String y = "__";
 		int x = HelperClass.makeHigh(1);
 		switch (x) {
 		  case 1: 
-			  y = "Case 1"; 		// Should NSU!
+			  y += "Case 1"; 		// Should NSU!
 			  break;
 		  default: 
-			  y = "Case Def"; 
+			  y += "Case Def"; 
 			  break;
 		}
 		
-		System.out.println(y);
+		@SuppressWarnings("unused")
+		String z = y + "__";
 	}
 }
