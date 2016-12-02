@@ -16,7 +16,9 @@ public class NSU_SwitchStmtFail {
 		  case 1: 
 			  y += "Case 1"; 		// Should NSU!
 			  break;
-		  default: 
+		  default: 					// if default case is removed, it does throw NSU
+			  						// because then the compiler reuses the y variable
+			  						// with default case, it introduces a new one
 			  y += "Case Def"; 
 			  break;
 		}

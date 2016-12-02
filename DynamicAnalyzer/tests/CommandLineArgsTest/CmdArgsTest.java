@@ -62,7 +62,7 @@ public class CmdArgsTest {
 	 */
 	@Test
 	public void pathTestP() {
-		String testFile = "NSUPolicy";		// SHOULD BE NSUPolicy1 !! Not working right now
+		String testFile = "NSUPolicy1";		// SHOULD BE NSUPolicy1 !! Not working right now
 		String externalPath = "/Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer/testing_external";
 		
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
@@ -87,7 +87,7 @@ public class CmdArgsTest {
 	 */
 	@Test
 	public void pathTestPRelative() {
-		String testFile = "NSUPolicy"; // SHOULD BE NSUPolicy1 !! Not working right now
+		String testFile = "NSUPolicy1"; // SHOULD BE NSUPolicy1 !! Not working right now
 		String externalPath = "testing_external";
 		
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});

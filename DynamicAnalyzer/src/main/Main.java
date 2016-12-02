@@ -10,6 +10,7 @@ import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.apache.commons.cli.ParseException;
@@ -56,7 +57,8 @@ public class Main {
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
 		
 		LOGGER_LEVEL = Level.ALL;
-		String[] sootOptions = ArgParser.getSootOptions(args);
+		ArrayList<String> pathArgs = new ArrayList<String>();
+		String[] sootOptions = ArgParser.getSootOptions(args, pathArgs);
 		
 		try {
 			System.out.println("Logger Init1");
@@ -71,12 +73,17 @@ public class Main {
 			throw new IllegalStateException("System property `java.home' is undefined");
 		}
     	
-		// TODO: specify the standard library classpath as a command line argument
-		Scene.v().setSootClassPath(Scene.v().getSootClassPath()
+		// Setting the soot classpath
+		String classPath = Scene.v().getSootClassPath()
 				+ ":.:"
 				+ new File(javaHome, "lib/jce.jar").toString()
 			    + ":"
-				+ new File(javaHome, "lib/rt.jar").toString());
+				+ new File(javaHome, "lib/rt.jar").toString();
+		// Adding the arguments given by the user via the -p flag. See ArgParser.java
+		for (String s : pathArgs) {
+			classPath += ":" + s;
+		}
+		Scene.v().setSootClassPath(classPath);
 		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 

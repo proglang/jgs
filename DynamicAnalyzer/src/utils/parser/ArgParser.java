@@ -5,6 +5,7 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 
 import utils.exceptions.IllegalArgumentsException;
 import utils.exceptions.InternalAnalyzerException;
@@ -32,7 +33,7 @@ public class ArgParser {
 		System.out.println("main.testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads -j");
 	}
 
-	public static String[] getSootOptions(String[] args) {
+	public static String[] getSootOptions(String[] args, ArrayList<String> pathArgs) {
 
 		if (args[0].startsWith("-")) {
 			throw new IllegalArgumentsException("first argument must be the main Class!");
@@ -80,11 +81,10 @@ public class ArgParser {
 			// case p flag
 			if (cmd.hasOption("p")) {
 				File path = new File(cmd.getOptionValue("p"));
-				template[3] = args[0]; // set mainclass
 
 				if (path.isAbsolute()) {
 					try {
-						template[3] = path.getCanonicalPath();
+						pathArgs.add(path.getCanonicalPath());
 					} catch (IOException e) {
 						throw new InternalAnalyzerException(e.getMessage());
 					} 
@@ -92,7 +92,7 @@ public class ArgParser {
 					File parent = new File(System.getProperty("user.dir"));
 					File fullPath = new File(parent, cmd.getOptionValue("p"));
 					try {
-						template[3] = fullPath.getCanonicalPath();
+						pathArgs.add(fullPath.getCanonicalPath());
 					} catch (IOException e) {
 						throw new InternalAnalyzerException(e.getMessage());
 					} 

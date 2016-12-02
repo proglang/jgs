@@ -120,7 +120,6 @@ public class AllEndToEndTests {
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
 				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 				
-				new Object[] { "StaticMethodsSuccess", false, new String[] {} }, 
 				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently

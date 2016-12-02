@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "NSU_ForLoopSuccess";
+	public String name = "StaticMethodsFail";
 
 	public boolean hasIllegalFlow = true;
 
