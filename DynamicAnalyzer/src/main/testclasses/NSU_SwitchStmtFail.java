@@ -7,7 +7,7 @@ import utils.analyzer.HelperClass;
  * @author Nicolas Müller
  *
  */
-public class SwitchStmtFail1 {
+public class NSU_SwitchStmtFail {
 
 	public static void main(String[] args) {
 		String y = "__";

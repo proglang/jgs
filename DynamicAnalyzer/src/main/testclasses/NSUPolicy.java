@@ -19,7 +19,8 @@ public class NSUPolicy {
 		secret = HelperClass.makeHigh(5);
 		
 		if (secret > 0) {
-			y += 1;						// NSU IllegalFlowException
+			y += 1;						// NSU IllegalFlowException, Illegal
+										// flow to int_i0
 		}
 		
 		/**

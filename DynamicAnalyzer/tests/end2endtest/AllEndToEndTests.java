@@ -95,6 +95,8 @@ public class AllEndToEndTests {
 				new Object[] { "NSU_ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
 				new Object[] { "NSU_ForLoopFail", true, new String[] {"int_i1"} }, 	
 				
+				new Object[] { "NSU_SwitchStmtFail", true, new String[] { "java.lang.String_r5" } }, 
+
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
 				new Object[] { "MulArray", false, new String[] {} },
@@ -123,7 +125,6 @@ public class AllEndToEndTests {
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently
 				new Object[] { "SwitchStmt", false, new String[] {} },
-				new Object[] { "SwitchStmtFail1", true, new String[] { "java.lang.String_r5" } }, 
 				new Object[] { "SwitchStmtFail2", true, new String[] { "int_i2" } },
 				
 				new Object[] { "WhileLoop", false, new String[] {} }, 
