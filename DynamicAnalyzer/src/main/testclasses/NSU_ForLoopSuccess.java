@@ -9,8 +9,9 @@ public class NSU_ForLoopSuccess {
 	 * @param args Not used
 	 */
 	public static void main(String[] args) {
-		int secret = HelperClass.makeHigh(42);
-		int res = simpleFor(secret);
+		int noSecret = 42;
+		int res = simpleFor(noSecret);
+		System.out.println(noSecret);
 	}
 
 	/**
@@ -20,7 +21,8 @@ public class NSU_ForLoopSuccess {
 	 */
 	public static int simpleFor(int x) {
 		for (int i = 0; i < x; i++) {
-			x--;		
+			x--;						// NSU? I think not. If it should throw 
+										// NSU, 
 		}
 		return x;
 	}
