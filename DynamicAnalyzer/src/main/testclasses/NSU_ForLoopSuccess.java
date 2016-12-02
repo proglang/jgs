@@ -1,7 +1,10 @@
 package main.testclasses;
 
-import utils.analyzer.HelperClass;
-
+/**
+ * Test using a for loop as an if statement.
+ * @author Nicolas Müller
+ *
+ */
 public class NSU_ForLoopSuccess {
 
 	/**
@@ -9,21 +12,19 @@ public class NSU_ForLoopSuccess {
 	 * @param args Not used
 	 */
 	public static void main(String[] args) {
-		int noSecret = 42;
-		int res = simpleFor(noSecret);
-		System.out.println(noSecret);
+		int doUpdate = 1;
+		int res = ForActingAsIf(doUpdate);
+		
+		// to make sure compiler doesn't optimize away
+		@SuppressWarnings("unused")
+		int forCompiler = res * 2;
 	}
 
-	/**
-	 * Simple method with just one for-loop.
-	 * @param x input
-	 * @return output
-	 */
-	public static int simpleFor(int x) {
+	private static int ForActingAsIf(int x) {
+		int y = 0;
 		for (int i = 0; i < x; i++) {
-			x--;						// NSU? I think not. If it should throw 
-										// NSU, 
+			y = 1;						// would throw NSU if x were HIGH
 		}
-		return x;
+		return y;
 	}
 }

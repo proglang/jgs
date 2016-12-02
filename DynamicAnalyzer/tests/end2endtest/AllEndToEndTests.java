@@ -93,7 +93,7 @@ public class AllEndToEndTests {
 				new Object[] { "NSU_FieldAccess5", true, new String[] {"<utils.test.C: boolean f>"} },
 				
 				new Object[] { "NSU_ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
-				new Object[] { "NSU_ForLoopFail", true, new String[] {"int_i1"} }, 	
+				new Object[] { "NSU_ForLoopFail", true, new String[] {"byte_b1"} }, 	
 				
 				new Object[] { "NSU_SwitchStmtFail", true, new String[] { "java.lang.String_r5" } }, 
 
