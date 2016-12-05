@@ -44,7 +44,7 @@ public class ObjectMap{
 	private ObjectMap() {
 		globalPC = new LinkedList<Object>();
 		globalPC.push(SecurityLevel.bottom()); 
-		actualReturnLevel = SecurityLevel.top();
+		actualReturnLevel = SecurityLevel.bottom();		// was top!?!
 		actualArguments = new ArrayList<Object>();
 		innerMap = new ReferenceIdentityMap<Object, 
 				HashMap<String, Object>>(

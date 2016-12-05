@@ -95,7 +95,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 */
 	protected enum RightElement {
 		NOT, NEW_ARRAY, NEW_UNDEF_OBJECT,
-		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD,
+		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD, 
+		SET_RETURN_LEVEL,
 		MAKE_HIGH, MAKE_LOW
 	} 
 	
@@ -412,6 +413,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 			} else {
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated as an internal class");
+				//rightElement = RightElement.SET_RETURN_LEVEL;
+
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -438,6 +441,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 			} else {
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated as an internal class");
+				rightElement = RightElement.SET_RETURN_LEVEL;
 				JimpleInjector.storeArgumentLevels(callingStmt, args);
 			}
 		} else {
@@ -466,6 +470,10 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated as an internal class");
 				// JimpleInjector.pushToGlobalPC(LocalPC JOIN GlobalPC)
+				rightElement = RightElement.SET_RETURN_LEVEL;
+				// aber überall noch mal checken ob nirgendwo das right element
+				// überschrieben wird, d.h. ob das hier eine eindeutige 
+				// positioin ist
 				JimpleInjector.storeArgumentLevels(callingStmt, args);	// this is where we could push a global pc
 			}
 		} else {

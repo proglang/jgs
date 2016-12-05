@@ -3,7 +3,6 @@ package main.testclasses;
 import utils.test.SimpleObject;
 
 /**
- * Not working, because SimpleObject somehow does not get instrumented
  * @author Nicolas Müller
  *
  */

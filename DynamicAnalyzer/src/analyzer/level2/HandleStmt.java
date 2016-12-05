@@ -596,6 +596,23 @@ public class HandleStmt {
 		localmap.setLevel(signature, securitylevel);
 		return localmap.getLevel(signature);
 	}
+	
+	/**
+	 * Patch to set the security value of a left-hand side, where the
+	 * statement is a virtualInvoke.
+	 * @param signature
+	 */
+	public void setReturnLevelAfterInvokeStmt(String signature) {
+		// in eigene methode des jimpleInjector
+	    // l := get level of left-hand-side
+	    // l := l joined with objectmap.actualReturnLevel
+	    // set level of left-hand-side to l AFTER
+		// unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+		Object leftHandSideSecValue = localmap.getLevel(signature);
+		leftHandSideSecValue = handleStatementUtils.joinLevels(objectmap.getActualReturnLevel(), 
+				leftHandSideSecValue);
+		setLevelOfLocal(signature, leftHandSideSecValue);
+	}
 
 	/**
 	 * Set the level of a local to default security-level. Called on every

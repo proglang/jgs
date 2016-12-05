@@ -59,9 +59,11 @@ public class AllEndToEndTests {
 				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									
 				
 				new Object[] { "BooleanPrintFail", true, new String[] {"boolean_z1"} }, 						
+
+				new Object[] { "DirectPrintFail", true, new String[] {"java.lang.Object_$r3"} }, 						
 				
 				new Object[] { "ExternalFail1", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
-				new Object[] { "ExternalFail2", true, new String[] {} },										// fails: TODO: write external, manually instrumented class for this test
+				new Object[] { "ExternalFail2", true, new String[] {"int_i0"} },										// fails: TODO: write external, manually instrumented class for this test
 				
 				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },							// throws java.lang.verify error
 				
@@ -118,7 +120,7 @@ public class AllEndToEndTests {
 				new Object[] { "SystemOut2", true, new String[] {"java.lang.Object_$r3"} },						
 				
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
-				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
+				new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 				
 				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
 				

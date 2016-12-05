@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "StaticMethodsFail";
+	public String name = "MulArrayFail";
 
 	public boolean hasIllegalFlow = true;
 

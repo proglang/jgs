@@ -135,6 +135,25 @@ public class JimpleInjector {
 	static Unit lastPos;
 
 	/**
+	 * See method with same name in HandleStatement.
+	 * @param signatureOfLeftSide
+	 * @param pos
+	 */
+	public static void setReturnLevelAfterInvokeStmt(String signatureOfLeftSide, Unit pos) {
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		Expr setReturnLevel = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+				"setReturnLevelAfterInvokeStmt", paramTypes, 
+				VoidType.v(),
+				false), local_for_Strings);
+		Unit invoke = Jimple.v().newInvokeStmt(setReturnLevel);
+		
+		unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+	}
+	
+	/**
 	 * Initialization of JimpleInjector. Set all needed variables
 	 * and compute the start position for inserting new units.
 	 * @param body The body of the analyzed method.

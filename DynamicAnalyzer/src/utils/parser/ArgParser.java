@@ -4,7 +4,6 @@ import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
 import java.util.ArrayList;
 
 import utils.exceptions.IllegalArgumentsException;

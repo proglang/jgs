@@ -19,8 +19,9 @@ public class NSU_SwitchStmtFail {
 		  default: 					// if default case is removed, it does throw NSU
 			  						// because then the compiler reuses the y variable
 			  						// with default case, it introduces a new one
-			  y += "Case Def"; 
-			  break;
+			  //y += "Case Def"; 
+			  break;				// this problem should be the same for if/while
+			  						// statements!
 		}
 		
 		@SuppressWarnings("unused")

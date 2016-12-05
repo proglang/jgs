@@ -3,9 +3,6 @@ package CommandLineArgsTest;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.nio.file.Files;
-
-import javax.swing.text.html.HTMLDocument.HTMLReader.HiddenAction;
 
 import org.junit.Test;
 
@@ -87,7 +84,7 @@ public class CmdArgsTest {
 	 */
 	@Test
 	public void pathTestPRelative() {
-		String testFile = "NSUPolicy1"; // SHOULD BE NSUPolicy1 !! Not working right now
+		String testFile = "NSUPolicy1"; 
 		String externalPath = "testing_external";
 		
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});

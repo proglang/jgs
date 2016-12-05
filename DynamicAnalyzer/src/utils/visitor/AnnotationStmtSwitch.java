@@ -1,6 +1,7 @@
 package utils.visitor;
 
 import analyzer.level1.JimpleInjector;
+import analyzer.level1.storage.UnitStore.Element;
 import soot.Body;
 import soot.Local;
 import soot.Value;
@@ -112,6 +113,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			break; // This two cases are treated later
 		case MAKE_LOW:
 			break;
+		case SET_RETURN_LEVEL: // This will be handeled later (include by nico)
+			break;
 		default:
 			new InternalAnalyzerException("Unexpected Context: "
 					+ AnnotationValueSwitch.rightElement);
@@ -133,6 +136,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			logger.finest("Make left operand low");
 			JimpleInjector.makeLocalLow((Local) leftOperand, aStmt);
 			break;
+		case SET_RETURN_LEVEL:
+			JimpleInjector.setReturnLevelAfterInvokeStmt(leftOperand.toString(), aStmt);
+		  // in eigene methode des jimpleInjector
+		  // l := get level of left-hand-side
+		  // l := l joined with objectmap.actualReturnLevel
+		  // set level of left-hand-side to l AFTER
+			// unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+		break;
 		default:
 			break;
 		}
