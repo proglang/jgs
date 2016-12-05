@@ -14,10 +14,10 @@ public class SwitchStmt {
 	public static int simpleSwitch(int x) {
 		switch (x) {
 		  case 1: 
-			  x++; 
+			  x++; 			
 			  break;
 		  case 2: 
-			  x--; 
+			  x--; 			
 			  break;
 		  default: 
 			  x = 100; 

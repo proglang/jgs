@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "MulArrayFail";
+	public String name = "SwitchStmtFail2";
 
 	public boolean hasIllegalFlow = true;
 

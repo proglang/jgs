@@ -97,7 +97,11 @@ public class AllEndToEndTests {
 				new Object[] { "NSU_ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
 				new Object[] { "NSU_ForLoopFail", true, new String[] {"byte_b1"} }, 	
 				
-				new Object[] { "NSU_SwitchStmtFail", true, new String[] { "java.lang.String_r5" } }, 
+				new Object[] { "NSU_SwitchStmtFail", true, new String[] { "java.lang.String_r1" } }, 
+				
+				// two special cases, where compiler optimisation prevents NSU Exceptions
+				new Object[] { "NSU_IfStmtSpecialCase", false, new String[] {  } }, 
+				new Object[] { "NSU_SwitchStmtSpecialCase", false, new String[] {  } }, 
 
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
@@ -120,13 +124,12 @@ public class AllEndToEndTests {
 				new Object[] { "SystemOut2", true, new String[] {"java.lang.Object_$r3"} },						
 				
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
-				new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
+				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 				
 				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently
 				new Object[] { "SwitchStmt", false, new String[] {} },
-				new Object[] { "SwitchStmtFail2", true, new String[] { "int_i2" } },
 				
 				new Object[] { "WhileLoop", false, new String[] {} }, 
 				new Object[] { "WhileLoopFail", true, new String[] { "int_i1" } });
