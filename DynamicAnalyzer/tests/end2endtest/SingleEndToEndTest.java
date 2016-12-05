@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "SwitchStmtFail2";
+	public String name = "ExternalFail1";
 
 	public boolean hasIllegalFlow = true;
 

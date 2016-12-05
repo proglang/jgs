@@ -4,10 +4,8 @@ import utils.analyzer.HelperClass;
 
 
 /**
- * We want end-to-end tests with external classes, so here we manually instrument
- * an class, which will be used by the ExtClasses*.java end-to-end tests.
+ * Does not get instrumented!
  * @author NicolasM
- *
  */
 public class simpleClassForTests {
 	/**
