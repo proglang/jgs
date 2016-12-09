@@ -3,6 +3,8 @@ package CommandLineArgsTest;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.junit.Test;
 
@@ -103,8 +105,14 @@ public class CmdArgsTest {
 		assertTrue(!outJar.exists());
 	}
 	
+	/**
+	 * Super awesome test: Builds a jar with -f flag, instruments and includes external classes,
+	 * builds to jar, runs it and tests for IllegalFlowException.
+	 */
 	@Test
 	public void addFilesTest() {
+		boolean hasIllegalFlow = true;
+		
 		String testFile = "StaticMethodsFail"; 
 		String externalPath = "testing_external";
 		String additionalFile = "main.testclasses.utils.SimpleObject";
@@ -122,6 +130,25 @@ public class CmdArgsTest {
 		assertTrue(addFile.exists());
 		assertTrue(addFile2.exists());
 		
+		// now run it and check wheter or not it produces an IllegalFlowException
+		// Run a java app in a separate system process
+		System.out.println("Running " + outJar.toString() + "...");
+		Process proc;
+		try {
+			proc = Runtime.getRuntime().exec("java -jar " + outJar.toString());
+			// Then retreive the process output
+			InputStream err = proc.getErrorStream();
+			String output = convertStreamToString(err);
+			System.out.println(output);
+			if (hasIllegalFlow) {
+				assertTrue(output.contains("utils.exceptions.IllegalFlowException"));
+			} else {
+				assertTrue(!err.toString().contains("IllegalFlowException"));
+			}
+		} catch (IOException e) {
+			assertTrue(false);
+		}
+		
 		// delete for valid run next time
 		outFile.delete();
 		outJar.delete();
@@ -132,6 +159,13 @@ public class CmdArgsTest {
 		assertTrue(!outJar.exists());
 		assertTrue(!addFile.exists());
 		assertTrue(!addFile2.exists());
+	}
+	
+	static String convertStreamToString(java.io.InputStream is) {
+	    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+	    String ret = s.hasNext() ? s.next() : "";
+	    s.close();
+	    return ret;
 	}
 	
 }
