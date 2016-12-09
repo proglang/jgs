@@ -102,8 +102,8 @@ public class Main {
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
 		// we want to output it to ant/main/testclasses/test1.jar
 		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
-		File pathToMain = new File(new File(sootOptions[6]).getAbsolutePath(), sootOptions[4]);
-		utils.ant.AntRunner.run(args[0], pathToMain.getAbsolutePath(), sootOptions[6]);
+		File pathToMain = new File(new File(sootOptions[sootOptions.length - 1]).getAbsolutePath(), sootOptions[4]);
+		utils.ant.AntRunner.run(args[0], pathToMain.getAbsolutePath(), sootOptions[sootOptions.length - 1]);
         } finally {
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
