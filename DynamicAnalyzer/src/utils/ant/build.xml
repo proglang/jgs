@@ -11,15 +11,7 @@
         </manifest>
     	
     	<fileset dir="${outputFolder}">
-    	   <include name="${mainClass}.class"/>	
-    	</fileset>
-    	
-    	<fileset dir="../../../bin">
-    	   	<include name="utils/test/*.class"/>	
-    	 </fileset>
-    	
-    	<fileset dir="../../../bin">
-    	    <include name="utils/analyzer/HelperClass.class"/>	
+    	   <include name="**/*.class"/>	
     	</fileset>
     	
     	<fileset dir="../../../bin">
