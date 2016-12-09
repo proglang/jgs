@@ -93,6 +93,7 @@ public class ArgParser {
 		
 		Option filesToAdd = new Option("f", "files", true, "add files to instrumentation process");
 		filesToAdd.setRequired(false);
+		filesToAdd.setArgs(Option.UNLIMITED_VALUES);
 		options.addOption(filesToAdd);
 
 		CommandLineParser parser = new DefaultParser();
@@ -111,7 +112,7 @@ public class ArgParser {
 			template[4] = "filesToProcess_firstFile (which will be the mainclass file)";
 			
 			if (cmd.hasOption("f")) {
-				String[] additionalFiles = cmd.getOptionValues("p");
+				String[] additionalFiles = cmd.getOptionValues("f");
 				for (int i = 0; i < additionalFiles.length; i++) {
 					template[5 + i] = additionalFiles[i];
 				}
@@ -140,7 +141,7 @@ public class ArgParser {
 			// case o flag
 			if (cmd.hasOption("o")) {
 				String outputFolder = cmd.getOptionValue("o");
-				template[6] = toAbsolutePath(outputFolder);
+				template[template.length - 1] = toAbsolutePath(outputFolder);
 			}
 			
 			return template;

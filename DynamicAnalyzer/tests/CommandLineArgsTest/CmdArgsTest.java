@@ -103,5 +103,35 @@ public class CmdArgsTest {
 		assertTrue(!outJar.exists());
 	}
 	
+	@Test
+	public void addFilesTest() {
+		String testFile = "StaticMethodsFail"; 
+		String externalPath = "testing_external";
+		String additionalFile = "main.testclasses.utils.SimpleObject";
+		String additionalFile2 = "main.testclasses.utils.C";
+		
+		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath, "-f", additionalFile, additionalFile2});
+		File outParent = new File(System.getProperty("user.dir"));
+		File outFile = new File(outParent, outputPath + "/main/testclasses/"+ testFile +".class");
+		File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
+		File addFile = new File(outParent, outputPath + "/" + additionalFile.replace(".", "/") + ".class");
+		File addFile2 = new File(outParent, outputPath + "/" + additionalFile2.replace(".", "/") + ".class");
+		
+		assertTrue(outFile.exists());
+		assertTrue(outJar.exists());
+		assertTrue(addFile.exists());
+		assertTrue(addFile2.exists());
+		
+		// delete for valid run next time
+		outFile.delete();
+		outJar.delete();
+		addFile.delete();
+		addFile2.delete();
+		
+		assertTrue(!outFile.exists());
+		assertTrue(!outJar.exists());
+		assertTrue(!addFile.exists());
+		assertTrue(!addFile2.exists());
+	}
 	
 }

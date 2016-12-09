@@ -95,8 +95,7 @@ public class Main {
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
 
-        try {	   
-        	soot.Main.main(sootOptions);
+        soot.Main.main(sootOptions);
         
 		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
@@ -104,12 +103,12 @@ public class Main {
 		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
 		File pathToMain = new File(new File(sootOptions[sootOptions.length - 1]).getAbsolutePath(), sootOptions[4]);
 		utils.ant.AntRunner.run(args[0], pathToMain.getAbsolutePath(), sootOptions[sootOptions.length - 1]);
-        } finally {
+        
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
 		// was ist der empfohlene weg, exceptions zu werfen aus einer analyse heraus.
 		// unsere situation: Rufen main.Main in unit tests auf, wewnn wir einmal expcept werfen, bricht
 		// alles ab, obwohl wir resetten.
-        }
+        
 	}
 }
