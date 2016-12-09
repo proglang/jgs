@@ -102,19 +102,22 @@ public class ArgParser {
 
 			cmd = parser.parse(options, args);
 
-			// template for the string we will return to soot. also use 4th and
-			// last (-1) element for ant (see bottom of Main.main)
-			ArrayList<String> _template = new ArrayList<String>( Arrays.asList("-f", "c", "-main-class",
-					"mainclass", "firstFileToProcess") );
+			// construct the template string
+			String[] template = new String[cmd.hasOption("f") ? 7 + cmd.getOptionValues("f").length : 7];
+			template[0] = "-f";
+			template[1] = "c";
+			template[2] = "-main-class";
+			template[3] = "placeholder_mainclass";
+			template[4] = "filesToProcess_firstFile (which will be the mainclass file)";
+			
 			if (cmd.hasOption("f")) {
-				String[] additionalFiles = cmd.getOptionValues("f");
+				String[] additionalFiles = cmd.getOptionValues("p");
 				for (int i = 0; i < additionalFiles.length; i++) {
-					_template.add(additionalFiles[i]);
+					template[5 + i] = additionalFiles[i];
 				}
 			}
-			_template.add("--d");
-			_template.add("placeholder output path");
-			String[] template = _template.toArray(new String[_template.size()]);		// this is the most complicated cast i've ever seen
+			template[template.length - 2] = "--d";
+			template[template.length - 1] = "placeholder output path";
 
 			// case no flag
 			template[3] = args[0]; // set mainclass
