@@ -85,16 +85,16 @@ public class AllEndToEndTests {
 				// Examples from readme.md
 				new Object[] { "NSUPolicy", true, new String[] {"int_i0"} },
 				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
-				new Object[] { "NSUPolicy3", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSUPolicy3", true, new String[] {"<main.testclasses.utils.C: boolean f>"} },
 				new Object[] { "NSUPolicy4", true, new String[] {"java.lang.String_r5"} },
 
 				// More NSU Tests
-				new Object[] { "NSU_FieldAccess", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess", true, new String[] {"<main.testclasses.utils.C: boolean f>"} },
 				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"int f"} },
 				new Object[] { "NSU_FieldAccess2", false, new String[] {} },
-				new Object[] { "NSU_FieldAccess3", true, new String[] {"<utils.test.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccess4", true, new String[] {"<utils.test.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccess5", true, new String[] {"<utils.test.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess3", true, new String[] {"<main.testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess4", true, new String[] {"<main.testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess5", true, new String[] {"<main.testclasses.utils.C: boolean f>"} },
 				
 				new Object[] { "NSU_ForLoopSuccess", false, new String[] {} }, 										// fails with java.lang.VerifyError: (maybe invalid bytecode)
 				new Object[] { "NSU_ForLoopFail", true, new String[] {"byte_b1"} }, 	
@@ -111,7 +111,7 @@ public class AllEndToEndTests {
 				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r19"} }, 					
 				
 				// Testing implicit and explicit flow with classes (which is unimplemented currently)
-				new Object[] { "NewClassFail1", true, new String[] {"utils.test.C_r4"} },
+				new Object[] { "NewClassFail1", true, new String[] {"main.testclasses.utils.C_r4"} },
 				
 				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								
 				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						

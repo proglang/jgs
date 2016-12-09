@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "LowFieldHighInstance";
+	public String name = "NewClassFail1";
 
 	public boolean hasIllegalFlow = true;
 

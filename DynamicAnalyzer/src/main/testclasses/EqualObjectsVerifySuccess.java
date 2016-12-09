@@ -1,6 +1,6 @@
 package main.testclasses;
 
-import utils.test.C;
+import main.testclasses.utils.C;
 
 /**
  * Test throwa a java.lang.VerifyError: (class: main/testclasses/EqualObjectsVerifySuccess, 

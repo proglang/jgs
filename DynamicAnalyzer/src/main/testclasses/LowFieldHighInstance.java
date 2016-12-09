@@ -1,7 +1,7 @@
 package main.testclasses;
 
+import main.testclasses.utils.C;
 import utils.analyzer.HelperClass;
-import utils.test.C;
 
 public class LowFieldHighInstance {
 	public static void main(String[] args) {

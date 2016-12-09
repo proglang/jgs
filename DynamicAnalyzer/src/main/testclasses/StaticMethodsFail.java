@@ -1,6 +1,6 @@
 package main.testclasses;
 
-import utils.test.SimpleObject;
+import main.testclasses.utils.SimpleObject;
 
 /**
  * @author Nicolas Müller
