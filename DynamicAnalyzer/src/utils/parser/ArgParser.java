@@ -4,7 +4,10 @@ import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import utils.exceptions.IllegalArgumentsException;
 import utils.exceptions.InternalAnalyzerException;
@@ -30,9 +33,43 @@ public class ArgParser {
 		System.out.println("main.testclasses.NSUPolicy1 -o /Users/NicolasM/myOutputFolder");
 		System.out.println("main.testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads");
 		System.out.println("main.testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads -j");
+		System.out.println("main.testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java");
+		System.out.println("main.testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java some/absolut/path/to/additionalFile.java");
 	}
+	
+	/**
+	 * Convert a given path to canonical path, regardless whether input is relative or absolute
+	 * @param s			relative or absolute path
+	 * @return			equivalent canonical path
+	 */
+	private static String toAbsolutePath(String s) {
+		File path = new File(s);
 
-	public static String[] getSootOptions(String[] args) {
+		if (path.isAbsolute()) {
+			try {
+				return path.getCanonicalPath();
+			} catch (IOException e) {
+				throw new InternalAnalyzerException(e.getMessage());
+			} 
+		} else {
+			File parent = new File(System.getProperty("user.dir"));
+			File fullPath = new File(parent, s);
+			try {
+				return fullPath.getCanonicalPath();
+			} catch (IOException e) {
+				throw new InternalAnalyzerException(e.getMessage());
+			} 
+		}
+		
+	}
+	
+	/**
+	 * Parse command line arguments into a soot-friendly format
+	 * @param args
+	 * @param pathArgs
+	 * @return
+	 */
+	public static String[] getSootOptions(String[] args, ArrayList<String> pathArgs) {
 
 		if (args[0].startsWith("-")) {
 			throw new IllegalArgumentsException("first argument must be the main Class!");
@@ -53,6 +90,11 @@ public class ArgParser {
 				"output as Jimple instead of as compiled class");
 		format.setRequired(false);
 		options.addOption(format);
+		
+		Option filesToAdd = new Option("f", "files", true, "add files to instrumentation process");
+		filesToAdd.setRequired(false);
+		filesToAdd.setArgs(Option.UNLIMITED_VALUES);
+		options.addOption(filesToAdd);
 
 		CommandLineParser parser = new DefaultParser();
 
@@ -61,16 +103,27 @@ public class ArgParser {
 
 			cmd = parser.parse(options, args);
 
-			// template for the string we will return to soot. also use 4th and
-			// 7th element for ant (see bottom of Main.main)
-			String[] template = new String[] { "-f", "c", "-main-class",
-					"path/to/file placeholder", "mainclass placeholder", "--d",
-					"placeholder output path" };
+			// construct the template string
+			String[] template = new String[cmd.hasOption("f") ? 7 + cmd.getOptionValues("f").length : 7];
+			template[0] = "-f";
+			template[1] = "c";
+			template[2] = "-main-class";
+			template[3] = "placeholder_mainclass";
+			template[4] = "filesToProcess_firstFile (which will be the mainclass file)";
+			
+			if (cmd.hasOption("f")) {
+				String[] additionalFiles = cmd.getOptionValues("f");
+				for (int i = 0; i < additionalFiles.length; i++) {
+					template[5 + i] = additionalFiles[i];
+				}
+			}
+			template[template.length - 2] = "--d";
+			template[template.length - 1] = "placeholder output path";
 
 			// case no flag
 			template[3] = args[0]; // set mainclass
 			template[4] = args[0];
-			template[6] = System.getProperty("user.dir");
+			template[template.length - 1] = System.getProperty("user.dir");
 
 			// case j flag
 			if (cmd.hasOption("j")) {
@@ -79,39 +132,18 @@ public class ArgParser {
 
 			// case p flag
 			if (cmd.hasOption("p")) {
-				File path = new File(cmd.getOptionValue("p"));
-				template[3] = args[0]; // set mainclass
-
-				if (path.isAbsolute()) {
-					try {
-						template[3] = path.getCanonicalPath();
-					} catch (IOException e) {
-						throw new InternalAnalyzerException(e.getMessage());
-					} 
-				} else {
-					File parent = new File(System.getProperty("user.dir"));
-					File fullPath = new File(parent, cmd.getOptionValue("p"));
-					try {
-						template[3] = fullPath.getCanonicalPath();
-					} catch (IOException e) {
-						throw new InternalAnalyzerException(e.getMessage());
-					} 
+				String[] classPathList = cmd.getOptionValues("p");
+				for (String path : classPathList) {
+					pathArgs.add(toAbsolutePath(path));
 				}
 			}
 
 			// case o flag
 			if (cmd.hasOption("o")) {
-				File out = new File(cmd.getOptionValue("o"));
-
-				if (out.isAbsolute()) {
-					template[6] = out.getAbsolutePath();
-				} else {
-					File parent = new File(System.getProperty("user.dir"));
-					File fullPath = new File(parent, cmd.getOptionValue("o"));
-					template[6] = fullPath.getAbsolutePath();
-				}
+				String outputFolder = cmd.getOptionValue("o");
+				template[template.length - 1] = toAbsolutePath(outputFolder);
 			}
-
+			
 			return template;
 
 			// if illegal input

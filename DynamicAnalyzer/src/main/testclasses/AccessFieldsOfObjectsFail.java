@@ -1,7 +1,7 @@
 package main.testclasses;
 
+import main.testclasses.utils.SimpleObject;
 import utils.analyzer.HelperClass;
-import utils.test.SimpleObject;
 
 /**
  * Simple test that should fail, since it leaks a high Field

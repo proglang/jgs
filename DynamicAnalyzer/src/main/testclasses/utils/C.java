@@ -1,4 +1,4 @@
-package utils.test;
+package main.testclasses.utils;
 
 /**
  * Testclass 

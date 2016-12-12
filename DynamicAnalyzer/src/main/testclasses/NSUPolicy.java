@@ -9,17 +9,18 @@ import utils.analyzer.HelperClass;
  * @author Nicolas Müller
  *
  */
-public class NSUPolicy1 {
+public class NSUPolicy {
 	
 	public static void main(String[] args) {
 		int y = 5;
 		int secret = 42;
 		
-		y = HelperClass.makeLow(5);		// just for clarity
+		//y = HelperClass.makeLow(5);		// just for clarity
 		secret = HelperClass.makeHigh(5);
 		
 		if (secret > 0) {
-			y += 1;						// NSU IllegalFlowException
+			y += 1;						// NSU IllegalFlowException, Illegal
+										// flow to int_i0
 		}
 		
 		/**

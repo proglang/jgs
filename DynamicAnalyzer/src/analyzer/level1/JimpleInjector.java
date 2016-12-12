@@ -32,6 +32,8 @@ import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -132,6 +134,25 @@ public class JimpleInjector {
 	 */
 	static Unit lastPos;
 
+	/**
+	 * See method with same name in HandleStatement.
+	 * @param signatureOfLeftSide
+	 * @param pos
+	 */
+	public static void setReturnLevelAfterInvokeStmt(String signatureOfLeftSide, Unit pos) {
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
+		Expr setReturnLevel = Jimple.v().newVirtualInvokeExpr(
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
+				"setReturnLevelAfterInvokeStmt", paramTypes, 
+				VoidType.v(),
+				false), local_for_Strings);
+		Unit invoke = Jimple.v().newInvokeStmt(setReturnLevel);
+		
+		unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+	}
+	
 	/**
 	 * Initialization of JimpleInjector. Set all needed variables
 	 * and compute the start position for inserting new units.
@@ -673,6 +694,23 @@ public class JimpleInjector {
 		Unit assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(fieldSignature));
 		
+		// push and pop security level of instance to globalPC
+		Unit pushInstanceLevelToGlobalPC = Jimple.v().newInvokeStmt(
+				Jimple.v().newVirtualInvokeExpr(
+						hs, Scene.v().makeMethodRef(
+								Scene.v().getSootClass(HANDLE_CLASS), "pushInstanceLevelToGlobalPC", 
+								Arrays.<Type>asList(RefType.v("java.lang.String")), 
+								VoidType.v(), false), 
+								StringConstant.v(getSignatureForLocal(tmpLocal)))
+				);
+		
+		Unit popGlobalPC = Jimple.v().newInvokeStmt(
+				Jimple.v().newVirtualInvokeExpr(
+						hs, Scene.v().makeMethodRef(
+								Scene.v().getSootClass(HANDLE_CLASS), "popGlobalPC", 
+								Collections.<Type>emptyList(), RefType.v("java.lang.Object"), false))
+				);
+		
 		// insert: checkGlobalPC(Object, String)
 		Expr checkGlobalPC	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
@@ -689,9 +727,13 @@ public class JimpleInjector {
 				tmpLocal, local_for_Strings);
 		Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 	
-		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
+		// pushInstanceLevelToGlobalPC and popGlobalPC take the instance, push to global pc; and pop afterwards.
+		// see NSU_FieldAccess tests why this is needed
+		unitStore_Before.insertElement(unitStore_Before.new Element(pushInstanceLevelToGlobalPC, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
 		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
+		unitStore_Before.insertElement(unitStore_Before.new Element(popGlobalPC, pos));
 		lastPos = pos;
 	}
 	
@@ -939,6 +981,11 @@ public class JimpleInjector {
 	 * @param pos position of actual statement
 	 * @param lArguments list of arguments
 	 */
+	
+	// obect map ist global erreichbar. dahin lege temporär die argumente.
+	// dann beim aufruf schaut die neue local map in der neuen methode in die global
+	// map und nimmt sich von da die level der gerade übergebenen argumente.
+	
 	public static void storeArgumentLevels(Unit pos, Local... lArguments) {
  
 		logger.log(Level.INFO, "Store Arguments for next method in method {0}",
@@ -1058,7 +1105,7 @@ public class JimpleInjector {
 		int numberOfLocals = locals.length;
 		ArrayList<Type>	paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
-		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), numberOfLocals));
+		paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1)); // here
 		
 		// Add hashvalue for immediate dominator
 		String domIdentity = DominatorFinder.getImmediateDominatorIdentity(pos);

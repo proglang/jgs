@@ -1,7 +1,7 @@
 package main.testclasses;
 
+import main.testclasses.utils.C;
 import utils.analyzer.HelperClass;
-import utils.test.C;
 
 public class NSU_FieldAccessStatic {
 		static int f = 0;
@@ -11,7 +11,7 @@ public class NSU_FieldAccessStatic {
 			C c = HelperClass.makeHigh(b);
 			
 	        f = 1; // ok
-	        if (c == b){
+	        if (c.equals(b)){
 	          f = 2; // NSU Error
 	        }
 		

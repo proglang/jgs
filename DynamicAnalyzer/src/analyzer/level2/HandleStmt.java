@@ -321,6 +321,21 @@ public class HandleStmt {
 	}
 
 	/**
+	 * Push the level of a given instance to the globalPC (e.g. on top of its stack)
+	 * @param localSignature		singature of local to be pushed onto the stack
+	 */
+	public void pushInstanceLevelToGlobalPC(String localSignature) {
+		// get instance level of localSignature, push to globalPC (which calcs
+		// the max of all its stack elements)
+		
+		Object secLevel = getLocalLevel(localSignature);
+		pushGlobalPC(handleStatementUtils.joinWithGPC(secLevel));
+	
+	}
+	
+	// make PopGlobalPC public
+	
+	/**
 	 * Push a new localPC and the indentity for its corresponding postdominator
 	 * unit to the LPCList.
 	 * 
@@ -384,7 +399,7 @@ public class HandleStmt {
 	 * 
 	 * @return SecurityLevel of last GPC
 	 */
-	protected Object popGlobalPC() {
+	public Object popGlobalPC() {
 		return objectmap.popGlobalPC();
 	}
 
@@ -497,7 +512,7 @@ public class HandleStmt {
 				.valueOf(dominatorIdentity))) {
 			logger.info("Pop LPC for identity " + dominatorIdentity);
 			localmap.popLocalPC(Integer.valueOf(dominatorIdentity));
-			objectmap.popGlobalPC();
+			objectmap.popGlobalPC(); 	// pop needs to be removed
 		}
 	}
 
@@ -580,6 +595,23 @@ public class HandleStmt {
 		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, securitylevel);
 		return localmap.getLevel(signature);
+	}
+	
+	/**
+	 * Patch to set the security value of a left-hand side, where the
+	 * statement is a virtualInvoke.
+	 * @param signature
+	 */
+	public void setReturnLevelAfterInvokeStmt(String signature) {
+		// in eigene methode des jimpleInjector
+	    // l := get level of left-hand-side
+	    // l := l joined with objectmap.actualReturnLevel
+	    // set level of left-hand-side to l AFTER
+		// unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+		Object leftHandSideSecValue = localmap.getLevel(signature);
+		leftHandSideSecValue = handleStatementUtils.joinLevels(objectmap.getActualReturnLevel(), 
+				leftHandSideSecValue);
+		setLevelOfLocal(signature, leftHandSideSecValue);
 	}
 
 	/**
@@ -737,7 +769,8 @@ public class HandleStmt {
 	 * @param object
 	 * @param field
 	 */
-	public void checkGlobalPC(Object object, String field) {
+	public void checkGlobalPC(Object object, String field) { // weiteres arg: Object addLevel
+							// localpc bei statischen feldern, localpc + referenz bei instanzfeldern
 		handleStatementUtils.checkGlobalPC(object, field);
 	}
 

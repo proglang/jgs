@@ -42,8 +42,9 @@ public class ExternalClasses {
 		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
 				 new NoHighAllowedForPrintOutput());
 		
-		
+		// Methods where we don't do anything
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
+		
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeHigh(java.lang.Object)>", new MakeHigh());
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "

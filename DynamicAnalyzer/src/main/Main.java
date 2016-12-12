@@ -5,11 +5,13 @@ import soot.G;
 import soot.PackManager;
 import soot.Scene;
 import soot.Transform;
+import soot.options.Options;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.apache.commons.cli.ParseException;
@@ -56,7 +58,8 @@ public class Main {
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
 		
 		LOGGER_LEVEL = Level.ALL;
-		String[] sootOptions = ArgParser.getSootOptions(args);
+		ArrayList<String> pathArgs = new ArrayList<String>();
+		String[] sootOptions = ArgParser.getSootOptions(args, pathArgs);
 		
 		try {
 			System.out.println("Logger Init1");
@@ -71,12 +74,17 @@ public class Main {
 			throw new IllegalStateException("System property `java.home' is undefined");
 		}
     	
-		// TODO: specify the standard library classpath as a command line argument
-		Scene.v().setSootClassPath(Scene.v().getSootClassPath()
+		// Setting the soot classpath
+		String classPath = Scene.v().getSootClassPath()
 				+ ":.:"
 				+ new File(javaHome, "lib/jce.jar").toString()
 			    + ":"
-				+ new File(javaHome, "lib/rt.jar").toString());
+				+ new File(javaHome, "lib/rt.jar").toString();
+		// Adding the arguments given by the user via the -p flag. See ArgParser.java
+		for (String s : pathArgs) {
+			classPath += ":" + s;
+		}
+		Scene.v().setSootClassPath(classPath);
 		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
@@ -87,18 +95,20 @@ public class Main {
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
 
-        	   
-		soot.Main.main(sootOptions);
-		
+        soot.Main.main(sootOptions);
+        
 		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
 		// we want to output it to ant/main/testclasses/test1.jar
 		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
-		File pathToMain = new File(new File(sootOptions[6]).getAbsolutePath(), sootOptions[4]);
-		utils.ant.AntRunner.run(args[0], pathToMain.getAbsolutePath(), sootOptions[6]);
-		
+		File pathToMain = new File(new File(sootOptions[sootOptions.length - 1]).getAbsolutePath(), sootOptions[4]);
+		utils.ant.AntRunner.run(args[0], pathToMain.getAbsolutePath(), sootOptions[sootOptions.length - 1]);
+        
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
-
+		// was ist der empfohlene weg, exceptions zu werfen aus einer analyse heraus.
+		// unsere situation: Rufen main.Main in unit tests auf, wewnn wir einmal expcept werfen, bricht
+		// alles ab, obwohl wir resetten.
+        
 	}
 }

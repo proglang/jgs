@@ -2,10 +2,8 @@ package main.testclasses;
 
 import utils.analyzer.HelperClass;
 
-public class InvokeLibMethod {
-	
+public class DirectPrintFail {
 	public static void main(String[] args) {
-		int x = HelperClass.makeHigh(3);
-		System.out.println(x);
+		System.out.println(HelperClass.makeHigh(3));
 	}
 }
