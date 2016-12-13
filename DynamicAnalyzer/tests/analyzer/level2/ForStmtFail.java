@@ -29,7 +29,7 @@ public class ForStmtFail {
 		
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_i");
-		hs.makeLocal("int_i", null);
+		hs.makeLocal("int_i", "HIGH");
 		hs.addLocal("int_res");
 		
 		int res = 0;
@@ -60,7 +60,7 @@ public class ForStmtFail {
 		
 		HandleStmt hs = new HandleStmt();
 		hs.addLocal("int_i");
-		hs.makeLocal("int_i", null);
+		hs.makeLocal("int_i","HIGH");
 		hs.addLocal("int_res");
 		
 		int res = 0;
@@ -91,7 +91,7 @@ public class ForStmtFail {
 		HandleStmt hs = new HandleStmt();
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_i");
-		hs.makeLocal("int_i", null);
+		hs.makeLocal("int_i", "HIGH");
 		hs.addFieldToObjectMap(this, "int_res");
 		
 		int i = 0; // Local
