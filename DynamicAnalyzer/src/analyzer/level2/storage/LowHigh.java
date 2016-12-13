@@ -6,7 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class LowHigh extends SecDomain<LowHigh.Level> {
+public class LowHigh extends SecDomain<LowHigh.Level> {	// like: SecDomain ist die Relation; LowHigh.Level die "Menge"
     
 	public static enum Level {
         LOW, HIGH
@@ -39,19 +39,30 @@ public class LowHigh extends SecDomain<LowHigh.Level> {
 
 	@Override
     public AnnotationParser<Level> levelParser() {
-//        return new AnnotationParser<Level>() {
-//            @Override
-//            public Option<Level> parse(String s) {
-//            if (s.equals("LOW")) {
-//               return Option.apply(Level.LOW);
-//            } else if (s.equals("HIGH")) {
-//                return Option.apply(Level.HIGH);
-//            } else {
-//                return Option.empty();
-//            }
-//            }
-//		  };
+  /*      return new AnnotationParser<Level>() {
+            @Override
+            public Option<Level> parse(String s) {
+            if (s.equals("LOW")) {
+               return Option.apply(Level.LOW);
+            } else if (s.equals("HIGH")) {
+                return Option.apply(Level.HIGH);
+            } else {
+                return Option.empty();
+            }
+            }
+		  }; */
 		return null;
+	}
+	
+	@Override
+	public Level readLevel(String s) {
+		if (s.equals("LOW")) {
+            return Level.LOW;
+         } else if (s.equals("HIGH")) {
+             return Level.HIGH;
+         } else {
+	         throw new IllegalArgumentException(String.format("Error parsing string %s to a level", s));
+         }
 	}
 
 	@Override

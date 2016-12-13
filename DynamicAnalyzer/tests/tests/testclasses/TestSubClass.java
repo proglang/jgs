@@ -87,7 +87,7 @@ public class TestSubClass {
 		
 		hs.setLevelOfLocal("int_result");
 		int result = 0;
-		hs.makeLocalHigh("int_result");
+		hs.makeLocal("int_result", null);
 		
 		hs.returnLocal("int_result");
 		hs.close();

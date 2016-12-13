@@ -131,21 +131,19 @@ public class CmdArgsTest {
 		assertTrue(addFile2.exists());
 		
 		// now run it and check wheter or not it produces an IllegalFlowException
-		// Run a java app in a separate system process
 		System.out.println("Running " + outJar.toString() + "...");
 		Process proc;
 		try {
 			proc = Runtime.getRuntime().exec("java -jar " + outJar.toString());
-			// Then retreive the process output
-			InputStream err = proc.getErrorStream();
-			String output = convertStreamToString(err);
+			String output = convertStreamToString(proc.getErrorStream());
 			System.out.println(output);
 			if (hasIllegalFlow) {
 				assertTrue(output.contains("utils.exceptions.IllegalFlowException"));
 			} else {
-				assertTrue(!err.toString().contains("IllegalFlowException"));
+				assertTrue(!output.contains("utils.exceptions.IllegalFlowException"));
 			}
 		} catch (IOException e) {
+			System.out.println(e.toString());
 			assertTrue(false);
 		}
 		
@@ -161,7 +159,7 @@ public class CmdArgsTest {
 		assertTrue(!addFile2.exists());
 	}
 	
-	static String convertStreamToString(java.io.InputStream is) {
+	private static String convertStreamToString(java.io.InputStream is) {
 	    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 	    String ret = s.hasNext() ? s.next() : "";
 	    s.close();

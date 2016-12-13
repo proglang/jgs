@@ -290,35 +290,50 @@ public class HandleStmt {
 		localmap.initializeLocal(signature);
 		return localmap.getLevel(signature);
 	}
-
-	/**
-	 * Set SecurityLevel of given local to HIGH.
-	 * 
-	 * @param signature
-	 *            signature of local
-	 */
-	public void makeLocalHigh(String signature) {
-		logger.info("Set level of local " + signature
-				+ " to SecurityLevel.top()");
+	
+	public void makeLocal(String signature, String level) {
+		logger.info("Set level of local " + signature + " to " + level);
 		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
-		localmap.setLevel(signature, SecurityLevel.top());
+		localmap.setLevel(signature, SecurityLevel.redSecLevel(level));
 		logger.info("New securitylevel of local " + signature + " is "
 				+ localmap.getLevel(signature));
 	}
-
-	/**
-	 * Set SecurityLevel of given local to LOW.
-	 * 
-	 * @param signature
-	 *            signature of local
-	 */
-	public void makeLocalLow(String signature) {
-		logger.info("Set level of " + signature + " to SecurityLevel.bottom()");
-		handleStatementUtils.checkIfLocalExists(signature);
-		localmap.setLevel(signature, SecurityLevel.bottom());
-		logger.info("New securitylevel: " + localmap.getLevel(signature));
-	}
+	
+	
+//	
+//
+//	/**
+//	 * Set SecurityLevel of given local to HIGH. This one is
+//	 * actually in use (by the AnnotationSwitchStmt)
+//	 * 
+//	 * @param signature
+//	 *            signature of local
+//	 */
+//	public void makeLocalHigh(String signature) {
+//		logger.info("Set level of local " + signature
+//				+ " to SecurityLevel.top()");
+//		handleStatementUtils.checkIfLocalExists(signature);
+//		localmap.initializeLocal(signature);
+//		localmap.setLevel(signature, SecurityLevel.top());
+//		logger.info("New securitylevel of local " + signature + " is "
+//				+ localmap.getLevel(signature));
+//	}
+//
+//	/**
+//	 * Set SecurityLevel of given local to LOW. This one is
+//	 * actually in use (by the AnnotationSwitchStmt).
+//	 * Same as above probably.
+//	 * 
+//	 * @param signature
+//	 *            signature of local
+//	 */
+//	public void makeLocalLow(String signature) {
+//		logger.info("Set level of " + signature + " to SecurityLevel.bottom()");
+//		handleStatementUtils.checkIfLocalExists(signature);
+//		localmap.setLevel(signature, SecurityLevel.bottom());
+//		logger.info("New securitylevel: " + localmap.getLevel(signature));
+//	}
 
 	/**
 	 * Push the level of a given instance to the globalPC (e.g. on top of its stack)
@@ -589,9 +604,10 @@ public class HandleStmt {
 	 *            security-level
 	 * @return The new security-level
 	 */
-	protected Object setLevelOfLocal(String signature, Object securitylevel) {
+	public Object setLevelOfLocal(String signature, Object securitylevel) {
 		logger.log(Level.INFO, "Set level of local {0} to {1}", new Object[] {
 				signature, securitylevel });
+		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, securitylevel);
 		return localmap.getLevel(signature);

@@ -53,7 +53,7 @@ public class TestClass {
     	
     	int a2 = 23;
     	
-    	hs.makeLocalHigh("int_a2");
+    	hs.makeLocal("int_a2", null);
     	hs.joinLevelOfLocalAndAssignmentLevel("int_a1");
     	hs.joinLevelOfLocalAndAssignmentLevel("int_a2");
     	hs.setLevelOfLocal("int_res");

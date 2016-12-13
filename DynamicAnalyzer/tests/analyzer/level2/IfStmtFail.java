@@ -28,7 +28,7 @@ public class IfStmtFail {
 		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x");
 		int x = 1;
-		hs.makeLocalHigh("int_x");
+		hs.makeLocal("int_x", null);
 		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_x"));
 		
 		hs.addLocal("int_y");

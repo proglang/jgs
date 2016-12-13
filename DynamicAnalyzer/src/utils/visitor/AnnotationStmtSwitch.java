@@ -2,6 +2,7 @@ package utils.visitor;
 
 import analyzer.level1.JimpleInjector;
 import analyzer.level1.storage.UnitStore.Element;
+import analyzer.level2.SecurityLevel;
 import soot.Body;
 import soot.Local;
 import soot.Value;
@@ -130,11 +131,16 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		switch (AnnotationValueSwitch.rightElement) {
 		case MAKE_HIGH:
 			logger.finest("Make left operand high");
-			JimpleInjector.makeLocalHigh((Local) leftOperand, aStmt);
+			JimpleInjector.makeLocal((Local) leftOperand, "HIGH", aStmt);
+			// JimpleInjector.makeLocalHigh((Local) leftOperand, aStmt);
 			break;
+		case MAKE_MEDIUM:
+			logger.finest("Make left operand medium");
+			JimpleInjector.makeLocal((Local) leftOperand, "MEDIUM", aStmt);
 		case MAKE_LOW:
 			logger.finest("Make left operand low");
-			JimpleInjector.makeLocalLow((Local) leftOperand, aStmt);
+			// JimpleInjector.makeLocalLow((Local) leftOperand, aStmt);
+			JimpleInjector.makeLocal((Local) leftOperand, "LOW", aStmt);
 			break;
 		case SET_RETURN_LEVEL:
 			JimpleInjector.setReturnLevelAfterInvokeStmt(leftOperand.toString(), aStmt);

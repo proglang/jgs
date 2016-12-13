@@ -31,7 +31,7 @@ public class Nico {
 		hs.addLocal("int_y");
 		hs.setLevelOfLocal("int_y");
 		int y = 2;
-		hs.makeLocalHigh("int_y");
+		hs.makeLocal("int_y", null);
 		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_y"));
 
 		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());

@@ -42,4 +42,8 @@ public class SecurityLevel {
 	public static boolean le(Object l1, Object l2) {
 		return secDomain.le(l1, l2);
 	}
+	
+	public static Object redSecLevel(String level) {
+		return secDomain.readLevel(level);
+	}
 }
