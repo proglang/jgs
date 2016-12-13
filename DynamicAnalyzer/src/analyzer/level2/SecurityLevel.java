@@ -13,12 +13,13 @@ package analyzer.level2;
 //}
 
 import analyzer.level2.storage.LowHigh;
+import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 
 public class SecurityLevel {
 	@SuppressWarnings("rawtypes")
-	public static SecDomain secDomain = new LowHigh();
+	public static SecDomain secDomain = new LowMediumHigh();
 	
 	public static Object bottom() {
 		return secDomain.bottom();
