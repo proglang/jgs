@@ -1075,7 +1075,7 @@ public class JimpleInjector {
 	 * @param pos
 	 * @param l
 	 */
-	public static void checkThatNotHigh(Unit pos, Local l) {
+	public static void checkThatNot(Local l, String level, Unit pos) {
 		logger.info("Check that " + l + " is not high");
 		
 		if (l == null)	{
@@ -1083,6 +1083,7 @@ public class JimpleInjector {
 		}
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
 		paramTypes.add(RefType.v("java.lang.String"));
 		
 		String signature = getSignatureForLocal(l);
@@ -1092,8 +1093,8 @@ public class JimpleInjector {
 		
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-				"checkThatNotHigh", paramTypes, VoidType.v(),	false), 
-				local_for_Strings);
+				"checkThatNot", paramTypes, VoidType.v(),	false), 
+				local_for_Strings, StringConstant.v(level));
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
 

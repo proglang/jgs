@@ -807,11 +807,11 @@ public class HandleStmt {
 	 * @param signature
 	 *            signature of the argument
 	 */
-	public void checkThatNotHigh(String signature) {
+	public void checkThatNot(String signature, String level) {
 		logger.info("Check that " + localmap.getLevel(signature)
-				+ " is not HIGH");
-		if (localmap.getLevel(signature) == SecurityLevel.top()) {
-			logger.info("it's high");
+				+ " is not " + level + " or higher");
+		if (!SecurityLevel.lt(localmap.getLevel(signature), SecurityLevel.readLevel(level))) {
+			logger.info("it's " + SecurityLevel.readLevel(level));
 			handleStatementUtils.abort("Passed argument " + signature
 					+ " with a high security level to a method "
 					+ "which doesn't allow it.");

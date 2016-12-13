@@ -85,7 +85,7 @@ public class ExternalClasses {
 			// Also, we might print in low context: If so, we mustn't print a high-sec param
 			for (Local param: params) {
 				if (param != null) {
-					JimpleInjector.checkThatNotHigh(pos, param);
+					JimpleInjector.checkThatNot(param, "HIGH", pos);
 					
 				}
 			} 
