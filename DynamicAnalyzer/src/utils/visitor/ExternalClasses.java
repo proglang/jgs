@@ -32,7 +32,7 @@ public class ExternalClasses {
 		methodMap.put("<java.lang.String: java.lang.String "
 				+ "substring(int,int)>", new JoinLevels());
 		
-		// Methods where the argument cannot have a High argument
+		// Methods where the argument cannot have a Medium argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
 				 new NotAllowedForPrintOutput("MEDIUM"));
 		methodMap.put("<java.io.PrintStream: void println(int)>", 
@@ -42,7 +42,15 @@ public class ExternalClasses {
 		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
 				 new NotAllowedForPrintOutput("MEDIUM"));
 		
-		// Methods 
+		// Methods where the argument cannot have a High argument (but may very well have a medium argument!)
+		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.Object)>", 
+				 new NotAllowedForPrintOutput("HIGH"));
+		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.int)>", 
+				 new NotAllowedForPrintOutput("HIGH"));
+		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.String)>", 
+				 new NotAllowedForPrintOutput("HIGH"));
+		methodMap.put("<utils.printer.SecurePrinter: void printMedium(boolean)>", 
+				 new NotAllowedForPrintOutput("HIGH"));
 		
 		// Methods where we don't do anything
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());

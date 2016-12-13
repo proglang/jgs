@@ -23,6 +23,7 @@ import analyzer.level2.SwitchStmtSuccess;
 import analyzer.level2.WhileStmtFail;
 import analyzer.level2.WhileStmtSuccess;
 import analyzer.level2.storage.LocalMapTest;
+import analyzer.level2.storage.LowMiddleHighTest;
 import analyzer.level2.storage.ObjectMapTest;
 import analyzer.level2.storage.SecurityOptionalTest;
 
@@ -72,6 +73,9 @@ import end2endtest.SingleEndToEndTest;
     
     // Test for commandline arguments and correct path output
     CmdArgsTest.class,
+    
+    // Tests for LowMiddleHigh Lattice
+    LowMiddleHighTest.class,
 
     // Tests for valid bytecode of testclasses
     AllEndToEndTests.class,
