@@ -124,6 +124,7 @@ public class AllEndToEndTests {
 				// Acting with Mediums!
 				new Object[] { "PrintMediumSuccess", false, new String[] {} }, 
 				new Object[] { "PrintMediumFail", true, new String[] {"java.lang.String_r3"} }, 
+				new Object[] { "PrintMediumFail2", true, new String[] {"java.lang.String_r3"} }, 
 				
 				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
 				new Object[] { "SystemOut1", true, new String[] {"int_i0"} },

@@ -1,7 +1,6 @@
 package main.testclasses;
 
 import utils.analyzer.HelperClass;
-import utils.printer.SecurePrinter;
 
 public class PrintMediumFail {
 	public static void main(String[] args) {

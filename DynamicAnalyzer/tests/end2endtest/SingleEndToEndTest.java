@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "PrintMediumSuccess";
+	public String name = "PrintMediumFail2";
 
 	public boolean hasIllegalFlow = true;
 
