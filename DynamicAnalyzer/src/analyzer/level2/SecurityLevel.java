@@ -44,7 +44,18 @@ public class SecurityLevel {
 		return secDomain.le(l1, l2);
 	}
 	
-	public static Object redSecLevel(String level) {
+	/**
+	 * Strictly less than
+	 * @param l1
+	 * @param l2
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean lt(Object l1, Object l2) {
+		return secDomain.le(l1, l2) && !l1.equals(l2);
+	}
+	
+	public static Object readLevel(String level) {
 		return secDomain.readLevel(level);
 	}
 }

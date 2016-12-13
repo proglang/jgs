@@ -80,7 +80,7 @@ public class ExternalClasses {
 			}
 			
 			// If print Statement is called, context must not be high: This, we can always check
-			JimpleInjector.checkThatPCNotHigh(pos);
+			JimpleInjector.checkThatPCLessThan("HIGH", pos);
 			
 			// Also, we might print in low context: If so, we mustn't print a high-sec param
 			for (Local param: params) {

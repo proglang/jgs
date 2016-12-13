@@ -295,7 +295,7 @@ public class HandleStmt {
 		logger.info("Set level of local " + signature + " to " + level);
 		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
-		localmap.setLevel(signature, SecurityLevel.redSecLevel(level));
+		localmap.setLevel(signature, SecurityLevel.readLevel(level));
 		logger.info("New securitylevel of local " + signature + " is "
 				+ localmap.getLevel(signature));
 	}
@@ -822,13 +822,14 @@ public class HandleStmt {
 	 * This method is used if a print statement is identified. Print statements
 	 * must never be called in high sec context. Thus, we must check the
 	 * context;
+	 * @param level TODO
 	 */
-	public void checkThatPCNotHigh() {
-		logger.info("About to print something to public output. Thus, check that PC is not HIGH");
-		if (localmap.getLocalPC() == SecurityLevel.top()) {
-			logger.info("Trying to print with HIGH PC!");
+	public void checkThatPCLessThan(String level) {
+		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
+		if (!SecurityLevel.lt(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
+			logger.info("Trying to print with "+ level + " PC!");
 			handleStatementUtils
-					.abort("Tried to print in high-security context: LocalPC was HIGH!");
+					.abort("Tried to print in high-security context: LocalPC was " + level + "!");
 		}
 	}
 }

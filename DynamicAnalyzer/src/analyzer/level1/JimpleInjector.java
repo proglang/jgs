@@ -1103,20 +1103,24 @@ public class JimpleInjector {
 	}
 	
 	/**
-	 * Method to check that PC is not high. Called when calling System.out.println(), 
+	 * Method to check that PC is not of specified level, or above. Called when calling System.out.println(), 
 	 * which must always be called in low context because of its side effects.
+	 * @param level 	level that the PC must not exceed
 	 * @param pos
 	 */
-	public static void checkThatPCNotHigh(Unit pos) {
-		logger.info("Check that context is not high");
+	public static void checkThatPCLessThan(String level, Unit pos) {
+		logger.info("Check that context is not " + level + "or above");
 		
 		if (pos == null) {
 			throw new InternalAnalyzerException("Position is Null");
 		}
 		
+		ArrayList<Type> paramTypes = new ArrayList<Type>();
+		paramTypes.add(RefType.v("java.lang.String"));
+		
 		Expr checkPC = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"checkThatPCNotHigh", new ArrayList<Type>(), VoidType.v(), false));
+						"checkThatPCLessThan", paramTypes, VoidType.v(), false), StringConstant.v(level));
 		Unit invoke = Jimple.v().newInvokeStmt(checkPC);
 		
 		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
