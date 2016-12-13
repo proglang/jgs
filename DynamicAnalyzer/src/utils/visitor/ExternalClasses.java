@@ -34,19 +34,23 @@ public class ExternalClasses {
 		
 		// Methods where the argument cannot have a High argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
-				 new NoHighAllowedForPrintOutput());
+				 new NotAllowedForPrintOutput("MEDIUM"));
 		methodMap.put("<java.io.PrintStream: void println(int)>", 
-				 new NoHighAllowedForPrintOutput());
+				 new NotAllowedForPrintOutput("MEDIUM"));
 		methodMap.put("<java.io.PrintStream: void println(boolean)>", 
-				 new NoHighAllowedForPrintOutput());
+				 new NotAllowedForPrintOutput("MEDIUM"));
 		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
-				 new NoHighAllowedForPrintOutput());
+				 new NotAllowedForPrintOutput("MEDIUM"));
+		
+		// Methods 
 		
 		// Methods where we don't do anything
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
 		
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeHigh(java.lang.Object)>", new MakeHigh());
+		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
+				+ "makeMedium(java.lang.Object)>", new MakeMedium());
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeLow(java.lang.Object)>", new MakeLow());
 	}
@@ -71,27 +75,33 @@ public class ExternalClasses {
 		}
 	}
 	
-	static class NoHighAllowedForPrintOutput implements Command {
+	static class NotAllowedForPrintOutput implements Command {
+		
+		private String level;
+		public NotAllowedForPrintOutput(String level) {
+			this.level = level;
+		}
+		
 		public void execute(Unit pos, Local[] params) {
-			logger.fine("Insert check that external class has no high argument");
+			logger.fine("Insert check that external class has no " + level + " arguments");
 			if (params == null || pos == null) {
 				throw new InternalAnalyzerException(
 						"Received a null-pointer as argument");
 			}
 			
 			// If print Statement is called, context must not be high: This, we can always check
-			JimpleInjector.checkThatPCLessThan("HIGH", pos);
+			JimpleInjector.checkThatPCLessThan(level, pos);
 			
 			// Also, we might print in low context: If so, we mustn't print a high-sec param
 			for (Local param: params) {
 				if (param != null) {
-					JimpleInjector.checkThatNot(param, "HIGH", pos);
+					JimpleInjector.checkThatNot(param, level, pos);
 					
 				}
 			} 
 		}
 	}
-
+	
 	static class DoNothing implements Command	{
 		@Override
 		public void execute(Unit pos, Local[] params) {
@@ -107,6 +117,14 @@ public class ExternalClasses {
 			logger.fine("Variable" + params[0].toString() + " is set to high");
 			JimpleInjector.makeLocalHigh(params[0], pos);*/
 			AnnotationValueSwitch.rightElement = RightElement.MAKE_HIGH;
+		}
+	}
+	
+	static class MakeMedium implements Command {
+		@Override
+		public void execute(Unit pos, Local[] params) {
+			logger.info("Right element is a makeMedium method");
+			AnnotationValueSwitch.rightElement = RightElement.MAKE_MEDIUM;
 		}
 	}
 	
