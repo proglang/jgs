@@ -37,7 +37,7 @@ public class IfStmtSuccess {
 			assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
 			assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 			
-			hs.makeLocalHigh("int_x");
+			hs.makeLocal("int_x", "HIGH");
 			
 			hs.checkCondition("123", "int_x");
 			if (x == 1) {
@@ -58,7 +58,7 @@ public class IfStmtSuccess {
 		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
 		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 		
-		hs.makeLocalHigh("int_x");
+		hs.makeLocal("int_x", "HIGH");
 		
 		hs.checkCondition("123", "int_x");
 		if (x == 1) {
@@ -73,7 +73,7 @@ public class IfStmtSuccess {
 		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
 		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
 		
-		hs.makeLocalLow("int_x");
+		hs.makeLocal("int_x", "LOW");
 		hs.pushLocalPC(SecurityLevel.top(), 234);
 		hs.pushGlobalPC(SecurityLevel.top());
 		

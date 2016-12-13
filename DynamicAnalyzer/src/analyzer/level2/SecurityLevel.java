@@ -13,12 +13,13 @@ package analyzer.level2;
 //}
 
 import analyzer.level2.storage.LowHigh;
+import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 
 public class SecurityLevel {
 	@SuppressWarnings("rawtypes")
-	public static SecDomain secDomain = new LowHigh();
+	public static SecDomain secDomain = new LowMediumHigh();
 	
 	public static Object bottom() {
 		return secDomain.bottom();
@@ -41,5 +42,20 @@ public class SecurityLevel {
 	@SuppressWarnings("unchecked")
 	public static boolean le(Object l1, Object l2) {
 		return secDomain.le(l1, l2);
+	}
+	
+	/**
+	 * Strictly less than
+	 * @param l1
+	 * @param l2
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static boolean lt(Object l1, Object l2) {
+		return secDomain.le(l1, l2) && !l1.equals(l2);
+	}
+	
+	public static Object readLevel(String level) {
+		return secDomain.readLevel(level);
 	}
 }

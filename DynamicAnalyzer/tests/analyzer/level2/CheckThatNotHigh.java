@@ -28,7 +28,7 @@ public class CheckThatNotHigh {
 		
 		hs.addLocal("String_low");
 		
-		hs.checkThatNotHigh("String_low");
+		hs.checkThatNot("String_low", "HIGH");
 		
 		hs.close();
 		
@@ -49,7 +49,7 @@ public class CheckThatNotHigh {
 		
 		assertEquals(SecurityLevel.top(), hs.getLocalLevel("String_high"));
 		
-		hs.checkThatNotHigh("String_high");
+		hs.checkThatNot("String_high", "HIGH");
 		
 		hs.close();
 		

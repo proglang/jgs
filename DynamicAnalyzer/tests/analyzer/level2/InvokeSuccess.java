@@ -93,7 +93,7 @@ public class InvokeSuccess {
 		assertEquals(SecurityLevel.bottom(), hs.getActualReturnLevel());
     	
     	
-		hs.makeLocalHigh("int_b");
+		hs.makeLocal("int_b", "HIGH");
 		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 		xy.methodWithParams(a, b, c);
 		assertEquals(SecurityLevel.top(), hs.getActualReturnLevel());

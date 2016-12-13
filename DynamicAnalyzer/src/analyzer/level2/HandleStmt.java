@@ -290,35 +290,50 @@ public class HandleStmt {
 		localmap.initializeLocal(signature);
 		return localmap.getLevel(signature);
 	}
-
-	/**
-	 * Set SecurityLevel of given local to HIGH.
-	 * 
-	 * @param signature
-	 *            signature of local
-	 */
-	public void makeLocalHigh(String signature) {
-		logger.info("Set level of local " + signature
-				+ " to SecurityLevel.top()");
+	
+	public void makeLocal(String signature, String level) {
+		logger.info("Set level of local " + signature + " to " + level);
 		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
-		localmap.setLevel(signature, SecurityLevel.top());
+		localmap.setLevel(signature, SecurityLevel.readLevel(level));
 		logger.info("New securitylevel of local " + signature + " is "
 				+ localmap.getLevel(signature));
 	}
-
-	/**
-	 * Set SecurityLevel of given local to LOW.
-	 * 
-	 * @param signature
-	 *            signature of local
-	 */
-	public void makeLocalLow(String signature) {
-		logger.info("Set level of " + signature + " to SecurityLevel.bottom()");
-		handleStatementUtils.checkIfLocalExists(signature);
-		localmap.setLevel(signature, SecurityLevel.bottom());
-		logger.info("New securitylevel: " + localmap.getLevel(signature));
-	}
+	
+	
+//	
+//
+//	/**
+//	 * Set SecurityLevel of given local to HIGH. This one is
+//	 * actually in use (by the AnnotationSwitchStmt)
+//	 * 
+//	 * @param signature
+//	 *            signature of local
+//	 */
+//	public void makeLocalHigh(String signature) {
+//		logger.info("Set level of local " + signature
+//				+ " to SecurityLevel.top()");
+//		handleStatementUtils.checkIfLocalExists(signature);
+//		localmap.initializeLocal(signature);
+//		localmap.setLevel(signature, SecurityLevel.top());
+//		logger.info("New securitylevel of local " + signature + " is "
+//				+ localmap.getLevel(signature));
+//	}
+//
+//	/**
+//	 * Set SecurityLevel of given local to LOW. This one is
+//	 * actually in use (by the AnnotationSwitchStmt).
+//	 * Same as above probably.
+//	 * 
+//	 * @param signature
+//	 *            signature of local
+//	 */
+//	public void makeLocalLow(String signature) {
+//		logger.info("Set level of " + signature + " to SecurityLevel.bottom()");
+//		handleStatementUtils.checkIfLocalExists(signature);
+//		localmap.setLevel(signature, SecurityLevel.bottom());
+//		logger.info("New securitylevel: " + localmap.getLevel(signature));
+//	}
 
 	/**
 	 * Push the level of a given instance to the globalPC (e.g. on top of its stack)
@@ -589,9 +604,10 @@ public class HandleStmt {
 	 *            security-level
 	 * @return The new security-level
 	 */
-	protected Object setLevelOfLocal(String signature, Object securitylevel) {
+	public Object setLevelOfLocal(String signature, Object securitylevel) {
 		logger.log(Level.INFO, "Set level of local {0} to {1}", new Object[] {
 				signature, securitylevel });
+		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, securitylevel);
 		return localmap.getLevel(signature);
@@ -791,11 +807,11 @@ public class HandleStmt {
 	 * @param signature
 	 *            signature of the argument
 	 */
-	public void checkThatNotHigh(String signature) {
+	public void checkThatNot(String signature, String level) {
 		logger.info("Check that " + localmap.getLevel(signature)
-				+ " is not HIGH");
-		if (localmap.getLevel(signature) == SecurityLevel.top()) {
-			logger.info("it's high");
+				+ " is not " + level + " or higher");
+		if (!SecurityLevel.lt(localmap.getLevel(signature), SecurityLevel.readLevel(level))) {
+			logger.info("it's " + SecurityLevel.readLevel(level));
 			handleStatementUtils.abort("Passed argument " + signature
 					+ " with a high security level to a method "
 					+ "which doesn't allow it.");
@@ -806,13 +822,14 @@ public class HandleStmt {
 	 * This method is used if a print statement is identified. Print statements
 	 * must never be called in high sec context. Thus, we must check the
 	 * context;
+	 * @param level TODO
 	 */
-	public void checkThatPCNotHigh() {
-		logger.info("About to print something to public output. Thus, check that PC is not HIGH");
-		if (localmap.getLocalPC() == SecurityLevel.top()) {
-			logger.info("Trying to print with HIGH PC!");
+	public void checkThatPCLessThan(String level) {
+		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
+		if (!SecurityLevel.lt(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
+			logger.info("Trying to print with "+ level + " PC!");
 			handleStatementUtils
-					.abort("Tried to print in high-security context: LocalPC was HIGH!");
+					.abort("Tried to print in high-security context: LocalPC was " + level + "!");
 		}
 	}
 }
