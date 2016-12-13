@@ -25,6 +25,14 @@ public class LowMiddleHighTest {
 			assertTrue(SecurityLevel.lt(LowMediumHigh.Level.LOW, LowMediumHigh.Level.MEDIUM));
 			assertTrue(SecurityLevel.lt(LowMediumHigh.Level.LOW, LowMediumHigh.Level.HIGH));
 			assertTrue(SecurityLevel.lt(LowMediumHigh.Level.MEDIUM, LowMediumHigh.Level.HIGH));
+			
+			assertTrue(!SecurityLevel.lt(LowMediumHigh.Level.LOW, LowMediumHigh.Level.LOW));
+			assertTrue(!SecurityLevel.lt(LowMediumHigh.Level.MEDIUM, LowMediumHigh.Level.MEDIUM));
+			assertTrue(!SecurityLevel.lt(LowMediumHigh.Level.HIGH, LowMediumHigh.Level.HIGH));
+			
+			assertTrue(!SecurityLevel.lt(LowMediumHigh.Level.HIGH, LowMediumHigh.Level.LOW));
+			assertTrue(!SecurityLevel.lt(LowMediumHigh.Level.HIGH, LowMediumHigh.Level.MEDIUM));
+			assertTrue(!SecurityLevel.lt(LowMediumHigh.Level.MEDIUM, LowMediumHigh.Level.LOW));
 	}
 	
 	@Test
