@@ -1093,7 +1093,7 @@ public class JimpleInjector {
 		
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-				"checkThatNot", paramTypes, VoidType.v(),	false), 
+				"checkThatNotLe", paramTypes, VoidType.v(),	false), 
 				local_for_Strings, StringConstant.v(level));
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		

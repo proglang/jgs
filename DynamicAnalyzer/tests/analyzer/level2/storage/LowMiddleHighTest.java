@@ -17,7 +17,7 @@ public class LowMiddleHighTest {
 	@Before
 	 public void beforeMethod() {
 	     org.junit.Assume.assumeTrue(SecurityLevel.secDomain instanceof LowMediumHigh);
-	     // rest of setup.
+	     // execute only if correct lattice is used
 	 }
 	
 	@Test
