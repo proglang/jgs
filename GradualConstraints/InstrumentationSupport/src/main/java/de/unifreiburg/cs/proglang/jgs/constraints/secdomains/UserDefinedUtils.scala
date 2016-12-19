@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains
 
-import UserDefined._
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined._
 import org.json4s._
 
 /**
