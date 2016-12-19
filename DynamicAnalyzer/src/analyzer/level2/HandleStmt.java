@@ -815,16 +815,14 @@ public class HandleStmt {
 
 	/**
 	 * This method is used if a print statement is identified. Print statements
-	 * must never be called in high sec context. Thus, we must check the
-	 * context;
-	 * @param level TODO
+	 * require the PC to be on a less/equal a certain level (lessThan LOW for system.println, 
+	 * lessThan MEDIUM for SecurePrinter.printMedium(String s);
+	 * @param level		level the PC must be less/equal than.
 	 */
-	public void checkThatPCLessThan(String level) {
+	public void checkThatPCLe(String level) {
 		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
-		if (!SecurityLevel.le(SecurityLevel.readLevel(level), localmap.getLocalPC())) {
-			logger.info("Trying to print with "+ level + " PC!");
-			handleStatementUtils
-					.abort("Tried to print in high-security context: LocalPC was " + level + "!");
+		if (!SecurityLevel.le(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
+			handleStatementUtils.abort("Invalid security context: PC must be less/eqal " + level + ", but PC was " + localmap.getLocalPC());
 		}
 	}
 }

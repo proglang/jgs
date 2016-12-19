@@ -77,8 +77,8 @@ public class AllEndToEndTests {
 				
 				// Implicit flow from high-if guard to low-sec return
 				new Object[] { "ImplicitFlow1", true, new String[] {"byte_b1"} },
-				new Object[] { "ImplicitFlow2", true, new String[] {"high-security context"} },
-				new Object[] { "ImplicitFlow3", true, new String[] {"high-security context"} },
+				new Object[] { "ImplicitFlow2", true, new String[] {"Invalid security context"} },
+				new Object[] { "ImplicitFlow3", true, new String[] {"Invalid security context"} },
 
 				new Object[] { "LowFieldHighInstance", true, new String[] {"boolean_z0"} },
 			

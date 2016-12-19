@@ -10,7 +10,7 @@ public class AccessFieldsOfObjectsFail {
 
 	public static void main(String[] args) {
 		SimpleObject oneObject = new SimpleObject();
-		oneObject.field = HelperClass.makeLow("New field value");
+		oneObject.field = HelperClass.makeHigh("New field value");
 		System.out.println(oneObject.field);
 	}
 

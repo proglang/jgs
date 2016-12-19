@@ -1109,7 +1109,7 @@ public class JimpleInjector {
 	 * @param level 	level that the PC must not exceed
 	 * @param pos
 	 */
-	public static void checkThatPCLessThan(String level, Unit pos) {
+	public static void checkThatPCLe(String level, Unit pos) {
 		logger.info("Check that context is " + level + "or above");
 		
 		if (pos == null) {
@@ -1121,7 +1121,7 @@ public class JimpleInjector {
 		
 		Expr checkPC = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-						"checkThatPCLessThan", paramTypes, VoidType.v(), false), StringConstant.v(level));
+						"checkThatPCLe", paramTypes, VoidType.v(), false), StringConstant.v(level));
 		Unit invoke = Jimple.v().newInvokeStmt(checkPC);
 		
 		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "AccessFieldsOfObjectsFail";
+	public String name = "ImplicitFlow2";
 
 	public boolean hasIllegalFlow = true;
 
