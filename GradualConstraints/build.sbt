@@ -47,7 +47,11 @@ lazy val InstrumentationSupport =
   (project in file("InstrumentationSupport")).
     settings(commonSettings:_*).
     settings(
-      libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
+      libraryDependencies ++=
+        Seq("com.novocode" % "junit-interface" % "0.11" % "test",
+          "org.json4s" %% "json4s-jackson" % "3.3.0",
+          "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.7.4"
+        ),
       artifactName := {
         (sv : ScalaVersion , mod : ModuleID , artifact : Artifact) => "gradualconstraints_" + Artifact.artifactName(sv, mod, artifact)
       }

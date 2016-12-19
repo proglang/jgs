@@ -181,26 +181,9 @@ object JgsCheck {
             new Config(types, csets, opt)
           }
           case UserDomain(secDomainClass) =>
-            val domainSpecJson = Try(parseJson(Source.fromFile(secDomainClass).mkString)) match {
-              case Failure(exc) =>
-                throw new IllegalArgumentException(
-                  s"Error parsing security domain specification ${secDomainClass}: ${exc.getMessage}"
-                )
-              case Success(json) => json
-            }
-            val domainSpec = UserDefinedUtils.fromJSon(domainSpecJson)
-            // a little validation
-            if (domainSpec.levels.isEmpty) {
-              throw new IllegalArgumentException(
-                s"No security levels found in ${secDomainClass}"
-              )
-            }
-            if (domainSpec.edges.isEmpty) {
-              throw new IllegalArgumentException(
-                s"No less-than edges found in ${secDomainClass}"
-              )
-            }
+
             // create the domains
+            val domainSpec = UserDefinedUtils.fromJSon(secDomainClass)
             val secdomain = UserDefined(domainSpec.levels, domainSpec.edges)
             val types = new TypeDomain(secdomain)
             val csets = new NaiveConstraintsFactory(types)
