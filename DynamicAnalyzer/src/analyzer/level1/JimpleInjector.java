@@ -1075,7 +1075,7 @@ public class JimpleInjector {
 	 * @param pos
 	 * @param l
 	 */
-	public static void checkThatNot(Local l, String level, Unit pos) {
+	public static void checkThatLe(Local l, String level, Unit pos) {
 		logger.info("Check that " + l + " is not high");
 		
 		if (l == null)	{
@@ -1093,7 +1093,7 @@ public class JimpleInjector {
 		
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-				"checkThatNotLe", paramTypes, VoidType.v(),	false), 
+				"checkThatLe", paramTypes, VoidType.v(),	false), 
 				local_for_Strings, StringConstant.v(level));
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
@@ -1110,7 +1110,7 @@ public class JimpleInjector {
 	 * @param pos
 	 */
 	public static void checkThatPCLessThan(String level, Unit pos) {
-		logger.info("Check that context is not " + level + "or above");
+		logger.info("Check that context is " + level + "or above");
 		
 		if (pos == null) {
 			throw new InternalAnalyzerException("Position is Null");

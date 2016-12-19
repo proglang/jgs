@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "PrintMediumFail2";
+	public String name = "AccessFieldsOfObjectsFail";
 
 	public boolean hasIllegalFlow = true;
 
@@ -38,7 +38,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] {};
+	public String[] involvedVars = new String[] {"java.lang.String_$r6"};
 
 	Logger logger = L1Logger.getLogger();
 

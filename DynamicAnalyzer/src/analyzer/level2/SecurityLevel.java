@@ -12,14 +12,24 @@ package analyzer.level2;
 //	}
 //}
 
+import java.io.File;
+
 import analyzer.level2.storage.LowHigh;
 import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.*;
 
 
 public class SecurityLevel {
 	@SuppressWarnings("rawtypes")
 	public static SecDomain secDomain = new LowMediumHigh();
+//	static {
+//		UserDefinedUtils.Spec domainSpec 
+		
+//		= UserDefinedUtils.fromJSon(new File("secdomain-alice-bob-charlie.yaml")); 
+//				
+//		secDomain = UserDefined$.MODULE$.apply(domainSpec);
+//	}
 	
 	public static Object bottom() {
 		return secDomain.bottom();

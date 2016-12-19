@@ -801,20 +801,15 @@ public class HandleStmt {
 	}
 
 	/**
-	 * This method is used if an argument with a HIGH value is passed to a
-	 * method which doesn't allow it.
-	 * 
-	 * @param signature
-	 *            signature of the argument
+	 * Check level of signature is less/equal than @param level
+	 * @param signature			signature of the local to test
+	 * @param level				level which mustn't be exceeded
 	 */
-	public void checkThatNotLe(String signature, String level) {
-		logger.info("Check that " + level + "is not less/equal " + localmap.getLevel(signature)
-				);
-		if (SecurityLevel.le(SecurityLevel.readLevel(level), localmap.getLevel(signature))) {
-			logger.info("it's " + SecurityLevel.readLevel(level));
-			handleStatementUtils.abort("Passed argument " + signature
-					+ " with a high security level to a method "
-					+ "which doesn't allow it.");
+	public void checkThatLe(String signature, String level) {
+		logger.info("Check if " + signature + " is less/equal " + level);
+		if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))){
+			handleStatementUtils.abort("Pasad argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" + 
+			" which requres a security level of less/eqal " + level );
 		}
 	}
 
@@ -826,7 +821,7 @@ public class HandleStmt {
 	 */
 	public void checkThatPCLessThan(String level) {
 		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
-		if (SecurityLevel.le(SecurityLevel.readLevel(level), localmap.getLocalPC())) {
+		if (!SecurityLevel.le(SecurityLevel.readLevel(level), localmap.getLocalPC())) {
 			logger.info("Trying to print with "+ level + " PC!");
 			handleStatementUtils
 					.abort("Tried to print in high-security context: LocalPC was " + level + "!");

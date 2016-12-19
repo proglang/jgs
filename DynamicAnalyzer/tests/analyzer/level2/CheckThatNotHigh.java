@@ -28,8 +28,8 @@ public class CheckThatNotHigh {
 		
 		hs.addLocal("String_low");
 		
-		hs.checkThatNotLe("String_low", "HIGH");
-		
+//		hs.checkThatNotLe("String_low", "HIGH");
+		hs.checkThatLe("String_low", "LOW");
 		hs.close();
 		
 		LOGGER.info("CheckThatNotHigh-successTest finished");
@@ -49,7 +49,8 @@ public class CheckThatNotHigh {
 		
 		assertEquals(SecurityLevel.top(), hs.getLocalLevel("String_high"));
 		
-		hs.checkThatNotLe("String_high", "HIGH");
+//		hs.checkThatNotLe("String_high", "HIGH");
+		hs.checkThatLe("String_high", "LOW");
 		
 		hs.close();
 		

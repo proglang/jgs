@@ -32,25 +32,25 @@ public class ExternalClasses {
 		methodMap.put("<java.lang.String: java.lang.String "
 				+ "substring(int,int)>", new JoinLevels());
 		
-		// Methods where the argument cannot have a Medium argument
+		// Methods where the argument must have LOW argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
-				 new NotAllowedForPrintOutput("MEDIUM"));
+				 new MaxLevelAllowedForPrintOutput("LOW"));
 		methodMap.put("<java.io.PrintStream: void println(int)>", 
-				 new NotAllowedForPrintOutput("MEDIUM"));
+				 new MaxLevelAllowedForPrintOutput("LOW"));
 		methodMap.put("<java.io.PrintStream: void println(boolean)>", 
-				 new NotAllowedForPrintOutput("MEDIUM"));
+				 new MaxLevelAllowedForPrintOutput("LOW"));
 		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
-				 new NotAllowedForPrintOutput("MEDIUM"));
+				 new MaxLevelAllowedForPrintOutput("LOW"));
 		
-		// Methods where the argument cannot have a High argument (but may very well have a medium argument!)
+		// Methods where the argument must have either LOW or MEDIUM argument
 		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.Object)>", 
-				 new NotAllowedForPrintOutput("HIGH"));
+				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.int)>", 
-				 new NotAllowedForPrintOutput("HIGH"));
+				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.String)>", 
-				 new NotAllowedForPrintOutput("HIGH"));
+				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		methodMap.put("<utils.printer.SecurePrinter: void printMedium(boolean)>", 
-				 new NotAllowedForPrintOutput("HIGH"));
+				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		
 		// Methods where we don't do anything
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
@@ -83,10 +83,10 @@ public class ExternalClasses {
 		}
 	}
 	
-	static class NotAllowedForPrintOutput implements Command {
+	static class MaxLevelAllowedForPrintOutput implements Command {
 		
 		private String level;
-		public NotAllowedForPrintOutput(String level) {
+		public MaxLevelAllowedForPrintOutput(String level) {
 			this.level = level;
 		}
 		
@@ -103,7 +103,7 @@ public class ExternalClasses {
 			// Also, we might print in low context: If so, we mustn't print a high-sec param
 			for (Local param: params) {
 				if (param != null) {
-					JimpleInjector.checkThatNot(param, level, pos);
+					JimpleInjector.checkThatLe(param, level, pos);
 					
 				}
 			} 
