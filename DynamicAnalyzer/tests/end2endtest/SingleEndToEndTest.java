@@ -38,7 +38,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] {"high-security context"};
+	public String[] involvedVars = new String[] {};
 
 	Logger logger = L1Logger.getLogger();
 
