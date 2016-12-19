@@ -1,8 +1,10 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains
 
+import java.io.File
+
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Level
-import de.unifreiburg.cs.proglang.jgs.signatures.parse.{ParseUtils, AnnotationParser}
+import de.unifreiburg.cs.proglang.jgs.signatures.parse.{AnnotationParser, ParseUtils}
 
 import scala.collection.JavaConversions._
 
@@ -73,6 +75,8 @@ object UserDefined {
   }
 
   def apply(spec: UserDefinedUtils.Spec) : UserDefined = apply(spec.levels, spec.edges)
+
+  def fromFile(file: File) : UserDefined = apply(UserDefinedUtils.fromJSon(file))
 
   private def bounds(levels : Set[Level], lt : (Level, Level) => Boolean) : Map[Tuple2[Level, Level], Level] = {
     val le = (l1 : Level, l2 : Level) => lt(l1, l2) || l1 == l2
