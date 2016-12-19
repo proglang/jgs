@@ -72,6 +72,7 @@ object UserDefined {
     new UserDefined(levels, lt, lubMap, glbMap, top.get, bottom.get)
   }
 
+  def apply(spec: UserDefinedUtils.Spec) : UserDefined = apply(spec.levels, spec.edges)
 
   private def bounds(levels : Set[Level], lt : (Level, Level) => Boolean) : Map[Tuple2[Level, Level], Level] = {
     val le = (l1 : Level, l2 : Level) => lt(l1, l2) || l1 == l2
