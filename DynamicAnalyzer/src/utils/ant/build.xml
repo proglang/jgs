@@ -29,7 +29,7 @@
     	<!-- Add the security domain -->
     	<zipfileset src="../../../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar">
     	   	<include name="de/unifreiburg/cs/proglang/jgs/constraints/SecDomain.class"/>
-    		<include name="de/unifreiburg/cs/proglang/jgs/constraints/secdomains/**"/>
+    		<include name="de/unifreiburg/cs/proglang/jgs/constraints/secdomains/UserDefined.class"/>
     	</zipfileset>	
     	
     	<!-- Supplementary files -->

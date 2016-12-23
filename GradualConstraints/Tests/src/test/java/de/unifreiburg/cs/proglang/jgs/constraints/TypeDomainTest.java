@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains
+        .UnknownSecurityLevelException;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import org.junit.Test;
 import scala.Option;
@@ -64,7 +66,6 @@ public class TypeDomainTest {
                 throw new RuntimeException("Not Implemented!");
             }
 
-            @Override
             public AnnotationParser<Level> levelParser() {
                 return s -> {
                     if (s.equals("?")) {
@@ -73,6 +74,15 @@ public class TypeDomainTest {
                         return Option.empty();
                     }
                 };
+            }
+            @Override
+            public Level readLevel(String s) {
+                if (s.equals("?")) {
+                    return HIGH;
+                } else {
+                   throw new UnknownSecurityLevelException(s);
+                }
+
             }
 
             @Override
