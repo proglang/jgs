@@ -6,7 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import java.util.Arrays;
 import java.util.Iterator;
 
-public class LowHigh extends SecDomain<LowHigh.Level> {	// like: SecDomain ist die Relation; LowHigh.Level die "Menge"
+public class LowHigh implements SecDomain<LowHigh.Level> {	// like: SecDomain ist die Relation; LowHigh.Level die "Menge"
     
 	public static enum Level {
         LOW, HIGH
@@ -35,23 +35,6 @@ public class LowHigh extends SecDomain<LowHigh.Level> {	// like: SecDomain ist d
 	@Override
     public boolean le(Level l1, Level l2) {
 		return l1.equals(Level.LOW) || l1.equals(l2);
-	}
-
-	@Override
-    public AnnotationParser<Level> levelParser() {
-  /*      return new AnnotationParser<Level>() {
-            @Override
-            public Option<Level> parse(String s) {
-            if (s.equals("LOW")) {
-               return Option.apply(Level.LOW);
-            } else if (s.equals("HIGH")) {
-                return Option.apply(Level.HIGH);
-            } else {
-                return Option.empty();
-            }
-            }
-		  }; */
-		return null;
 	}
 	
 	@Override

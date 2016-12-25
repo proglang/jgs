@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains
+        .UnknownSecurityLevelException;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.collections4.iterators.IteratorChain;
@@ -54,10 +56,11 @@ public class TypeDomain<Level> {
                 } else if (s.equals("pub")) {
                     return Option.apply(pub());
                 } else {
-                    Option<Level> olevel = secDomain.levelParser().parse(s);
-                    if (olevel.isDefined()) {
-                        return Option.apply(self.level(olevel.get()));
-                    } else {
+                    // TODO: we remove the levelParser from SecDomain, so we should remove the typeParser here.
+                    try {
+                        Level level = secDomain.readLevel(s);
+                        return Option.apply(self.level(level));
+                    } catch (UnknownSecurityLevelException e){
                         return Option.empty();
                     }
                 }

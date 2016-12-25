@@ -13,25 +13,11 @@ import scala.Option;
  * @author Luminous Fennell 
  *
  */
-public class LowHigh extends SecDomain<LowHigh.Level> {
+public class LowHigh implements SecDomain<LowHigh.Level> {
 
     public static enum Level {
         LOW, HIGH
     }
-
-    private final AnnotationParser<Level> parser =
-            ParseUtils.addDefaults(this, new AnnotationParser<Level>() {
-                @Override
-                public Option<Level> parse(String s) {
-                    if (s.equals("LOW")) {
-                        return Option.apply(Level.LOW);
-                    } else if (s.equals("HIGH")) {
-                        return Option.apply(Level.HIGH);
-                    } else {
-                        return Option.empty();
-                    }
-                }
-            });
 
     @Override
     public Level bottom() {
@@ -58,9 +44,28 @@ public class LowHigh extends SecDomain<LowHigh.Level> {
         return l1.equals(Level.LOW) || l1.equals(l2);
     }
 
-    @Override
     public AnnotationParser<Level> levelParser() {
-        return parser;
+        return new AnnotationParser<Level>() {
+            @Override
+            public Option<Level> parse(String input) {
+                try {
+                    return Option.apply(readLevel(input));
+                } catch (UnknownSecurityLevelException e) {
+                    return Option.empty();
+                }
+            }
+        };
+    }
+
+    @Override
+    public Level readLevel(String s) {
+        if (s.equals("LOW")) {
+            return Level.LOW;
+        } else if (s.equals("HIGH")) {
+            return Level.HIGH;
+        } else {
+            throw new UnknownSecurityLevelException(s);
+        }
     }
 
     @Override

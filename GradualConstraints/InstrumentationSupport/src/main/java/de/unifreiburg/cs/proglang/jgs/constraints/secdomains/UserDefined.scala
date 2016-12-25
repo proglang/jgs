@@ -31,9 +31,15 @@ class UserDefined private (val levels : Set[Level],
 
   override def top(): Level = topLevel
 
-  override def levelParser(): AnnotationParser[Level] = ParseUtils.addDefaults(this, new AnnotationParser[Level] {
-    override def parse(input: String): Option[Level] = levels.find(l => l.name == input)
-  })
+  override def readLevel(s : String) : Level = {
+    val levelParser: AnnotationParser[Level] = ParseUtils.addDefaults(this, new AnnotationParser[Level] {
+      override def parse(input: String): Option[Level] = levels.find(l => l.name == input)
+    })
+    levelParser.parse(s).getOrElse{
+      throw new UnknownSecurityLevelException(s);
+    }
+  }
+
 
   override def le(l1: Level, l2: Level): Boolean = l1 == l2 || lt.contains(l1 -> l2)
 

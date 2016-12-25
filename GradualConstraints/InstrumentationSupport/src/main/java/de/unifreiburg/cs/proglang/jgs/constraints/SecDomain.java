@@ -11,21 +11,18 @@ import java.util.Iterator;
  *
  * @param <Level> The type of security levels. It's {@code toString} method should return a string that can be recognized by {@code readLevel}
  */
-public abstract class SecDomain<Level> {
-   public abstract Level bottom();
-   public abstract Level top();
-   public abstract Level lub(Level l1, Level l2);
-   public abstract Level glb(Level l1, Level l2);
-   public abstract boolean le(Level l1, Level l2);
-
-   /**
-    * A way to parse security levels from Strings.
-    */
-   public abstract AnnotationParser<Level> levelParser();
+public interface SecDomain<Level> {
+   Level bottom();
+   Level top();
+   Level lub(Level l1, Level l2);
+   Level glb(Level l1, Level l2);
+   boolean le(Level l1, Level l2);
 
     /**
-     * Parses a String into a Level. Throws an exception on parse errors. This method should be to instantiate Levels during run-time monitoring.
+     * Parses a String into a Level. Should throw an IllegalArgumentException on parse errors. This method should be to instantiate Levels during run-time monitoring.
      */
+   Level readLevel(String levelString);
+   /*
    public Level readLevel(String levelString) {
       // TODO: throw a recognizable exception here (for debugging purposes)
       Option<Level> maybeLevel = this.levelParser().parse(levelString);
@@ -35,6 +32,7 @@ public abstract class SecDomain<Level> {
          throw new IllegalArgumentException(String.format("Error parsing string %s to a level", levelString));
       }
    }
+   */
 
    /**
     * Optional method for enumerable domains

@@ -1,14 +1,13 @@
 package analyzer.level2.storage;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
-import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
 import utils.exceptions.InternalAnalyzerException;
 
-public class LowMediumHigh extends SecDomain<LowMediumHigh.Level> { 
+public class LowMediumHigh implements SecDomain<LowMediumHigh.Level> { 
 
 	public static enum Level {
 		LOW, MEDIUM, HIGH
@@ -54,19 +53,6 @@ public class LowMediumHigh extends SecDomain<LowMediumHigh.Level> {
 		default:
 			throw new InternalAnalyzerException("Weird level: " + l1);
 		}
-	}
-
-	@Override
-	public AnnotationParser<Level> levelParser() {
-		/*
-		 * return new AnnotationParser<Level>() {
-		 * 
-		 * @Override public Option<Level> parse(String s) { if (s.equals("LOW"))
-		 * { return Option.apply(Level.LOW); } else if (s.equals("HIGH")) {
-		 * return Option.apply(Level.HIGH); } else { return Option.empty(); } }
-		 * };
-		 */
-		return null;
 	}
 
 	@Override
