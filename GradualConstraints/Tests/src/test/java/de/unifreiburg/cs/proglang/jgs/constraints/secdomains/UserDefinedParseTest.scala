@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains
 
 import de.unifreiburg.cs.proglang.jgs.JgsCheck
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Level
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.{Edge}
 import org.scalatest._
 
 class UserDefinedParseTest extends FlatSpec with Matchers {
@@ -25,11 +25,11 @@ class UserDefinedParseTest extends FlatSpec with Matchers {
 
   val domainSpec = UserDefinedUtils.fromJSon(JgsCheck.parseJson(domainSpecFileContent))
 
-  def levelSet(ls : String*) : Set[Level] =
-    ls.map(Level(_)).toSet
-  def edgeSet(edgeStrings : Set[(String, String)]) : Set[(Level, Level)] =
-    edgeStrings.map(e => Level(e._1) -> Level(e._2))
-  def edgeSet(es : (String, String)*) : Set[(Level, Level)] = edgeSet(es.toSet)
+  def levelSet(ls : String*) : Set[String] =
+    ls.toSet
+  def edgeSet(edgeStrings : Set[(String,String)]) : Set[Edge] =
+    edgeStrings.map(e => Edge(e._1, e._2))
+  def edgeSet(es : (String,String)*) : Set[Edge] = edgeSet(es.toSet)
 
   "domainSpec" should "contain all the levels" in {
     domainSpec.levels should be (levelSet(
