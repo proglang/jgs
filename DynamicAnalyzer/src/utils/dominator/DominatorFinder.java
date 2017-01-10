@@ -12,11 +12,22 @@ import java.lang.Long;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+/**
+ * Find postdominators for if-statements to determine their scope. Postdominators are represented as integer IDs.
+ * 
+ * @author koenigr, fennell
+ *
+ */
+
 public class DominatorFinder {
 	private static MHGPostDominatorsFinder pdfinder;
 	private static UnitGraph graph;
 	private static HashMap<Unit, String> domList;
+	
+	// ID-counter for identifying postdominators 
 	private static long identity;
+	// Distinguished ID to be used if the virtual postdominator at the end of a method. We use this virtual postdominator to work around the fact that Jimple does not guarantee a single return statement.
+	private final static String POSTDOM_ID_END_OF_METHOD = "" + Integer.MIN_VALUE; 
 	private static Logger logger = L1Logger.getLogger();
   
 	/**
@@ -38,17 +49,17 @@ public class DominatorFinder {
 	 * @return Hashvalue of immerdiate dominator.
 	 */
 	public static String getImmediateDominatorIdentity(Unit node) {
-		Unit dom = (Unit) pdfinder.getImmediateDominator(node);
-		if (!containsStmt(dom)) {
-			domList.put(dom, getIdentityForUnit(dom));
-		} 
+		Unit dom = (Unit) pdfinder.getImmediateDominator(node); 
 		if (dom != null) {
-		 logger.info("Dominator \"" + dom.toString()
-				+ "\" has Identity " + domList.get(dom));
+		    String id = getIdentityForUnit(dom);
+		    // we have an immediate postdominator
+		 logger.info("Postdominator \"" + dom.toString()
+				+ "\" has Identity " + id);
+		     return id;
 		} else {
-		 logger.info("No immediate dominator for node:" + node.toString());
+		 logger.info("Postdominator for node " + node.toString() + "is the end of the method");
+		 return POSTDOM_ID_END_OF_METHOD;
 		}
-		return domList.get(dom);
 	}
 
 	/**

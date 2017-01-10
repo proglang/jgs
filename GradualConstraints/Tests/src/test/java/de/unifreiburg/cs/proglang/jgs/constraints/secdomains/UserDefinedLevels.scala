@@ -1,23 +1,22 @@
 package de.unifreiburg.cs.proglang.jgs.constraints.secdomains
 
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Level
 
 /**
   * Created by fennell on 5/10/16.
   */
 object UserDefinedLevels {
   // the extremes
-  val levPublic = Level("public")
-  val levTop = Level("top")
+  val levPublic = "public"
+  val levTop = "top"
 
   // the corporate domain
-  val levEmployee = Level("employee")
-  val levManager = Level("manager")
+  val levEmployee = "employee"
+  val levManager = "manager"
 
   // the personal domain
-  val levAlice = Level("Alice")
-  val levBob = Level("Bob")
-  val levCharlie = Level("Charlie")
+  val levAlice = "Alice"
+  val levBob = "Bob"
+  val levCharlie = "Charlie"
   val personalPrincipals = Set(levAlice, levBob, levCharlie)
 
 }
