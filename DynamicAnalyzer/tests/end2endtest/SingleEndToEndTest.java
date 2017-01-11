@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "DominatorNullPointer";
+	public String name = "NSUPolicy";
 
 	public boolean hasIllegalFlow = true;
 
