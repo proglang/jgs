@@ -8,30 +8,38 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-public class CmdArgsTest {
+public class compileToJarTests {
 	
 	String outputPath = "sootOutput/argsTest";
+
+	private static String convertStreamToString(java.io.InputStream is) {
+	    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+	    String ret = s.hasNext() ? s.next() : "";
+	    s.close();
+	    return ret;
+	}
+	
 	/**
 	 * NSUPolicy1 is present only on external_path, not in src/main...
 	 * NSUPolicy is present only in src/main, not on external_path...
 	 */
-	
+
 	@Test
 	public void pathTest() {
 		String testFile = "NSUPolicy";
-		
+
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath});
 		File outParent = new File(System.getProperty("user.dir"));
 		File outFile = new File(outParent, outputPath + "/main/testclasses/"+ testFile +".class");
 		File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
-		
+
 		assertTrue(outFile.exists());
 		assertTrue(outJar.exists());
-		
+
 		// delete for valid run next time
 		outFile.delete();
 		outJar.delete();
-				
+
 		assertTrue(!outFile.exists());
 		assertTrue(!outJar.exists());
 	}
@@ -39,19 +47,19 @@ public class CmdArgsTest {
 	@Test
 	public void pathTestJimple() {
 		String testFile = "NSUPolicy";
-		
+
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-j"});
 		File outParent = new File(System.getProperty("user.dir"));
 		File outFile = new File(outParent, outputPath + "/main.testclasses."+ testFile +".jimple");
 		File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
-		
+
 		assertTrue(outFile.exists());
 		assertTrue(outJar.exists());
-		
+
 		// delete for valid run next time
 		outFile.delete();
 		outJar.delete();
-		
+
 		assertTrue(!outFile.exists());
 		assertTrue(!outJar.exists());
 	}
@@ -63,19 +71,19 @@ public class CmdArgsTest {
 	public void pathTestP() {
 		String testFile = "NSUPolicy1";		// SHOULD BE NSUPolicy1 !! Not working right now
 		String externalPath = "/Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer/testing_external";
-		
+
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
 		File outParent = new File(System.getProperty("user.dir"));
 		File outFile = new File(outParent, outputPath + "/main/testclasses/"+ testFile +".class");
 		File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
-		
+
 		assertTrue(outFile.exists());
 		assertTrue(outJar.exists());
-		
+
 		// delete for valid run next time
 		outFile.delete();
 		outJar.delete();
-		
+
 		assertTrue(!outFile.exists());
 		assertTrue(!outJar.exists());
 	}
@@ -86,57 +94,68 @@ public class CmdArgsTest {
 	 */
 	@Test
 	public void pathTestPRelative() {
-		String testFile = "NSUPolicy1"; 
+		String testFile = "NSUPolicy1";
 		String externalPath = "testing_external";
-		
+
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
 		File outParent = new File(System.getProperty("user.dir"));
 		File outFile = new File(outParent, outputPath + "/main/testclasses/"+ testFile +".class");
 		File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
-		
+
 		assertTrue(outFile.exists());
 		assertTrue(outJar.exists());
-		
+
 		// delete for valid run next time
 		outFile.delete();
 		outJar.delete();
-		
+
 		assertTrue(!outFile.exists());
 		assertTrue(!outJar.exists());
 	}
 	
-	/**
-	 * Super awesome test: Builds a jar with -f flag, instruments and includes external classes,
-	 * builds to jar, runs it and tests for IllegalFlowException.
-	 */
+
 	@Test
-	public void addFilesTest() {
+    public void staticMethodsFail() {
+	    addFilesTest("StaticMethodsFail");
+    }
+
+    @Test
+    public void externalFail1() {
+	    addFilesTest("ExternalFail1");
+    }
+
+    /**
+     * Super awesome test: Builds a jar with -f flag, instruments and includes external classes,
+     * builds to jar, runs it and tests for IllegalFlowException.
+     */
+	private void addFilesTest(String testFile) {
 		boolean hasIllegalFlow = true;
-		
-		String testFile = "StaticMethodsFail"; 
+
 		String externalPath = "testing_external";
+
+		// staticMehotdsFail needs the SimpleObject, externalFail1 needs the simpleClassForTests
 		String additionalFile = "main.testclasses.utils.SimpleObject";
-		String additionalFile2 = "main.testclasses.utils.C";
-		
+		String additionalFile2 = "main.testclasses.utils.simpleClassForTests";
+
 		main.Main.main(new String[] {"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath, "-f", additionalFile, additionalFile2});
 		File outParent = new File(System.getProperty("user.dir"));
 		File outFile = new File(outParent, outputPath + "/main/testclasses/"+ testFile +".class");
 		File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
 		File addFile = new File(outParent, outputPath + "/" + additionalFile.replace(".", "/") + ".class");
 		File addFile2 = new File(outParent, outputPath + "/" + additionalFile2.replace(".", "/") + ".class");
-		
+
 		assertTrue(outFile.exists());
 		assertTrue(outJar.exists());
 		assertTrue(addFile.exists());
 		assertTrue(addFile2.exists());
-		
+
 		// now run it and check wheter or not it produces an IllegalFlowException
 		System.out.println("Running " + outJar.toString() + "...");
 		Process proc;
 		try {
 			proc = Runtime.getRuntime().exec("java -jar " + outJar.toString());
 			String output = convertStreamToString(proc.getErrorStream());
-			System.out.println(output);
+			System.out.println("===== OUTPUT IS =====\n" + output);
 			if (hasIllegalFlow) {
 				assertTrue(output.contains("utils.exceptions.IllegalFlowException"));
 			} else {
@@ -146,24 +165,8 @@ public class CmdArgsTest {
 			System.out.println(e.toString());
 			assertTrue(false);
 		}
-		
-		// delete for valid run next time
-		outFile.delete();
-		outJar.delete();
-		addFile.delete();
-		addFile2.delete();
-		
-		assertTrue(!outFile.exists());
-		assertTrue(!outJar.exists());
-		assertTrue(!addFile.exists());
-		assertTrue(!addFile2.exists());
-	}
-	
-	private static String convertStreamToString(java.io.InputStream is) {
-	    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-	    String ret = s.hasNext() ? s.next() : "";
-	    s.close();
-	    return ret;
+
+
 	}
 	
 }

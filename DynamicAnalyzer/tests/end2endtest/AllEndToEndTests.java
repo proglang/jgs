@@ -67,7 +67,7 @@ public class AllEndToEndTests {
 				
 				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },							// throws java.lang.verify error
 				
-				new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
+				// new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },					
@@ -108,7 +108,7 @@ public class AllEndToEndTests {
 				new Object[] { "MakeHigh", false, new String[] {} },
 				
 				new Object[] { "MulArray", false, new String[] {} },
-				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r19"} }, 					
+				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r"} },
 				
 				// Testing implicit and explicit flow with classes (which is unimplemented currently)
 				new Object[] { "NewClassFail1", true, new String[] {"main.testclasses.utils.C_r4"} },

@@ -1,6 +1,6 @@
 package testmain;
 
-import CommandLineArgsTest.CmdArgsTest;
+import CommandLineArgsTest.compileToJarTests;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
 import analyzer.level2.AssignLocalsFail;
@@ -32,8 +32,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import end2endtest.AllEndToEndTests;
-import end2endtest.SingleEndToEndTest;
-
 
 
 @RunWith(Suite.class)
@@ -72,7 +70,7 @@ import end2endtest.SingleEndToEndTest;
     SecurityOptionalTest.class,
     
     // Test for commandline arguments and correct path output
-    CmdArgsTest.class,
+    compileToJarTests.class,
     
     // Tests for LowMiddleHigh Lattice
     LowMiddleHighTest.class,

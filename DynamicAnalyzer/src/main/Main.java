@@ -97,7 +97,7 @@ public class Main {
 
         soot.Main.main(sootOptions);
         
-		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
+		// compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
 		// we want to output it to ant/main/testclasses/test1.jar
 		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
@@ -106,6 +106,8 @@ public class Main {
         
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
+
+		// open question:
 		// was ist der empfohlene weg, exceptions zu werfen aus einer analyse heraus.
 		// unsere situation: Rufen main.Main in unit tests auf, wewnn wir einmal expcept werfen, bricht
 		// alles ab, obwohl wir resetten.
