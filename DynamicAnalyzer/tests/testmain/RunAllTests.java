@@ -1,6 +1,6 @@
 package testmain;
 
-import CommandLineArgsTest.compileToJarTests;
+import end2endtest.compileToJarTests;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
 import analyzer.level2.AssignLocalsFail;

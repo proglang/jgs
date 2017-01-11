@@ -1,4 +1,4 @@
-package CommandLineArgsTest;
+package end2endtest;
 
 import static org.junit.Assert.assertTrue;
 

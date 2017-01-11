@@ -61,13 +61,14 @@ public class AllEndToEndTests {
 				new Object[] { "BooleanPrintFail", true, new String[] {"boolean_z1"} }, 						
 
 				new Object[] { "DirectPrintFail", true, new String[] {"java.lang.Object_$r3"} }, 						
+
+				// ExternalFail1 is fully tested in tests.end2endtest.compileToJarTests
+				// new Object[] { "ExternalFail1", true, new String[] {} },
+				new Object[] { "ExternalFail2", true, new String[] {"int_i0"} },
 				
-				new Object[] { "ExternalFail1", true, new String[] {} }, 										// fails: TODO: write external, manually instrumented class for this test
-				new Object[] { "ExternalFail2", true, new String[] {"int_i0"} },										// fails: TODO: write external, manually instrumented class for this test
+				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },
 				
-				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },							// throws java.lang.verify error
-				
-				// new Object[] { "DominatorNullPointer", false, new String[] {} },								// NullPointerException!!!
+				// new Object[] { "DominatorNullPointer", false, new String[] {} },
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },					
@@ -132,8 +133,9 @@ public class AllEndToEndTests {
 				
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
 				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
-				
-				new Object[] { "StaticMethodsFail", true, new String[] {} },									// fails: Unfinished test by Regina. Take closer look!
+
+                // StaticMethodsFail is fully tested in tests.end2endtest.compileToJarTests
+				// new Object[] { "StaticMethodsFail", true, new String[] {} },
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently
 				new Object[] { "SwitchStmt", false, new String[] {} },

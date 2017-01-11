@@ -30,7 +30,7 @@ The following flags are supported:
 - `-o`, the output directory. May be absolute or relative. If omitted, output will be in current folder
 - `-p`, the path to src directory. May be absolute or relative. If omitted, source must be in current folder
 
-Sample arguments for main method (see tests.CommandLineArgsTest.compileToJarTests):
+Sample arguments for main method (see tests.end2endtest.compileToJarTests):
 - `main.testclasses.NSUPolicy1`
 - `main.testclasses.NSUPolicy1 -j`
 - `main.testclasses.NSUPolicy1 -o /path/to/outdir`
