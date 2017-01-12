@@ -2,56 +2,8 @@ package utils.visitor;
 
 import analyzer.level1.JimpleInjector;
 import soot.Local;
-import soot.jimple.AddExpr;
-import soot.jimple.AndExpr;
-import soot.jimple.ArrayRef;
-import soot.jimple.CastExpr;
-import soot.jimple.CaughtExceptionRef;
-import soot.jimple.ClassConstant;
-import soot.jimple.CmpExpr;
-import soot.jimple.CmpgExpr;
-import soot.jimple.CmplExpr;
-import soot.jimple.DivExpr;
-import soot.jimple.DoubleConstant;
-import soot.jimple.DynamicInvokeExpr;
-import soot.jimple.EqExpr;
-import soot.jimple.Expr;
-import soot.jimple.FloatConstant;
-import soot.jimple.GeExpr;
-import soot.jimple.GtExpr;
-import soot.jimple.InstanceFieldRef;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InstanceOfExpr;
-import soot.jimple.IntConstant;
-import soot.jimple.InterfaceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.JimpleValueSwitch;
-import soot.jimple.LeExpr;
-import soot.jimple.LengthExpr;
-import soot.jimple.LongConstant;
-import soot.jimple.LtExpr;
-import soot.jimple.MulExpr;
-import soot.jimple.NeExpr;
-import soot.jimple.NegExpr;
-import soot.jimple.NewArrayExpr;
-import soot.jimple.NewExpr;
-import soot.jimple.NewMultiArrayExpr;
-import soot.jimple.NullConstant;
-import soot.jimple.OrExpr;
-import soot.jimple.ParameterRef;
-import soot.jimple.RemExpr;
-import soot.jimple.ShlExpr;
-import soot.jimple.ShrExpr;
-import soot.jimple.SpecialInvokeExpr;
-import soot.jimple.StaticFieldRef;
-import soot.jimple.StaticInvokeExpr;
-import soot.jimple.Stmt;
-import soot.jimple.StringConstant;
-import soot.jimple.SubExpr;
-import soot.jimple.ThisRef;
-import soot.jimple.UshrExpr;
-import soot.jimple.VirtualInvokeExpr;
-import soot.jimple.XorExpr;
+import soot.jimple.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NotSupportedStmtException;
 import utils.logging.L1Logger;
@@ -62,8 +14,8 @@ import org.junit.internal.runners.statements.InvokeMethod;
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
-	Logger logger = L1Logger.getLogger();
-	VisitorHelper vh = new VisitorHelper();
+	private Logger logger = L1Logger.getLogger();
+	private VisitorHelper vh = new VisitorHelper();
 	
 	/*
 	 * ???

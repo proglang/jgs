@@ -68,7 +68,7 @@ public class AllEndToEndTests {
 				
 				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },
 				
-				// new Object[] { "DominatorNullPointer", false, new String[] {} },
+				new Object[] { "DominatorNullPointer", false, new String[] {} },
 				
 				new Object[] { "FieldsSuccess", false, new String[] {} },
 				new Object[] { "FieldWriteFail", true, new String[] {"main.testclasses.FieldWriteFail<main.testclasses.FieldWriteFail: int field>"} },					

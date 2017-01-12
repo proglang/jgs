@@ -1,16 +1,13 @@
 package utils.parser;
 
 import org.apache.commons.cli.*;
+import utils.exceptions.IllegalArgumentsException;
+import utils.exceptions.InternalAnalyzerException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-
-import utils.exceptions.IllegalArgumentsException;
-import utils.exceptions.InternalAnalyzerException;
 
 /**
  * Parses the arguments from cmd into soot format. Soot format is like this:
@@ -71,6 +68,11 @@ public class ArgParser {
 	 */
 	public static String[] getSootOptions(String[] args, ArrayList<String> pathArgs) {
 
+		// todo:
+		// can start with anything
+		// -m sets the mainclass
+
+
 		if (args[0].startsWith("-")) {
 			throw new IllegalArgumentsException("first argument must be the main Class!");
 		}
@@ -105,6 +107,8 @@ public class ArgParser {
 
 			// construct the template string
 			String[] template = new String[cmd.hasOption("f") ? 7 + cmd.getOptionValues("f").length : 7];
+			List<String> sootArgs = new ArrayList<>();
+
 			template[0] = "-f";
 			template[1] = "c";
 			template[2] = "-main-class";
@@ -143,6 +147,7 @@ public class ArgParser {
 				String outputFolder = cmd.getOptionValue("o");
 				template[template.length - 1] = toAbsolutePath(outputFolder);
 			}
+
 			
 			return template;
 

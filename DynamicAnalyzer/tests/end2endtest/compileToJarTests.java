@@ -4,7 +4,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.junit.Test;
-import utils.exceptions.IllegalFlowException;
 
 import java.io.File;
 import java.util.Scanner;
@@ -152,20 +151,12 @@ public class compileToJarTests {
             project.addTarget(target);
             project.setDefault(TARGET_NAME);
 
-            // debugging purposes
             task.setOutput(out);
 
             target.execute();
             project.executeTarget(project.getDefaultTarget());
 
-        } catch (IllegalFlowException e) {
-            System.out.println("IllegalFlowException!! : " + e);
         } catch (Exception e) {
-            System.out.println("EXCEPTION: " + e + "\n\n" + e.getClass().getClass().toString());
-            e.printStackTrace();
-
-            // just to get it working.
-            // =======================
             try {
                 Scanner scanner = new Scanner(out);
                 String text = scanner.useDelimiter("\\A").next();
@@ -174,13 +165,11 @@ public class compileToJarTests {
                 } else {
                     assertThat(text, not(containsString("IllegalFlowException")));
                 }
-                scanner.close(); // Put this call in a finally block
+                scanner.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
                 fail();
             }
-            // ========================
-
         }
 
         assertTrue(out.delete());

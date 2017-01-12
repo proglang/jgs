@@ -22,9 +22,9 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "NSUPolicy";
+	public String name = "DominatorNullPointer";
 
-	public boolean hasIllegalFlow = true;
+	private boolean hasIllegalFlow = true;
 
 	/**
 	 * Define the involved vars here. Involved vars are those that are present
@@ -38,9 +38,9 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	public String[] involvedVars = new String[] {"java.lang.String_$r6"};
+	private String[] involvedVars = new String[] {"java.lang.String_$r6"};
 
-	Logger logger = L1Logger.getLogger();
+	private Logger logger = L1Logger.getLogger();
 
 	@Test
 	public void test() {
