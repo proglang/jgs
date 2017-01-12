@@ -10,7 +10,7 @@ import main.Main;
  */
 public class ClassCompiler {
 
-	static Logger logger = L1Logger.getLogger();
+	private static Logger logger = L1Logger.getLogger();
 
 	/**
 	 * Static Helper Method to compile a given test, and put it into

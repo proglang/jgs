@@ -5,7 +5,9 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -16,11 +18,11 @@ public class compileToJarTests {
 
     private String outputPath = "sootOutput/argsTest";
 
+
     /**
      * NSUPolicy1 is present only on external_path, not in src/main...
      * NSUPolicy is present only in src/main, not on external_path...
      */
-
     @Test
     public void pathTest() {
         String testFile = "NSUPolicy";

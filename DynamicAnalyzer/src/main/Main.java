@@ -23,10 +23,8 @@ import utils.parser.ArgumentContainer;
  */
 public class Main {
 
-	private static Level LOGGER_LEVEL;
 
-
-	/**
+    /**
 	 * The entry point for compilation and instrumentation (that is, adding the appropriate
 	 * code to check for information leak). Use appropriate arguments to indicate
 	 * which test will be compiled, and what the output format should be.
@@ -57,14 +55,14 @@ public class Main {
     	
 		// LOGGER_LEVEL = argparser.getLoggerLevel();
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
-		
-		LOGGER_LEVEL = Level.ALL;
+
+        Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
-        LinkedList<String> sootOptions = new LinkedList<String>(Arrays.asList(
-                                sootOptionsContainer.getMainclass(),                    // adds the mainclass file
-                                "-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
-                                "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
-                                "--d", sootOptionsContainer.getOutputFolder()));         // sets output folder
+        LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
+                sootOptionsContainer.getMainclass(),                    // adds the mainclass file
+                "-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
+                "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
+                "--d", sootOptionsContainer.getOutputFolder()));         // sets output folder
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
@@ -89,7 +87,7 @@ public class Main {
 				+ new File(javaHome, "lib/jce.jar").toString()
 			    + ":"
 				+ new File(javaHome, "lib/rt.jar").toString();
-		// Adding the arguments given by the user via the -p flag. See ArgParser.java
+		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
 		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
 			classPath += ":" + s;
 		}
@@ -106,12 +104,7 @@ public class Main {
 
         soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
         
-		// compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
-		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
-		// we want to output it to ant/main/testclasses/test1.jar
-		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
-		File pathToMain = new File(
-		        new File(sootOptionsContainer.getOutputFolder()).getAbsolutePath(), sootOptionsContainer.getMainclass());
+		// compile to JAR.
 		utils.ant.AntRunner.run(sootOptionsContainer);
         
 		// for multiple runs, soot needs to be reset, which is done in the following line

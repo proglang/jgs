@@ -27,8 +27,8 @@ import junit.framework.Test;
  */
 public class ClassRunner {
 
-	static Logger logger = L1Logger.getLogger();
-	static final String TARGET_NAME = "exec";
+	private static Logger logger = L1Logger.getLogger();
+	private static final String TARGET_NAME = "exec";
 
 	/**
 	 * Runs the given class via Apache Ant.

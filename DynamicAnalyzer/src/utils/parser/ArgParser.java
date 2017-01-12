@@ -1,13 +1,11 @@
 package utils.parser;
 
-import com.sun.org.apache.xpath.internal.Arg;
+import main.testclasses.SystemOut1;
 import org.apache.commons.cli.*;
-import utils.exceptions.IllegalArgumentsException;
 import utils.exceptions.InternalAnalyzerException;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,12 +18,12 @@ import java.util.List;
  */
 public class ArgParser {
 
-    // todo print Help sometimes
-	public static void printHelp() {
-		System.out.println(" ====== POSSIBLE FLAGS =======");
+	private static void printHelp() {
+		System.out.println(" ====== HELP ======= ");
 		System.out.println("-j: Compile to Jimple. ");
-		System.out.println("-p: Set a different input file ");
+		System.out.println("-p: Set classpath for soot. Use to add files in several directories. ");
 		System.out.println("-o: Set output folder. ");
+        System.out.println("-f: Add additional files to be processed (like main.testclasses.SomeHelperClassForMain)");
 		System.out.println("\nExamples:");
 		System.out.println("main.testclasses.NSUPolicy1");
 		System.out.println("main.testclasses.NSUPolicy1 -j");
@@ -94,17 +92,11 @@ public class ArgParser {
 
             // case p flag
             if (cmd.hasOption(ADD_DIRECTORIES_TO_CLASSPATH)) {
-                for (String s: cmd.getOptionValues(ADD_DIRECTORIES_TO_CLASSPATH)) {
-                    addDirsToClasspath.add(s);
-                }
+                Collections.addAll(addDirsToClasspath, cmd.getOptionValues(ADD_DIRECTORIES_TO_CLASSPATH));
             }
 
 			// case j flag
-			if (cmd.hasOption(JIMPLE_FLAG)) {
-               toJimple = true;
-			} else {
-			    toJimple = false;
-            }
+            toJimple = cmd.hasOption(JIMPLE_FLAG);
 
             // case o flag
             if (cmd.hasOption(OUTPUT_FOLDER_FLAG)) {
@@ -115,21 +107,27 @@ public class ArgParser {
 
 			// case f flag
             if (cmd.hasOption(ADDITIONAL_FILES_FLAG)) {
-			    for (String file: cmd.getOptionValues(ADDITIONAL_FILES_FLAG)) {
-			        additionalFiles.add(file);
-                }
+                Collections.addAll(additionalFiles, cmd.getOptionValues(ADDITIONAL_FILES_FLAG));
             }
 
-            // used only named arguments so that order is not confused
-			return new ArgumentContainer(mainclass = mainclass,
-                    addDirsToClasspath = addDirsToClasspath,
-                    toJimple = toJimple,
-                    outputFolder = outputFolder,
-                    additionalFiles = additionalFiles);
+            // case help flag
+            if (cmd.hasOption("h")){
+                printHelp();
+                System.exit(0);
+            }
+
+            return new ArgumentContainer(mainclass,
+                    addDirsToClasspath,
+                    toJimple,
+                    outputFolder,
+                    additionalFiles);
 
 			// if illegal input
 		} catch (ParseException e) {
-			throw new IllegalArgumentsException(e.getMessage());
+			printHelp();
+			System.exit(0);
 		}
+
+	    throw new InternalAnalyzerException("This line must never be reached"); // compiler complains if i dont put this here?!
 	}
 }

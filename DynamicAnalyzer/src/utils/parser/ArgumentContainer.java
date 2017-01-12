@@ -4,10 +4,12 @@ import java.util.List;
 
 /**
  * Created by Nicolas Müller on 12.01.17.
+ * This is a structured container for the arguments passed in.
+ * It's purpose is to facility handeling the appropriate arguments to both soot and ant.
  */
 public class ArgumentContainer {
 
-    public static final String VALUE_NOT_PRESENT = "!_!_VALUE_NOT_PRESENT_!_!";
+    static final String VALUE_NOT_PRESENT = "!_!_VALUE_NOT_PRESENT_!_!";
 
     private final String mainclass;
     private final List<String> addDirsToClasspath;
@@ -15,7 +17,7 @@ public class ArgumentContainer {
     private final String outputFolder;
     private final List<String> additionalFiles;
 
-    public ArgumentContainer(String mainclass, List<String> addDirsToClasspath, boolean toJimple, String outputFolder, List<String> additionalFiles) {
+    ArgumentContainer(String mainclass, List<String> addDirsToClasspath, boolean toJimple, String outputFolder, List<String> additionalFiles) {
         this.mainclass = mainclass;
         this.toJimple = toJimple;
         this.outputFolder = outputFolder;
@@ -24,6 +26,7 @@ public class ArgumentContainer {
     }
 
     public String getMainclass() {
+        assert !mainclass.equals(VALUE_NOT_PRESENT);
         return mainclass;
     }
 
@@ -46,8 +49,6 @@ public class ArgumentContainer {
             return outputFolder;
         }
     }
-
-
 
     public List<String> getAdditionalFiles() {
         return additionalFiles;
