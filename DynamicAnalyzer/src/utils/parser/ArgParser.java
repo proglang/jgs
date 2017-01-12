@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class ArgParser {
 
+    // todo print Help sometimes
 	public static void printHelp() {
 		System.out.println(" ====== POSSIBLE FLAGS =======");
 		System.out.println("-j: Compile to Jimple. ");
@@ -60,27 +61,21 @@ public class ArgParser {
 		}
 		
 	}
-	
-	/**
-	 * Parse command line arguments into a soot-friendly format
-	 * @param args
-	 * @param pathArgs
-	 * @return
-	 */
-	public static String[] getSootOptions(String[] args, ArrayList<String> pathArgs) {
+
+	public static ArgumentContainer getSootOptions(String[] args, ArrayList<String> pathArgs) {
 
         // locals variables to hold parsing results
-        String mainclass = ArgumentContainer.VALUE_NOT_PRESENT;
-        String outputFormat = ArgumentContainer.VALUE_NOT_PRESENT;
-        String outputFolder = ArgumentContainer.VALUE_NOT_PRESENT;
-        String pathToMainclass = ArgumentContainer.VALUE_NOT_PRESENT;
+        String mainclass;
+        boolean toJimple;
+        String outputFolder;
+        String pathToMainclass;
         List<String> additionalFiles = new ArrayList<>();
 
         // flags
         final String MAINCLASS_FLAG = "m";
-        final String ADD_TO_CLASSPATH_FLAG = "p";
-        final String OUTPUT_FOLDER_FLAG = "o";
+        final String PATH_TO_MAINCLASS_FLAG = "p";
         final String JIMPLE_FLAG = "j";
+        final String OUTPUT_FOLDER_FLAG = "o";
         final String ADDITIONAL_FILES_FLAG = "f";
 
         // ======== PREPARE OPTIONS =========
@@ -91,21 +86,21 @@ public class ArgParser {
         mainopt.setRequired(true);
         options.addOption(mainopt);
 
-		Option pathToMainc = new Option(ADD_TO_CLASSPATH_FLAG, "path", true,
+		Option pathToMainc = new Option(PATH_TO_MAINCLASS_FLAG, "path", true,
 				"Optional: Set path to MainClass");
 		pathToMainc.setRequired(false);
 		options.addOption(pathToMainc);
+
+        Option format = new Option(JIMPLE_FLAG, "jimple", false,
+                "Optional: Output as Jimple instead of as compiled class");
+        format.setRequired(false);
+        options.addOption(format);
 
 		Option output = new Option(OUTPUT_FOLDER_FLAG, "output", true,
                 "Optional: Set output folder");
 		output.setRequired(false);
 		options.addOption(output);
 
-		Option format = new Option(JIMPLE_FLAG, "jimple", false,
-				"Optional: Output as Jimple instead of as compiled class");
-		format.setRequired(false);
-		options.addOption(format);
-		
 		Option filesToAdd = new Option(ADDITIONAL_FILES_FLAG, "files", true,
                 "Optional: add additional files to instrumentation process");
 		filesToAdd.setRequired(false);
@@ -113,24 +108,33 @@ public class ArgParser {
 		options.addOption(filesToAdd);
 
 		CommandLineParser parser = new DefaultParser();
-
 		CommandLine cmd;
 		try {
 			cmd = parser.parse(options, args);
 
-			// case j flag
-			if (cmd.hasOption(JIMPLE_FLAG)) {
-                outputFormat = "J";
-			} else {
-			    outputFormat = "c";
+			// m flag
+            mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
+
+            // case p flag
+            if (cmd.hasOption(PATH_TO_MAINCLASS_FLAG)) {
+                pathToMainclass = cmd.getOptionValue(PATH_TO_MAINCLASS_FLAG);
+            } else {
+                pathToMainclass = ArgumentContainer.VALUE_NOT_PRESENT;
             }
 
-			// case p flag
-			if (cmd.hasOption(ADD_TO_CLASSPATH_FLAG)) {
-				for (String path : cmd.getOptionValues(ADD_TO_CLASSPATH_FLAG)) {
-                    addToClassPath.add(path);
-				}
-			}
+			// case j flag
+			if (cmd.hasOption(JIMPLE_FLAG)) {
+               toJimple = true;
+			} else {
+			    toJimple = false;
+            }
+
+            // case o flag
+            if (cmd.hasOption(OUTPUT_FOLDER_FLAG)) {
+                outputFolder = cmd.getOptionValue(OUTPUT_FOLDER_FLAG);
+            } else {
+                outputFolder = ArgumentContainer.VALUE_NOT_PRESENT;
+            }
 
 			// case f flag
             if (cmd.hasOption(ADDITIONAL_FILES_FLAG)) {
@@ -139,15 +143,7 @@ public class ArgParser {
                 }
             }
 
-			// case o flag
-			if (cmd.hasOption(OUTPUT_FOLDER_FLAG)) {
-				outputFolder = cmd.getOptionValue(OUTPUT_FOLDER_FLAG);
-			} else {
-			    outputFolder = ArgumentContainer.VALUE_NOT_PRESENT;
-            }
-
-			
-			return template;
+			return new ArgumentContainer(mainclass, outputFolder,toJimple, pathToMainclass, additionalFiles);
 
 			// if illegal input
 		} catch (ParseException e) {
