@@ -40,10 +40,10 @@ public class ArgumentContainer {
     }
 
     public String getOutputFolder() {
-        if (!outputFolder.equals(VALUE_NOT_PRESENT)) {
-            return outputFolder;
-        } else {
+        if (outputFolder.equals(VALUE_NOT_PRESENT)) {
             return System.getProperty("user.dir");
+        } else {
+            return outputFolder;
         }
     }
 

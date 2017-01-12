@@ -5,16 +5,17 @@ import soot.G;
 import soot.PackManager;
 import soot.Scene;
 import soot.Transform;
-import soot.options.Options;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.logging.Level;
 
 import org.apache.commons.cli.ParseException;
+import utils.parser.ArgumentContainer;
 
 
 /**
@@ -58,9 +59,17 @@ public class Main {
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
 		
 		LOGGER_LEVEL = Level.ALL;
-		ArrayList<String> pathArgs = new ArrayList<String>();
-		String[] sootOptions = ArgParser.getSootOptions(args, pathArgs);
-		
+		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+        LinkedList<String> sootOptions = new LinkedList<String>(Arrays.asList(
+                                sootOptionsContainer.getMainclass(),                    // adds the mainclass file
+                                "-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
+                                "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
+                                "--d", sootOptionsContainer.getOutputFolder()));         // sets output folder
+		for (String s : sootOptionsContainer.getAdditionalFiles()) {
+		    sootOptions.add(s);                                                         // add further files to be instrumented
+        }
+
+
 		try {
 			System.out.println("Logger Init1");
 			L1Logger.setup(LOGGER_LEVEL);
@@ -81,7 +90,7 @@ public class Main {
 			    + ":"
 				+ new File(javaHome, "lib/rt.jar").toString();
 		// Adding the arguments given by the user via the -p flag. See ArgParser.java
-		for (String s : pathArgs) {
+		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 			classPath += ":" + s;
 		}
 		Scene.v().setSootClassPath(classPath);
@@ -95,14 +104,17 @@ public class Main {
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
 
-        soot.Main.main(sootOptions);
+        soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
         
 		// compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
 		// we want to output it to ant/main/testclasses/test1.jar
 		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
-		File pathToMain = new File(new File(sootOptions[sootOptions.length - 1]).getAbsolutePath(), sootOptions[4]);
-		utils.ant.AntRunner.run(args[0], pathToMain.getAbsolutePath(), sootOptions[sootOptions.length - 1]);
+		File pathToMain = new File(
+		        new File(sootOptionsContainer.getOutputFolder()).getAbsolutePath(), sootOptionsContainer.getMainclass());
+		utils.ant.AntRunner.run(sootOptionsContainer.getMainclass(),
+                                pathToMain.getAbsolutePath(),
+                                sootOptionsContainer.getOutputFolder());
         
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();

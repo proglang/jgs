@@ -21,7 +21,7 @@ public class ClassCompiler {
 	 */
 	public static void compile(String name, String outputDir) {
 
-		String[] args = {"main.testclasses." + name, "-o", "sootOutput/" + outputDir};
+		String[] args = {"-m", "main.testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started");
 		Main.main(args);
 		logger.info("Compilation successful, binary put in sootOutput/"

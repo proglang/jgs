@@ -62,7 +62,7 @@ public class ArgParser {
 		
 	}
 
-	public static ArgumentContainer getSootOptions(String[] args, ArrayList<String> pathArgs) {
+	public static ArgumentContainer getSootOptions(String[] args) {
 
         // locals variables to hold parsing results
         String mainclass;
@@ -143,7 +143,12 @@ public class ArgParser {
                 }
             }
 
-			return new ArgumentContainer(mainclass, outputFolder,toJimple, pathToMainclass, additionalFiles);
+            // used only named arguments so that order is not confused
+			return new ArgumentContainer(mainclass = mainclass,
+                    pathToMainclass = pathToMainclass,
+                    toJimple = toJimple,
+                    outputFolder = outputFolder,
+                    additionalFiles = additionalFiles);
 
 			// if illegal input
 		} catch (ParseException e) {

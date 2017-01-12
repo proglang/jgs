@@ -25,7 +25,7 @@ public class compileToJarTests {
     public void pathTest() {
         String testFile = "NSUPolicy";
 
-        main.Main.main(new String[]{"main.testclasses." + testFile, "-o", outputPath});
+        main.Main.main(new String[]{"-m", "main.testclasses." + testFile, "-o", outputPath});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".class");
         File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
@@ -42,7 +42,7 @@ public class compileToJarTests {
     public void pathTestJimple() {
         String testFile = "NSUPolicy";
 
-        main.Main.main(new String[]{"main.testclasses." + testFile, "-o", outputPath, "-j"});
+        main.Main.main(new String[]{"-m", "main.testclasses." + testFile, "-o", outputPath, "-j"});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/main.testclasses." + testFile + ".jimple");
         File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
@@ -63,7 +63,7 @@ public class compileToJarTests {
         String testFile = "NSUPolicy1";        // SHOULD BE NSUPolicy1 !! Not working right now
         String externalPath = "/Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer/testing_external";
 
-        main.Main.main(new String[]{"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
+        main.Main.main(new String[]{"-m", "main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".class");
         File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
@@ -85,7 +85,7 @@ public class compileToJarTests {
         String testFile = "NSUPolicy1";
         String externalPath = "testing_external";
 
-        main.Main.main(new String[]{"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
+        main.Main.main(new String[]{"-m", "main.testclasses." + testFile, "-o", outputPath, "-p", externalPath});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".class");
         File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
@@ -118,7 +118,7 @@ public class compileToJarTests {
 
         String externalPath = "testing_external";
 
-        main.Main.main(new String[]{"main.testclasses." + testFile, "-o", outputPath, "-p", externalPath, "-f", additionalFile});
+        main.Main.main(new String[]{"-m", "main.testclasses." + testFile, "-o", outputPath, "-p", externalPath, "-f", additionalFile});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".class");
         File outJar = new File(outParent, outputPath + "/main/testclasses/" + testFile + ".jar");
