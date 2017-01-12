@@ -10,25 +10,25 @@ public class ArgumentContainer {
     public static final String VALUE_NOT_PRESENT = "!_!_VALUE_NOT_PRESENT_!_!";
 
     private final String mainclass;
-    private final String pathToMainclass;
+    private final List<String> addDirsToClasspath;
     private final boolean toJimple;
     private final String outputFolder;
     private final List<String> additionalFiles;
 
-    public ArgumentContainer(String mainclass, String pathToMainclass, boolean toJimple, String outputFolder, List<String> additionalFiles) {
+    public ArgumentContainer(String mainclass, List<String> addDirsToClasspath, boolean toJimple, String outputFolder, List<String> additionalFiles) {
         this.mainclass = mainclass;
-        this.pathToMainclass = pathToMainclass;
         this.toJimple = toJimple;
         this.outputFolder = outputFolder;
         this.additionalFiles = additionalFiles;
+        this.addDirsToClasspath = addDirsToClasspath;
     }
 
     public String getMainclass() {
         return mainclass;
     }
 
-    public String getPathToMainclass() {
-        return pathToMainclass;
+    public List<String> getAddDirsToClasspath() {
+        return addDirsToClasspath;
     }
 
     public String getOutputFormat() {
@@ -46,6 +46,8 @@ public class ArgumentContainer {
             return outputFolder;
         }
     }
+
+
 
     public List<String> getAdditionalFiles() {
         return additionalFiles;

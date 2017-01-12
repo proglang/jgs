@@ -5,7 +5,7 @@
 
   <target name="build-jar">
   	
-    <jar destfile="${pathToMainClass}.jar" basedir=".">
+    <jar destfile="${fullPathForMainClassToCreate}.jar" basedir=".">
 
         <manifest>
          <attribute name="Main-Class" value="${mainClass}"/>

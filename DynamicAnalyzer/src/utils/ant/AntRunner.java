@@ -3,32 +3,18 @@ package utils.ant;
 import java.io.File;
 import java.io.PrintWriter;
 import org.apache.tools.ant.*;
+import utils.parser.ArgumentContainer;
+import utils.parser.PathHelper;
 
 
 public class AntRunner {
-	public static void main(String[] args) {
-		
-		String mainClass = "main/testclasses/AccessFieldsOfObjectsFail";
-		String pathToMainClass ="sootOutput";
-		String outputFolder = "ant";
-		
-		run(mainClass, pathToMainClass, outputFolder);
-	}
-	
-	/***
-	 * Helper to run ant	
-	 * @param mainClass				mainClass
-	 * @param pathToMainClass		path to the mainClass
-	 * @param outputFolder			output folder
-	 */
-	public static void run(String mainClass, String pathToMainClass, String outputFolder) {
+
+
+	public static void run(ArgumentContainer sootArgsContainer) {
 		
 		// replace "." by "/", eg: main.testclasses.test1 => main/testclasses/test1
-		mainClass = mainClass.replace(".", "/");
-		pathToMainClass = pathToMainClass.replace(".", "/");
-		outputFolder = outputFolder.replace(".", "/");
-		
-		createProperties(mainClass, pathToMainClass, outputFolder);
+		createProperties(sootArgsContainer);
+
 		File buildFile = new File("src/utils/ant/build.xml");
 		
 		
@@ -55,18 +41,18 @@ public class AntRunner {
 		}
 	}
 
-	/**
-	 * Helper method to create properties for our ant file
-	 * @param mainClass			which file to compile
-	 * @param pathToMainClass	folder where the mainClass is located
-	 * @param outputFolder 		where to output
-	 */
-	private static void createProperties(String mainClass, String pathToMainClass, String outputFolder) {
-		try  { 
+
+	private static void createProperties(ArgumentContainer argsContainer) {
+
+        String mainClass = argsContainer.getMainclass().replace(".", "/");										// main/testclasses/DominatorNullPointer
+        String outputFolder = PathHelper.toAbsolutePath(argsContainer.getOutputFolder());
+        String fullPathForMainClassToCreate = new File(outputFolder, mainClass).getAbsolutePath();
+
+		try  {
 			PrintWriter writer = new PrintWriter("src/utils/ant/build.properties", "UTF-8");
 			writer.write("# File to set mainClass and outputFolder\n");
 			writer.write("mainClass=" + mainClass + "\n");
-			writer.write("pathToMainClass=" + pathToMainClass + "\n");
+			writer.write("fullPathForMainClassToCreate=" + fullPathForMainClassToCreate + "\n");
 			writer.write("outputFolder=" + outputFolder + "\n");	
 			writer.close();
 		} catch (Exception e) {

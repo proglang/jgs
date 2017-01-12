@@ -35,45 +35,19 @@ public class ArgParser {
 		System.out.println("main.testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java");
 		System.out.println("main.testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java some/absolut/path/to/additionalFile.java");
 	}
-	
-	/**
-	 * Convert a given path to canonical path, regardless whether input is relative or absolute
-	 * @param s			relative or absolute path
-	 * @return			equivalent canonical path
-	 */
-	private static String toAbsolutePath(String s) {
-		File path = new File(s);
 
-		if (path.isAbsolute()) {
-			try {
-				return path.getCanonicalPath();
-			} catch (IOException e) {
-				throw new InternalAnalyzerException(e.getMessage());
-			} 
-		} else {
-			File parent = new File(System.getProperty("user.dir"));
-			File fullPath = new File(parent, s);
-			try {
-				return fullPath.getCanonicalPath();
-			} catch (IOException e) {
-				throw new InternalAnalyzerException(e.getMessage());
-			} 
-		}
-		
-	}
-
-	public static ArgumentContainer getSootOptions(String[] args) {
+    public static ArgumentContainer getSootOptions(String[] args) {
 
         // locals variables to hold parsing results
         String mainclass;
         boolean toJimple;
         String outputFolder;
-        String pathToMainclass;
+        List<String> addDirsToClasspath = new ArrayList<>();
         List<String> additionalFiles = new ArrayList<>();
 
         // flags
         final String MAINCLASS_FLAG = "m";
-        final String PATH_TO_MAINCLASS_FLAG = "p";
+        final String ADD_DIRECTORIES_TO_CLASSPATH = "p";
         final String JIMPLE_FLAG = "j";
         final String OUTPUT_FOLDER_FLAG = "o";
         final String ADDITIONAL_FILES_FLAG = "f";
@@ -86,10 +60,13 @@ public class ArgParser {
         mainopt.setRequired(true);
         options.addOption(mainopt);
 
-		Option pathToMainc = new Option(PATH_TO_MAINCLASS_FLAG, "path", true,
-				"Optional: Set path to MainClass");
-		pathToMainc.setRequired(false);
-		options.addOption(pathToMainc);
+
+		Option addDirsToClasspathOption = new Option(ADD_DIRECTORIES_TO_CLASSPATH, "directory", true,
+				"Optional: Add directories to the soot classpath. Use if you want to add files (mainclass or via -f flag) that are" +
+                        "not contained in your current directory");
+		addDirsToClasspathOption.setRequired(false);
+		addDirsToClasspathOption.setArgs(Option.UNLIMITED_VALUES);
+		options.addOption(addDirsToClasspathOption);
 
         Option format = new Option(JIMPLE_FLAG, "jimple", false,
                 "Optional: Output as Jimple instead of as compiled class");
@@ -116,10 +93,10 @@ public class ArgParser {
             mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
 
             // case p flag
-            if (cmd.hasOption(PATH_TO_MAINCLASS_FLAG)) {
-                pathToMainclass = cmd.getOptionValue(PATH_TO_MAINCLASS_FLAG);
-            } else {
-                pathToMainclass = ArgumentContainer.VALUE_NOT_PRESENT;
+            if (cmd.hasOption(ADD_DIRECTORIES_TO_CLASSPATH)) {
+                for (String s: cmd.getOptionValues(ADD_DIRECTORIES_TO_CLASSPATH)) {
+                    addDirsToClasspath.add(s);
+                }
             }
 
 			// case j flag
@@ -145,7 +122,7 @@ public class ArgParser {
 
             // used only named arguments so that order is not confused
 			return new ArgumentContainer(mainclass = mainclass,
-                    pathToMainclass = pathToMainclass,
+                    addDirsToClasspath = addDirsToClasspath,
                     toJimple = toJimple,
                     outputFolder = outputFolder,
                     additionalFiles = additionalFiles);

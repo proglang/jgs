@@ -66,7 +66,7 @@ public class Main {
                                 "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
                                 "--d", sootOptionsContainer.getOutputFolder()));         // sets output folder
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
-		    sootOptions.add(s);                                                         // add further files to be instrumented
+		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
 
 
@@ -90,7 +90,7 @@ public class Main {
 			    + ":"
 				+ new File(javaHome, "lib/rt.jar").toString();
 		// Adding the arguments given by the user via the -p flag. See ArgParser.java
-		for (String s : sootOptionsContainer.getAdditionalFiles()) {
+		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
 			classPath += ":" + s;
 		}
 		Scene.v().setSootClassPath(classPath);
@@ -112,9 +112,7 @@ public class Main {
 		// [-f, c, -main-class, main.testclasses.NSU_FieldAccess, main.testclasses.NSU_FieldAccess, --d, sootOutput/junit]
 		File pathToMain = new File(
 		        new File(sootOptionsContainer.getOutputFolder()).getAbsolutePath(), sootOptionsContainer.getMainclass());
-		utils.ant.AntRunner.run(sootOptionsContainer.getMainclass(),
-                                pathToMain.getAbsolutePath(),
-                                sootOptionsContainer.getOutputFolder());
+		utils.ant.AntRunner.run(sootOptionsContainer);
         
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
