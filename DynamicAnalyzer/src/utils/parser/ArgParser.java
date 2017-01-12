@@ -1,5 +1,6 @@
 package utils.parser;
 
+import com.sun.org.apache.xpath.internal.Arg;
 import org.apache.commons.cli.*;
 import utils.exceptions.IllegalArgumentsException;
 import utils.exceptions.InternalAnalyzerException;
@@ -68,32 +69,45 @@ public class ArgParser {
 	 */
 	public static String[] getSootOptions(String[] args, ArrayList<String> pathArgs) {
 
-		// todo:
-		// can start with anything
-		// -m sets the mainclass
+        // locals variables to hold parsing results
+        String mainclass = ArgumentContainer.VALUE_NOT_PRESENT;
+        String outputFormat = ArgumentContainer.VALUE_NOT_PRESENT;
+        String outputFolder = ArgumentContainer.VALUE_NOT_PRESENT;
+        String pathToMainclass = ArgumentContainer.VALUE_NOT_PRESENT;
+        List<String> additionalFiles = new ArrayList<>();
 
+        // flags
+        final String MAINCLASS_FLAG = "m";
+        final String ADD_TO_CLASSPATH_FLAG = "p";
+        final String OUTPUT_FOLDER_FLAG = "o";
+        final String JIMPLE_FLAG = "j";
+        final String ADDITIONAL_FILES_FLAG = "f";
 
-		if (args[0].startsWith("-")) {
-			throw new IllegalArgumentsException("first argument must be the main Class!");
-		}
-
+        // ======== PREPARE OPTIONS =========
 		Options options = new Options();
 
-		Option pathToMainclass = new Option("p", "path", true,
-				"Optinal: Path to MainClass");
-		pathToMainclass.setRequired(false);
-		options.addOption(pathToMainclass);
+        Option mainopt = new Option(MAINCLASS_FLAG, "mainclass", true,
+                "mainclass");
+        mainopt.setRequired(true);
+        options.addOption(mainopt);
 
-		Option output = new Option("o", "output", true, "output file");
+		Option pathToMainc = new Option(ADD_TO_CLASSPATH_FLAG, "path", true,
+				"Optional: Set path to MainClass");
+		pathToMainc.setRequired(false);
+		options.addOption(pathToMainc);
+
+		Option output = new Option(OUTPUT_FOLDER_FLAG, "output", true,
+                "Optional: Set output folder");
 		output.setRequired(false);
 		options.addOption(output);
 
-		Option format = new Option("j", "jimple", false,
-				"output as Jimple instead of as compiled class");
+		Option format = new Option(JIMPLE_FLAG, "jimple", false,
+				"Optional: Output as Jimple instead of as compiled class");
 		format.setRequired(false);
 		options.addOption(format);
 		
-		Option filesToAdd = new Option("f", "files", true, "add files to instrumentation process");
+		Option filesToAdd = new Option(ADDITIONAL_FILES_FLAG, "files", true,
+                "Optional: add additional files to instrumentation process");
 		filesToAdd.setRequired(false);
 		filesToAdd.setArgs(Option.UNLIMITED_VALUES);
 		options.addOption(filesToAdd);
@@ -102,51 +116,35 @@ public class ArgParser {
 
 		CommandLine cmd;
 		try {
-
 			cmd = parser.parse(options, args);
 
-			// construct the template string
-			String[] template = new String[cmd.hasOption("f") ? 7 + cmd.getOptionValues("f").length : 7];
-			List<String> sootArgs = new ArrayList<>();
-
-			template[0] = "-f";
-			template[1] = "c";
-			template[2] = "-main-class";
-			template[3] = "placeholder_mainclass";
-			template[4] = "filesToProcess_firstFile (which will be the mainclass file)";
-			
-			if (cmd.hasOption("f")) {
-				String[] additionalFiles = cmd.getOptionValues("f");
-				for (int i = 0; i < additionalFiles.length; i++) {
-					template[5 + i] = additionalFiles[i];
-				}
-			}
-			template[template.length - 2] = "--d";
-			template[template.length - 1] = "placeholder output path";
-
-			// case no flag
-			template[3] = args[0]; // set mainclass
-			template[4] = args[0];
-			template[template.length - 1] = System.getProperty("user.dir");
-
 			// case j flag
-			if (cmd.hasOption("j")) {
-				template[1] = "J";
-			}
+			if (cmd.hasOption(JIMPLE_FLAG)) {
+                outputFormat = "J";
+			} else {
+			    outputFormat = "c";
+            }
 
 			// case p flag
-			if (cmd.hasOption("p")) {
-				String[] classPathList = cmd.getOptionValues("p");
-				for (String path : classPathList) {
-					pathArgs.add(toAbsolutePath(path));
+			if (cmd.hasOption(ADD_TO_CLASSPATH_FLAG)) {
+				for (String path : cmd.getOptionValues(ADD_TO_CLASSPATH_FLAG)) {
+                    addToClassPath.add(path);
 				}
 			}
 
+			// case f flag
+            if (cmd.hasOption(ADDITIONAL_FILES_FLAG)) {
+			    for (String file: cmd.getOptionValues(ADDITIONAL_FILES_FLAG)) {
+			        additionalFiles.add(file);
+                }
+            }
+
 			// case o flag
-			if (cmd.hasOption("o")) {
-				String outputFolder = cmd.getOptionValue("o");
-				template[template.length - 1] = toAbsolutePath(outputFolder);
-			}
+			if (cmd.hasOption(OUTPUT_FOLDER_FLAG)) {
+				outputFolder = cmd.getOptionValue(OUTPUT_FOLDER_FLAG);
+			} else {
+			    outputFolder = ArgumentContainer.VALUE_NOT_PRESENT;
+            }
 
 			
 			return template;
