@@ -25,10 +25,10 @@ and directly set the securitylevel of the left argument
         r5 = (java.lang.String) $r4;
         r6 = "bg";
         
-        $r7 = <main.testclasses.MakeHigh: java.lang.String field>;
+        $r7 = <testclasses.MakeHigh: java.lang.String field>;
         $r8 = staticinvoke <utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>($r7);
         $r9 = (java.lang.String) $r8;
-        <main.testclasses.MakeHigh: java.lang.String field> = $r9;
+        <testclasses.MakeHigh: java.lang.String field> = $r9;
         return;
 
 

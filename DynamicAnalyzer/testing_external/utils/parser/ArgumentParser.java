@@ -106,13 +106,13 @@ public class ArgumentParser {
 	/**
 	 * Extract arguments for soot.
 	 * It should have one of following three formats:
-	 * new String[]{"-f","c", "-main-class", "main.testclasses.Simple", 
-	 * 		"main.testclasses.Simple"}	
+	 * new String[]{"-f","c", "-main-class", "testclasses.Simple",
+	 * 		"testclasses.Simple"}
 	 * or 
-	 * new String[]{"-f","c", "-main-class", "main.testclasses.Simple", 
+	 * new String[]{"-f","c", "-main-class", "testclasses.Simple",
 	 * 		"--process-dir", "src/main/testclasses"}
-	 * or new String[]{"-f","c", "-main-class", "main.testclasses.Simple", 
-	 * 		"main.testclasses.Simple", "--d", "sootOutput/outputDir"}	
+	 * or new String[]{"-f","c", "-main-class", "testclasses.Simple",
+	 * 		"testclasses.Simple", "--d", "sootOutput/outputDir"}
 	 * 
 	 * @return Array with arguments for Soot.
 	 * 

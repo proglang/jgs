@@ -36,7 +36,7 @@ public class Main {
 	 * 
 	 * For illustration, we supply the command line arguments to compile a single file to 
 	 * instrumented binary code:
-	 * -f c --classes main.testclasses.Simple  --main_class main.testclasses.Simple
+	 * -f c --classes testclasses.Simple  --main_class testclasses.Simple
 	 * 
 	 * @param args
 	 * @throws ParseException 
@@ -52,7 +52,7 @@ public class Main {
      */
 	private static void execute(String[] args) {
 		
-		//argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes main.testclasses.Simple ..."
+		//argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes testclasses.Simple ..."
     	
 		// LOGGER_LEVEL = argparser.getLoggerLevel();
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
@@ -92,7 +92,7 @@ public class Main {
         	   
 		soot.Main.main(sootOptions);
 		
-		//compile to JAR. Currently, sootOptions[3] is the mainClass (like main.testclasses.test1).
+		//compile to JAR. Currently, sootOptions[3] is the mainClass (like testclasses.test1).
 		// it gets compiled to sootOutput/junit/main/testclasses/test1.class
 		// we want to output it to ant/main/testclasses/test1.jar
 		utils.ant.AntRunner.run(sootOptions[3], "sootOutput", "antOutput");

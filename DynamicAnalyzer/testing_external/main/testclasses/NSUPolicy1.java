@@ -1,4 +1,4 @@
-package main.testclasses;
+package testclasses;
 
 import org.junit.Ignore;
 

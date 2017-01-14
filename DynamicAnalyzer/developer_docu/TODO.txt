@@ -34,7 +34,7 @@ ValueSwitch: CaseNewExpr
 Check all "Flags". Do I need all of them?
 
 KONFIGURATION
->> Define sootClassPath for rt.jar in Main which works globally
+>> Define sootClassPath for rt.jar in main.Main which works globally
 >> URL = classLoader.getSystemResource
 >> Bestimmen, welche Klassen analysiert werden und welche nicht (im Run...)
 

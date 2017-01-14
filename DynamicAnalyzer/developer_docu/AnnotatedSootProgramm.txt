@@ -1,17 +1,17 @@
-public class main.testclasses.Simple extends java.lang.Object
+public class testclasses.Simple extends java.lang.Object
 {
 
     public void <init>()
     {
     	// This is the setup. It basically adds Simple to the local map, creates a new map in the Object Map to hold fields.
     
-        main.testclasses.Simple r0;							// Create local variable for main.testclasses.Simple
+        testclasses.Simple r0;							// Create local variable for testclasses.Simple
         analyzer.level2.HandleStmt hs;						// Create local variable for the handle statement hs
         java.lang.String local_for_Strings;					// Create a local variable for strings, as temporary container
         java.lang.String[] local_for_String_Arrays;			// Same container for arrays of strings
         java.lang.Object local_for_Objects;					// Same container for objects
 
-        r0 := @this: main.testclasses.Simple;										// The @this tag indicates what the this keyword refers to
+        r0 := @this: testclasses.Simple;										// The @this tag indicates what the this keyword refers to
         specialinvoke r0.<java.lang.Object: void <init>()>();						// Specialinvode means: init constructor of Simple class
         hs = new analyzer.level2.HandleStmt;
         specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();				// Clears the objectMap in analyzer.level2.HandleStmt,
@@ -20,7 +20,7 @@ public class main.testclasses.Simple extends java.lang.Object
         virtualinvoke hs.<analyzer.level2.HandleStmt: void addObjectToObjectMap(java.lang.Object)>(r0);		// add Simple Object to ObjectMap
         																									// eg creates a new map which will
         																									// map simple.FIELD -> SecValue
-        local_for_Strings = "main.testclasses.Simple_r0";
+        local_for_Strings = "testclasses.Simple_r0";
         virtualinvoke hs.<analyzer.level2.HandleStmt: void addLocal(java.lang.String)>(local_for_Strings);	// adds a the simple Class as a
         																									// Local to the one and only local
         																									// map, with default sec-value LOW

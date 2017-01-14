@@ -31,12 +31,12 @@ The following flags are supported:
 - `-p`, the path to src directory. May be absolute or relative. If omitted, source must be in current folder
 
 Sample arguments for main method (see tests.end2endtest.compileToJarTests):
-- `main.testclasses.NSUPolicy1`
-- `main.testclasses.NSUPolicy1 -j`
-- `main.testclasses.NSUPolicy1 -o /path/to/outdir`
-- `main.testclasses.NSUPolicy1 -o relativepath/to/outputdir`
-- `main.testclasses.NSUPolicy1 -p /path/to/inputdir`
-- `main.testclasses.NSUPolicy1 -p relativepath/to/inputdir -o /path/to/outdir -j`
+- `testclasses.NSUPolicy1`
+- `testclasses.NSUPolicy1 -j`
+- `testclasses.NSUPolicy1 -o /path/to/outdir`
+- `testclasses.NSUPolicy1 -o relativepath/to/outputdir`
+- `testclasses.NSUPolicy1 -p /path/to/inputdir`
+- `testclasses.NSUPolicy1 -p relativepath/to/inputdir -o /path/to/outdir -j`
 
 ## Example
 Consider the following java class:
@@ -55,13 +55,13 @@ and throws an "IllegalFlowException" if executed.
 
 
 ## Compiling via main:
-- Choose your Run Configurations (for example, if we want to compile to instrumented binary, use the RunMainAnalyzerSingleC, which has the following arguments: `-f c --classes main.testclasses.WhileLoopFail --main_class main.testclasses.WhileLoopFail)` 
+- Choose your Run Configurations (for example, if we want to compile to instrumented binary, use the RunMainAnalyzerSingleC, which has the following arguments: `-f c --classes testclasses.WhileLoopFail --main_class testclasses.WhileLoopFail)` 
 -  Execute `DynamicAnalyser.src.main.Main.java` from within Eclipse. This produces a file in 'sootOutput' which is instrumented, meaning
    that it has the original program PLUS more code that checks - on runtime - if the flow is valid or if there is information leakage.
 - Go to folder `sootOutput/`
 - Run the compiled file using:
 ```
-java -cp .:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar   main.testclasses.NameOfTest
+java -cp .:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar   testclasses.NameOfTest
 ```
 Note on `.:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar`:
 To run the class file successfully, we have to provide more that just the file, because it contains instrumented code: methods and classes 
@@ -69,9 +69,9 @@ which also have to be available to the program at runtime!
 
 ## Unit tests
 There are two kinds of unit tests:
-- end to end tests in src.main.testclasses: These get compiled and instrumented, then executed, and observed for desired Exception.
+- end to end tests in src.testclasses: These get compiled and instrumented, then executed, and observed for desired Exception.
 - manually instrumented testfiles, which can be found in tests.analyzer.level2. Here we include the run-time checks "by hand".
-All of these tests can be run by executing the tests.testmain.RunAllTests as JUnit test from within Eclipse.
+All of these tests can be run by executing the tests.RunAllTests as JUnit test from within Eclipse.
 
 ## Brief overview over the source code
 To get you started, here is a very brief introduction into the source code:
@@ -101,10 +101,10 @@ if (secret == 42) {					// PC is HIGH
 ```
 The local `y` would be upgraded from LOW to HIGH, because the high guard (`secret == 42`) sets the localPC to HIGH inside the if statement. This upgrade will not pass: An IllegalFlowException will be thrown, even though no information has yet been leaked. If the PC is HIGH, we cannot update a LOW variable and have it upgraded to HIGH. The reason for this is purely technical, and can be understood when studying the NSU policy.
 
-A working example can be found in code unter `main.testclasses.NSUPolicy1`.
+A working example can be found in code unter `testclasses.NSUPolicy1`.
 
 ### Further example
-Consider the following code (see `main.testclasses.NSUPolicy2` for working example) 
+Consider the following code (see `testclasses.NSUPolicy2` for working example) 
 ```
 o1 = new C();
 o2 = new C();

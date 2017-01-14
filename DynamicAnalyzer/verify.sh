@@ -38,7 +38,7 @@ elif [ "$1" = "-j" ]
 then 
 	echo "Compile Jimple files"
 
-	java -cp $JGS_DEPS/soot-2.5.0/lib/soot-2.5.0.jar soot.Main -cp sootOutput/:./bin:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/local/java/java170/jre/lib/rt.jar -f c -process-dir sootOutput -d sootOutput2 -src-prec J
+	java -cp $JGS_DEPS/soot-2.5.0/lib/soot-2.5.0.jar soot.main.Main -cp sootOutput/:./bin:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jce.jar:/usr/local/java/java170/jre/lib/rt.jar -f c -process-dir sootOutput -d sootOutput2 -src-prec J
 
 	echo "End of Jimple file compilation"
 
