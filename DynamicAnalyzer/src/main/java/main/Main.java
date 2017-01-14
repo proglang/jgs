@@ -105,7 +105,8 @@ public class Main {
         soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
         
 		// compile to JAR.
-		utils.ant.AntRunner.run(sootOptionsContainer);
+        // todo re-enable
+		// utils.ant.AntRunner.run(sootOptionsContainer);
         
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();

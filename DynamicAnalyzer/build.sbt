@@ -1,8 +1,12 @@
 lazy val setScalaVersion = scalaVersion := "2.11.7"
+lazy val baseDir = file("/Users/nicolasm/Dropbox/Hiwi/ProgLang/jgs/DynamicAnalyzer")
 
 lazy val commonSettings = Seq(
 
   setScalaVersion,
+  fork := true,
+  // baseDirectory in run := baseDir,
+  // baseDirectory in test := baseDir,
   organization := "de.unifreiburg.cs.proglang",
   unmanagedBase := file("lib"),
 
