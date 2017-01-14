@@ -44,9 +44,9 @@ public class AntRunner {
 
 	private static void createProperties(ArgumentContainer argsContainer) {
 
-        String mainClass = argsContainer.getMainclass().replace(".", "/");										// main/testclasses/DominatorNullPointer
-        String outputFolder = PathHelper.toAbsolutePath(argsContainer.getOutputFolder());
-        String fullPathForMainClassToCreate = new File(outputFolder, mainClass).getAbsolutePath();
+        String mainClass = argsContainer.getMainclass().replace(".", "/");								// main/testclasses/DominatorNullPointer
+        String outputFolder = PathHelper.toAbsolutePath(argsContainer.getOutputFolder());               // is relative, not absolute
+        String fullPathForMainClassToCreate = new File(outputFolder, mainClass).getAbsolutePath();      // is absolute and points to the mainClass (without .class)
 
 		try  {
 			PrintWriter writer = new PrintWriter("src/utils/ant/build.properties", "UTF-8");
