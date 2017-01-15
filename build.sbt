@@ -2,14 +2,14 @@ lazy val setScalaVersion = scalaVersion := "2.11.7"
 
 lazy val commonSettings = Seq(
 
-    setScalaVersion,
-    organization := "de.unifreiburg.cs.proglang",
-    unmanagedBase := file("lib"),
+  setScalaVersion,
+  organization := "de.unifreiburg.cs.proglang",
+  unmanagedBase := file("lib"),
 
-    libraryDependencies ++= Seq(
-      "org.apache.commons" % "commons-lang3" % "3.4",
-      "org.apache.commons" % "commons-collections4" % "4.1"
-    )
+  libraryDependencies ++= Seq(
+    "org.apache.commons" % "commons-lang3" % "3.4",
+    "org.apache.commons" % "commons-collections4" % "4.1"
+  )
 )
 
 lazy val jgsCheckDeps = Seq(
@@ -21,10 +21,19 @@ lazy val jgsCheckDeps = Seq(
   "com.googlecode.kiama" %% "kiama" % "1.8.0"
 )
 
+lazy val dynAnalyzerDeps = Seq(
+  "org.apache.commons" % "commons-lang3" % "3.4",
+  "org.apache.commons" % "commons-collections4" % "4.1",
+  "junit" % "junit" % "4.12",
+  "org.apache.ant" % "ant-junit" % "1.9.7",
+  "commons-cli" % "commons-cli" % "1.3.1",
+  // "ca.mcgill.sable" % "soot" % "RELEASE",
+  "org.hamcrest" % "hamcrest-library" % "1.3"
 
+)
 
 lazy val GradualConstraints =
-  (project in file(".")).
+  (project in file("GradualConstraints")).
     dependsOn(InstrumentationSupport).
     settings(commonSettings:_*).
     settings(
@@ -32,22 +41,30 @@ lazy val GradualConstraints =
     )
 
 
+lazy val DynamicAnalyzer =
+  (project in file("DynamicAnalyzer")).
+    // dependsOn(InstrumentationSupport).
+    settings(commonSettings:_*).
+    settings(
+      libraryDependencies ++= dynAnalyzerDeps
+    )
+
 lazy val GradualConstraintsTests =
-  (project in file("Tests")).
+  (project in file("GradualConstraints/Tests")).
     dependsOn(GradualConstraints).
     settings(commonSettings:_*).
     settings(
       libraryDependencies ++=
         jgsCheckDeps ++
-        Seq(
-          "com.novocode" % "junit-interface" % "0.11" % "test",
-          "org.scalactic" %% "scalactic" % "2.2.6",
-          "org.scalatest" %% "scalatest" % "2.2.6" % "test"
-        )
+          Seq(
+            "com.novocode" % "junit-interface" % "0.11" % "test",
+            "org.scalactic" %% "scalactic" % "2.2.6",
+            "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+          )
     )
 
 lazy val InstrumentationSupport =
-  (project in file("InstrumentationSupport")).
+  (project in file("GradualConstraints/InstrumentationSupport")).
     settings(commonSettings:_*).
     settings(
       libraryDependencies ++=
@@ -63,7 +80,3 @@ lazy val InstrumentationSupport =
 
 
 lazy val JGSSupport = project.settings(setScalaVersion)
-
-
-
-
