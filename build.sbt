@@ -34,7 +34,7 @@ lazy val dynAnalyzerDeps = Seq(
 
 lazy val GradualConstraints =
   (project in file("GradualConstraints")).
-    dependsOn(InstrumentationSupport).
+    //dependsOn(InstrumentationSupport).
     settings(commonSettings:_*).
     settings(
       libraryDependencies ++= jgsCheckDeps
