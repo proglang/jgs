@@ -12,7 +12,7 @@ lazy val commonSettings = Seq(
   )
 )
 
-lazy val jgsCheckDeps = Seq(
+lazy val gradConstraintsDeps = Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   // "org.json4s" %% "json4s-native" % "3.3.0",
   "org.json4s" %% "json4s-jackson" % "3.3.0",
@@ -29,24 +29,25 @@ lazy val dynAnalyzerDeps = Seq(
   "commons-cli" % "commons-cli" % "1.3.1",
   // "ca.mcgill.sable" % "soot" % "RELEASE",
   "org.hamcrest" % "hamcrest-library" % "1.3"
-
 )
 
 lazy val GradualConstraints =
   (project in file("GradualConstraints")).
-    //dependsOn(InstrumentationSupport).
+    dependsOn(InstrumentationSupport).
     settings(commonSettings:_*).
     settings(
-      libraryDependencies ++= jgsCheckDeps
+      libraryDependencies ++= gradConstraintsDeps,
+      javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
     )
 
 
 lazy val DynamicAnalyzer =
   (project in file("DynamicAnalyzer")).
-    // dependsOn(InstrumentationSupport).
+    dependsOn(InstrumentationSupport).
     settings(commonSettings:_*).
     settings(
-      libraryDependencies ++= dynAnalyzerDeps
+      libraryDependencies ++= dynAnalyzerDeps,
+      javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
     )
 
 lazy val GradualConstraintsTests =
@@ -55,12 +56,13 @@ lazy val GradualConstraintsTests =
     settings(commonSettings:_*).
     settings(
       libraryDependencies ++=
-        jgsCheckDeps ++
+        gradConstraintsDeps ++
           Seq(
             "com.novocode" % "junit-interface" % "0.11" % "test",
             "org.scalactic" %% "scalactic" % "2.2.6",
             "org.scalatest" %% "scalatest" % "2.2.6" % "test"
-          )
+          ),
+      javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
     )
 
 lazy val InstrumentationSupport =
@@ -72,6 +74,7 @@ lazy val InstrumentationSupport =
           "org.json4s" %% "json4s-jackson" % "3.3.0",
           "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.7.4"
         ),
+      javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
       artifactName := {
         (sv : ScalaVersion , mod : ModuleID , artifact : Artifact) => "gradualconstraints_" + Artifact.artifactName(sv, mod, artifact)
       }

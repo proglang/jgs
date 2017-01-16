@@ -151,8 +151,7 @@ public class ObjectMap{
 	 * @return The return-level of the last return-operation.
 	 */
 	public Object getActualReturnLevel() {
-		Object returnL = actualReturnLevel;
-		return returnL;
+		return actualReturnLevel;
 	}
   
 	/**
@@ -210,10 +209,9 @@ public class ObjectMap{
 	 * Add a new field to the objectMap.
 	 * @param object The Object it belongs to
 	 * @param field The signature of the field
-	 * @param securityLevel The security-level of the field
-	 * @return security-level 
+	 * @return security-level
 	 */
-	public Object addField(Object object, String field) {
+	Object addField(Object object, String field) {
 		innerMap.get(object).put(field, SecurityLevel.bottom());
 		return innerMap.get(object).get(field);
 	}
@@ -265,7 +263,6 @@ public class ObjectMap{
 	/**
 	 * Get the security-level of the actual assign statement. the assignmentLevel 
 	 * accumulates the security level of the right-hand-side of the current assignment.
-	 * @param securityLevel the security-level
 	 */
 	public Object getAssignmentLevel() {
 		return assignStmtLevel;

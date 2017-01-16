@@ -17,6 +17,8 @@ import static org.junit.Assert.*;
 public class compileToJarTests {
 
     private String outputPath = "sootOutput/argsTest";
+    String externalPath = "DynamicAnalyzer/testing_external/src/main/java";
+    File extPath = new File( new File(System.getProperty("user.dir")), externalPath);
 
 
     /**
@@ -63,9 +65,8 @@ public class compileToJarTests {
     @Test
     public void pathTestP() {
         String testFile = "NSUPolicy1";        // SHOULD BE NSUPolicy1 !! Not working right now
-        String externalPath = "/Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer/testing_external";
 
-        main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", externalPath});
+        main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", extPath.getAbsolutePath()});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/testclasses/" + testFile + ".class");
         File outJar = new File(outParent, outputPath + "/testclasses/" + testFile + ".jar");
@@ -85,9 +86,8 @@ public class compileToJarTests {
     @Test
     public void pathTestPRelative() {
         String testFile = "NSUPolicy1";
-        String externalPath = "testing_external";
 
-        main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", externalPath});
+        main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", extPath.getAbsolutePath()});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/testclasses/" + testFile + ".class");
         File outJar = new File(outParent, outputPath + "/testclasses/" + testFile + ".jar");
@@ -126,9 +126,9 @@ public class compileToJarTests {
         File outJar = new File(outParent, outputPath + "/testclasses/" + testFile + ".jar");
         File addFile = new File(outParent, outputPath + "/" + additionalFile.replace(".", "/") + ".class");
 
-        assertTrue(outFile.exists());
-        assertTrue(outJar.exists());
-        assertTrue(addFile.exists());
+        assertTrue("File not found: " + outFile.getAbsolutePath(), outFile.exists());
+        assertTrue("File not found: " + outJar.getAbsolutePath(), outJar.exists());
+        assertTrue("File not found: " + addFile.getAbsolutePath(), addFile.exists());
 
         // now run it and check wheter or not it produces an IllegalFlowException
         System.out.println("Running " + outJar.toString() + "...");

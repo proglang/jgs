@@ -48,7 +48,7 @@ public class ExampleTests {
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
         Methods<LowHigh.Level> methods = results.max_methods_D_D__D();
-        VarTyping<LowHigh.Level> varTyping = results.max_varTyping();
+        VarTyping<LowHigh.Level> varTyping = results.max_varTyping(); // für jedes statement und pc steht drin, ob dyn oder stat überprüft werden soll
         CxTyping<LowHigh.Level> cxTyping = results.max_cxTyping();
 
         // first get an instantiation for max

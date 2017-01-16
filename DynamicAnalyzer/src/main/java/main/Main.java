@@ -62,7 +62,7 @@ public class Main {
                 sootOptionsContainer.getMainclass(),                    // adds the mainclass file
                 "-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
                 "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
-                "--d", sootOptionsContainer.getOutputFolder()));         // sets output folder
+                "--d", sootOptionsContainer.getOutputFolderAbsolutePath()));         // sets output folder
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
@@ -105,8 +105,7 @@ public class Main {
         soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
         
 		// compile to JAR.
-        // todo re-enable
-		// utils.ant.AntRunner.run(sootOptionsContainer);
+		utils.ant.AntRunner.run(sootOptionsContainer);
         
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();

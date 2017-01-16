@@ -3,6 +3,7 @@ package utils.parser;
 import org.apache.commons.cli.*;
 import utils.exceptions.InternalAnalyzerException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +92,9 @@ public class ArgParser {
 
             // case p flag
             if (cmd.hasOption(ADD_DIRECTORIES_TO_CLASSPATH)) {
-                Collections.addAll(addDirsToClasspath, cmd.getOptionValues(ADD_DIRECTORIES_TO_CLASSPATH));
+                for ( String s : cmd.getOptionValues(ADD_DIRECTORIES_TO_CLASSPATH)) {
+                    addDirsToClasspath.add(PathHelper.toAbsolutePath(s));
+                }
             }
 
 			// case j flag
@@ -101,7 +104,7 @@ public class ArgParser {
             if (cmd.hasOption(OUTPUT_FOLDER_FLAG)) {
                 outputFolder = cmd.getOptionValue(OUTPUT_FOLDER_FLAG);
             } else {
-                outputFolder = ArgumentContainer.VALUE_NOT_PRESENT;
+                outputFolder = ArgumentContainer.VALUE_NOT_SET;
             }
 
 			// case f flag

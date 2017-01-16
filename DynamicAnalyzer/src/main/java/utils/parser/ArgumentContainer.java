@@ -1,5 +1,7 @@
 package utils.parser;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  */
 public class ArgumentContainer {
 
-    static final String VALUE_NOT_PRESENT = "!_!_VALUE_NOT_PRESENT_!_!";
+    static final String VALUE_NOT_SET = "!_!_VALUE_NOT_SET_!_!";
 
     private final String mainclass;
     private final List<String> addDirsToClasspath;
@@ -26,7 +28,7 @@ public class ArgumentContainer {
     }
 
     public String getMainclass() {
-        assert !mainclass.equals(VALUE_NOT_PRESENT);
+        assert !mainclass.equals(VALUE_NOT_SET);
         return mainclass;
     }
 
@@ -42,11 +44,12 @@ public class ArgumentContainer {
         }
     }
 
-    public String getOutputFolder() {
-        if (outputFolder.equals(VALUE_NOT_PRESENT)) {
+    // output Folder wäre Optional<String>
+    public String getOutputFolderAbsolutePath() {
+        if (outputFolder.equals(VALUE_NOT_SET)) {
             return System.getProperty("user.dir");
         } else {
-            return outputFolder;
+            return PathHelper.toAbsolutePath(outputFolder);
         }
     }
 
