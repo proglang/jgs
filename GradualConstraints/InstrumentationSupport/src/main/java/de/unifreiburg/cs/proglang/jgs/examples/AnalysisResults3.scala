@@ -28,7 +28,10 @@ class AnalysisResults3[Level] {
           (up_2_if_not_B, localX) -> (instantiation.get(1), instantiation.get(1)),
 
           (up_3_inc_B, localB) -> (instantiation.get(0), instantiation.get(0)),
-          (up_3_inc_B, localX) -> (instantiation.get(1), instantiation.get(1))
+          (up_3_inc_B, localX) -> (instantiation.get(1), instantiation.get(1)),
+
+          (up_4_return_B, localB) -> (instantiation.get(0), instantiation.get(0)),
+          (up_4_return_B, localX) -> (instantiation.get(1), instantiation.get(1))
           ))
   }
 
@@ -39,9 +42,9 @@ class AnalysisResults3[Level] {
     makeCxTyping(instantiation => Map(
       up_0_id_X_p0 -> Public[Level](),
       up_1_id_B_p2 -> Public[Level](),
-      up_2_if_not_B -> Dynamic[Level](),
-      up_3_inc_B -> Dynamic[Level](),
-      up_4_return_B -> Dynamic[Level]()
+      up_2_if_not_B -> Public[Level](),
+      up_3_inc_B -> instantiation.get(0),
+      up_4_return_B -> instantiation.get(0)
     ))
   }
 
