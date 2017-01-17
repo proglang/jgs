@@ -13,27 +13,27 @@ class AnalysisResults[Level] {
     makeVarTyping(
       (instantiation : Instantiation[Level]) =>
         Map.apply[(Stmt, Local), (Type[Level], Type[Level])](
-          (max_01_id_X_p0, localX) -> (Public[Level](), instantiation.get(0)),    // at statement max_01_id_x_p0, what value does variable localX have ?before and after? the statement?!
-          (max_01_id_X_p0, localY) -> (Public[Level](), Public[Level]),
-          (max_01_id_X_p0, localZ) -> (Public[Level](), Public[Level]),
-          (max_02_id_Y_p1, localX) -> (instantiation.get(0), instantiation.get(0)),
-          (max_02_id_Y_p1, localY) -> (Public[Level](), instantiation.get(1)),
-          (max_02_id_Y_p1, localZ) -> (Public[Level](), Public[Level]),
-          (max_1_assign_Z_X, localX) ->(instantiation.get(0), instantiation.get(0)),
-          (max_1_assign_Z_X, localY) -> (instantiation.get(1), instantiation.get(1)),
-          (max_1_assign_Z_X, localZ) ->(Public[Level](), instantiation.get(0)),
-          (max_2_if_Z_lt_Y, localX) -> (instantiation.get(0), instantiation.get(0)),
-          (max_2_if_Z_lt_Y, localY) -> (instantiation.get(1), instantiation.get(1)),
-          (max_2_if_Z_lt_Y, localZ) ->(instantiation.get(0), instantiation.get(0)),
-          (max_22_goto_4, localX) -> (instantiation.get(0), instantiation.get(0)),
-          (max_22_goto_4, localY) -> (instantiation.get(1), instantiation.get(1)),
-          (max_22_goto_4, localZ) ->(instantiation.get(0), instantiation.get(0)),
-          (max_3_assign_Z_Y, localX) -> (instantiation.get(0), instantiation.get(0)),
-          (max_3_assign_Z_Y, localY) -> (instantiation.get(1), instantiation.get(1)),
-          (max_3_assign_Z_Y, localZ) ->(instantiation.get(0), lub(instantiation.get(0),instantiation.get(1))),
-          (max_4_return_Z, localX) -> (instantiation.get(0), instantiation.get(0)),
-          (max_4_return_Z, localY) ->  (instantiation.get(1), instantiation.get(1)),
-          (max_4_return_Z, localZ) -> (lub(instantiation.get(1), instantiation.get(0)), lub(instantiation.get(0), instantiation.get(1)))
+          (max_0_id_X_p0, localX) -> (Public[Level](), instantiation.get(0)),
+          (max_0_id_X_p0, localY) -> (Public[Level](), Public[Level]),
+          (max_0_id_X_p0, localZ) -> (Public[Level](), Public[Level]),
+          (max_1_id_Y_p1, localX) -> (instantiation.get(0), instantiation.get(0)),
+          (max_1_id_Y_p1, localY) -> (Public[Level](), instantiation.get(1)),
+          (max_1_id_Y_p1, localZ) -> (Public[Level](), Public[Level]),
+          (max_2_assign_Z_X, localX) ->(instantiation.get(0), instantiation.get(0)),
+          (max_2_assign_Z_X, localY) -> (instantiation.get(1), instantiation.get(1)),
+          (max_2_assign_Z_X, localZ) ->(Public[Level](), instantiation.get(0)),
+          (max_3_if_Z_lt_Y, localX) -> (instantiation.get(0), instantiation.get(0)),
+          (max_3_if_Z_lt_Y, localY) -> (instantiation.get(1), instantiation.get(1)),
+          (max_3_if_Z_lt_Y, localZ) ->(instantiation.get(0), instantiation.get(0)),
+          (max_4_goto_6, localX) -> (instantiation.get(0), instantiation.get(0)),
+          (max_4_goto_6, localY) -> (instantiation.get(1), instantiation.get(1)),
+          (max_4_goto_6, localZ) ->(instantiation.get(0), instantiation.get(0)),
+          (max_5_assign_Z_Y, localX) -> (instantiation.get(0), instantiation.get(0)),
+          (max_5_assign_Z_Y, localY) -> (instantiation.get(1), instantiation.get(1)),
+          (max_5_assign_Z_Y, localZ) ->(instantiation.get(0), lub(instantiation.get(0),instantiation.get(1))),
+          (max_6_return_Z, localX) -> (instantiation.get(0), instantiation.get(0)),
+          (max_6_return_Z, localY) ->  (instantiation.get(1), instantiation.get(1)),
+          (max_6_return_Z, localZ) -> (lub(instantiation.get(1), instantiation.get(0)), lub(instantiation.get(0), instantiation.get(1)))
     ))
   }
 
@@ -41,13 +41,13 @@ class AnalysisResults[Level] {
   val max_cxTyping: CxTyping[Level] = {
     import Code._
     makeCxTyping(instantiation => Map(
-      max_01_id_X_p0 -> Public[Level](),
-      max_02_id_Y_p1 -> Public[Level](),
-      max_1_assign_Z_X -> Public[Level](),
-      max_2_if_Z_lt_Y -> Public[Level](),
-      max_22_goto_4 -> lub(instantiation.get(0), instantiation.get(1)),
-      max_3_assign_Z_Y -> lub(instantiation.get(0), instantiation.get(1)),
-      max_4_return_Z -> Public[Level]()
+      max_0_id_X_p0 -> Public[Level](),
+      max_1_id_Y_p1 -> Public[Level](),
+      max_2_assign_Z_X -> Public[Level](),
+      max_3_if_Z_lt_Y -> Public[Level](),
+      max_4_goto_6 -> lub(instantiation.get(0), instantiation.get(1)),
+      max_5_assign_Z_Y -> lub(instantiation.get(0), instantiation.get(1)),
+      max_6_return_Z -> Public[Level]()
     ))
   }
 
@@ -96,8 +96,9 @@ class AnalysisResults[Level] {
     }
 
   def makeInstantiation(m : Map[Int, Type[Level]], ret : Type[Level]) : Instantiation[Level] =
-    new Instantiation[Level] {override def get(param: Int): Type[Level] =
-      m.getOrElse(param, throw new IllegalArgumentException(s"Type for parameter ${param} not known"))
+    new Instantiation[Level] {
+      override def get(param: Int): Type[Level] =
+        m.getOrElse(param, throw new IllegalArgumentException(s"Type for parameter ${param} not known"))
 
       override def getReturn: Type[Level] = ret
     }
