@@ -146,4 +146,56 @@ public class ExampleTests3 {
         s = Code.up_4_return_B;
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
     }
+
+
+    @Test
+    public void sum_P_P__P() {
+
+        // Assume we get the following objects from the type analysis
+        // (we are using the LowHigh lattice)
+        Methods<LowHigh.Level> methods = results.up_methods_P_P__P();
+        VarTyping<LowHigh.Level> varTyping = results.up_varTyping();
+        CxTyping<LowHigh.Level> cxTyping = results.up_cxTyping();
+
+        // first get an instantiation for max WHATS THAT?
+        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
+
+        // lets look at the individual statements:
+        Stmt s;
+
+        // Let soot create new local variables
+        Local x = Code.localX;
+        Local b = Code.localB;
+
+        // 0: x := p0;
+
+        s = Code.up_0_id_X_p0;
+        assertTrue(cxTyping.get(instantiation, s).isPublic());
+        assertTrue(varTyping.getBefore(instantiation, s, x).isPublic());
+        assertTrue(varTyping.getAfter(instantiation, s, x).isPublic());
+
+        // 1: b := p1
+
+        s = Code.up_1_id_B_p2;
+        assertTrue(cxTyping.get(instantiation, s).isPublic());
+        assertTrue(varTyping.getBefore(instantiation, s, b).isPublic());
+        assertTrue(varTyping.getAfter(instantiation, s, b).isPublic());
+
+        // 2: if not b goto 4;
+        s = Code.up_2_if_not_B;
+        assertTrue(cxTyping.get(instantiation, s).isPublic());
+        assertTrue(varTyping.getAfter(instantiation, s, x).isPublic());
+        assertTrue(varTyping.getAfter(instantiation, s, b).isPublic());
+
+
+        // 3: inc(x);
+        s = Code.up_3_inc_B;
+        assertTrue(cxTyping.get(instantiation, s).isPublic());
+        assertTrue(varTyping.getAfter(instantiation, s, x).isPublic());
+        assertTrue(varTyping.getAfter(instantiation, s, b).isPublic());
+
+        // 4: return b;
+        s = Code.up_4_return_B;
+        assertTrue(varTyping.getAfter(instantiation, s, x).isPublic());
+    }
 }

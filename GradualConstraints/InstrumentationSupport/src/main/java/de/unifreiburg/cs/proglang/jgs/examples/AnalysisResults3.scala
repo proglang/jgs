@@ -70,6 +70,16 @@ class AnalysisResults3[Level] {
   }
 
 
+  // Returns P_P__P basically.
+  val up_methods_P_P__P: Methods[Level] =
+    new Methods[Level] {
+      override def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
+
+      override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
+        makeInstantiation(Map(0 -> Public[Level](), 1 -> Public[Level]()), Public[Level]())
+    }
+
+
 
   // =================================== Utilities ========================================
   def makeVarTyping(getMaps
