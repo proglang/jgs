@@ -108,12 +108,12 @@ public class Code {
 
     // Methods For ExampleTests3
     /*
-      int update_on_secret(bool p0, int p1) {
+      int update_on_bool(bool p0, int p1) {
           int x;
           boolean b;
           0: x := p0;
           1: b := p1;
-          2: if b == false goto 4;
+          2: if not b goto 4;
           3: inc(x);
           4: return b;
       }

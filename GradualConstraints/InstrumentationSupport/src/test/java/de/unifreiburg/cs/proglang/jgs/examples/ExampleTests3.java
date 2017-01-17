@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class ExampleTests3 {
 
     /*
-      int update_on_secret(bool p0, int p1) {
+      int update_on_bool(bool p0, int p1) {
           int x;
           boolean b;
           0: x := p0;
