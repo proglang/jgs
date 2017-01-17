@@ -2,6 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.examples;
 
 import soot.*;
 import soot.jimple.*;
+import soot.jimple.parser.node.TBoolConstant;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class Code {
     // Class to hold exmaple methods and fields
     static SootClass exClass = makeClass("InstrumentationExamples");
     static SootClass exClass2 = makeClass("InstrumentationExamples2");
+    static SootClass exClass3 = makeClass("InstrumentationExamples3");
 
     // Fields
     static SootField fieldA = makeField("fieldA", IntType.v(), exClass);
@@ -28,9 +30,12 @@ public class Code {
     public static Local localY = j.newLocal("y", IntType.v());
     public static Local localZ = j.newLocal("z", IntType.v());
 
+    public static Local localB = j.newLocal("b", BooleanType.v());
+
     // Generic parameters
     static ParameterRef param0 = j.newParameterRef(IntType.v(), 0);
     static ParameterRef param1 = j.newParameterRef(IntType.v(), 1);
+    static ParameterRef param2 = j.newParameterRef(BooleanType.v(), 2);
 
     // A placeholder for the targets of if statements
     static Stmt placeholder = j.newNopStmt();
@@ -100,6 +105,37 @@ public class Code {
                                             .build()
                                 );
 
+
+    // Methods For ExampleTests3
+    /*
+      int update_on_secret(bool p0, int p1) {
+          int x;
+          boolean b;
+          0: x := p0;
+          1: b := p1;
+          2: if b == false goto 4;
+          3: inc(x);
+          4: return b;
+      }
+     */
+
+    public static final Stmt up_0_id_X_p0 = j.newIdentityStmt(localX, param0);
+    public static final Stmt up_1_id_B_p2 = j.newIdentityStmt(localB, param2);
+    public static final Stmt up_4_return_B = j.newReturnStmt(localB);
+    public static final Stmt up_2_if_not_B = j.newIfStmt(j.newEqExpr(localB, IntConstant.v(0)), up_4_return_B);
+    public static final Stmt up_3_inc_B = j.newAssignStmt(localX, j.newAddExpr(localX, IntConstant.v(1)));
+    public static SootMethod update = makeMethod(exClass3,
+            "update",
+            asList(BooleanType.v(), IntType.v()),
+            IntType.v(),
+            BodyBuilder.begin()
+                    .seq(up_0_id_X_p0)
+                    .seq(up_1_id_B_p2)
+                    .seq(up_2_if_not_B)
+                    .seq(up_3_inc_B)
+                    .seq(up_4_return_B)
+                    .build()
+    );
 
     /**
      * Helper method to create a fresh class.

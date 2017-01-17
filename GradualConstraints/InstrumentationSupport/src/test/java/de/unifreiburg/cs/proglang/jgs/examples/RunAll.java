@@ -10,7 +10,8 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ ExampleTests.class,
-                ExampleTests2.class })
+                ExampleTests2.class,
+                ExampleTests3.class})
 public class RunAll {
 
 }

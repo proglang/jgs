@@ -29,13 +29,13 @@ public class ExampleTests {
         int x;
         int y;
         int z;
-       01: x := p0;
-       02: y := p1;
-        1: z = x;
-        2: if (z < y) goto 3;
-       22:   goto 4;
-        3:   z = y;
-        4: return z;
+       0: x := p0;
+       1: y := p1;
+       2: z = x;
+       3: if (z < y) goto 5;
+       4:   goto 6;
+       5:   z = y;
+       6: return z;
       }
      */
 
