@@ -6,6 +6,10 @@ import soot.Local
 import soot.SootMethod
 import soot.jimple.Stmt
 
+/**
+  * Artifical results for ExampleTests
+  * @tparam Level Level may be static, dynamic or public.
+  */
 class AnalysisResults[Level] {
   val max_varTyping: VarTyping[Level] = {
     import Code._

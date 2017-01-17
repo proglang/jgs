@@ -120,6 +120,7 @@ public class ExampleTests {
         s = Code.max_2_assign_Z_X;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getBefore(instantiation, s, x).isDynamic());
+        assertTrue(varTyping.getBefore(instantiation, s, y).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, z).isDynamic());
 
         // max_2_if_Z_lt_Y : if (z<p1) goto 3;

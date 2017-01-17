@@ -7,7 +7,8 @@ import soot.SootMethod
 import soot.jimple.Stmt
 
 /**
-  * Created by Nicolas Müller on 17.01.17.
+  * Artifical results for ExampleTests2
+  * @tparam Level Level may be static, dynamic or public.
   */
 class AnalysisResults2[Level] {
 
@@ -56,6 +57,17 @@ class AnalysisResults2[Level] {
       override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
         makeInstantiation(Map(0 -> Dynamic[Level](), 1 -> Dynamic[Level]()), Dynamic[Level]())
     }
+
+
+  // Returns "a mapping from methods to their instantiations".
+  // Returns P_D__D, basically.
+  val sum_methods_P_D__D: Methods[Level] =
+  new Methods[Level] {
+    override def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
+
+    override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
+      makeInstantiation(Map(0 -> Public[Level](), 1 -> Dynamic[Level]()), Dynamic[Level]())
+  }
 
 
 
