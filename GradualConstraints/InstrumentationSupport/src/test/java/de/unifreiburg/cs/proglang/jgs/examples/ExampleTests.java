@@ -52,6 +52,8 @@ public class ExampleTests {
         CxTyping<LowHigh.Level> cxTyping = results.max_cxTyping();
 
         // first get an instantiation for max
+        // instantiation is a Soot object of type SootMethod. It is created in Code.java, and contains all the soot Statements the max programm
+        // consits of.
         Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.max);
 
         // lets look at the individual statements:
@@ -68,7 +70,7 @@ public class ExampleTests {
         //   --> update z's label with x, no NSU check required
         //   (things after "-->" is what the instrumentation should do in this case)
         s = Code.max_1_assign_Z_X;
-        assertTrue(cxTyping.get(instantiation, s).isPublic());
+        assertTrue(cxTyping.get(instantiation, s).isPublic());  // get statement s in instantiation "instantiation"
         assertTrue(varTyping.getBefore(instantiation, s, x).isDynamic());
         assertTrue(varTyping.getAfter(instantiation, s, z).isDynamic());
 

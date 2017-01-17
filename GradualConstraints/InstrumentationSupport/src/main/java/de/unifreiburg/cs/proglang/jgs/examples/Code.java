@@ -1,10 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.examples;
 
 import soot.*;
-import soot.jimple.IfStmt;
-import soot.jimple.Jimple;
-import soot.jimple.ParameterRef;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 
 import java.util.List;
 
@@ -37,8 +34,7 @@ public class Code {
     // A placeholder for the targets of if statements
     static Stmt placeholder = j.newNopStmt();
 
-    // Methods
-
+    // Methods for max:
     /*
       int max(int p0, int p1) {
         int x;
@@ -74,6 +70,10 @@ public class Code {
                                            .seq(max_4_return_Z)
                                            .build()
                                 );
+
+
+    // METHODS FOR ExampleTests2
+    public static final Stmt add_2_Z__ADD_X_Y = j.newAssignStmt(localZ, j.newAddExpr(localX, localY));
 
 
     /**

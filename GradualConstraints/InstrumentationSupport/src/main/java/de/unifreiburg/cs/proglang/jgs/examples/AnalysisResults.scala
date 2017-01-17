@@ -13,7 +13,7 @@ class AnalysisResults[Level] {
     makeVarTyping(
       (instantiation : Instantiation[Level]) =>
         Map.apply[(Stmt, Local), (Type[Level], Type[Level])](
-          (max_01_id_X_p0, localX) -> (Public[Level](), instantiation.get(0)),
+          (max_01_id_X_p0, localX) -> (Public[Level](), instantiation.get(0)),    // at statement max_01_id_x_p0, what value does variable localX have ?before and after? the statement?!
           (max_01_id_X_p0, localY) -> (Public[Level](), Public[Level]),
           (max_01_id_X_p0, localZ) -> (Public[Level](), Public[Level]),
           (max_02_id_Y_p1, localX) -> (instantiation.get(0), instantiation.get(0)),
@@ -33,10 +33,11 @@ class AnalysisResults[Level] {
           (max_3_assign_Z_Y, localZ) ->(instantiation.get(0), lub(instantiation.get(0),instantiation.get(1))),
           (max_4_return_Z, localX) -> (instantiation.get(0), instantiation.get(0)),
           (max_4_return_Z, localY) ->  (instantiation.get(1), instantiation.get(1)),
-          (max_4_return_Z, localZ) -> (lub(instantiation.get(1), instantiation.get(0)), lub(instantiation.get(0), instantiation.get(1))
-    )))
+          (max_4_return_Z, localZ) -> (lub(instantiation.get(1), instantiation.get(0)), lub(instantiation.get(0), instantiation.get(1)))
+    ))
   }
 
+  // define the Program Counters at the individual statements of ExampleTest.test_max_D_D__D and test_max_D_P__D.
   val max_cxTyping: CxTyping[Level] = {
     import Code._
     makeCxTyping(instantiation => Map(
@@ -49,6 +50,8 @@ class AnalysisResults[Level] {
       max_4_return_Z -> Public[Level]()
     ))
   }
+
+
 
   private[examples] val max_methods_D_P__D: Methods[Level] = new Methods[Level]() {
     def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] = {
@@ -92,7 +95,7 @@ class AnalysisResults[Level] {
         getMap(instantiation).getOrElse(s, throw new IllegalArgumentException(s"Cx Type of stmt ${s} not known"))
     }
 
-  def makeInstantiation(m : Map[Int, Type[Level]], ret : Type[Level]) =
+  def makeInstantiation(m : Map[Int, Type[Level]], ret : Type[Level]) : Instantiation[Level] =
     new Instantiation[Level] {override def get(param: Int): Type[Level] =
       m.getOrElse(param, throw new IllegalArgumentException(s"Type for parameter ${param} not known"))
 
