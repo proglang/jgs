@@ -1,5 +1,11 @@
 package analyzer.level1;
 
+import analyzer.level1.storage.Dynamic;
+import analyzer.level1.storage.SecValueTuple;
+import analyzer.level2.SecurityLevel;
+import analyzer.level2.storage.LowMediumHigh;
+import de.unifreiburg.cs.proglang.jgs.examples.ExampleTypes;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.Body;
 import soot.BodyTransformer;
 import soot.Local;
@@ -7,12 +13,15 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.Stmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;
+import java.sql.Struct;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -95,6 +104,9 @@ public class BodyAnalyzer extends BodyTransformer{
 
 		units = body.getUnits();
 		locals = body.getLocals();
+
+		// ==== Create Fake Analysis Results ====
+		Map<Stmt, Map<Local, SecValueTuple>> varTyping = createFakeAnalysisResult_Vars(units, locals);
 				
 		// invokeHS should be at the beginning of every method-body. 
 		// It creates a map for locals.
@@ -178,5 +190,29 @@ public class BodyAnalyzer extends BodyTransformer{
 		JimpleInjector.addUnitsToChain();			
 		
 		JimpleInjector.closeHS();
+	}
+
+	/**
+	 * Create fake analysis results for every local variable
+	 * @param units
+	 * @param locals
+	 * @return
+	 */
+	private Map<Stmt, Map<Local, SecValueTuple>> createFakeAnalysisResult_Vars(Chain<Unit> units, Chain<Local> locals) {
+
+		Map<Stmt, Map<Local, SecValueTuple>> m = new HashMap<>();
+		Dynamic<LowMediumHigh.Level> dyn = new Dynamic<>();
+		SecValueTuple dyn_dyn = new SecValueTuple(dyn, dyn);
+		for (Unit u: units) {
+		    Stmt s = (Stmt) u;
+
+            Map<Local, SecValueTuple> tmp = new HashMap<>();
+            for (Local l: locals) {
+                tmp.put(l, dyn_dyn);
+            }
+
+            m.put(s, tmp);
+		}
+		return m;
 	}
 }

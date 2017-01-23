@@ -1,17 +1,17 @@
 package main;
 
 import analyzer.level1.BodyAnalyzer;
-import soot.G;
-import soot.PackManager;
-import soot.Scene;
-import soot.Transform;
+import soot.*;
+import soot.options.Options;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.apache.commons.cli.ParseException;
@@ -56,6 +56,7 @@ public class Main {
 		// LOGGER_LEVEL = argparser.getLoggerLevel();
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
 
+
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
@@ -66,9 +67,7 @@ public class Main {
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
-
-
-		try {
+            try {
 			System.out.println("Logger Init1");
 			L1Logger.setup(LOGGER_LEVEL);
 		} catch (IOException e) {
@@ -86,7 +85,8 @@ public class Main {
 				+ ":.:"
 				+ new File(javaHome, "lib/jce.jar").toString()
 			    + ":"
-				+ new File(javaHome, "lib/rt.jar").toString();
+				+ new File(javaHome, "lib/rt.jar").toString()
+                + "/Users/nicolasm/Dropbox/Hiwi/ProgLang/jgs/DynamicAnalyzer/src/main/java/";
 		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
 		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
 			classPath += ":" + s;
@@ -95,8 +95,35 @@ public class Main {
 		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
+        Scene scene = Scene.v();
 
-		BodyAnalyzer banalyzer = new BodyAnalyzer();
+        String className = sootOptionsContainer.getMainclass();
+        //String className = "testclasses.DominatorNullPointer";
+        Options.v().set_main_class(className);
+        Options.v().set_soot_classpath(classPath);
+
+        // loading classes
+
+        scene.addBasicClass(className);
+
+        try {
+            scene.loadNecessaryClasses();
+        } catch (NullPointerException e) {
+            throw new RuntimeException("Error loading classes to analyze");
+        }
+
+
+        // do something with the classes
+        Map<SootMethod, Integer> methodArgCount = new HashMap<>();
+        for (SootClass c : scene.getApplicationClasses()) {
+            for (SootMethod m : c.getMethods()) {
+                System.out.println("Found method: " + m.toString());
+                methodArgCount.put(m, m.getParameterCount());
+            }
+        }
+
+
+            BodyAnalyzer banalyzer = new BodyAnalyzer();
 
 
 
