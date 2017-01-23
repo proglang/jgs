@@ -21,6 +21,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.cli.ParseException;
 import utils.parser.ArgumentContainer;
+import utils.staticResults.staticResultFaker;
 
 
 /**
@@ -87,6 +88,8 @@ public class Main {
         SootClass sootClass = Scene.v().loadClassAndSupport(sootOptionsContainer.getMainclass());
         sootClass.setApplicationClass();
         Body sootBody = sootClass.getMethodByName("main").retrieveActiveBody();
+
+        staticResultFaker.make(sootBody, var_result);
 
 
 
