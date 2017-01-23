@@ -61,7 +61,7 @@ public class ExampleTests2 {
 
 
         // x := x + y
-        // PC is public
+        // PC is public // public ~ statisch low
         // before: x, y are DYN
         // after: z is DYN
         // --> update z's label with the join of x and y. Do not perform NSU check
@@ -70,6 +70,7 @@ public class ExampleTests2 {
         assertTrue(varTyping.getBefore(instantiation, s, x).isDynamic());
         assertTrue(varTyping.getBefore(instantiation, s, y).isDynamic());
         assertTrue(varTyping.getBefore(instantiation, s, z).isPublic());
+
         assertTrue(varTyping.getAfter(instantiation, s, z).isDynamic());
         assertTrue(!varTyping.getAfter(instantiation, s, z).isPublic());
     }

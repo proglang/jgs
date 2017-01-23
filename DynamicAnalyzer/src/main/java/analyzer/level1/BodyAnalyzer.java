@@ -73,7 +73,6 @@ public class BodyAnalyzer extends BodyTransformer{
 		Logger logger = L1Logger.getLogger();
 		
 		try { 
-
 			System.out.println("Logger Init2");
 			L1Logger.setup(Level.ALL);
 		} catch (IOException e) {
