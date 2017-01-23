@@ -1,8 +1,11 @@
 package main;
 
 import analyzer.level1.BodyAnalyzer;
+import analyzer.level1.storage.SecValueTuple;
 import soot.*;
+import soot.jimple.Stmt;
 import soot.options.Options;
+import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 
@@ -44,6 +47,51 @@ public class Main {
 		execute(args);
 	}
 
+    public static Map<Stmt, Map<Local, SecValueTuple>>  analy(String mainclass)
+    {
+        String javaHome = System.getProperty("java.home");    //gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
+
+        if (javaHome == null) {
+            throw new IllegalStateException("System property `java.home' is undefined");
+        }
+
+        // Setting the soot classpath
+        String classPath = ".:"
+                + new File(javaHome, "lib/jce.jar").toString()
+                + ":"
+                + new File(javaHome, "lib/rt.jar").toString();
+
+        // add classes to analyze
+        Options.v().set_main_class(mainclass);
+        Options.v().set_soot_classpath(classPath);
+
+        // loading classes
+        Scene scene = Scene.v();
+
+        scene.addBasicClass(mainclass);
+
+        try {
+            scene.loadNecessaryClasses();
+        } catch (NullPointerException e) {
+            // if we change classname to smth stupid, this line does not throw an error! but it should, right?!
+            throw new RuntimeException("Error loading classes to analyze");
+        }
+
+        if (scene.getApplicationClasses().size() < 1) {
+            throw new InternalAnalyzerException("Application Classes is emtpy. But soot did not compain!");
+        }
+
+        // do something with the classes
+        Map<SootMethod, Integer> methodArgCount = new HashMap<>();
+        for (SootClass c : scene.getApplicationClasses()) {
+            for (SootMethod m : c.getMethods()) {
+                System.out.println("Found method: " + m.toString());
+                methodArgCount.put(m, m.getParameterCount());
+            }
+        }
+        return null;
+    }
+
 	/**
      * Method which configures and executes soot.main.Main.
      * @param args This arguments are delivered by main.Main.main.
@@ -55,6 +103,7 @@ public class Main {
     	
 		// LOGGER_LEVEL = argparser.getLoggerLevel();
 		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
+
 
 
         Level LOGGER_LEVEL = Level.ALL;
@@ -73,8 +122,10 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
+
+        Map<Stmt, Map<Local, SecValueTuple>> var_result = analy(sootOptionsContainer.getMainclass());
+
+        String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
 		if (javaHome == null) {
 			throw new IllegalStateException("System property `java.home' is undefined");
@@ -85,8 +136,7 @@ public class Main {
 				+ ":.:"
 				+ new File(javaHome, "lib/jce.jar").toString()
 			    + ":"
-				+ new File(javaHome, "lib/rt.jar").toString()
-                + "/Users/nicolasm/Dropbox/Hiwi/ProgLang/jgs/DynamicAnalyzer/src/main/java/";
+				+ new File(javaHome, "lib/rt.jar").toString();
 		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
 		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
 			classPath += ":" + s;
@@ -95,37 +145,7 @@ public class Main {
 		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        Scene scene = Scene.v();
-
-        String className = sootOptionsContainer.getMainclass();
-        //String className = "testclasses.DominatorNullPointer";
-        Options.v().set_main_class(className);
-        Options.v().set_soot_classpath(classPath);
-
-        // loading classes
-
-        scene.addBasicClass(className);
-
-        try {
-            scene.loadNecessaryClasses();
-        } catch (NullPointerException e) {
-            throw new RuntimeException("Error loading classes to analyze");
-        }
-
-
-        // do something with the classes
-        Map<SootMethod, Integer> methodArgCount = new HashMap<>();
-        for (SootClass c : scene.getApplicationClasses()) {
-            for (SootMethod m : c.getMethods()) {
-                System.out.println("Found method: " + m.toString());
-                methodArgCount.put(m, m.getParameterCount());
-            }
-        }
-
-
-            BodyAnalyzer banalyzer = new BodyAnalyzer();
-
-
+        BodyAnalyzer banalyzer = new BodyAnalyzer();
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
@@ -144,4 +164,6 @@ public class Main {
 		// alles ab, obwohl wir resetten.
         
 	}
+
+
 }
