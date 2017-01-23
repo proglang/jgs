@@ -29,13 +29,13 @@ public class ExampleTests {
         int x;
         int y;
         int z;
-       01: x := p0;
-       02: y := p1;
-        1: z = x;
-        2: if (z < y) goto 3;
-       22:   goto 4;
-        3:   z = y;
-        4: return z;
+       0: x := p0;
+       1: y := p1;
+       2: z = x;
+       3: if (z < y) goto 5;
+       4:   goto 6;
+       5:   z = y;
+       6: return z;
       }
      */
 
@@ -48,10 +48,12 @@ public class ExampleTests {
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
         Methods<LowHigh.Level> methods = results.max_methods_D_D__D();
-        VarTyping<LowHigh.Level> varTyping = results.max_varTyping();
+        VarTyping<LowHigh.Level> varTyping = results.max_varTyping(); // für jedes statement und pc steht drin, ob dyn oder stat überprüft werden soll
         CxTyping<LowHigh.Level> cxTyping = results.max_cxTyping();
 
         // first get an instantiation for max
+        // instantiation is a Soot object of type SootMethod. It is created in Code.java, and contains all the soot Statements the max programm
+        // consits of.
         Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.max);
 
         // lets look at the individual statements:
@@ -67,8 +69,8 @@ public class ExampleTests {
         //   after: z is dynamic
         //   --> update z's label with x, no NSU check required
         //   (things after "-->" is what the instrumentation should do in this case)
-        s = Code.max_1_assign_Z_X;
-        assertTrue(cxTyping.get(instantiation, s).isPublic());
+        s = Code.max_2_assign_Z_X;
+        assertTrue(cxTyping.get(instantiation, s).isPublic());  // get statement s in instantiation "instantiation"
         assertTrue(varTyping.getBefore(instantiation, s, x).isDynamic());
         assertTrue(varTyping.getAfter(instantiation, s, z).isDynamic());
 
@@ -76,7 +78,7 @@ public class ExampleTests {
         //   pc is public,
         //   before: y is dynamic, z is dynamic
         //   --> update the pc label with join(y, z) for the body of the if
-        s = Code.max_2_if_Z_lt_Y;
+        s = Code.max_3_if_Z_lt_Y;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getBefore(instantiation, s, y).isDynamic());
         assertTrue(varTyping.getBefore(instantiation, s, z).isDynamic());
@@ -86,7 +88,7 @@ public class ExampleTests {
         //   before: y is dynamic
         //   after: z is dynamic
         //   --> update z's label with join(y, pc), do NSU check
-        s = Code.max_3_assign_Z_Y;
+        s = Code.max_5_assign_Z_Y;
         assertTrue(cxTyping.get(instantiation, s).isDynamic());
         assertTrue(varTyping.getBefore(instantiation, s, y).isDynamic());
         assertTrue(varTyping.getAfter(instantiation, s, z).isDynamic());
@@ -115,16 +117,17 @@ public class ExampleTests {
         //   after: z is dynamic
         //   --> update z's label with x, no NSU check required
         //   (same as before)
-        s = Code.max_1_assign_Z_X;
+        s = Code.max_2_assign_Z_X;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getBefore(instantiation, s, x).isDynamic());
+        assertTrue(varTyping.getBefore(instantiation, s, y).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, z).isDynamic());
 
         // max_2_if_Z_lt_Y : if (z<p1) goto 3;
         //   pc is public,
         //   before: p1 is public, z is dynamic
         //   --> update the pc label with z for the body of the if (no need to consider p1
-        s = Code.max_2_if_Z_lt_Y;
+        s = Code.max_3_if_Z_lt_Y;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getBefore(instantiation, s, y).isPublic());
         assertTrue(varTyping.getBefore(instantiation, s, z).isDynamic());
@@ -134,7 +137,7 @@ public class ExampleTests {
         //   before: p1 is public
         //   after: z is dynamic
         //   --> update z's label with pc, do NSU check (no need to consider p1)
-        s = Code.max_3_assign_Z_Y;
+        s = Code.max_5_assign_Z_Y;
         assertTrue(cxTyping.get(instantiation, s).isDynamic());
         assertTrue(varTyping.getBefore(instantiation, s, y).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, z).isDynamic());

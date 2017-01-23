@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
 /**
- * Types, as seen by the code generating the dynamic instrumentation
+ * Types, as seen by the code generating the dynamic instrumentation. Exactly one of the boolean query methods returns true.
  */
 public interface Type<Level> {
 

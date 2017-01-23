@@ -10,6 +10,8 @@ public interface VarTyping<Level> {
 
     /**
      * Given an @{code instantiation}, return the type for local @{code l} before statement @{code s}.
+     * Returns either static, dynamic or public (low)
+     * @param instantiation describes the kind of instantiation, for examples: (D, D) => D
      */
     Type<Level> getBefore(Instantiation<Level> instantiation, Stmt s, Local l);
     /**
