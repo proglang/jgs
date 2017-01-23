@@ -33,7 +33,7 @@ lib/
 .idea/
 out/
 bin/
-ant/
+# ant/
 build.properties
 
 ## user specific files
