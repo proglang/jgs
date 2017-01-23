@@ -1,7 +1,9 @@
 package main;
 
 import analyzer.level1.BodyAnalyzer;
+import analyzer.level1.storage.Dynamic;
 import analyzer.level1.storage.SecValueTuple;
+import analyzer.level2.storage.LowMediumHigh;
 import soot.*;
 import soot.jimple.Stmt;
 import soot.options.Options;
@@ -47,50 +49,7 @@ public class Main {
 		execute(args);
 	}
 
-    public static Map<Stmt, Map<Local, SecValueTuple>>  analy(String mainclass)
-    {
-        String javaHome = System.getProperty("java.home");    //gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
-        if (javaHome == null) {
-            throw new IllegalStateException("System property `java.home' is undefined");
-        }
-
-        // Setting the soot classpath
-        String classPath = ".:"
-                + new File(javaHome, "lib/jce.jar").toString()
-                + ":"
-                + new File(javaHome, "lib/rt.jar").toString();
-
-        // add classes to analyze
-        Options.v().set_main_class(mainclass);
-        Options.v().set_soot_classpath(classPath);
-
-        // loading classes
-        Scene scene = Scene.v();
-
-        scene.addBasicClass(mainclass);
-
-        try {
-            scene.loadNecessaryClasses();
-        } catch (NullPointerException e) {
-            // if we change classname to smth stupid, this line does not throw an error! but it should, right?!
-            throw new RuntimeException("Error loading classes to analyze");
-        }
-
-        if (scene.getApplicationClasses().size() < 1) {
-            throw new InternalAnalyzerException("Application Classes is emtpy. But soot did not compain!");
-        }
-
-        // do something with the classes
-        Map<SootMethod, Integer> methodArgCount = new HashMap<>();
-        for (SootClass c : scene.getApplicationClasses()) {
-            for (SootMethod m : c.getMethods()) {
-                System.out.println("Found method: " + m.toString());
-                methodArgCount.put(m, m.getParameterCount());
-            }
-        }
-        return null;
-    }
 
 	/**
      * Method which configures and executes soot.main.Main.
@@ -123,7 +82,14 @@ public class Main {
 			e.printStackTrace();
 		}
 
-        Map<Stmt, Map<Local, SecValueTuple>> var_result = analy(sootOptionsContainer.getMainclass());
+        // ====== Create fake results =====
+        Map<Stmt, Map<Local, SecValueTuple>> var_result = new HashMap<>();
+        SootClass sootClass = Scene.v().loadClassAndSupport(sootOptionsContainer.getMainclass());
+        sootClass.setApplicationClass();
+        Body sootBody = sootClass.getMethodByName("main").retrieveActiveBody();
+
+
+
 
         String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
