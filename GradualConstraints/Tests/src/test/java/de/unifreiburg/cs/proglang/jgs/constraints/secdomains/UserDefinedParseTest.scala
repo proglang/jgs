@@ -28,7 +28,7 @@ class UserDefinedParseTest extends FlatSpec with Matchers {
   def levelSet(ls : String*) : Set[String] =
     ls.toSet
   def edgeSet(edgeStrings : Set[(String,String)]) : Set[Edge] =
-    edgeStrings.map(e => Edge(e._1, e._2))
+    edgeStrings.map(e => new Edge(e._1, e._2))
   def edgeSet(es : (String,String)*) : Set[Edge] = edgeSet(es.toSet)
 
   "domainSpec" should "contain all the levels" in {

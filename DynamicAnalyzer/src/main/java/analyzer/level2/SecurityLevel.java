@@ -1,5 +1,14 @@
 package analyzer.level2;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 //public enum SecurityLevel {
 //	LOW1, HIGH1;
 //	
@@ -17,19 +26,59 @@ import java.io.File;
 import analyzer.level2.storage.LowHigh;
 import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.*;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Edge;
 
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class SecurityLevel {
 	@SuppressWarnings("rawtypes")
-	public static SecDomain secDomain = new LowMediumHigh();
-//	static {
-//		UserDefinedUtils.Spec domainSpec 
-		
-//		= UserDefinedUtils.fromJSon(new File("secdomain-alice-bob-charlie.yaml")); 
-//				
-//		secDomain = UserDefined$.MODULE$.apply(domainSpec);
-//	}
+	// public static SecDomain secDomain = new LowMediumHigh();
+	public static SecDomain secDomain;
+	
+	private static Object getSecDomainResource(String name) {	    
+	    InputStream in = Object.class.getResourceAsStream("/secdomain/" + name);
+	    if (in == null) {
+	        throw new RuntimeException(String.format("Cannot find secdomain resource: %s", name));
+	    }
+	    try {
+	    return new ObjectInputStream(in).readObject();
+	    } catch (IOException | ClassNotFoundException e) {
+	        throw new RuntimeException(String.format("Error reading secdomain resource %s: %s", name, e));
+	    }
+	}
+	static {	
+	    // TODO: read secdomain from resources
+	    /*
+	        secDomain = new UserDefined((Set)getSecDomainResource("levels"), 
+	                                    (Set)getSecDomainResource("lt"),
+	                                    (Map)getSecDomainResource("lubMap"),
+	                                    (Map)getSecDomainResource("glbMap"),
+	                                    (String)getSecDomainResource("topLevel"),
+	                                    (String)getSecDomainResource("bottomLevel"));
+	                                    */
+	    Set<String> levels = new HashSet<>(Arrays.asList("LOW", "MEDIUM", "HIGH"));
+	    Set<Edge> lt = new HashSet<>(Arrays.asList(new UserDefined.Edge("MEDIUM", "HIGH"),
+	                                               new UserDefined.Edge("LOW", "HIGH"),
+	                                               new UserDefined.Edge("LOW", "MEDIUM")));
+	    Map<Edge, String> lubMap = new HashMap<>();
+	    for (String l : levels) {
+	        lubMap.put(new Edge(l, l), l);
+	        lubMap.put(new Edge(l, "HIGH"), "HIGH");
+	        lubMap.put(new Edge("HIGH", l), "HIGH");
+	        lubMap.put(new Edge("LOW", l), l);
+	        lubMap.put(new Edge(l, "LOW"), l);
+	    }
+	    Map<Edge, String> glbMap = new HashMap<>();
+	      for (String l : levels) {
+	          glbMap.put(new Edge(l, l), l);
+	          glbMap.put(new Edge(l, "HIGH"), l);
+	          glbMap.put(new Edge("HIGH", l), l);
+	          glbMap.put(new Edge("LOW", l), "LOW");
+	          glbMap.put(new Edge(l, "LOW"), "LOW");
+	      }	    
+	    secDomain = new UserDefined(levels, lt, lubMap, glbMap, "HIGH", "LOW");
+	}
 	
 	public static Object bottom() {
 		return secDomain.bottom();

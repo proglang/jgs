@@ -16,9 +16,9 @@ object ExampleDomains {
     val bob = "bob"
     val charlie = "charlie"
     val principals = Set(alice, bob, charlie)
-    UserDefinedUtils(
+    UserDefinedUtils.makeSecDomain(
       Set(bottom, top) ++ principals,
-      (for (p <- principals) yield Edge(bottom, p)) ++ (for (p <- principals) yield Edge(p, top))
+      (for (p <- principals) yield new Edge(bottom, p)) ++ (for (p <- principals) yield new Edge(p, top))
     )
   }
 

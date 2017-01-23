@@ -184,7 +184,7 @@ object JgsCheck {
 
             // create the domains
             val domainSpec = UserDefinedUtils.fromJSon(secDomainClass)
-            val secdomain = UserDefinedUtils(domainSpec)
+            val secdomain = UserDefinedUtils.makeSecDomain(domainSpec)
             val types = new TypeDomain(secdomain)
             val csets = new NaiveConstraintsFactory(types)
             new Config(types, csets, opt)

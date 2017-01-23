@@ -11,7 +11,7 @@ class UserDefinedTest extends FlatSpec with Matchers {
   // some utils for converting between Edge and (String, String)
   def closeTransitively(edges : Set[(String, String)]) : Set[Edge] =
     UserDefinedUtils.closeTransitively(asEdgeSet(edges))
-  def asEdgeSet(edges : Set[(String, String)]) : Set[Edge] = (for {(left, right) <- edges} yield Edge(left, right))
+  def asEdgeSet(edges : Set[(String, String)]) : Set[Edge] = (for {(left, right) <- edges} yield new Edge(left, right))
 
 
   "Closing {public -> manager, manager -> top}" should "add {public -> top}" in {
@@ -38,7 +38,7 @@ class UserDefinedTest extends FlatSpec with Matchers {
 
   "Upper bounds" should "work for {public, employee}" in {
     val lt = UserDefinedUtils.closeTransitively(corpEdges)
-    val le = (l1 : String, l2 : String) => lt(Edge(l1, l2)) || l1 == l2
+    val le = (l1 : String, l2 : String) => lt(new Edge(l1, l2)) || l1 == l2
     UserDefinedUtils.upperBounds(corpPrincipals, le, levPublic, levEmployee) should
       be (Set(levManager, levEmployee, levTop))
   }

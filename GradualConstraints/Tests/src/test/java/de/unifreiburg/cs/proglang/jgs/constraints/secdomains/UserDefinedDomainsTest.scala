@@ -11,16 +11,16 @@ class UserDefinedDomainsTest extends FlatSpec with Matchers {
 
   import UserDefinedLevels._
 
-  val corporateDomain = UserDefinedUtils(
+  val corporateDomain = UserDefinedUtils.makeSecDomain(
     Set(levPublic, levEmployee, levManager, levTop),
-    Set(Edge(levPublic, levEmployee), Edge(levEmployee, levManager), Edge(levManager, levTop))
+    Set(new Edge(levPublic, levEmployee), new Edge(levEmployee, levManager), new Edge(levManager, levTop))
   )
 
   val personalDomain = {
-    UserDefinedUtils(
+    UserDefinedUtils.makeSecDomain(
       personalPrincipals ++ Set(levPublic, levTop),
-      (for (l <- personalPrincipals) yield Edge(levPublic, l)) ++
-        (for (l <- personalPrincipals) yield Edge(l, levTop))
+      (for (l <- personalPrincipals) yield new Edge(levPublic, l)) ++
+        (for (l <- personalPrincipals) yield new Edge(l, levTop))
     )
   }
 
