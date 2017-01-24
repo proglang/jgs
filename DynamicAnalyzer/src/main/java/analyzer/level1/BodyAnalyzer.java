@@ -1,11 +1,8 @@
 package analyzer.level1;
 
 import analyzer.level1.storage.Dynamic;
-import analyzer.level1.storage.SecValueTuple;
-import analyzer.level2.SecurityLevel;
+import utils.staticResults.BeforeAfterContainer;
 import analyzer.level2.storage.LowMediumHigh;
-import de.unifreiburg.cs.proglang.jgs.examples.ExampleTypes;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.Body;
 import soot.BodyTransformer;
 import soot.Local;
@@ -20,7 +17,6 @@ import utils.logging.L1Logger;
 import utils.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;
-import java.sql.Struct;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -106,7 +102,7 @@ public class BodyAnalyzer extends BodyTransformer{
 		locals = body.getLocals();
 
 		// ==== Create Fake Analysis Results ====
-		Map<Stmt, Map<Local, SecValueTuple>> varTyping = createFakeAnalysisResult_Vars(units, locals);
+		Map<Stmt, Map<Local, BeforeAfterContainer>> varTyping = createFakeAnalysisResult_Vars(units, locals);
 				
 		// invokeHS should be at the beginning of every method-body. 
 		// It creates a map for locals.
@@ -198,15 +194,15 @@ public class BodyAnalyzer extends BodyTransformer{
 	 * @param locals
 	 * @return
 	 */
-	private Map<Stmt, Map<Local, SecValueTuple>> createFakeAnalysisResult_Vars(Chain<Unit> units, Chain<Local> locals) {
+	private Map<Stmt, Map<Local, BeforeAfterContainer>> createFakeAnalysisResult_Vars(Chain<Unit> units, Chain<Local> locals) {
 
-		Map<Stmt, Map<Local, SecValueTuple>> m = new HashMap<>();
+		Map<Stmt, Map<Local, BeforeAfterContainer>> m = new HashMap<>();
 		Dynamic<LowMediumHigh.Level> dyn = new Dynamic<>();
-		SecValueTuple dyn_dyn = new SecValueTuple(dyn, dyn);
+		BeforeAfterContainer dyn_dyn = new BeforeAfterContainer(dyn, dyn);
 		for (Unit u: units) {
 		    Stmt s = (Stmt) u;
 
-            Map<Local, SecValueTuple> tmp = new HashMap<>();
+            Map<Local, BeforeAfterContainer> tmp = new HashMap<>();
             for (Local l: locals) {
                 tmp.put(l, dyn_dyn);
             }

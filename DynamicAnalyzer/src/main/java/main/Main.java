@@ -1,27 +1,24 @@
 package main;
 
 import analyzer.level1.BodyAnalyzer;
-import analyzer.level1.storage.Dynamic;
-import analyzer.level1.storage.SecValueTuple;
+import utils.staticResults.BeforeAfterContainer;
 import analyzer.level2.storage.LowMediumHigh;
 import soot.*;
 import soot.jimple.Stmt;
-import soot.options.Options;
-import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
 
 import org.apache.commons.cli.ParseException;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.staticResultFaker;
+import utils.staticResults.FakeCxTyping;
+import utils.staticResults.FakeVarTyping;
 
 
 /**
@@ -84,15 +81,15 @@ public class Main {
 		}
 
         // ====== Create fake results =====
-        Map<Stmt, Map<Local, SecValueTuple>> var_result = new HashMap<>();
         SootClass sootClass = Scene.v().loadClassAndSupport(sootOptionsContainer.getMainclass());
         sootClass.setApplicationClass();
         Body sootBody = sootClass.getMethodByName("main").retrieveActiveBody();
 
-        staticResultFaker.make(sootBody, var_result);
 
+        FakeVarTyping<LowMediumHigh.Level> fakeVarTyping = new FakeVarTyping<>(sootBody);
+        FakeCxTyping<LowMediumHigh.Level> fakeCxTyping = new FakeCxTyping<>(sootBody);
 
-
+        // =================================
 
         String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
