@@ -76,8 +76,7 @@ class AnalysisResults[Level] {
 
 
   // Utilities
-  def makeVarTyping(getMaps
-                    : Instantiation[Level] => (Map[(Stmt, Local), (Type[Level], Type[Level])]))
+  def makeVarTyping(getMaps : Instantiation[Level] => (Map[(Stmt, Local), (Type[Level], Type[Level])]))
   : VarTyping[Level] = {
 
     def lookup(map: Map[(Stmt, Local), (Type[Level], Type[Level])], s: Stmt, l: Local) =

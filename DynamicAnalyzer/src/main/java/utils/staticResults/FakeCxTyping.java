@@ -30,7 +30,7 @@ public class FakeCxTyping<Level> implements CxTyping<Level>{
         @Override
         public Type<Level> get(Instantiation<Level> instantiation, Stmt s) {
             if (!CxTyping.containsKey(s)) {
-                throw new InternalAnalyzerException("Key" + s.toString() + "not present in CX-Typing!");
+                throw new InternalAnalyzerException("Key" + s.toString() + " not present in CX-Typing!");
             }
             return CxTyping.get(s);
         }

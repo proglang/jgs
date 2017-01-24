@@ -2,6 +2,9 @@ package analyzer.level1;
 
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.ArrayType;
 import soot.Body;
 import soot.IntType;
@@ -135,6 +138,13 @@ public class JimpleInjector {
 	static Unit lastPos;
 
 	/**
+	 * Stores the results of the static analysis. Use Lvel instead of Level because of conflicts with the LEVEL of the Logger.
+	 */
+	static VarTyping varTyping;
+	static CxTyping cxTyping;
+	static Instantiation instantiation;
+
+	/**
 	 * See method with same name in HandleStatement.
 	 * @param signatureOfLeftSide
 	 * @param pos
@@ -240,7 +250,8 @@ public class JimpleInjector {
 	 * @param local The Local
 	 */
 	public static void addLocal(Local local) {
-		logger.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
+
+	    logger.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
 				getSignatureForLocal(local), b.getMethod().getName()});
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
@@ -679,16 +690,19 @@ public class JimpleInjector {
 				false), local_for_Strings);
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
-		// insert checkLocalPC
+		// insert checkLocalPC to perform NSU check. only needs to be done if CxTyping of Statement is Dynamic
 		Expr checkLocalPC = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-				"checkLocalPC", paramTypes, 
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+				"checkLocalPC", paramTypes,
 				VoidType.v(),
 				false), local_for_Strings);
 		Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
 		
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
+		// insert NSU check only if PC is dynamic!
+        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
+        }
 		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
 		lastPos = pos;
 	}
@@ -1365,4 +1379,10 @@ public class JimpleInjector {
 			i++;
 		}
 	}
+
+    public static <Lvel> void setStaticAnalaysisResults(VarTyping<Lvel> varTy, CxTyping<Lvel> cxTy, Instantiation<Lvel> inst) {
+	    varTyping = varTy;
+	    cxTyping = cxTy;
+	    instantiation = inst;
+    }
 }

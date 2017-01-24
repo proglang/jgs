@@ -1,6 +1,9 @@
 package analyzer.level1;
 
 import analyzer.level1.storage.Dynamic;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import utils.staticResults.BeforeAfterContainer;
 import analyzer.level2.storage.LowMediumHigh;
 import soot.Body;
@@ -14,6 +17,9 @@ import soot.jimple.Stmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
+import utils.staticResults.FakeCxTyping;
+import utils.staticResults.FakeInstantiation;
+import utils.staticResults.FakeVarTyping;
 import utils.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;
@@ -35,9 +41,18 @@ import java.util.logging.Logger;
  * @author koenigr
  *
  */
-public class BodyAnalyzer extends BodyTransformer{
+public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
-	/**
+    VarTyping<Lvel> VarTyping;
+    CxTyping<Lvel> CxTyping;
+    Instantiation<Lvel> Instantiation;
+    public BodyAnalyzer(FakeVarTyping<Lvel> fakeVarTyping, FakeCxTyping<Lvel> fakeCxTyping, FakeInstantiation<Lvel> fakeInstantiation) {
+        VarTyping = fakeVarTyping;
+        CxTyping = fakeCxTyping;
+        Instantiation = fakeInstantiation;
+    }
+
+    /**
 	 * internalTransform is an internal soot method, which is called somewhere along the way.
 	 * for us, it serves as an entry point to the instrumentation process
 	 */
@@ -97,6 +112,7 @@ public class BodyAnalyzer extends BodyTransformer{
 		DominatorFinder.init(body);
 				
 		JimpleInjector.setBody(body);
+		JimpleInjector.setStaticAnalaysisResults(VarTyping, CxTyping, Instantiation);
 
 		units = body.getUnits();
 		locals = body.getLocals();

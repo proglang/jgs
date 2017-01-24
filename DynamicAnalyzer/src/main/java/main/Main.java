@@ -108,7 +108,7 @@ public class Main {
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer banalyzer = new BodyAnalyzer();
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(fakeVarTyping, fakeCxTyping, fakeInstantiation);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
