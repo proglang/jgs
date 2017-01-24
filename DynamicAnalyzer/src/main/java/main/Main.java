@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import org.apache.commons.cli.ParseException;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.FakeCxTyping;
+import utils.staticResults.FakeInstantiation;
 import utils.staticResults.FakeVarTyping;
 
 
@@ -55,14 +56,6 @@ public class Main {
 	 * @throws ParseException 
      */
 	private static void execute(String[] args) {
-		
-		//argparser = new ArgumentParser(args);	//args are the arguments for soot, like "-f c --classes testclasses.Simple ..."
-    	
-		// LOGGER_LEVEL = argparser.getLoggerLevel();
-		// String[] sootOptions = argparser.getSootOptions();	// sootOptions is basically the same as args (it misses --classes, for some reason)
-
-
-
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
@@ -73,23 +66,12 @@ public class Main {
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
-            try {
+        try {
 			System.out.println("Logger Init1");
 			L1Logger.setup(LOGGER_LEVEL);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-        // ====== Create fake results =====
-        SootClass sootClass = Scene.v().loadClassAndSupport(sootOptionsContainer.getMainclass());
-        sootClass.setApplicationClass();
-        Body sootBody = sootClass.getMethodByName("main").retrieveActiveBody();
-
-
-        FakeVarTyping<LowMediumHigh.Level> fakeVarTyping = new FakeVarTyping<>(sootBody);
-        FakeCxTyping<LowMediumHigh.Level> fakeCxTyping = new FakeCxTyping<>(sootBody);
-
-        // =================================
 
         String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
@@ -103,12 +85,27 @@ public class Main {
 				+ new File(javaHome, "lib/jce.jar").toString()
 			    + ":"
 				+ new File(javaHome, "lib/rt.jar").toString();
+
 		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
 		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
 			classPath += ":" + s;
 		}
 		Scene.v().setSootClassPath(classPath);
-		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
+
+
+        // ====== Create fake static analysis results =====
+        SootClass sootClass = Scene.v().loadClassAndSupport(sootOptionsContainer.getMainclass());
+        sootClass.setApplicationClass();
+        Body sootBody = sootClass.getMethodByName("main").retrieveActiveBody();
+
+
+        FakeVarTyping<LowMediumHigh.Level> fakeVarTyping = new FakeVarTyping<>(sootBody);
+        FakeCxTyping<LowMediumHigh.Level> fakeCxTyping = new FakeCxTyping<>(sootBody);
+        FakeInstantiation<LowMediumHigh.Level> fakeInstantiation = new FakeInstantiation<>();
+        // =================================
+
+        // those are needed because of soot-magic i guess
+        Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
         BodyAnalyzer banalyzer = new BodyAnalyzer();
