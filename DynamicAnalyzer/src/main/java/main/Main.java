@@ -6,9 +6,9 @@ import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.FakeCxTyping;
-import utils.staticResults.FakeInstantiation;
-import utils.staticResults.FakeVarTyping;
+import utils.staticResults.CxTypingEverythingDynamic;
+import utils.staticResults.InstantiationEverythingDynamic;
+import utils.staticResults.VarTypingEverythingDynamic;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,9 +81,9 @@ public class Main {
 
 
         // ====== Create fake static analysis results =====
-        Map<SootMethod, FakeVarTyping> fakeVarTypingsMap = new HashMap<>();
-        Map<SootMethod, FakeCxTyping> fakeCxTypingsMap = new HashMap<>();
-        Map<SootMethod, FakeInstantiation> fakeInstantiationMap = new HashMap<>();
+        Map<SootMethod, VarTypingEverythingDynamic> fakeVarTypingsMap = new HashMap<>();
+        Map<SootMethod, CxTypingEverythingDynamic> fakeCxTypingsMap = new HashMap<>();
+        Map<SootMethod, InstantiationEverythingDynamic> fakeInstantiationMap = new HashMap<>();
 
         Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
         allClasses.add(sootOptionsContainer.getMainclass());
@@ -96,9 +96,9 @@ public class Main {
             for (SootMethod sm : sootClass.getMethods()) {
                 Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
 
-                fakeVarTypingsMap.put(sm, new FakeVarTyping(b));
-                fakeCxTypingsMap.put(sm, new FakeCxTyping(b));
-                fakeInstantiationMap.put(sm, new FakeInstantiation(b));
+                fakeVarTypingsMap.put(sm, new VarTypingEverythingDynamic(b));
+                fakeCxTypingsMap.put(sm, new CxTypingEverythingDynamic(b));
+                fakeInstantiationMap.put(sm, new InstantiationEverythingDynamic(b));
             }
         }
         // =================================

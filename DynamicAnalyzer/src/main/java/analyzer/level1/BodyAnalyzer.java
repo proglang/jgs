@@ -3,11 +3,10 @@ package analyzer.level1;
 import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
-import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
-import utils.staticResults.FakeCxTyping;
-import utils.staticResults.FakeInstantiation;
-import utils.staticResults.FakeVarTyping;
+import utils.staticResults.CxTypingEverythingDynamic;
+import utils.staticResults.InstantiationEverythingDynamic;
+import utils.staticResults.VarTypingEverythingDynamic;
 import utils.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;
@@ -18,7 +17,6 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -36,12 +34,12 @@ import static org.hamcrest.CoreMatchers.is;
  */
 public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
-    Map<SootMethod, FakeVarTyping> fakeVarTypingsMap;
-    Map<SootMethod, FakeCxTyping> fakeCxTypingsMap;
-    Map<SootMethod, FakeInstantiation> fakeInstantiationMap;
-    public BodyAnalyzer(Map<SootMethod, FakeVarTyping> fakeVarTyping,
-                        Map<SootMethod, FakeCxTyping> fakeCxTyping,
-                        Map<SootMethod, FakeInstantiation> fakeInstantiation) {
+    Map<SootMethod, VarTypingEverythingDynamic> fakeVarTypingsMap;
+    Map<SootMethod, CxTypingEverythingDynamic> fakeCxTypingsMap;
+    Map<SootMethod, InstantiationEverythingDynamic> fakeInstantiationMap;
+    public BodyAnalyzer(Map<SootMethod, VarTypingEverythingDynamic> fakeVarTyping,
+                        Map<SootMethod, CxTypingEverythingDynamic> fakeCxTyping,
+                        Map<SootMethod, InstantiationEverythingDynamic> fakeInstantiation) {
         fakeVarTypingsMap = fakeVarTyping;
         fakeCxTypingsMap = fakeCxTyping;
         fakeInstantiationMap = fakeInstantiation;

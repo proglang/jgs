@@ -13,13 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Nicolas Müller on 24.01.17.
+ * Fake Context Typing, which always returns the Dynamic Type.
  */
-public class FakeCxTyping<Level> implements CxTyping<Level>{
+public class CxTypingEverythingDynamic<Level> implements CxTyping<Level>{
         Body sootBody;
         Map<Stmt, Type<Level>> CxTyping = new HashMap<>();
 
-        public FakeCxTyping(Body body) {
+        public CxTypingEverythingDynamic(Body body) {
             sootBody = body;
             for (Unit u: sootBody.getUnits()) {
                 CxTyping.put((Stmt) u, new Dynamic<Level>());

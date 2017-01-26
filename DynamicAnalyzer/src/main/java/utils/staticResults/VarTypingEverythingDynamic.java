@@ -14,14 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Nicolas Müller on 23.01.17.
+ * Fake Variable Typing, which always return the Dynamic Type.
  */
-public class FakeVarTyping<Level> implements VarTyping<Level>{
+public class VarTypingEverythingDynamic<Level> implements VarTyping<Level>{
 
     Map<Stmt, Map<Local, BeforeAfterContainer>> var_typing = new HashMap<>();
     Body sootBody;
 
-    public FakeVarTyping(Body body) {
+    public VarTypingEverythingDynamic(Body body) {
         sootBody = body;
         Dynamic<Level> dyn = new Dynamic<>();
         BeforeAfterContainer dyn_dyn = new BeforeAfterContainer(dyn, dyn);

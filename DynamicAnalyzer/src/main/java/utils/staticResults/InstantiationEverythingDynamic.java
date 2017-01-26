@@ -6,11 +6,11 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
 import soot.Body;
 
 /**
- * Created by Nicolas Müller on 24.01.17.
+ * Fake Instantiation, which always returns the Dynamic Level.
  */
-public class FakeInstantiation<Level> implements Instantiation<Level> {
+public class InstantiationEverythingDynamic<Level> implements Instantiation<Level> {
     Body body;
-    public FakeInstantiation(Body b) {
+    public InstantiationEverythingDynamic(Body b) {
         body = b;
     }
 
