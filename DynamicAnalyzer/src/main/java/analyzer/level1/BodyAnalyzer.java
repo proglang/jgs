@@ -1,36 +1,26 @@
 package analyzer.level1;
 
-import analyzer.level1.storage.Dynamic;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
-import utils.exceptions.InternalAnalyzerException;
-import utils.staticResults.BeforeAfterContainer;
-import analyzer.level2.storage.LowMediumHigh;
-import soot.Body;
-import soot.BodyTransformer;
-import soot.Local;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Unit;
-import soot.jimple.Stmt;
+import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
+import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import utils.staticResults.FakeCxTyping;
 import utils.staticResults.FakeInstantiation;
 import utils.staticResults.FakeVarTyping;
 import utils.visitor.AnnotationStmtSwitch;
 
-import org.junit.*;
-
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * This Analyzer is applied to every method.
@@ -121,11 +111,10 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
         // Body-Analyz implementiert Analyse in EINER Methode. Neu aufgerufen für jede Methode
 		JimpleInjector.setBody(body);
 
-		if (fakeVarTypingsMap.get(method).equals(null) ||
-                fakeCxTypingsMap.get(method).equals(null) ||
-                fakeInstantiationMap.get(method).equals(null)) {
-		    throw new InternalAnalyzerException("Key " + method + " not found!");
-        }
+        assertThat("fake Variable Typing for " + method + " not found in fakeVarTypingsMap", fakeVarTypingsMap.get(method), not(is((nullValue()))));
+        assertThat("fake Cx Typing for " + method + " not found in fakeCxTypingsMap", fakeCxTypingsMap.get(method), not(is((nullValue()))));
+        assertThat("fake Instrumentation Typing for " + method + " not found in fakeInstrumentationMap", fakeInstantiationMap.get(method), not(is((nullValue()))));
+
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(fakeVarTypingsMap.get(method),
