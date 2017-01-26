@@ -1,23 +1,19 @@
 package main;
 
 import analyzer.level1.BodyAnalyzer;
-import utils.staticResults.BeforeAfterContainer;
 import analyzer.level2.storage.LowMediumHigh;
 import soot.*;
-import soot.jimple.Stmt;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
+import utils.parser.ArgumentContainer;
+import utils.staticResults.FakeCxTyping;
+import utils.staticResults.FakeInstantiation;
+import utils.staticResults.FakeVarTyping;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
-
-import org.apache.commons.cli.ParseException;
-import utils.parser.ArgumentContainer;
-import utils.staticResults.FakeCxTyping;
-import utils.staticResults.FakeInstantiation;
-import utils.staticResults.FakeVarTyping;
 
 
 /**
@@ -30,17 +26,11 @@ public class Main {
 	 * The entry point for compilation and instrumentation (that is, adding the appropriate
 	 * code to check for information leak). Use appropriate arguments to indicate
 	 * which test will be compiled, and what the output format should be.
-	 * 
-	 * Note for eclipse users: Comfortable execution via different run configurations,
-	 * where you can choose between compilation to instrumented binary (RunMainAnalyzerSingleC) 
-	 * and compilation to the intermediate, instrumented jimple formate (RunMainAnalyzerSingleJ)
-	 * 
-	 * For illustration, we supply the command line arguments to compile a single file to 
-	 * instrumented binary code:
-	 * -f c --classes testclasses.Simple  --main_class testclasses.Simple
-	 * 
-	 * @param args
-	 * @throws ParseException 
+	 *
+     * To see which command line args to use, go to the parser in utils.parser, or run the main (this one) without any
+     * arguments, which'll print the help.
+	 *
+	 * @param args Commandline-Args for analysis
 	 */
 	public static void main(String[] args) {
 		execute(args);
@@ -51,7 +41,6 @@ public class Main {
 	/**
      * Method which configures and executes soot.main.Main.
      * @param args This arguments are delivered by main.Main.main.
-	 * @throws ParseException 
      */
 	private static void execute(String[] args) {
         Level LOGGER_LEVEL = Level.ALL;
@@ -92,26 +81,20 @@ public class Main {
 
 
         // ====== Create fake static analysis results =====
-        SootClass sootClass = Scene.v().loadClassAndSupport(sootOptionsContainer.getMainclass());
-        sootClass.setApplicationClass();
-
         Map<SootMethod, FakeVarTyping> fakeVarTypingsMap = new HashMap<>();
         Map<SootMethod, FakeCxTyping> fakeCxTypingsMap = new HashMap<>();
         Map<SootMethod, FakeInstantiation> fakeInstantiationMap = new HashMap<>();
 
-        for (SootMethod sm : sootClass.getMethods()) {
-            Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
-            fakeVarTypingsMap.put(sm, new FakeVarTyping(b));
-            fakeCxTypingsMap.put(sm, new FakeCxTyping(b));
-            fakeInstantiationMap.put(sm, new FakeInstantiation(b));
-        }
+        Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
+        allClasses.add(sootOptionsContainer.getMainclass());
 
-        // add additional methods from other classes
-        for (String s : sootOptionsContainer.getAdditionalFiles()) {
-            SootClass addC = Scene.v().loadClassAndSupport(s);
-            addC.setApplicationClass();
-            for (SootMethod sm : addC.getMethods()) {
-                Body b = addC.getMethodByName(sm.getName()).retrieveActiveBody();
+        // add fake typings for methods from main and other classes
+        for (String s : allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm : sootClass.getMethods()) {
+                Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
 
                 fakeVarTypingsMap.put(sm, new FakeVarTyping(b));
                 fakeCxTypingsMap.put(sm, new FakeCxTyping(b));
