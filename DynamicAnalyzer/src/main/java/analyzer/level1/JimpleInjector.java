@@ -138,9 +138,9 @@ public class JimpleInjector {
 	static Unit lastPos;
 
 	/**
-	 * Stores the results of the static analysis. Use Lvel instead of Level because of conflicts with the LEVEL of the Logger.
+     * Stores the results of the static analysis. Use Lvel instead of Level because of conflicts with the LEVEL of the Logger.
 	 */
-	static VarTyping varTyping;
+    static VarTyping varTyping;
 	static CxTyping cxTyping;
 	static Instantiation instantiation;
 

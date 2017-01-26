@@ -11,6 +11,7 @@ import utils.parser.ArgParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Level;
@@ -96,19 +97,25 @@ public class Main {
         // ====== Create fake static analysis results =====
         SootClass sootClass = Scene.v().loadClassAndSupport(sootOptionsContainer.getMainclass());
         sootClass.setApplicationClass();
-        Body sootBody = sootClass.getMethodByName("main").retrieveActiveBody();
 
+        Map<SootMethod, FakeVarTyping> fakeVarTypingsMap = new HashMap<>();
+        Map<SootMethod, FakeCxTyping> fakeCxTypingsMap = new HashMap<>();
+        Map<SootMethod, FakeInstantiation> fakeInstantiationMap = new HashMap<>();
 
-        FakeVarTyping<LowMediumHigh.Level> fakeVarTyping = new FakeVarTyping<>(sootBody);
-        FakeCxTyping<LowMediumHigh.Level> fakeCxTyping = new FakeCxTyping<>(sootBody);
-        FakeInstantiation<LowMediumHigh.Level> fakeInstantiation = new FakeInstantiation<>();
+        for (SootMethod sm : sootClass.getMethods()) {
+            Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+            fakeVarTypingsMap.put(sm, new FakeVarTyping(b));
+            fakeCxTypingsMap.put(sm, new FakeCxTyping(b));
+            fakeInstantiationMap.put(sm, new FakeInstantiation(b));
+        }
+
         // =================================
 
         // those are needed because of soot-magic i guess
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(fakeVarTyping, fakeCxTyping, fakeInstantiation);
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 

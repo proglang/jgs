@@ -4,6 +4,7 @@ import analyzer.level1.storage.Dynamic;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
+import utils.exceptions.InternalAnalyzerException;
 import utils.staticResults.BeforeAfterContainer;
 import analyzer.level2.storage.LowMediumHigh;
 import soot.Body;
@@ -21,6 +22,8 @@ import utils.staticResults.FakeCxTyping;
 import utils.staticResults.FakeInstantiation;
 import utils.staticResults.FakeVarTyping;
 import utils.visitor.AnnotationStmtSwitch;
+
+import org.junit.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,13 +46,15 @@ import java.util.logging.Logger;
  */
 public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
-    VarTyping<Lvel> VarTyping;
-    CxTyping<Lvel> CxTyping;
-    Instantiation<Lvel> Instantiation;
-    public BodyAnalyzer(FakeVarTyping<Lvel> fakeVarTyping, FakeCxTyping<Lvel> fakeCxTyping, FakeInstantiation<Lvel> fakeInstantiation) {
-        VarTyping = fakeVarTyping;
-        CxTyping = fakeCxTyping;
-        Instantiation = fakeInstantiation;
+    Map<SootMethod, FakeVarTyping> fakeVarTypingsMap;
+    Map<SootMethod, FakeCxTyping> fakeCxTypingsMap;
+    Map<SootMethod, FakeInstantiation> fakeInstantiationMap;
+    public BodyAnalyzer(Map<SootMethod, FakeVarTyping> fakeVarTyping,
+                        Map<SootMethod, FakeCxTyping> fakeCxTyping,
+                        Map<SootMethod, FakeInstantiation> fakeInstantiation) {
+        fakeVarTypingsMap = fakeVarTyping;
+        fakeCxTypingsMap = fakeCxTyping;
+        fakeInstantiationMap = fakeInstantiation;
     }
 
     /**
@@ -110,16 +115,27 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		stmtSwitch = new AnnotationStmtSwitch(body);
 
 		DominatorFinder.init(body);
-				
+
+		// für jeden methodenbody wird der Bodyanalyzer einmal "ausgeführt"
+        // Intraprozedurale Methode
+        // Body-Analyz implementiert Analyse in EINER Methode. Neu aufgerufen für jede Methode
 		JimpleInjector.setBody(body);
-		JimpleInjector.setStaticAnalaysisResults(VarTyping, CxTyping, Instantiation);
+
+		if (fakeVarTypingsMap.get(method).equals(null) ||
+                fakeCxTypingsMap.get(method).equals(null) ||
+                fakeInstantiationMap.get(method).equals(null)) {
+		    throw new InternalAnalyzerException("Key " + method + " not found!");
+        }
+
+		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
+		JimpleInjector.setStaticAnalaysisResults(fakeVarTypingsMap.get(method),
+                                                    fakeCxTypingsMap.get(method),
+                                                    fakeInstantiationMap.get(method));
 
 		units = body.getUnits();
 		locals = body.getLocals();
 
-		// ==== Create Fake Analysis Results ====
-		Map<Stmt, Map<Local, BeforeAfterContainer>> varTyping = createFakeAnalysisResult_Vars(units, locals);
-				
+
 		// invokeHS should be at the beginning of every method-body. 
 		// It creates a map for locals.
 		JimpleInjector.invokeHS();
@@ -202,29 +218,5 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		JimpleInjector.addUnitsToChain();			
 		
 		JimpleInjector.closeHS();
-	}
-
-	/**
-	 * Create fake analysis results for every local variable
-	 * @param units
-	 * @param locals
-	 * @return
-	 */
-	private Map<Stmt, Map<Local, BeforeAfterContainer>> createFakeAnalysisResult_Vars(Chain<Unit> units, Chain<Local> locals) {
-
-		Map<Stmt, Map<Local, BeforeAfterContainer>> m = new HashMap<>();
-		Dynamic<LowMediumHigh.Level> dyn = new Dynamic<>();
-		BeforeAfterContainer dyn_dyn = new BeforeAfterContainer(dyn, dyn);
-		for (Unit u: units) {
-		    Stmt s = (Stmt) u;
-
-            Map<Local, BeforeAfterContainer> tmp = new HashMap<>();
-            for (Local l: locals) {
-                tmp.put(l, dyn_dyn);
-            }
-
-            m.put(s, tmp);
-		}
-		return m;
 	}
 }
