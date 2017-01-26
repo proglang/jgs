@@ -10,10 +10,7 @@ import utils.parser.ArgParser;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 import org.apache.commons.cli.ParseException;
@@ -109,6 +106,18 @@ public class Main {
             fakeInstantiationMap.put(sm, new FakeInstantiation(b));
         }
 
+        // add additional methods from other classes
+        for (String s : sootOptionsContainer.getAdditionalFiles()) {
+            SootClass addC = Scene.v().loadClassAndSupport(s);
+            addC.setApplicationClass();
+            for (SootMethod sm : addC.getMethods()) {
+                Body b = addC.getMethodByName(sm.getName()).retrieveActiveBody();
+
+                fakeVarTypingsMap.put(sm, new FakeVarTyping(b));
+                fakeCxTypingsMap.put(sm, new FakeCxTyping(b));
+                fakeInstantiationMap.put(sm, new FakeInstantiation(b));
+            }
+        }
         // =================================
 
         // those are needed because of soot-magic i guess
