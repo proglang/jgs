@@ -26,12 +26,9 @@ public class AntRunner {
 
         // folder working dir
         String folder_working_dir = System.getProperty("user.dir");
-        //String folder_working_dir = "";
-
 
         Jar j = new Jar();
         j.setTaskName("build-jar-task");
-        j.setBasedir(new File(folder_working_dir));
         j.setDestFile(new File(sootArgsContainer.getOutputFolderAbsolutePath(), sootArgsContainer.getMainclass().replace(".", "/") + ".jar"));
 
         // Set Manifest
@@ -46,22 +43,22 @@ public class AntRunner {
             e.printStackTrace();
         }
 
-        // add stuff in output folder (temporary solution)
+        // add stuff in output folder (temporary solution), which include instrumented main and other classes
         FileSet outputFolder = new FileSet();
-        outputFolder.setDir(new File( folder_working_dir, "DynamicAnalyzer/target/scala-2.11/classes"));
+        outputFolder.setDir(new File( sootArgsContainer.getOutputFolderAbsolutePath()));
         outputFolder.setIncludes("**/*.class");
         j.addFileset(outputFolder);
 
         // add the Handle Statement
         FileSet handleStatement = new FileSet();
         handleStatement.setDir(new File(folder_working_dir, "DynamicAnalyzer/target/scala-2.11/classes"));
-        handleStatement.setIncludes("***/*//*.class");
+        handleStatement.setIncludes("analyzer/level2/**");
         j.addFileset(handleStatement);
 
         // add the Utils Folder
         FileSet utilsFolder = new FileSet();
         utilsFolder.setDir(new File(folder_working_dir, "DynamicAnalyzer/target/scala-2.11/classes"));
-        utilsFolder.setIncludes("utils*//**");
+        utilsFolder.setIncludes("utils/**");
         j.addFileset(utilsFolder);
 
         // add sec Domain
@@ -75,7 +72,7 @@ public class AntRunner {
         // add supplementary files
         ZipFileSet suppF = new ZipFileSet();
         suppF.setSrc(new File(folder_working_dir, "lib/commons-collections4-4.0.jar"));
-        suppF.setIncludes("org*//**");
+        suppF.setIncludes("org*//**//**//**//**");
         j.addZipfileset(suppF);
 
 
@@ -97,12 +94,8 @@ public class AntRunner {
 		consoleLogger.setOutputPrintStream(System.out);
 		consoleLogger.setMessageOutputLevel(Project.MSG_INFO);
 		p.addBuildListener(consoleLogger);
-		//p.setProperty();
         j.setProject(p);
 
-		if (p.getDefaultTarget().equals(null)) {
-		    throw new InternalAnalyzerException("Default target is null");
-        }
 		p.fireBuildStarted();
 		p.init();
 		p.executeTarget(p.getDefaultTarget());
