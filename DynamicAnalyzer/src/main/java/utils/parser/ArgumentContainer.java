@@ -45,7 +45,7 @@ public class ArgumentContainer {
     // output Folder wäre Optional<String>
     public String getOutputFolderAbsolutePath() {
         if (outputFolder.equals(VALUE_NOT_SET)) {
-            return System.getProperty("user.dir");
+            return PathHelper.getBaseDirOfProjectViaClassloader().getAbsolutePath();
         } else {
             return PathHelper.toAbsolutePath(outputFolder);
         }

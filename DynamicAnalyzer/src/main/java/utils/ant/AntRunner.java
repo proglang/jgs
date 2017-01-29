@@ -25,7 +25,7 @@ public class AntRunner {
 
 
         // folder working dir
-        String folder_working_dir = System.getProperty("user.dir");
+        String folder_working_dir = PathHelper.getBaseDirOfProjectViaClassloader().getPath();
 
         Jar j = new Jar();
         j.setTaskName("build-jar-task");
