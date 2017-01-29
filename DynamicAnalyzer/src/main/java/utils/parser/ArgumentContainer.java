@@ -32,11 +32,6 @@ public class ArgumentContainer {
         return mainclass;
     }
 
-    public String getMainclassAbsolutePath() {
-        assert !mainclass.equals(VALUE_NOT_SET);
-        return PathHelper.toAbsolutePath(mainclass);
-    }
-
     public List<String> getAddDirsToClasspath() {
         return addDirsToClasspath;
     }
