@@ -1,6 +1,12 @@
 package classfiletests.utils;
 
+import java.util.Map;
 import java.util.logging.Logger;
+
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
+import soot.SootMethod;
 import utils.logging.L1Logger;
 import main.Main;
 
@@ -24,6 +30,16 @@ public class ClassCompiler {
 		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started");
 		Main.main(args);
+		logger.info("Compilation successful, binary put in sootOutput/"
+				+ outputDir);
+	}
+
+	public static void compileWithFakeTyping(String name, String outputDir, Map<SootMethod, VarTyping> varTyping,
+											 Map<SootMethod, CxTyping> cxTyping,
+											 Map<SootMethod, Instantiation> instantiation) {
+		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
+		logger.info("Compilation of src file started. Using fake static analysis results");
+		Main.mainWithFakeResults(args, varTyping, cxTyping, instantiation);
 		logger.info("Compilation successful, binary put in sootOutput/"
 				+ outputDir);
 	}

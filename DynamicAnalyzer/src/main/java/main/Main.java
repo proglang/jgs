@@ -2,6 +2,10 @@ package main;
 
 import analyzer.level1.BodyAnalyzer;
 import analyzer.level2.storage.LowMediumHigh;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
+import jas.Var;
 import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
@@ -33,16 +37,32 @@ public class Main {
 	 * @param args Commandline-Args for analysis
 	 */
 	public static void main(String[] args) {
-		execute(args);
+		execute(args, false, null, null, null);
 	}
 
-
+	/**
+	 * Run main with fake variable typing results.
+	 * @param args			arguments as list of strings
+	 * @param varTyping		fake var Typing map
+	 * @param cxTyping		fake cx Typing map
+	 * @param instantiation	fake instantiation map
+	 */
+	public static void mainWithFakeResults(String[] args,
+										   Map<SootMethod, VarTyping> varTyping,
+										   Map<SootMethod, CxTyping> cxTyping,
+										   Map<SootMethod, Instantiation> instantiation) {
+		execute(args, true, varTyping, cxTyping, instantiation);
+	}
 
 	/**
      * Method which configures and executes soot.main.Main.
      * @param args This arguments are delivered by main.Main.main.
      */
-	private static void execute(String[] args) {
+	private static void execute(String[] args,
+								boolean useFakeTyping,
+								Map<SootMethod, VarTyping> varTyping,
+								Map<SootMethod, CxTyping> cxTyping,
+								Map<SootMethod, Instantiation> instantiation) {
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
@@ -80,27 +100,38 @@ public class Main {
 		Scene.v().setSootClassPath(classPath);
 
 
-        // ====== Create fake static analysis results =====
-        Map<SootMethod, VarTypingEverythingDynamic> fakeVarTypingsMap = new HashMap<>();
-        Map<SootMethod, CxTypingEverythingDynamic> fakeCxTypingsMap = new HashMap<>();
-        Map<SootMethod, InstantiationEverythingDynamic> fakeInstantiationMap = new HashMap<>();
+        // ====== Create / load fake static analysis results =====
+        Map<SootMethod, VarTyping> fakeVarTypingsMap;
+		Map<SootMethod, CxTyping> fakeCxTypingsMap;
+		Map<SootMethod, Instantiation> fakeInstantiationMap;
 
-        Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
-        allClasses.add(sootOptionsContainer.getMainclass());
+		// if no fake Typing is supplied
+		if (! useFakeTyping) {
+			fakeVarTypingsMap = new HashMap<>();
+			fakeCxTypingsMap = new HashMap<>();
+			fakeInstantiationMap = new HashMap<>();
 
-        // add fake typings for methods from main and other classes
-        for (String s : allClasses) {
-            SootClass sootClass = Scene.v().loadClassAndSupport(s);
-            sootClass.setApplicationClass();
+			Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
+			allClasses.add(sootOptionsContainer.getMainclass());
 
-            for (SootMethod sm : sootClass.getMethods()) {
-                Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+			// add fake typings for methods from main and other classes
+			for (String s : allClasses) {
+				SootClass sootClass = Scene.v().loadClassAndSupport(s);
+				sootClass.setApplicationClass();
 
-                fakeVarTypingsMap.put(sm, new VarTypingEverythingDynamic(b));
-                fakeCxTypingsMap.put(sm, new CxTypingEverythingDynamic(b));
-                fakeInstantiationMap.put(sm, new InstantiationEverythingDynamic(b));
-            }
-        }
+				for (SootMethod sm : sootClass.getMethods()) {
+					Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+
+					fakeVarTypingsMap.put(sm, new VarTypingEverythingDynamic(b));
+					fakeCxTypingsMap.put(sm, new CxTypingEverythingDynamic(b));
+					fakeInstantiationMap.put(sm, new InstantiationEverythingDynamic(b));
+				}
+			}
+		} else {
+			fakeVarTypingsMap = varTyping;
+			fakeCxTypingsMap = cxTyping;
+			fakeInstantiationMap = instantiation;
+		}
         // =================================
 
         // those are needed because of soot-magic i guess
