@@ -1,4 +1,4 @@
-package fakeAnalysisE2Etests;
+package end2endtest;
 
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;

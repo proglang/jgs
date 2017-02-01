@@ -5,13 +5,11 @@ import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
-import jas.Var;
 import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.CxTypingEverythingDynamic;
-import utils.staticResults.FakeTypingStorage;
 import utils.staticResults.InstantiationEverythingDynamic;
 import utils.staticResults.VarTypingEverythingDynamic;
 
@@ -112,9 +110,22 @@ public class Main {
 			fakeCxTypingsMap = new HashMap<>();
 			fakeInstantiationMap = new HashMap<>();
 
-			// fill the three maps with appropriate analysis results (all fake, all dynamic)
-            FakeTypingStorage.createAllDynamicTyping(sootOptionsContainer, fakeVarTypingsMap,
-                                                    fakeCxTypingsMap, fakeInstantiationMap );
+            Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
+            allClasses.add(sootOptionsContainer.getMainclass());
+
+            // add fake typings for methods from main and other classes
+            for (String s : allClasses) {
+                SootClass sootClass = Scene.v().loadClassAndSupport(s);
+                sootClass.setApplicationClass();
+
+                for (SootMethod sm : sootClass.getMethods()) {
+                    Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+
+                    fakeVarTypingsMap.put(sm, new VarTypingEverythingDynamic(b));
+                    fakeCxTypingsMap.put(sm, new CxTypingEverythingDynamic(b));
+                    fakeInstantiationMap.put(sm, new InstantiationEverythingDynamic(b));
+                }
+            }
 		} else {
 			fakeVarTypingsMap = varTyping;
 			fakeCxTypingsMap = cxTyping;
