@@ -9,10 +9,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import soot.SootMethod;
+import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
+import utils.staticResults.ResultsServer;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -23,23 +24,16 @@ public class AllFakeAnalysisTests {
 
     private final String name;
     private final boolean hasIllegalFlow;
+    private final StaticAnalysis analysisResult;
     private final String[] involvedVars;
-    Map<SootMethod, VarTyping> varTypingMap;
-    Map<SootMethod, CxTyping> cxTypingMap;
-    Map<SootMethod, Instantiation> instantiationMap;
 
     public AllFakeAnalysisTests(String name, boolean hasIllegalFlow,
-                                Map<SootMethod, VarTyping> varTyping,
-                                Map<SootMethod, CxTyping> cxTyping,
-                                Map<SootMethod, Instantiation> instantiation,
-                                String... involvedVars) {
+                                StaticAnalysis analysisResult, String... involvedVars) {
 
         this.name = name;
         this.hasIllegalFlow = hasIllegalFlow;
+        this.analysisResult = analysisResult;
         this.involvedVars = involvedVars;
-        this.varTypingMap = varTyping;
-        this.cxTypingMap = cxTyping;
-        this.instantiationMap = instantiation;
     }
 
     Logger logger = L1Logger.getLogger();
@@ -47,8 +41,8 @@ public class AllFakeAnalysisTests {
     @Parameterized.Parameters(name = "Name: {0}")
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
-                new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } },
-                new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } });
+                new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } },
+                new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } });
     }
 
     @Test
@@ -61,13 +55,31 @@ public class AllFakeAnalysisTests {
         String outputDir = "junit_fakeAnalysis";
 
         // here, we need to create the appropriate fake Maps to hand over the the ClassCompiler
+        Map<SootMethod, VarTyping> fakeVarTypingsMap = new HashMap<>();
+        Map<SootMethod, CxTyping> fakeCxTypingsMap = new HashMap<>();
+        Map<SootMethod, Instantiation> fakeInstantiationMap = new HashMap<>();
+
+        Collection<String> allClasses = Arrays.asList("testclasses." + name);
+        switch (analysisResult) {
+            case allDynamic:
+                ResultsServer.setAllDynamic(fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, allClasses);
+                break;
+            default:
+                throw new InternalAnalyzerException("Invalid analysis result requested!");
+        }
 
 
-
-        ClassCompiler.compileWithFakeTyping(name, outputDir, varTypingMap, cxTypingMap, instantiationMap);
+        ClassCompiler.compileWithFakeTyping(name, outputDir, fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap);
         ClassRunner.testClass(name, outputDir, hasIllegalFlow, involvedVars);
 
         logger.info("Finished executing testclasses with fake analysis results." + name + "");
     }
 
+    }
+
+/**
+ * Desribe how we want the fake analysis results the be
+ */
+enum StaticAnalysis {
+    allDynamic, CxPublic
     }
