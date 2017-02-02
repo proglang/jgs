@@ -9,6 +9,8 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.SootMethod;
 import utils.logging.L1Logger;
 import main.Main;
+import utils.parser.ArgParser;
+import utils.parser.ArgumentContainer;
 
 /**
  * Compiles a given class using the main.Main.main method.

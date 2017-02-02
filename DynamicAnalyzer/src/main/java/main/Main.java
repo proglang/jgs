@@ -11,6 +11,7 @@ import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.CxTypingEverythingDynamic;
 import utils.staticResults.InstantiationEverythingDynamic;
+import utils.staticResults.ResultsServer;
 import utils.staticResults.VarTypingEverythingDynamic;
 
 import java.io.File;
@@ -111,21 +112,10 @@ public class Main {
 			fakeInstantiationMap = new HashMap<>();
 
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
-            allClasses.add(sootOptionsContainer.getMainclass());
+			allClasses.add(sootOptionsContainer.getMainclass());
 
-            // add fake typings for methods from main and other classes
-            for (String s : allClasses) {
-                SootClass sootClass = Scene.v().loadClassAndSupport(s);
-                sootClass.setApplicationClass();
+			ResultsServer.setAllDynamic(fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, allClasses);
 
-                for (SootMethod sm : sootClass.getMethods()) {
-                    Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
-
-                    fakeVarTypingsMap.put(sm, new VarTypingEverythingDynamic(b));
-                    fakeCxTypingsMap.put(sm, new CxTypingEverythingDynamic(b));
-                    fakeInstantiationMap.put(sm, new InstantiationEverythingDynamic(b));
-                }
-            }
 		} else {
 			fakeVarTypingsMap = varTyping;
 			fakeCxTypingsMap = cxTyping;

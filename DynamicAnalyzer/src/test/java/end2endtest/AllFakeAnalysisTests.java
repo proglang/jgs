@@ -6,6 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import soot.SootMethod;
 import utils.logging.L1Logger;
@@ -17,6 +18,7 @@ import java.util.logging.Logger;
 /**
  * Created by Nicolas Müller on 30.01.17.
  */
+@RunWith(Parameterized.class)
 public class AllFakeAnalysisTests {
 
     private final String name;
@@ -56,8 +58,12 @@ public class AllFakeAnalysisTests {
     public void test() {
         System.out.println("\n\n\n");
         logger.info("Start of executing testclasses with fake analysis results." + name + "");
-
         String outputDir = "junit_fakeAnalysis";
+
+        // here, we need to create the appropriate fake Maps to hand over the the ClassCompiler
+
+
+
         ClassCompiler.compileWithFakeTyping(name, outputDir, varTypingMap, cxTypingMap, instantiationMap);
         ClassRunner.testClass(name, outputDir, hasIllegalFlow, involvedVars);
 
