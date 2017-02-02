@@ -1,4 +1,4 @@
-package utils.staticResults;
+package utils.staticResults.storage;
 
 import analyzer.level1.storage.Dynamic;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
@@ -44,7 +44,7 @@ public class VarTypingEverythingDynamic<Level> implements VarTyping<Level>{
         if (! sootBody.getUnits().contains((Unit) s) || ! sootBody.getLocals().contains(l)) {
             throw new InternalAnalyzerException("Required VarTyping for Stmt "  + s.toString() + " and Local " + l.toString() + ", which is not present in the Fake Variable Typing");
         }
-        return var_typing.get(s).get(l).before;
+        return var_typing.get(s).get(l).getBefore();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class VarTypingEverythingDynamic<Level> implements VarTyping<Level>{
         if (! sootBody.getUnits().contains((Unit) s) || ! sootBody.getLocals().contains(l)) {
             throw new InternalAnalyzerException("Required VarTyping for Stmt "  + s.toString() + " and Local " + l.toString() + ", which is not present in the Fake Variable Typing");
         }
-        return var_typing.get(s).get(l).after;
+        return var_typing.get(s).get(l).getAfter();
     }
 }
 

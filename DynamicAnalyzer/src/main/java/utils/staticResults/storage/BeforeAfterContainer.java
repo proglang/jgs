@@ -1,4 +1,4 @@
-package utils.staticResults;
+package utils.staticResults.storage;
 
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
 
@@ -7,6 +7,15 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
  */
 public class BeforeAfterContainer<Level>  {
     Type<Level> before;
+
+    public Type<Level> getBefore() {
+        return before;
+    }
+
+    public Type<Level> getAfter() {
+        return after;
+    }
+
     Type<Level> after;
 
     public BeforeAfterContainer(Type<Level> before, Type<Level> after) {

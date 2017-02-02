@@ -4,9 +4,9 @@ import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
-import utils.staticResults.CxTypingEverythingDynamic;
-import utils.staticResults.InstantiationEverythingDynamic;
-import utils.staticResults.VarTypingEverythingDynamic;
+import utils.staticResults.storage.CxTypingEverythingDynamic;
+import utils.staticResults.storage.InstantiationEverythingDynamic;
+import utils.staticResults.storage.VarTypingEverythingDynamic;
 import utils.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;

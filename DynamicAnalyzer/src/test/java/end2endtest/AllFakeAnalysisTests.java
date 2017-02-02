@@ -42,7 +42,10 @@ public class AllFakeAnalysisTests {
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } },
-                new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } });
+                new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.CxPublic, new String[] { "java.lang.String_$r6" } },
+
+                new Object[] { "NSU_FieldAccessStatic", true, StaticAnalysis.allDynamic, new String[] {"int f"} },
+                new Object[] { "NSU_FieldAccessStatic", false, StaticAnalysis.CxPublic, new String[] {} });
     }
 
     @Test
@@ -62,7 +65,14 @@ public class AllFakeAnalysisTests {
         Collection<String> allClasses = Arrays.asList("testclasses." + name);
         switch (analysisResult) {
             case allDynamic:
-                ResultsServer.setAllDynamic(fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, allClasses);
+                ResultsServer.setDynamicVar(fakeVarTypingsMap, allClasses);
+                ResultsServer.setDynamicCx(fakeCxTypingsMap, allClasses);
+                ResultsServer.setDynamicInst(fakeInstantiationMap, allClasses);
+                break;
+            case CxPublic:
+                ResultsServer.setDynamicVar(fakeVarTypingsMap, allClasses);
+                ResultsServer.setPublicCx(fakeCxTypingsMap, allClasses);
+                ResultsServer.setDynamicInst(fakeInstantiationMap, allClasses);
                 break;
             default:
                 throw new InternalAnalyzerException("Invalid analysis result requested!");

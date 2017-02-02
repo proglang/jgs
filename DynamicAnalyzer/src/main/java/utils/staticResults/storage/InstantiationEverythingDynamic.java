@@ -1,4 +1,4 @@
-package utils.staticResults;
+package utils.staticResults.storage;
 
 import analyzer.level1.storage.Dynamic;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;

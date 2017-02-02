@@ -9,10 +9,7 @@ import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.CxTypingEverythingDynamic;
-import utils.staticResults.InstantiationEverythingDynamic;
 import utils.staticResults.ResultsServer;
-import utils.staticResults.VarTypingEverythingDynamic;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,7 +111,9 @@ public class Main {
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
 
-			ResultsServer.setAllDynamic(fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, allClasses);
+			ResultsServer.setDynamicVar(fakeVarTypingsMap, allClasses);
+			ResultsServer.setDynamicCx(fakeCxTypingsMap, allClasses);
+			ResultsServer.setDynamicInst(fakeInstantiationMap, allClasses);
 
 		} else {
 			fakeVarTypingsMap = varTyping;
