@@ -700,9 +700,9 @@ public class JimpleInjector {
 		
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
 		// insert NSU check only if PC is dynamic!
-        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-            unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
-        }
+		if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+			unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
+		}
 		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
 		lastPos = pos;
 	}
@@ -776,7 +776,10 @@ public class JimpleInjector {
 		// see NSU_FieldAccess tests why this is needed
 		unitStore_Before.insertElement(unitStore_Before.new Element(pushInstanceLevelToGlobalPC, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
+		// only if context ist dynamic / pc is dynamc
+		//if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+			unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
+		//}
 		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(popGlobalPC, pos));
 		lastPos = pos;

@@ -44,8 +44,8 @@ public class AllFakeAnalysisTests {
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } },
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.CxPublic, new String[] { "java.lang.String_$r6" } },
 
-                new Object[] { "NSU_FieldAccessStatic", true, StaticAnalysis.allDynamic, new String[] {"int f"} },
-                new Object[] { "NSU_FieldAccessStatic", false, StaticAnalysis.CxPublic, new String[] {} });
+                new Object[] { "NSUPolicy", true, StaticAnalysis.allDynamic, new String[] {"int_i0"} },
+                new Object[] { "NSUPolicy", false, StaticAnalysis.CxPublic, new String[] {} });
     }
 
     @Test
