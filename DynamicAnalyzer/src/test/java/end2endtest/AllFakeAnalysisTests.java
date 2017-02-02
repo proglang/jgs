@@ -38,7 +38,7 @@ public class AllFakeAnalysisTests {
 
     Logger logger = L1Logger.getLogger();
 
-    @Parameterized.Parameters(name = "Name: {0}")
+    @Parameterized.Parameters(name = "Name: {0}, {2}")
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } },

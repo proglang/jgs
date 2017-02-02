@@ -1,3 +1,4 @@
+import end2endtest.AllFakeAnalysisTests;
 import end2endtest.compileToJarTests;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
@@ -76,6 +77,9 @@ import end2endtest.AllEndToEndTests;
 
     // Test for commandline arguments and correct path output
     compileToJarTests.class,
+
+        // Test with fake static analysis
+        AllFakeAnalysisTests.class,
     })
 
 public class RunAllTests {
