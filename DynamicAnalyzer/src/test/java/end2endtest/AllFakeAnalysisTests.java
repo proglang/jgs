@@ -47,9 +47,11 @@ public class AllFakeAnalysisTests {
     @Parameterized.Parameters(name = "Name: {0}, {2}")
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
+                // should throw a IllegalFlow Exception regardless of the CX
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } },
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.CxPublic, new String[] { "java.lang.String_$r6" } },
 
+                // should only throw an IllegalFLow Exception if NSU. NSU should only be thrown if CX is Dynamic
                 new Object[] { "NSUPolicy", true, StaticAnalysis.allDynamic, new String[] {"int_i0"} },
                 new Object[] { "NSUPolicy", false, StaticAnalysis.CxPublic, new String[] {} },
 

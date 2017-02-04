@@ -682,7 +682,8 @@ public class JimpleInjector {
 		Stmt assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(signature));
 		
-		// insert setLevelOfLOcal
+		// insert setLevelOfLOcal, which accumulates the PC and the right-hand side of the assign stmt.
+		// The local's sec-value is then set to that sec-value.
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
 				"setLevelOfLocal", paramTypes, 
@@ -690,7 +691,8 @@ public class JimpleInjector {
 				false), local_for_Strings);
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
-		// insert checkLocalPC to perform NSU check. only needs to be done if CxTyping of Statement is Dynamic
+		// insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
+		// only needs to be done if CxTyping of Statement is Dynamic
 		Expr checkLocalPC = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
 				"checkLocalPC", paramTypes,
@@ -729,9 +731,7 @@ public class JimpleInjector {
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		// units.getFirst is already a reference to @this
-		// Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+
 		
 		// Retrieve the object it belongs to
 		Local tmpLocal = (Local) f.getBase();
@@ -757,6 +757,8 @@ public class JimpleInjector {
 				);
 		
 		// insert: checkGlobalPC(Object, String)
+        // why do we check the global PC? Because the field is possibily visible everywhere, check that sec-value of field is greater
+        // or equal than the global PC.
 		Expr checkGlobalPC	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "checkGlobalPC", 
@@ -764,7 +766,7 @@ public class JimpleInjector {
 				tmpLocal, local_for_Strings);
 		Unit checkGlobalPCExpr = Jimple.v().newInvokeStmt(checkGlobalPC);
 		
-		// insert setLevelOfField
+		// insert setLevelOfField, which sets Level of Field to the join of gPC and right-hand side of assign stmt sec-value join
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField", 
@@ -777,10 +779,10 @@ public class JimpleInjector {
 		unitStore_Before.insertElement(unitStore_Before.new Element(pushInstanceLevelToGlobalPC, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
 		// only if context ist dynamic / pc is dynamc
-		//if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+		if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
 			unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
-		//}
-		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
+		}
+        unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(popGlobalPC, pos));
 		lastPos = pos;
 	}
