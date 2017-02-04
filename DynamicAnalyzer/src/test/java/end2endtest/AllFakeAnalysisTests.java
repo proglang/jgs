@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Created by Nicolas Müller on 30.01.17.
+ * Tests to test the impact of different static analysis results.
  */
 @RunWith(Parameterized.class)
 public class AllFakeAnalysisTests {
@@ -38,6 +38,12 @@ public class AllFakeAnalysisTests {
 
     Logger logger = L1Logger.getLogger();
 
+    /**
+     * Testing the same testcases with different static analysis results. For example,
+     * we expect an NSU/IllegalFLow Exception when running NSUPolicy in dynamic CX, but if the CX
+     * is pulic, we do not expect an NSU / IllegalFlow Exception.
+     * @return
+     */
     @Parameterized.Parameters(name = "Name: {0}, {2}")
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
@@ -45,7 +51,17 @@ public class AllFakeAnalysisTests {
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.CxPublic, new String[] { "java.lang.String_$r6" } },
 
                 new Object[] { "NSUPolicy", true, StaticAnalysis.allDynamic, new String[] {"int_i0"} },
-                new Object[] { "NSUPolicy", false, StaticAnalysis.CxPublic, new String[] {} });
+                new Object[] { "NSUPolicy", false, StaticAnalysis.CxPublic, new String[] {} },
+
+                new Object[] { "NSUPolicy2", true, StaticAnalysis.allDynamic, new String[] {"boolean_$z2"} },
+                new Object[] { "NSUPolicy2", false, StaticAnalysis.CxPublic, new String[] {"boolean_$z2"} },
+
+                new Object[] { "NSUPolicy3", true, StaticAnalysis.allDynamic, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSUPolicy3", false, StaticAnalysis.CxPublic, new String[] {"<testclasses.utils.C: boolean f>"} },
+
+                new Object[] { "NSUPolicy4", true, StaticAnalysis.allDynamic, new String[] {"java.lang.String_r5"} },
+                new Object[] { "NSUPolicy4", false, StaticAnalysis.CxPublic, new String[] {"java.lang.String_r5"} }
+       );
     }
 
     @Test
