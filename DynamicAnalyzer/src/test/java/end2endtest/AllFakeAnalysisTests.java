@@ -51,22 +51,37 @@ public class AllFakeAnalysisTests {
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.allDynamic, new String[] { "java.lang.String_$r6" } },
                 new Object[] { "AccessFieldsOfObjectsFail", true, StaticAnalysis.CxPublic, new String[] { "java.lang.String_$r6" } },
 
-                // should only throw an IllegalFLow Exception if NSU. NSU should only be thrown if CX is Dynamic
+                // NSU on local Variables.
                 new Object[] { "NSUPolicy", true, StaticAnalysis.allDynamic, new String[] {"int_i0"} },
                 new Object[] { "NSUPolicy", false, StaticAnalysis.CxPublic, new String[] {} },
 
-                new Object[] { "NSUPolicy2", true, StaticAnalysis.allDynamic, new String[] {"boolean_$z2"} },
-                new Object[] { "NSUPolicy2", false, StaticAnalysis.CxPublic, new String[] {} },
+                // NSUPolicy2 is omitted, since it's IllegalFLowExcpetion is caused by printing a high-sec and not by updating a low-sec in a high-sec context.
 
+                // NSU on fields.
                 new Object[] { "NSUPolicy3", true, StaticAnalysis.allDynamic, new String[] {"<testclasses.utils.C: boolean f>"} },
                 new Object[] { "NSUPolicy3", false, StaticAnalysis.CxPublic, new String[] {} },
 
-                new Object[] { "NSUPolicy4", true, StaticAnalysis.allDynamic, new String[] {"java.lang.String_r5"} },
-                new Object[] { "NSUPolicy4", false, StaticAnalysis.CxPublic, new String[] {} },
+                // NSUFolicy4 omitted, same reason as NSUPolicy2.
 
-                // Testing StaticField NSU: JimpleInjector.SetLevelOfAssignmentStmt ( StaticFieldRed, ..)
+                // NSU on static fields
                 new Object[] { "NSU_FieldAccessStatic", true, StaticAnalysis.allDynamic, new String[] {"int f"} },
-                new Object[] { "NSU_FieldAccessStatic", false, StaticAnalysis.CxPublic, new String[] {} }
+                new Object[] { "NSU_FieldAccessStatic", false, StaticAnalysis.CxPublic, new String[] {} },
+
+                // NSU on static fields
+                new Object[] { "NSU_FieldAccess", true, StaticAnalysis.allDynamic,  new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess", false, StaticAnalysis.CxPublic, new String[] {} },
+
+                new Object[] { "NSU_FieldAccess2", false, StaticAnalysis.allDynamic,  new String[] {} },    // does not throw an IllFlow Except
+                new Object[] { "NSU_FieldAccess2", false, StaticAnalysis.CxPublic, new String[] {} },
+
+                new Object[] { "NSU_FieldAccess3", true, StaticAnalysis.allDynamic,  new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess3", false, StaticAnalysis.CxPublic, new String[] {} },
+
+                new Object[] { "NSU_FieldAccess4", true, StaticAnalysis.allDynamic,  new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess4", false, StaticAnalysis.CxPublic, new String[] {} },
+
+                new Object[] { "NSU_FieldAccess5", true, StaticAnalysis.allDynamic,  new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess5", false, StaticAnalysis.CxPublic, new String[] {} }
        );
     }
 
