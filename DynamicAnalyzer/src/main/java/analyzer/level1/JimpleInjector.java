@@ -830,7 +830,9 @@ public class JimpleInjector {
 		unitStore_Before.insertElement(
 				unitStore_Before.new Element(assignDeclaringClass, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(checkGlobalPCExpr, pos));
+        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(checkGlobalPCExpr, pos));
+        }
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
 		lastPos = pos;
 	}

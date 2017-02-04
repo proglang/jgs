@@ -56,13 +56,17 @@ public class AllFakeAnalysisTests {
                 new Object[] { "NSUPolicy", false, StaticAnalysis.CxPublic, new String[] {} },
 
                 new Object[] { "NSUPolicy2", true, StaticAnalysis.allDynamic, new String[] {"boolean_$z2"} },
-                new Object[] { "NSUPolicy2", false, StaticAnalysis.CxPublic, new String[] {"boolean_$z2"} },
+                new Object[] { "NSUPolicy2", false, StaticAnalysis.CxPublic, new String[] {} },
 
                 new Object[] { "NSUPolicy3", true, StaticAnalysis.allDynamic, new String[] {"<testclasses.utils.C: boolean f>"} },
-                new Object[] { "NSUPolicy3", false, StaticAnalysis.CxPublic, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSUPolicy3", false, StaticAnalysis.CxPublic, new String[] {} },
 
                 new Object[] { "NSUPolicy4", true, StaticAnalysis.allDynamic, new String[] {"java.lang.String_r5"} },
-                new Object[] { "NSUPolicy4", false, StaticAnalysis.CxPublic, new String[] {"java.lang.String_r5"} }
+                new Object[] { "NSUPolicy4", false, StaticAnalysis.CxPublic, new String[] {} },
+
+                // Testing StaticField NSU: JimpleInjector.SetLevelOfAssignmentStmt ( StaticFieldRed, ..)
+                new Object[] { "NSU_FieldAccessStatic", true, StaticAnalysis.allDynamic, new String[] {"int f"} },
+                new Object[] { "NSU_FieldAccessStatic", false, StaticAnalysis.CxPublic, new String[] {} }
        );
     }
 
