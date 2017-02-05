@@ -1,14 +1,10 @@
 package utils.staticResults;
 
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.Local;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import utils.exceptions.InternalAnalyzerException;
-import utils.staticResults.implementation.CxTypingImpl;
-import utils.staticResults.implementation.InstantiationImpl;
 import utils.staticResults.implementation.VarTypingImpl;
 
 import java.util.HashMap;
@@ -19,7 +15,7 @@ import java.util.Map;
  */
 public class MSLMap<T>
 {
-    Map<SootMethod, Map<Stmt, Map<Local, T>>> map = new HashMap<>();
+    private Map<SootMethod, Map<Stmt, Map<Local, T>>> map = new HashMap<>();
 
     public void put(SootMethod sm, Stmt stmt, Local l, T payload) {
         if (!map.containsKey(sm)) {
@@ -37,14 +33,6 @@ public class MSLMap<T>
 
     public VarTyping getVar(SootMethod sm) {
       return new VarTypingImpl(map.get(sm));
-    }
-
-    public CxTyping getCx(SootMethod sm) {
-        return new CxTypingImpl(map.get(sm));
-    }
-
-    public Instantiation getInst(SootMethod sm) {
-        return new InstantiationImpl(map.get(sm));
     }
 
     public T get(SootMethod sm, Stmt stmt, Local l ) {

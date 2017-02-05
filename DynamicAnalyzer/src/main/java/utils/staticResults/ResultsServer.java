@@ -1,15 +1,12 @@
 package utils.staticResults;
 
-import utils.staticResults.implementation.Dynamic;
-import utils.staticResults.implementation.Public;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import soot.*;
 import soot.jimple.Stmt;
+import utils.staticResults.implementation.Dynamic;
+import utils.staticResults.implementation.Public;
 import utils.staticResults.implementation.Types;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * A Helper that fills the var, cx and instantiation maps with the approprioate typings
@@ -17,10 +14,7 @@ import java.util.Map;
 public class ResultsServer {
 
 
-    /**
-     * Fill the varTyping map with all dynamic entries
-     * @param allClasses
-     */
+    // ======================= SET VAR TYPING ==========================
     public static void setDynamic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);

@@ -2,13 +2,9 @@ package end2endtest;
 
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import soot.SootMethod;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 import utils.staticResults.BeforeAfterContainer;
@@ -17,8 +13,19 @@ import utils.staticResults.MSMap;
 import utils.staticResults.ResultsServer;
 import utils.staticResults.implementation.Types;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Logger;
+
+/**
+ * Desribe how we want the fake analysis results the be
+ */
+enum StaticAnalysis {
+    allDynamic,         // Var, Cx & Instantiation all return Dynamic on any request
+    CxPublic,           // same as allDynamic, except for Cx, which returns public on any request
+    VarAndCxPublic      // same as CxPublic, except for Var, which returns public on any request
+}
 
 /**
  * Tests to test the impact of different static analysis results.
@@ -30,6 +37,7 @@ public class AllFakeAnalysisTests {
     private final boolean hasIllegalFlow;
     private final StaticAnalysis analysisResult;
     private final String[] involvedVars;
+    private Logger logger = L1Logger.getLogger();
 
     public AllFakeAnalysisTests(String name, boolean hasIllegalFlow,
                                 StaticAnalysis analysisResult, String... involvedVars) {
@@ -40,13 +48,10 @@ public class AllFakeAnalysisTests {
         this.involvedVars = involvedVars;
     }
 
-    Logger logger = L1Logger.getLogger();
-
     /**
      * Testing the same testcases with different static analysis results. For example,
      * we expect an NSU/IllegalFLow Exception when running NSUPolicy in dynamic CX, but if the CX
      * is pulic, we do not expect an NSU / IllegalFlow Exception.
-     * @return
      */
     @Parameterized.Parameters(name = "Name: {0}, {2}")
     public static Iterable<Object[]> generateParameters() {
@@ -59,13 +64,9 @@ public class AllFakeAnalysisTests {
                 new Object[] { "NSUPolicy", true, StaticAnalysis.allDynamic, new String[] {"int_i0"} },
                 new Object[] { "NSUPolicy", false, StaticAnalysis.CxPublic, new String[] {} },
 
-                // NSUPolicy2 is omitted, since it's IllegalFLowExcpetion is caused by printing a high-sec and not by updating a low-sec in a high-sec context.
-
                 // NSU on fields.
                 new Object[] { "NSUPolicy3", true, StaticAnalysis.allDynamic, new String[] {"<testclasses.utils.C: boolean f>"} },
                 new Object[] { "NSUPolicy3", false, StaticAnalysis.CxPublic, new String[] {} },
-
-                // NSUFolicy4 omitted, same reason as NSUPolicy2.
 
                 // NSU on static fields
                 new Object[] { "NSU_FieldAccessStatic", true, StaticAnalysis.allDynamic, new String[] {"int f"} },
@@ -93,10 +94,10 @@ public class AllFakeAnalysisTests {
        );
     }
 
-    @Test
     /**
      * Runs each testfile specified above. note that the outputDir can be set to ones liking.
      */
+    @Test
     public void test() {
         System.out.println("\n\n\n");
         logger.info("Start of executing testclasses with fake analysis results." + name + "");
@@ -107,7 +108,7 @@ public class AllFakeAnalysisTests {
         MSMap<Types> fakeCxTypingsMap = new MSMap<>();
         MSMap<Types> fakeInstantiationMap = new MSMap<>();
 
-        Collection<String> allClasses = Arrays.asList("testclasses." + name);
+        Collection<String> allClasses = Collections.singletonList("testclasses." + name);
         switch (analysisResult) {
             case allDynamic:
                 ResultsServer.setDynamic(fakeVarTypingsMap, allClasses);
@@ -136,13 +137,4 @@ public class AllFakeAnalysisTests {
         logger.info("Finished executing testclasses with fake analysis results." + name + "");
     }
 
-    }
-
-/**
- * Desribe how we want the fake analysis results the be
- */
-enum StaticAnalysis {
-    allDynamic,         // Var, Cx & Instantiation all return Dynamic on any request
-    CxPublic,           // same as allDynamic, except for Cx, which returns public on any request
-    VarAndCxPublic      // same as CxPublic, except for Var, which returns public on any request
     }
