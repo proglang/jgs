@@ -15,6 +15,12 @@ public class ResultsServer {
 
 
     // ======================= SET VAR TYPING ==========================
+
+    /**
+     * Creates a mapping (methods, statements and variables) => (Dynamic, Dynamic)
+     * @param mslMap            Map to fill
+     * @param allClasses        Collection of Strings specifying the soot classes that contain the keys
+     */
     public static void setDynamic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
@@ -33,6 +39,11 @@ public class ResultsServer {
         }
     }
 
+    /**
+     * Creates a mapping (methods, statements and variables) => (Public, Public)
+     * @param mslMap            Map to fill
+     * @param allClasses        Collection of Strings specifying the soot classes that contain the keys
+     */
     public static void setPublic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
@@ -52,6 +63,11 @@ public class ResultsServer {
 
 
     // ========================= SET CX / Instantiation ===========================
+    /**
+     * Creates a mapping (methods, statements) => Dynamic
+     * @param msMap            Map to fill
+     * @param allClasses        Collection of Strings specifying the soot classes that contain the keys
+     */
     public static void setDynamic(MSMap<Types> msMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
@@ -66,7 +82,11 @@ public class ResultsServer {
             }
         }
     }
-
+    /**
+     * Creates a mapping (methods, statements) => Public
+     * @param msMap            Map to fill
+     * @param allClasses        Collection of Strings specifying the soot classes that contain the keys
+     */
     public static void setPublic(MSMap<Types> msMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
