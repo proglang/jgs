@@ -69,7 +69,7 @@ public class ExampleTests3 {
         assertTrue(varTyping.getAfter(instantiation, s, b).isDynamic());
 
         // 2: if not b goto 4;
-        // pc is dynamic AFTER this statement, but right here it is still public                RIGHT?
+        // pc is dynamic AFTER this statement, but right here it is still public
         s = Code.up_2_if_not_B;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
@@ -128,7 +128,7 @@ public class ExampleTests3 {
         assertTrue(varTyping.getAfter(instantiation, s, b).isPublic());
 
         // 2: if not b goto 4;
-        // --> pc is not dynamic, but stays public since guard b is public                      RIGHT?
+        // --> pc is not dynamic, but stays public since guard b is public
         s = Code.up_2_if_not_B;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
@@ -136,7 +136,7 @@ public class ExampleTests3 {
 
 
         // 3: inc(x);
-        // --> no nsu check necessary, no change in respect to line 2,                      RIGHT?
+        // --> no nsu check necessary, no change in respect to line 2,
         s = Code.up_3_inc_B;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
