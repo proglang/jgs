@@ -1,4 +1,4 @@
-package utils.staticResults.storage;
+package utils.staticResults;
 
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
 

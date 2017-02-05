@@ -9,7 +9,11 @@ import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
+import utils.staticResults.BeforeAfterContainer;
+import utils.staticResults.MSLMap;
+import utils.staticResults.MSMap;
 import utils.staticResults.ResultsServer;
+import utils.staticResults.implementation.Types;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,15 +44,15 @@ public class Main {
 	/**
 	 * Run main with fake variable typing results.
 	 * @param args			arguments as list of strings
-	 * @param varTyping		fake var Typing map
-	 * @param cxTyping		fake cx Typing map
-	 * @param instantiation	fake instantiation map
+	 * @param varMap		fake var Typing map
+	 * @param cxMap		fake cx Typing map
+	 * @param instantiationMap	fake instantiation map
 	 */
 	public static void mainWithFakeResults(String[] args,
-										   Map<SootMethod, VarTyping> varTyping,
-										   Map<SootMethod, CxTyping> cxTyping,
-										   Map<SootMethod, Instantiation> instantiation) {
-		execute(args, true, varTyping, cxTyping, instantiation);
+										   MSLMap<BeforeAfterContainer> varMap,
+										   MSMap<Types> cxMap,
+										   MSMap<Types> instantiationMap) {
+		execute(args, true, varMap, cxMap, instantiationMap);
 	}
 
 	/**
@@ -57,9 +61,10 @@ public class Main {
      */
 	private static void execute(String[] args,
 								boolean useFakeTyping,
-								Map<SootMethod, VarTyping> varTyping,
-								Map<SootMethod, CxTyping> cxTyping,
-								Map<SootMethod, Instantiation> instantiation) {
+								MSLMap<BeforeAfterContainer> varMap,
+								MSMap<Types> cxMap,
+								MSMap<Types> instantiationMap) {
+
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
@@ -98,27 +103,27 @@ public class Main {
 
 
         // ====== Create / load fake static analysis results =====
-        Map<SootMethod, VarTyping> fakeVarTypingsMap;
-		Map<SootMethod, CxTyping> fakeCxTypingsMap;
-		Map<SootMethod, Instantiation> fakeInstantiationMap;
+		MSLMap<BeforeAfterContainer> varMapping;
+		MSMap<Types> cxMapping;
+		MSMap<Types> instantiationMapping;
 
 		// if no fake Typing is supplied, make everything dynamic
 		if (! useFakeTyping) {
-			fakeVarTypingsMap = new HashMap<>();
-			fakeCxTypingsMap = new HashMap<>();
-			fakeInstantiationMap = new HashMap<>();
+			varMapping = new MSLMap<>();
+			cxMapping = new MSMap<>();
+			instantiationMapping = new MSMap<>();
 
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
 
-			ResultsServer.setDynamicVar(fakeVarTypingsMap, allClasses);
-			ResultsServer.setDynamicCx(fakeCxTypingsMap, allClasses);
-			ResultsServer.setDynamicInst(fakeInstantiationMap, allClasses);
+			ResultsServer.setDynamic(varMapping, allClasses);
+			ResultsServer.setDynamic(cxMapping, allClasses);
+			ResultsServer.setDynamic(instantiationMapping, allClasses);
 
 		} else {
-			fakeVarTypingsMap = varTyping;
-			fakeCxTypingsMap = cxTyping;
-			fakeInstantiationMap = instantiation;
+			varMapping = varMap;
+			cxMapping = cxMap;
+			instantiationMapping = instantiationMap;
 		}
         // =================================
 
@@ -126,7 +131,7 @@ public class Main {
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap);
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 

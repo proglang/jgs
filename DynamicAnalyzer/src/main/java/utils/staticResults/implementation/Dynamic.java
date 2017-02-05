@@ -1,4 +1,4 @@
-package analyzer.level1.storage;
+package utils.staticResults.implementation;
 
 /**
  * Created by Nicolas Müller on 23.01.17.

@@ -11,7 +11,11 @@ import org.junit.runners.Parameterized;
 import soot.SootMethod;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
+import utils.staticResults.BeforeAfterContainer;
+import utils.staticResults.MSLMap;
+import utils.staticResults.MSMap;
 import utils.staticResults.ResultsServer;
+import utils.staticResults.implementation.Types;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -73,6 +77,7 @@ public class AllFakeAnalysisTests {
 
                 new Object[] { "NSU_FieldAccess2", false, StaticAnalysis.allDynamic,  new String[] {} },    // does not throw an IllFlow Except
                 new Object[] { "NSU_FieldAccess2", false, StaticAnalysis.CxPublic, new String[] {} },
+                new Object[] { "NSU_FieldAccess2", false, StaticAnalysis.VarAndCxPublic, new String[] {} },
 
                 new Object[] { "NSU_FieldAccess3", true, StaticAnalysis.allDynamic,  new String[] {"<testclasses.utils.C: boolean f>"} },
                 new Object[] { "NSU_FieldAccess3", false, StaticAnalysis.CxPublic, new String[] {} },
@@ -82,6 +87,9 @@ public class AllFakeAnalysisTests {
 
                 new Object[] { "NSU_FieldAccess5", true, StaticAnalysis.allDynamic,  new String[] {"<testclasses.utils.C: boolean f>"} },
                 new Object[] { "NSU_FieldAccess5", false, StaticAnalysis.CxPublic, new String[] {} }
+
+                //
+
        );
     }
 
@@ -95,25 +103,31 @@ public class AllFakeAnalysisTests {
         String outputDir = "junit_fakeAnalysis";
 
         // here, we need to create the appropriate fake Maps to hand over the the ClassCompiler
-        Map<SootMethod, VarTyping> fakeVarTypingsMap = new HashMap<>();
-        Map<SootMethod, CxTyping> fakeCxTypingsMap = new HashMap<>();
-        Map<SootMethod, Instantiation> fakeInstantiationMap = new HashMap<>();
+        MSLMap<BeforeAfterContainer> fakeVarTypingsMap = new MSLMap<>();
+        MSMap<Types> fakeCxTypingsMap = new MSMap<>();
+        MSMap<Types> fakeInstantiationMap = new MSMap<>();
 
         Collection<String> allClasses = Arrays.asList("testclasses." + name);
         switch (analysisResult) {
             case allDynamic:
-                ResultsServer.setDynamicVar(fakeVarTypingsMap, allClasses);
-                ResultsServer.setDynamicCx(fakeCxTypingsMap, allClasses);
-                ResultsServer.setDynamicInst(fakeInstantiationMap, allClasses);
+                ResultsServer.setDynamic(fakeVarTypingsMap, allClasses);
+                ResultsServer.setDynamic(fakeCxTypingsMap, allClasses);
+                ResultsServer.setDynamic(fakeInstantiationMap, allClasses);
                 break;
             case CxPublic:
-                ResultsServer.setDynamicVar(fakeVarTypingsMap, allClasses);
-                ResultsServer.setPublicCx(fakeCxTypingsMap, allClasses);
-                ResultsServer.setDynamicInst(fakeInstantiationMap, allClasses);
+                ResultsServer.setDynamic(fakeVarTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
+                ResultsServer.setDynamic(fakeInstantiationMap, allClasses);
+                break;
+            case VarAndCxPublic:
+                ResultsServer.setPublic(fakeVarTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
+                ResultsServer.setDynamic(fakeInstantiationMap, allClasses);
                 break;
             default:
                 throw new InternalAnalyzerException("Invalid analysis result requested!");
         }
+
 
 
         ClassCompiler.compileWithFakeTyping(name, outputDir, fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap);
@@ -128,5 +142,7 @@ public class AllFakeAnalysisTests {
  * Desribe how we want the fake analysis results the be
  */
 enum StaticAnalysis {
-    allDynamic, CxPublic
+    allDynamic,         // Var, Cx & Instantiation all return Dynamic on any request
+    CxPublic,           // same as allDynamic, except for Cx, which returns public on any request
+    VarAndCxPublic      // same as CxPublic, except for Var, which returns public on any request
     }

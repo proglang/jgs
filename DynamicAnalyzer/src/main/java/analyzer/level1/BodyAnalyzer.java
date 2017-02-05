@@ -1,12 +1,15 @@
 package analyzer.level1;
 
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
-import utils.staticResults.storage.CxTypingEverythingDynamic;
-import utils.staticResults.storage.InstantiationEverythingDynamic;
-import utils.staticResults.storage.VarTypingEverythingDynamic;
+import utils.staticResults.BeforeAfterContainer;
+import utils.staticResults.MSLMap;
+import utils.staticResults.MSMap;
+import utils.staticResults.implementation.Types;
 import utils.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;
@@ -14,11 +17,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.is;
 
 /**
  * This Analyzer is applied to every method.
@@ -34,15 +32,15 @@ import static org.hamcrest.CoreMatchers.is;
  */
 public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
-    Map<SootMethod, VarTypingEverythingDynamic> fakeVarTypingsMap;
-    Map<SootMethod, CxTypingEverythingDynamic> fakeCxTypingsMap;
-    Map<SootMethod, InstantiationEverythingDynamic> fakeInstantiationMap;
-    public BodyAnalyzer(Map<SootMethod, VarTypingEverythingDynamic> fakeVarTyping,
-                        Map<SootMethod, CxTypingEverythingDynamic> fakeCxTyping,
-                        Map<SootMethod, InstantiationEverythingDynamic> fakeInstantiation) {
-        fakeVarTypingsMap = fakeVarTyping;
-        fakeCxTypingsMap = fakeCxTyping;
-        fakeInstantiationMap = fakeInstantiation;
+	MSLMap<BeforeAfterContainer> varMapping;
+	MSMap<Types> cxMapping;
+	MSMap<Types> instantiationMapping;
+    public BodyAnalyzer(MSLMap<BeforeAfterContainer> varMap,
+                        MSMap<Types> cxMap,
+                        MSMap<Types> instantiationMap) {
+        varMapping = varMap;
+        cxMapping = cxMap;
+        instantiationMapping = instantiationMap;
     }
 
     /**
@@ -109,15 +107,8 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
         // Body-Analyz implementiert Analyse in EINER Methode. Neu aufgerufen für jede Methode
 		JimpleInjector.setBody(body);
 
-        assertThat("fake Variable Typing for " + method + " not found in fakeVarTypingsMap", fakeVarTypingsMap.get(method), not(is((nullValue()))));
-        assertThat("fake Cx Typing for " + method + " not found in fakeCxTypingsMap", fakeCxTypingsMap.get(method), not(is((nullValue()))));
-        assertThat("fake Instrumentation Typing for " + method + " not found in fakeInstrumentationMap", fakeInstantiationMap.get(method), not(is((nullValue()))));
-
-
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
-		JimpleInjector.setStaticAnalaysisResults(fakeVarTypingsMap.get(method),
-                                                    fakeCxTypingsMap.get(method),
-                                                    fakeInstantiationMap.get(method));
+		JimpleInjector.setStaticAnalaysisResults(varMapping.getVar(method), cxMapping.getCx(method), instantiationMapping.getInst(method));
 
 		units = body.getUnits();
 		locals = body.getLocals();

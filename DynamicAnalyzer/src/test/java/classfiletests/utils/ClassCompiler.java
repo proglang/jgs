@@ -11,6 +11,10 @@ import utils.logging.L1Logger;
 import main.Main;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
+import utils.staticResults.BeforeAfterContainer;
+import utils.staticResults.MSLMap;
+import utils.staticResults.MSMap;
+import utils.staticResults.implementation.Types;
 
 /**
  * Compiles a given class using the main.Main.main method.
@@ -36,9 +40,10 @@ public class ClassCompiler {
 				+ outputDir);
 	}
 
-	public static void compileWithFakeTyping(String name, String outputDir, Map<SootMethod, VarTyping> varTyping,
-											 Map<SootMethod, CxTyping> cxTyping,
-											 Map<SootMethod, Instantiation> instantiation) {
+	public static void compileWithFakeTyping(String name, String outputDir,
+											 MSLMap<BeforeAfterContainer> varTyping,
+											 MSMap<Types> cxTyping,
+											MSMap<Types> instantiation) {
 		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started. Using fake static analysis results");
 		Main.mainWithFakeResults(args, varTyping, cxTyping, instantiation);

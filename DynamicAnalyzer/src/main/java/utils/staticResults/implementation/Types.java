@@ -1,4 +1,4 @@
-package analyzer.level1.storage;
+package utils.staticResults.implementation;
 
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;

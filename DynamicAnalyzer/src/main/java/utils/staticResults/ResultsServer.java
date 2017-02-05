@@ -1,16 +1,12 @@
 package utils.staticResults;
 
+import utils.staticResults.implementation.Dynamic;
+import utils.staticResults.implementation.Public;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
-import soot.Body;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootMethod;
-import utils.staticResults.storage.CxTypingEverythingDynamic;
-import utils.staticResults.storage.CxTypingEverythingPublic;
-import utils.staticResults.storage.InstantiationEverythingDynamic;
-import utils.staticResults.storage.VarTypingEverythingDynamic;
+import soot.*;
+import soot.jimple.Stmt;
+import utils.staticResults.implementation.Types;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,60 +19,71 @@ public class ResultsServer {
 
     /**
      * Fill the varTyping map with all dynamic entries
-     * @param varTyping
      * @param allClasses
      */
-    public static void setDynamicVar(Map<SootMethod, VarTyping> varTyping, Collection<String> allClasses) {
-
-
+    public static void setDynamic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
             sootClass.setApplicationClass();
 
             for (SootMethod sm : sootClass.getMethods()) {
                 Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+                for (Unit u: b.getUnits()) {
+                    Stmt stmt = (Stmt) u;
+                    for (Local l: b.getLocals()) {
+                        BeforeAfterContainer tmp = new BeforeAfterContainer<>(new Dynamic<>(), new Dynamic<>());
+                        mslMap.put(sm, stmt, l, tmp);
+                    }
+                }
+            }
+        }
+    }
 
-                varTyping.put(sm, new VarTypingEverythingDynamic(b));
+    public static void setPublic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
+        for (String s : allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm : sootClass.getMethods()) {
+                Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+                for (Unit u: b.getUnits()) {
+                    Stmt stmt = (Stmt) u;
+                    for (Local l: b.getLocals()) {
+                        mslMap.put(sm, stmt, l, new BeforeAfterContainer<>(new Public<>(), new Public<>()));
+                    }
+                }
             }
         }
     }
 
 
-    public static void setDynamicCx(Map<SootMethod, CxTyping> cxTyping, Collection<String> allClasses) {
+    // ========================= SET CX / Instantiation ===========================
+    public static void setDynamic(MSMap<Types> msMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
             sootClass.setApplicationClass();
 
             for (SootMethod sm : sootClass.getMethods()) {
                 Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
-
-                cxTyping.put(sm, new CxTypingEverythingDynamic(b));
+                for (Unit u: b.getUnits()) {
+                    Stmt stmt = (Stmt) u;
+                    msMap.put(sm, stmt, new Dynamic<>());
+                }
             }
         }
     }
 
-    public static void setPublicCx(Map<SootMethod, CxTyping> cxTyping, Collection<String> allClasses) {
+    public static void setPublic(MSMap<Types> msMap, Collection<String> allClasses) {
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
             sootClass.setApplicationClass();
 
             for (SootMethod sm : sootClass.getMethods()) {
                 Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
-
-                cxTyping.put(sm, new CxTypingEverythingPublic(b));
-            }
-        }
-    }
-
-    public static void setDynamicInst(Map<SootMethod, Instantiation> instantiation, Collection<String> allClasses) {
-        for (String s : allClasses) {
-            SootClass sootClass = Scene.v().loadClassAndSupport(s);
-            sootClass.setApplicationClass();
-
-            for (SootMethod sm : sootClass.getMethods()) {
-                Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
-
-                instantiation.put(sm, new InstantiationEverythingDynamic(b));
+                for (Unit u: b.getUnits()) {
+                    Stmt stmt = (Stmt) u;
+                    msMap.put(sm, stmt, new Public<>());
+                }
             }
         }
     }
