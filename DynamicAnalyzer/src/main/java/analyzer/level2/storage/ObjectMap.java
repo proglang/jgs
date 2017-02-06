@@ -201,6 +201,12 @@ public class ObjectMap{
 	 * @return security-level 
 	 */
 	public Object setField(Object object, String field, Object securityLevel) {
+		// TODO seems like implicit dependency on getFieldLevel. Correct?
+		// If if-stmt is left out, NullPointerException. Thus, i inserted it. - Nico, 04.02.2016
+		if (!innerMap.containsKey(object)) {
+			insertNewObject(object);
+		}
+
 		innerMap.get(object).put(field, securityLevel);
 		return innerMap.get(object).get(field);
 	}

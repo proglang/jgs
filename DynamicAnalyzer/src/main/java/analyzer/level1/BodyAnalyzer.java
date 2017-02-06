@@ -1,15 +1,15 @@
 package analyzer.level1;
 
-import soot.Body;
-import soot.BodyTransformer;
-import soot.Local;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Unit;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
+import utils.staticResults.BeforeAfterContainer;
+import utils.staticResults.MSLMap;
+import utils.staticResults.MSMap;
+import utils.staticResults.implementation.Types;
 import utils.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;
@@ -30,9 +30,20 @@ import java.util.logging.Logger;
  * @author koenigr
  *
  */
-public class BodyAnalyzer extends BodyTransformer{
+public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
-	/**
+	MSLMap<BeforeAfterContainer> varMapping;
+	MSMap<Types> cxMapping;
+	MSMap<Types> instantiationMapping;
+    public BodyAnalyzer(MSLMap<BeforeAfterContainer> varMap,
+                        MSMap<Types> cxMap,
+                        MSMap<Types> instantiationMap) {
+        varMapping = varMap;
+        cxMapping = cxMap;
+        instantiationMapping = instantiationMap;
+    }
+
+    /**
 	 * internalTransform is an internal soot method, which is called somewhere along the way.
 	 * for us, it serves as an entry point to the instrumentation process
 	 */
@@ -73,7 +84,6 @@ public class BodyAnalyzer extends BodyTransformer{
 		Logger logger = L1Logger.getLogger();
 		
 		try { 
-
 			System.out.println("Logger Init2");
 			L1Logger.setup(Level.ALL);
 		} catch (IOException e) {
@@ -91,12 +101,19 @@ public class BodyAnalyzer extends BodyTransformer{
 		stmtSwitch = new AnnotationStmtSwitch(body);
 
 		DominatorFinder.init(body);
-				
+
+		// für jeden methodenbody wird der Bodyanalyzer einmal "ausgeführt"
+        // Intraprozedurale Methode
+        // Body-Analyz implementiert Analyse in EINER Methode. Neu aufgerufen für jede Methode
 		JimpleInjector.setBody(body);
+
+		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
+		JimpleInjector.setStaticAnalaysisResults(varMapping.getVar(method), cxMapping.getCx(method), instantiationMapping.getInst(method));
 
 		units = body.getUnits();
 		locals = body.getLocals();
-				
+
+
 		// invokeHS should be at the beginning of every method-body. 
 		// It creates a map for locals.
 		JimpleInjector.invokeHS();

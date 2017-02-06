@@ -24,7 +24,8 @@ public class ExampleTests3 {
           1: b := p1;
           2: if not b goto 4;
           3: inc(x);
-          4: return b;
+          4: return x;          // if ist "geschlossen" nach dem INC, return_x ist ein postdominator, von daher ist der
+                                // PC wieder public
       }
      */
 
@@ -68,7 +69,7 @@ public class ExampleTests3 {
         assertTrue(varTyping.getAfter(instantiation, s, b).isDynamic());
 
         // 2: if not b goto 4;
-        // pc is dynamic AFTER this statement, but right here it is still public                RIGHT?
+        // pc is dynamic AFTER this statement, but right here it is still public
         s = Code.up_2_if_not_B;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
@@ -85,7 +86,7 @@ public class ExampleTests3 {
 
         // 4: return b;
         // no NSU
-        // --> PC must still be dynamic, right?!
+        // --> PC is again public, da wo die IFs geschlossen werden, wird der "effekt" des if wieder aufgehoben
         s = Code.up_4_return_B;
         assertTrue(cxTyping.get(instantiation, s).isDynamic());
     }
@@ -127,7 +128,7 @@ public class ExampleTests3 {
         assertTrue(varTyping.getAfter(instantiation, s, b).isPublic());
 
         // 2: if not b goto 4;
-        // --> pc is not dynamic, but stays public since guard b is public                      RIGHT?
+        // --> pc is not dynamic, but stays public since guard b is public
         s = Code.up_2_if_not_B;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
@@ -135,14 +136,14 @@ public class ExampleTests3 {
 
 
         // 3: inc(x);
-        // --> no nsu check necessary, no change in respect to line 2,                      RIGHT?
+        // --> no nsu check necessary, no change in respect to line 2,
         s = Code.up_3_inc_B;
         assertTrue(cxTyping.get(instantiation, s).isPublic());
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
         assertTrue(varTyping.getAfter(instantiation, s, b).isPublic());
 
         // 4: return b;
-        // ---> no NSU. Output remains dymanic
+        // ---> no NSU. Output b would be public, output x would be dynamic. PC stays public the whole time.
         s = Code.up_4_return_B;
         assertTrue(varTyping.getAfter(instantiation, s, x).isDynamic());
     }
