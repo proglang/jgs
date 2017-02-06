@@ -1,5 +1,6 @@
 package utils.parser;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -42,12 +43,16 @@ public class ArgumentContainer {
         }
     }
 
-    // output Folder wäre Optional<String>
     public String getOutputFolderAbsolutePath() {
         if (outputFolder.equals(VALUE_NOT_SET)) {
-            return PathHelper.getBaseDirOfProjectViaClassloader().getAbsolutePath();
+            return System.getProperty("user.dir");
         } else {
-            return PathHelper.toAbsolutePath(outputFolder);
+            File out = new File(outputFolder);
+            if (out.isAbsolute()) {
+                return outputFolder;
+            } else {
+                return new File(System.getProperty("user.dir"), outputFolder).getAbsolutePath();
+            }
         }
     }
 

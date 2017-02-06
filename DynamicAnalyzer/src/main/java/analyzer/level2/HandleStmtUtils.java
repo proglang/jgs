@@ -11,7 +11,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HandleStmtUtils {
-	
+
+	// SetLogger Methode die den logger ändert, jimple injector soll zu beginn der main methode, bevor was anderes
+	// passiert, soll er setLogger aufrufen
+
+	//
+
 	Logger logger = L2Logger.getLogger();
 	private LocalMap localmap;
 	private static ObjectMap objectmap;
