@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "ImplicitFlow1";
+	public String name = "NSUPolicy";
 
 	private boolean hasIllegalFlow = true;
 
@@ -38,7 +38,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	private String[] involvedVars = new String[] {"java.lang.String_$r6"};
+	private String[] involvedVars = new String[] {"int_i0"};
 
 	private Logger logger = L1Logger.getLogger();
 

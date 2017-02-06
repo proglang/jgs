@@ -23,17 +23,20 @@ public class HandleStmt {
 	private LocalMap localmap;
 	private static ObjectMap objectmap;
 	private HandleStmtUtils handleStatementUtils;
+	private boolean controllerIsActive;
 
 	/**
 	 * This must be called at the beginning of every method in the analyzed
 	 * code. It creates a new LocalMap for the method and adjusts the
 	 * {@link SecurityLevel} of the globalPC
 	 */
-	public HandleStmt() {
+	public HandleStmt(boolean controllerIsActive) {
 		logger.log(Level.INFO, "Create new HandleStmt instance");
 		localmap = new LocalMap();
 		objectmap = ObjectMap.getInstance();
-		handleStatementUtils = new HandleStmtUtils(localmap, objectmap);
+
+		this.controllerIsActive = controllerIsActive;
+		handleStatementUtils = new HandleStmtUtils(localmap, objectmap, controllerIsActive);
 
 		objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
 				objectmap.getGlobalPC(), localmap.getLocalPC()));
@@ -808,8 +811,8 @@ public class HandleStmt {
 	public void checkThatLe(String signature, String level) {
 		logger.info("Check if " + signature + " is less/equal " + level);
 		if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))){
-			handleStatementUtils.abort("Pasad argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" + 
-			" which requres a security level of less/eqal " + level );
+			handleStatementUtils.abort("Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" +
+			" which requires a security level of less/equal " + level );
 		}
 	}
 
@@ -819,6 +822,7 @@ public class HandleStmt {
 	 * lessThan MEDIUM for SecurePrinter.printMedium(String s);
 	 * @param level		level the PC must be less/equal than.
 	 */
+	@SuppressWarnings("unused")
 	public void checkThatPCLe(String level) {
 		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
 		if (!SecurityLevel.le(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
