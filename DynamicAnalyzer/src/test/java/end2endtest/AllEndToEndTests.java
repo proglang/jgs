@@ -3,6 +3,7 @@ package end2endtest;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
+import classfiletests.utils.ExpectedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 public class AllEndToEndTests {
 
 	private final String name;
-	private final boolean hasIllegalFlow;
+	private final ExpectedException expectedException;
 	private final String[] involvedVars;
 
 	/**
@@ -25,17 +26,17 @@ public class AllEndToEndTests {
 	 * 
 	 * @param name
 	 *            Name of the class
-	 * @param hasIllegalFlow
-	 *            true if an exception is expected
+	 * @param expectedException
+	 *            specifiy if, and what kind of exception is expected
 	 * @param involvedVars
 	 *            variables which are expected to be involved in the exception
 	 */
-	public AllEndToEndTests(String name, boolean hasIllegalFlow,
+	public AllEndToEndTests(String name, ExpectedException expectedException,
 			String... involvedVars) {
 
 		this.name = name;
-		this.hasIllegalFlow = hasIllegalFlow;
 		this.involvedVars = involvedVars;
+		this.expectedException = expectedException;
 	}
 
 	Logger logger = L1Logger.getLogger();
@@ -49,87 +50,87 @@ public class AllEndToEndTests {
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
-				new Object[] { "AccessFieldsOfObjectsFail", true, new String[] { "java.lang.String_$r6" } }, 	
-				new Object[] { "AccessFieldsOfObjectsSuccess", false, new String[] {} },
+				new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, new String[] { "java.lang.String_$r6" } },
+				new Object[] { "AccessFieldsOfObjectsSuccess", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "ArithmeticExpressionsFail", true, new String[] { "int_i0" } }, 						
-				new Object[] { "ArithmeticExpressionsSuccess", false, new String[] {} },
+				new Object[] { "ArithmeticExpressionsFail", ExpectedException.ILLEGAL_FLOW, new String[] { "int_i0" } },
+				new Object[] { "ArithmeticExpressionsSuccess", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "ArrayRefFail", true, new String[] {"java.lang.String_$r7"} }, 					
-				new Object[] { "ArrayRefSuccess", false, new String[] {} }, 									
+				new Object[] { "ArrayRefFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_$r7"} },
+				new Object[] { "ArrayRefSuccess", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "BooleanPrintFail", true, new String[] {"boolean_z1"} }, 						
+				new Object[] { "BooleanPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_z1"} },
 
-				new Object[] { "DirectPrintFail", true, new String[] {"java.lang.Object_$r3"} }, 						
+				new Object[] { "DirectPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
 
 				// ExternalFail1 is fully tested in tests.end2endtest.compileToJarTests
 				// new Object[] { "ExternalFail1", true, new String[] {} },
-				new Object[] { "ExternalFail2", true, new String[] {"int_i0"} },
+				new Object[] { "ExternalFail2", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
 				
-				new Object[] { "EqualObjectsVerifySuccess", false, new String[] {} },
+				new Object[] { "EqualObjectsVerifySuccess", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "DominatorNullPointer", false, new String[] {} },
+				new Object[] { "DominatorNullPointer", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "FieldsSuccess", false, new String[] {} },
-				new Object[] { "FieldWriteFail", true, new String[] {"testclasses.FieldWriteFail<testclasses.FieldWriteFail: int field>"} },
+				new Object[] { "FieldsSuccess", ExpectedException.NONE, new String[] {} },
+				new Object[] { "FieldWriteFail", ExpectedException.ILLEGAL_FLOW, new String[] {"testclasses.FieldWriteFail<testclasses.FieldWriteFail: int field>"} },
 				
-				new Object[] { "IfStmtSuccess", false, new String[] {"byte_b1"} }, 								
-				new Object[] { "IfStmtFail", true, new String[] { "int_i0" } }, 								
+				new Object[] { "IfStmtSuccess", ExpectedException.NONE, new String[] {"byte_b1"} },
+				new Object[] { "IfStmtFail", ExpectedException.ILLEGAL_FLOW, new String[] { "int_i0" } },
 				
 				// Implicit flow from high-if guard to low-sec return
-				new Object[] { "ImplicitFlow1", true, new String[] {"byte_b1"} },
-				new Object[] { "ImplicitFlow2", true, new String[] {"Invalid security context"} },
-				new Object[] { "ImplicitFlow3", true, new String[] {"Invalid security context"} },
+				new Object[] { "ImplicitFlow1", ExpectedException.ILLEGAL_FLOW, new String[] {"byte_b1"} },
+				new Object[] { "ImplicitFlow2", ExpectedException.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
+				new Object[] { "ImplicitFlow3", ExpectedException.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
 
-				new Object[] { "LowFieldHighInstance", true, new String[] {"boolean_z0"} },
+				new Object[] { "LowFieldHighInstance", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_z0"} },
 			
 				// Examples from readme.md
-				new Object[] { "NSUPolicy", true, new String[] {"int_i0"} },
-				new Object[] { "NSUPolicy2", true, new String[] {"boolean_$z2"} },
-				new Object[] { "NSUPolicy3", true, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSUPolicy4", true, new String[] {"java.lang.String_r5"} },
+				new Object[] { "NSUPolicy", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
+				new Object[] { "NSUPolicy2", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_$z2"} },
+				new Object[] { "NSUPolicy3", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSUPolicy4", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_r5"} },
 
 				// More NSU Tests
-				new Object[] { "NSU_FieldAccess", true, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccessStatic", true, new String[] {"int f"} },
-				new Object[] { "NSU_FieldAccess2", false, new String[] {} },
-				new Object[] { "NSU_FieldAccess3", true, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccess4", true, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccess5", true, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccessStatic", ExpectedException.ILLEGAL_FLOW, new String[] {"int f"} },
+				new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, new String[] {} },
+				new Object[] { "NSU_FieldAccess3", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess4", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess5", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
 				
-				new Object[] { "NSU_ForLoopSuccess", false, new String[] {} },
-				new Object[] { "NSU_ForLoopFail", true, new String[] {"byte_b1"} }, 	
+				new Object[] { "NSU_ForLoopSuccess", ExpectedException.NONE, new String[] {} },
+				new Object[] { "NSU_ForLoopFail", ExpectedException.ILLEGAL_FLOW, new String[] {"byte_b1"} },
 				
-				new Object[] { "NSU_SwitchStmtFail", true, new String[] { "java.lang.String_r1" } }, 
+				new Object[] { "NSU_SwitchStmtFail", ExpectedException.ILLEGAL_FLOW, new String[] { "java.lang.String_r1" } },
 				
 				// two special cases, where compiler optimisation prevents NSU Exceptions
-				new Object[] { "NSU_IfStmtSpecialCase", false, new String[] {  } }, 
-				new Object[] { "NSU_SwitchStmtSpecialCase", false, new String[] {  } }, 
+				new Object[] { "NSU_IfStmtSpecialCase", ExpectedException.NONE, new String[] {  } },
+				new Object[] { "NSU_SwitchStmtSpecialCase", ExpectedException.NONE, new String[] {  } },
 
-				new Object[] { "MakeHigh", false, new String[] {} },
+				new Object[] { "MakeHigh", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "MulArray", false, new String[] {} },
-				new Object[] { "MulArrayFail", true, new String[] {"java.lang.String_$r"} },
+				new Object[] { "MulArray", ExpectedException.NONE, new String[] {} },
+				new Object[] { "MulArrayFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_$r"} },
 				
 				// Testing implicit and explicit flow with classes (which is unimplemented currently)
-				new Object[] { "NewClassFail1", true, new String[] {"testclasses.utils.C_r4"} },
+				new Object[] { "NewClassFail1", ExpectedException.ILLEGAL_FLOW, new String[] {"testclasses.utils.C_r4"} },
 				
-				new Object[] { "NonStaticMethodsSuccess", false, new String[] {} },								
-				new Object[] { "NonStaticMethodsFail", true, new String[] {"int_i0"} }, 						
+				new Object[] { "NonStaticMethodsSuccess", ExpectedException.NONE, new String[] {} },
+				new Object[] { "NonStaticMethodsFail", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
 			
 				// This is a collection of expressions that are not currently supported
 				// new Object[] { "NotSupported", false, new String[] {} }, 
 				
-				new Object[] { "PrivateVariableSuccess", false, new String[] {} }, 
+				new Object[] { "PrivateVariableSuccess", ExpectedException.NONE, new String[] {} },
 				
 				// Acting with Mediums!
-				new Object[] { "PrintMediumSuccess", false, new String[] {} }, 
-				new Object[] { "PrintMediumFail", true, new String[] {"java.lang.String_r3"} }, 
-				new Object[] { "PrintMediumFail2", true, new String[] {"java.lang.String_r3"} }, 
+				new Object[] { "PrintMediumSuccess", ExpectedException.NONE, new String[] {} },
+				new Object[] { "PrintMediumFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_r3"} },
+				new Object[] { "PrintMediumFail2", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_r3"} },
 				
 				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
-				new Object[] { "SystemOut1", true, new String[] {"int_i0"} },
-				new Object[] { "SystemOut2", true, new String[] {"java.lang.Object_$r3"} },						
+				new Object[] { "SystemOut1", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
+				new Object[] { "SystemOut2", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
 				
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
 				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
@@ -138,10 +139,10 @@ public class AllEndToEndTests {
 				// new Object[] { "StaticMethodsFail", true, new String[] {} },
 				
 				// SwitchStmtFail{1, 2} are very similar, but behave differently
-				new Object[] { "SwitchStmt", false, new String[] {} },
+				new Object[] { "SwitchStmt", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "WhileLoop", false, new String[] {} }, 
-				new Object[] { "WhileLoopFail", true, new String[] { "int_i1" } });
+				new Object[] { "WhileLoop", ExpectedException.NONE, new String[] {} },
+				new Object[] { "WhileLoopFail", ExpectedException.ILLEGAL_FLOW, new String[] { "int_i1" } });
 	}
 
 	@Test
@@ -154,7 +155,7 @@ public class AllEndToEndTests {
 
 		String outputDir = "junit";
 		ClassCompiler.compile(name, outputDir);
-		ClassRunner.testClass(name, outputDir, hasIllegalFlow, involvedVars);
+		ClassRunner.testClass(name, outputDir, expectedException, involvedVars);
 
 		logger.info("Finished executing testclasses." + name + "");
 	}

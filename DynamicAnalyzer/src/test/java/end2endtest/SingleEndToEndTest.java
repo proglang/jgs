@@ -3,6 +3,7 @@ package end2endtest;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
+import classfiletests.utils.ExpectedException;
 import org.junit.Test;
 import utils.logging.L1Logger;
 
@@ -24,7 +25,7 @@ public class SingleEndToEndTest {
 
 	public String name = "NSUPolicy";
 
-	private boolean hasIllegalFlow = true;
+	private ExpectedException expectedException = ExpectedException.ILLEGAL_FLOW;
 
 	/**
 	 * Define the involved vars here. Involved vars are those that are present
@@ -50,7 +51,7 @@ public class SingleEndToEndTest {
 		// the output directory, where the compiled binary is put. 
 		String outputDir = "junit";
 		ClassCompiler.compile(name, outputDir);
-		ClassRunner.testClass(name, outputDir, hasIllegalFlow, involvedVars);
+		ClassRunner.testClass(name, outputDir, expectedException, involvedVars);
 
 		logger.info("Finished executing testclasses." + name + "");
 	}

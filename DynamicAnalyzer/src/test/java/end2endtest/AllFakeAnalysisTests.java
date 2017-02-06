@@ -80,7 +80,7 @@ public class AllFakeAnalysisTests {
 
                 // NSU on static fields
                 new Object[] { "NSU_FieldAccess", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.allDynamic,  false, new String[] {"<testclasses.utils.C: boolean f>"} },
-                new Object[] { "NSU_FieldAccess", ExpectedException.NONE, false, StaticAnalysis.CxPublic, false, new String[] {} },
+                new Object[] { "NSU_FieldAccess", ExpectedException.NONE,  StaticAnalysis.CxPublic, false, new String[] {} },
 
                 new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.allDynamic,  false, new String[] {} },    // does not throw an IllFlow Except
                 new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.CxPublic, false, new String[] {} },

@@ -1,7 +1,7 @@
 package classfiletests.utils;
 
 /**
- * Kinds of exceptions we can possibily expect in our test cases.
+ * Created by Nicolas Müller on 06.02.17.
  */
 public enum ExpectedException {
     NONE,
