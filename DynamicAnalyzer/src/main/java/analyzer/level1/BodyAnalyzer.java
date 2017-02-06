@@ -121,6 +121,7 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 				
 		if (method.isMain()) {
 			JimpleInjector.initHS();
+			JimpleInjector.initHandleStmtUtils(false);
 		}
 
 		/*

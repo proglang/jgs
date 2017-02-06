@@ -30,16 +30,18 @@ public class HandleStmt {
 	 * code. It creates a new LocalMap for the method and adjusts the
 	 * {@link SecurityLevel} of the globalPC
 	 */
-	public HandleStmt(boolean controllerIsActive) {
+	public HandleStmt() {
 		logger.log(Level.INFO, "Create new HandleStmt instance");
 		localmap = new LocalMap();
 		objectmap = ObjectMap.getInstance();
+	}
 
+	@SuppressWarnings("unused")
+    public void initHandleStmtUtils(boolean controllerIsActive) {
 		this.controllerIsActive = controllerIsActive;
 		handleStatementUtils = new HandleStmtUtils(localmap, objectmap, controllerIsActive);
-
-		objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
-				objectmap.getGlobalPC(), localmap.getLocalPC()));
+        objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
+                objectmap.getGlobalPC(), localmap.getLocalPC()));
 	}
 
 	/**
