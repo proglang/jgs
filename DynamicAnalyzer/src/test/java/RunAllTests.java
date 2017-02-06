@@ -1,3 +1,4 @@
+import end2endtest.AllFakeAnalysisTests;
 import end2endtest.compileToJarTests;
 import analyzer.level2.AssignFieldsFail;
 import analyzer.level2.AssignFieldsSuccess;
@@ -67,15 +68,18 @@ import end2endtest.AllEndToEndTests;
     // Test for SecurityOptinal Container
     SecurityOptionalTest.class,
     
-    // Test for commandline arguments and correct path output
-    compileToJarTests.class,
-    
     // Tests for LowMiddleHigh Lattice
     LowMiddleHighTest.class,
 
     // Tests for valid bytecode of testclasses
     AllEndToEndTests.class,
     // SingleEndToEndTest.class		// SingleE2E is subset of AllE2E-Tests, so no need to rerun!
+
+    // Test for commandline arguments and correct path output
+    compileToJarTests.class,
+
+        // Test with fake static analysis
+        AllFakeAnalysisTests.class,
     })
 
 public class RunAllTests {

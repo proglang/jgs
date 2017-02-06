@@ -17,8 +17,6 @@ import java.net.URLClassLoader;
 import java.util.logging.Logger;
 import java.io.File;
 
-import junit.framework.Test;
-
 /**
  * Helper Class to run a given binary class file, and see whether of not it
  * throws the desired exception. Used by the end-to-end tests.

@@ -2,6 +2,9 @@ package analyzer.level1;
 
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.ArrayType;
 import soot.Body;
 import soot.IntType;
@@ -135,6 +138,13 @@ public class JimpleInjector {
 	static Unit lastPos;
 
 	/**
+     * Stores the results of the static analysis. Use Lvel instead of Level because of conflicts with the LEVEL of the Logger.
+	 */
+    static VarTyping varTyping;
+	static CxTyping cxTyping;
+	static Instantiation instantiation;
+
+	/**
 	 * See method with same name in HandleStatement.
 	 * @param signatureOfLeftSide
 	 * @param pos
@@ -240,7 +250,8 @@ public class JimpleInjector {
 	 * @param local The Local
 	 */
 	public static void addLocal(Local local) {
-		logger.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
+
+	    logger.log(Level.INFO, "Add Local {0} in method {1}",new Object[] {
 				getSignatureForLocal(local), b.getMethod().getName()});
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
@@ -671,7 +682,8 @@ public class JimpleInjector {
 		Stmt assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(signature));
 		
-		// insert setLevelOfLOcal
+		// insert setLevelOfLOcal, which accumulates the PC and the right-hand side of the assign stmt.
+		// The local's sec-value is then set to that sec-value.
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
 				"setLevelOfLocal", paramTypes, 
@@ -679,17 +691,26 @@ public class JimpleInjector {
 				false), local_for_Strings);
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 		
-		// insert checkLocalPC
+		// insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
+		// only needs to be done if CxTyping of Statement is Dynamic
 		Expr checkLocalPC = Jimple.v().newVirtualInvokeExpr(
-				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-				"checkLocalPC", paramTypes, 
+				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+				"checkLocalPC", paramTypes,
 				VoidType.v(),
 				false), local_for_Strings);
 		Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
-		
-		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+
+		// if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
+        // and we especially do not need to perform a NSU check!
+		// if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+
+            // insert NSU check only if PC is dynamic!
+            if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
+            }
+            unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+        // }
 		lastPos = pos;
 	}
 	
@@ -715,9 +736,7 @@ public class JimpleInjector {
 		ArrayList<Type> parameterTypes = new ArrayList<Type>();
 		parameterTypes.add(RefType.v("java.lang.Object"));
 		parameterTypes.add(RefType.v("java.lang.String"));
-		
-		// units.getFirst is already a reference to @this
-		// Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+
 		
 		// Retrieve the object it belongs to
 		Local tmpLocal = (Local) f.getBase();
@@ -743,6 +762,8 @@ public class JimpleInjector {
 				);
 		
 		// insert: checkGlobalPC(Object, String)
+        // why do we check the global PC? Because the field is possibily visible everywhere, check that sec-value of field is greater
+        // or equal than the global PC.
 		Expr checkGlobalPC	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "checkGlobalPC", 
@@ -750,7 +771,7 @@ public class JimpleInjector {
 				tmpLocal, local_for_Strings);
 		Unit checkGlobalPCExpr = Jimple.v().newInvokeStmt(checkGlobalPC);
 		
-		// insert setLevelOfField
+		// insert setLevelOfField, which sets Level of Field to the join of gPC and right-hand side of assign stmt sec-value join
 		Expr addObj	= Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(
 				Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField", 
@@ -762,8 +783,11 @@ public class JimpleInjector {
 		// see NSU_FieldAccess tests why this is needed
 		unitStore_Before.insertElement(unitStore_Before.new Element(pushInstanceLevelToGlobalPC, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
-		unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
+		// only if context ist dynamic / pc is dynamc
+		if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+			unitStore_Before.insertElement(unitStore_After.new Element(checkGlobalPCExpr, pos));
+		}
+        unitStore_Before.insertElement(unitStore_After.new Element(assignExpr, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(popGlobalPC, pos));
 		lastPos = pos;
 	}
@@ -811,7 +835,9 @@ public class JimpleInjector {
 		unitStore_Before.insertElement(
 				unitStore_Before.new Element(assignDeclaringClass, pos));
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-		unitStore_Before.insertElement(unitStore_Before.new Element(checkGlobalPCExpr, pos));
+        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(checkGlobalPCExpr, pos));
+        }
 		unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
 		lastPos = pos;
 	}
@@ -1365,4 +1391,10 @@ public class JimpleInjector {
 			i++;
 		}
 	}
+
+    public static <Lvel> void setStaticAnalaysisResults(VarTyping<Lvel> varTy, CxTyping<Lvel> cxTy, Instantiation<Lvel> inst) {
+	    varTyping = varTy;
+	    cxTyping = cxTy;
+	    instantiation = inst;
+    }
 }

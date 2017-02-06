@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 public class compileToJarTests {
@@ -64,7 +65,9 @@ public class compileToJarTests {
      */
     @Test
     public void pathTestP() {
-        String testFile = "NSUPolicy1";        // SHOULD BE NSUPolicy1 !! Not working right now
+        String testFile = "NSUPolicy1";        // SHOULD BE NSUPolicy1
+        File inputFile = new File(extPath.getAbsolutePath(), "/testclasses/" + testFile + ".java");
+        assertThat( "Input file cannot be found at " + inputFile.getAbsolutePath(), inputFile.exists(), is(Boolean.TRUE));
 
         main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", extPath.getAbsolutePath()});
         File outParent = new File(System.getProperty("user.dir"));

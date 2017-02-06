@@ -20,18 +20,19 @@ public class ArgParser {
 
 	private static void printHelp() {
 		System.out.println(" ====== HELP ======= ");
-		System.out.println("-j: Compile to Jimple. ");
+		System.out.println("-m: Set mainclass ");
+        System.out.println("-j: Compile to Jimple. ");
 		System.out.println("-p: Set classpath for soot. Use to add files in several directories. ");
 		System.out.println("-o: Set output folder. ");
         System.out.println("-f: Add additional files to be processed (like testclasses.SomeHelperClassForMain)");
 		System.out.println("\nExamples:");
-		System.out.println("testclasses.NSUPolicy1");
-		System.out.println("testclasses.NSUPolicy1 -j");
-		System.out.println("testclasses.NSUPolicy1 -o /Users/NicolasM/myOutputFolder");
-		System.out.println("testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads");
-		System.out.println("testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads -j");
-		System.out.println("testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java");
-		System.out.println("testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java some/absolut/path/to/additionalFile.java");
+		System.out.println("-m testclasses.NSUPolicy1");
+		System.out.println("-m testclasses.NSUPolicy1 -j");
+		System.out.println("-m testclasses.NSUPolicy1 -o /Users/NicolasM/myOutputFolder");
+		System.out.println("-m testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads");
+		System.out.println("-m testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads -j");
+		System.out.println("-m testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java");
+		System.out.println("-m testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java some/absolut/path/to/additionalFile.java");
 	}
 
     public static ArgumentContainer getSootOptions(String[] args) {

@@ -33,7 +33,7 @@ lib/
 .idea/
 out/
 bin/
-ant/
+# ant/
 build.properties
 
 ## user specific files
@@ -53,3 +53,5 @@ build.properties
 .idea/artifacts
 GradualConstraints/src/META-INF
 openjdk7
+
+.jimple

@@ -31,7 +31,7 @@ class AnalysisResults[Level] {
           (max_3_if_Z_lt_Y, localZ) ->(instantiation.get(0), instantiation.get(0)),
           (max_4_goto_6, localX) -> (instantiation.get(0), instantiation.get(0)),
           (max_4_goto_6, localY) -> (instantiation.get(1), instantiation.get(1)),
-          (max_4_goto_6, localZ) ->(instantiation.get(0), instantiation.get(0)),
+          (max_4_goto_6, localZ) -> (instantiation.get(0), instantiation.get(0)),
           (max_5_assign_Z_Y, localX) -> (instantiation.get(0), instantiation.get(0)),
           (max_5_assign_Z_Y, localY) -> (instantiation.get(1), instantiation.get(1)),
           (max_5_assign_Z_Y, localZ) ->(instantiation.get(0), lub(instantiation.get(0),instantiation.get(1))),
@@ -76,8 +76,7 @@ class AnalysisResults[Level] {
 
 
   // Utilities
-  def makeVarTyping(getMaps
-                    : Instantiation[Level] => (Map[(Stmt, Local), (Type[Level], Type[Level])]))
+  def makeVarTyping(getMaps : Instantiation[Level] => (Map[(Stmt, Local), (Type[Level], Type[Level])]))
   : VarTyping[Level] = {
 
     def lookup(map: Map[(Stmt, Local), (Type[Level], Type[Level])], s: Stmt, l: Local) =

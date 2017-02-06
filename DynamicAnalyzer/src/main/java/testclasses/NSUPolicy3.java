@@ -30,12 +30,12 @@ public class NSUPolicy3 {
 		// o1, o2, o1.f and o2.f are still LOW
 		
 		System.out.println(o1.f); // Okay
-		// System.out.println(o.f);  // Not okay! Leaks information! -> Test online in NSUPolicy2
-		// System.out.println(o1.f);  // Not okay! Leaks information! -> Test online in NSUPolicy2
+		// System.out.println(o.f);  // Not okay! Leaks information! -> Test in NSUPolicy2
+		// System.out.println(o1.f);  // Not okay! Leaks information! -> Test in NSUPolicy2
 		
 		o1.f = false;
 		o.f = true; 			// not ok.
-		//System.out.println(o1.f);  // Not okay! Leaks information! -> Test online in NSUPolicy2
+		//System.out.println(o1.f);  // Not okay! Leaks information! -> Test in NSUPolicy2
 
 		
 	}
