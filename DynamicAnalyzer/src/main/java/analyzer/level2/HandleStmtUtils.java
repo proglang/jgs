@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class HandleStmtUtils {
 
-    PassivController superfluousInstrumentationCatcher;
+    PassivController superfluousInstrumentationController;
 
 	Logger logger = L2Logger.getLogger();
 	private LocalMap localmap;
@@ -23,7 +23,7 @@ public class HandleStmtUtils {
 	
 	protected HandleStmtUtils(LocalMap lm, ObjectMap om, boolean isActive) {
 		this.localmap = lm;
-		superfluousInstrumentationCatcher = ControllerFactory.returnSuperfluousInstrumentationController(isActive);
+		superfluousInstrumentationController = ControllerFactory.returnSuperfluousInstrumentationController(isActive);
 		if (lm == null) {
 			throw new InternalAnalyzerException("LocalMap initialization has failed.");
 		}
@@ -67,7 +67,8 @@ public class HandleStmtUtils {
 		Object lpc = localmap.getLocalPC();
 		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC", 
 				new Object[] {signature, level, lpc });
-		superfluousInstrumentationCatcher.abortIfActive();
+
+		superfluousInstrumentationController.abortIfActive();
 		if (!SecurityLevel.le(lpc, level)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
 		}
@@ -85,6 +86,8 @@ public class HandleStmtUtils {
 				});
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
 		Object globalPC = objectmap.getGlobalPC();
+
+        superfluousInstrumentationController.abortIfActive();
 		if (!SecurityLevel.le(globalPC, fieldLevel)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature);
 		}	
