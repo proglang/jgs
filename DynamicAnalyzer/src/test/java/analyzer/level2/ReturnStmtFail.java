@@ -39,6 +39,7 @@ public class ReturnStmtFail {
 		logger.log(Level.INFO, "RETURN TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addObjectToObjectMap(this);
 		hs.pushLocalPC(SecurityLevel.top(), 123);
 		hs.addLocal("int_res1");
@@ -69,6 +70,7 @@ public class ReturnStmtFail {
 		logger.log(Level.INFO, "RETURN TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addObjectToObjectMap(this);
 		hs.pushLocalPC(SecurityLevel.top(), 123);
 		hs.addLocal("int_res1");

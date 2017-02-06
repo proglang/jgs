@@ -23,6 +23,7 @@ public class MultiArraySuccess {
 		logger.info("createArray success test started");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
@@ -61,6 +62,7 @@ public class MultiArraySuccess {
 		logger.info("createArray success test started");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		
 		String[][] twoD = new String[2][2];
 		hs.addArrayToObjectMap(twoD);
@@ -115,6 +117,7 @@ public class MultiArraySuccess {
 		logger.info("readArray success test started");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		
 		/*
 		 * x = a[i]
@@ -181,6 +184,7 @@ public class MultiArraySuccess {
 		logger.info("writeArray success test started");
 
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		
 		/*
 		 * a[i] = x;

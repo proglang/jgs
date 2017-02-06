@@ -29,6 +29,7 @@ public class MultiArrayFail {
 		logger.info("readArray fail test started");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		/*
 		 * x = a[i]
 		 * check x >= lpc
@@ -100,6 +101,7 @@ public class MultiArrayFail {
 		logger.info("writeArray fail test started");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 
 		/*
 		 * a[i] = x;

@@ -29,6 +29,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("int_x", SecurityLevel.bottom());
 		hs.pushLocalPC(SecurityLevel.top(), 123);
 		// x = LOW, lpc = HIGH
@@ -47,6 +48,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
 		hs.addLocal("int_z", SecurityLevel.top());
@@ -80,6 +82,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("TestSubClass_xy");
 		
 		TestSubClass xy;
@@ -107,6 +110,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("TestSubClass_xy");
 		hs.initializeVariable("TestSubClass_xy");
 		
@@ -138,6 +142,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
 		hs.addLocal("int_high", SecurityLevel.top());
@@ -174,6 +179,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
@@ -209,6 +215,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST STARTED");
 				
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		
 		/*
 		 * x++; or x += 1;  or x = x + 1;

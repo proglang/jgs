@@ -33,6 +33,7 @@ public class InvokeSuccess {
 
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("TestSubClass_xy");
 		/*
 		 * Invoke New Stmt
@@ -55,6 +56,7 @@ public class InvokeSuccess {
 		logger.log(Level.INFO, "INVOKE METHOD WITHOUT ARGUMENTS TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		/*
 		 *  Invoke Method
 		 *  1. Create new LocalMap
@@ -72,6 +74,7 @@ public class InvokeSuccess {
 		logger.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");
 	    
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		TestSubClass xy = new TestSubClass();
 		int a = 0;
 		int b = 1;
@@ -113,6 +116,7 @@ public class InvokeSuccess {
 
 			public SomeClass() {
 				HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 				hs.addObjectToObjectMap(this);
 				
 				hs.close();
@@ -120,6 +124,7 @@ public class InvokeSuccess {
 			
 			public void method1() {
 				HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 				
 				
 				method2();
@@ -130,6 +135,7 @@ public class InvokeSuccess {
 			
 			public void method2() {
 				HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 
 				
 				method3();
@@ -140,6 +146,7 @@ public class InvokeSuccess {
 			
 			public void method3() {
 				HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 
 				
 				hs.close();
@@ -148,6 +155,7 @@ public class InvokeSuccess {
 		}
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		
 		assertEquals(0, hs.getNumberOfElementsInObjectMap());
 		

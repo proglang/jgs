@@ -37,8 +37,9 @@ public class Main {
 	 *
 	 * @param args Commandline-Args for analysis
 	 */
-	public static void main(String[] args) {
-		execute(args, false, null, null, null);
+	public static void main(String[] args)
+	{
+		execute(args, false, null, null, null, false);
 	}
 
 	/**
@@ -51,8 +52,9 @@ public class Main {
 	public static void mainWithFakeResults(String[] args,
 										   MSLMap<BeforeAfterContainer> varMap,
 										   MSMap<Types> cxMap,
-										   MSMap<Types> instantiationMap) {
-		execute(args, true, varMap, cxMap, instantiationMap);
+										   MSMap<Types> instantiationMap,
+										   boolean controllerIsActive) {
+		execute(args, true, varMap, cxMap, instantiationMap, controllerIsActive);
 	}
 
 	/**
@@ -63,7 +65,8 @@ public class Main {
 								boolean useFakeTyping,
 								MSLMap<BeforeAfterContainer> varMap,
 								MSMap<Types> cxMap,
-								MSMap<Types> instantiationMap) {
+								MSMap<Types> instantiationMap,
+								boolean controllerIsActive) {
 
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
@@ -131,7 +134,7 @@ public class Main {
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping);
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping, controllerIsActive);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 

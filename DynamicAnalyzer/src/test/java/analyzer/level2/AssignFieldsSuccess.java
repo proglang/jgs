@@ -32,6 +32,7 @@ public class AssignFieldsSuccess {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "int_field");
 		
@@ -70,6 +71,7 @@ public class AssignFieldsSuccess {
 		logger.log(Level.INFO, "ASSIGN LOCALS TO FIELD TEST STARTED");
 	    
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addObjectToObjectMap(this);
 		assertEquals(1,  hs.getNumberOfElementsInObjectMap());
 		hs.addFieldToObjectMap(this, "int_field");
@@ -107,6 +109,7 @@ public class AssignFieldsSuccess {
 		logger.log(Level.INFO, "ASSIGN LOCALS TO A STATIC FIELD STARTED");
 
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addObjectToObjectMap(this.getClass());
 		assertEquals(1,  hs.getNumberOfElementsInObjectMap());
 		hs.addFieldToObjectMap(this.getClass(), "int_sField");
@@ -140,6 +143,7 @@ public class AssignFieldsSuccess {
 		logger.log(Level.INFO, "ASSIGN LOCAL TO AN EXTERNAL FIELD STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addObjectToObjectMap(this);
 		
 		/*

@@ -28,6 +28,7 @@ public class ForStmtFail {
 		logger.log(Level.INFO, "FOR STMT LOCAL TEST FAIL STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("int_i");
 		hs.makeLocal("int_i", "HIGH");
 		hs.addLocal("int_res");
@@ -59,6 +60,7 @@ public class ForStmtFail {
 		logger.log(Level.INFO, "FOR STMT LOCAL TEST FAIL STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addLocal("int_i");
 		hs.makeLocal("int_i","HIGH");
 		hs.addLocal("int_res");
@@ -89,6 +91,7 @@ public class ForStmtFail {
 		logger.log(Level.INFO, "FOR STMT FIELD TEST FAIL STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false);
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_i");
 		hs.makeLocal("int_i", "HIGH");
