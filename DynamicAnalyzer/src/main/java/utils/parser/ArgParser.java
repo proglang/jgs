@@ -94,7 +94,8 @@ public class ArgParser {
             // case p flag
             if (cmd.hasOption(ADD_DIRECTORIES_TO_CLASSPATH)) {
                 for ( String s : cmd.getOptionValues(ADD_DIRECTORIES_TO_CLASSPATH)) {
-                    addDirsToClasspath.add(PathHelper.toAbsolutePath(s));
+                    File tmp = new File(s);
+                    addDirsToClasspath.add(tmp.isAbsolute() ? s : new File(System.getProperty("user.dir"), s).getAbsolutePath());
                 }
             }
 
