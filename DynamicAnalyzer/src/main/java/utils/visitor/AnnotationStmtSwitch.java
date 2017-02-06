@@ -1,8 +1,6 @@
 package utils.visitor;
 
 import analyzer.level1.JimpleInjector;
-import analyzer.level1.storage.UnitStore.Element;
-import analyzer.level2.SecurityLevel;
 import soot.Body;
 import soot.Local;
 import soot.Value;
@@ -174,7 +172,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				int posInArgList = ((ParameterRef) stmt.getRightOp())
 						.getIndex();
 				JimpleInjector.assignArgumentToLocal(posInArgList,
-						(Local) stmt.getLeftOp(), stmt);
+						(Local) stmt.getLeftOp());
 			}
 		} else if (stmt.getRightOp() instanceof ThisRef) {
 			// TODO im Grunde nicht nötig...
