@@ -1,0 +1,10 @@
+package classfiletests.utils;
+
+/**
+ * Kinds of exceptions we can possibily expect in our test cases.
+ */
+public enum ExpectedException {
+    NONE,
+    ILLEGAL_FLOW,
+    SUPERFLUOUS_INSTRUMENTATION
+}

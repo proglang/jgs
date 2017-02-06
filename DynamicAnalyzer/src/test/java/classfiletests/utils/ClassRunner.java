@@ -10,6 +10,8 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
 import utils.exceptions.IllegalFlowException;
+import utils.exceptions.InternalAnalyzerException;
+import utils.exceptions.SuperfluousInstrumentationException;
 import utils.logging.L1Logger;
 
 import java.net.URL;
@@ -71,15 +73,10 @@ public class ClassRunner {
 	/**
 	 * Run class and check whether the expected exception is found.
 	 * 
-	 * @param className
-	 *            Name of the class.
-	 * @param exceptionExpected
-	 *            true if an exception is expected
-	 * 
 	 * @author Regina Koenig, Nicolas Müller
 	 */
 	public static void testClass(String className, String outputDir,
-			boolean exceptionExpected, String... involvedVars) {
+			ExpectedException expEx, String... involvedVars) {
 		
 		logger.info("Trying to run test " + className);
 
@@ -98,7 +95,7 @@ public class ClassRunner {
 			runClass(className, outputDir);
 
 			// Fail if the class was running but an exception was expected
-			if (exceptionExpected) {
+			if (! expEx.equals(ExpectedException.NONE)) {
 				logger.severe("Expected exception is not found");
 				fail();
 			}
@@ -106,38 +103,36 @@ public class ClassRunner {
 			logger.severe("Found exception " + e.getClass().toString());
 			e.printStackTrace();
 
-			// Fail if an exception is thrown but no exception was expected
-			if (!exceptionExpected) {
-				logger.severe("Fail because exception was not expected");
-				fail();
-			}
+			switch (expEx) {
+				case NONE:
+				    // fail if no expection was expected
+					logger.severe("Fail because exception was not expected");
+					fail();
+				case ILLEGAL_FLOW:
+					assertEquals(IllegalFlowException.class.toString(), e.getCause()
+							.getClass().toString());
 
-			// Fail if an exception is thrown which is not the expected
-			// exception
-			assertEquals(IllegalFlowException.class.toString(), e.getCause()
-					.getClass().toString());
-			
-			// Fail if illegalFlowException is thrown, expected, but no
-			// involvedVars are supplied
-			if (exceptionExpected && e.getCause().getClass().toString().contains("IllegalFlow")) {
-				if (involvedVars.length < 1) {
-					logger.warning("No variables supplied for IllegalFlowException");					
-				}
+					if (involvedVars.length < 1) {
+						logger.warning("No variables supplied for IllegalFlowException");
+					}
+					for (String var : involvedVars) {
+						logger.info("Check wheter " + var + " is contained in: "
+								+ e.getMessage() + " ... ");
+						if (e.getMessage().contains(var)) {
+							logger.info("Success!");
+						} else {
+							logger.severe("Fail, Exception thrown, but incorrect variable!");
+						}
+						assertTrue(e.getMessage().contains(var));
+					}
+					break;
+				case SUPERFLUOUS_INSTRUMENTATION:
+					assertEquals(SuperfluousInstrumentationException.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
+				default:
+					throw new InternalAnalyzerException("Unknown exception found!");
 			}
-			
-
-			// Check if the expected variables are involved
-			for (String var : involvedVars) {
-				logger.info("Check wheter " + var + " is contained in: "
-						+ e.getMessage() + " ... ");
-				if (e.getMessage().contains(var)) {
-					logger.info("Success!");
-				} else {
-					logger.severe("Fail, Exception thrown, but incorrect variable!");
-				}
-				assertTrue(e.getMessage().contains(var));
-			}
-
 		}
 
 	}
