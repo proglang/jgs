@@ -105,7 +105,11 @@ public class AllFakeAnalysisTests {
 
                 // testing that the controller works: Throwing a superfluous instrumentation exception on purpose
                 new Object[] { "NSUPolicy", ExpectedException.SUPERFLUOUS_INSTRUMENTATION, StaticAnalysis.ALL_DYNAMIC, true, new String[] {} },
-                new Object[] { "NSU_FieldAccess4", ExpectedException.SUPERFLUOUS_INSTRUMENTATION, StaticAnalysis.ALL_DYNAMIC,  true, new String[] {} }
+                new Object[] { "NSU_FieldAccess4", ExpectedException.SUPERFLUOUS_INSTRUMENTATION, StaticAnalysis.ALL_DYNAMIC,  true, new String[] {} },
+
+                // testing objects that may have invalid flows, but surely do not have NSU checks
+                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] {"int_i2"}},
+                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}}
        );
     }
 
