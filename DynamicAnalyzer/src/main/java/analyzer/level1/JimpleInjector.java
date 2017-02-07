@@ -682,7 +682,7 @@ public class JimpleInjector {
         Stmt assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
 
-        // insert setLevelOfLOcal, which accumulates the PC and the right-hand side of the assign stmt.
+        // insert setLevelOfLocal, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
         Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),

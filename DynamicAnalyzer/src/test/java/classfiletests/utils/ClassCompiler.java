@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.SootMethod;
+import utils.Controller;
 import utils.logging.L1Logger;
 import main.Main;
 import utils.parser.ArgParser;
@@ -44,10 +45,10 @@ public class ClassCompiler {
 											 MSLMap<BeforeAfterContainer> varTyping,
 											 MSMap<Types> cxTyping,
 											 MSMap<Types> instantiation,
-											 boolean controllerIsActive) {
+											 Controller isActive) {
 		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started. Using fake static analysis results");
-		Main.mainWithFakeResults(args, varTyping, cxTyping, instantiation, controllerIsActive);
+		Main.mainWithFakeResults(args, varTyping, cxTyping, instantiation, isActive.equals(Controller.ACTIVE) ? true : false);
 		logger.info("Compilation successful, binary put in sootOutput/"
 				+ outputDir);
 	}

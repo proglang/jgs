@@ -6,5 +6,5 @@ package classfiletests.utils;
 public enum ExpectedException {
     NONE,
     ILLEGAL_FLOW,
-    NSU_CHECK_CALLED
+    CHECK_PC_CALLED
 }

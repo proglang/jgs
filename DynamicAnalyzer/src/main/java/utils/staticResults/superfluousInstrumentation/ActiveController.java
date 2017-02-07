@@ -11,6 +11,6 @@ public class ActiveController extends PassivController {
      * If called, aborts execution with {@link NSUCheckCalledException}. Overwrites method in {@link PassivController}.
      */
     public void abortIfActive() {
-        throw new NSUCheckCalledException("Superfluous instrumentation detected");
+        throw new NSUCheckCalledException("Somewhere, checkGlobalPC or checkLocalPC was called!");
     }
 }

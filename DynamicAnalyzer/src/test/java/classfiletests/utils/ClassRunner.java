@@ -126,7 +126,7 @@ public class ClassRunner {
 						assertTrue(e.getMessage().contains(var));
 					}
 					break;
-				case NSU_CHECK_CALLED:
+				case CHECK_PC_CALLED:
 					assertEquals(NSUCheckCalledException.class.toString(), e.getCause()
 							.getClass().toString());
 					break;

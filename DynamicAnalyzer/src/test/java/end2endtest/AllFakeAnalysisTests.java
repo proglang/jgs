@@ -6,6 +6,7 @@ import classfiletests.utils.ExpectedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import utils.Controller;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NSUCheckCalledException;
 import utils.logging.L1Logger;
@@ -29,6 +30,8 @@ enum StaticAnalysis {
     ALL_PUBLIC, VAR_AND_CX_PUBLIC      // same as CX_PUBLIC, except for Var, which returns public on any request
 }
 
+
+
 /**
  * Tests to test the impact of different static analysis results.
  */
@@ -37,7 +40,7 @@ public class AllFakeAnalysisTests {
 
     private final String name;
     private final ExpectedException expEx;
-    private final boolean controllerIsActive;
+    private final Controller isActive;
     private final StaticAnalysis analysisResult;
     private final String[] involvedVars;
     private Logger logger = L1Logger.getLogger();
@@ -47,28 +50,26 @@ public class AllFakeAnalysisTests {
      * @param name                      name of the test from testclasses to run
      * @param expEx                     the kind of exception we expect. See {@link ExpectedException}
      * @param analysisResult            the kind of static analysis result we want this test to run with. See {@link StaticAnalysis}
-     * @param controllerIsActive        if true, throw {@link NSUCheckCalledException} on unnecessary instrumentation
+     * @param isActive                  iff active, throw {@link NSUCheckCalledException} on certain (superfluous) instrumentations
      * @param involvedVars              specify the variables involved. only used for {@link utils.exceptions.IllegalFlowException}
      */
     public AllFakeAnalysisTests(String name,
                                 ExpectedException expEx,
                                 StaticAnalysis analysisResult,
-                                boolean controllerIsActive,
+                                Controller isActive,
                                 String... involvedVars) {
 
         this.name = name;
         this.expEx = expEx;
         this.analysisResult = analysisResult;
         this.involvedVars = involvedVars;
-        this.controllerIsActive = controllerIsActive;
+        this.isActive = isActive;
     }
 
     /**
-     * Testing the same testcases with different static analysis results. For example,
-     * we expect an NSU/IllegalFLow Exception when running NSUPolicy in dynamic CX, but if the CX
-     * is pulic, we do not expect an NSU / IllegalFlow Exception.
+     * Testing a set of testclasses in different configurations. Refer to constructor of {@link AllFakeAnalysisTests} for details.
      */
-    @Parameterized.Parameters(name = "Name: {0}, {2}, {1}")
+    @Parameterized.Parameters(name = "Name: {0}, {1}, {2}, {3}")
     public static Iterable<Object[]> testForSuperfluousInstrumentation() {
         return Arrays.asList(
 
@@ -79,57 +80,62 @@ public class AllFakeAnalysisTests {
                 // =========================================================================
 
                 // should throw a IllegalFlow Exception regardless of the CX
-                new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] { "java.lang.String_$r6" } },
-                new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.CX_PUBLIC, false, new String[] { "java.lang.String_$r6" } },
+                new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE, new String[] { "java.lang.String_$r6" } },
+                new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] { "java.lang.String_$r6" } },
 
                 // NSU on local Variables.
-                new Object[] { "NSUPolicy", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] {"int_i0"} },
-                new Object[] { "NSUPolicy", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSUPolicy", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE, new String[] {"int_i0"} },
+                new Object[] { "NSUPolicy", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // NSU on fields.
-                new Object[] { "NSUPolicy3", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] {"<testclasses.utils.C: boolean f>"} },
-                new Object[] { "NSUPolicy3",ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSUPolicy3", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSUPolicy3",ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // NSU on static fields
-                new Object[] { "NSU_FieldAccessStatic", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] {"int f"} },
-                new Object[] { "NSU_FieldAccessStatic", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSU_FieldAccessStatic", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE, new String[] {"int f"} },
+                new Object[] { "NSU_FieldAccessStatic", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // NSU on static fields
-                new Object[] { "NSU_FieldAccess", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  false, new String[] {"<testclasses.utils.C: boolean f>"} },
-                new Object[] { "NSU_FieldAccess", ExpectedException.NONE,  StaticAnalysis.CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSU_FieldAccess", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess", ExpectedException.NONE,  StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
-                new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.ALL_DYNAMIC,  false, new String[] {} },    // does not throw an IllFlow Except
-                new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
-                new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.VAR_AND_CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE , new String[] {} },    // does not throw an IllFlow Except
+                new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
+                new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, StaticAnalysis.VAR_AND_CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
-                new Object[] { "NSU_FieldAccess3", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  false, new String[] {"<testclasses.utils.C: boolean f>"} },
-                new Object[] { "NSU_FieldAccess3", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSU_FieldAccess3", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess3", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
-                new Object[] { "NSU_FieldAccess4", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  false, new String[] {"<testclasses.utils.C: boolean f>"} },
-                new Object[] { "NSU_FieldAccess4", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSU_FieldAccess4", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess4", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
-                new Object[] { "NSU_FieldAccess5", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  false, new String[] {"<testclasses.utils.C: boolean f>"} },
-                new Object[] { "NSU_FieldAccess5", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
+                new Object[] { "NSU_FieldAccess5", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] { "NSU_FieldAccess5", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // =========================================================================
                 //    From here on, (hopefully) test only combinations of testclasses,
                 //    expected exceptions and static analysis results that are consistent
                 // =========================================================================
 
-                // testing that the controller works: Throwing a superfluous instrumentation exception on purpose
-                new Object[] { "NSUPolicy", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {} },
-                new Object[] { "NSU_FieldAccess4", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC,  true, new String[] {} },
+                // testing that the controller works: Throwing a CHECK_PC_CALLED exception on purpose
+                new Object[] { "NSUPolicy", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {} },
+                new Object[] { "NSU_FieldAccess4", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC,  Controller.ACTIVE, new String[] {} },
 
-                // testing objects that may have invalid flows, but surely do not have NSU checks. Must throw IllegalFlowExcpetion if controller is passive.
-                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] {"int_i2"}},            // dont look for superfl. flow
-                new Object[] {"NoNSU1", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}},                     // do look!
+                // testing objects that may have invalid flows, but surely do not have NSU checks. Must never throw CHECK_PC_CALLED exception
+                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE, new String[] {"int_i2"}},
+                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                // throws CHECK_PC_CALLED due to check_local_pc on simple variable assignments, which is probably fine
 
                 // NoNSU2 has no information leak, but does invoke NSUchecks if CX is dynamic. If it's public, we expect no NSU check
-                new Object[] {"NoNSU2", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}},
-                new Object[] {"NoNSU2", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, true, new String[] {}},
+                new Object[] {"NoNSU2", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"NoNSU2", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
 
-                new Object[] {"NoNSU3_Fields", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}},
-                new Object[] {"NoNSU3_Fields", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, true, new String[] {}}
+                new Object[] {"NoNSU3_Fields", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"NoNSU3_Fields", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
+
+                // ExceptionInInitialzerError, which is caused by the CHECK_PC_CALLED Exception being thrown in static initialisation of variable f.
+                new Object[] {"NoNSU4_staticField", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"NoNSU4_staticField", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}}
         );
     }
 
@@ -175,7 +181,7 @@ public class AllFakeAnalysisTests {
 
 
 
-        ClassCompiler.compileWithFakeTyping(name, outputDir, fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, controllerIsActive);
+        ClassCompiler.compileWithFakeTyping(name, outputDir, fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, isActive);
         ClassRunner.testClass(name, outputDir, expEx, involvedVars);
 
         logger.info("Finished executing testclasses with fake analysis results." + name + "");
