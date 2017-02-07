@@ -1,6 +1,6 @@
 package utils.staticResults.superfluousInstrumentation;
 
-import utils.exceptions.SuperfluousInstrumentationException;
+import utils.exceptions.NSUCheckCalledException;
 
 /**
  * Created by Nicolas Müller on 06.02.17.
@@ -8,9 +8,9 @@ import utils.exceptions.SuperfluousInstrumentationException;
 public class ActiveController extends PassivController {
     @Override
     /**
-     * If called, aborts execution with {@link SuperfluousInstrumentationException}. Overwrites method in {@link PassivController}.
+     * If called, aborts execution with {@link NSUCheckCalledException}. Overwrites method in {@link PassivController}.
      */
     public void abortIfActive() {
-        throw new SuperfluousInstrumentationException("Superfluous instrumentation detected");
+        throw new NSUCheckCalledException("Superfluous instrumentation detected");
     }
 }

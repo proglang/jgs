@@ -52,6 +52,10 @@ public class HandleStmtUtils {
 	 * @param signature signature of the local
 	 */
 	protected void checkLocalPC(String signature) {
+
+	    // check if this call is superfluous
+        superfluousInstrumentationController.abortIfActive();
+
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
@@ -68,7 +72,7 @@ public class HandleStmtUtils {
 		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC", 
 				new Object[] {signature, level, lpc });
 
-		superfluousInstrumentationController.abortIfActive();
+
 		if (!SecurityLevel.le(lpc, level)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
 		}

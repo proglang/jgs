@@ -11,7 +11,7 @@ import org.apache.tools.ant.types.Path;
 
 import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.SuperfluousInstrumentationException;
+import utils.exceptions.NSUCheckCalledException;
 import utils.logging.L1Logger;
 
 import java.net.URL;
@@ -126,8 +126,8 @@ public class ClassRunner {
 						assertTrue(e.getMessage().contains(var));
 					}
 					break;
-				case SUPERFLUOUS_INSTRUMENTATION:
-					assertEquals(SuperfluousInstrumentationException.class.toString(), e.getCause()
+				case NSU_CHECK_CALLED:
+					assertEquals(NSUCheckCalledException.class.toString(), e.getCause()
 							.getClass().toString());
 					break;
 				default:

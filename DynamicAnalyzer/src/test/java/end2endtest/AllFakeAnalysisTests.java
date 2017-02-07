@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import utils.exceptions.InternalAnalyzerException;
+import utils.exceptions.NSUCheckCalledException;
 import utils.logging.L1Logger;
 import utils.staticResults.BeforeAfterContainer;
 import utils.staticResults.MSLMap;
@@ -25,7 +26,7 @@ import java.util.logging.Logger;
 enum StaticAnalysis {
     ALL_DYNAMIC,         // Var, Cx & Instantiation all return Dynamic on any request
     CX_PUBLIC,           // same as ALL_DYNAMIC, except for Cx, which returns public on any request
-    VAR_AND_CX_PUBLIC      // same as CX_PUBLIC, except for Var, which returns public on any request
+    ALL_PUBLIC, VAR_AND_CX_PUBLIC      // same as CX_PUBLIC, except for Var, which returns public on any request
 }
 
 /**
@@ -46,7 +47,7 @@ public class AllFakeAnalysisTests {
      * @param name                      name of the test from testclasses to run
      * @param expEx                     the kind of exception we expect. See {@link ExpectedException}
      * @param analysisResult            the kind of static analysis result we want this test to run with. See {@link StaticAnalysis}
-     * @param controllerIsActive        if true, throw {@link utils.exceptions.SuperfluousInstrumentationException} on unnecessary instrumentation
+     * @param controllerIsActive        if true, throw {@link NSUCheckCalledException} on unnecessary instrumentation
      * @param involvedVars              specify the variables involved. only used for {@link utils.exceptions.IllegalFlowException}
      */
     public AllFakeAnalysisTests(String name,
@@ -68,8 +69,15 @@ public class AllFakeAnalysisTests {
      * is pulic, we do not expect an NSU / IllegalFlow Exception.
      */
     @Parameterized.Parameters(name = "Name: {0}, {2}, {1}")
-    public static Iterable<Object[]> generateParameters() {
+    public static Iterable<Object[]> testForSuperfluousInstrumentation() {
         return Arrays.asList(
+
+                // =========================================================================
+                //    The following are compinations of testclasses, expected exceptions
+                //    and static analysis results that are inconsistent, eg. that would
+                //    normally not appear like this
+                // =========================================================================
+
                 // should throw a IllegalFlow Exception regardless of the CX
                 new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] { "java.lang.String_$r6" } },
                 new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.CX_PUBLIC, false, new String[] { "java.lang.String_$r6" } },
@@ -103,14 +111,23 @@ public class AllFakeAnalysisTests {
                 new Object[] { "NSU_FieldAccess5", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC,  false, new String[] {"<testclasses.utils.C: boolean f>"} },
                 new Object[] { "NSU_FieldAccess5", ExpectedException.NONE, StaticAnalysis.CX_PUBLIC, false, new String[] {} },
 
-                // testing that the controller works: Throwing a superfluous instrumentation exception on purpose
-                new Object[] { "NSUPolicy", ExpectedException.SUPERFLUOUS_INSTRUMENTATION, StaticAnalysis.ALL_DYNAMIC, true, new String[] {} },
-                new Object[] { "NSU_FieldAccess4", ExpectedException.SUPERFLUOUS_INSTRUMENTATION, StaticAnalysis.ALL_DYNAMIC,  true, new String[] {} },
+                // =========================================================================
+                //    From here on, (hopefully) test only combinations of testclasses,
+                //    expected exceptions and static analysis results that are consistent
+                // =========================================================================
 
-                // testing objects that may have invalid flows, but surely do not have NSU checks
-                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] {"int_i2"}},
-                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}}
-       );
+                // testing that the controller works: Throwing a superfluous instrumentation exception on purpose
+                new Object[] { "NSUPolicy", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {} },
+                new Object[] { "NSU_FieldAccess4", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC,  true, new String[] {} },
+
+                // testing objects that may have invalid flows, but surely do not have NSU checks. Must throw IllegalFlowExcpetion if controller is passive.
+                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, false, new String[] {"int_i2"}},            // dont look for superfl. flow
+                new Object[] {"NoNSU1", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}},                     // do look!
+
+                // NoNSU2 has no information leak, but does invoke NSUchecks if CX is dynamic. If it's public, we expect no NSU check
+                new Object[] {"NoNSU2", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}},
+                new Object[] {"NoNSU2", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, true, new String[] {}}
+        );
     }
 
     /**
@@ -143,6 +160,11 @@ public class AllFakeAnalysisTests {
                 ResultsServer.setPublic(fakeVarTypingsMap, allClasses);
                 ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
                 ResultsServer.setDynamic(fakeInstantiationMap, allClasses);
+                break;
+            case ALL_PUBLIC:
+                ResultsServer.setPublic(fakeVarTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeInstantiationMap, allClasses);
                 break;
             default:
                 throw new InternalAnalyzerException("Invalid analysis result requested!");
