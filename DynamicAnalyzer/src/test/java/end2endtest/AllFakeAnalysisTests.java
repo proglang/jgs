@@ -126,7 +126,10 @@ public class AllFakeAnalysisTests {
 
                 // NoNSU2 has no information leak, but does invoke NSUchecks if CX is dynamic. If it's public, we expect no NSU check
                 new Object[] {"NoNSU2", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}},
-                new Object[] {"NoNSU2", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, true, new String[] {}}
+                new Object[] {"NoNSU2", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, true, new String[] {}},
+
+                new Object[] {"NoNSU3_Fields", ExpectedException.NSU_CHECK_CALLED, StaticAnalysis.ALL_DYNAMIC, true, new String[] {}},
+                new Object[] {"NoNSU3_Fields", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, true, new String[] {}}
         );
     }
 
