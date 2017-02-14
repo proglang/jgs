@@ -73,7 +73,9 @@ public class AllEndToEndTests {
 				
 				new Object[] { "FieldsSuccess", ExpectedException.NONE, new String[] {} },
 				new Object[] { "FieldWriteFail", ExpectedException.ILLEGAL_FLOW, new String[] {"testclasses.FieldWriteFail<testclasses.FieldWriteFail: int field>"} },
-				
+
+				new Object[] { "HighArgument", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
+
 				new Object[] { "IfStmtSuccess", ExpectedException.NONE, new String[] {"byte_b1"} },
 				new Object[] { "IfStmtFail", ExpectedException.ILLEGAL_FLOW, new String[] { "int_i0" } },
 				

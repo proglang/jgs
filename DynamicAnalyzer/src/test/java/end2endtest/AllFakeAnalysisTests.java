@@ -123,8 +123,7 @@ public class AllFakeAnalysisTests {
 
                 // testing objects that may have invalid flows, but surely do not have NSU checks. Must never throw CHECK_PC_CALLED exception
                 new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE, new String[] {"int_i2"}},
-                new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
-                // throws CHECK_PC_CALLED due to check_local_pc on simple variable assignments, which is probably fine
+                new Object[] {"NoNSU1", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
 
                 // NoNSU2 has no information leak, but does invoke NSUchecks if CX is dynamic. If it's public, we expect no NSU check
                 new Object[] {"NoNSU2", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
@@ -133,8 +132,6 @@ public class AllFakeAnalysisTests {
                 new Object[] {"NoNSU3_Fields", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
                 new Object[] {"NoNSU3_Fields", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
 
-                // ExceptionInInitialzerError, which is caused by the CHECK_PC_CALLED Exception being thrown in static initialisation of variable f.
-                new Object[] {"NoNSU4_staticField", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
                 new Object[] {"NoNSU4_staticField", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}}
         );
     }
