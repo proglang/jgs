@@ -13,6 +13,7 @@ import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NSUCheckCalledException;
 import utils.logging.L1Logger;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -76,7 +77,7 @@ public class ClassRunner {
 	 * @author Regina Koenig, Nicolas Müller
 	 */
 	public static void testClass(String className, String outputDir,
-			ExpectedException expEx, String... involvedVars) {
+                                 ExpectedException expEx, String... involvedVars) {
 		
 		logger.info("Trying to run test " + className);
 
@@ -126,7 +127,7 @@ public class ClassRunner {
 						assertTrue(e.getMessage().contains(var));
 					}
 					break;
-				case CHECK_PC_CALLED:
+				case CHECK_LOCAL_PC_CALLED:
 					assertEquals(NSUCheckCalledException.class.toString(), e.getCause()
 							.getClass().toString());
 					break;

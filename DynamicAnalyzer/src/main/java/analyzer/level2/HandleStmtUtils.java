@@ -5,7 +5,7 @@ import analyzer.level2.storage.ObjectMap;
 import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L2Logger;
-import utils.staticResults.superfluousInstrumentation.ControllerFactory;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
 import utils.staticResults.superfluousInstrumentation.PassivController;
 
 import java.util.logging.Level;
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class HandleStmtUtils {
 
-    PassivController superfluousInstrumentationController;
+    PassivController controller;
 
 	Logger logger = L2Logger.getLogger();
 	private LocalMap localmap;
@@ -21,9 +21,9 @@ public class HandleStmtUtils {
 
 	private final String ASSIGNMENT_ERROR_MESSAGE = "Found an illegal flow to ";
 	
-	protected HandleStmtUtils(LocalMap lm, ObjectMap om, boolean isActive) {
+	protected HandleStmtUtils(LocalMap lm, ObjectMap om, PassivController controller) {
 		this.localmap = lm;
-		superfluousInstrumentationController = ControllerFactory.returnSuperfluousInstrumentationController(isActive);
+		this.controller = controller;
 		if (lm == null) {
 			throw new InternalAnalyzerException("LocalMap initialization has failed.");
 		}
@@ -54,7 +54,7 @@ public class HandleStmtUtils {
 	protected void checkLocalPC(String signature) {
 
 	    // check if this call is superfluous
-        superfluousInstrumentationController.abortIfActive();
+        controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_LOCAL_PC_CALLED.getVal());
 
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
@@ -91,7 +91,7 @@ public class HandleStmtUtils {
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
 		Object globalPC = objectmap.getGlobalPC();
 
-        superfluousInstrumentationController.abortIfActive();
+        controller.abortIfActiveAndExceptionIsType(ExpectedException.NONE.getVal());
 		if (!SecurityLevel.le(globalPC, fieldLevel)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature);
 		}	

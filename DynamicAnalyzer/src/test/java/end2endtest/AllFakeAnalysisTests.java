@@ -2,7 +2,7 @@ package end2endtest;
 
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
-import classfiletests.utils.ExpectedException;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -114,19 +114,19 @@ public class AllFakeAnalysisTests {
                 //    expected exceptions and static analysis results that are consistent
                 // =========================================================================
 
-                // testing that the controller works: Throwing a CHECK_PC_CALLED exception on purpose
-                new Object[] { "NSUPolicy", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {} },
-                new Object[] { "NSU_FieldAccess4", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC,  Controller.ACTIVE, new String[] {} },
+                // testing that the controller works: Throwing a CHECK_LOCAL_PC_CALLED exception on purpose
+                new Object[] { "NSUPolicy", ExpectedException.CHECK_LOCAL_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {} },
+                new Object[] { "NSU_FieldAccess4", ExpectedException.CHECK_LOCAL_PC_CALLED, StaticAnalysis.ALL_DYNAMIC,  Controller.ACTIVE, new String[] {} },
 
-                // testing objects that may have invalid flows, but surely do not have NSU checks. Must never throw CHECK_PC_CALLED exception
+                // testing objects that may have invalid flows, but surely do not have NSU checks. Must never throw CHECK_LOCAL_PC_CALLED exception
                 new Object[] {"NoNSU1", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.PASSIVE, new String[] {"int_i2"}},
-                new Object[] {"NoNSU1", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"NoNSU1", ExpectedException.CHECK_LOCAL_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
 
                 // NoNSU2 has no information leak, but does invoke NSUchecks if CX is dynamic. If it's public, we expect no NSU check
-                new Object[] {"NoNSU2", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"NoNSU2", ExpectedException.CHECK_LOCAL_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
                 new Object[] {"NoNSU2", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
 
-                new Object[] {"NoNSU3_Fields", ExpectedException.CHECK_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"NoNSU3_Fields", ExpectedException.CHECK_LOCAL_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
                 new Object[] {"NoNSU3_Fields", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
 
                 new Object[] {"NoNSU4_staticField", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}}
@@ -175,7 +175,7 @@ public class AllFakeAnalysisTests {
 
 
 
-        ClassCompiler.compileWithFakeTyping(name, outputDir, fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, isActive);
+        ClassCompiler.compileWithFakeTyping(name, outputDir, fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, isActive, expEx.getVal());
         ClassRunner.testClass(name, outputDir, expEx, involvedVars);
 
         logger.info("Finished executing testclasses with fake analysis results." + name + "");

@@ -4,6 +4,9 @@ import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L2Logger;
+import utils.staticResults.superfluousInstrumentation.ControllerFactory;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
+import utils.staticResults.superfluousInstrumentation.PassivController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,8 +26,7 @@ public class HandleStmt {
 	private LocalMap localmap;
 	private static ObjectMap objectmap;
 	private HandleStmtUtils handleStatementUtils;
-	private boolean controllerIsActive;
-
+	PassivController controller;
 	/**
 	 * This must be called at the beginning of every method in the analyzed
 	 * code. It creates a new LocalMap for the method and adjusts the
@@ -37,9 +39,12 @@ public class HandleStmt {
 	}
 
 	@SuppressWarnings("unused")
-    public void initHandleStmtUtils(boolean controllerIsActive) {
-		this.controllerIsActive = controllerIsActive;
-		handleStatementUtils = new HandleStmtUtils(localmap, objectmap, controllerIsActive);
+	/**
+	 * Initialise the HandleStmtUtils. Use also to specify if, and what kind of exception we expect
+	 */
+    public void initHandleStmtUtils(boolean controllerIsActive, int exptectedException) {
+		this.controller = ControllerFactory.returnSuperfluousInstrumentationController(controllerIsActive, exptectedException);
+		handleStatementUtils = new HandleStmtUtils(localmap, objectmap, this.controller);
         objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
                 objectmap.getGlobalPC(), localmap.getLocalPC()));
 	}
@@ -433,6 +438,7 @@ public class HandleStmt {
 	 * @return new SecurityLevel of local
 	 */
 	public Object assignArgumentToLocal(int pos, String signature) {
+        controller.abortIfActiveAndExceptionIsType(ExpectedException.ASSIGN_ARG_TO_LOCAL.getVal());
 		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.setLevel(signature,
 				handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));

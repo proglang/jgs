@@ -37,14 +37,17 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 	MSMap<Types> cxMapping;
 	MIMap<Types> instantiationMapping;
 	boolean controllerIsActive;
+	int expectedException;
     public BodyAnalyzer(MSLMap<BeforeAfterContainer> varMap,
                         MSMap<Types> cxMap,
                         MIMap<Types> instantiationMap,
-						boolean controllerIsActive) {
+						boolean controllerIsActive,
+						int expectedException) {
         varMapping = varMap;
         cxMapping = cxMap;
         instantiationMapping = instantiationMap;
         this.controllerIsActive = controllerIsActive;
+        this.expectedException = expectedException;
     }
 
     /**
@@ -128,7 +131,7 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 			JimpleInjector.initHS();
 		}
 
-        JimpleInjector.initHandleStmtUtils(controllerIsActive);
+        JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
 
 		/*
 		 * If the method is the constructor, the newly created object

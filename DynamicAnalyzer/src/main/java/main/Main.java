@@ -36,7 +36,7 @@ public class Main {
 	 */
 	public static void main(String[] args)
 	{
-		execute(args, false, null, null, null, false);
+		execute(args, false, null, null, null, false, 0);
 	}
 
 	/**
@@ -45,13 +45,15 @@ public class Main {
 	 * @param varMap		fake var Typing map
 	 * @param cxMap		fake cx Typing map
 	 * @param instantiationMap	fake instantiation map
+	 * @param expextedException define which exception we expect
 	 */
 	public static void mainWithFakeResults(String[] args,
 										   MSLMap<BeforeAfterContainer> varMap,
 										   MSMap<Types> cxMap,
 										   MIMap<Types> instantiationMap,
-										   boolean controllerIsActive) {
-		execute(args, true, varMap, cxMap, instantiationMap, controllerIsActive);
+										   boolean controllerIsActive,
+										   int expextedException) {
+		execute(args, true, varMap, cxMap, instantiationMap, controllerIsActive, expextedException);
 	}
 
 	/**
@@ -63,7 +65,8 @@ public class Main {
 								MSLMap<BeforeAfterContainer> varMap,
 								MSMap<Types> cxMap,
 								MIMap<Types> instantiationMap,
-								boolean controllerIsActive) {
+								boolean controllerIsActive,
+								int expectedException) {
 
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
@@ -131,7 +134,7 @@ public class Main {
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping, controllerIsActive);
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping, controllerIsActive, expectedException);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 

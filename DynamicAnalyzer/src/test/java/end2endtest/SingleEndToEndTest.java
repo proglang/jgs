@@ -3,7 +3,7 @@ package end2endtest;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
-import classfiletests.utils.ExpectedException;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
 import org.junit.Test;
 import utils.logging.L1Logger;
 

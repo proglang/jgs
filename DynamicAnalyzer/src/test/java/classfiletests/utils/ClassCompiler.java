@@ -46,10 +46,12 @@ public class ClassCompiler {
 											 MSLMap<BeforeAfterContainer> varTyping,
 											 MSMap<Types> cxTyping,
 											 MIMap<Types> instantiation,
-											 Controller isActive) {
+											 Controller isActive,
+											 int expectedException) {
 		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started. Using fake static analysis results");
-		Main.mainWithFakeResults(args, varTyping, cxTyping, instantiation, isActive.equals(Controller.ACTIVE) ? true : false);
+		Main.mainWithFakeResults(args, varTyping, cxTyping, instantiation,
+				isActive.equals(Controller.ACTIVE) ? true : false, expectedException);
 		logger.info("Compilation successful, binary put in sootOutput/"
 				+ outputDir);
 	}
