@@ -9,9 +9,10 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
+import utils.exceptions.AssignArgumentToLocalExcpetion;
 import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.NSUCheckCalledException;
+import utils.exceptions.LocalPcCalledException;
 import utils.logging.L1Logger;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
@@ -128,7 +129,11 @@ public class ClassRunner {
 					}
 					break;
 				case CHECK_LOCAL_PC_CALLED:
-					assertEquals(NSUCheckCalledException.class.toString(), e.getCause()
+					assertEquals(LocalPcCalledException.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
+				case ASSIGN_ARG_TO_LOCAL:
+					assertEquals(AssignArgumentToLocalExcpetion.class.toString(), e.getCause()
 							.getClass().toString());
 					break;
 				default:

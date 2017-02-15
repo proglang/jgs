@@ -1,10 +1,10 @@
 package utils;
 
-import utils.exceptions.NSUCheckCalledException;
+import utils.exceptions.LocalPcCalledException;
 
 
 /**
- * Controller specifiying whether or not an {@link NSUCheckCalledException} should be thrown if certain statements
+ * Controller specifiying whether or not an {@link LocalPcCalledException} should be thrown if certain statements
  * are injected by the {@link analyzer.level1.JimpleInjector}, for example if checkLocalPC is injected.
  */
 public enum Controller {

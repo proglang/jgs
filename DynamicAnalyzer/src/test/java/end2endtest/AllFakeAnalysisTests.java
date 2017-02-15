@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import utils.Controller;
 import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.NSUCheckCalledException;
+import utils.exceptions.LocalPcCalledException;
 import utils.logging.L1Logger;
 import utils.staticResults.*;
 import utils.staticResults.implementation.Types;
@@ -47,7 +47,7 @@ public class AllFakeAnalysisTests {
      * @param name                      name of the test from testclasses to run
      * @param expEx                     the kind of exception we expect. See {@link ExpectedException}
      * @param analysisResult            the kind of static analysis result we want this test to run with. See {@link StaticAnalysis}
-     * @param isActive                  iff active, throw {@link NSUCheckCalledException} on certain (superfluous) instrumentations
+     * @param isActive                  iff active, throw {@link LocalPcCalledException} on certain (superfluous) instrumentations
      * @param involvedVars              specify the variables involved. only used for {@link utils.exceptions.IllegalFlowException}
      */
     public AllFakeAnalysisTests(String name,
@@ -69,6 +69,13 @@ public class AllFakeAnalysisTests {
     @Parameterized.Parameters(name = "Name: {0}, {1}, {2}, {3}")
     public static Iterable<Object[]> testForSuperfluousInstrumentation() {
         return Arrays.asList(
+
+
+                // =========================================================================
+                // testing assignArgumentToLocal;
+                // =========================================================================
+                new Object[] {"HighArgument", ExpectedException.ASSIGN_ARG_TO_LOCAL, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"HighArgument", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
 
                 // =========================================================================
                 //    The following are compinations of testclasses, expected exceptions
@@ -131,6 +138,7 @@ public class AllFakeAnalysisTests {
                 new Object[] {"NoNSU3_Fields", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
 
                 new Object[] {"NoNSU4_staticField", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}}
+
         );
     }
 
