@@ -62,7 +62,7 @@ public class ResultsServer {
     }
 
 
-    // ========================= SET CX / Instantiation ===========================
+    // ========================= SET CX ===========================
     /**
      * Creates a mapping (methods, statements) => Dynamic
      * @param msMap            Map to fill
@@ -97,6 +97,36 @@ public class ResultsServer {
                 for (Unit u: b.getUnits()) {
                     Stmt stmt = (Stmt) u;
                     msMap.put(sm, stmt, new Public<>());
+                }
+            }
+        }
+    }
+
+
+    // =============== SET INSTANTIATION ==================
+    public static void setDynamic(MIMap<Types> miMap, Collection<String> allClasses) {
+        for (String s: allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm: sootClass.getMethods()) {
+                // add return type after last parameter!
+                for (int parameter = 0; parameter <= sm.getParameterCount(); parameter++) {
+                    miMap.put(sm, parameter, new Dynamic());
+                }
+            }
+        }
+    }
+
+    public static void setPublic(MIMap<Types> miMap, Collection<String> allClasses) {
+        for (String s: allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm: sootClass.getMethods()) {
+                // add return type after last parameter!
+                for (int parameter = 0; parameter <= sm.getParameterCount(); parameter++) {
+                    miMap.put(sm, parameter, new Public());
                 }
             }
         }

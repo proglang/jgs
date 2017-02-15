@@ -10,10 +10,7 @@ import utils.Controller;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NSUCheckCalledException;
 import utils.logging.L1Logger;
-import utils.staticResults.BeforeAfterContainer;
-import utils.staticResults.MSLMap;
-import utils.staticResults.MSMap;
-import utils.staticResults.ResultsServer;
+import utils.staticResults.*;
 import utils.staticResults.implementation.Types;
 
 import java.util.Arrays;
@@ -148,7 +145,7 @@ public class AllFakeAnalysisTests {
         // here, we need to create the appropriate fake Maps to hand over the the ClassCompiler
         MSLMap<BeforeAfterContainer> fakeVarTypingsMap = new MSLMap<>();
         MSMap<Types> fakeCxTypingsMap = new MSMap<>();
-        MSMap<Types> fakeInstantiationMap = new MSMap<>();
+        MIMap<Types> fakeInstantiationMap = new MIMap<>();
 
         Collection<String> allClasses = Collections.singletonList("testclasses." + name);
         switch (analysisResult) {

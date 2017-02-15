@@ -172,7 +172,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				int posInArgList = ((ParameterRef) stmt.getRightOp())
 						.getIndex();
 				JimpleInjector.assignArgumentToLocal(posInArgList,
-						(Local) stmt.getLeftOp());
+                        (Local) stmt.getLeftOp());
 			}
 		} else if (stmt.getRightOp() instanceof ThisRef) {
 			// TODO im Grunde nicht nötig...

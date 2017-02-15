@@ -977,7 +977,10 @@ public class JimpleInjector {
 
         Unit assignExpr = Jimple.v().newInvokeStmt(assignArg);
 
-        unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
+        // only assign Argument to Local if Argument is of Dynamic Type
+        if (instantiation.get(posInArgList).isDynamic()) {
+            unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
+        }
         lastPos = assignExpr;
     }
 

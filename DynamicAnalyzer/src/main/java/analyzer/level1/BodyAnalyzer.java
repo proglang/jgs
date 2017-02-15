@@ -7,6 +7,7 @@ import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
 import utils.staticResults.BeforeAfterContainer;
+import utils.staticResults.MIMap;
 import utils.staticResults.MSLMap;
 import utils.staticResults.MSMap;
 import utils.staticResults.implementation.Types;
@@ -34,11 +35,11 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
 	MSLMap<BeforeAfterContainer> varMapping;
 	MSMap<Types> cxMapping;
-	MSMap<Types> instantiationMapping;
+	MIMap<Types> instantiationMapping;
 	boolean controllerIsActive;
     public BodyAnalyzer(MSLMap<BeforeAfterContainer> varMap,
                         MSMap<Types> cxMap,
-                        MSMap<Types> instantiationMap,
+                        MIMap<Types> instantiationMap,
 						boolean controllerIsActive) {
         varMapping = varMap;
         cxMapping = cxMap;
@@ -111,7 +112,8 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		JimpleInjector.setBody(body);
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
-		JimpleInjector.setStaticAnalaysisResults(varMapping.getVar(method), cxMapping.getCx(method), instantiationMapping.getInst(method));
+		JimpleInjector.setStaticAnalaysisResults(varMapping.getVar(method), cxMapping.getCx(method),
+					instantiationMapping.getInstantiation(method));
 
 		units = body.getUnits();
 		locals = body.getLocals();

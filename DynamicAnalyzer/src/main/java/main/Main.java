@@ -9,10 +9,7 @@ import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.BeforeAfterContainer;
-import utils.staticResults.MSLMap;
-import utils.staticResults.MSMap;
-import utils.staticResults.ResultsServer;
+import utils.staticResults.*;
 import utils.staticResults.implementation.Types;
 
 import java.io.File;
@@ -52,7 +49,7 @@ public class Main {
 	public static void mainWithFakeResults(String[] args,
 										   MSLMap<BeforeAfterContainer> varMap,
 										   MSMap<Types> cxMap,
-										   MSMap<Types> instantiationMap,
+										   MIMap<Types> instantiationMap,
 										   boolean controllerIsActive) {
 		execute(args, true, varMap, cxMap, instantiationMap, controllerIsActive);
 	}
@@ -65,7 +62,7 @@ public class Main {
 								boolean useFakeTyping,
 								MSLMap<BeforeAfterContainer> varMap,
 								MSMap<Types> cxMap,
-								MSMap<Types> instantiationMap,
+								MIMap<Types> instantiationMap,
 								boolean controllerIsActive) {
 
         Level LOGGER_LEVEL = Level.ALL;
@@ -108,13 +105,13 @@ public class Main {
         // ====== Create / load fake static analysis results =====
 		MSLMap<BeforeAfterContainer> varMapping;
 		MSMap<Types> cxMapping;
-		MSMap<Types> instantiationMapping;
+		MIMap<Types> instantiationMapping;
 
 		// if no fake Typing is supplied, make everything dynamic
 		if (! useFakeTyping) {
 			varMapping = new MSLMap<>();
 			cxMapping = new MSMap<>();
-			instantiationMapping = new MSMap<>();
+			instantiationMapping = new MIMap<>();
 
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());

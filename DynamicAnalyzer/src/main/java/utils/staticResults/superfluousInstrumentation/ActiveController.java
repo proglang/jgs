@@ -10,6 +10,7 @@ public class ActiveController extends PassivController {
     /**
      * If called, aborts execution with {@link NSUCheckCalledException}. Overwrites method in {@link PassivController}.
      */
+    // braucht noch argumente, methode, stmt
     public void abortIfActive() {
         throw new NSUCheckCalledException("Somewhere, checkGlobalPC or checkLocalPC was called!");
     }

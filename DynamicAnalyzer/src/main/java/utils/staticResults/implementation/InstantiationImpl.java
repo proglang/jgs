@@ -12,19 +12,30 @@ import java.util.Map;
  */
 public class InstantiationImpl<Level> implements Instantiation<Level> {
 
-    Map<Stmt, Type<Level>> map;
+    Map<Integer, Type<Level>> map;
 
-    public InstantiationImpl(Map<Stmt, Type<Level>> map) {
+    public InstantiationImpl(Map<Integer, Type<Level>> map) {
         this.map = map;
     }
 
     @Override
     public Type<Level> get(int param) {
-        throw new NotImplementedException();
+        if (param == map.size() - 1) {
+            throw new IllegalArgumentException("Required to get type of argument " + param + "," +
+                    "but this argument does not exist in this instantiation! At position " + param +
+                    ", the return value is stored!");
+        }
+        return map.get(param);
     }
 
+    /**
+     * Return the sec-value the method returns. Internally, this value
+     * is stored at the very last position of a map containing the sec-values of
+     * the arguments of the method.
+     * @return      sec-value of method return
+     */
     @Override
     public Type<Level> getReturn() {
-        throw new NotImplementedException();
+        return map.get(map.size() - 1);
     }
 }

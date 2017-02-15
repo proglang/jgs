@@ -13,6 +13,7 @@ import main.Main;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.BeforeAfterContainer;
+import utils.staticResults.MIMap;
 import utils.staticResults.MSLMap;
 import utils.staticResults.MSMap;
 import utils.staticResults.implementation.Types;
@@ -44,7 +45,7 @@ public class ClassCompiler {
 	public static void compileWithFakeTyping(String name, String outputDir,
 											 MSLMap<BeforeAfterContainer> varTyping,
 											 MSMap<Types> cxTyping,
-											 MSMap<Types> instantiation,
+											 MIMap<Types> instantiation,
 											 Controller isActive) {
 		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started. Using fake static analysis results");
