@@ -27,7 +27,7 @@ public class SwitchStmtSuccess {
 		LOGGER.log(Level.INFO, "SWITCH STMT LOW TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("int_x");
 		int x = 0;
@@ -63,7 +63,7 @@ public class SwitchStmtSuccess {
 		LOGGER.log(Level.INFO, "SWITCH STMT HIGH TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("int_x", SecurityLevel.top());
 		int x = 0;

@@ -26,7 +26,7 @@ public class WhileStmtSuccess {
 		LOGGER.log(Level.INFO, "WHILE STMT LOW TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("int_x");
 		hs.checkLocalPC("int_x");
@@ -58,7 +58,7 @@ public class WhileStmtSuccess {
 		LOGGER.log(Level.INFO, "WHILE STMT HIGH TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("int_x", SecurityLevel.top());
 		int x = 0;

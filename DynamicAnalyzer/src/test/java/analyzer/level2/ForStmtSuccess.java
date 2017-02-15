@@ -24,7 +24,7 @@ public class ForStmtSuccess {
 		LOGGER.log(Level.INFO, "FOR STMT LOCAL TEST SUCCESS STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_i");
 		hs.addLocal("int_res");
 		
@@ -52,7 +52,7 @@ public class ForStmtSuccess {
 		LOGGER.log(Level.INFO, "FOR STMT FIELD TEST SUCCESS STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_i");
 		hs.addFieldToObjectMap(this, "int_res");

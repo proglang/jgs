@@ -15,7 +15,7 @@ public class TestSubClass {
 	
 	public TestSubClass() {
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this	,"int_field");
 		hs.addFieldToObjectMap(this	,"int_pField");
@@ -31,7 +31,7 @@ public class TestSubClass {
 	
 	public int methodWithConstReturn() {
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.returnConstant();
 		hs.close();
@@ -50,7 +50,7 @@ public class TestSubClass {
 	
 	public int methodWithLowLocalReturn() {
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_result");
 		
 		hs.setLevelOfLocal("int_result");
@@ -63,7 +63,7 @@ public class TestSubClass {
 	
 	public int methodWithParams(int a, int b, int c) {
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_a1");
 		hs.addLocal("int_b1");
 		hs.addLocal("int_c1");
@@ -87,7 +87,7 @@ public class TestSubClass {
 	
 	public int methodWithHighLocalReturn() {
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_result");
 		
 		hs.setLevelOfLocal("int_result");

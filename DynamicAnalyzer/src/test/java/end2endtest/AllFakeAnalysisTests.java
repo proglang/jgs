@@ -116,6 +116,7 @@ public class AllFakeAnalysisTests {
 
                 // testing that the controller works: Throwing a CHECK_LOCAL_PC_CALLED exception on purpose
                 new Object[] { "NSUPolicy", ExpectedException.CHECK_LOCAL_PC_CALLED, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {} },
+                new Object[] { "NSUPolicy", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {} },
                 new Object[] { "NSU_FieldAccess4", ExpectedException.CHECK_LOCAL_PC_CALLED, StaticAnalysis.ALL_DYNAMIC,  Controller.ACTIVE, new String[] {} },
 
                 // testing objects that may have invalid flows, but surely do not have NSU checks. Must never throw CHECK_LOCAL_PC_CALLED exception

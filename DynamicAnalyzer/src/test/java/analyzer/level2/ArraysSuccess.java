@@ -25,7 +25,7 @@ public class ArraysSuccess {
 		logger.log(Level.INFO, "CREATE ARRAY SUCCESS TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("String[]_a");
 		String[] a = new String[] {"asd", "", ""};
@@ -44,7 +44,7 @@ public class ArraysSuccess {
 		logger.log(Level.INFO, "READ ARRAY SUCCESS TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		String[] a = new String[] {"asd", "", ""};
 		hs.addArrayToObjectMap(a);
@@ -82,7 +82,7 @@ public class ArraysSuccess {
 		logger.log(Level.INFO, "WRITE ARRAY SUCCESS TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		String[] a = new String[] {"a", "b", "c"};
 		assertEquals(3, a.length);

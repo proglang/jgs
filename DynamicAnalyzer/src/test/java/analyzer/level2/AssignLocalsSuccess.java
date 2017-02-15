@@ -28,8 +28,8 @@ public class AssignLocalsSuccess {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_x", SecurityLevel.bottom());
 		
 		/*
@@ -62,7 +62,7 @@ public class AssignLocalsSuccess {
 		logger.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
 		hs.addLocal("int_z", SecurityLevel.top());
@@ -117,7 +117,7 @@ public class AssignLocalsSuccess {
 		logger.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
 	    
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 
 		hs.addObjectToObjectMap(this);
 		hs.addFieldToObjectMap(this, "String_field");
@@ -161,7 +161,7 @@ public class AssignLocalsSuccess {
 		logger.log(Level.INFO, "ASSIGN FIELD TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("TestSubClass_xy");
 		
 		/*
@@ -192,7 +192,7 @@ public class AssignLocalsSuccess {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		/*
 		 * Assign method (result)
@@ -236,7 +236,7 @@ public class AssignLocalsSuccess {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		/*
 		 * Assign argument
@@ -270,7 +270,7 @@ public class AssignLocalsSuccess {
 		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL SUCCESS TEST STARTED");
 				
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		/*
 		 * x++; or x += 1;  or x = x + 1;

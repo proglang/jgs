@@ -25,7 +25,7 @@ public class CheckThatNotHigh {
 		LOGGER.info("CheckThatNotHigh-successTest started");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("String_low");
 		
@@ -43,7 +43,7 @@ public class CheckThatNotHigh {
 		LOGGER.info("CheckThatNotHigh-failTest started");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("String_high");
 		

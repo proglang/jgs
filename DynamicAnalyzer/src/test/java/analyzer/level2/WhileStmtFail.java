@@ -28,7 +28,7 @@ public class WhileStmtFail {
 		LOGGER.log(Level.INFO, "WHILE STMT TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
-		hs.initHandleStmtUtils(false);
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("int_x");
 		hs.checkLocalPC("int_x");
