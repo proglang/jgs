@@ -24,7 +24,8 @@ import java.util.logging.Logger;
 enum StaticAnalysis {
     ALL_DYNAMIC,         // Var, Cx & Instantiation all return Dynamic on any request
     CX_PUBLIC,           // same as ALL_DYNAMIC, except for Cx, which returns public on any request
-    ALL_PUBLIC, VAR_AND_CX_PUBLIC      // same as CX_PUBLIC, except for Var, which returns public on any request
+    ALL_PUBLIC,          // same as CX_PUBLIC, except for Var, which returns public on any request
+    VAR_AND_CX_PUBLIC    // just instantiation dynamic
 }
 
 
@@ -72,8 +73,12 @@ public class AllFakeAnalysisTests {
 
 
                 // =========================================================================
-                // testing assignArgumentToLocal;
+                // Testing HandleStmt.assignArgumentToLocal;
+                // Testclass HighArguments has a method callPrint(int i) which is called with HIGH int.
+                // it does cause an Illegal Flow always. Assign_ARG_TO_LOCAL only if analysis
+                // is dynamic and controller is active
                 // =========================================================================
+                new Object[] {"HighArgument", ExpectedException.ILLEGAL_FLOW, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
                 new Object[] {"HighArgument", ExpectedException.ASSIGN_ARG_TO_LOCAL, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
                 new Object[] {"HighArgument", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
 

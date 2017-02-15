@@ -2,7 +2,8 @@ package utils.staticResults.superfluousInstrumentation;
 
 /**
  * Created by Nicolas Müller on 06.02.17.
- * The assigned number is necessary to hand over the expected exception to jimple.
+ * The assigned number is necessary to hand over the expected exception to jimple,
+ * see initHandleStmtUtils in class {@link analyzer.level1.JimpleInjector}.
  */
 public enum ExpectedException {
     NONE(0),

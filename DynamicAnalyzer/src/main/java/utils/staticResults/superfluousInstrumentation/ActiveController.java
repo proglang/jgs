@@ -5,7 +5,8 @@ import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.LocalPcCalledException;
 
 /**
- * Created by Nicolas Müller on 06.02.17.
+ * A Controller to check if superfluous instrumentation is present. Extends {@link PassivController}, which is its
+ * passive counterpart that does nothing.
  */
 public class ActiveController extends PassivController {
     private int kindOfException;
