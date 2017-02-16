@@ -13,6 +13,7 @@ import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetio
 import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
+import utils.exceptions.SuperfluousInstrumentation.joinLevelOfLocalAndAssignmentLevelException;
 import utils.logging.L1Logger;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
@@ -134,6 +135,10 @@ public class ClassRunner {
 					break;
 				case ASSIGN_ARG_TO_LOCAL:
 					assertEquals(AssignArgumentToLocalExcpetion.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
+				case JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL:
+					assertEquals(joinLevelOfLocalAndAssignmentLevelException.class.toString(), e.getCause()
 							.getClass().toString());
 					break;
 				default:

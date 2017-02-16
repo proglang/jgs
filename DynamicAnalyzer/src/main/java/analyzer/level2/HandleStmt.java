@@ -553,6 +553,7 @@ public class HandleStmt {
 	 * @return security-level of the local.
 	 */
 	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
+	    controller.abortIfActiveAndExceptionIsType(ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL.getVal());
 		localmap.initializeLocal(local);
 		Object localLevel = localmap.getLevel(local);
 		objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(

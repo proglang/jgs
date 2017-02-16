@@ -3,6 +3,7 @@ package utils.staticResults.superfluousInstrumentation;
 import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetion;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
+import utils.exceptions.SuperfluousInstrumentation.joinLevelOfLocalAndAssignmentLevelException;
 
 /**
  * A Controller to check if superfluous instrumentation is present. Extends {@link PassivController}, which is its
@@ -23,6 +24,7 @@ public class ActiveController extends PassivController {
      * it throws exceptions allways.
      */
     public void abortIfActiveAndExceptionIsType(int expectedException) {
+
         if (expectedException == this.kindOfException || this.kindOfException == 0) {
             switch (expectedException) {
                 case 0:
@@ -37,6 +39,9 @@ public class ActiveController extends PassivController {
                 case 3:
                     throw new AssignArgumentToLocalExcpetion("A sec value of an argument was assigned needlessly" +
                             "to a local while the controller was active");
+                case 4:
+                    throw new joinLevelOfLocalAndAssignmentLevelException("A joinLevelOfLocalAndAssignment statement" +
+                            "was needlessly called while controller was active");
                 default:
                     throw new InternalAnalyzerException("Unknown type of exception" + expectedException);
             }

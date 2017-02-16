@@ -73,6 +73,12 @@ public class AllFakeAnalysisTests {
 
 
                 // =========================================================================
+                // joinLevelOfLocalAndAssignmentLevelException
+                // =========================================================================
+                new Object[] {"SimpleIfStmt", ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL, StaticAnalysis.ALL_DYNAMIC, Controller.ACTIVE, new String[] {}},
+                new Object[] {"SimpleIfStmt", ExpectedException.NONE, StaticAnalysis.ALL_PUBLIC, Controller.ACTIVE, new String[] {}},
+
+                // =========================================================================
                 // Testing HandleStmt.assignArgumentToLocal;
                 // Testclass HighArguments has a method callPrint(int i) which is called with HIGH int.
                 // it does cause an Illegal Flow always. Assign_ARG_TO_LOCAL only if analysis
