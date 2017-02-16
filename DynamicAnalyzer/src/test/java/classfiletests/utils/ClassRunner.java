@@ -75,7 +75,6 @@ public class ClassRunner {
 
 	/**
 	 * Run class and check whether the expected exception is found.
-	 * 
 	 * @author Regina Koenig, Nicolas Müller
 	 */
 	public static void testClass(String className, String outputDir,

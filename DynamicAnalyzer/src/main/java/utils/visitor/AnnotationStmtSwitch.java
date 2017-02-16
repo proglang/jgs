@@ -141,7 +141,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			JimpleInjector.makeLocal((Local) leftOperand, "LOW", aStmt);
 			break;
 		case SET_RETURN_LEVEL:
-			JimpleInjector.setReturnLevelAfterInvokeStmt(leftOperand.toString(), aStmt);
+			JimpleInjector.setReturnLevelAfterInvokeStmt(aStmt);
 		  // in eigene methode des jimpleInjector
 		  // l := get level of left-hand-side
 		  // l := l joined with objectmap.actualReturnLevel

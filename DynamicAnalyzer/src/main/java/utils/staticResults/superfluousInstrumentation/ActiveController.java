@@ -11,11 +11,10 @@ import utils.exceptions.SuperfluousInstrumentation.joinLevelOfLocalAndAssignment
  */
 public class ActiveController extends PassivController {
     private int kindOfException;
-    public ActiveController(int kindOfException) {
+    ActiveController(int kindOfException) {
         this.kindOfException = kindOfException;
     }
 
-    @Override
     /**
      * If called, aborts execution with {@link LocalPcCalledException}. Overwrites method in {@link PassivController}.
      * expectedException is where the caller specifies which exception we expect, see {@link ExpectedException}.
@@ -23,6 +22,7 @@ public class ActiveController extends PassivController {
      * If controller is not expecting any exception at all (e.g. this.kindOfexception == 0),
      * it throws exceptions allways.
      */
+    @Override
     public void abortIfActiveAndExceptionIsType(int expectedException) {
 
         if (expectedException == this.kindOfException || this.kindOfException == 0) {
@@ -32,8 +32,8 @@ public class ActiveController extends PassivController {
                             " throw an exception of type 0 - which is no exception!!");
                 case 1:
                     throw new InternalAnalyzerException("Some method in the HandleStmt requested to" +
-                            "throw an exception of type 1 - which is IllegalFlowexception, which" +
-                            "should not be thrown by this controller!");
+                            "throw an exception of type 1 - which is the IllegalFlowException, which" +
+                            "should not be thrown by the controller at all!");
                 case 2:
                     throw new LocalPcCalledException("Check local PC was called somewhere with an active controller");
                 case 3:

@@ -120,10 +120,9 @@ public class JimpleInjector {
     /**
      * See method with same name in HandleStatement.
      *
-     * @param signatureOfLeftSide
-     * @param pos
+     * @param pos   Statement / Unit where to insert setReturnLevelAfterInvokeStmt
      */
-    public static void setReturnLevelAfterInvokeStmt(String signatureOfLeftSide, Unit pos) {
+    public static void setReturnLevelAfterInvokeStmt(Unit pos) {
         ArrayList<Type> paramTypes = new ArrayList<>();
         paramTypes.add(RefType.v("java.lang.String"));
 
@@ -957,6 +956,7 @@ public class JimpleInjector {
     /**
      * Note: Altough method is not used by jimpleInjector, the corresponding handleStatement method is used in the manually instrumented tests.
      */
+    @SuppressWarnings("unused")
     public static void assignReturnLevelToLocal(Local l, Unit pos) {
         logger.log(Level.INFO, "Assign return level of invoked method to local {0}",
                 getSignatureForLocal(l));
@@ -1134,7 +1134,7 @@ public class JimpleInjector {
      * which must always be called in low context because of its side effects.
      *
      * @param level level that the PC must not exceed
-     * @param pos
+     * @param pos   position where to insert statement
      */
     public static void checkThatPCLe(String level, Unit pos) {
         logger.info("Check that context is " + level + "or above");
