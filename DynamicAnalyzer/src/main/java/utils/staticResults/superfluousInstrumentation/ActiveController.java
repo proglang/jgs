@@ -1,8 +1,8 @@
 package utils.staticResults.superfluousInstrumentation;
 
-import utils.exceptions.AssignArgumentToLocalExcpetion;
+import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetion;
 import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.LocalPcCalledException;
+import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
 
 /**
  * A Controller to check if superfluous instrumentation is present. Extends {@link PassivController}, which is its

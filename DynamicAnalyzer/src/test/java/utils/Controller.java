@@ -1,6 +1,6 @@
 package utils;
 
-import utils.exceptions.LocalPcCalledException;
+import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
 
 
 /**

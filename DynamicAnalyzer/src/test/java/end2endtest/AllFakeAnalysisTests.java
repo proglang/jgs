@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import utils.Controller;
 import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.LocalPcCalledException;
+import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
 import utils.logging.L1Logger;
 import utils.staticResults.*;
 import utils.staticResults.implementation.Types;

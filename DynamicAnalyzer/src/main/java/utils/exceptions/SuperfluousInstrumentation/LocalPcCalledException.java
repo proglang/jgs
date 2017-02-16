@@ -1,4 +1,4 @@
-package utils.exceptions;
+package utils.exceptions.SuperfluousInstrumentation;
 
 /**
  * Created by Nicolas Müller on 06.02.17.

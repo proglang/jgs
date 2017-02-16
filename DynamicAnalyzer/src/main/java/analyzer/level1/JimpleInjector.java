@@ -553,10 +553,13 @@ public class JimpleInjector {
                         false), local_for_Strings);
         Unit invoke = Jimple.v().newInvokeStmt(invokeAddLevel);
 
-
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-        unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
-        lastPos = pos;
+        // only insert the joinLevelOfLocal.. stmt if local is in fact dynamically checked
+        // TODO CX is irrelevant here?
+        if (varTyping.getAfter(instantiation, (Stmt) pos, local).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+            lastPos = pos;
+        }
     }
 
 
@@ -597,10 +600,13 @@ public class JimpleInjector {
                 local_for_Objects, local_for_Strings);
         Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignBase, pos));
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-        lastPos = pos;
+        // TODO CANNOT CAST ..
+        //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignBase, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+            lastPos = pos;
+        //}
     }
 
     /**
@@ -633,11 +639,14 @@ public class JimpleInjector {
                 local_for_Objects, local_for_Strings);
         Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 
-        unitStore_Before.insertElement(
-                unitStore_Before.new Element(assignDeclaringClass, pos));
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-        lastPos = pos;
+        // TODO cannot cast StaticFieldref to Local!
+        //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
+            unitStore_Before.insertElement(
+                    unitStore_Before.new Element(assignDeclaringClass, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+            lastPos = pos;
+        //}
     }
 
     /**
@@ -668,8 +677,11 @@ public class JimpleInjector {
 
         Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
 
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
-        lastPos = pos;
+        // TODO CANNOT CAST ...
+        //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) a).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignExpr, pos));
+            lastPos = pos;
+        //}
     }
 
 
@@ -982,8 +994,8 @@ public class JimpleInjector {
         // only assign Argument to Local if Argument is of Dynamic Type
         if (instantiation.get(posInArgList).isDynamic()) {
             unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
+            lastPos = assignExpr;
         }
-        lastPos = assignExpr;
     }
 
 

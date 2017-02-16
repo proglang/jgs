@@ -9,10 +9,10 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
-import utils.exceptions.AssignArgumentToLocalExcpetion;
+import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetion;
 import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.LocalPcCalledException;
+import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
 import utils.logging.L1Logger;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
@@ -118,7 +118,7 @@ public class ClassRunner {
 						logger.warning("No variables supplied for IllegalFlowException");
 					}
 					for (String var : involvedVars) {
-						logger.info("Check wheter " + var + " is contained in: "
+						logger.info("Check whether " + var + " is contained in: "
 								+ e.getMessage() + " ... ");
 						if (e.getMessage().contains(var)) {
 							logger.info("Success!");
