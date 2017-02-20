@@ -5,7 +5,8 @@ import utils.analyzer.HelperClass;
 public class SimpleIfStmt {
 	
 	public static void main(String[] args) {
-		simpleIfStmt(42);
+		int i = 42;
+		simpleIfStmt(i);
 	}
 	
 	/**

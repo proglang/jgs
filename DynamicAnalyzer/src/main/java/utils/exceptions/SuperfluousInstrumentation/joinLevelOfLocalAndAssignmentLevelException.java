@@ -9,6 +9,7 @@ package utils.exceptions.SuperfluousInstrumentation;
 public class joinLevelOfLocalAndAssignmentLevelException extends RuntimeException {
     private static final long serialVersionUID = 23428999234972342L;
 
+    // should take another argument STRING involved_var. benenne variable bei der es abbrechen soll. 1var reicht.
     public joinLevelOfLocalAndAssignmentLevelException(String message) {
         super(message);
         printStackTrace();

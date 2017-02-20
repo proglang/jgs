@@ -167,6 +167,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 		logger.fine("\n > > > Identity statement identified < < <");
 
+		// for all statements i = parameter[0]
 		if (stmt.getRightOp() instanceof ParameterRef) {
 			if (!body.getMethod().isMain()) {
 				int posInArgList = ((ParameterRef) stmt.getRightOp())

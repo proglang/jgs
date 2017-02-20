@@ -1,11 +1,14 @@
 package utils.staticResults;
 
+import de.unifreiburg.cs.proglang.jgs.examples.AnalysisResults;
 import soot.*;
 import soot.jimple.Stmt;
 import utils.staticResults.implementation.Dynamic;
 import utils.staticResults.implementation.Public;
 import utils.staticResults.implementation.Types;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -60,6 +63,35 @@ public class ResultsServer {
             }
         }
     }
+
+    // seriously?
+    private static void getCustom(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses,
+                                  scala.collection.immutable.Map<scala.Tuple2<java.lang.String,java.lang.String>, scala.Tuple2<java.lang.Object,java.lang.Object>> custom) {
+
+        for (String s : allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm : sootClass.getMethods()) {
+                Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+                for (Unit u: b.getUnits()) {
+                    Stmt stmt = (Stmt) u;
+                    for (Local l: b.getLocals()) {
+                        mslMap.put(sm, stmt, l, new BeforeAfterContainer<>(
+                                CustomTyping.getBefore(custom, stmt.toString(), l.getName() ) ? new Public<>() : new Dynamic<>(),
+                                CustomTyping.getAfter(custom, stmt.toString(), l.getName() ) ? new Public<>() : new Dynamic<>()));
+                    }
+                }
+            }
+        }
+    }
+
+    // public custom wrappers
+
+    public static void getCustom1(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses, scala.collection.mutable.Map custom) {
+        getCustom(mslMap, allClasses, CustomTyping.custom1());
+    }
+
 
 
     // ========================= SET CX ===========================
