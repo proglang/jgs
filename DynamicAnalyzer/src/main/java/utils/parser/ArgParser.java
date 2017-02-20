@@ -18,13 +18,23 @@ import java.util.List;
  */
 public class ArgParser {
 
+    // flags
+    final static String MAINCLASS_FLAG = "m";
+    final static String ADD_DIRECTORIES_TO_CLASSPATH = "p";
+    final static String JIMPLE_FLAG = "j";
+    final static String OUTPUT_FOLDER_FLAG = "o";
+    final static String ADDITIONAL_FILES_FLAG = "f";
+    final static String PUBLIC_TYPING_FOR_JIMPLE = "x";
+    final static String HELP = "h";
+
 	private static void printHelp() {
 		System.out.println(" ====== HELP ======= ");
-		System.out.println("-m: Set mainclass ");
-        System.out.println("-j: Compile to Jimple. ");
-		System.out.println("-p: Set classpath for soot. Use to add files in several directories. ");
-		System.out.println("-o: Set output folder. ");
-        System.out.println("-f: Add additional files to be processed (like testclasses.SomeHelperClassForMain)");
+		System.out.println("-" + MAINCLASS_FLAG + ": Set mainclass ");
+        System.out.println("-" + JIMPLE_FLAG + ": Compile to Jimple. ");
+		System.out.println("-" + ADD_DIRECTORIES_TO_CLASSPATH + ": Set classpath for soot. Use to add files in several directories. ");
+		System.out.println("-" + OUTPUT_FOLDER_FLAG + ": Set output folder. ");
+        System.out.println("-" + ADDITIONAL_FILES_FLAG + ": Add additional files to be processed (like testclasses.SomeHelperClassForMain)");
+        System.out.println("-" + PUBLIC_TYPING_FOR_JIMPLE + ": Developer's option. Uses all public typing and produces a reduced jimple file");
 		System.out.println("\nExamples:");
 		System.out.println("-m testclasses.NSUPolicy1");
 		System.out.println("-m testclasses.NSUPolicy1 -j");
@@ -43,13 +53,9 @@ public class ArgParser {
         String outputFolder;
         List<String> addDirsToClasspath = new ArrayList<>();
         List<String> additionalFiles = new ArrayList<>();
+        boolean usePublicTyping;
 
-        // flags
-        final String MAINCLASS_FLAG = "m";
-        final String ADD_DIRECTORIES_TO_CLASSPATH = "p";
-        final String JIMPLE_FLAG = "j";
-        final String OUTPUT_FOLDER_FLAG = "o";
-        final String ADDITIONAL_FILES_FLAG = "f";
+
 
         // ======== PREPARE OPTIONS =========
 		Options options = new Options();
@@ -83,10 +89,25 @@ public class ArgParser {
 		filesToAdd.setArgs(Option.UNLIMITED_VALUES);
 		options.addOption(filesToAdd);
 
+		Option help = new Option(HELP, "help", false, "Print Help");
+		help.setRequired(false);
+		options.addOption(help);
+
+		Option publicTyping = new Option(PUBLIC_TYPING_FOR_JIMPLE, "publicTyping", false, "Developer's option: Run main with all public. Especially useful in" +
+                "combination with -" + JIMPLE_FLAG + "to print out the optimised jimple");
+		publicTyping.setRequired(false);
+		options.addOption(publicTyping);
+
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd;
 		try {
 			cmd = parser.parse(options, args);
+
+            // help flag
+            if (cmd.hasOption("h")){
+                printHelp();
+                System.exit(0);
+            }
 
 			// m flag
             mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
@@ -114,17 +135,16 @@ public class ArgParser {
                 Collections.addAll(additionalFiles, cmd.getOptionValues(ADDITIONAL_FILES_FLAG));
             }
 
-            // case help flag
-            if (cmd.hasOption("h")){
-                printHelp();
-                System.exit(0);
-            }
+           usePublicTyping = cmd.hasOption(PUBLIC_TYPING_FOR_JIMPLE);
+
+            //
 
             return new ArgumentContainer(mainclass,
                     addDirsToClasspath,
                     toJimple,
                     outputFolder,
-                    additionalFiles);
+                    additionalFiles,
+                    usePublicTyping);
 
 			// if illegal input
 		} catch (ParseException e) {

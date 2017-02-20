@@ -119,9 +119,15 @@ public class Main {
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
 
-			ResultsServer.setDynamic(varMapping, allClasses);
-			ResultsServer.setDynamic(cxMapping, allClasses);
-			ResultsServer.setDynamic(instantiationMapping, allClasses);
+			if (sootOptionsContainer.usePublicTyping()) {
+				ResultsServer.setPublic(varMapping, allClasses);
+				ResultsServer.setPublic(cxMapping, allClasses);
+				ResultsServer.setPublic(instantiationMapping, allClasses);
+			} else {
+				ResultsServer.setDynamic(varMapping, allClasses);
+				ResultsServer.setDynamic(cxMapping, allClasses);
+				ResultsServer.setDynamic(instantiationMapping, allClasses);
+			}
 
 		} else {
 			varMapping = varMap;

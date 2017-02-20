@@ -71,15 +71,15 @@ object CustomTyping {
   /**
     * Return true if type is dynamic
     */
-  def isDynamicBefore(map :Map[(String, String), (Boolean, Boolean)], method: String, local: String) = {
-    map.getOrElse((method, local), (false, false))._1;
+  def isDynamicBefore(map :Map[(String, String), (Boolean, Boolean)], method: String, local: String): Boolean = {
+    map.getOrElse((method, local), (false, false))._1
   }
 
   /**
     * Return true if type is dynamic
     */
-  def isDynamicAfter(map :Map[(String, String), (Boolean, Boolean)], method: String, local: String) = {
-    map.getOrElse((method, local), (false, false))._2;
+  def isDynamicAfter(map :Map[(String, String), (Boolean, Boolean)], method: String, local: String): Boolean = {
+    map.getOrElse((method, local), (false, false))._2
   }
 }
 

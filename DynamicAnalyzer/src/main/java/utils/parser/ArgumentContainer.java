@@ -17,13 +17,15 @@ public class ArgumentContainer {
     private final boolean toJimple;
     private final String outputFolder;
     private final List<String> additionalFiles;
+    private boolean usePublicTyping;
 
-    ArgumentContainer(String mainclass, List<String> addDirsToClasspath, boolean toJimple, String outputFolder, List<String> additionalFiles) {
+    ArgumentContainer(String mainclass, List<String> addDirsToClasspath, boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping) {
         this.mainclass = mainclass;
         this.toJimple = toJimple;
         this.outputFolder = outputFolder;
         this.additionalFiles = additionalFiles;
         this.addDirsToClasspath = addDirsToClasspath;
+        this.usePublicTyping = usePublicTyping;
     }
 
     public String getMainclass() {
@@ -43,6 +45,10 @@ public class ArgumentContainer {
         }
     }
 
+    public boolean usePublicTyping() {
+        return usePublicTyping;
+    }
+
     public String getOutputFolderAbsolutePath() {
         if (outputFolder.equals(VALUE_NOT_SET)) {
             return System.getProperty("user.dir");
@@ -54,6 +60,7 @@ public class ArgumentContainer {
                 return new File(System.getProperty("user.dir"), outputFolder).getAbsolutePath();
             }
         }
+
     }
 
     public List<String> getAdditionalFiles() {
