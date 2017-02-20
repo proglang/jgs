@@ -713,7 +713,7 @@ public class JimpleInjector {
                         false), local_for_Strings);
         Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
 
-        // if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
+        // TODO if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
         // and we especially do not need to perform a NSU check!
         // if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
         unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));

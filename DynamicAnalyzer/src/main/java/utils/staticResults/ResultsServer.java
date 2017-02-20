@@ -63,7 +63,7 @@ public class ResultsServer {
 
     // seriously?
     private static void getCustom(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses,
-                                  scala.collection.immutable.Map<scala.Tuple2<java.lang.String,java.lang.String>, scala.Tuple2<java.lang.Object,java.lang.Object>> custom) {
+                                  scala.collection.immutable.Map<scala.Tuple2<java.lang.String,java.lang.String>, scala.Tuple2<java.lang.Object,java.lang.Object>> customTyping) {
 
         for (String s : allClasses) {
             SootClass sootClass = Scene.v().loadClassAndSupport(s);
@@ -75,8 +75,8 @@ public class ResultsServer {
                     Stmt stmt = (Stmt) u;
                     for (Local l: b.getLocals()) {
                         mslMap.put(sm, stmt, l, new BeforeAfterContainer<>(
-                                CustomTyping.getBefore(custom, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>(),
-                                CustomTyping.getAfter(custom, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>()));
+                                CustomTyping.isDynamicBefore(customTyping, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>(),
+                                CustomTyping.isDynamicAfter(customTyping, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>()));
                     }
                 }
             }
@@ -85,11 +85,14 @@ public class ResultsServer {
 
     // public custom wrappers
 
-    public static void getCustom1(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
+    public static void custom_lowPlusPublic_AllDynamic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
         getCustom(mslMap, allClasses, CustomTyping.LowPlusPublic_allDynamic());
     }
 
 
+    public static void custom_lowPlugPublic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
+        getCustom(mslMap, allClasses, CustomTyping.LowPlusPublic());
+    }
 
     // ========================= SET CX ===========================
     /**

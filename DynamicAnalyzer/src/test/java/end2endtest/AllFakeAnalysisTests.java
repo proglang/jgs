@@ -22,11 +22,13 @@ import java.util.logging.Logger;
  * Desribe how we want the fake analysis results the be
  */
 enum StaticAnalysis {
-    ALL_DYNAMIC,         // Var, Cx & Instantiation all return Dynamic on any request
-    CX_PUBLIC,           // same as ALL_DYNAMIC, except for Cx, which returns public on any request
-    ALL_PUBLIC,          // same as CX_PUBLIC, except for Var, which returns public on any request
-    CUSTOM_LowPlusPublic1,
-    VAR_AND_CX_PUBLIC    // just instantiation dynamic
+    ALL_DYNAMIC,                            // Var, Cx & Instantiation all return Dynamic on any request
+    CX_PUBLIC,                              // same as ALL_DYNAMIC, except for Cx, which returns public on any request
+    ALL_PUBLIC,                             // same as CX_PUBLIC, except for Var, which returns public on any request
+    VAR_AND_CX_PUBLIC,                      // just instantiation dynamic
+
+    CUSTOM_LowPlusPublic_AllDynamic,        // AllDynamic especially to test if typing map in CustomTyping.scala works
+    CUSTOM_LowPlusPublic                    // Mapping such that i is Dynamic, j is public and res = i + j
 }
 
 
@@ -77,9 +79,11 @@ public class AllFakeAnalysisTests {
                 // custom typing. See utils.staticResults.CustomTyping
                 // =========================================================================
 
-                // for testing purposes, StaticAnalysis.CUSTOM_LowPlusPublic1 is the same as everything (important) == DYNAMIC. This must
-                // case superfluous join_level_... exception, since the test performs: int res = int a + int j;
-                new Object[] {"LowPlusPublic", ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL, StaticAnalysis.CUSTOM_LowPlusPublic1, Controller.ACTIVE, new String[] {}},
+                // to make sure the Custom Typing works, StaticAnalysis.CUSTOM_LowPlusPublic_AllDynamic makes everything (important) dynamic.
+                // Must cause superfluous join_level_of_local exception, since int res = int a + int j obviously performs a join_level_of_local_and_assignment_level stmt.
+               // new Object[] {"LowPlusPublic", ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL, StaticAnalysis.CUSTOM_LowPlusPublic_AllDynamic, Controller.ACTIVE, new String[] {}},
+                // the following test tests if we are able to join a DYNAMIC(LOW) with a PUBLIC local variable.
+                new Object[] {"LowPlusPublic", ExpectedException.NONE, StaticAnalysis.CUSTOM_LowPlusPublic, Controller.PASSIVE, new String[] {}},
 
                 // =========================================================================
                 // joinLevelOfLocalAndAssignmentLevelException
@@ -198,8 +202,13 @@ public class AllFakeAnalysisTests {
                 ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
                 ResultsServer.setPublic(fakeInstantiationMap, allClasses);
                 break;
-            case CUSTOM_LowPlusPublic1:
-                ResultsServer.getCustom1(fakeVarTypingsMap, allClasses);
+            case CUSTOM_LowPlusPublic_AllDynamic:
+                ResultsServer.custom_lowPlusPublic_AllDynamic(fakeVarTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeInstantiationMap, allClasses);
+                break;
+            case CUSTOM_LowPlusPublic:
+                ResultsServer.custom_lowPlugPublic(fakeVarTypingsMap, allClasses);
                 ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
                 ResultsServer.setPublic(fakeInstantiationMap, allClasses);
                 break;

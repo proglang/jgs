@@ -561,7 +561,7 @@ public class HandleStmt {
 		logger.log(
 				Level.INFO,
 				"Set assignment-level to level "
-						+ objectmap.getAssignmentLevel());
+						+ objectmap.getAssignmentLevel() + " because of " + local);
 		return objectmap.getAssignmentLevel();
 	}
 
