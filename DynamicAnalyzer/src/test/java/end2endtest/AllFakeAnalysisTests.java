@@ -25,6 +25,7 @@ enum StaticAnalysis {
     ALL_DYNAMIC,         // Var, Cx & Instantiation all return Dynamic on any request
     CX_PUBLIC,           // same as ALL_DYNAMIC, except for Cx, which returns public on any request
     ALL_PUBLIC,          // same as CX_PUBLIC, except for Var, which returns public on any request
+    CUSTOM_LowPlusPublic1,
     VAR_AND_CX_PUBLIC    // just instantiation dynamic
 }
 
@@ -71,6 +72,14 @@ public class AllFakeAnalysisTests {
     public static Iterable<Object[]> testForSuperfluousInstrumentation() {
         return Arrays.asList(
 
+
+                // =========================================================================
+                // custom typing. See utils.staticResults.CustomTyping
+                // =========================================================================
+
+                // for testing purposes, StaticAnalysis.CUSTOM_LowPlusPublic1 is the same as everything (important) == DYNAMIC. This must
+                // case superfluous join_level_... exception, since the test performs: int res = int a + int j;
+                new Object[] {"LowPlusPublic", ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL, StaticAnalysis.CUSTOM_LowPlusPublic1, Controller.ACTIVE, new String[] {}},
 
                 // =========================================================================
                 // joinLevelOfLocalAndAssignmentLevelException
@@ -186,6 +195,11 @@ public class AllFakeAnalysisTests {
                 break;
             case ALL_PUBLIC:
                 ResultsServer.setPublic(fakeVarTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
+                ResultsServer.setPublic(fakeInstantiationMap, allClasses);
+                break;
+            case CUSTOM_LowPlusPublic1:
+                ResultsServer.getCustom1(fakeVarTypingsMap, allClasses);
                 ResultsServer.setPublic(fakeCxTypingsMap, allClasses);
                 ResultsServer.setPublic(fakeInstantiationMap, allClasses);
                 break;

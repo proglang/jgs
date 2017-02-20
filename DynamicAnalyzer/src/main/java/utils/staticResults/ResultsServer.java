@@ -1,14 +1,11 @@
 package utils.staticResults;
 
-import de.unifreiburg.cs.proglang.jgs.examples.AnalysisResults;
 import soot.*;
 import soot.jimple.Stmt;
 import utils.staticResults.implementation.Dynamic;
 import utils.staticResults.implementation.Public;
 import utils.staticResults.implementation.Types;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -78,8 +75,8 @@ public class ResultsServer {
                     Stmt stmt = (Stmt) u;
                     for (Local l: b.getLocals()) {
                         mslMap.put(sm, stmt, l, new BeforeAfterContainer<>(
-                                CustomTyping.getBefore(custom, stmt.toString(), l.getName() ) ? new Public<>() : new Dynamic<>(),
-                                CustomTyping.getAfter(custom, stmt.toString(), l.getName() ) ? new Public<>() : new Dynamic<>()));
+                                CustomTyping.getBefore(custom, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>(),
+                                CustomTyping.getAfter(custom, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>()));
                     }
                 }
             }
@@ -88,8 +85,8 @@ public class ResultsServer {
 
     // public custom wrappers
 
-    public static void getCustom1(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses, scala.collection.mutable.Map custom) {
-        getCustom(mslMap, allClasses, CustomTyping.custom1());
+    public static void getCustom1(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
+        getCustom(mslMap, allClasses, CustomTyping.LowPlusPublic_allDynamic());
     }
 
 
