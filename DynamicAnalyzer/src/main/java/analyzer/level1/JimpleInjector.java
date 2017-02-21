@@ -1150,10 +1150,11 @@ public class JimpleInjector {
                 local_for_Strings, StringConstant.v(level));
         Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 
-
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
-        unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
-        lastPos = pos;
+        if (varTyping.getBefore(instantiation, (Stmt) pos, l).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+            lastPos = pos;
+        }
     }
 
     /**
@@ -1178,8 +1179,11 @@ public class JimpleInjector {
                         "checkThatPCLe", paramTypes, VoidType.v(), false), StringConstant.v(level));
         Unit invoke = Jimple.v().newInvokeStmt(checkPC);
 
-        unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
-        lastPos = pos;
+        // only if PC is dynamic
+        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+            lastPos = pos;
+        }
     }
 
     /**
