@@ -4,6 +4,7 @@ import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetio
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
 import utils.exceptions.SuperfluousInstrumentation.joinLevelOfLocalAndAssignmentLevelException;
+import utils.exceptions.SuperfluousInstrumentation.setReturnAfterInvokeException;
 
 /**
  * A Controller to check if superfluous instrumentation is present. Extends {@link PassivController}, which is its
@@ -42,6 +43,8 @@ public class ActiveController extends PassivController {
                 case 4:
                     throw new joinLevelOfLocalAndAssignmentLevelException("A joinLevelOfLocalAndAssignment statement" +
                             "was needlessly called while controller was active");
+                case 5:
+                    throw new setReturnAfterInvokeException("Superfluous Stmt!");
                 default:
                     throw new InternalAnalyzerException("Unknown type of exception" + expectedException);
             }

@@ -637,6 +637,7 @@ public class HandleStmt {
 	    // l := l joined with objectmap.actualReturnLevel
 	    // set level of left-hand-side to l AFTER
 		// unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.SET_RETURN_AFTER_INVOKE.getVal());
 		Object leftHandSideSecValue = localmap.getLevel(signature);
 		leftHandSideSecValue = handleStatementUtils.joinLevels(objectmap.getActualReturnLevel(), 
 				leftHandSideSecValue);

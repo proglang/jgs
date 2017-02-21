@@ -10,7 +10,8 @@ public enum ExpectedException {
     ILLEGAL_FLOW(1),
     CHECK_LOCAL_PC_CALLED(2),
     ASSIGN_ARG_TO_LOCAL(3),
-    JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL(4);
+    JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL(4),
+    SET_RETURN_AFTER_INVOKE(5);
 
     private int number;
 
@@ -21,4 +22,5 @@ public enum ExpectedException {
     public int getVal() {
         return this.number;
     }
+
 }

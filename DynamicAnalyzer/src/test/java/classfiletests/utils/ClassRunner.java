@@ -140,6 +140,10 @@ public class ClassRunner {
 					assertEquals(joinLevelOfLocalAndAssignmentLevelException.class.toString(), e.getCause()
 							.getClass().toString());
 					break;
+				case SET_RETURN_AFTER_INVOKE:
+					assertEquals(joinLevelOfLocalAndAssignmentLevelException.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
 				default:
 					throw new InternalAnalyzerException("Unknown exception found!");
 			}
