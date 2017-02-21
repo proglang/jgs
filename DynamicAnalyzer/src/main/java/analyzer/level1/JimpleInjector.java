@@ -258,17 +258,12 @@ public class JimpleInjector {
         ArrayList<Type> paramTypes = new ArrayList<>();
         paramTypes.add(RefType.v("java.lang.String"));
 
-        String signature = getSignatureForLocal(local);
-        Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-
         Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "addLocal", paramTypes, VoidType.v(), false), local_for_Strings);
+                        "addLocal", paramTypes, VoidType.v(), false), StringConstant.v(getSignatureForLocal(local)));
         Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
 
-
-        unitStore_After.insertElement(unitStore_After.new Element(sig, lastPos));
-        unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
+        unitStore_After.insertElement(unitStore_After.new Element(ass, lastPos));
         lastPos = ass;
     }
 
