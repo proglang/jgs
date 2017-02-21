@@ -1018,8 +1018,10 @@ public class JimpleInjector {
                 Scene.v().getSootClass(HANDLE_CLASS), "returnConstant",
                 parameterTypes, VoidType.v(), false));
 
-        unitStore_Before.insertElement(unitStore_Before.new Element(
-                Jimple.v().newInvokeStmt(returnConst), retStmt));
+        if (instantiation.getReturn().isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(
+                    Jimple.v().newInvokeStmt(returnConst), retStmt));
+        }
     }
 
     public static void returnLocal(Local l, Unit pos) {
@@ -1037,9 +1039,11 @@ public class JimpleInjector {
 
         Stmt returnL = Jimple.v().newInvokeStmt(returnLocal);
 
-        unitStore_Before.insertElement(unitStore_Before.new Element(sig, pos));
-        unitStore_Before.insertElement(unitStore_Before.new Element(returnL, pos));
-        lastPos = pos;
+        if (instantiation.getReturn().isDynamic()) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(sig, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(returnL, pos));
+            lastPos = pos;
+        }
     }
 
     /**
@@ -1071,10 +1075,10 @@ public class JimpleInjector {
 
         Unit[] tmpUnitArray = new Unit[length];
 
+        boolean dynamicArgsExist = false;
         for (int i = 0; i < length; i++) {
 
-            // This results in:
-            // local_for_String_Arrays[0] = "boolean_z0";
+            // This results in code like: local_for_String_Arrays[0] = "boolean_z0";
             // for each local that is given as an argument, jimple code is injected that assings this local to a slot
             // in a vector. This vector is given to the HandleStmt.storeArgumentLevels method.
             // It's possible to get a null vector as an argument. This happens,
@@ -1084,13 +1088,17 @@ public class JimpleInjector {
                 tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
                         local_for_String_Arrays, IntConstant.v(i)),
                         StringConstant.v(signature));
-
+                dynamicArgsExist = true;
                 // else if () ..
 
+            } else if (lArguments[i] != null && ! varTyping.getBefore(instantiation, (Stmt) pos, lArguments[i]).isDynamic()) {
+                tmpUnitArray[i] = null;
             } else {
+                // if arguments are all constants
                 tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
                         local_for_String_Arrays, IntConstant.v(i)),
                         StringConstant.v("DEFAULT_LOW"));
+                dynamicArgsExist = true;
             }
         }
 
@@ -1101,13 +1109,19 @@ public class JimpleInjector {
 
         // only store arguments if it's even neccessary (e.g. one of the arguments is public)
         // if no argument is dynamic, don't even call storeArgumentLevels
-        unitStore_Before.insertElement(
-                unitStore_Before.new Element(assignNewStringArray, pos));
-        for (Unit el : tmpUnitArray) {
-            unitStore_Before.insertElement(unitStore_Before.new Element(el, pos));
+        if(dynamicArgsExist) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignNewStringArray, pos));
         }
-        unitStore_Before.insertElement(unitStore_Before.new Element(invokeStoreArgs, pos));
-        lastPos = pos;
+        for (Unit el : tmpUnitArray) {
+            if (el != null) {
+                // if el.equals(null), the corresponding local is public. See loop above.
+                unitStore_Before.insertElement(unitStore_Before.new Element(el, pos));
+            }
+        }
+        if (dynamicArgsExist) {
+            unitStore_Before.insertElement(unitStore_Before.new Element(invokeStoreArgs, pos));
+            lastPos = pos;
+        }
 
     }
 
