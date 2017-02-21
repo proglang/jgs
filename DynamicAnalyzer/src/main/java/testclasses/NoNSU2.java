@@ -18,7 +18,7 @@ public class NoNSU2 {
             System.out.print("More than four args were supplied");
             b = false;
         }
-        int ret = doStuff(b);
+        int ret = doStuff(b);       // setReturnLevel is called on this int to set return of doStuff
         System.out.println(ret);
 
 

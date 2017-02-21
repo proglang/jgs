@@ -19,6 +19,7 @@ import java.util.logging.Logger;
  * 
  * @author Regina Koenig (2015)
  */
+@SuppressWarnings("ALL")
 public class HandleStmt {
 
 	private static final Logger logger = L2Logger.getLogger();

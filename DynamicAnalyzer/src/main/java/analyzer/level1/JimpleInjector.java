@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.*;
 import soot.jimple.*;
+import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.exceptions.InternalAnalyzerException;
@@ -133,7 +134,10 @@ public class JimpleInjector {
                         false), local_for_Strings);
         Unit invoke = Jimple.v().newInvokeStmt(setReturnLevel);
 
-        unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+        // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
+        if ( varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
+            unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+        }
     }
 
     /**
