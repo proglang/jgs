@@ -1073,13 +1073,20 @@ public class JimpleInjector {
 
         for (int i = 0; i < length; i++) {
 
+            // This results in:
+            // local_for_String_Arrays[0] = "boolean_z0";
+            // for each local that is given as an argument, jimple code is injected that assings this local to a slot
+            // in a vector. This vector is given to the HandleStmt.storeArgumentLevels method.
             // It's possible to get a null vector as an argument. This happens,
             // if a constant is set as argument.
-            if (lArguments[i] != null) {
+            if (lArguments[i] != null && varTyping.getBefore(instantiation, (Stmt) pos, lArguments[i]).isDynamic()) {
                 String signature = getSignatureForLocal(lArguments[i]);
                 tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
                         local_for_String_Arrays, IntConstant.v(i)),
                         StringConstant.v(signature));
+
+                // else if () ..
+
             } else {
                 tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
                         local_for_String_Arrays, IntConstant.v(i)),
@@ -1092,7 +1099,8 @@ public class JimpleInjector {
                 parameterTypes, VoidType.v(), false), local_for_String_Arrays);
         Stmt invokeStoreArgs = Jimple.v().newInvokeStmt(storeArgs);
 
-
+        // only store arguments if it's even neccessary (e.g. one of the arguments is public)
+        // if no argument is dynamic, don't even call storeArgumentLevels
         unitStore_Before.insertElement(
                 unitStore_Before.new Element(assignNewStringArray, pos));
         for (Unit el : tmpUnitArray) {
