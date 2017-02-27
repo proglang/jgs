@@ -1093,7 +1093,7 @@ public class JimpleInjector {
                 tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
                         local_for_String_Arrays, IntConstant.v(i)),
                         StringConstant.v("DEFAULT_LOW"));
-                dynamicArgsExist = true;
+                dynamicArgsExist = true;        // this is neccessary, else VerifyError ...?
             }
         }
 

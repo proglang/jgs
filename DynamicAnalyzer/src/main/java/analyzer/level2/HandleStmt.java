@@ -495,7 +495,11 @@ public class HandleStmt {
 	 *            List of arguments
 	 */
 	public void storeArgumentLevels(String... arguments) {
-		controller.abortIfActiveAndExceptionIsType(ExpectedException.STORE_ARGUMENT_LEVELS.getVal());
+		// unfortunately, when printing out constants, storeArgumentLevels is still added by the jimpleInjector.
+        // if we can change that needs to be investiaged, changing the central line 1096 in
+        // jimpleInjector.storeArgumentLevels:               dynamicArgsExist = true;
+        // we get tons of java.lang.verify errors...
+	    // controller.abortIfActiveAndExceptionIsType(ExpectedException.STORE_ARGUMENT_LEVELS.getVal());
 	    logger.info("Store arguments " + Arrays.toString(arguments)
 				+ " in LocalMap");
 		ArrayList<Object> levelArr = new ArrayList<Object>();

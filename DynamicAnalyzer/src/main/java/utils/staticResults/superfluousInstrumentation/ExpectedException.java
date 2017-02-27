@@ -14,7 +14,7 @@ public enum ExpectedException {
     SET_RETURN_AFTER_INVOKE(5),
     CHECK_THAT_LE(6),
     CHECK_THAT_PC_LE(7),
-    STORE_ARGUMENT_LEVELS(8),
+    // STORE_ARGUMENT_LEVELS(8),        // inactive, see corresponding jimpleInjector method for explanation
     RETURN_LOCAL(9),
     RETURN_CONSTANT(10),
     SET_RETURN_LEVEL_AFTER_INVOKE_STMT(11);

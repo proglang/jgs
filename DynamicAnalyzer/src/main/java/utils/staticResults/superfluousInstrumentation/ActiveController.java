@@ -47,7 +47,7 @@ public class ActiveController extends PassivController {
                 case 7:
                     throw new checkThatPcLeException("superfluous stmt!");
                 case 8:
-                    throw new storeArgumentLevels("superfluous stmt!");
+                    throw new storeArgumentLevelsException("superfluous stmt!");
                 case 9:
                     throw new ReturnLocalException("superfluous stmt!");
                 case 10:

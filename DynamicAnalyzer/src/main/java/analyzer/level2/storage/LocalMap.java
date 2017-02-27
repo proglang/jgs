@@ -144,6 +144,7 @@ public class LocalMap {
 	}
 	
 	public void setLevel(String signature, Object securitylevel) {
+
 		localMap.put(signature, new SecurityOptional(securitylevel, true));
 	}
 	
