@@ -46,6 +46,14 @@ public class TypeDomain<Level> {
         return new SecLevel<>(level);
     }
 
+    /**
+     * A parser for types.
+     *
+     * It reads static types like the secdomain.
+     * "?" reads as the dynamic type.
+     * "pub" reads as the public type.
+     * @return
+     */
     public AnnotationParser<Type<Level>> typeParser() {
         final TypeDomain<Level> self = this;
         return new AnnotationParser<Type<Level>>() {
