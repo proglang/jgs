@@ -820,6 +820,7 @@ public class HandleStmt {
 	 * @param level				level which mustn't be exceeded
 	 */
 	public void checkThatLe(String signature, String level) {
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_LE.getVal());
 		logger.info("Check if " + signature + " is less/equal " + level);
 		if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))){
 			handleStatementUtils.abort("Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" +
@@ -835,6 +836,7 @@ public class HandleStmt {
 	 */
 	@SuppressWarnings("unused")
 	public void checkThatPCLe(String level) {
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_PC_LE.getVal());
 		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
 		if (!SecurityLevel.le(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
 			handleStatementUtils.abort("Invalid security context: PC must be less/eqal " + level + ", but PC was " + localmap.getLocalPC());

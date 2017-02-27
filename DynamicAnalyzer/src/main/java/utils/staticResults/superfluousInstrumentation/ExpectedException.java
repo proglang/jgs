@@ -11,7 +11,9 @@ public enum ExpectedException {
     CHECK_LOCAL_PC_CALLED(2),
     ASSIGN_ARG_TO_LOCAL(3),
     JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL(4),
-    SET_RETURN_AFTER_INVOKE(5);
+    SET_RETURN_AFTER_INVOKE(5),
+    CHECK_THAT_LE(6),
+    CHECK_THAT_PC_LE(7);
 
     private int number;
 
