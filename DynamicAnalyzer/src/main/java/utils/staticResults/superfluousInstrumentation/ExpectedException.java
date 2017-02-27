@@ -13,7 +13,10 @@ public enum ExpectedException {
     JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL(4),
     SET_RETURN_AFTER_INVOKE(5),
     CHECK_THAT_LE(6),
-    CHECK_THAT_PC_LE(7);
+    CHECK_THAT_PC_LE(7),
+    STORE_ARGUMENT_LEVELS(8),
+    RETURN_LOCAL(9),
+    RETURN_CONSTANT(10);
 
     private int number;
 

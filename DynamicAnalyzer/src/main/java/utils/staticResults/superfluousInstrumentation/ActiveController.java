@@ -46,6 +46,10 @@ public class ActiveController extends PassivController {
                     throw new checkThatLeException("superfluous stmt!");
                 case 7:
                     throw new checkThatPcLeException("superfluous stmt!");
+                case 8:
+                    throw new storeArgumentLevels("superfluous stmt!");
+                case 9:
+                    throw new ReturnLocalException("superfluous stmt!");
                 default:
                     throw new InternalAnalyzerException("Unknown type of exception" + expectedException);
             }

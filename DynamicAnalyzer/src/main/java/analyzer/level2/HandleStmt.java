@@ -467,6 +467,7 @@ public class HandleStmt {
 	 * Set Returnlevel to SecurityLevel.bottom().
 	 */
 	public void returnConstant() {
+	    controller.abortIfActiveAndExceptionIsType(ExpectedException.RETURN_CONSTANT.getVal());
 		logger.log(Level.INFO, "Return a constant value.");
 		objectmap.setActualReturnLevel(handleStatementUtils
 				.joinWithLPC(SecurityLevel.bottom()));
@@ -494,7 +495,8 @@ public class HandleStmt {
 	 *            List of arguments
 	 */
 	public void storeArgumentLevels(String... arguments) {
-		logger.info("Store arguments " + Arrays.toString(arguments)
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.STORE_ARGUMENT_LEVELS.getVal());
+	    logger.info("Store arguments " + Arrays.toString(arguments)
 				+ " in LocalMap");
 		ArrayList<Object> levelArr = new ArrayList<Object>();
 		for (String el : arguments) {
