@@ -34,7 +34,7 @@ class TypingUtils[Level] (secdomain : SecDomain[Level]){
   def fieldTypingfromFieldTable(t: FieldTable[Level]): FieldTyping[Level] =
     new FieldTyping[Level] {
       override def get(f: SootField): Type[Level] = {
-        t.get(f).map(t => instrumentationType(t.inspect())).getOrElse {
+        t.get(f).map(t => instrumentationType(t)).getOrElse {
           throw new IllegalArgumentException(s"Could not find a type for field ${f}")
         }
       }

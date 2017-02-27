@@ -1,8 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 
 /**
  * The domain of constraint elements. We have type variables and literal
@@ -20,7 +20,7 @@ public class CTypes {
 
     }
 
-    public static <Level> CType<Level> literal(Type<Level> t) {
+    public static <Level> CType<Level> literal(TypeView<Level> t) {
         return new Literal<>(t);
     }
 
@@ -35,9 +35,9 @@ public class CTypes {
             return t.toString();
         }
 
-        public final Type<Level> t;
+        public final TypeView<Level> t;
 
-        private Literal(Type<Level> t) {
+        private Literal(TypeView<Level> t) {
             super();
             this.t = t;
         }

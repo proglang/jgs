@@ -6,12 +6,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import soot.IntType;
@@ -27,7 +27,7 @@ public class ConstraintsTest {
     private TypeVars tvars;
     private TypeVar h1, h2, l1, l2, d1, d2, p1, p2;
     private CType<Level> ch1, ch2, cl1, cl2, cd1, cd2, cp1, cp2;
-    private Map<TypeVar, Type<Level>> ass;
+    private Map<TypeVar, TypeView<Level>> ass;
 
     // Particular Sets of variables Variable
     private Set<CType<Level>> allVariables;

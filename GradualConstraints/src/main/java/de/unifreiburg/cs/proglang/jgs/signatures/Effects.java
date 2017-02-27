@@ -1,48 +1,48 @@
 package de.unifreiburg.cs.proglang.jgs.signatures;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.*;
 
 import java.util.*;
 
 import static java.util.Arrays.asList;
 
  // TODO: move out of signatures and in its dedicated file in the typing package (as BodyTypingResult also uses it and the "concept" makes sense independently of MethodSignatures)
-public final class Effects<Level> implements Iterable<Type<Level>> {
-    private final HashSet<Type<Level>> effectSet;
+public final class Effects<Level> implements Iterable<TypeView<Level>> {
+    private final HashSet<TypeView<Level>> effectSet;
 
-    Effects(HashSet<Type<Level>> effects) {
+    Effects(HashSet<TypeView<Level>> effects) {
         this.effectSet = effects;
     }
 
      /* Effects */
      public static <Level> Effects<Level> emptyEffect() {
-         return new Effects<>(new HashSet<Type<Level>>());
+         return new Effects<>(new HashSet<TypeView<Level>>());
      }
 
      @SafeVarargs
-     public static <Level> Effects<Level> makeEffects(Type<Level> type, Type<Level>... types) {
+     public static <Level> Effects<Level> makeEffects(TypeView<Level> type, TypeView<Level>... types) {
          return Effects.<Level>emptyEffect().add(type, types);
      }
 
-     public static <Level> Effects<Level> makeEffects(Collection<Type<Level>> types) {
+     public static <Level> Effects<Level> makeEffects(Collection<TypeView<Level>> types) {
          return Effects.<Level>emptyEffect().add(types);
      }
 
      @SafeVarargs
      public static <Level> Effects<Level> union(Effects<Level>... effectSets) {
-         HashSet<Type<Level>> result = new HashSet<>();
+         HashSet<TypeView<Level>> result = new HashSet<>();
          for (Effects<Level> es : effectSets) {
              result.addAll(es.effectSet);
          }
          return new Effects<>(result);
      }
 
-     public final Effects<Level> add(Type<Level> type, Type<Level>... types) {
+     public final Effects<Level> add(TypeView<Level> type, TypeView<Level>... types) {
         return this.add(type).add(asList(types));
     }
 
-    public final Effects<Level> add(Type<Level> type) {
+    public final Effects<Level> add(TypeView<Level> type) {
         return this.add(Collections.singletonList(type));
     }
 
@@ -50,8 +50,8 @@ public final class Effects<Level> implements Iterable<Type<Level>> {
         return this.add(other.effectSet);
     }
 
-    public final Effects<Level> add(Collection<Type<Level>> types) {
-        HashSet<Type<Level>> result = new HashSet<>(this.effectSet);
+    public final Effects<Level> add(Collection<TypeView<Level>> types) {
+        HashSet<TypeView<Level>> result = new HashSet<>(this.effectSet);
         result.addAll(types);
         return new Effects<>(result);
     }
@@ -64,12 +64,12 @@ public final class Effects<Level> implements Iterable<Type<Level>> {
         return l;
     }
 
-    public final Iterator<Type<Level>> stream() {
+    public final Iterator<TypeView<Level>> stream() {
         return this.effectSet.iterator();
     }
 
-    private boolean covers(TypeDomain<Level> types, Type<Level> t) {
-        for (Type<Level> cand : effectSet) {
+    private boolean covers(TypeDomain<Level> types, TypeView<Level> t) {
+        for (TypeView<Level> cand : effectSet) {
             if (types.le(cand, t)) {
                 return true;
             }
@@ -78,8 +78,8 @@ public final class Effects<Level> implements Iterable<Type<Level>> {
     }
 
     public final EffectRefinementResult<Level> refines(TypeDomain<Level> types, Effects<Level> other) {
-        HashSet<Type<Level>> notCovered = new HashSet<>();
-        for (Type<Level> t : this.effectSet) {
+        HashSet<TypeView<Level>> notCovered = new HashSet<>();
+        for (TypeView<Level> t : this.effectSet) {
             if (!(other.covers(types, t))) {
                 notCovered.add(t);
             }
@@ -112,7 +112,7 @@ public final class Effects<Level> implements Iterable<Type<Level>> {
     }
 
     @Override
-    public Iterator<Type<Level>> iterator() {
+    public Iterator<TypeView<Level>> iterator() {
         return this.effectSet.iterator();
     }
 

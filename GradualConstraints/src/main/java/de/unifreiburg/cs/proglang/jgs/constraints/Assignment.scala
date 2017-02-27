@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 
 import scala.collection.JavaConversions._
@@ -13,16 +13,16 @@ import scala.collection.JavaConversions._
   * @param < Level>
   */
 case class Assignment[Level]
-(private val ass: Map[TypeVars.TypeVar, TypeDomain.Type[Level]])
+(private val ass: Map[TypeVars.TypeVar, TypeView[Level]])
 {
 
 
   /**
     * @return An immutable reference to the map that represents the assignment.
     */
-  def getForJava: java.util.Map[TypeVars.TypeVar, TypeDomain.Type[Level]] =  ass
+  def getForJava: java.util.Map[TypeVars.TypeVar, TypeView[Level]] =  ass
 
-  def get : Map[TypeVar, Type[Level]] = ass
+  def get : Map[TypeVar, TypeView[Level]] = ass
 
   /**
     * Apply an assignment to a constraint element to get a proper type
@@ -30,7 +30,7 @@ case class Assignment[Level]
     * @param t The constraint element
     * @return The type after applying the assignment.
     */
-  def applyTo(t: CTypes.CType[Level]): TypeDomain.Type[Level] = {
+  def applyTo(t: CTypes.CType[Level]): TypeView[Level] = {
     throw new NotImplemented("Assignment.applyTo")
   }
 

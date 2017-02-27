@@ -7,7 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarTags._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Cx, Internal, Param, Ret}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Lit, Pub}
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Lit, Pub, TypeView}
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, ConstraintKind, TypeDomain, TypeVars, _}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
@@ -184,7 +184,7 @@ object Format {
   }
 
   def assignment[Level](ass: Assignment[Level]): Doc = {
-    val mapping: Map[TypeVar, Type[Level]] = ass.get
+    val mapping: Map[TypeVar, TypeView[Level]] = ass.get
     val kvDocs = mapping.map(kv => typeVar(kv._1) <> "=" <> sectype(kv._2)).toList
     braces(hsep(kvDocs, ","))
   }
@@ -198,8 +198,8 @@ object Format {
     }
   }
 
-  def sectype[Level](t: Type[Level]): Doc = {
-    t.inspect() match {
+  def sectype[Level](t: TypeView[Level]): Doc = {
+    t match {
       case Lit(level) => level.toString
       case Dyn() => "?"
       case Pub() => "pub"

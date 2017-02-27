@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 
 import scala.collection.JavaConversions._
 
@@ -32,7 +32,7 @@ object Assignments {
     }
   }
 
-  def builder[Level](v: TypeVars.TypeVar, t: TypeDomain.Type[Level]): Builder[Level] = {
+  def builder[Level](v: TypeVars.TypeVar, t: TypeView[Level]): Builder[Level] = {
     return new Builder[Level]().add(v, t)
   }
 
@@ -41,18 +41,18 @@ object Assignments {
   }
 
   class Builder[Level] {
-    private final val ass: java.util.Map[TypeVars.TypeVar, TypeDomain.Type[Level]] = new java.util.HashMap[TypeVars.TypeVar, TypeDomain.Type[Level]]
+    private final val ass: java.util.Map[TypeVars.TypeVar, TypeView[Level]] = new java.util.HashMap[TypeVars.TypeVar, TypeView[Level]]
 
     def build: Assignment[Level] = {
       return new Assignment[Level](this.ass.toMap)
     }
 
-    def add(v: TypeVars.TypeVar, t: TypeDomain.Type[Level]): Builder[Level] = {
+    def add(v: TypeVars.TypeVar, t: TypeView[Level]): Builder[Level] = {
       this.ass.put(v, t)
       return this
     }
 
-    def add(m : java.util.Map[TypeVar, Type[Level]]) : Builder[Level] = {
+    def add(m : java.util.Map[TypeVar, TypeView[Level]]) : Builder[Level] = {
       this.ass.putAll(m)
       return this
     }

@@ -2,9 +2,9 @@ package de.unifreiburg.cs.proglang.jgs.signatures
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{CTypeView, Lit, Variable}
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, TypeVars}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param
 import de.unifreiburg.cs.proglang.jgs.signatures.SymbolViews.{Literal, Param, Return, SymbolView}
@@ -20,7 +20,7 @@ object Symbols {
     * Get the list of Params from a SootMethod.
     */
   def methodParameters[Level](m: SootMethod): java.util.List[Symbol.Param[Level]] = {
-    val types: java.util.List[Type[Level]] = m.getParameterTypes.asInstanceOf[java.util.List[Type[Level]]]
+    val types: java.util.List[TypeView[Level]] = m.getParameterTypes.asInstanceOf[java.util.List[TypeView[Level]]]
     val result: java.util.List[Symbol.Param[Level]] = new java.util.ArrayList[Symbol.Param[Level]]
     for (pos <- Range(0, m.getParameterCount)) {
       result.add(param(pos))

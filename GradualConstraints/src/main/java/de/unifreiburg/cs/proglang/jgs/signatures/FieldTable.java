@@ -8,21 +8,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import static de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.*;
 
 public class FieldTable<Level> {
 
-    private final Map<SootField, TypeDomain.Type<Level>> fieldTable;
+    private final Map<SootField, TypeView<Level>> fieldTable;
 
-    public FieldTable(Map<SootField, TypeDomain.Type<Level>> fieldTable) {
+    public FieldTable(Map<SootField, TypeView<Level>> fieldTable) {
         this.fieldTable = new HashMap<>(fieldTable);
     }
 
-    public Option<Type<Level>> get(SootField f) {
+    public Option<TypeView<Level>> get(SootField f) {
         return Option.apply(fieldTable.get(f));
     }
 
-    public Map<SootField, Type<Level>> getRawTable() {
+    public Map<SootField, TypeView<Level>> getRawTable() {
         return Collections.unmodifiableMap(this.fieldTable);
     }
 

@@ -3,12 +3,12 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import soot.IntType;
@@ -29,7 +29,7 @@ public class CTypeDomainTest {
     @Before
     public void setUp() {
        this.tvars = new TypeVars();
-       Map<TypeVar, Type<Level>> m = new HashMap<>();
+       Map<TypeVar, TypeView<Level>> m = new HashMap<>();
        Var<?> lh1, lh2, ll, ld, lb;
        lh1 = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
        lh2 = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));

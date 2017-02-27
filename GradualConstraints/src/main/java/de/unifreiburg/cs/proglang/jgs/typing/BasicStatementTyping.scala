@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.{literal, variable}
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, TypeDomain, TypeVars, _}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
@@ -109,7 +110,7 @@ class BasicStatementTyping[LevelT](
       return maybe_Result.get
     }
 
-    private def getFieldType(f: SootField): TypeDomain.Type[LevelT] = {
+    private def getFieldType(f: SootField): TypeView[LevelT] = {
       return fields.get(f).getOrElse(
         throw new TypingAssertionFailure(
           "No field type found for field "
@@ -226,7 +227,7 @@ class BasicStatementTyping[LevelT](
     private def caseFieldDefinition(fieldRef: FieldRef, stmt: DefinitionStmt) {
       val field: SootField = fieldRef.getField
       val constraints: ListBuffer[Constraint[LevelT]] = ListBuffer()
-      val fieldType: TypeDomain.Type[LevelT] = getFieldType(field)
+      val fieldType: TypeView[LevelT] = getFieldType(field)
       val leDest: Function[CTypes.CType[LevelT], Constraint[LevelT]] = c => Constraints.le(c, CTypes.literal(fieldType))
       Vars.getAllFromValueBoxes(stmt.getLeftOp.getUseBoxes.asInstanceOf[java.util.Collection[ValueBox]]).map(v => Constraints.le(CTypes.variable(env.get(v)), CTypes.literal(fieldType))).foreach(constraints += _)
       val tags: TagMap[LevelT] = if ((stmt.getRightOp.isInstanceOf[Local])) {
@@ -291,7 +292,7 @@ class BasicStatementTyping[LevelT](
       caseDefinitionStmt(stmt)
     }
 
-    private def compatible(sourceType: TypeDomain.Type[LevelT], destType: TypeDomain.Type[LevelT]): Boolean = {
+    private def compatible(sourceType: TypeView[LevelT], destType: TypeView[LevelT]): Boolean = {
       return (cstrs.types.dyn == destType) ^ (cstrs.types.dyn == sourceType)
     }
 

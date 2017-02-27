@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
 import scala.Option;
 import scala.util.Try;
@@ -18,10 +20,10 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
 public abstract class Casts<Level> {
 
     public static class CxCast<Level> {
-        public final Type<Level> sourceType;
-        public final Type<Level> destType;
+        public final TypeView<Level> sourceType;
+        public final TypeView<Level> destType;
 
-        public CxCast(Type<Level> sourceType, Type<Level> destType) {
+        public CxCast(TypeView<Level> sourceType, TypeView<Level> destType) {
             this.sourceType = sourceType;
             this.destType = destType;
         }
@@ -56,12 +58,12 @@ public abstract class Casts<Level> {
     }
 
     public static class ValueCast<Level> {
-        public final Type<Level> sourceType;
-        public final Type<Level> destType;
+        public final TypeView<Level> sourceType;
+        public final TypeView<Level> destType;
         public final Option<Var<?>> value;
 
-        protected ValueCast(Type<Level> sourceType,
-                            Type<Level> destType,
+        protected ValueCast(TypeView<Level> sourceType,
+                            TypeView<Level> destType,
                             Option<Var<?>> value) {
             this.sourceType = sourceType;
             this.destType = destType;
@@ -140,11 +142,11 @@ public abstract class Casts<Level> {
 
     public abstract boolean detectContextCastEndFromCall(StaticInvokeExpr e);
 
-    protected ValueCast<Level> makeValueCast(Type<Level> source, Type<Level> destination, Option<Var<?>> value) {
+    protected ValueCast<Level> makeValueCast(TypeView<Level> source, TypeView<Level> destination, Option<Var<?>> value) {
         return new ValueCast<>(source, destination, value);
     }
 
-    protected CxCast<Level> makeContextCast(Type<Level> source, Type<Level> destination) {
+    protected CxCast<Level> makeContextCast(TypeView<Level> source, TypeView<Level> destination) {
         return new CxCast<>(source, destination);
     }
 }

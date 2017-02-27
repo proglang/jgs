@@ -6,6 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{CTypeView, Lit, Va
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Cx, Internal, Param, Ret}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.typing.{CompatibilityConflict, ConflictCause, FlowConflict, TagMap}
 
 import scala.Predef.Set
@@ -131,13 +132,13 @@ object NaiveConstraints {
   }
 
   private def findFlowConflict[Level](closed: Iterable[Constraint[Level]], leConflicts: List[Constraint[Level]], tags: TagMap[Level]): Iterator[FlowConflict[Level]] = {
-    val sourceStream: Iterator[TypeDomain.Type[Level]] = leConflicts.iterator.map(c => {
+    val sourceStream: Iterator[TypeView[Level]] = leConflicts.iterator.map(c => {
       val ct = c.getLhs
       val lit = ct.inspect().asInstanceOf[CTypeViews.Lit[Level]]
       lit.t
     })
-    val sources: List[TypeDomain.Type[Level]] = sourceStream.toList
-    val sinkStream: Iterator[TypeDomain.Type[Level]] = leConflicts.iterator.map(c => {
+    val sources: List[TypeView[Level]] = sourceStream.toList
+    val sinkStream: Iterator[TypeView[Level]] = leConflicts.iterator.map(c => {
       val ct = c.getRhs;
       if (!(ct.inspect().isInstanceOf[CTypeViews.Lit[Level]])) {
         throw new IllegalStateException(
@@ -147,7 +148,7 @@ object NaiveConstraints {
       val lit = ct.inspect().asInstanceOf[CTypeViews.Lit[Level]]
       lit.t
     })
-    val sinks: Set[TypeDomain.Type[Level]] = sinkStream.toSet
+    val sinks: Set[TypeView[Level]] = sinkStream.toSet
     for {
       t <- sources.iterator
       sourceTags = tags.tags.filter(kv => kv._1.getLhs.equals(literal(t))).toList

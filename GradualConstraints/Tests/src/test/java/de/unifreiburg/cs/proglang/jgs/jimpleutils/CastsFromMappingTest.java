@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
@@ -52,7 +53,7 @@ public class CastsFromMappingTest {
         return Jimple.v().newStaticInvokeExpr(m.makeRef(), NullConstant.v());
     }
 
-    private static Matcher<Optional<ValueCast<Level>>> convertsBetween(Type<Level> source, Type<Level> dest) {
+    private static Matcher<Optional<ValueCast<Level>>> convertsBetween(TypeView<Level> source, TypeView<Level> dest) {
         return new TypeSafeMatcher<Optional<ValueCast<Level>>>() {
             @Override
             protected boolean matchesSafely(Optional<ValueCast<Level>> levelValueCast) {
@@ -66,7 +67,7 @@ public class CastsFromMappingTest {
         };
     }
 
-    private static <Level> Map<String, CastUtils.Conversion<Level>> parseConversionMap(AnnotationParser<Type<Level>> typeParser, Map<String,String> casts) {
+    private static <Level> Map<String, CastUtils.Conversion<Level>> parseConversionMap(AnnotationParser<TypeView<Level>> typeParser, Map<String,String> casts) {
         Map<String, CastUtils.Conversion<Level>> result = new HashMap<>();
         for (Map.Entry<String, String> e : casts.entrySet()) {
            result.put(e.getKey(), CastUtils.<Level>parseConversion(typeParser, e.getValue()).get());

@@ -3,6 +3,8 @@ package de.unifreiburg.cs.proglang.jgs.signatures;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.signatures.SymbolViews.SymbolView;
 
 import java.util.*;
@@ -30,7 +32,7 @@ public abstract class Symbol<Level> {
         return new Return<>();
     }
 
-    public static <Level> Symbol<Level> literal(TypeDomain.Type<Level> t) {
+    public static <Level> Symbol<Level> literal(TypeView<Level> t) {
         return new Literal<>(t);
     }
 
@@ -138,9 +140,9 @@ public abstract class Symbol<Level> {
     }
 
     public static class Literal<Level> extends Symbol<Level> {
-        final TypeDomain.Type<Level> me;
+        final TypeView<Level> me;
 
-        private Literal(TypeDomain.Type<Level> me) {
+        private Literal(TypeView<Level> me) {
             super();
             this.me = me;
         }

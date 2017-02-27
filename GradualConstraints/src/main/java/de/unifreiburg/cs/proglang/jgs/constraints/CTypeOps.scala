@@ -3,8 +3,8 @@ package de.unifreiburg.cs.proglang.jgs.constraints
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{CTypeView, Lit, Variable}
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 
 import scala.util.{Failure, Try}
 
@@ -17,7 +17,7 @@ object CTypeOps {
   /**
     * @return The type of `ct` given assignment `a`. May return nothing when `ct` is a variable which is not mapped by `a`.
     */
-  def tryApply[Level](a: Assignment[Level], ct: CTypeView[Level]): Option[Type[Level]] =
+  def tryApply[Level](a: Assignment[Level], ct: CTypeView[Level]): Option[TypeView[Level]] =
     ct match {
       case Lit(t) => Some(t)
       case Variable(v) => a.get.get(v)
@@ -26,7 +26,7 @@ object CTypeOps {
   /**
     * See [[tryApply(Assignment, CTypeView)]]
     */
-  def tryApply[Level](a: Assignment[Level], ct: CType[Level]): Option[Type[Level]] =
+  def tryApply[Level](a: Assignment[Level], ct: CType[Level]): Option[TypeView[Level]] =
     tryApply(a, ct.inspect())
 
 
@@ -51,7 +51,7 @@ object CTypeOps {
   /**
     * Like [[tryApply]] but throws an error in case of nothing.
     */
-  def apply[Level](a: Assignment[Level], ct: CType[Level]): Type[Level] = {
+  def apply[Level](a: Assignment[Level], ct: CType[Level]): TypeView[Level] = {
     val error = Failure(
       new RuntimeException("Unknown variable: "
         + this.toString()

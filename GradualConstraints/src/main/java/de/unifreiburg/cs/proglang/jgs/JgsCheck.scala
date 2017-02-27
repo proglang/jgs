@@ -6,7 +6,6 @@ import java.util.logging.Logger
 import com.fasterxml.jackson.dataformat.yaml.{YAMLFactory, YAMLMapper}
 import de.unifreiburg.cs.proglang.jgs.TestCollector.{Exceptional, UnexpectedFailure, UnexpectedSuccess}
 import de.unifreiburg.cs.proglang.jgs.cli.Format
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh, UserDefined, UserDefinedUtils}
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
@@ -19,6 +18,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import de.unifreiburg.cs.proglang.jgs.typing.{ClassHierarchyTyping, MethodTyping, TypingAssertionFailure, TypingException}
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import de.unifreiburg.cs.proglang.jgs.Util._
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import org.json4s._
 import org.json4s.jackson.{Json, Json4sScalaModule}
 import scopt.OptionParser
@@ -204,17 +204,17 @@ object JgsCheck {
     val cstrs = new Constraints(types)
 
     def typeCheck(s: Scene, classes: List[SootClass]): Unit = {
-      val fieldMap: Map[SootField, Type[Level]] =
+      val fieldMap: Map[SootField, TypeView[Level]] =
         (for (c <- classes;
               f <- c.getFields)
           yield {
             val secAnnotations: List[String] =
               Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.iterator).toList
-            val mt: Option[TypeDomain.Type[Level]] =
+            val mt: Option[TypeView[Level]] =
               for (typeStr <- getSingleAnnotation(secAnnotations, new IllegalArgumentException("Found more than one security level on " + f.getName()));
                    t <- types.typeParser().parse(typeStr))
                 yield t
-            val t: TypeDomain.Type[Level] = mt.getOrElse(types.pub())
+            val t: TypeView[Level] = mt.getOrElse(types.pub())
             (f, t)
           }).toMap
       log.info("Field types: " + fieldMap.toString())
@@ -287,13 +287,13 @@ object JgsCheck {
       /** ****************************
         * Read configured field types from file
         * *****************************/
-      val configuredFields : List[(SootField, Type[Level])] =
+      val configuredFields : List[(SootField, TypeView[Level])] =
         for {
           JObject(entries) <- annotationsJson \\ "fields"
           JField(name, JString(typeString)) <- entries
           f <- Try(s.getField(name)).map(f => List(f)).getOrElse(List())
           fieldType <- {
-            val t : Try[Type[Level]] = asTry(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}", types.typeParser().parse(typeString))
+            val t : Try[TypeView[Level]] = asTry(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}", types.typeParser().parse(typeString))
             skipAndReportFailure(log, "", t)
           }
         } yield {
@@ -443,7 +443,7 @@ object JgsCheck {
         }
       }))
 
-    private def parseEffects(effectStrings: List[String]): Try[List[Type[Level]]] =
+    private def parseEffects(effectStrings: List[String]): Try[List[TypeView[Level]]] =
       Try(effectStrings.map(s => types.typeParser().parse(s) match {
         case Some(t) => t
         case None => throw new RuntimeException(String.format("Error parsing type %s", s))

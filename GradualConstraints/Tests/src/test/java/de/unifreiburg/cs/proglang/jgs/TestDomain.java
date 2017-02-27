@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
@@ -89,7 +89,7 @@ public class TestDomain {
         @Override
         public Try<Option<ValueCast<Level>>> detectValueCastFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Try<Option<ValueCast<Level>>>>
+            BiFunction<TypeView<Level>, TypeView<Level>, Try<Option<ValueCast<Level>>>>
                     makeCast =
                     (t1, t2) -> {
                         Optional<ValueCast<Level>> result = Interop.asJavaStream(Vars.getAll(e.getArg(0))).findFirst().map(value -> makeValueCast(t1, t2, Option.apply(value)));
@@ -111,7 +111,7 @@ public class TestDomain {
         @Override
         public Try<Option<CxCast<Level>>> detectContextCastStartFromCall(StaticInvokeExpr e) {
             SootMethod m = e.getMethod();
-            BiFunction<Type<Level>, Type<Level>, Try<Option<CxCast<Level>>>>
+            BiFunction<TypeView<Level>, TypeView<Level>, Try<Option<CxCast<Level>>>>
                     makeCast =
                     (t1, t2) -> new Success<>(Option.apply(makeContextCast(t1, t2)));
             if (castEquals(castCxDynToHigh, m)) {
@@ -152,18 +152,18 @@ public class TestDomain {
 
     ///////
     // Types
-    public static final Type<Level> THIGH = types.level(HIGH);
-    public static final Type<Level> TLOW = types.level(LOW);
-    public static final Type<Level> DYN = types.dyn();
-    public static final Type<Level> PUB = types.pub();
+    public static final TypeView<Level> THIGH = types.level(HIGH);
+    public static final TypeView<Level> TLOW = types.level(LOW);
+    public static final TypeView<Level> DYN = types.dyn();
+    public static final TypeView<Level> PUB = types.pub();
 
-    public static Type<Level> tglb(Type<Level> l1,
-                                   Type<Level> l2) {
+    public static TypeView<Level> tglb(TypeView<Level> l1,
+                                   TypeView<Level> l2) {
         return types.glb(l1, l2);
     }
 
-    public static boolean tle(Type<Level> l1,
-                              Type<Level> l2) {
+    public static boolean tle(TypeView<Level> l1,
+                              TypeView<Level> l2) {
         return types.le(l1, l2);
     }
 

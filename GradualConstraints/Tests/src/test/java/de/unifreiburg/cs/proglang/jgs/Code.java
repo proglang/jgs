@@ -2,6 +2,8 @@ package de.unifreiburg.cs.proglang.jgs;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
 import de.unifreiburg.cs.proglang.jgs.signatures.*;
@@ -104,7 +106,7 @@ public class Code {
 
         this.testClass = makeFreshClass("TestClass");
 
-        Map<SootField, TypeDomain.Type<Level>> fieldMap = new HashMap<>();
+        Map<SootField, TypeView<Level>> fieldMap = new HashMap<>();
 
         this.testLowField_int = new SootField("testLowField", IntType.v(), 0);
         testClass.addField(this.testLowField_int);

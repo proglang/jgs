@@ -1,18 +1,18 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{ValueCast, CxCast}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{CxCast, ValueCast}
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
 import soot.SootMethod
-import soot.jimple.{StringConstant, StaticInvokeExpr}
+import soot.jimple.{StaticInvokeExpr, StringConstant}
 
-import scala.util.{Success, Failure, Try}
+import scala.util.{Failure, Success, Try}
 
 /**
   * Cast detectors that read their conversion from String constants
   */
-class CastsFromConstants[Level](typeParser: AnnotationParser[Type[Level]],
+class CastsFromConstants[Level](typeParser: AnnotationParser[TypeView[Level]],
                                 valueCast: String,
                                 cxCastBegin: String, cxCastEnd: String)
 extends Casts[Level] {
@@ -38,7 +38,7 @@ extends Casts[Level] {
 
 object CastsFromConstants {
 
-  def getConversionFromCall[Level](typeParser : AnnotationParser[Type[Level]], expr: StaticInvokeExpr) : Try[Conversion[Level]] = {
+  def getConversionFromCall[Level](typeParser : AnnotationParser[TypeView[Level]], expr: StaticInvokeExpr) : Try[Conversion[Level]] = {
     val maybeConv = for {
       e <- Some(expr)
       if e.getArgCount >= 1

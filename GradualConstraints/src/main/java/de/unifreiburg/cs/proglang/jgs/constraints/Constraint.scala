@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
+
 
 final case class Constraint[Level]
 (val kind: ConstraintKind,
@@ -13,8 +15,8 @@ final case class Constraint[Level]
       case ConstraintKind.LE =>
         return types.le(CTypeOps.apply(a, this.lhs), CTypeOps.apply(a, rhs))
       case ConstraintKind.COMP =>
-        var tlhs: TypeDomain.Type[Level] = null
-        var trhs: TypeDomain.Type[Level] = null
+        var tlhs: TypeView[Level] = null
+        var trhs: TypeView[Level] = null
         tlhs = CTypeOps.apply[Level](a, this.lhs)
         trhs = CTypeOps.apply[Level](a, this.rhs)
         return types.le(tlhs, trhs) || types.le(trhs, tlhs)

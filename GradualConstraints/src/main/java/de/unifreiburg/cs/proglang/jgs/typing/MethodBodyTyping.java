@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
@@ -184,7 +185,7 @@ public class MethodBodyTyping<Level> {
             Constraint<Level> srcConstraint = Constraints.<Level>le(CTypes.<Level>variable(topLevelContext), literal(cxCast.sourceType));
             Constraint<Level> destConstraint = Constraints.<Level>le(literal(cxCast.destType), CTypes.<Level>variable(newPc));
             List<Constraint<Level>> additionalConstraintsList = new LinkedList<>(Arrays.asList(srcConstraint, destConstraint));
-            for (TypeDomain.Type<Level> e : r.getEffects()) {
+            for (TypeView<Level> e : r.getEffects()) {
                 additionalConstraintsList.add(Constraints.<Level>le(literal(cxCast.destType), literal(e)));
             }
             Map<Constraint<Level>, TypeVarTags.TypeVarTag> tagMap = new HashMap<>();
@@ -193,7 +194,7 @@ public class MethodBodyTyping<Level> {
             }
 
             // modify effects: remove dest and add source
-            Set<TypeDomain.Type<Level>> newEffects = new HashSet<>();
+            Set<TypeView<Level>> newEffects = new HashSet<>();
             newEffects.add(cxCast.sourceType);
             // TODO: why not a factory method?
             return new BodyTypingResult<Level>(r.getConstraints().add(csets.fromCollection(additionalConstraintsList)),

@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.Type
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
 import soot.SootMethod
 
@@ -11,10 +11,10 @@ import scala.util.{Failure, Success, Try}
   */
 object CastUtils {
 
-  sealed case class Conversion[Level](val source: Type[Level],
-                                      val dest: Type[Level])
+  sealed case class Conversion[Level](val source: TypeView[Level],
+                                      val dest: TypeView[Level])
 
-  def parseConversion[Level](typeParser : AnnotationParser[Type[Level]], s : String) : Try[Conversion[Level]] = {
+  def parseConversion[Level](typeParser : AnnotationParser[TypeView[Level]], s : String) : Try[Conversion[Level]] = {
     val err = new IllegalArgumentException(s"Unable to parse `${s}' as a type conversion. Expected: [type] ~> [type].")
     s.trim.split("\\s") match {
       case Array(st1, "~>", st2) =>
