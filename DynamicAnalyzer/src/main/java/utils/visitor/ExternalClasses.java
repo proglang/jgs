@@ -54,13 +54,18 @@ public class ExternalClasses {
 		
 		// Methods where we don't do anything
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
-		
+
+		//
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeHigh(java.lang.Object)>", new MakeHigh());
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeMedium(java.lang.Object)>", new MakeMedium());
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeLow(java.lang.Object)>", new MakeLow());
+
+		// Dont do anything for ValueOf
+		methodMap.put("<java.lang.Boolean: java.lang.Boolean valueOf(boolean)>", new DoNothing());
+		methodMap.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new DoNothing());
 	}
 	
 	static void receiveCommand(String method,Unit pos, Local[] params) {
