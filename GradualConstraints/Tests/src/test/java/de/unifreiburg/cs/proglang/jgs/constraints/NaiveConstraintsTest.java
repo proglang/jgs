@@ -280,4 +280,18 @@ public class NaiveConstraintsTest {
         assertThat(cs.findConflictCause(tags), is(asList(new FlowConflict<>(THIGH, new TypeVarTags.Field(highField),
                                                   TLOW, new TypeVarTags.Field(lowField)))));
     }
+
+    @Test
+    public void testLowerBounds() {
+        ConstraintSet<Level> cset = makeNaive(asList(leC(literal(THIGH), variable(cs.v0)),
+                                                   leC(variable(cs.v1), variable(cs.v0)),
+                                                   leC(literal(TLOW), variable(cs.v1)),
+                                                     leC(variable(cs.v1), variable(cs.v2))));
+        Set<CTypeViews.CTypeView<Level>> res = asJavaStream(cset.lowerBounds(cs.v0).iterator()).collect(toSet());
+        List<CTypeViews.CTypeView<Level>> expected = asList(
+                CTypes.<Level>literal(THIGH).inspect(),
+                CTypes.<Level>variable(cs.v1).inspect(),
+                CTypes.<Level>literal(TLOW).inspect());
+        assertThat(res, is(expected.stream().collect(toSet())));
+    }
 }

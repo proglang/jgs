@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.CTypeView
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol
 import de.unifreiburg.cs.proglang.jgs.typing.{ConflictCause, TagMap}
@@ -139,4 +140,9 @@ abstract case class ConstraintSet[Level] (
   def findConflictCause(tags: TagMap[Level]): java.util.List[ConflictCause[Level]] = {
     List()
   }
+
+  /**
+    * Return the set of ctypes that strictly lower bound the the type variable <code>tv</code>.
+    */
+  def lowerBounds(tv : TypeVars.TypeVar) : Set[CTypeView[Level]]
 }

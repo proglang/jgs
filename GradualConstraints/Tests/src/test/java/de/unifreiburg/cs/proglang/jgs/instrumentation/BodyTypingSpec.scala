@@ -6,7 +6,7 @@ import soot.{Local, SootMethod}
 import scala.collection.JavaConversions._
 
 /**
-  * Created by fennell on 8/23/16.
+  * Utilities to make mock instances of the results of body typing relevant for instrumentation.
   */
 object BodyTypingSpec {
 

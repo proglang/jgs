@@ -2,10 +2,13 @@ package de.unifreiburg.cs.proglang.jgs.constraints
 
 import java.util.Collections
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.Lit
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{CTypeView, Lit, Variable}
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes._
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Cx, Internal, Param, Ret}
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
 import de.unifreiburg.cs.proglang.jgs.typing.{CompatibilityConflict, ConflictCause, FlowConflict, TagMap}
 
+import scala.Predef.Set
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import scala.collection._
@@ -107,7 +110,7 @@ object NaiveConstraints {
     cs.flatMap(c => Constraints.implicationsOf(c))
 
   def projectTo[Level](cs: java.util.Set[Constraint[Level]], typeVarCol: java.util.Collection[TypeVars.TypeVar]): Iterator[Constraint[Level]] = {
-    val closure: Set[Constraint[Level]] = close(cs)
+    val closure: Set[Constraint[Level]] = close(cs).toSet
     val typeVars = typeVarCol.iterator.map(CTypes.variable[Level]).toSet
     closure.iterator.filter(c =>
       c.variables.forall(v => typeVars.contains(variable(v)))
@@ -232,7 +235,7 @@ class NaiveConstraints[Level](types: TypeDomain[Level], cs: Set[Constraint[Level
     * conflicting flows.
     */
   override def findConflictCause(tags: TagMap[Level]): java.util.List[ConflictCause[Level]] = {
-    val closed: Set[Constraint[Level]] = NaiveConstraints.close(this.cs)
+    val closed: Set[Constraint[Level]] = NaiveConstraints.close(this.cs).toSet
     val conflicts: List[Constraint[Level]] = closed.filter(c => !c.isSatisfiable(types)).toList
     conflicts.foreach(c => {
       val isLit = (ct: CType [ Level ]) => ct.inspect().isInstanceOf[CTypeViews.Lit[Level]];
@@ -259,4 +262,13 @@ class NaiveConstraints[Level](types: TypeDomain[Level], cs: Set[Constraint[Level
     result.append("}")
     return result.toString
   }
+
+  /**
+    * Return the set of lower bounds of the the type variable <code>tv</code>.
+    */
+  override def lowerBounds(tv: TypeVar): Set[CTypeView[Level]] = {
+    for { c <- NaiveConstraints.close[Level](this.cs).toSet
+          if c.getRhs == CTypes.variable(tv)
+        } yield c.getLhs.inspect()
+    }
 }

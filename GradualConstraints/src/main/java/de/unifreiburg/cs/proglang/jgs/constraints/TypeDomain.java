@@ -182,7 +182,7 @@ public class TypeDomain<Level> {
      * @param <Level> concreteConstraints security level
      * @author Luminous Fennell <fennell@informatik.uni-freiburg.de>
      */
-    public static abstract class Type<Level> {
+    public static abstract class Type<Level> implements de.unifreiburg.cs.proglang.jgs.instrumentation.Type<Level> {
         // TODO: remove TypeSwitch and pattern-match on TypeView instead (implies converting to Scala)
         abstract <T> T accept(TypeSwitch<Level, T> sw);
 
@@ -212,6 +212,21 @@ public class TypeDomain<Level> {
         @Override
         public TypeViews.TypeView<Level> inspect() {
             return new TypeViews.Lit<>(this.level);
+        }
+
+        @Override
+        public boolean isStatic() {
+            return true;
+        }
+
+        @Override
+        public boolean isDynamic() {
+            return false;
+        }
+
+        @Override
+        public boolean isPublic() {
+            return false;
         }
 
         public Level getLevel() {
@@ -263,6 +278,25 @@ public class TypeDomain<Level> {
         }
 
 
+        @Override
+        public boolean isStatic() {
+            return false;
+        }
+
+        @Override
+        public boolean isDynamic() {
+            return true;
+        }
+
+        @Override
+        public boolean isPublic() {
+            return false;
+        }
+
+        @Override
+        public Level getLevel() {
+            throw new IllegalArgumentException("dynamic type has not level");
+        }
     }
 
     static class Public<Level> extends Type<Level> {
@@ -282,6 +316,25 @@ public class TypeDomain<Level> {
             return "PUB";
         }
 
+        @Override
+        public boolean isStatic() {
+            return false;
+        }
+
+        @Override
+        public boolean isDynamic() {
+            return false;
+        }
+
+        @Override
+        public boolean isPublic() {
+            return true;
+        }
+
+        @Override
+        public Level getLevel() {
+            throw new IllegalArgumentException("public type has no level");
+        }
     }
 
 }
