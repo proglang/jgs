@@ -81,7 +81,7 @@ public class AllFakeAnalysisTests {
 
                 // to make sure the Custom Typing works, StaticAnalysis.CUSTOM_LowPlusPublic_AllDynamic makes everything (important) dynamic.
                 // Must cause superfluous join_level_of_local exception, since int res = int a + int j obviously performs a join_level_of_local_and_assignment_level stmt.
-               // new Object[] {"LowPlusPublic", ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL, StaticAnalysis.CUSTOM_LowPlusPublic_AllDynamic, Controller.ACTIVE, new String[] {}},
+                new Object[] {"LowPlusPublic", ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL, StaticAnalysis.CUSTOM_LowPlusPublic_AllDynamic, Controller.ACTIVE, new String[] {}},
                 // the following test tests if we are able to join a DYNAMIC(LOW) with a PUBLIC local variable.
                 new Object[] {"LowPlusPublic", ExpectedException.NONE, StaticAnalysis.CUSTOM_LowPlusPublic, Controller.PASSIVE, new String[] {}},
 

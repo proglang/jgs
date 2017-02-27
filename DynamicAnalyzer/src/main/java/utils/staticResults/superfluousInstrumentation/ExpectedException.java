@@ -16,7 +16,8 @@ public enum ExpectedException {
     CHECK_THAT_PC_LE(7),
     STORE_ARGUMENT_LEVELS(8),
     RETURN_LOCAL(9),
-    RETURN_CONSTANT(10);
+    RETURN_CONSTANT(10),
+    SET_RETURN_LEVEL_AFTER_INVOKE_STMT(11);
 
     private int number;
 

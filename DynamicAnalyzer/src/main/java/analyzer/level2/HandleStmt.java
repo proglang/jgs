@@ -634,6 +634,7 @@ public class HandleStmt {
 	 * @param signature
 	 */
 	public void setReturnLevelAfterInvokeStmt(String signature) {
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.SET_RETURN_LEVEL_AFTER_INVOKE_STMT.getVal());
 		// in eigene methode des jimpleInjector
 	    // l := get level of left-hand-side
 	    // l := l joined with objectmap.actualReturnLevel

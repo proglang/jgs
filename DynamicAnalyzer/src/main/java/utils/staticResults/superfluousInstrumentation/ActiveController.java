@@ -50,6 +50,10 @@ public class ActiveController extends PassivController {
                     throw new storeArgumentLevels("superfluous stmt!");
                 case 9:
                     throw new ReturnLocalException("superfluous stmt!");
+                case 10:
+                    throw new ReturnConstantException("superfluous stmt!");
+                case 11:
+                    throw new setReturnLevelAfterInvokeStmtException("superfluous stmt!");
                 default:
                     throw new InternalAnalyzerException("Unknown type of exception" + expectedException);
             }
