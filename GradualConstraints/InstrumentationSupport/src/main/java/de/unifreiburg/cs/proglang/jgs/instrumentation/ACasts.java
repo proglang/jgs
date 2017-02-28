@@ -67,7 +67,7 @@ public abstract class ACasts<Level> implements Casts<Level> {
         throw new RuntimeException("Not Implemented!");
     }
 
-    public static class CxCast<Level> implements Conversion<Level> {
+    public static class CxCast<Level> implements Casts.Conversion<Level> {
         public final TypeView<Level> sourceType;
         public final TypeView<Level> destType;
 
@@ -115,7 +115,7 @@ public abstract class ACasts<Level> implements Casts<Level> {
         }
     }
 
-    public static class ValueCast<Level> implements Conversion<Level> {
+    public static class ValueCast<Level> implements Casts.Conversion<Level> {
         public final TypeView<Level> sourceType;
         public final TypeView<Level> destType;
         public final Option<Var<?>> value;
