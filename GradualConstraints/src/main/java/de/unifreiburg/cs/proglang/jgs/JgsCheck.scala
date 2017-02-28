@@ -8,9 +8,7 @@ import de.unifreiburg.cs.proglang.jgs.TestCollector.{Exceptional, UnexpectedFail
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh, UserDefined, UserDefinedUtils}
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.extractStringArrayAnnotation
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Casts, _}
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.{emptyEffect, makeEffects}
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures._
 import de.unifreiburg.cs.proglang.jgs.signatures._
@@ -19,6 +17,9 @@ import de.unifreiburg.cs.proglang.jgs.typing.{ClassHierarchyTyping, MethodTyping
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import de.unifreiburg.cs.proglang.jgs.Util._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils.TypeViewConversion
+import de.unifreiburg.cs.proglang.jgs.instrumentation.{ACasts, CastUtils, CastsFromConstants}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.{CastsFromMapping, Methods, Supertypes}
 import org.json4s._
 import org.json4s.jackson.{Json, Json4sScalaModule}
 import scopt.OptionParser
@@ -341,7 +342,7 @@ object JgsCheck {
       println(contextCasts)
       println(contextCastEnd)
       */
-        def makeCastMap(casts: Map[String, String]): Map[String, Conversion[Level]] = {
+        def makeCastMap(casts: Map[String, String]): Map[String, TypeViewConversion[Level]] = {
           for {
             (m, convString) <- casts
             conv <- skipAndReportFailure(log, s"Error parsing conversion for cast-method ${m}",
@@ -366,7 +367,7 @@ object JgsCheck {
       }
 
       // TODO: combine generic casts and mapping casts.. generic ones should have precedence (?)
-      val casts: Casts[Level] =
+      val casts: ACasts[Level] =
         if (opt.genericCasts) {
           constructGenericCasts
         } else {

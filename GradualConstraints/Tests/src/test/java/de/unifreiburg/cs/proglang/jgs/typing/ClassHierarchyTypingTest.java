@@ -7,6 +7,8 @@ import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodWithSignature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.Literal;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol$;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +22,6 @@ import java.util.stream.Stream;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -58,7 +57,7 @@ public class ClassHierarchyTypingTest {
     public void testIllegalOverride_testCallee() {
         SootMethod testCallee_override = new SootMethod("testCallee", emptyList(), IntType.v());
         Signature<Level> sig = makeSignature(testCallee_override.getParameterCount(),
-                                             Stream.of(leS(literal(THIGH), ret())).collect(toList()),
+                                             Stream.of(leS(new Literal<>(THIGH), Symbol$.MODULE$.ret())).collect(toList()),
                                              Effects.emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(
@@ -79,7 +78,7 @@ public class ClassHierarchyTypingTest {
                         code.ignore0Low1ReturnHigh.getParameterTypes(),
                         code.ignore0Low1ReturnHigh.getReturnType());
         Signature<Level> sig = makeSignature(ignore0Low1ReturnHigh_override.getParameterCount(),
-                                             Stream.of(leS(param(1), literal(THIGH)), leS(literal(TLOW), ret())).collect(toList()), Effects.emptyEffect());
+                                             Stream.of(leS(Symbol$.MODULE$.param(1), Symbol$.MODULE$.literal(THIGH)), leS(Symbol$.MODULE$.literal(TLOW), Symbol$.MODULE$.ret())).collect(toList()), Effects.emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(
                         ignore0Low1ReturnHigh_override,
@@ -94,7 +93,7 @@ public class ClassHierarchyTypingTest {
                         code.ignore0Low1ReturnHigh.getParameterTypes(),
                         code.ignore0Low1ReturnHigh.getReturnType());
         Signature<Level> sig = makeSignature(ignore0Low1ReturnHigh_override.getParameterCount(),
-                                             Stream.of(leS(param(1), literal(THIGH)), leS(literal(TLOW), ret())).collect(toList()),
+                                             Stream.of(leS(Symbol$.MODULE$.param(1), Symbol$.MODULE$.literal(THIGH)), leS(Symbol$.MODULE$.literal(TLOW), Symbol$.MODULE$.ret())).collect(toList()),
                                              Effects.makeEffects(TLOW));
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(

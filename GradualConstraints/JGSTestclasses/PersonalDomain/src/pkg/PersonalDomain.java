@@ -79,13 +79,13 @@ public class PersonalDomain {
     // OK: This assignment uses a casts (HIGH ~> ?) to copy highField into dynamicField.
     @Effects({"?"})
     void OK_castHighToDynamic(String s) {
-        this.dynamicField = Casts.castHighToDyn(this.highField);
+        this.dynamicField = ACasts.castHighToDyn(this.highField);
     }
 
     // OK: Using casts we can produce a leak. Only run-time enforcement is able to prevent it.
     @Effects({"LOW"})
     void OK_dynamicLeak() {
-        this.lowField = Casts.castDynToLow(Casts.castHighToDyn(this.highField));
+        this.lowField = ACasts.castDynToLow(ACasts.castHighToDyn(this.highField));
     }
     // OK: Similar leak using context casts
     //  ATTENTION:
@@ -93,11 +93,11 @@ public class PersonalDomain {
     //  - thus the use of "Integer" for dynH
     @Effects({"?"})
     void OK_dynamicLeakWithContextCast() {
-        Integer dynH = Casts.castHighToDyn(this.highField);
+        Integer dynH = ACasts.castHighToDyn(this.highField);
         if (dynH == 42) {
-            Casts.castCxDynToLow();
-            this.lowField = Casts.castDynToLow(dynH);
-            Casts.castCxEnd();
+            ACasts.castCxDynToLow();
+            this.lowField = ACasts.castDynToLow(dynH);
+            ACasts.castCxEnd();
         }
     }
 

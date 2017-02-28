@@ -1,11 +1,14 @@
 package de.unifreiburg.cs.proglang.jgs.typing
 
+import de.unifreiburg.cs.proglang.jgs
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.{literal, variable}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, TypeDomain, TypeVars, _}
+import de.unifreiburg.cs.proglang.jgs.instrumentation.{ACasts, CastUtils, Var}
 import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
-import de.unifreiburg.cs.proglang.jgs.signatures._
+import de.unifreiburg.cs.proglang.jgs.signatures.{Effects, FieldTable, Param, Return, Signature, SignatureTable}
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
 import de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import soot._
@@ -30,7 +33,11 @@ class BasicStatementTyping[LevelT](
                                     val cstrs: Constraints[LevelT],
                                     val currentMethod: SootMethod
                                   ) {
-  def generate(s: Stmt, localDefs: LocalDefs, env: Environment, pc: java.util.Set[TypeVars.TypeVar], signatures: SignatureTable[LevelT], fields: FieldTable[LevelT], casts: Casts[LevelT]): BodyTypingResult[LevelT] = {
+  def generate(s: Stmt, localDefs: LocalDefs,
+               env: Environment,
+               pc: java.util.Set[TypeVars.TypeVar],
+               signatures: SignatureTable[LevelT],
+               fields: FieldTable[LevelT], casts: ACasts[LevelT]): BodyTypingResult[LevelT] = {
     val g: Gen = new Gen(env, pc.toSet, signatures, fields, casts, localDefs)
     s.apply(g)
     if (!g.getErrorMsg.isEmpty) {
@@ -50,7 +57,7 @@ class BasicStatementTyping[LevelT](
              private val pcs: Set[TypeVars.TypeVar],
              private val signatures: SignatureTable[LevelT],
              private val fields: FieldTable[LevelT],
-             private val casts: Casts[LevelT],
+             private val casts: ACasts[LevelT],
              private val localDefs: LocalDefs
            ) extends AbstractStmtSwitch {
 
@@ -78,7 +85,7 @@ class BasicStatementTyping[LevelT](
           setResult(emptyEffect)
         }
 
-        def caseCast(cast: Casts.ValueCast[LevelT]) {
+        def caseCast(cast: ACasts.ValueCast[LevelT]) {
           setResult(emptyEffect)
         }
 
@@ -143,26 +150,26 @@ class BasicStatementTyping[LevelT](
           throw new RuntimeException(s"Argument count ($argCount) does not " + s"equal parameter count ($paramterCount): ${m.toString}")
         }
         val sig: Signature[LevelT] = getSignature(m)
-        val instantiation: mutable.HashMap[Symbol[LevelT], CTypes.CType[LevelT]] = mutable.HashMap()
+        val instantiation: mutable.HashMap[jgs.signatures.Symbol[LevelT], CTypes.CType[LevelT]] = mutable.HashMap()
         val argTypes: List[Option[TypeVars.TypeVar]] = args.map(mv => mv.map(env.get)).toList
         (0 until argCount).foreach(i => {
           val mat = argTypes.get(i);
           mat.foreach(at => {
-            instantiation.put(Symbol.param(i), variable(at));
+            instantiation.put(jgs.signatures.Symbol.param(i), variable(at));
           });
           if (!mat.isDefined) {
-            instantiation.put(Symbol.param(i), literal(cstrs.types.pub));
+            instantiation.put(jgs.signatures.Symbol.param(i), literal(cstrs.types.pub));
           }
         })
-        instantiation += Symbol.ret[LevelT] -> variable(destTVar)
+        instantiation += jgs.signatures.Symbol.ret[LevelT] -> variable(destTVar)
         val tagMap: mutable.Map[Constraint[LevelT], TypeVarTags.TypeVarTag] = mutable.HashMap()
         sig.constraints.stream.foreach(sc => {
           val c = sc.toTypingConstraint(instantiation);
           val params =
-            sc.symbols().iterator().filter(s => s.isInstanceOf[Symbol.Param[LevelT]])
-              .map(s => new TypeVarTags.MethodArg(m, (s.asInstanceOf[(Symbol.Param[LevelT])]).position));
+            sc.symbols().iterator().filter(s => s.isInstanceOf[Param[LevelT]])
+              .map(s => new TypeVarTags.MethodArg(m, (s.asInstanceOf[(Param[LevelT])]).position));
           val rets =
-            sc.symbols().iterator().filter(s => s.isInstanceOf[Symbol.Return[LevelT]])
+            sc.symbols().iterator().filter(s => s.isInstanceOf[Return[LevelT]])
               .map(s => new TypeVarTags.MethodReturn(m));
           constraints.add(c);
           (params ++ rets).foreach(t => tagMap += c -> t);
@@ -182,7 +189,7 @@ class BasicStatementTyping[LevelT](
         (Iterator(destC) ++ thisPtr.map(tp => leDest.apply(variable(env.get(thisPtr.get)))).iterator).foreach(constraints += _)
       }
 
-      def caseCast(cast: Casts.ValueCast[LevelT]) {
+      def caseCast(cast: ACasts.ValueCast[LevelT]) {
         if (!compatible(cast.sourceType, cast.destType)) {
           errorMsg.add(String.format("Source type %s cannot be converted to destination type %s.", cast.sourceType, cast.destType))
           return
@@ -191,7 +198,7 @@ class BasicStatementTyping[LevelT](
         mcstr.foreach(constraints += _)
         val destC: Constraint[LevelT] = Constraints.le(literal(cast.destType), destCType)
         constraints.add(destC)
-        val conv: CastUtils.Conversion[LevelT] = new CastUtils.Conversion[LevelT](cast.sourceType, cast.destType)
+        val conv: CastUtils.TypeViewConversion[LevelT] = new CastUtils.TypeViewConversion[LevelT](cast.sourceType, cast.destType)
         val tag: TypeVarTags.TypeVarTag = new TypeVarTags.Cast(conv)
         tags = TagMap.of(destC, tag).addAll(mcstr.map(c => TagMap.of(c, tag)).getOrElse(TagMap.empty[LevelT]))
       }
@@ -210,7 +217,7 @@ class BasicStatementTyping[LevelT](
 
     private def caseLocalDefinition(writeVar: Local, stmt: DefinitionStmt) {
       val constraints: ListBuffer[Constraint[LevelT]] = ListBuffer()
-      val destTVar: TypeVars.TypeVar = tvars.forLocal(Var.fromLocal(writeVar), stmt)
+      val destTVar: TypeVars.TypeVar = tvars.forLocal(Vars.fromLocal(writeVar), stmt)
       val destCType: CTypes.CType[LevelT] = variable(destTVar)
       val leDest: Function[CTypes.CType[LevelT], Constraint[LevelT]] = ct => Constraints.le(ct, destCType)
       val toCType: Function[Var[_], CTypes.CType[LevelT]] = v => variable(env.get(v))
@@ -220,7 +227,7 @@ class BasicStatementTyping[LevelT](
       this.pcs.foreach(pc => {
         constraints += (leDest.apply(variable(pc)));
       })
-      val fin: Environment = env.add(Var.fromLocal(writeVar), destTVar)
+      val fin: Environment = env.add(Vars.fromLocal(writeVar), destTVar)
       setResult(makeResult(stmt, csets.fromCollection(constraints), fin, extractEffects(rhs), sw.getTags))
     }
 
@@ -232,7 +239,8 @@ class BasicStatementTyping[LevelT](
       Vars.getAllFromValueBoxes(stmt.getLeftOp.getUseBoxes.asInstanceOf[java.util.Collection[ValueBox]]).map(v => Constraints.le(CTypes.variable(env.get(v)), CTypes.literal(fieldType))).foreach(constraints += _)
       val tags: TagMap[LevelT] = if ((stmt.getRightOp.isInstanceOf[Local])) {
         val rhs: Local = stmt.getRightOp.asInstanceOf[Local]
-        val cstr: Constraint[LevelT] = leDest.apply(CTypes.variable(env.get(Var.fromLocal(rhs))))
+        val cstr: Constraint[LevelT] = leDest.apply(CTypes.variable(env.get(Vars.fromLocal(rhs))))
+
         constraints.add(cstr)
         TagMap.of(cstr, new TypeVarTags.Field(field))
       }
@@ -314,7 +322,7 @@ class BasicStatementTyping[LevelT](
 
     override def caseReturnStmt(stmt: ReturnStmt) {
       if (stmt.getOp.isInstanceOf[Local]) {
-        val r: Var[_] = Var.fromLocal(stmt.getOp.asInstanceOf[Local])
+        val r: Var[_] = Vars.fromLocal(stmt.getOp.asInstanceOf[Local])
         setResult(makeResult(stmt, csets.fromCollection((Iterator(Constraints.le[LevelT](variable(env.get(r)), variable(tvars.ret))) ++ this.pcs.iterator.map(pcVar => Constraints.le[LevelT](variable(pcVar), variable(tvars.ret())))).toList.asJavaCollection), env, emptyEffect[LevelT], TagMap.empty[LevelT]))
       }
       else if (stmt.getOp.isInstanceOf[Constant]) {
@@ -329,7 +337,7 @@ class BasicStatementTyping[LevelT](
       val e: Value = stmt.getInvokeExpr
       val constraints: ListBuffer[Constraint[LevelT]] = ListBuffer()
       val dummy: Local = Jimple.v.newLocal("DUMMY_FOR_INVOKE_STMT", null)
-      val destTVar: TypeVars.TypeVar = tvars.forLocal(Var.fromLocal(dummy), stmt)
+      val destTVar: TypeVars.TypeVar = tvars.forLocal(Vars.fromLocal(dummy), stmt)
       val destCType: CTypes.CType[LevelT] = variable(destTVar)
       val leDest: Function[CTypes.CType[LevelT], Constraint[LevelT]] = t => Constraints.le(t, destCType)
       val toCType: Function[Var[_], CTypes.CType[LevelT]] = v => variable(env.get(v))

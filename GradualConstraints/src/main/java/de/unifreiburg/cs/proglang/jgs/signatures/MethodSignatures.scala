@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.signatures
 
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, _}
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.{Param, param, ret}
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
 
 import scala.collection.JavaConversions._
 
@@ -26,13 +26,13 @@ object MethodSignatures {
     * parameters in the range of 0..paramCount.
     */
   def makeSignature[Level](paramCount: Int, constraints: java.util.Collection[SigConstraint[Level]], effects: Effects[Level]): Signature[Level] = {
-    val paramInRange = (p :  Symbol.Param[_])=> p.position < paramCount && 0 <= p.position
+    val paramInRange = (p :  Param[_])=> p.position < paramCount && 0 <= p.position
     if (!constraints.iterator().flatMap(c => c.symbols().iterator()).forall(s => !(s.isInstanceOf[Param[_]])
       || paramInRange((s.asInstanceOf[Param[Level]])))) {
       throw new IllegalArgumentException(String.format(s"Illegal parameter for parameter count ${paramCount} in constraint ${constraints}"))
     }
-    val paramConstraints: Iterator[SigConstraint[Level]] = (0 until paramCount).iterator.map(i => trivial(param[Level](i)))
-    val allConstraints: Iterator[SigConstraint[Level]] = (constraints.iterator() ++ Iterator(trivial(ret[Level])) ++ paramConstraints)
+    val paramConstraints: Iterator[SigConstraint[Level]] = (0 until paramCount).iterator.map(i => trivial(Param[Level](i)))
+    val allConstraints: Iterator[SigConstraint[Level]] = (constraints.iterator() ++ Iterator(trivial(Return[Level])) ++ paramConstraints)
     return new Signature[Level](signatureConstraints(allConstraints), effects)
   }
 
@@ -40,7 +40,7 @@ object MethodSignatures {
     return new SigConstraintSet[Level](sigSet.toSet)
   }
 
-  def toSignatureConstraintSet[Level](constraints: ConstraintSet[Level], params: java.util.Map[TypeVars.TypeVar, Symbol.Param[Level]], retVar: TypeVars.TypeVar): SigConstraintSet[Level] = {
+  def toSignatureConstraintSet[Level](constraints: ConstraintSet[Level], params: java.util.Map[TypeVars.TypeVar, Param[Level]], retVar: TypeVars.TypeVar): SigConstraintSet[Level] = {
     val relevantVars: Set[TypeVars.TypeVar] = Set(retVar) ++ params.keySet
     signatureConstraints(constraints.projectTo(params.keySet).stream.map(c => {
       val lhs = Symbols.ctypeToSymbol(params, c.getLhs);

@@ -1,6 +1,5 @@
-package de.unifreiburg.cs.proglang.jgs.jimpleutils;
+package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
 import scala.Option;
@@ -9,15 +8,13 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 
-import static de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain.*;
-
 /**
  * An interface to detect casts from method calls. In JGS, casts are identity
  * methods that BasicStatementTyping.generate treats specially.
  * <p>
  * Created by fennell on 11/13/15.
  */
-public abstract class Casts<Level> {
+public abstract class ACasts<Level> {
 
     public static class CxCast<Level> {
         public final TypeView<Level> sourceType;
@@ -62,7 +59,7 @@ public abstract class Casts<Level> {
         public final TypeView<Level> destType;
         public final Option<Var<?>> value;
 
-        protected ValueCast(TypeView<Level> sourceType,
+        public ValueCast(TypeView<Level> sourceType,
                             TypeView<Level> destType,
                             Option<Var<?>> value) {
             this.sourceType = sourceType;

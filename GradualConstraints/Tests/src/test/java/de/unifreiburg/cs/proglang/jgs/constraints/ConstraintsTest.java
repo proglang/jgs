@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,14 +40,14 @@ public class ConstraintsTest {
         Var<?> vh1, vh2, vl1, vl2, vd1, vd2, vp1, vp2;
 
         tvars = new TypeVars();
-        vh1 = Var.fromLocal(Jimple.v().newLocal("h1", IntType.v()));
-        vh2 = Var.fromLocal(Jimple.v().newLocal("h2", IntType.v()));
-        vl1 = Var.fromLocal(Jimple.v().newLocal("l1", IntType.v()));
-        vl2 = Var.fromLocal(Jimple.v().newLocal("l2", IntType.v()));
-        vd1 = Var.fromLocal(Jimple.v().newLocal("d1", IntType.v()));
-        vd2 = Var.fromLocal(Jimple.v().newLocal("d2", IntType.v()));
-        vp1 = Var.fromLocal(Jimple.v().newLocal("p1", IntType.v()));
-        vp2 = Var.fromLocal(Jimple.v().newLocal("p2", IntType.v()));
+        vh1 = Vars.fromLocal(Jimple.v().newLocal("h1", IntType.v()));
+        vh2 = Vars.fromLocal(Jimple.v().newLocal("h2", IntType.v()));
+        vl1 = Vars.fromLocal(Jimple.v().newLocal("l1", IntType.v()));
+        vl2 = Vars.fromLocal(Jimple.v().newLocal("l2", IntType.v()));
+        vd1 = Vars.fromLocal(Jimple.v().newLocal("d1", IntType.v()));
+        vd2 = Vars.fromLocal(Jimple.v().newLocal("d2", IntType.v()));
+        vp1 = Vars.fromLocal(Jimple.v().newLocal("p1", IntType.v()));
+        vp2 = Vars.fromLocal(Jimple.v().newLocal("p2", IntType.v()));
 
 
         h1 = tvars.testParam(vh1,"");

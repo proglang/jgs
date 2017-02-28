@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.signatures.Signature;
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodWithSignature;
 import de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol$;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +21,6 @@ import java.util.stream.Stream;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.leS;
 import static de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSignature;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -53,7 +52,7 @@ public class SupertypesTest {
         SootMethod testCallee_override = new SootMethod("testCallee", emptyList(), IntType.v());
         Signature<Level> sig = makeSignature(
                 testCallee_override.getParameterCount(),
-                Stream.of(leS(literal(THIGH), ret())).collect(toList()),
+                Stream.of(leS(Symbol$.MODULE$.literal(THIGH), Symbol$.MODULE$.ret())).collect(toList()),
                 emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(
@@ -70,7 +69,7 @@ public class SupertypesTest {
     public void testOverrides_testCallee_int() {
         SootMethod testCallee_override = new SootMethod("testCallee", emptyList(), IntType.v());
         Signature<Level> sig = makeSignature(testCallee_override.getParameterCount(),
-                Stream.of(leS(literal(THIGH), ret())).collect(toList()),
+                Stream.of(leS(Symbol$.MODULE$.literal(THIGH), Symbol$.MODULE$.ret())).collect(toList()),
                 emptyEffect());
         Pair<SootClass, SignatureTable<Level>> derived = code.makeDerivedClass("SubTestClass", code.testClass,
                 asList(MethodWithSignature.make(

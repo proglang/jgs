@@ -1,12 +1,15 @@
 package de.unifreiburg.cs.proglang.jgs;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import de.unifreiburg.cs.proglang.jgs.signatures.*;
+import de.unifreiburg.cs.proglang.jgs.signatures.Literal;
+import de.unifreiburg.cs.proglang.jgs.signatures.Param;
+import de.unifreiburg.cs.proglang.jgs.signatures.Return;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol$;
 import de.unifreiburg.cs.proglang.jgs.typing.Environment;
 import de.unifreiburg.cs.proglang.jgs.typing.Environments;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
@@ -24,7 +27,6 @@ import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
 import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.makeTable;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
@@ -82,12 +84,12 @@ public class Code {
         this.localO = j.newLocal("o", RefType.v("java.lang.Object"));
         this.localT = j.newLocal("t", RefType.v("TestClass"));
         this.localThis = j.newLocal("this", RefType.v("TestClass"));
-        this.varX = Var.fromLocal(localX);
-        this.varY = Var.fromLocal(localY);
-        this.varZ = Var.fromLocal(localZ);
-        this.varO = Var.fromLocal(localO);
-        this.varT = Var.fromLocal(localT);
-        this.varThis = Var.fromLocal(localThis);
+        this.varX = Vars.fromLocal(localX);
+        this.varY = Vars.fromLocal(localY);
+        this.varZ = Vars.fromLocal(localZ);
+        this.varO = Vars.fromLocal(localO);
+        this.varT = Vars.fromLocal(localT);
+        this.varThis = Vars.fromLocal(localThis);
         this.tvarX = tvars.testParam(varX, "");
         this.tvarY = tvars.testParam(varY, "");
         this.tvarZ = tvars.testParam(varZ, "");
@@ -122,8 +124,8 @@ public class Code {
         this.fields = new FieldTable<>(fieldMap);
 
         Map<SootMethod, Signature<Level>> sigMap = new HashMap<>();
-        Symbol.Param<LowHigh.Level> param_x = param(0);
-        Symbol.Param<LowHigh.Level> param_y = param(1);
+        Param<Level> param_x = new Param<>(0);
+        Param<LowHigh.Level> param_y = new Param<>(1);
 
         // Method:
         // int testCallee()
@@ -134,7 +136,7 @@ public class Code {
         this.testClass.addMethod(testCallee__int);
         sigMap.put(this.testCallee__int,
                 makeSignature(this.testCallee__int.getParameterCount(),
-                              Stream.of(leS(Symbol.literal(PUB), ret())).collect(toList()),
+                              Stream.of(leS(new Literal<>(PUB), new Return<>())).collect(toList()),
                               Effects.emptyEffect()));
 
         // Method:
@@ -146,8 +148,8 @@ public class Code {
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(testCallee_int_int__int);
         Stream<SigConstraint<Level>> sigCstrs =
-                Stream.of(leS(param_x, ret()),
-                        leS(param_y, ret()));
+                Stream.of(leS(param_x, Symbol$.MODULE$.ret()),
+                        leS(param_y, Symbol$.MODULE$.ret()));
         sigMap.put(this.testCallee_int_int__int,
                 makeSignature(this.testCallee_int_int__int.getParameterCount(),
                               sigCstrs.collect(toList()),
@@ -161,7 +163,7 @@ public class Code {
                         IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(ignoreSnd_int_int__int);
-        sigCstrs = Stream.of(leS(param_x, ret()), leS(param_y, param_y));
+        sigCstrs = Stream.of(leS(param_x, Symbol$.MODULE$.ret()), leS(param_y, param_y));
         sigMap.put(this.ignoreSnd_int_int__int,
                 makeSignature(this.ignoreSnd_int_int__int.getParameterCount(),
                               sigCstrs.collect(toList()), Effects.emptyEffect()));
@@ -173,7 +175,7 @@ public class Code {
                 singletonList(IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(this.writeToLowReturn0_int__int);
-        sigCstrs = Stream.of((leS(param_x, literal(TLOW))), leS(ret(), ret()));
+        sigCstrs = Stream.of((leS(param_x, Symbol$.MODULE$.literal(TLOW))), leS(Symbol$.MODULE$.ret(), Symbol$.MODULE$.ret()));
         sigMap.put(this.writeToLowReturn0_int__int,
                 makeSignature(this.writeToLowReturn0_int__int.getParameterCount(),
                               sigCstrs.collect(toList()), Effects.makeEffects(TLOW)));
@@ -186,7 +188,7 @@ public class Code {
                 asList(IntType.v(), IntType.v()),
                 IntType.v(), Modifier.ABSTRACT);
         this.testClass.addMethod(this.ignore0Low1ReturnHigh);
-        sigCstrs = Stream.of(leS(param(1), literal(TLOW)), leS(literal(THIGH), ret()));
+        sigCstrs = Stream.of(leS(Symbol$.MODULE$.param(1), Symbol$.MODULE$.literal(TLOW)), leS(Symbol$.MODULE$.literal(THIGH), Symbol$.MODULE$.ret()));
         sigMap.put(this.ignore0Low1ReturnHigh, makeSignature(this.ignore0Low1ReturnHigh.getParameterCount(),
                                                              sigCstrs.collect(toList()), Effects.emptyEffect()));
 

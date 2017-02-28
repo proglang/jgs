@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
 import de.unifreiburg.cs.proglang.jgs.util.FunctionsForJava;
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented;
 import scala.Option;
@@ -13,7 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
+import static de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts.ValueCast;
 
 /**
  * A Value-Switch that abstracts over the concreteConstraints expressions and is only
@@ -22,9 +24,9 @@ import static de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
  */
 public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
 
-    public final Casts<Level> casts;
+    public final ACasts<Level> casts;
 
-    protected RhsSwitch(Casts<Level> casts) {
+    protected RhsSwitch(ACasts<Level> casts) {
         this.casts = casts;
     }
 
@@ -118,7 +120,7 @@ public abstract class RhsSwitch<Level> extends AbstractJimpleValueSwitch {
     @Override
     public void caseInstanceFieldRef(InstanceFieldRef v) {
         // the base of a field ref is always a local in Jimple
-        caseGetField(v, Option.<Var<?>>apply(Var.fromLocal((Local)v.getBase())));
+        caseGetField(v, Option.<Var<?>>apply(Vars.fromLocal((Local)v.getBase())));
     }
 
 

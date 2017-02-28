@@ -3,7 +3,8 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import org.junit.Before;
 import org.junit.Test;
 import soot.IntType;
@@ -13,7 +14,6 @@ import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.*;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -33,7 +33,7 @@ public class EnvironmentTest {
     @Test
     public void testJoin () {
         Environment before = code.init;
-        Var<?> v = Var.fromLocal(j.newLocal("v", IntType.v()));
+        Var<?> v = Vars.fromLocal(j.newLocal("v", IntType.v()));
         TypeVars.TypeVar tv1 = tvars.testParam(v, "1");
         TypeVars.TypeVar tv2 = tvars.testParam(v, "2");
         Environment first = before.add(v, tv1);

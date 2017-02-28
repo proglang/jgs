@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils.TypeViewConversion
 import soot.{SootField, SootMethod}
 
 import scala.language.existentials
@@ -16,9 +16,9 @@ object TypeVarTags {
   sealed trait TypeVarTag
   sealed case class Symbol(symbol: Symbol) extends TypeVarTag
   sealed case class Field(field : SootField) extends TypeVarTag
-  sealed case class Cast(conversion: Conversion[_]) extends TypeVarTag
+  sealed case class Cast(conversion: TypeViewConversion[_]) extends TypeVarTag
   sealed case class MethodReturn(method : SootMethod) extends TypeVarTag
   sealed case class MethodArg(method : SootMethod, pos : Int) extends TypeVarTag
-  sealed case class CxCast(conversion : Conversion[_]) extends TypeVarTag
+  sealed case class CxCast(conversion : TypeViewConversion[_]) extends TypeVarTag
   sealed case class Join(condition: String) extends TypeVarTag
 }

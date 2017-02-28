@@ -12,9 +12,11 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import de.unifreiburg.cs.proglang.jgs.signatures.*;
+import de.unifreiburg.cs.proglang.jgs.signatures.Param;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.typing.*;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,7 +29,6 @@ import scala.util.Try;
 import soot.*;
 import soot.jimple.StaticInvokeExpr;
 
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.stream.Collectors.toSet;
 
@@ -80,7 +81,7 @@ public class TestDomain {
     }
 
 
-    public static final Casts<Level> casts = new Casts<Level>() {
+    public static final ACasts<Level> casts = new ACasts<Level>() {
 
         private boolean castEquals(SootMethod declaredCast, SootMethod m) {
             return m.getName().equals(declaredCast.getName());
@@ -213,7 +214,7 @@ public class TestDomain {
     }
 
     public static SigConstraint<Level> leS(int paramPos, Symbol<Level> sc2) {
-        return MethodSignatures.le(param(paramPos), sc2);
+        return MethodSignatures.le(new Param<>(paramPos), sc2);
     }
 
     //////////////
@@ -398,7 +399,11 @@ public class TestDomain {
         @Override
         protected void describeMismatchSafely
                 (Signature<Level> item, Description mismatchDescription) {
-            mismatchDescription.appendValue(result);
+            mismatchDescription.appendText("\n")
+                    .appendText("Result of constraint refinement was:\n")
+                    .appendValue(result.getLeft())
+                    .appendText("\nMissing effects were:\n")
+                    .appendValue(result.getRight());
         }
 
 

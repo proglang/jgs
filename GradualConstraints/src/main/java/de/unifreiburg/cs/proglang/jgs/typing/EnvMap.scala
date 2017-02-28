@@ -3,7 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.typing
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, Constraint}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var
 import de.unifreiburg.cs.proglang.jgs.typing.Environment.JoinResult
 import de.unifreiburg.cs.proglang.jgs.util.Extra
 import soot.jimple.Stmt

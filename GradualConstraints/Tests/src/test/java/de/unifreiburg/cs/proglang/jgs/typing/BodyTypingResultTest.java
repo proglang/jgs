@@ -6,7 +6,8 @@ import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSetFactory;
 import de.unifreiburg.cs.proglang.jgs.constraints.NaiveConstraintsFactory;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import org.junit.Before;
 import org.junit.Test;
 import soot.IntType;
@@ -38,7 +39,7 @@ public class BodyTypingResultTest {
     @Test
     public void joinTest() {
         Environment before = code.init;
-        Var<?> v = Var.fromLocal(j.newLocal("v", IntType.v()));
+        Var<?> v = Vars.fromLocal(j.newLocal("v", IntType.v()));
         TypeVars.TypeVar tv1 = tvars.testParam(v, "1");
         TypeVars.TypeVar tv2 = tvars.testParam(v, "2");
         Environment first = before.add(v, tv1);

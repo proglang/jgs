@@ -1,7 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.toolkits.graph.DirectedGraph;
@@ -156,7 +155,7 @@ public class TypeVars {
         return new TestParam(param, id);
     }
 
-    public TypeVar param(Var<Symbol.Param<?>> param) {
+    public TypeVar param(Var<Integer> param) {
         return new Param(param);
     }
 
@@ -188,9 +187,9 @@ public class TypeVars {
     }
 
     private class Param implements TypeVar {
-        private final Var<Symbol.Param<?>> param;
+        private final Var<Integer> param;
 
-        private Param(Var<Symbol.Param<?>> param) {
+        private Param(Var<Integer> param) {
             this.param = param;
         }
 
@@ -218,7 +217,7 @@ public class TypeVars {
 
         @Override
         public TypeVarViews.TypeVarView inspect() {
-            return new TypeVarViews.Param(param.repr.position);
+            return new TypeVarViews.Param(param.repr);
         }
     }
 

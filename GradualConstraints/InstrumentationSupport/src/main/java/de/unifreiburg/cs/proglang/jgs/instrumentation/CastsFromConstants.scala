@@ -1,10 +1,10 @@
-package de.unifreiburg.cs.proglang.jgs.jimpleutils
+package de.unifreiburg.cs.proglang.jgs.instrumentation
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{CxCast, ValueCast}
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts.{CxCast, ValueCast}
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils.TypeViewConversion
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
-import soot.SootMethod
 import soot.jimple.{StaticInvokeExpr, StringConstant}
 
 import scala.util.{Failure, Success, Try}
@@ -15,7 +15,7 @@ import scala.util.{Failure, Success, Try}
 class CastsFromConstants[Level](typeParser: AnnotationParser[TypeView[Level]],
                                 valueCast: String,
                                 cxCastBegin: String, cxCastEnd: String)
-extends Casts[Level] {
+extends ACasts[Level] {
   override def detectValueCastFromCall(e: StaticInvokeExpr): Try[Option[ValueCast[Level]]] = {
     def cont(e : StaticInvokeExpr) : Try[Option[ValueCast[Level]]] =
           for { conv <- CastsFromConstants.getConversionFromCall(typeParser, e)
@@ -38,7 +38,7 @@ extends Casts[Level] {
 
 object CastsFromConstants {
 
-  def getConversionFromCall[Level](typeParser : AnnotationParser[TypeView[Level]], expr: StaticInvokeExpr) : Try[Conversion[Level]] = {
+  def getConversionFromCall[Level](typeParser : AnnotationParser[TypeView[Level]], expr: StaticInvokeExpr) : Try[TypeViewConversion[Level]] = {
     val maybeConv = for {
       e <- Some(expr)
       if e.getArgCount >= 1

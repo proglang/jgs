@@ -13,7 +13,7 @@ valuecasts:
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: int castDynToPub(int)>": "? ~> pub"
 
 valuecast-generic:
-  "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>"
+  "<de.unifreiburg.cs.proglang.jgs.support.ACasts: java.lang.Object cast(java.lang.String,java.lang.Object)>"
 
 contextcasts:
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxHighToDyn()>": "[top] ~> ?"
@@ -23,6 +23,6 @@ contextcasts:
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToPub()>": "? ~> pub"
   - "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxDynToHigh()>": "? ~> [top]"
 
-contextcast-generic: "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCx(java.lang.String)>"
+contextcast-generic: "<de.unifreiburg.cs.proglang.jgs.support.ACasts: void castCx(java.lang.String)>"
 
-contextcastend: "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxEnd()>"
+contextcastend: "<de.unifreiburg.cs.proglang.jgs.support.ACasts: void castCxEnd()>"

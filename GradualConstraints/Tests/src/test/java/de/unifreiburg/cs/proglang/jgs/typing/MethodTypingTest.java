@@ -3,6 +3,9 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 import de.unifreiburg.cs.proglang.jgs.Code;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.*;
+import de.unifreiburg.cs.proglang.jgs.signatures.Param;
+import de.unifreiburg.cs.proglang.jgs.signatures.Return;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol$;
 import org.junit.Before;
 import org.junit.Test;
 import soot.*;
@@ -13,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.*;
 import static java.util.Arrays.asList;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
@@ -102,11 +104,11 @@ public class MethodTypingTest {
         SootMethod m = makeMultipleReturns();
         List<Param<Level>> ps = Symbols.<Level>methodParameters(m);
         Stream<SigConstraint<Level>> sigConstraints = Stream.of(
-                leS(ps.get(0), ret()),
-                leS(ps.get(1), ret()),
-                leS(ps.get(2), ret()),
+                leS(ps.get(0), new Return<>()),
+                leS(ps.get(1), new Return<>()),
+                leS(ps.get(2), new Return<>()),
                 leS(ps.get(2), ps.get(2)),
-                leS(ps.get(3), ret()));
+                leS(ps.get(3), new Return<>()));
         SignatureTable<Level> signatures = code.signatures.extendWith(m, sigConstraints.collect(Collectors.toList()), Effects.emptyEffect());
         MethodTyping.Result<Level> r = mtyping.check(tvars, signatures, code.fields, m);
 
@@ -128,9 +130,9 @@ public class MethodTypingTest {
         List<Param<Level>> ps = Symbols.methodParameters(m);
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
                                                                       Stream.of(
-                        leS(ps.get(0), ret()),
-                        leS(ps.get(1), ret()),
-                        leS(ps.get(3), ret())).collect(Collectors.toList()),
+                        leS(ps.get(0), Symbol$.MODULE$.ret()),
+                        leS(ps.get(1), Symbol$.MODULE$.ret()),
+                        leS(ps.get(3), Symbol$.MODULE$.ret())).collect(Collectors.toList()),
                                                                       Effects.emptyEffect());
 
         MethodTyping.Result<Level> r = mtyping.check(tvars, signatures, code.fields, m);
@@ -180,8 +182,8 @@ public class MethodTypingTest {
         List<Param<Level>> ps = Symbols.methodParameters(m);
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
                                                                       Stream.of(
-                        leS(ps.get(0), ret()),
-                        leS(Symbol.literal(DYN), ret())
+                        leS(ps.get(0), Symbol$.MODULE$.ret()),
+                        leS(Symbol$.MODULE$.literal(DYN), Symbol$.MODULE$.ret())
                 ).collect(Collectors.toList()),
                                                                       Effects.emptyEffect());
         assertThat(m, compliesTo(tvars, signatures, code.fields));
@@ -199,7 +201,7 @@ public class MethodTypingTest {
         List<Param<Level>> ps = Symbols.methodParameters(m);
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
                                                                       Stream.of(
-                        leS(Symbol.literal(DYN), ret())
+                        leS(Symbol$.MODULE$.literal(DYN), Symbol$.MODULE$.ret())
                 ).collect(Collectors.toList()),
                                                                       Effects.emptyEffect());
         assertThat(m, violates(tvars, signatures, code.fields));
@@ -236,8 +238,8 @@ public class MethodTypingTest {
     public void testMakeMethodWithLowEffects() {
         SootMethod m = makeMethodWithLowEffects();
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
-                                                                      Stream.of(leS(0, literal(TLOW)),
-                        leS(1, literal(TLOW))).collect(Collectors.toList()),
+                                                                      Stream.of(leS(0, Symbol$.MODULE$.literal(TLOW)),
+                        leS(1, Symbol$.MODULE$.literal(TLOW))).collect(Collectors.toList()),
                                                                       Effects.<Level>emptyEffect().add(TLOW));
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
@@ -253,8 +255,8 @@ public class MethodTypingTest {
     public void testMakeMethodWithLowEffects_publicEffect() {
         SootMethod m = makeMethodWithLowEffects();
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
-                                                                      Stream.of(leS(0, literal(TLOW)),
-                        leS(1, literal(TLOW))).collect(Collectors.toList()),
+                                                                      Stream.of(leS(0, Symbol$.MODULE$.literal(TLOW)),
+                        leS(1, Symbol$.MODULE$.literal(TLOW))).collect(Collectors.toList()),
                                                                       Effects.<Level>emptyEffect().add(PUB));
         assertThat(m, compliesTo(tvars, signatures, code.fields));
     }
@@ -270,7 +272,7 @@ public class MethodTypingTest {
     public void testMakeMethodWithLowEffects_invalid1() {
         SootMethod m = makeMethodWithLowEffects();
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
-                                                                      Stream.of(leS(0, literal(TLOW))).collect(Collectors.toList()),
+                                                                      Stream.of(leS(0, Symbol$.MODULE$.literal(TLOW))).collect(Collectors.toList()),
                                                                       Effects.<Level>emptyEffect().add(TLOW));
         assertThat(m, violates(tvars, signatures, code.fields));
     }
@@ -286,7 +288,7 @@ public class MethodTypingTest {
     public void testMakeMethodWithLowEffects_invalid2() {
         SootMethod m = makeMethodWithLowEffects();
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
-                                                                      Stream.of(leS(1, literal(TLOW))).collect(Collectors.toList()),
+                                                                      Stream.of(leS(1, Symbol$.MODULE$.literal(TLOW))).collect(Collectors.toList()),
                                                                       Effects.<Level>emptyEffect().add(TLOW));
         assertThat(m, violates(tvars, signatures, code.fields));
     }
@@ -302,7 +304,7 @@ public class MethodTypingTest {
     public void testMakeMethodWithLowEffects_invalid3() {
         SootMethod m = makeMethodWithLowEffects();
         SignatureTable<Level> signatures = code.signatures.extendWith(m,
-                                                                      Stream.of(leS(0, literal(TLOW)), leS(1, literal(TLOW))).collect(Collectors.toList()),
+                                                                      Stream.of(leS(0, Symbol$.MODULE$.literal(TLOW)), leS(1, Symbol$.MODULE$.literal(TLOW))).collect(Collectors.toList()),
                                                                       Effects.<Level>emptyEffect());
         assertThat(m, violates(tvars, signatures, code.fields));
     }

@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,11 +32,11 @@ public class CTypeDomainTest {
        this.tvars = new TypeVars();
        Map<TypeVar, TypeView<Level>> m = new HashMap<>();
        Var<?> lh1, lh2, ll, ld, lb;
-       lh1 = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
-       lh2 = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
-       ll  = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
-       ld  = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
-       lb  = Var.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       lh1 = Vars.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       lh2 = Vars.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       ll  = Vars.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       ld  = Vars.fromLocal(Jimple.v().newLocal("", IntType.v()));
+       lb  = Vars.fromLocal(Jimple.v().newLocal("", IntType.v()));
 
        vh1 = tvars.testParam(lh1, "");
        vh2 = tvars.testParam(lh2, "");

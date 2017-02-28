@@ -1,7 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.CTypeView
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol
 import de.unifreiburg.cs.proglang.jgs.typing.{ConflictCause, TagMap}
 
@@ -32,10 +32,10 @@ object ConstraintSet {
 
     override def toString: String = {
       val result: StringBuilder = new StringBuilder
-      result.append(String.format("Abstract: %s\n", this.abstractConstraints.toString.replace(",", ",\n")))
-      result.append(String.format("Concrete: %s\n", this.concreteConstraints.toString.replace(",", ",\n")))
-      result.append(String.format("Counterexample: %s\n", this.counterExample))
-      result.append(String.format("Conflicting: %s\n", this.getConflicting))
+      result.append(String.format("general constraints: \n %s\n", this.abstractConstraints.toString.replace(",", ",\n")))
+      result.append(String.format("refined constraints: \n %s\n", this.concreteConstraints.toString.replace(",", ",\n")))
+      result.append(String.format("counterexample: %s\n", this.counterExample))
+      result.append(String.format("conflicting: %s\n", this.getConflicting))
       return result.toString
     }
 
@@ -125,7 +125,7 @@ abstract case class ConstraintSet[Level] (
   /**
     * Project a constraint set to the symbols relevant for a method signature, which are the parameters, and the return symbol
     */
-  def asSignatureConstraints(tvars: TypeVars, params: Iterator[Var[Symbol.Param[_]]]): ConstraintSet[Level] = {
+  def asSignatureConstraints(tvars: TypeVars, params: Iterator[Var[Integer]]): ConstraintSet[Level] = {
     val vars: Set[TypeVars.TypeVar] = (Iterator(tvars.ret) ++ params.map(tvars.param)).toSet
     return this.projectTo(vars)
   }

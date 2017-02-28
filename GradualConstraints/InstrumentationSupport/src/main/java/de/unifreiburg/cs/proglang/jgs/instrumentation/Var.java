@@ -1,7 +1,6 @@
-package de.unifreiburg.cs.proglang.jgs.jimpleutils;
+package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
 
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import soot.Local;
 import soot.jimple.ThisRef;
 
@@ -16,24 +15,20 @@ import soot.jimple.ThisRef;
 public class Var<T> {
     public final T repr;
 
-    /*
-     ******************* factory methods ******************
-     */
-    public static Var<Local> fromLocal(Local v) {
-        return new Var<>(v);
+
+    // factory methods
+    public static Var<Local> fromLocal(Local l) {
+      return new Var<>(l);
+    }
+    public static Var<ThisRef> fromThis(ThisRef tr) {
+        return new Var<>(tr);
     }
 
-    public static Var<ThisRef> fromThis(ThisRef v) {
-        return new Var<>(v);
+    public static Var<Integer> fromParam(Integer i) {
+        return new Var<>(i);
     }
 
-    public static <Level> Var<Symbol.Param<?>> fromParam(Symbol.Param<Level> v) {
-        return new Var<Symbol.Param<?>>(v);
-    }
-
-
-
-    private Var(T me) {
+    public Var(T me) {
         super();
         this.repr = me;
     }

@@ -4,14 +4,14 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes.CType;
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintSet.RefinementCheckResult;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.TypingUtils;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import de.unifreiburg.cs.proglang.jgs.signatures.*;
-import de.unifreiburg.cs.proglang.jgs.signatures.Symbol.Param;
+
+import de.unifreiburg.cs.proglang.jgs.signatures.Param;
+import de.unifreiburg.cs.proglang.jgs.signatures.Return;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import scala.Option;
 import scala.collection.JavaConversions;
 import soot.SootMethod;
@@ -30,7 +30,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.Symbols.methodParameters
 public class MethodTyping<Level> {
     final private ConstraintSetFactory<Level> csets;
     final private Constraints<Level> cstrs;
-    private final Casts<Level> casts;
+    private final ACasts<Level> casts;
     final private TypingUtils<Level> typingUtils;
 
     public interface ConflictResult<Level> {
@@ -124,7 +124,7 @@ public class MethodTyping<Level> {
      * @param cstrs The domain of constraints
      * @param casts Specification of cast methods
      */
-    public MethodTyping(ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts) {
+    public MethodTyping(ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, ACasts<Level> casts) {
         this.csets = csets;
         this.casts = casts;
         this.cstrs = cstrs;
@@ -168,14 +168,14 @@ public class MethodTyping<Level> {
         for (Map.Entry<Param<Level>, TypeVar> e : paramMapping.entrySet()) {
             symbolMapping.put(e.getKey(), CTypes.<Level>variable(e.getValue()));
         }
-        symbolMapping.put(Symbol.<Level>ret(), CTypes.<Level>variable(tvars.ret()));
+        symbolMapping.put(new Return(), CTypes.<Level>variable(tvars.ret()));
 
         ConstraintSet<Level> sigConstraints =
                 csets.fromCollection(JavaConversions.asJavaCollection(signatureToCheck.constraints.toTypingConstraints(symbolMapping).toSeq()));
 
-        List<Var<Param<?>>> params = new LinkedList<>();
+        List<Var<Integer>> params = new LinkedList<>();
         for (Param<?> p : methodParameters(method)) {
-            params.add(Var.fromParam(p));
+            params.add(Vars.fromParam(p.position()));
         }
 
         ConstraintSet<Level> bodyConstraints =

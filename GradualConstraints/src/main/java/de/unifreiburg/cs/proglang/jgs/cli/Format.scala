@@ -9,7 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Cx, Internal, Pa
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Lit, Pub, TypeView}
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypes, ConstraintKind, TypeDomain, TypeVars, _}
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.CastUtils.Conversion
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils.TypeViewConversion
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.EffectRefinementResult
 import de.unifreiburg.cs.proglang.jgs.typing._
 import org.kiama.output.PrettyPrinter._
@@ -131,7 +131,7 @@ object Format {
   }
 
 
-  def conversion[Level](c : Conversion[Level]) : Doc = {
+  def conversion[Level](c : TypeViewConversion[Level]) : Doc = {
     sectype(c.source) <+> "~>" <+> sectype(c.dest)
   }
 

@@ -1,17 +1,16 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.{CxCast, ValueCast}
 import de.unifreiburg.cs.proglang.jgs.TestDomain
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, secdomains}
-import org.scalatest.{Matchers, FlatSpec}
-import soot.{Modifier, VoidType, RefType, SootMethod}
-import soot.jimple.{StringConstant, Jimple, StaticInvokeExpr}
+import org.scalatest.{FlatSpec, Matchers}
+import soot.{Modifier, RefType, SootMethod, VoidType}
+import soot.jimple.{Jimple, StaticInvokeExpr, StringConstant}
 
 import scala.collection.JavaConversions._
-
-
 import TestDomain._
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts.{CxCast, ValueCast}
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants
 
 import scala.util.Success
 
@@ -67,7 +66,7 @@ object CastsFromConstantsTest {
   val tVoid = VoidType.v()
   val localX = Jimple.v().newLocal("x", tObject)
   val localString = Jimple.v().newLocal("aString", tString)
-  val varX = Var.fromLocal(localX)
+  val varX = Vars.fromLocal(localX)
   val valueCastMethod = new SootMethod("cast", List(tString, tObject),tObject,Modifier.STATIC)
   castClass.addMethod(valueCastMethod)
   val cxCastMethod = new SootMethod("castCx", List(tString), tVoid, Modifier.STATIC)

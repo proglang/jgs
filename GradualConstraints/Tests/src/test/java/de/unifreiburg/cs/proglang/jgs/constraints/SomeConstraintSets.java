@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints;
 
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
 import soot.IntType;
 import soot.jimple.Jimple;
 
@@ -24,10 +25,10 @@ public class SomeConstraintSets {
     public final ConstraintSet<Level> x1_le_x3__x2_le_x3;
 
     public SomeConstraintSets(TypeVars tvars) {
-        Var<?> l0 = Var.fromLocal(Jimple.v().newLocal("v0", IntType.v()));
-        Var<?> l1 = Var.fromLocal(Jimple.v().newLocal("v1", IntType.v()));
-        Var<?> l2 = Var.fromLocal(Jimple.v().newLocal("v2", IntType.v()));
-        Var<?> l3 = Var.fromLocal(Jimple.v().newLocal("v3", IntType.v()));
+        Var<?> l0 = Vars.fromLocal(Jimple.v().newLocal("v0", IntType.v()));
+        Var<?> l1 = Vars.fromLocal(Jimple.v().newLocal("v1", IntType.v()));
+        Var<?> l2 = Vars.fromLocal(Jimple.v().newLocal("v2", IntType.v()));
+        Var<?> l3 = Vars.fromLocal(Jimple.v().newLocal("v3", IntType.v()));
         v0 = tvars.testParam(l0, "");
         v1 = tvars.testParam(l1, "");
         v2 = tvars.testParam(l2, "");

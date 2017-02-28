@@ -10,10 +10,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level
 import de.unifreiburg.cs.proglang.jgs.examples.{AnalysisResults, Code}
 import org.scalatest.{FlatSpec, Matchers}
 import de.unifreiburg.cs.proglang.jgs.instrumentation.BodyTypingSpec._
-import de.unifreiburg.cs.proglang.jgs.signatures.{Effects, FieldTable, MethodSignatures, Signature, SignatureTable, Symbol}
+import de.unifreiburg.cs.proglang.jgs.signatures._
 import de.unifreiburg.cs.proglang.jgs.typing.{Environments, MethodBodyTyping}
 import soot.SootMethod
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Methods, Var, Vars}
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.{Methods, Vars}
 import soot.jimple.Stmt
 
 import scala.collection.JavaConversions._
@@ -98,9 +98,9 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
         SignatureTable.makeTable(Map(
           Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
             List(
-              MethodSignatures.le[LowHigh.Level](Symbol.param(0), Symbol.literal(TestDomain.DYN)),
-              MethodSignatures.le[LowHigh.Level](Symbol.param(1), Symbol.literal(TestDomain.DYN)),
-              MethodSignatures.le[LowHigh.Level](Symbol.ret(), Symbol.literal(TestDomain.DYN))
+              MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),
+              MethodSignatures.le[LowHigh.Level](Param(1), Literal(TestDomain.DYN)),
+              MethodSignatures.le[LowHigh.Level](Return(), Literal(TestDomain.DYN))
             ),
       Effects.emptyEffect()))), new FieldTable(Collections.emptyMap())).generateResult(
         Code.max.retrieveActiveBody(),
@@ -108,10 +108,10 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
       Environments.forParamMap(tvs, de.unifreiburg.cs.proglang.jgs.jimpleutils.Methods.symbolMapForMethod(tvs, Code.max))
         )
 
-    bodyResult.envMap.getPre(Code.max_0_id_X_p0).get.get(Var.fromLocal(Code.localZ)) shouldBe empty
-    bodyResult.envMap.getPre(Code.max_0_id_X_p0).get.get(Var.fromLocal(Code.localX)) shouldBe empty
-    bodyResult.envMap.getPost(Code.max_0_id_X_p0).get.get(Var.fromLocal(Code.localX)) should not be empty
-    bodyResult.envMap.getPost(Code.max_0_id_X_p0).get.get(Var.fromLocal(Code.localX)).get should have size 1
+    bodyResult.envMap.getPre(Code.max_0_id_X_p0).get.get(Vars.fromLocal(Code.localZ)) shouldBe empty
+    bodyResult.envMap.getPre(Code.max_0_id_X_p0).get.get(Vars.fromLocal(Code.localX)) shouldBe empty
+    bodyResult.envMap.getPost(Code.max_0_id_X_p0).get.get(Vars.fromLocal(Code.localX)) should not be empty
+    bodyResult.envMap.getPost(Code.max_0_id_X_p0).get.get(Vars.fromLocal(Code.localX)).get should have size 1
 
 
   }
@@ -123,9 +123,9 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
       SignatureTable.makeTable(Map(
         Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
           List(
-            MethodSignatures.le[LowHigh.Level](Symbol.param(0), Symbol.literal(TestDomain.DYN)),
-            MethodSignatures.le[LowHigh.Level](Symbol.param(1), Symbol.literal(TestDomain.DYN)),
-            MethodSignatures.le[LowHigh.Level](Symbol.ret(), Symbol.literal(TestDomain.DYN))
+            MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),
+            MethodSignatures.le[LowHigh.Level](Param(1), Literal(TestDomain.DYN)),
+            MethodSignatures.le[LowHigh.Level](Return(), Literal(TestDomain.DYN))
           ),
           Effects.emptyEffect()))), new FieldTable(Collections.emptyMap())).generateResult(
       Code.max.retrieveActiveBody(),
@@ -155,9 +155,9 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
       SignatureTable.makeTable(Map(
         Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
           List(
-            MethodSignatures.le[LowHigh.Level](Symbol.param(0), Symbol.literal(TestDomain.DYN)),
-            MethodSignatures.le[LowHigh.Level](Symbol.param(1), Symbol.literal(TestDomain.DYN)),
-            MethodSignatures.le[LowHigh.Level](Symbol.ret(), Symbol.literal(TestDomain.DYN))
+            MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),
+            MethodSignatures.le[LowHigh.Level](Param(1), Literal(TestDomain.DYN)),
+            MethodSignatures.le[LowHigh.Level](Return(), Literal(TestDomain.DYN))
           ),
           Effects.emptyEffect()))),
       new FieldTable[LowHigh.Level](java.util.Collections.emptyMap()), Code.max)

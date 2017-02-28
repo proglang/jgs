@@ -2,6 +2,9 @@ package de.unifreiburg.cs.proglang.jgs.typing;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.*;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.*;
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable;
@@ -37,7 +40,7 @@ import static scala.collection.JavaConverters.seqAsJavaListConverter;
 public class MethodBodyTyping<Level> {
 
     final private SootMethod method;
-    final private Casts<Level> casts;
+    final private ACasts<Level> casts;
     final private ConstraintSetFactory<Level> csets;
     final private Constraints<Level> cstrs;
     final private TypeVars tvars;
@@ -52,7 +55,7 @@ public class MethodBodyTyping<Level> {
      * @param signatures
      * @param fields
      */
-    public MethodBodyTyping(SootMethod method, TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts, SignatureTable<Level> signatures, FieldTable<Level> fields) {
+    public MethodBodyTyping(SootMethod method, TypeVars tvars, ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, ACasts<Level> casts, SignatureTable<Level> signatures, FieldTable<Level> fields) {
         this.method = method;
         this.csets = csets;
         this.casts = casts;
@@ -148,10 +151,10 @@ public class MethodBodyTyping<Level> {
         List<Unit> successors = g.getSuccsOf(s);
 
         // check for context casts a context casts
-        Option<Casts.CxCast<Level>> maybeCxCast = casts.detectContextCastStartFromStmt(s);
+        Option<ACasts.CxCast<Level>> maybeCxCast = casts.detectContextCastStartFromStmt(s);
         if (maybeCxCast.isDefined()) {
             //a context cast
-            Casts.CxCast<Level> cxCast = maybeCxCast.get();
+            ACasts.CxCast<Level> cxCast = maybeCxCast.get();
 
             if (successors.size() != 1) {
                 throw new TypingAssertionFailure("Begin of context cast should have exatcly one successor " + s.toString());
@@ -190,7 +193,7 @@ public class MethodBodyTyping<Level> {
             }
             Map<Constraint<Level>, TypeVarTags.TypeVarTag> tagMap = new HashMap<>();
             for (Constraint<Level> c : additionalConstraintsList) {
-                tagMap.put(c, new TypeVarTags.CxCast(new CastUtils.Conversion<Level>(cxCast.sourceType, cxCast.destType)));
+                tagMap.put(c, new TypeVarTags.CxCast(new CastUtils.TypeViewConversion<Level>(cxCast.sourceType, cxCast.destType)));
             }
 
             // modify effects: remove dest and add source

@@ -1,9 +1,10 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Casts.ValueCast;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts.ValueCast;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.hamcrest.Description;
@@ -37,7 +38,7 @@ public class CastsFromMappingTest {
 
     @Before
     public void setUp() {
-        this.castClass = new SootClass("de.unifreiburg.cs.proglang.jgs.support.Casts");
+        this.castClass = new SootClass("de.unifreiburg.cs.proglang.jgs.support.ACasts");
     }
 
     private StaticInvokeExpr makeCall_0(String methodName) {
@@ -67,8 +68,8 @@ public class CastsFromMappingTest {
         };
     }
 
-    private static <Level> Map<String, CastUtils.Conversion<Level>> parseConversionMap(AnnotationParser<TypeView<Level>> typeParser, Map<String,String> casts) {
-        Map<String, CastUtils.Conversion<Level>> result = new HashMap<>();
+    private static <Level> Map<String, CastUtils.TypeViewConversion<Level>> parseConversionMap(AnnotationParser<TypeView<Level>> typeParser, Map<String,String> casts) {
+        Map<String, CastUtils.TypeViewConversion<Level>> result = new HashMap<>();
         for (Map.Entry<String, String> e : casts.entrySet()) {
            result.put(e.getKey(), CastUtils.<Level>parseConversion(typeParser, e.getValue()).get());
         }
@@ -85,10 +86,10 @@ public class CastsFromMappingTest {
 
         assertThat("makeCall_ generates wrong name" + callCastHighToDyn.getMethod().toString(),
                    callCastHighToDyn.getMethod().toString(),
-                   is("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castHighToDyn(java.lang.Object)>"));
+                   is("<de.unifreiburg.cs.proglang.jgs.support.ACasts: java.lang.Object castHighToDyn(java.lang.Object)>"));
         assertThat("makeCall_ generates wrong name" + callCxCastHighToDyn.getMethod().toString(),
                    callCxCastHighToDyn.getMethod().toString(),
-                   is("<de.unifreiburg.cs.proglang.jgs.support.Casts: void cxCastHighToDyn()>"));
+                   is("<de.unifreiburg.cs.proglang.jgs.support.ACasts: void cxCastHighToDyn()>"));
 
         Map<String,String> valueCasts = new HashMap<>();
         valueCasts.put(callCastHighToDyn.getMethod().toString(), "HIGH ~> ?");
@@ -98,7 +99,7 @@ public class CastsFromMappingTest {
         cxCasts.put(callCxCastLowToDyn.getMethod().toString(), "LOW ~> ?");
         String cxCastEnd = callCxCastEnd.getMethod().toString();
 
-        Casts<Level> casts =
+        ACasts<Level> casts =
                 CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types.typeParser(), valueCasts),
                                               parseConversionMap(types.typeParser(), cxCasts),
                                               cxCastEnd);
@@ -113,14 +114,14 @@ public class CastsFromMappingTest {
     @Test(expected=IllegalArgumentException.class)
     public void testInvalid() {
         Map<String,String> valueCasts = new HashMap<>();
-        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castHighToDyn", "H ~> ?");
-        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castLowToDyn", "L ~> ?");
+        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castHighToDyn", "H ~> ?");
+        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castLowToDyn", "L ~> ?");
         Map<String,String> cxCasts = new HashMap<>();
-        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxHighToDyn", "H ~> ?");
-        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxLowToDyn", "L ~> ?");
-        String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.Casts.castCxEnd";
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castCxHighToDyn", "H ~> ?");
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castCxLowToDyn", "L ~> ?");
+        String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.ACasts.castCxEnd";
 
-        Casts<Level> casts =
+        ACasts<Level> casts =
                 CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types.typeParser(), valueCasts),
                                                        parseConversionMap(types.typeParser(), cxCasts),
                                                        cxCastEnd);

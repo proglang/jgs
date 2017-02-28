@@ -2,7 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.typing
 
 import com.sun.istack.internal.NotNull
 import de.unifreiburg.cs.proglang.jgs.constraints._
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
 

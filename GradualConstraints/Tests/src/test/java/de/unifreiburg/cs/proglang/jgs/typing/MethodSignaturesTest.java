@@ -6,6 +6,8 @@ import de.unifreiburg.cs.proglang.jgs.constraints.SomeConstraintSets;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import de.unifreiburg.cs.proglang.jgs.signatures.SigConstraint;
+import de.unifreiburg.cs.proglang.jgs.signatures.Param;
+import de.unifreiburg.cs.proglang.jgs.signatures.Return;
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
 import de.unifreiburg.cs.proglang.jgs.util.Interop;
 import org.junit.Before;
@@ -37,17 +39,17 @@ public class MethodSignaturesTest {
     }
 
     @Test public void testConstraints() {
-        Symbol<Level> s1 = Symbol.param(0);
-        Symbol<Level> s2 = Symbol.param(1);
+        Symbol<Level> s1 = new Param<>(0);
+        Symbol<Level> s2 = new Param<>(1);
 
         Map<Symbol<Level>, CType<Level>> mapping = new HashMap<>();
         mapping.put(s1, variable(cs.v1));
         mapping.put(s2, variable(cs.v2));
-        mapping.put(Symbol.ret(), variable(cs.v3));
+        mapping.put(new Return<>(), variable(cs.v3));
 
         // a typical constraint for an "add" method: @return >= x, @return >= y
         Stream<SigConstraint<Level>> sig =
-                Stream.of(leS(s1, Symbol.ret()), leS(s2, Symbol.ret()));
+                Stream.of(leS(s1, new Return<>()), leS(s2, new Return<>()));
         ConstraintSet<Level> sigAsCSet =
                 makeNaive(Interop.asJavaStream((makeSignature(2, sig.collect(toList()), Effects.emptyEffect())
                         .constraints.toTypingConstraints(mapping))).collect(Collectors.toSet()));

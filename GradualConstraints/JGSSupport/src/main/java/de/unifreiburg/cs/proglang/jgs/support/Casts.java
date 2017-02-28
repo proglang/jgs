@@ -25,7 +25,7 @@ public class Casts {
     public static void castCxEnd(){}
 
     /**
-     * Casts whose conversion is manually specified in an external json file (option --cast-methods of JGSCheck).
+     * ACasts whose conversion is manually specified in an external json file (option --cast-methods of JGSCheck).
      *
      * They have to be defined and listed in the --cast-methods file for every domain.
      * (As this is a lot of work, it is recommended to use the generic casts above)

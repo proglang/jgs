@@ -5,7 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVarViews.{Cx, Internal, Pa
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
 import de.unifreiburg.cs.proglang.jgs.constraints.{CTypeViews, _}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Lit, Pub, TypeView}
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var
+import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars
 import de.unifreiburg.cs.proglang.jgs.signatures.FieldTable
 import de.unifreiburg.cs.proglang.jgs.typing.EnvMap
 import soot.{Local, SootField}
@@ -50,7 +50,7 @@ class TypingUtils[Level] (secdomain : SecDomain[Level]){
 
   def varTypingFromEnvMap(envMap : EnvMap, constraints : ConstraintSet[Level]) : VarTyping[Level] = {
     def get(typing : EnvMap.MultiEnv, instantiation: Instantiation[Level], l: Local) = {
-      val tvs = typing.getOrElse(Var.fromLocal(l), Set())
+      val tvs = typing.getOrElse(Vars.fromLocal(l), Set())
       val lbs = for { tv <- tvs ; lb <- lowerBoundLiteralsOrParams(constraints, tv, instantiation) } yield lb
       joinLowerBounds(lbs)
     }

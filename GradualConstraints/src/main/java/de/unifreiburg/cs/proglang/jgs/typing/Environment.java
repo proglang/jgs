@@ -5,7 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar;
-import de.unifreiburg.cs.proglang.jgs.jimpleutils.Var;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
 import scala.Option;
 
 import java.util.*;

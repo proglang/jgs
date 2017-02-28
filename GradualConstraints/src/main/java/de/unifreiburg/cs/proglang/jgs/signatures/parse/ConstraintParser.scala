@@ -5,6 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.signatures
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSigConstraint
 import de.unifreiburg.cs.proglang.jgs.signatures.SigConstraint
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
 
 import scala.util.Try
 import scala.util.parsing.combinator.RegexParsers

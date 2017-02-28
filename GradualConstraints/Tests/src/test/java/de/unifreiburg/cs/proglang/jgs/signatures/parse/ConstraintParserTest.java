@@ -1,8 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.signatures.parse;
 
-import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol$;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -13,9 +13,6 @@ import scala.util.parsing.combinator.Parsers;
 import java.util.Optional;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.literal;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.param;
-import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.ret;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -78,18 +75,18 @@ public class ConstraintParserTest {
     public void test() throws Exception {
         assertThat(parsers.constraintKindParser(), parses("<=", ConstraintKind.LE));
         assertThat(parsers.constraintKindParser(), parses("~", ConstraintKind.COMP));
-        assertThat(parsers.symbolParser(), parses("HIGH", literal(THIGH)));
-        assertThat(parsers.symbolParser(), parses("?", literal(DYN)));
-        assertThat(parsers.symbolParser(), parses("@ret", ret()));
-        assertThat(parsers.symbolParser(), parses("@1", param(1)));
+        assertThat(parsers.symbolParser(), parses("HIGH", Symbol$.MODULE$.literal(THIGH)));
+        assertThat(parsers.symbolParser(), parses("?", Symbol$.MODULE$.literal(DYN)));
+        assertThat(parsers.symbolParser(), parses("@ret", Symbol$.MODULE$.ret()));
+        assertThat(parsers.symbolParser(), parses("@1", Symbol$.MODULE$.param(1)));
         assertThat(parsers.parse(parsers.constraintParser(), "HIGH <= LOW").get(),
-                   is(equalTo(leS(literal(THIGH), literal(TLOW)))));
+                   is(equalTo(leS(Symbol$.MODULE$.literal(THIGH), Symbol$.MODULE$.literal(TLOW)))));
         assertThat(parsers.parse(parsers.constraintParser(), "? <= LOW").get(),
-                   is(equalTo(leS(literal(DYN), literal(TLOW)))));
+                   is(equalTo(leS(Symbol$.MODULE$.literal(DYN), Symbol$.MODULE$.literal(TLOW)))));
         assertThat(parsers.parse(parsers.constraintParser(), ("@1 <= LOW")).get(),
-                   is(equalTo(leS(param(1), literal(TLOW)))));
+                   is(equalTo(leS(Symbol$.MODULE$.param(1), Symbol$.MODULE$.literal(TLOW)))));
         assertThat(parsers.parse(parsers.constraintParser(), ("@ret <= @2")).get(),
-                   is(equalTo(leS(ret(), param(2)))));
+                   is(equalTo(leS(Symbol$.MODULE$.ret(), Symbol$.MODULE$.param(2)))));
     }
 
 

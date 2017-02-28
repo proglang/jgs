@@ -4,6 +4,8 @@ import de.unifreiburg.cs.proglang.jgs.constraints.CTypes;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraint;
 import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind;
 import de.unifreiburg.cs.proglang.jgs.constraints.Constraints;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol;
+import static de.unifreiburg.cs.proglang.jgs.signatures.Symbols.*;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +27,8 @@ public class SigConstraint<Level> {
     }
 
     public Constraint<Level> toTypingConstraint(Map<Symbol<Level>, CTypes.CType<Level>> tvarMapping) {
-        return Constraints.make(kind, lhs.toCType(tvarMapping),
-                                rhs.toCType(tvarMapping));
+        return Constraints.make(kind, symbolToCType(tvarMapping, lhs),
+                                symbolToCType(tvarMapping, rhs));
     }
 
     public List<Symbol<Level>> symbols() {

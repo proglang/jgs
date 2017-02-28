@@ -1,7 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars
-import de.unifreiburg.cs.proglang.jgs.signatures.Signature
+import de.unifreiburg.cs.proglang.jgs.signatures
+import de.unifreiburg.cs.proglang.jgs.signatures.{Param, Signature}
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.ConstraintParser
 import soot.SootMethod
@@ -10,15 +11,15 @@ import soot.tagkit._
 import scala.collection.JavaConverters._
 
 /**
-  * Created by fennell on 1/22/16.
+  * Utilities for extracting information from SootMethods.
   */
 object Methods {
   def parameters[Level](method: SootMethod): Iterator[Param[Level]] = {
-    (for (pos <- 0 until method.getParameterCount) yield param[Level](pos)).iterator
+    (for (pos <- 0 until method.getParameterCount) yield signatures.Symbol.param[Level](pos)).iterator
   }
 
   def symbolMapForMethod[Level](tvars: TypeVars, method: SootMethod): java.util.Map[Param[Level], TypeVars.TypeVar] = {
-    Methods.parameters(method).map((p : Param[Level]) => p -> tvars.param(Var.fromParam(p))).toMap.asJava
+    Methods.parameters(method).map((p : Param[Level]) => p -> tvars.param(Vars.fromParam(p.position))).toMap.asJava
   }
 
   def extractAnntotation[T](annotationType: String, extract: AnnotationElem => T, tags: Iterator[Tag]): Iterator[T] = {
