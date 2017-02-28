@@ -43,7 +43,7 @@ lazy val GradualConstraints =
 
 lazy val DynamicAnalyzer =
   (project in file("DynamicAnalyzer")).
-    dependsOn(InstrumentationSupport).
+    dependsOn(InstrumentationSupport, JGSSupport).
     settings(commonSettings:_*).
     settings(
       libraryDependencies ++= dynAnalyzerDeps,
@@ -82,4 +82,6 @@ lazy val InstrumentationSupport =
     )
 
 
-lazy val JGSSupport = project.settings(setScalaVersion)
+lazy val JGSSupport =
+  (project in file("GradualConstraints/JGSSupport")).
+    settings(setScalaVersion)

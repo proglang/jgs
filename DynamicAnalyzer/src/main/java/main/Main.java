@@ -2,9 +2,8 @@ package main;
 
 import analyzer.level1.BodyAnalyzer;
 import analyzer.level2.storage.LowMediumHigh;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
@@ -36,6 +35,7 @@ public class Main {
 	 */
 	public static void main(String[] args)
 	{
+
 		execute(args, false, null, null, null, false, 0);
 	}
 
@@ -67,6 +67,14 @@ public class Main {
 								MIMap<Types> instantiationMap,
 								boolean controllerIsActive,
 								int expectedException) {
+
+		// Example instantiation of a instrumentation.Casts object
+		// TODO: Just an example... "execute" should be parameterized properly.
+		Casts<LowMediumHigh.Level> casts =
+				new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
+										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.cast",
+										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
+										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
 
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
