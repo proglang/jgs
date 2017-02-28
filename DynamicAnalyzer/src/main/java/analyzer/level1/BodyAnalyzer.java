@@ -169,7 +169,8 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
 		// Add all locals to LocalMap except the locals which 
 		// are inserted for analysis purposes.
-		Iterator<Local> lit = locals.iterator();
+		// locals are not added anymore all at the beginning. Instead, they are added only when needed.
+		/*Iterator<Local> lit = locals.iterator();
 		while (lit.hasNext()) {
 			Local item = lit.next();
 			if (!(item.getName() == "local_for_Strings") 
@@ -179,9 +180,9 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 					&& !(item.getName() == "local_for_Objects") 
 					&& !(item.getName() == "local_level")
 					&& !(item.getName() == "hs")) {
-				JimpleInjector.addLocal(item);
+				//JimpleInjector.addLocal(item);
 			}
-		}
+		}*/
 
 				
 				

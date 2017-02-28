@@ -297,14 +297,12 @@ public class HandleStmt {
 	 * @return SecurityLevel
 	 */
 	protected Object getLocalLevel(String signature) {
-		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
 		return localmap.getLevel(signature);
 	}
 	
 	public void makeLocal(String signature, String level) {
 		logger.info("Set level of local " + signature + " to " + level);
-		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, SecurityLevel.readLevel(level));
 		logger.info("New securitylevel of local " + signature + " is "
@@ -324,7 +322,6 @@ public class HandleStmt {
 //	public void makeLocalHigh(String signature) {
 //		logger.info("Set level of local " + signature
 //				+ " to SecurityLevel.top()");
-//		handleStatementUtils.checkIfLocalExists(signature);
 //		localmap.initializeLocal(signature);
 //		localmap.setLevel(signature, SecurityLevel.top());
 //		logger.info("New securitylevel of local " + signature + " is "
@@ -341,7 +338,6 @@ public class HandleStmt {
 //	 */
 //	public void makeLocalLow(String signature) {
 //		logger.info("Set level of " + signature + " to SecurityLevel.bottom()");
-//		handleStatementUtils.checkIfLocalExists(signature);
 //		localmap.setLevel(signature, SecurityLevel.bottom());
 //		logger.info("New securitylevel: " + localmap.getLevel(signature));
 //	}
@@ -440,7 +436,6 @@ public class HandleStmt {
 	 */
 	public Object assignArgumentToLocal(int pos, String signature) {
         controller.abortIfActiveAndExceptionIsType(ExpectedException.ASSIGN_ARG_TO_LOCAL.getVal());
-		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.setLevel(signature,
 				handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
 		// if not initialized, initialize it:
@@ -457,7 +452,6 @@ public class HandleStmt {
 	 *            signature of local
 	 */
 	public void assignReturnLevelToLocal(String signature) {
-		handleStatementUtils.checkIfLocalExists(signature);
 		handleStatementUtils.checkLocalPC(signature);
 		setLevelOfLocal(signature, objectmap.getActualReturnLevel());
 		objectmap.setActualReturnLevel(SecurityLevel.top());
@@ -504,7 +498,6 @@ public class HandleStmt {
 				+ " in LocalMap");
 		ArrayList<Object> levelArr = new ArrayList<Object>();
 		for (String el : arguments) {
-			handleStatementUtils.checkIfLocalExists(el);
 			localmap.initializeLocal(el);
 			levelArr.add(localmap.getLevel(el));
 		}
@@ -626,7 +619,6 @@ public class HandleStmt {
 	public Object setLevelOfLocal(String signature, Object securitylevel) {
 		logger.log(Level.INFO, "Set level of local {0} to {1}", new Object[] {
 				signature, securitylevel });
-		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.initializeLocal(signature);
 		localmap.setLevel(signature, securitylevel);
 		return localmap.getLevel(signature);

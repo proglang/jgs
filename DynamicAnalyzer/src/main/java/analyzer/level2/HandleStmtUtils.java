@@ -182,19 +182,6 @@ public class HandleStmtUtils {
 		return res;
 	}
 	
-
-	/**
-	 * Check if given local exists in localmap. 
-	 * Throw InternalAanalyzerException if not.
-	 * @param signature
-	 */
-	protected void checkIfLocalExists(String signature) {
-		if (!localmap.contains(signature)) {
-			throw new InternalAnalyzerException("Missing local " 
-				+ signature + " in LocalMap");
-		}
-	}
-	
 	/**
 	 * Called when trying to add a new local to localmap via addLocal(String signature)
 	 * Throws InternalAnalyzerException if already present
