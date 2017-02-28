@@ -1,6 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.jimpleutils;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
+import de.unifreiburg.cs.proglang.jgs.constraints.UnknownTypeException;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts.ValueCast;
@@ -68,10 +70,10 @@ public class CastsFromMappingTest {
         };
     }
 
-    private static <Level> Map<String, CastUtils.TypeViewConversion<Level>> parseConversionMap(AnnotationParser<TypeView<Level>> typeParser, Map<String,String> casts) {
+    private static <Level> Map<String, CastUtils.TypeViewConversion<Level>> parseConversionMap(TypeDomain<Level> typeDomain, Map<String,String> casts) {
         Map<String, CastUtils.TypeViewConversion<Level>> result = new HashMap<>();
         for (Map.Entry<String, String> e : casts.entrySet()) {
-           result.put(e.getKey(), CastUtils.<Level>parseConversion(typeParser, e.getValue()).get());
+           result.put(e.getKey(), CastUtils.<Level>parseConversion(typeDomain, e.getValue()).get());
         }
         return result;
     }
@@ -100,8 +102,8 @@ public class CastsFromMappingTest {
         String cxCastEnd = callCxCastEnd.getMethod().toString();
 
         ACasts<Level> casts =
-                CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types.typeParser(), valueCasts),
-                                              parseConversionMap(types.typeParser(), cxCasts),
+                CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types, valueCasts),
+                                              parseConversionMap(types, cxCasts),
                                               cxCastEnd);
 
         assertThat(String.format("wrong conversion for %s", callCxCastHighToDyn.getMethod().toString()), Interop.asJavaOptional(casts.detectValueCastFromCall(callCastHighToDyn)),
@@ -111,19 +113,19 @@ public class CastsFromMappingTest {
         assertThat(casts.detectValueCastFromCall(callCxCastHighToDyn), is(Success.apply(Option.empty())));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=UnknownTypeException.class)
     public void testInvalid() {
         Map<String,String> valueCasts = new HashMap<>();
-        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castHighToDyn", "H ~> ?");
-        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castLowToDyn", "L ~> ?");
+        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castHighToDyn", "H ~> ?");
+        valueCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castLowToDyn", "L ~> ?");
         Map<String,String> cxCasts = new HashMap<>();
-        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castCxHighToDyn", "H ~> ?");
-        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.ACasts.castCxLowToDyn", "L ~> ?");
-        String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.ACasts.castCxEnd";
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxHighToDyn", "H ~> ?");
+        cxCasts.put("de.unifreiburg.cs.proglang.jgs.support.Casts.castCxLowToDyn", "L ~> ?");
+        String cxCastEnd = "de.unifreiburg.cs.proglang.jgs.support.Casts.castCxEnd";
 
         ACasts<Level> casts =
-                CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types.typeParser(), valueCasts),
-                                                       parseConversionMap(types.typeParser(), cxCasts),
+                CastsFromMapping$.MODULE$.<Level>apply(parseConversionMap(types, valueCasts),
+                                                       parseConversionMap(types, cxCasts),
                                                        cxCastEnd);
 
     }

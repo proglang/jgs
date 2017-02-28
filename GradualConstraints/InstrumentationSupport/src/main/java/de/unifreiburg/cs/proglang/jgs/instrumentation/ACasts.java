@@ -14,9 +14,60 @@ import soot.jimple.Stmt;
  * <p>
  * Created by fennell on 11/13/15.
  */
-public abstract class ACasts<Level> {
+public abstract class ACasts<Level> implements Casts<Level> {
 
-    public static class CxCast<Level> {
+    @Override
+    public boolean isValueCast(Stmt s) {
+        try {
+            return detectValueCastFromStmt(s).isDefined();
+        } catch (TypingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public Conversion<Level> getValueCast(Stmt s) {
+        try {
+            Option<ValueCast<Level>> mcast = detectValueCastFromStmt(s);
+            if (mcast.isDefined()) {
+                return mcast.get();
+            } else {
+                throw new IllegalArgumentException("No value cast at statement: " + s);
+            }
+        } catch (TypingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public boolean isCxCastStart(Stmt s) {
+        try {
+            return detectContextCastStartFromStmt(s).isDefined();
+        } catch (TypingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public Conversion<Level> getCxCast(Stmt s) {
+            try {
+                Option<CxCast<Level>> mcast = detectContextCastStartFromStmt(s);
+                if (mcast.isDefined()) {
+                    return mcast.get();
+                } else {
+                    throw new IllegalArgumentException("No context cast starts at statement: " + s);
+                }
+            } catch (TypingException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+    @Override
+    public boolean isCxCastEnd(Stmt s) {
+        throw new RuntimeException("Not Implemented!");
+    }
+
+    public static class CxCast<Level> implements Conversion<Level> {
         public final TypeView<Level> sourceType;
         public final TypeView<Level> destType;
 
@@ -52,9 +103,19 @@ public abstract class ACasts<Level> {
             result = 31 * result + (destType != null ? destType.hashCode() : 0);
             return result;
         }
+
+        @Override
+        public Type<Level> getSrcType() {
+            return this.sourceType;
+        }
+
+        @Override
+        public Type<Level> getDestType() {
+            return this.destType;
+        }
     }
 
-    public static class ValueCast<Level> {
+    public static class ValueCast<Level> implements Conversion<Level> {
         public final TypeView<Level> sourceType;
         public final TypeView<Level> destType;
         public final Option<Var<?>> value;
@@ -105,6 +166,31 @@ public abstract class ACasts<Level> {
             result = 31 * result + (value != null ? value.hashCode() : 0);
             return result;
         }
+
+        @Override
+        public Type<Level> getSrcType() {
+            return this.sourceType;
+        }
+
+        @Override
+        public Type<Level> getDestType() {
+            return this.destType;
+        }
+    }
+
+    public Option<ValueCast<Level>> detectValueCastFromStmt(Stmt s) throws TypingException {
+        if (s.containsInvokeExpr()) {
+            InvokeExpr e = s.getInvokeExpr();
+            if (e instanceof StaticInvokeExpr) {
+                Try<Option<ValueCast<Level>>> result = this.detectValueCastFromCall((StaticInvokeExpr) e);
+                if (result.isSuccess()) {
+                    return result.get();
+                } else {
+                    throw new TypingException(result.failed().get().getMessage());
+                }
+            }
+        }
+        return Option.empty();
     }
 
     public Option<CxCast<Level>> detectContextCastStartFromStmt(Stmt s)

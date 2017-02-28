@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts.{CxCast, ValueCast}
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils.TypeViewConversion
@@ -12,13 +13,13 @@ import scala.util.{Failure, Success, Try}
 /**
   * Cast detectors that read their conversion from String constants
   */
-class CastsFromConstants[Level](typeParser: AnnotationParser[TypeView[Level]],
+class CastsFromConstants[Level](typeDomain: TypeDomain[Level],
                                 valueCast: String,
                                 cxCastBegin: String, cxCastEnd: String)
 extends ACasts[Level] {
   override def detectValueCastFromCall(e: StaticInvokeExpr): Try[Option[ValueCast[Level]]] = {
     def cont(e : StaticInvokeExpr) : Try[Option[ValueCast[Level]]] =
-          for { conv <- CastsFromConstants.getConversionFromCall(typeParser, e)
+          for { conv <- CastsFromConstants.getConversionFromCall(typeDomain, e)
             v = CastsFromConstants.getVariableFromCall(e)
           } yield Some(new ValueCast[Level](conv.source, conv.dest, v))
     CastsFromConstants.detectForMatchingMethod(valueCast, e, cont)
@@ -30,7 +31,7 @@ extends ACasts[Level] {
 
   override def detectContextCastStartFromCall(e: StaticInvokeExpr): Try[Option[CxCast[Level]]] = {
     CastsFromConstants.detectForMatchingMethod(cxCastBegin, e, e => {
-      for (conv <- CastsFromConstants.getConversionFromCall(typeParser, e))
+      for (conv <- CastsFromConstants.getConversionFromCall(typeDomain, e))
         yield Some(new CxCast[Level](conv.source, conv.dest))
     })
   }
@@ -38,7 +39,7 @@ extends ACasts[Level] {
 
 object CastsFromConstants {
 
-  def getConversionFromCall[Level](typeParser : AnnotationParser[TypeView[Level]], expr: StaticInvokeExpr) : Try[TypeViewConversion[Level]] = {
+  def getConversionFromCall[Level](typeDomain : TypeDomain[Level], expr: StaticInvokeExpr) : Try[TypeViewConversion[Level]] = {
     val maybeConv = for {
       e <- Some(expr)
       if e.getArgCount >= 1
@@ -46,7 +47,7 @@ object CastsFromConstants {
     } yield sConst.value
 
     maybeConv match {
-      case Some(convString) => CastUtils.parseConversion(typeParser, convString)
+      case Some(convString) => CastUtils.parseConversion(typeDomain, convString)
       case None => Failure(new IllegalArgumentException(s"No conversion parameter in cast method `${expr}'. " +
         s"Expected a string as first argument."))
     }

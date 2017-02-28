@@ -52,34 +52,27 @@ public class TypeDomain<Level> {
     /**
      * A parser for types.
      *
-     * It reads static types like the secdomain.
+     * It works analogously to SecDomain.readLevel,
+     * so an Exception is thrown when the type cannot be parsed.
+     *
+     *  static types are parsed by SecDomain.readLevel.
      * "?" reads as the dynamic type.
      * "pub" reads as the public type.
-     * @return
      */
-    public AnnotationParser<TypeView<Level>> typeParser() {
-        final TypeDomain<Level> self = this;
-        return new AnnotationParser<TypeView<Level>>() {
-            @Override
-            public Option<TypeView<Level>> parse(String s) {
-                if (s.equals("?")) {
-                    return Option.apply(dyn());
-                } else if (s.equals("pub")) {
-                    return Option.apply(pub());
-                } else {
-                    // TODO: we remove the levelParser from SecDomain, so we should remove the typeParser here.
-                    try {
-                        Level level = secDomain.readLevel(s);
-                        return Option.apply(self.level(level));
-                    } catch (UnknownSecurityLevelException e){
-                        return Option.empty();
-                    }
-                }
+    public TypeView<Level> readType(String s) {
+        if (s.equals("?")) {
+            return dyn();
+        } else if (s.equals("pub")) {
+            return pub();
+        } else {
+            try {
+                Level level = secDomain.readLevel(s);
+                return this.level(level);
+            } catch (UnknownSecurityLevelException e){
+                throw new UnknownTypeException(s);
             }
-
-        };
+        }
     }
-
 
     /**
      * Enumerates all types by prepending "pub" and "dyn" to the security

@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.signatures.parse
 
-import de.unifreiburg.cs.proglang.jgs.constraints.ConstraintKind
+import de.unifreiburg.cs.proglang.jgs.constraints.{ConstraintKind, TypeDomain}
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.signatures
 import de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSigConstraint
@@ -10,7 +10,7 @@ import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
 import scala.util.Try
 import scala.util.parsing.combinator.RegexParsers
 
-class ConstraintParser[Level](val typeParser : AnnotationParser[TypeView[Level]])
+class ConstraintParser[Level](val typeDomain : TypeDomain[Level])
   extends RegexParsers {
 
 
@@ -24,7 +24,9 @@ class ConstraintParser[Level](val typeParser : AnnotationParser[TypeView[Level]]
     val retParser: Parser[signatures.Symbol[Level]] = "ret" ^^^ signatures.Symbol.ret()
     val paramParser : Parser[signatures.Symbol[Level]] = "[0-9]+".r ^^ { d => signatures.Symbol.param(d.toInt) }
     val literalParser : Parser[signatures.Symbol[Level]] = "\\S+".r flatMap {
-      s => typeParser.parse(s).map(t => success(signatures.Symbol.literal(t))).getOrElse(failure(s"Type parser: unable to parse `$s'"))
+      s => Try(typeDomain.readType(s))
+        .map(t => success(signatures.Symbol.literal(t)))
+        .getOrElse(failure(s"Type parser: unable to parse `$s'"))
         }
     "@" ~> (retParser | paramParser) | literalParser
   }

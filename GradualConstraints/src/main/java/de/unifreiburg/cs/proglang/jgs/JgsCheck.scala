@@ -211,10 +211,13 @@ object JgsCheck {
           yield {
             val secAnnotations: List[String] =
               Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.iterator).toList
-            val mt: Option[TypeView[Level]] =
-              for (typeStr <- getSingleAnnotation(secAnnotations, new IllegalArgumentException("Found more than one security level on " + f.getName()));
-                   t <- types.typeParser().parse(typeStr))
+            val mt: Option[TypeView[Level]] = {
+              val moreThanOneErr = new IllegalArgumentException("Found more than one security level on " + f.getName())
+              for { typeStr <- getSingleAnnotation(secAnnotations, moreThanOneErr)
+                    t <- Try(types.readType(typeStr)).toOption
+                  }
                 yield t
+            }
             val t: TypeView[Level] = mt.getOrElse(types.pub())
             (f, t)
           }).toMap
@@ -294,7 +297,11 @@ object JgsCheck {
           JField(name, JString(typeString)) <- entries
           f <- Try(s.getField(name)).map(f => List(f)).getOrElse(List())
           fieldType <- {
-            val t : Try[TypeView[Level]] = asTry(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}", types.typeParser().parse(typeString))
+            val t : Try[TypeView[Level]] =
+              asTry(
+                new RuntimeException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}"),
+                types.readType(typeString)
+              )
             skipAndReportFailure(log, "", t)
           }
         } yield {
@@ -346,7 +353,7 @@ object JgsCheck {
           for {
             (m, convString) <- casts
             conv <- skipAndReportFailure(log, s"Error parsing conversion for cast-method ${m}",
-              CastUtils.parseConversion(types.typeParser(), convString))
+              CastUtils.parseConversion(types, convString))
           } yield m -> conv
         }
         CastsFromMapping(makeCastMap(valueCasts), makeCastMap(contextCasts), contextCastEnd)
@@ -359,7 +366,7 @@ object JgsCheck {
             case _ => throw new IllegalArgumentException(s"Cannot find string entry ${key} in cast-method file ${opt.castMethods}")
           }
         new CastsFromConstants(
-          types.typeParser(),
+          types,
           getString("valuecast-generic"),
           getString("contextcast-generic"),
           getString("contextcastend")
@@ -438,17 +445,16 @@ object JgsCheck {
     private def parseConstraints(constraintStrings: List[String]): Try[List[SigConstraint[Level]]] =
     // TODO: good error message when parsing fails
       Try(constraintStrings.map(s => {
-        new ConstraintParser(types.typeParser()).parseConstraints(s) match {
+        new ConstraintParser(types).parseConstraints(s) match {
           case Failure(exception) => throw exception
           case Success(value) => value
         }
       }))
 
     private def parseEffects(effectStrings: List[String]): Try[List[TypeView[Level]]] =
-      Try(effectStrings.map(s => types.typeParser().parse(s) match {
-        case Some(t) => t
-        case None => throw new RuntimeException(String.format("Error parsing type %s", s))
-      }))
+      Try(effectStrings.map(
+        s => asTry(new RuntimeException(String.format("Error parsing type %s", s)), types.readType(s)).get
+      ))
   }
 
   private def getSingleAnnotation[A](annotations: List[A], tooManyError: RuntimeException): Option[A] =

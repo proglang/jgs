@@ -22,7 +22,7 @@ public class ConstraintParserTest {
 
     @Before
     public void setUp() {
-        parsers = new ConstraintParser<Level>(types.typeParser());
+        parsers = new ConstraintParser<Level>(types);
     }
 
     private <T> T parse(Parsers.Parser<T> parser, String input) throws Exception {

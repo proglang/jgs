@@ -17,7 +17,7 @@ import scala.util.Success
 class CastsFromConstantsTest extends FlatSpec with Matchers{
   import CastsFromConstantsTest._
 
-  val casts = new CastsFromConstants(types.typeParser(),"<testCasts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
+  val casts = new CastsFromConstants(types,"<testCasts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
           "<testCasts: void castCx(java.lang.String)>", "<testCasts: void castCxEnd()>")
 
 

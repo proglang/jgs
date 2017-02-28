@@ -8,7 +8,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains
         .UnknownSecurityLevelException;
 import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import scala.Option;
 
 import java.util.Iterator;
@@ -32,13 +34,18 @@ public class TypeDomainTest {
         assertTrue("PUB <= THIGH", tle(PUB, THIGH));
     }
 
+    @Rule public ExpectedException thrown = ExpectedException.none();
+    @Test public void testParserFail() {
+        thrown.expect(UnknownTypeException.class);
+        types.readType("lkjas");
+    }
+
     @Test
-    public void testParser() {
-        assertThat(types.typeParser().parse("LOW"), is(equalTo(Option.apply(TLOW))));
-        assertThat(types.typeParser().parse("HIGH"), is(equalTo(Option.apply(THIGH))));
-        assertThat(types.typeParser().parse("lkjas"), is(equalTo(Option.empty())));
-        assertThat(types.typeParser().parse("pub"), is(equalTo(Option.apply(PUB))));
-        assertThat(types.typeParser().parse("?"), is(equalTo(Option.apply(DYN))));
+    public void testParserSuccess() {
+        assertThat(types.readType("LOW"), is(equalTo((TLOW))));
+        assertThat(types.readType("HIGH"), is(equalTo((THIGH))));
+        assertThat(types.readType("pub"), is(equalTo(PUB)));
+        assertThat(types.readType("?"), is(equalTo(DYN)));
         // see that special types like ? and pub take precendence
         SecDomain<Level> alternativeDomain = new SecDomain<Level>() {
             @Override
@@ -91,7 +98,7 @@ public class TypeDomainTest {
             }
         };
         TypeDomain<Level> alternativeTypeDomain = new TypeDomain<Level>(alternativeDomain);
-        assertThat(alternativeTypeDomain.typeParser().parse("?"), is(equalTo(Option.apply(alternativeTypeDomain.dyn()))));
+        assertThat(alternativeTypeDomain.readType("?"), is(equalTo(alternativeTypeDomain.dyn())));
     }
 
 }

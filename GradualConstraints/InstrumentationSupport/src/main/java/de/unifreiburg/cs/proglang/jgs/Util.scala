@@ -21,6 +21,12 @@ object Util {
 
   def asTry[A](msg : String, maybeVal : Option[A]) : Try[A] = asTry(new RuntimeException(msg), maybeVal)
 
+  def asTry[A](exc : RuntimeException, r : => A) : Try[A] =
+    Try(r) match {
+      case Success(a) => Success(a)
+      case  Failure(e) => Failure(exc)
+    }
+
 
   def skipAndReportFailure[A](log : Logger, msg : String, maybeValue : Try[A]) : Option[A] =
     maybeValue match {
