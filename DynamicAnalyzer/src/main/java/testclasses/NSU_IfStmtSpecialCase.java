@@ -3,7 +3,7 @@ package testclasses;
 import utils.analyzer.HelperClass;
 
 /**
- * Behavoir which is not consistent with NSU Policy.
+ * Behavior which is not consistent with NSU Policy.
  * Does not pose security issue. Labeled as "desired behavoir" for now.
  * @author Nicolas Müller
  *

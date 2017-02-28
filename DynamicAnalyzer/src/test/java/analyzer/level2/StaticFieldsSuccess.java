@@ -28,6 +28,7 @@ public class StaticFieldsSuccess {
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST STARTED");
 
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		hs.addObjectToObjectMap(this.getClass());
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
@@ -45,6 +46,7 @@ public class StaticFieldsSuccess {
 		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD SUCCESS TEST STARTED");
 
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		hs.addObjectToObjectMap(this.getClass());
 		

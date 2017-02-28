@@ -61,8 +61,40 @@ public class ResultsServer {
         }
     }
 
+    // seriously?
+    private static void getCustom(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses,
+                                  scala.collection.immutable.Map<scala.Tuple2<java.lang.String,java.lang.String>, scala.Tuple2<java.lang.Object,java.lang.Object>> customTyping) {
 
-    // ========================= SET CX / Instantiation ===========================
+        for (String s : allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm : sootClass.getMethods()) {
+                Body b = sootClass.getMethodByName(sm.getName()).retrieveActiveBody();
+                for (Unit u: b.getUnits()) {
+                    Stmt stmt = (Stmt) u;
+                    for (Local l: b.getLocals()) {
+                        mslMap.put(sm, stmt, l, new BeforeAfterContainer<>(
+                                CustomTyping.isDynamicBefore(customTyping, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>(),
+                                CustomTyping.isDynamicAfter(customTyping, stmt.toString(), l.getName() ) ? new Dynamic<>() : new Public<>()));
+                    }
+                }
+            }
+        }
+    }
+
+    // public custom wrappers
+
+    public static void custom_lowPlusPublic_AllDynamic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
+        getCustom(mslMap, allClasses, CustomTyping.LowPlusPublic_allDynamic());
+    }
+
+
+    public static void custom_lowPlugPublic(MSLMap<BeforeAfterContainer> mslMap, Collection<String> allClasses) {
+        getCustom(mslMap, allClasses, CustomTyping.LowPlusPublic());
+    }
+
+    // ========================= SET CX ===========================
     /**
      * Creates a mapping (methods, statements) => Dynamic
      * @param msMap            Map to fill
@@ -97,6 +129,36 @@ public class ResultsServer {
                 for (Unit u: b.getUnits()) {
                     Stmt stmt = (Stmt) u;
                     msMap.put(sm, stmt, new Public<>());
+                }
+            }
+        }
+    }
+
+
+    // =============== SET INSTANTIATION ==================
+    public static void setDynamic(MIMap<Types> miMap, Collection<String> allClasses) {
+        for (String s: allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm: sootClass.getMethods()) {
+                // add return type after last parameter!
+                for (int parameter = 0; parameter <= sm.getParameterCount(); parameter++) {
+                    miMap.put(sm, parameter, new Dynamic());
+                }
+            }
+        }
+    }
+
+    public static void setPublic(MIMap<Types> miMap, Collection<String> allClasses) {
+        for (String s: allClasses) {
+            SootClass sootClass = Scene.v().loadClassAndSupport(s);
+            sootClass.setApplicationClass();
+
+            for (SootMethod sm: sootClass.getMethods()) {
+                // add return type after last parameter!
+                for (int parameter = 0; parameter <= sm.getParameterCount(); parameter++) {
+                    miMap.put(sm, parameter, new Public());
                 }
             }
         }

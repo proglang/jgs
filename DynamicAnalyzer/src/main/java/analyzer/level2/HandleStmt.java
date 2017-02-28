@@ -4,6 +4,9 @@ import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L2Logger;
+import utils.staticResults.superfluousInstrumentation.ControllerFactory;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
+import utils.staticResults.superfluousInstrumentation.PassivController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import java.util.logging.Logger;
  * 
  * @author Regina Koenig (2015)
  */
+@SuppressWarnings("ALL")
 public class HandleStmt {
 
 	private static final Logger logger = L2Logger.getLogger();
@@ -23,7 +27,7 @@ public class HandleStmt {
 	private LocalMap localmap;
 	private static ObjectMap objectmap;
 	private HandleStmtUtils handleStatementUtils;
-
+	PassivController controller;
 	/**
 	 * This must be called at the beginning of every method in the analyzed
 	 * code. It creates a new LocalMap for the method and adjusts the
@@ -33,10 +37,17 @@ public class HandleStmt {
 		logger.log(Level.INFO, "Create new HandleStmt instance");
 		localmap = new LocalMap();
 		objectmap = ObjectMap.getInstance();
-		handleStatementUtils = new HandleStmtUtils(localmap, objectmap);
+	}
 
-		objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
-				objectmap.getGlobalPC(), localmap.getLocalPC()));
+	@SuppressWarnings("unused")
+	/**
+	 * Initialise the HandleStmtUtils. Use also to specify if, and what kind of exception we expect
+	 */
+    public void initHandleStmtUtils(boolean controllerIsActive, int exptectedException) {
+		this.controller = ControllerFactory.returnSuperfluousInstrumentationController(controllerIsActive, exptectedException);
+		handleStatementUtils = new HandleStmtUtils(localmap, objectmap, this.controller);
+        objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
+                objectmap.getGlobalPC(), localmap.getLocalPC()));
 	}
 
 	/**
@@ -428,6 +439,7 @@ public class HandleStmt {
 	 * @return new SecurityLevel of local
 	 */
 	public Object assignArgumentToLocal(int pos, String signature) {
+        controller.abortIfActiveAndExceptionIsType(ExpectedException.ASSIGN_ARG_TO_LOCAL.getVal());
 		handleStatementUtils.checkIfLocalExists(signature);
 		localmap.setLevel(signature,
 				handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
@@ -455,6 +467,7 @@ public class HandleStmt {
 	 * Set Returnlevel to SecurityLevel.bottom().
 	 */
 	public void returnConstant() {
+	    controller.abortIfActiveAndExceptionIsType(ExpectedException.RETURN_CONSTANT.getVal());
 		logger.log(Level.INFO, "Return a constant value.");
 		objectmap.setActualReturnLevel(handleStatementUtils
 				.joinWithLPC(SecurityLevel.bottom()));
@@ -482,7 +495,12 @@ public class HandleStmt {
 	 *            List of arguments
 	 */
 	public void storeArgumentLevels(String... arguments) {
-		logger.info("Store arguments " + Arrays.toString(arguments)
+		// unfortunately, when printing out constants, storeArgumentLevels is still added by the jimpleInjector.
+        // if we can change that needs to be investiaged, changing the central line 1096 in
+        // jimpleInjector.storeArgumentLevels:               dynamicArgsExist = true;
+        // we get tons of java.lang.verify errors...
+	    // controller.abortIfActiveAndExceptionIsType(ExpectedException.STORE_ARGUMENT_LEVELS.getVal());
+	    logger.info("Store arguments " + Arrays.toString(arguments)
 				+ " in LocalMap");
 		ArrayList<Object> levelArr = new ArrayList<Object>();
 		for (String el : arguments) {
@@ -542,6 +560,7 @@ public class HandleStmt {
 	 * @return security-level of the local.
 	 */
 	public Object joinLevelOfLocalAndAssignmentLevel(String local) {
+	    controller.abortIfActiveAndExceptionIsType(ExpectedException.JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL.getVal());
 		localmap.initializeLocal(local);
 		Object localLevel = localmap.getLevel(local);
 		objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(
@@ -549,7 +568,7 @@ public class HandleStmt {
 		logger.log(
 				Level.INFO,
 				"Set assignment-level to level "
-						+ objectmap.getAssignmentLevel());
+						+ objectmap.getAssignmentLevel() + " because of " + local);
 		return objectmap.getAssignmentLevel();
 	}
 
@@ -619,11 +638,13 @@ public class HandleStmt {
 	 * @param signature
 	 */
 	public void setReturnLevelAfterInvokeStmt(String signature) {
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.SET_RETURN_LEVEL_AFTER_INVOKE_STMT.getVal());
 		// in eigene methode des jimpleInjector
 	    // l := get level of left-hand-side
 	    // l := l joined with objectmap.actualReturnLevel
 	    // set level of left-hand-side to l AFTER
 		// unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.SET_RETURN_AFTER_INVOKE.getVal());
 		Object leftHandSideSecValue = localmap.getLevel(signature);
 		leftHandSideSecValue = handleStatementUtils.joinLevels(objectmap.getActualReturnLevel(), 
 				leftHandSideSecValue);
@@ -806,10 +827,11 @@ public class HandleStmt {
 	 * @param level				level which mustn't be exceeded
 	 */
 	public void checkThatLe(String signature, String level) {
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_LE.getVal());
 		logger.info("Check if " + signature + " is less/equal " + level);
 		if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))){
-			handleStatementUtils.abort("Pasad argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" + 
-			" which requres a security level of less/eqal " + level );
+			handleStatementUtils.abort("Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" +
+			" which requires a security level of less/equal " + level );
 		}
 	}
 
@@ -819,7 +841,9 @@ public class HandleStmt {
 	 * lessThan MEDIUM for SecurePrinter.printMedium(String s);
 	 * @param level		level the PC must be less/equal than.
 	 */
+	@SuppressWarnings("unused")
 	public void checkThatPCLe(String level) {
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_PC_LE.getVal());
 		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
 		if (!SecurityLevel.le(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
 			handleStatementUtils.abort("Invalid security context: PC must be less/eqal " + level + ", but PC was " + localmap.getLocalPC());

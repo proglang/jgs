@@ -12,14 +12,13 @@ public class ArrayRefSuccess {
 	public static void main(String[] args) {
 		String secret = read()[1];
 		String[] pub = {"x", "y", HelperClass.makeLow(secret)};
-		System.out.println(pub[2].toString());
+		System.out.println(pub[2]);
 	}
 
 	public static String[] read() {
 		String secret = "42";
 		secret = HelperClass.makeHigh(secret);
-		String[] arr = {"41", secret, "43"};
-		return arr;
+		return new String[]{"41", secret, "43"};
 	}
 	
 }

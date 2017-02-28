@@ -28,6 +28,7 @@ public class SwitchStmtFail {
 		LOGGER.log(Level.INFO, "SWITCH STMT FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		
 		hs.addLocal("int_x", SecurityLevel.top());
 		int x = 0;

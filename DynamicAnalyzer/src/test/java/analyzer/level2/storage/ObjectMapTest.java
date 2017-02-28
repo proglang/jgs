@@ -104,6 +104,7 @@ public class ObjectMapTest {
 		
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		ObjectMap m = ObjectMap.getInstance();
 		int numOfEl = m.getNumberOfElements();
 		hs.addObjectToObjectMap(this);

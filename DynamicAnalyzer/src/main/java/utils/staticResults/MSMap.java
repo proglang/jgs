@@ -35,10 +35,6 @@ public class MSMap<T> {
         return new CxTypingImpl(map.get(sm));
     }
 
-    public Instantiation getInst(SootMethod sm) {
-        return new InstantiationImpl(map.get(sm));
-    }
-
     public T get(SootMethod sm, Stmt stmt, Local l ) {
         boolean valuePresent = false;
         if (map.containsKey(sm)) {

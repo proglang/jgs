@@ -67,7 +67,10 @@ public class compileToJarTests {
     public void pathTestP() {
         String testFile = "NSUPolicy1";        // SHOULD BE NSUPolicy1
         File inputFile = new File(extPath.getAbsolutePath(), "/testclasses/" + testFile + ".java");
-        assertThat( "Input file cannot be found at " + inputFile.getAbsolutePath(), inputFile.exists(), is(Boolean.TRUE));
+
+        assertThat( "Input file cannot be found at " + inputFile.getAbsolutePath() +
+                ".\n Please note that this test requires the external file path to be manually set on your computer. " +
+                "See test.java.end2endtest.compilerToJarTests.", inputFile.exists(), is(Boolean.TRUE));
 
         main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", extPath.getAbsolutePath()});
         File outParent = new File(System.getProperty("user.dir"));
@@ -89,6 +92,11 @@ public class compileToJarTests {
     @Test
     public void pathTestPRelative() {
         String testFile = "NSUPolicy1";
+        File inputFile = new File(extPath.getAbsolutePath(), "/testclasses/" + testFile + ".java");
+
+        assertThat( "Input file cannot be found at " + inputFile.getAbsolutePath() +
+                ".\n Please note that this test requires the external file path to be manually set on your computer." +
+                " See test.java.end2endtest.compilerToJarTests.", inputFile.exists(), is(Boolean.TRUE));
 
         main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", extPath.getAbsolutePath()});
         File outParent = new File(System.getProperty("user.dir"));

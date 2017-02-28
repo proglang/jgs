@@ -27,6 +27,7 @@ public class ReturnStmtSuccess {
 		logger.log(Level.INFO, "RETURN TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		hs.pushLocalPC(SecurityLevel.bottom(), 123);
 		hs.addLocal("int_res1");

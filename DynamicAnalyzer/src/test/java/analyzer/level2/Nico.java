@@ -21,6 +21,7 @@ public class Nico {
 		System.out.println("SIMPLE IF STMT TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_x");

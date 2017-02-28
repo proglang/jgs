@@ -9,8 +9,13 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
+import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetion;
 import utils.exceptions.IllegalFlowException;
+import utils.exceptions.InternalAnalyzerException;
+import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
+import utils.exceptions.SuperfluousInstrumentation.joinLevelOfLocalAndAssignmentLevelException;
 import utils.logging.L1Logger;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -70,16 +75,10 @@ public class ClassRunner {
 
 	/**
 	 * Run class and check whether the expected exception is found.
-	 * 
-	 * @param className
-	 *            Name of the class.
-	 * @param exceptionExpected
-	 *            true if an exception is expected
-	 * 
 	 * @author Regina Koenig, Nicolas Müller
 	 */
 	public static void testClass(String className, String outputDir,
-			boolean exceptionExpected, String... involvedVars) {
+                                 ExpectedException expEx, String... involvedVars) {
 		
 		logger.info("Trying to run test " + className);
 
@@ -98,7 +97,7 @@ public class ClassRunner {
 			runClass(className, outputDir);
 
 			// Fail if the class was running but an exception was expected
-			if (exceptionExpected) {
+			if (! expEx.equals(ExpectedException.NONE)) {
 				logger.severe("Expected exception is not found");
 				fail();
 			}
@@ -106,38 +105,48 @@ public class ClassRunner {
 			logger.severe("Found exception " + e.getClass().toString());
 			e.printStackTrace();
 
-			// Fail if an exception is thrown but no exception was expected
-			if (!exceptionExpected) {
-				logger.severe("Fail because exception was not expected");
-				fail();
-			}
+			switch (expEx) {
+				case NONE:
+				    // fail if no expection was expected
+					logger.severe("Fail because exception was not expected");
+					fail();
+				case ILLEGAL_FLOW:
+					assertEquals(IllegalFlowException.class.toString(), e.getCause()
+							.getClass().toString());
 
-			// Fail if an exception is thrown which is not the expected
-			// exception
-			assertEquals(IllegalFlowException.class.toString(), e.getCause()
-					.getClass().toString());
-			
-			// Fail if illegalFlowException is thrown, expected, but no
-			// involvedVars are supplied
-			if (exceptionExpected && e.getCause().getClass().toString().contains("IllegalFlow")) {
-				if (involvedVars.length < 1) {
-					logger.warning("No variables supplied for IllegalFlowException");					
-				}
+					if (involvedVars.length < 1) {
+						logger.warning("No variables supplied for IllegalFlowException");
+					}
+					for (String var : involvedVars) {
+						logger.info("Check whether " + var + " is contained in: "
+								+ e.getMessage() + " ... ");
+						if (e.getMessage().contains(var)) {
+							logger.info("Success!");
+						} else {
+							logger.severe("Fail, Exception thrown, but incorrect variable!");
+						}
+						assertTrue(e.getMessage().contains(var));
+					}
+					break;
+				case CHECK_LOCAL_PC_CALLED:
+					assertEquals(LocalPcCalledException.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
+				case ASSIGN_ARG_TO_LOCAL:
+					assertEquals(AssignArgumentToLocalExcpetion.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
+				case JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL:
+					assertEquals(joinLevelOfLocalAndAssignmentLevelException.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
+				case SET_RETURN_AFTER_INVOKE:
+					assertEquals(joinLevelOfLocalAndAssignmentLevelException.class.toString(), e.getCause()
+							.getClass().toString());
+					break;
+				default:
+					throw new InternalAnalyzerException("Unknown exception found!");
 			}
-			
-
-			// Check if the expected variables are involved
-			for (String var : involvedVars) {
-				logger.info("Check wheter " + var + " is contained in: "
-						+ e.getMessage() + " ... ");
-				if (e.getMessage().contains(var)) {
-					logger.info("Success!");
-				} else {
-					logger.severe("Fail, Exception thrown, but incorrect variable!");
-				}
-				assertTrue(e.getMessage().contains(var));
-			}
-
 		}
 
 	}

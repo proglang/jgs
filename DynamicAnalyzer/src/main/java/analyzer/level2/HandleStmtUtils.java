@@ -1,21 +1,19 @@
 package analyzer.level2;
 
-import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L2Logger;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
+import utils.staticResults.superfluousInstrumentation.PassivController;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class HandleStmtUtils {
 
-	// SetLogger Methode die den logger ändert, jimple injector soll zu beginn der main methode, bevor was anderes
-	// passiert, soll er setLogger aufrufen
-
-	//
+    PassivController controller;
 
 	Logger logger = L2Logger.getLogger();
 	private LocalMap localmap;
@@ -23,8 +21,9 @@ public class HandleStmtUtils {
 
 	private final String ASSIGNMENT_ERROR_MESSAGE = "Found an illegal flow to ";
 	
-	protected HandleStmtUtils(LocalMap lm, ObjectMap om) {
+	protected HandleStmtUtils(LocalMap lm, ObjectMap om, PassivController controller) {
 		this.localmap = lm;
+		this.controller = controller;
 		if (lm == null) {
 			throw new InternalAnalyzerException("LocalMap initialization has failed.");
 		}
@@ -38,7 +37,6 @@ public class HandleStmtUtils {
 	 * If the result of the check for localPC or globalPC is negative (that means,
 	 * that a LOW variable is written in a HIGH context), then
 	 * the analysis aborts with an {@link IllegalFlowException}.
-	 * @param sink the variable which is written in a HIGH context.
 	 */
 	protected void abort(String message) {
 		throw new IllegalFlowException(message);
@@ -54,6 +52,10 @@ public class HandleStmtUtils {
 	 * @param signature signature of the local
 	 */
 	protected void checkLocalPC(String signature) {
+
+	    // check if this call is superfluous
+        controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_LOCAL_PC_CALLED.getVal());
+
 		if (localmap == null) {
 			throw new InternalAnalyzerException("LocalMap is not assigned");
 		}
@@ -69,6 +71,8 @@ public class HandleStmtUtils {
 		Object lpc = localmap.getLocalPC();
 		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC", 
 				new Object[] {signature, level, lpc });
+
+
 		if (!SecurityLevel.le(lpc, level)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
 		}
@@ -86,6 +90,8 @@ public class HandleStmtUtils {
 				});
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
 		Object globalPC = objectmap.getGlobalPC();
+
+        controller.abortIfActiveAndExceptionIsType(ExpectedException.NONE.getVal());
 		if (!SecurityLevel.le(globalPC, fieldLevel)) {
 			abort(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature);
 		}	

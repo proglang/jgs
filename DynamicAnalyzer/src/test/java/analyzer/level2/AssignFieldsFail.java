@@ -27,6 +27,7 @@ public class AssignFieldsFail {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		
 		hs.addFieldToObjectMap(this, "int_field");
@@ -51,6 +52,7 @@ public class AssignFieldsFail {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		
 		hs.addFieldToObjectMap(this, "int_field");
@@ -76,6 +78,7 @@ public class AssignFieldsFail {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
 		HandleStmt hs = new HandleStmt();
+		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_local");

@@ -9,10 +9,7 @@ import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.BeforeAfterContainer;
-import utils.staticResults.MSLMap;
-import utils.staticResults.MSMap;
-import utils.staticResults.ResultsServer;
+import utils.staticResults.*;
 import utils.staticResults.implementation.Types;
 
 import java.io.File;
@@ -37,8 +34,9 @@ public class Main {
 	 *
 	 * @param args Commandline-Args for analysis
 	 */
-	public static void main(String[] args) {
-		execute(args, false, null, null, null);
+	public static void main(String[] args)
+	{
+		execute(args, false, null, null, null, false, 0);
 	}
 
 	/**
@@ -47,12 +45,15 @@ public class Main {
 	 * @param varMap		fake var Typing map
 	 * @param cxMap		fake cx Typing map
 	 * @param instantiationMap	fake instantiation map
+	 * @param expextedException define which exception we expect
 	 */
 	public static void mainWithFakeResults(String[] args,
 										   MSLMap<BeforeAfterContainer> varMap,
 										   MSMap<Types> cxMap,
-										   MSMap<Types> instantiationMap) {
-		execute(args, true, varMap, cxMap, instantiationMap);
+										   MIMap<Types> instantiationMap,
+										   boolean controllerIsActive,
+										   int expextedException) {
+		execute(args, true, varMap, cxMap, instantiationMap, controllerIsActive, expextedException);
 	}
 
 	/**
@@ -63,7 +64,9 @@ public class Main {
 								boolean useFakeTyping,
 								MSLMap<BeforeAfterContainer> varMap,
 								MSMap<Types> cxMap,
-								MSMap<Types> instantiationMap) {
+								MIMap<Types> instantiationMap,
+								boolean controllerIsActive,
+								int expectedException) {
 
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
@@ -105,20 +108,26 @@ public class Main {
         // ====== Create / load fake static analysis results =====
 		MSLMap<BeforeAfterContainer> varMapping;
 		MSMap<Types> cxMapping;
-		MSMap<Types> instantiationMapping;
+		MIMap<Types> instantiationMapping;
 
 		// if no fake Typing is supplied, make everything dynamic
 		if (! useFakeTyping) {
 			varMapping = new MSLMap<>();
 			cxMapping = new MSMap<>();
-			instantiationMapping = new MSMap<>();
+			instantiationMapping = new MIMap<>();
 
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
 
-			ResultsServer.setDynamic(varMapping, allClasses);
-			ResultsServer.setDynamic(cxMapping, allClasses);
-			ResultsServer.setDynamic(instantiationMapping, allClasses);
+			if (sootOptionsContainer.usePublicTyping()) {
+				ResultsServer.setPublic(varMapping, allClasses);
+				ResultsServer.setPublic(cxMapping, allClasses);
+				ResultsServer.setPublic(instantiationMapping, allClasses);
+			} else {
+				ResultsServer.setDynamic(varMapping, allClasses);
+				ResultsServer.setDynamic(cxMapping, allClasses);
+				ResultsServer.setDynamic(instantiationMapping, allClasses);
+			}
 
 		} else {
 			varMapping = varMap;
@@ -131,7 +140,7 @@ public class Main {
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping);
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping, controllerIsActive, expectedException);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 

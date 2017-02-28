@@ -1,8 +1,6 @@
 package utils.visitor;
 
 import analyzer.level1.JimpleInjector;
-import analyzer.level1.storage.UnitStore.Element;
-import analyzer.level2.SecurityLevel;
 import soot.Body;
 import soot.Local;
 import soot.Value;
@@ -143,7 +141,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			JimpleInjector.makeLocal((Local) leftOperand, "LOW", aStmt);
 			break;
 		case SET_RETURN_LEVEL:
-			JimpleInjector.setReturnLevelAfterInvokeStmt(leftOperand.toString(), aStmt);
+			JimpleInjector.setReturnLevelAfterInvokeStmt(aStmt);
 		  // in eigene methode des jimpleInjector
 		  // l := get level of left-hand-side
 		  // l := l joined with objectmap.actualReturnLevel
@@ -169,12 +167,13 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 		logger.fine("\n > > > Identity statement identified < < <");
 
+		// for all statements i = parameter[0]
 		if (stmt.getRightOp() instanceof ParameterRef) {
 			if (!body.getMethod().isMain()) {
 				int posInArgList = ((ParameterRef) stmt.getRightOp())
 						.getIndex();
 				JimpleInjector.assignArgumentToLocal(posInArgList,
-						(Local) stmt.getLeftOp(), stmt);
+                        (Local) stmt.getLeftOp());
 			}
 		} else if (stmt.getRightOp() instanceof ThisRef) {
 			// TODO im Grunde nicht nötig...

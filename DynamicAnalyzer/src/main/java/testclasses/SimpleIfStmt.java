@@ -5,7 +5,8 @@ import utils.analyzer.HelperClass;
 public class SimpleIfStmt {
 	
 	public static void main(String[] args) {
-		simpleIfStmt(42);
+		int i = 42;
+		simpleIfStmt(i);
 	}
 	
 	/**
@@ -14,9 +15,9 @@ public class SimpleIfStmt {
 	 * @return output
 	 */
 	public static boolean simpleIfStmt(int x) {
-		boolean isPositive = false;
+		boolean isPositive;
 		x = HelperClass.makeHigh(x);
-		isPositive = HelperClass.makeHigh(isPositive);
+		isPositive = HelperClass.makeHigh(false);
 		
 		if (x >= 0) {
 			isPositive = true;
