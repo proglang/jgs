@@ -13,7 +13,9 @@ public class SimpleCastFail1 {
      * x has Type TOP, y has typ PUBLIC, return value is dynamic
      */
    public static int m(int x, int y) {
-      int z = Casts.cast("[top] ~> ?", x);
+      //Casts.cast("[top] ~> ?", x);
+      //int z = Casts.cast("[top] ~> ?", x);
+      int z = Casts.cast("HIGH ~> ?", x);
       z += Casts.cast("pub ~> ?", y);
       if (z >= 0) {
          return 1;

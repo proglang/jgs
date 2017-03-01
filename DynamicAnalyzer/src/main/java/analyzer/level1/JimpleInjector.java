@@ -2,10 +2,11 @@ package analyzer.level1;
 
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
+import analyzer.level2.storage.LowMediumHigh;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import soot.*;
+import soot.Type;
 import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
@@ -118,6 +119,7 @@ public class JimpleInjector {
     private static CxTyping cxTyping;
     private static Instantiation instantiation;
 
+    
     /**
      * See method with same name in HandleStatement.
      *
@@ -1427,5 +1429,15 @@ public class JimpleInjector {
         varTyping = varTy;
         cxTyping = cxTy;
         instantiation = inst;
+    }
+
+    public static void handleCast(AssignStmt aStmt) {
+        Casts<LowMediumHigh.Level> casts =
+                new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
+                       "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
+                        "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
+                        "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
+
+        casts.isValueCast(aStmt);
     }
 }
