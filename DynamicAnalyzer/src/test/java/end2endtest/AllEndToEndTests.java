@@ -133,7 +133,11 @@ public class AllEndToEndTests {
 				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
 				new Object[] { "SystemOut1", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
 				new Object[] { "SystemOut2", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
-				
+
+
+
+				new Object[] { "SimpleCastFail1", ExpectedException.ILLEGAL_FLOW, new String[] {"int"} },
+
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
 				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 

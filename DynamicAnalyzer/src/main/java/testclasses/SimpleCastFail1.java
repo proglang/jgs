@@ -5,7 +5,8 @@ import de.unifreiburg.cs.proglang.jgs.support.Casts;
 public class SimpleCastFail1 {
 
    public static void main(String[] args) {
-
+      int z = m(2, 3);
+      System.out.println(z);
    }
 
     /**

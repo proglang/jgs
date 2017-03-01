@@ -75,6 +75,7 @@ public class Main {
 										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.cast",
 										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
 										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
+		
 
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);

@@ -147,7 +147,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		  // l := l joined with objectmap.actualReturnLevel
 		  // set level of left-hand-side to l AFTER
 			// unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
-		break;
+			break;
+		case CAST:
+			logger.finest("Cast found at " + aStmt);
 		default:
 			break;
 		}
