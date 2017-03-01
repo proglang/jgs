@@ -1432,6 +1432,33 @@ public class JimpleInjector {
     }
 
     public static void handleCast(AssignStmt aStmt) {
+        logger.info("Insert a cast handle for " + aStmt);
+
+        ArrayList<Type> paramTypes = new ArrayList<>();
+        //paramTypes.add(RefType.v("soot.jimple.AssignStmt"));
+        paramTypes.add(RefType.v("java.lang.Object"));
+
+        Unit assignStmt = Jimple.v().newAssignStmt(
+                local_for_Objects, aStmt.getRightOp()
+                //ClassConstant.v(sc.getName().replace(".", "/"))
+                );
+
+        Expr handleCastExpr = Jimple.v().newVirtualInvokeExpr(
+                hs,
+                Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+                        "handleCast", paramTypes,
+                        VoidType.v(), false),
+                //ClassConstant.v(aStmt.toString().replace(".", "/"))
+                local_for_Objects
+        );
+        // Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
+        Unit handleCastStmt = Jimple.v().newInvokeStmt(handleCastExpr);
+
+        unitStore_After.insertElement(unitStore_After.new Element(assignStmt, aStmt));
+        unitStore_After.insertElement(unitStore_After.new Element(handleCastStmt, assignStmt));
+        lastPos = assignStmt;
+
+
         Casts<LowMediumHigh.Level> casts =
                 new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
