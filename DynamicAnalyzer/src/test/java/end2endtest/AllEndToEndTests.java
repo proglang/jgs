@@ -61,6 +61,10 @@ public class AllEndToEndTests {
 				
 				new Object[] { "BooleanPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_z1"} },
 
+				new Object[] { "castFromDyn_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r5"} },
+				new Object[] { "castFromDyn_Fail2", ExpectedException.ILLEGAL_FLOW, new String[] {"FILL ME"} },
+				new Object[] { "castFromDyn_Success1", ExpectedException.ILLEGAL_FLOW, new String[] {"FILL ME"} },
+
 				new Object[] { "DirectPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
 
 				// ExternalFail1 is fully tested in tests.end2endtest.compileToJarTests
@@ -136,7 +140,6 @@ public class AllEndToEndTests {
 
 
 
-				new Object[] { "SimpleCastFail1", ExpectedException.ILLEGAL_FLOW, new String[] {"int"} },
 
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
 				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
