@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "castFromDyn_Fail1";
+	public String name = "castDyn2DynSuccess";
 
 	private ExpectedException expectedException = ExpectedException.ILLEGAL_FLOW;
 

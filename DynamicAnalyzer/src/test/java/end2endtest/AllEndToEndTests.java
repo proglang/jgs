@@ -63,7 +63,10 @@ public class AllEndToEndTests {
 
 				new Object[] { "castFromDyn_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r5"} },
 				new Object[] { "castFromDyn_Fail2", ExpectedException.ILLEGAL_FLOW, new String[] {"FILL ME"} },
-				new Object[] { "castFromDyn_Success1", ExpectedException.ILLEGAL_FLOW, new String[] {"FILL ME"} },
+				new Object[] { "castFromDyn_Success1", ExpectedException.NONE, new String[] {""} },
+				new Object[] { "castFromDyn_Success2", ExpectedException.NONE, new String[] {""} },
+
+				new Object[] { "castDyn2DynSuccess", ExpectedException.NONE, new String[] {""} },
 
 				new Object[] { "DirectPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
 

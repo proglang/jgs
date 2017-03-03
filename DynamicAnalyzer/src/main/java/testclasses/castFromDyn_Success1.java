@@ -1,10 +1,14 @@
 package testclasses;
 
+import de.unifreiburg.cs.proglang.jgs.support.Casts;
+import utils.analyzer.HelperClass;
+
 /**
- * Created by Nicolas Müller on 02.03.17.
+ * Casting a high dyn int to static high -> everything ok here.
  */
 public class castFromDyn_Success1 {
     public static void main(String[] args) {
-
+        int z = HelperClass.makeHigh(3);
+        z = Casts.cast("? ~> HIGH", z);
     }
 }
