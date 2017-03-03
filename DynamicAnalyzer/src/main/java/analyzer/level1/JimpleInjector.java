@@ -2,6 +2,7 @@ package analyzer.level1;
 
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
@@ -11,6 +12,7 @@ import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
+import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 
@@ -1471,9 +1473,17 @@ public class JimpleInjector {
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // x = (H => ? ) y				Initialisierung
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
-                // Dynamic -> Dynamic, ignore or throw excpetion?
+                // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
             } else {
-                // Static to Static, makeHigh if cast is upwards, or throw exception ?
+                // Static to Static, invalid casts should be caught by static analyzer. We double check:
+                if (! SecurityLevel.le(
+                        SecurityLevel.readLevel(conversion.getSrcType().getLevel().toString()) ,
+                        SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()))) {
+
+                   // can't use that here, because it will all UnitTests...
+                   // throw new IllegalFlowException("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
+                }
+                // else: treat like assign stmt, no extra instrumentation.
             }
         }
     }

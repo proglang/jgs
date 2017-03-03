@@ -13,7 +13,7 @@ public class castDyn2DynSuccess {
         int j = 0;
         // the following cast must act like an assign stmt y = 3
         j = Casts.cast("? ~> ?", 3);
-        if (j != 0) {
+        if (i - j != 0) {
             String except = HelperClass.makeHigh("This is just a dirty way to cause an exception, because i cannot use" +
                     "assert stmts here (will cause soot ref error).");
             System.out.println(except);
