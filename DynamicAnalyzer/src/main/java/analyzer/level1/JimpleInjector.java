@@ -1433,6 +1433,10 @@ public class JimpleInjector {
         instantiation = inst;
     }
 
+    /**
+     * Handle Casts.cast(String s, T local) method
+     * @param aStmt         Jimple assign statement whose right-hand side is the cast
+     */
     public static void handleCast(AssignStmt aStmt) {
        Casts<LowMediumHigh.Level> casts =
                 new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
@@ -1459,7 +1463,7 @@ public class JimpleInjector {
                 // Static to Static, invalid casts should be caught by static analyzer. We double check:
                 if (! SecurityLevel.le( SecurityLevel.readLevel(conversion.getSrcType().getLevel().toString()) ,
                                         SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()))) {
-                   // can't use that here, because it will all UnitTests...
+                   // can't use that here, because exceptions during soot analysis will cause all UnitTests to fail
                    // throw new IllegalFlowException("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
                 }
                 // else: treat like assign stmt, no extra instrumentation.
