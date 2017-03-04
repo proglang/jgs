@@ -16,8 +16,8 @@ public class castDyn2Static_Success2 {
         j = Casts.cast("? ~> MEDIUM", j);
         h = Casts.cast("? ~> HIGH", h);
 
-        int z = i + j + h;
-
+        int z = HelperClass.makeHigh(3);
+        z = Casts.cast("? ~> HIGH", z);         // Ok, z is HIGH
     }
 
 }

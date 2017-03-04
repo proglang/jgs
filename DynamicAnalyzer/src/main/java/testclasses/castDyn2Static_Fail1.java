@@ -11,6 +11,6 @@ public class castDyn2Static_Fail1 {
 
    public static void main(String[] args) {
       int z = HelperClass.makeHigh(3);
-      z = Casts.cast("? ~> LOW", z);
+      z = Casts.cast("? ~> MEDIUM", z);
    }
 }

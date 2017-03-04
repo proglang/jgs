@@ -1444,50 +1444,21 @@ public class JimpleInjector {
 
         if (casts.isValueCast(aStmt)) {
             Casts.Conversion conversion = casts.getValueCast(aStmt);
-
             Local leftHandLocal = (Local) aStmt.getLeftOp();
-
-
 
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
                 // x = (? => BOTTOM) y		check
                 logger.info("Check that " + getSignatureForLocal(leftHandLocal) + " is less/equal " + conversion.getDestType().getLevel());
-
                 checkThatLe(leftHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
-
-                ArrayList<Type> paramTypes = new ArrayList<>();
-                paramTypes.add(RefType.v("java.lang.String"));
-                paramTypes.add(RefType.v("java.lang.String"));
-
-                Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
-                        hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                                "checkThatLe", paramTypes, VoidType.v(), false),
-                        StringConstant.v(getSignatureForLocal(leftHandLocal)),
-                        StringConstant.v(conversion.getDestType().getLevel().toString()));
-                Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
-
-                unitStore_Before.insertElement(unitStore_Before.new Element(invoke, aStmt));
-                lastPos = aStmt;
-
-
-
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // x = (H => ? ) y				Initialisierung
-
-
-               makeLocal(leftHandLocal,
-                       //SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()).toString(),
-                       conversion.getSrcType().getLevel().toString(),
-                       aStmt);
-
+               makeLocal(leftHandLocal, conversion.getSrcType().getLevel().toString(), aStmt);
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
             } else {
                 // Static to Static, invalid casts should be caught by static analyzer. We double check:
-                if (! SecurityLevel.le(
-                        SecurityLevel.readLevel(conversion.getSrcType().getLevel().toString()) ,
-                        SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()))) {
-
+                if (! SecurityLevel.le( SecurityLevel.readLevel(conversion.getSrcType().getLevel().toString()) ,
+                                        SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()))) {
                    // can't use that here, because it will all UnitTests...
                    // throw new IllegalFlowException("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
                 }
