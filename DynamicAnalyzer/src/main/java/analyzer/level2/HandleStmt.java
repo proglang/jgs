@@ -114,11 +114,6 @@ public class HandleStmt {
 		}
 	}
 
-	public void handleCast(soot.jimple.Stmt aStmt) {
-	    System.out.println(aStmt);
-	    System.out.print("==============================================");
-    }
-
 	/**
 	 * Add a field of an object to ObjectMap.
 	 * 
