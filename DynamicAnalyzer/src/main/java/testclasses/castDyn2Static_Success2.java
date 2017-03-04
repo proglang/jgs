@@ -6,7 +6,7 @@ import utils.analyzer.HelperClass;
 /**
  * Created by Nicolas Müller on 03.03.17.
  */
-public class castFromDyn_Success2 {
+public class castDyn2Static_Success2 {
     public static void main(String[] args) {
         int i = 3;
         int j = HelperClass.makeMedium(4);

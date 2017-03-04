@@ -6,7 +6,7 @@ import utils.analyzer.HelperClass;
 /**
  * Created by Nicolas Müller on 02.03.17.
  */
-public class castFromDyn_Fail2 {
+public class castDyn2Static_Fail2 {
     public static void main(String[] args) {
 
     }

@@ -1440,7 +1440,7 @@ public class JimpleInjector {
                         "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
                         "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
 
-       logger.info("Found Cast " + aStmt.getUseBoxes().get(0).getValue());
+       logger.info("Found Cast " + aStmt.getUseBoxes().get(0).getValue() );
 
         if (casts.isValueCast(aStmt)) {
             Casts.Conversion conversion = casts.getValueCast(aStmt);
@@ -1452,6 +1452,8 @@ public class JimpleInjector {
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
                 // x = (? => BOTTOM) y		check
                 logger.info("Check that " + getSignatureForLocal(leftHandLocal) + " is less/equal " + conversion.getDestType().getLevel());
+
+                checkThatLe(leftHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
 
                 ArrayList<Type> paramTypes = new ArrayList<>();
                 paramTypes.add(RefType.v("java.lang.String"));
@@ -1466,12 +1468,18 @@ public class JimpleInjector {
 
                 unitStore_Before.insertElement(unitStore_Before.new Element(invoke, aStmt));
                 lastPos = aStmt;
-                // insert check that DYN[Level] less/equal static target level
-                // insert checkThatLe(x, BOTTOM)
+
 
 
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // x = (H => ? ) y				Initialisierung
+
+
+               makeLocal(leftHandLocal,
+                       //SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()).toString(),
+                       conversion.getSrcType().getLevel().toString(),
+                       aStmt);
+
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
             } else {

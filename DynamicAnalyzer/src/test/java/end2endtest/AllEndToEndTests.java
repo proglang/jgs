@@ -61,12 +61,18 @@ public class AllEndToEndTests {
 				
 				new Object[] { "BooleanPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_z1"} },
 
-				new Object[] { "castFromDyn_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r5"} },
-				new Object[] { "castFromDyn_Fail2", ExpectedException.ILLEGAL_FLOW, new String[] {"FILL ME"} },
-				new Object[] { "castFromDyn_Success1", ExpectedException.NONE, new String[] {""} },
-				new Object[] { "castFromDyn_Success2", ExpectedException.NONE, new String[] {""} },
+				// ============= Casts ===========
+				new Object[] { "castStatic2Dyn_Success1", ExpectedException.NONE, new String[] {""} },
+				new Object[] { "castStatic2Dyn_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_"} },
+
+				new Object[] { "castDyn2Static_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r5"} },
+				new Object[] { "castDyn2Static_Fail2", ExpectedException.ILLEGAL_FLOW, new String[] {"FILL ME"} },
+				new Object[] { "castDyn2Static_Success1", ExpectedException.NONE, new String[] {""} },
+				new Object[] { "castDyn2Static_Success2", ExpectedException.NONE, new String[] {""} },
 
 				new Object[] { "castDyn2DynSuccess", ExpectedException.NONE, new String[] {""} },
+
+				// not usable bc unit test cannot handle exception thrown in instrumentation phase
 				// new Object[] { "castStatic2Static_Fail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String"} },
 
 				new Object[] { "DirectPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
