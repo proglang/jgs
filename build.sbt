@@ -41,6 +41,13 @@ lazy val GradualConstraints =
     )
 
 
+lazy val jgs =
+  (project in file(".")).
+    dependsOn(GradualConstraints, DynamicAnalyzer).
+    settings(commonSettings:_*).
+    settings(
+    )
+
 lazy val DynamicAnalyzer =
   (project in file("DynamicAnalyzer")).
     dependsOn(InstrumentationSupport, JGSSupport).

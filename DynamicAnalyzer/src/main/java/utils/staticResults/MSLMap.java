@@ -1,5 +1,7 @@
 package utils.staticResults;
 
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.Local;
 import soot.SootMethod;
@@ -50,4 +52,6 @@ public class MSLMap<T>
             throw new InternalAnalyzerException(String.format("Tried to retrieve key( %s, %s, %s ), which is not present in static analysis result", sm, stmt, l));
         }
     }
+
+
 }

@@ -117,6 +117,7 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(varMapping.getVar(method), cxMapping.getCx(method),
 					instantiationMapping.getInstantiation(method));
+				// das bekomme ich direkt from gradual constraint
 
 		units = body.getUnits();
 		locals = body.getLocals();
