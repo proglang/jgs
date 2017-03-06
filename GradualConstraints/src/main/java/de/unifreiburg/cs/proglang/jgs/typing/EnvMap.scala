@@ -107,6 +107,10 @@ object EnvMap {
     new EnvMap(m)
   }
 
+  def empty(): EnvMap = {
+    new EnvMap(Map())
+  }
+
   def asConstraints[Level](mkConstraint : CType[Level] => Constraint[Level], env : MultiEnv, v : Var[_]) :
     java.util.Set[Constraint[Level]] =
     for (tv <- env(v)) yield mkConstraint(CTypes.variable[Level](tv))

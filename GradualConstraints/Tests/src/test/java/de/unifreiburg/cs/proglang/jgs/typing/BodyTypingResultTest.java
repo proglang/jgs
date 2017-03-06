@@ -8,6 +8,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Var;
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars;
+import de.unifreiburg.cs.proglang.jgs.signatures.Effects;
 import org.junit.Before;
 import org.junit.Test;
 import soot.IntType;
@@ -36,6 +37,10 @@ public class BodyTypingResultTest {
         this.csets = new NaiveConstraintsFactory<>(types);
     }
 
+    public static BodyTypingResult<LowHigh.Level> trivialResultForTesting(ConstraintSetFactory<LowHigh.Level> csets, Environment env) {
+        return new BodyTypingResult<LowHigh.Level>(csets.empty(), Effects.emptyEffect(), env, TagMap.empty(), EnvMap.empty());
+    }
+
     @Test
     public void joinTest() {
         Environment before = code.init;
@@ -46,15 +51,15 @@ public class BodyTypingResultTest {
         Environment second = before.add(v, tv2);
         ConstraintSet<Level> cs1 = csets.fromCollection(Collections.singletonList(leC(code.tvarX, tv1)));
         ConstraintSet<Level> cs2 = csets.fromCollection(Collections.singletonList(leC(code.tvarY, tv2)));
-        BodyTypingResult<Level> r1 = BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, first), cs1);
+        BodyTypingResult<Level> r1 = BodyTypingResult.addConstraints(trivialResultForTesting(csets, first), cs1);
         BodyTypingResult<Level> result = BodyTypingResult.join(r1,
-                BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, second), cs2), csets, tvars, "test"
+                                                               BodyTypingResult.addConstraints(trivialResultForTesting(csets, second), cs2), csets, tvars, "test"
         );
 
         TypeVar freshV = tvars.join(tv1, tv2);
         ConstraintSet<Level> cs = cs1.add(cs2).add(leC(tv1, freshV)).add(leC(tv2, freshV));
         ConstraintSet<Level> tmpcs = cs1.add(cs2).add(leC(tv1, freshV)).add(leC(tv2, freshV));
-        BodyTypingResult<Level> expected = BodyTypingResult.addConstraints(BodyTypingResult.fromEnv(csets, before.add(v, freshV)), cs);
+        BodyTypingResult<Level> expected = BodyTypingResult.addConstraints(trivialResultForTesting(csets, before.add(v, freshV)), cs);
 
 
         assertThat("Simple constraints problem: ", tmpcs.equals(cs), is(true));

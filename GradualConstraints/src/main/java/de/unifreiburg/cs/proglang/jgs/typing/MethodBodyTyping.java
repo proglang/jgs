@@ -120,7 +120,17 @@ public class MethodBodyTyping<Level> {
         @SuppressWarnings("unchecked") DominatorsFinder<Unit> postdoms = new MHGPostDominatorsFinder(g);
 
 
-        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g), g, localDefs, postdoms, s, BodyTypingResult.fromEnv(csets, env), signatures, fields, pc, Collections.<Pair<TypeVar, Unit>>emptySet(), Option.<Unit>empty());
+        BodyTypingResult<Level> r = generateResult(tvars.forMethod(g),
+                                                   g,
+                                                   localDefs,
+                                                   postdoms,
+                                                   s,
+                                                   BodyTypingResult.initial(csets, env),
+                                                   signatures,
+                                                   fields,
+                                                   pc,
+                                                   Collections.<Pair<TypeVar, Unit>>emptySet(),
+                                                   Option.<Unit>empty());
 
         return r;
     }
@@ -138,7 +148,7 @@ public class MethodBodyTyping<Level> {
                                                    TypeVar topLevelContext,
                                                    // visited: branches that were already in the current context visited, identified by their first statement
                                                    Set<Pair<TypeVar, Unit>> visited,
-                                                   // until: a unit where result generation should stop
+                                                   // until: a unit where result generation should stop (the end of a branch)
                                                    Option<Unit> until) throws TypingException {
 
         // when there is an "until" unit and we reached it, stop
@@ -162,7 +172,7 @@ public class MethodBodyTyping<Level> {
             ;
             Stmt startOfCast = (Stmt) successors.get(0); // there should be exactly this one
 
-            // find the end unit
+            // find the unit where the CxCast ends
             Set<Unit> cxDoms = new HashSet<>();
             for (Unit s2 : postdoms.getDominators(s))  {
                if (casts.detectContextCastEndFromStmt((Stmt)s2)) {
@@ -200,6 +210,7 @@ public class MethodBodyTyping<Level> {
             Set<TypeView<Level>> newEffects = new HashSet<>();
             newEffects.add(cxCast.sourceType);
             // TODO: why not a factory method?
+            // TODO: it seems as if we do not continue after a CxCast!!!
             return new BodyTypingResult<Level>(r.getConstraints().add(csets.fromCollection(additionalConstraintsList)),
                                                Effects.makeEffects(newEffects),
                                                r.getFinalEnv(),

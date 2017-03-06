@@ -9,7 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.jimpleutils._
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
 import de.unifreiburg.cs.proglang.jgs.signatures.{Effects, FieldTable, Param, Return, Signature, SignatureTable}
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol._
-import de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.fromEnv
+import de.unifreiburg.cs.proglang.jgs.typing.BodyTypingResult.{makeResult, trivialWithEnv}
 import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import soot._
 import soot.jimple._
@@ -66,10 +66,6 @@ class BasicStatementTyping[LevelT](
     def getErrorMsg: List[String] = errorMsg.toList
 
 
-    // Make a result with the env map for a single statement
-    private def makeResult(s : Stmt, constraints: ConstraintSet[LevelT], finalEnv: Environment, effects: Effects[LevelT], tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
-      return new BodyTypingResult[LevelT](constraints, effects, finalEnv, tags, EnvMap(s -> (env, finalEnv)))
-    }
 
     private def extractEffects(rhs: Value): Effects[LevelT] = {
       val effectCases: RhsSwitch[LevelT] = new RhsSwitch[LevelT]((casts)) {
@@ -208,7 +204,6 @@ class BasicStatementTyping[LevelT](
       }
 
       def caseNew(`type`: RefType) {
-        noRestrictions
       }
 
       def caseConstant(v: Value) {
@@ -228,7 +223,7 @@ class BasicStatementTyping[LevelT](
         constraints += (leDest.apply(variable(pc)));
       })
       val fin: Environment = env.add(Vars.fromLocal(writeVar), destTVar)
-      setResult(makeResult(stmt, csets.fromCollection(constraints), fin, extractEffects(rhs), sw.getTags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), env, fin, extractEffects(rhs), sw.getTags))
     }
 
     private def caseFieldDefinition(fieldRef: FieldRef, stmt: DefinitionStmt) {
@@ -280,7 +275,7 @@ class BasicStatementTyping[LevelT](
       else {
         Effects.emptyEffect[LevelT].add(fieldType)
       }
-      setResult(makeResult(stmt, csets.fromCollection(constraints), env, effects, tags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), env, env, effects, tags))
     }
 
     private def caseDefinitionStmt(stmt: DefinitionStmt) {
@@ -304,8 +299,8 @@ class BasicStatementTyping[LevelT](
       return (cstrs.types.dyn == destType) ^ (cstrs.types.dyn == sourceType)
     }
 
-    private def noRestrictions {
-      setResult(fromEnv(csets, env))
+    private def noRestrictions(s : Stmt) {
+      setResult(trivialWithEnv(s, csets, env))
     }
 
     override def caseIdentityStmt(stmt: IdentityStmt) {
@@ -313,20 +308,25 @@ class BasicStatementTyping[LevelT](
     }
 
     override def caseNopStmt(stmt: NopStmt) {
-      noRestrictions
+      noRestrictions(stmt)
     }
 
     override def caseGotoStmt(stmt: GotoStmt) {
-      noRestrictions
+      noRestrictions(stmt)
     }
 
     override def caseReturnStmt(stmt: ReturnStmt) {
       if (stmt.getOp.isInstanceOf[Local]) {
         val r: Var[_] = Vars.fromLocal(stmt.getOp.asInstanceOf[Local])
-        setResult(makeResult(stmt, csets.fromCollection((Iterator(Constraints.le[LevelT](variable(env.get(r)), variable(tvars.ret))) ++ this.pcs.iterator.map(pcVar => Constraints.le[LevelT](variable(pcVar), variable(tvars.ret())))).toList.asJavaCollection), env, emptyEffect[LevelT], TagMap.empty[LevelT]))
+        setResult(makeResult(stmt, csets.fromCollection((Iterator(Constraints.le[LevelT](variable(env.get(r)), variable(tvars.ret))) ++
+          this.pcs.iterator.map(pcVar => Constraints.le[LevelT](variable(pcVar),
+            variable(tvars.ret())))).toList.asJavaCollection),
+          env, env,
+          emptyEffect[LevelT],
+          TagMap.empty[LevelT]))
       }
       else if (stmt.getOp.isInstanceOf[Constant]) {
-        noRestrictions
+        noRestrictions(stmt)
       }
       else {
         throw new RuntimeException("Did not expect to return a " + stmt.getOp.getClass)
@@ -343,15 +343,17 @@ class BasicStatementTyping[LevelT](
       val toCType: Function[Var[_], CTypes.CType[LevelT]] = v => variable(env.get(v))
       val sw: BasicStatementTyping[LevelT]#Gen#ExprSwitch = new ExprSwitch(leDest, toCType, constraints, destTVar, destCType)
       e.apply(sw)
-      setResult(makeResult(stmt, csets.fromCollection(constraints), env, extractEffects(e), sw.getTags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), env, env, extractEffects(e), sw.getTags))
     }
 
+    // Cast for *trivial* if statements (that is, if-statements with a single successor;
+    //   they are considered basic statemetn and can be treated as a noop)
     override def caseIfStmt(stmt: IfStmt) {
-      noRestrictions
+      noRestrictions(stmt)
     }
 
     override def caseReturnVoidStmt(stmt: ReturnVoidStmt) {
-      noRestrictions
+      noRestrictions(stmt)
     }
 
     override def defaultCase(obj: AnyRef) {
