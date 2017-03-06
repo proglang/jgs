@@ -35,36 +35,18 @@ public class Main {
 	 */
 	public static void main(String[] args)
 	{
-
-		execute(args, false, null, null, null, false, 0);
+		execute(args, false, null,  false, 0);
 	}
 
-	/**
-	 * Run main with fake variable typing results.
-	 * @param args			arguments as list of strings
-	 * @param varMap		fake var Typing map
-	 * @param cxMap		fake cx Typing map
-	 * @param instantiationMap	fake instantiation map
-	 * @param expextedException define which exception we expect
-	 */
-	public static void mainWithFakeResults(String[] args,
-										   MSLMap<BeforeAfterContainer> varMap,
-										   MSMap<Types> cxMap,
-										   MIMap<Types> instantiationMap,
-										   boolean controllerIsActive,
-										   int expextedException) {
-		execute(args, true, varMap, cxMap, instantiationMap, controllerIsActive, expextedException);
-	}
+
 
 	/**
      * Method which configures and executes soot.main.Main.
      * @param args This arguments are delivered by main.Main.main.
      */
-	private static void execute(String[] args,
-								boolean useFakeTyping,
-								MSLMap<BeforeAfterContainer> varMap,
-								MSMap<Types> cxMap,
-								MIMap<Types> instantiationMap,
+	public static void execute(String[] args,
+								boolean useExternalTyping,
+								Methods m,
 								boolean controllerIsActive,
 								int expectedException) {
 
@@ -109,33 +91,19 @@ public class Main {
 
 
         // ====== Create / load fake static analysis results =====
-		MSLMap<BeforeAfterContainer> varMapping;
-		MSMap<Types> cxMapping;
-		MIMap<Types> instantiationMapping;
+		Methods methods = m;
 
-		// if no fake Typing is supplied, make everything dynamic
-		if (! useFakeTyping) {
-			varMapping = new MSLMap<>();
-			cxMapping = new MSMap<>();
-			instantiationMapping = new MIMap<>();
+		// if no external Typing is supplied, make one up
+		if (! useExternalTyping) {
 
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
 
 			if (sootOptionsContainer.usePublicTyping()) {
-				ResultsServer.setPublic(varMapping, allClasses);
-				ResultsServer.setPublic(cxMapping, allClasses);
-				ResultsServer.setPublic(instantiationMapping, allClasses);
+				methods = ResultsServer.createAllPublicMethods(allClasses);
 			} else {
-				ResultsServer.setDynamic(varMapping, allClasses);
-				ResultsServer.setDynamic(cxMapping, allClasses);
-				ResultsServer.setDynamic(instantiationMapping, allClasses);
+				methods = ResultsServer.createAllDynamicMethods(allClasses);
 			}
-
-		} else {
-			varMapping = varMap;
-			cxMapping = cxMap;
-			instantiationMapping = instantiationMap;
 		}
         // =================================
 
@@ -143,7 +111,7 @@ public class Main {
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping, controllerIsActive, expectedException);
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(methods, controllerIsActive, expectedException);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
