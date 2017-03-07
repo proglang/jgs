@@ -7,10 +7,6 @@ import soot.SootMethod;
  */
 public interface Methods<Level> {
 
-    VarTyping<Level> getVarTyping(SootMethod m);
-
-    CxTyping<Level> getCxTyping(SootMethod m);
-
     /**
      * Return the single instantiation for a monomorphic method. Throws an {@code IllegalArgumentException} if the method is not monomorphic.
      */
