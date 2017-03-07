@@ -21,6 +21,7 @@ public class ArgParser {
     // flags
     final static String MAINCLASS_FLAG = "m";
     final static String ADD_DIRECTORIES_TO_CLASSPATH = "p";
+    final static String OTHER_CLASSES_FOR_STATIC_ANALYZER = "s";
     final static String JIMPLE_FLAG = "j";
     final static String OUTPUT_FOLDER_FLAG = "o";
     final static String ADDITIONAL_FILES_FLAG = "f";
@@ -31,7 +32,8 @@ public class ArgParser {
 		System.out.println(" ====== HELP ======= ");
 		System.out.println("-" + MAINCLASS_FLAG + ": Set mainclass ");
         System.out.println("-" + JIMPLE_FLAG + ": Compile to Jimple. ");
-		System.out.println("-" + ADD_DIRECTORIES_TO_CLASSPATH + ": Set classpath for soot. Use to add files in several directories. ");
+		System.out.println("-" + ADD_DIRECTORIES_TO_CLASSPATH + ": Set classpath for soot. Use to add multiple folders in several directories. ");
+        System.out.println("-" + OTHER_CLASSES_FOR_STATIC_ANALYZER + ": Add other classes to be analyzed");
 		System.out.println("-" + OUTPUT_FOLDER_FLAG + ": Set output folder. ");
         System.out.println("-" + ADDITIONAL_FILES_FLAG + ": Add additional files to be processed (like testclasses.SomeHelperClassForMain)");
         System.out.println("-" + PUBLIC_TYPING_FOR_JIMPLE + ": Developer's option. Uses all public typing and produces a reduced jimple file");
@@ -52,6 +54,7 @@ public class ArgParser {
         boolean toJimple;
         String outputFolder;
         List<String> addDirsToClasspath = new ArrayList<>();
+        List<String> addClasses = new ArrayList<>();
         List<String> additionalFiles = new ArrayList<>();
         boolean usePublicTyping;
 
@@ -72,6 +75,12 @@ public class ArgParser {
 		addDirsToClasspathOption.setRequired(false);
 		addDirsToClasspathOption.setArgs(Option.UNLIMITED_VALUES);
 		options.addOption(addDirsToClasspathOption);
+
+		Option addOtherClassesForStatic = new Option(OTHER_CLASSES_FOR_STATIC_ANALYZER, "otherClasses", true,
+		                "Add other Classes for the static analyzer");
+		addOtherClassesForStatic.setRequired(false);
+		addOtherClassesForStatic.setArgs(Option.UNLIMITED_VALUES);
+		options.addOption(addOtherClassesForStatic);
 
         Option format = new Option(JIMPLE_FLAG, "jimple", false,
                 "Optional: Output as Jimple instead of as compiled class");
@@ -120,6 +129,14 @@ public class ArgParser {
                 }
             }
 
+            // case s flag
+            if (cmd.hasOption(OTHER_CLASSES_FOR_STATIC_ANALYZER)) {
+                for (String s: cmd.getOptionValues(OTHER_CLASSES_FOR_STATIC_ANALYZER)) {
+                    File tmp = new File(s);
+                    addClasses.add(tmp.isAbsolute() ? s : new File(System.getProperty("user.dir"), s).getAbsolutePath());
+                }
+            }
+
 			// case j flag
             toJimple = cmd.hasOption(JIMPLE_FLAG);
 
@@ -141,6 +158,7 @@ public class ArgParser {
 
             return new ArgumentContainer(mainclass,
                     addDirsToClasspath,
+                    addClasses,
                     toJimple,
                     outputFolder,
                     additionalFiles,

@@ -9,7 +9,6 @@ import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.*;
-import utils.staticResults.implementation.Types;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +85,9 @@ public class Main {
 
 		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
 		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
+			classPath += ":" + s;
+		}
+		for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
 			classPath += ":" + s;
 		}
 		Scene.v().setSootClassPath(classPath);

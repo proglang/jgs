@@ -26,8 +26,9 @@ public class TypeCheckExample {
                                          "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
         Methods<LowHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 "pkg.ScratchMonomorphic",
-                new String[]{"GradualConstraints/JGSTescclasses/Scratch/src/main/java/pkg/ScratchMonomorphic.java"},
-                new String[]{".", "GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes", "GradualConstraints/JGSSupport/target/scala-2.11/classes"},
+                new String[]{"GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic.java"},
+                new String[]{".", "GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes",
+                        "GradualConstraints/JGSSupport/target/scala-2.11/classes"},
                 Collections.<String, JgsCheck.Annotation>emptyMap(),
                 Collections.<String, String>emptyMap(),
                 new LowHigh(), casts
