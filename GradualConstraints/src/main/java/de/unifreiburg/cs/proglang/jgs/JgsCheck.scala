@@ -4,6 +4,7 @@ import java.io.File
 import java.util.logging.Logger
 
 import com.fasterxml.jackson.dataformat.yaml.{YAMLFactory, YAMLMapper}
+import de.unifreiburg.cs.proglang.jgs.JgsCheck.Opt
 import de.unifreiburg.cs.proglang.jgs.TestCollector.{Exceptional, UnexpectedFailure, UnexpectedSuccess}
 import de.unifreiburg.cs.proglang.jgs.cli.Format
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.{ExampleDomains, LowHigh, UserDefined, UserDefinedUtils}
@@ -18,7 +19,7 @@ import de.unifreiburg.cs.proglang.jgs.util.NotImplemented
 import de.unifreiburg.cs.proglang.jgs.Util._
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils.TypeViewConversion
-import de.unifreiburg.cs.proglang.jgs.instrumentation.{ACasts, CastUtils, CastsFromConstants}
+import de.unifreiburg.cs.proglang.jgs.instrumentation._
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.{CastsFromMapping, Methods, Supertypes}
 import org.json4s._
 import org.json4s.jackson.{Json, Json4sScalaModule}
@@ -190,68 +191,246 @@ object JgsCheck {
             val csets = new NaiveConstraintsFactory(types)
             new Config(types, csets, opt)
         }
-        import cfg._
-        typeCheck(s, classes)
+        cfg.typeCheck(s, classes)
 
     }
+
   }
 
+  case class Annotation(constraintStrings : Array[String], effectStrings : Array[String])
+
+  def typeCheck[Level](mainClass : String,
+                       otherClasses : Array[String],
+                       sootClasspath : Array[String],
+                       // support : Array[String],
+                       externalMethodAnnotations : java.util.Map[String, Annotation],
+                       externalFieldAnnotations : java.util.Map[String, String],
+                       secdomain : SecDomain[Level],
+                       casts : ACasts[Level]) : instrumentation.Methods[Level] = {
+
+
+    val o: Options = Options.v()
+    o.set_main_class(mainClass)
+
+    val s: Scene = Scene.v()
+    s.setSootClassPath(sootClasspath.mkString(":") ++ ":" ++ s.getSootClassPath())
+    log.info(s"Soot classpath: ${s.getSootClassPath}")
+
+    for (c <- otherClasses) {
+      s.addBasicClass(c)
+    }
+
+    val c = s.loadClassAndSupport(mainClass)
+    c.setApplicationClass()
+
+    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts)
+  }
+
+  def typeCheck[Level](s : Scene,
+                       externalMethodAnnotations : java.util.Map[String, Annotation],
+                       externalFieldAnnotations : java.util.Map[String, String],
+                       secdomain : SecDomain[Level],
+                       casts : ACasts[Level]) : instrumentation.Methods[Level] = {
+    try {
+      s.loadNecessaryClasses()
+    } catch {
+      // TODO: check if this loading error can be detected earlier and more precicely.
+      case e : NullPointerException =>
+        die("ERROR loading classes to analyze. Aborting.\n")
+    }
+
+    log.info(f"Number of classes found: ${s.getClasses.size()}%d")
+    log.info(f"Number of application classes found: ${s.getApplicationClasses.size()}%d")
+    log.info(s"Main class: ${s.getMainClass}")
+    // Abort when no classes where found
+    if (s.getClasses.isEmpty) {
+      die("WARNING: did not find any classes to type-check. Aborting \n")
+    }
+
+    // Initialize the essential datastructures for typechecking
+    val classes: List[SootClass] = s.getApplicationClasses.toList
+    val types = new TypeDomain(secdomain)
+    val csets = new NaiveConstraintsFactory(types)
+    val cstrs = new Constraints(types)
+
+    // utilities
+    def parseConstraints(constraintStrings: List[String]): Try[List[SigConstraint[Level]]] =
+    // TODO: good error message when parsing fails
+    Try(constraintStrings.map(s => {
+      new ConstraintParser(types).parseConstraints(s) match {
+        case Failure(exception) => throw exception
+        case Success(value) => value
+      }
+    }))
+
+    def parseEffects(effectStrings: List[String]): Try[List[TypeView[Level]]] =
+      Try(effectStrings.map(
+        s => asTry(new RuntimeException(String.format("Error parsing type %s", s)), types.readType(s)).get
+      ))
+
+    // Parse typing declarations from source code
+    val fieldMap: Map[SootField, TypeView[Level]] =
+    (for (c <- classes;
+          f <- c.getFields)
+      yield {
+        val secAnnotations: List[String] =
+          Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.iterator).toList
+        val mt: Option[TypeView[Level]] = {
+          val moreThanOneErr = new IllegalArgumentException("Found more than one security level on " + f.getName())
+          for { typeStr <- getSingleAnnotation(secAnnotations, moreThanOneErr)
+                t <- Try(types.readType(typeStr)).toOption
+          }
+            yield t
+        }
+        val t: TypeView[Level] = mt.getOrElse(types.pub())
+        (f, t)
+      }).toMap
+    log.info("Field types: " + fieldMap.toString())
+
+    val signatureMap: Map[SootMethod, Signature[Level]] =
+      (for {
+        c <- classes
+        m <- c.getMethods
+        sig <- { val constraintStrings: List[String] =
+          getSingleAnnotation(
+            extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().iterator).toList.map(_.toList),
+            new IllegalArgumentException("Found more than one constraint annotation on " + m.getName())
+          ).getOrElse(Nil)
+          val effectStrings: List[String] = getSingleAnnotation(
+            extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().iterator()).toList.map(_.toList),
+            new IllegalArgumentException("Found more than one effect annotation on " + m.getName())).getOrElse(Nil)
+          val maybeEntry =
+            for {
+              cs <- parseConstraints(constraintStrings)
+              effs <- parseEffects(effectStrings)
+            } yield makeSignature[Level](m.getParameterCount, cs, makeEffects(effs))
+          skipAndReportFailure(log, s"Error parsing signature for method ${m}: ", maybeEntry)
+        }
+      } yield m -> sig).toMap
+
+    log.info("Signature map: " + signatureMap.toString())
+
+    // add signatures for constructors
+    val specialSignatures: Map[SootMethod, Signature[Level]] =
+    Map(
+      // Object.<init> is harmless
+      s.getSootClass("java.lang.Object").getMethodByName("<init>") -> makeSignature[Level](0, List(), emptyEffect[Level])
+    )
+
+    val configuredSignatures : Map[SootMethod, Signature[Level]] =
+      (for {
+        (methodSignature, Annotation(constraintStrings, effectStrings)) <- externalMethodAnnotations
+        method <- Try(s.getMethod(methodSignature)).toOption
+        maybeEntry =
+          for {
+            constraints <- parseConstraints(constraintStrings.toList)
+            effects <- parseEffects(effectStrings.toList)
+          } yield makeSignature[Level](method.getParameterCount, constraints, makeEffects(effects))
+        entry <- skipAndReportFailure(log, s"Error parsing external annotation for method ${method}:", maybeEntry)
+      } yield {
+        method -> entry
+      }).toMap
+
+      val configuredFields : Map[SootField, TypeView[Level]] = {
+        for {
+          (fieldName, typeString) <- externalFieldAnnotations.toMap
+          f <- Try(s.getField(fieldName)).toOption
+          fieldType <- {
+            val t : Try[TypeView[Level]] =
+              asTry(
+                new RuntimeException(s"Error parsing type ${typeString} of field ${fieldName}"),
+                types.readType(typeString)
+              )
+            skipAndReportFailure(log, "", t)
+        }
+      } yield {
+        // TODO: emit a warning when a field cannot be found
+        //          val f : SootField = Try(s.getField(name)).getOrElse(
+        //            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find field ${name}")
+        //          )
+        f -> fieldType
+      }
+      }
+
+      /** ***********************************
+        * set signature table and field table
+        * *****************************/
+      val signatures = SignatureTable.makeTable[Level](signatureMap ++ specialSignatures ++ configuredSignatures)
+      val fieldTable = new FieldTable[Level](fieldMap ++ configuredFields)
+
+      /** ***********************
+        * Class hierarchy check
+        * ************************/
+      println("Checking class hierarchy: ")
+      for (c <- classes; mSub <- c.getMethods; mSup <- Supertypes.findOverridden(mSub)) {
+        val result = ClassHierarchyTyping.checkTwoMethods(csets, types, signatures, mSub, mSup)
+        print(s"* method ${mSub} overriding method ${mSup}: ")
+        println(Format.pprint(Format.classHierarchyCheck(result)))
+      }
+      println
+
+
+      /** *********************
+        * Method signature check
+        ************************/
+      println("Checking method bodies: ")
+      val methodResults : Map[SootMethod, MethodTyping.Result[Level]] = (for {c <- classes if !c.isInterface
+           m <- c.getMethods if !m.isAbstract
+           methodTyping = new MethodTyping(csets, cstrs, casts)
+           // TODO: clarify the difference between TypingException and TypingAssertionFailure
+           mresult = catching(classOf[TypingException],
+             classOf[TypingAssertionFailure],
+             classOf[NotImplemented]).either {
+               methodTyping.check(new TypeVars(), signatures, fieldTable, m)
+             }
+           resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
+           _ = { println(s"* Type checking method ${m.toString}: ${resultReport}"); println() }
+           result <- mresult.right.toOption
+      } yield (m -> result)).toMap
+
+    new instrumentation.Methods[Level] {
+      def getResult(m : SootMethod) : MethodTyping.Result[Level] =
+        methodResults.getOrElse(m, throw new NoSuchElementException(s"No variable typing for method ${m}"))
+
+      override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] = {
+        val result = getResult(m)
+        val signatureConstraints = result.refinementCheckResult.abstractConstraints
+
+        // check that we really can instantiate the method monomorphically.
+        val paramInstantiation : Map[Int, TypeView[Level]] = (for (i <- Range(0, m.getParameterCount))
+          yield i -> result.parameterInstantiation(i).getOrElse(
+            throw new IllegalArgumentException(s"No monomorphic instantiation for paramter ${i}: ${m} \n ${signatureConstraints.toString}"))).toMap
+
+        val returnInstantiation = result.returnInstantiation.getOrElse(
+          throw new IllegalArgumentException(s"No monomorphic instantiation for return type: ${m} \n ${signatureConstraints.toString}")
+        )
+
+        new Instantiation[Level] {
+          override def getReturn: Type[Level] = returnInstantiation
+
+          override def get(param: Int): Type[Level] = paramInstantiation(param)
+        }
+
+      }
+
+      override def getVarTyping(m: SootMethod): VarTyping[Level] =
+        getResult(m).variableTyping
+
+      override def getCxTyping(m: SootMethod): CxTyping[Level] =
+        getResult(m).cxTyping
+
+      override def getEffectType(m: SootMethod): Effect[Level] = ???
+    }
+
+    }
 
   class Config[Level](val types: TypeDomain[Level],
                       val csets: ConstraintSetFactory[Level],
                       val opt: Opt) {
     val testCollector : TestCollector[Level] = TestCollector()
 
-    val cstrs = new Constraints(types)
 
     def typeCheck(s: Scene, classes: List[SootClass]): Unit = {
-      val fieldMap: Map[SootField, TypeView[Level]] =
-        (for (c <- classes;
-              f <- c.getFields)
-          yield {
-            val secAnnotations: List[String] =
-              Methods.extractStringAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Sec;", f.getTags.iterator).toList
-            val mt: Option[TypeView[Level]] = {
-              val moreThanOneErr = new IllegalArgumentException("Found more than one security level on " + f.getName())
-              for { typeStr <- getSingleAnnotation(secAnnotations, moreThanOneErr)
-                    t <- Try(types.readType(typeStr)).toOption
-                  }
-                yield t
-            }
-            val t: TypeView[Level] = mt.getOrElse(types.pub())
-            (f, t)
-          }).toMap
-      log.info("Field types: " + fieldMap.toString())
-
-      val signatureMap: Map[SootMethod, Signature[Level]] =
-        (for {
-          c <- classes
-          m <- c.getMethods
-          sig <- { val constraintStrings: List[String] =
-                     getSingleAnnotation(
-                       extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Constraints;", m.getTags().iterator).toList.map(_.toList),
-                       new IllegalArgumentException("Found more than one constraint annotation on " + m.getName())
-                     ).getOrElse(Nil)
-                   val effectStrings: List[String] = getSingleAnnotation(
-                     extractStringArrayAnnotation("Lde/unifreiburg/cs/proglang/jgs/support/Effects;", m.getTags().iterator()).toList.map(_.toList),
-                     new IllegalArgumentException("Found more than one effect annotation on " + m.getName())).getOrElse(Nil)
-                   val maybeEntry =
-                     for {
-                       cs <- parseConstraints(constraintStrings)
-                       effs <- parseEffects(effectStrings)
-                     } yield makeSignature[Level](m.getParameterCount, cs, makeEffects(effs))
-                   skipAndReportFailure(log, s"Error parsing signature for method ${m}: ", maybeEntry)
-                }
-        } yield m -> sig).toMap
-
-      log.info("Signature map: " + signatureMap.toString())
-
-      // add signatures for constructors
-      val specialSignatures: Map[SootMethod, Signature[Level]] =
-        Map(
-          // Object.<init> is harmless
-          s.getSootClass("java.lang.Object").getMethodByName("<init>") -> makeSignature[Level](0, List(), emptyEffect[Level])
-        )
 
       /** ****************************
         * Read configured signatures from file
@@ -265,59 +444,32 @@ object JgsCheck {
         case Success(value) => value
       }
 
-      val configuredSignatures: List[(SootMethod, Signature[Level])] =
+      val configuredSignatures: List[(String, JgsCheck.Annotation)] =
         for {
           JObject(entries) <- annotationsJson \\ "methods"
           JField(name, JObject(JField("constraints", cs) :: JField("effects", effs) :: Nil)) <- entries
-          m <- Try(s.getMethod(name)).map(m => List(m)).getOrElse(List())
-          sig <- {
-            // TODO: emit a warning when a method cannot be found
-            //          val m : SootMethod = Try(s.getMethod(name)).getOrElse(
-            //            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find method ${name}")
-            //          )
-            val constraintStrings : List[String] = for (JArray(entries) <- cs; JString(s) <- entries) yield s
-            val effectStrings : List[String] = for (JArray(entries) <- effs; JString(s) <- entries) yield s
-            val maybeEntry =
-              for {
-                constraints <- parseConstraints(constraintStrings)
-                effects <- parseEffects(effectStrings)
-              } yield makeSignature[Level](m.getParameterCount, constraints, makeEffects(effects))
-            skipAndReportFailure(log, s"Error parsing external annotation for method ${m}:", maybeEntry)
-          }
         } yield {
-          m -> sig
+          val constraintStrings : List[String] = for (JArray(entries) <- cs; JString(s) <- entries) yield s
+          val effectStrings : List[String] = for (JArray(entries) <- effs; JString(s) <- entries) yield s
+          name -> Annotation(constraintStrings.toArray, effectStrings.toArray)
         }
 
       /** ****************************
         * Read configured field types from file
         * *****************************/
-      val configuredFields : List[(SootField, TypeView[Level])] =
+      val configuredFields : List[(String, String)] =
         for {
           JObject(entries) <- annotationsJson \\ "fields"
           JField(name, JString(typeString)) <- entries
-          f <- Try(s.getField(name)).map(f => List(f)).getOrElse(List())
-          fieldType <- {
-            val t : Try[TypeView[Level]] =
-              asTry(
-                new RuntimeException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Error parsing type ${typeString} of field ${name}"),
-                types.readType(typeString)
-              )
-            skipAndReportFailure(log, "", t)
-          }
         } yield {
           // TODO: emit a warning when a field cannot be found
 //          val f : SootField = Try(s.getField(name)).getOrElse(
 //            throw new IllegalArgumentException(s"Error when parsing external annotations from ${opt.externalAnnotations}: Cannot find field ${name}")
 //          )
-          f -> fieldType
+          name -> typeString
         }
 
 
-      /** ***********************************
-        * set signature table and field table
-        * *****************************/
-      val signatures = SignatureTable.makeTable[Level](signatureMap ++ specialSignatures ++ configuredSignatures)
-      val fieldTable = new FieldTable[Level](fieldMap ++ configuredFields)
 
       /** *********************
         * Read casts from config file
@@ -381,21 +533,11 @@ object JgsCheck {
           constructMappingCasts
         }
 
-      /** ***********************
-        * Class hierarchy check
-        * ************************/
-      println("Checking class hierarchy: ")
-      for (c <- classes; mSub <- c.getMethods; mSup <- Supertypes.findOverridden(mSub)) {
-        val result = ClassHierarchyTyping.checkTwoMethods(csets, types, signatures, mSub, mSup)
-        print(s"* method ${mSub} overriding method ${mSup}: ")
-        println(Format.pprint(Format.classHierarchyCheck(result)))
-      }
-      println
+      // TODO:  finish this
+      // JgsCheck.typeCheck()
 
-      /** *********************
-        * Method signature check
-        ************************/
-
+      // TODO: re-implement the testcollector stuff somehow... or something equivalent that is more elegant
+      /*
       println("Checking method bodies: ")
       for (c <- classes if !c.isInterface; m <- c.getMethods if !m.isAbstract) {
         val methodTyping = new MethodTyping(csets, cstrs, casts)
@@ -440,21 +582,9 @@ object JgsCheck {
         println(s"(Tested ${obeserved.size} methods, ${failures.size} failures, ${errors.size} errors)")
         sys.exit(retVal)
       }
+      */
     }
 
-    private def parseConstraints(constraintStrings: List[String]): Try[List[SigConstraint[Level]]] =
-    // TODO: good error message when parsing fails
-      Try(constraintStrings.map(s => {
-        new ConstraintParser(types).parseConstraints(s) match {
-          case Failure(exception) => throw exception
-          case Success(value) => value
-        }
-      }))
-
-    private def parseEffects(effectStrings: List[String]): Try[List[TypeView[Level]]] =
-      Try(effectStrings.map(
-        s => asTry(new RuntimeException(String.format("Error parsing type %s", s)), types.readType(s)).get
-      ))
   }
 
   private def getSingleAnnotation[A](annotations: List[A], tooManyError: RuntimeException): Option[A] =

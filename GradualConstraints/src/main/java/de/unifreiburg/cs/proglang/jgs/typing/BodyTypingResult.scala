@@ -5,6 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects.emptyEffect
+import soot.jimple.Stmt
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
@@ -21,12 +22,22 @@ object BodyTypingResult {
   }
 
   def trivialCase[Level](csets: ConstraintSetFactory[Level], envMap : EnvMap): BodyTypingResult[Level] = {
-    return new BodyTypingResult[Level](csets.empty, emptyEffect[Level], Environments.makeEmpty, TagMap.empty[Level], envMap)
+    new BodyTypingResult[Level](csets.empty, emptyEffect[Level], Environments.makeEmpty, TagMap.empty[Level], envMap)
   }
 
-  def fromEnv[Level](csets: ConstraintSetFactory[Level], env: Environment): BodyTypingResult[Level] = {
-    return new BodyTypingResult[Level](csets.empty, emptyEffect[Level], env, TagMap.empty[Level], EnvMap())
+  // Make a result with the env map for a single statement
+  def makeResult[LevelT](s : Stmt, constraints: ConstraintSet[LevelT], initialEnv : Environment, finalEnv: Environment, effects: Effects[LevelT], tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
+    new BodyTypingResult[LevelT](constraints, effects, finalEnv, tags, EnvMap(s -> (initialEnv, finalEnv)))
   }
+
+  // create a result from a given pre-statement environment with no constraints.
+  def trivialWithEnv[Level](s : Stmt, csets: ConstraintSetFactory[Level], env: Environment): BodyTypingResult[Level] = {
+    makeResult(s, csets.empty, env, env, emptyEffect[Level], TagMap.empty[Level])
+  }
+
+  // initial results at the beginning of type-checking a method
+  def initial[Level](csets: ConstraintSetFactory[Level], env: Environment) : BodyTypingResult[Level] =
+    new BodyTypingResult[Level](csets.empty(), emptyEffect(), env, TagMap.empty(), EnvMap.empty())
 
   def join[Level](r1: BodyTypingResult[Level], r2: BodyTypingResult[Level],
                   csets: ConstraintSetFactory[Level], tvars: TypeVars, condition: String): BodyTypingResult[Level] = {

@@ -339,7 +339,9 @@ public class MethodBodyTypingTest {
     public void testTrivialIf() throws TypingException {
         Body b = trivialIf();
         BodyTypingResult<Level> r = analyze(b);
-        assertThat(r, is(BodyTypingResult.fromEnv(new NaiveConstraintsFactory<>(types), r.getFinalEnv())));
+        BodyTypingResult<Level> expected =  BodyTypingResultTest.trivialResultForTesting(new NaiveConstraintsFactory<>(types), r.getFinalEnv());
+        assertThat(r.constraints(), is(expected.constraints()));
+        assertThat(r.getFinalEnv(), is(expected.getFinalEnv()));
     }
 
 

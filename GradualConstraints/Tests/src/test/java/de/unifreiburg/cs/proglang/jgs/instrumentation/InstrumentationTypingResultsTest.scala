@@ -149,6 +149,31 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
 
   }
 
+  "vartyping" should "be complete for all statements of max" in {
+
+    val dynInstantiation = new AnalysisResults[LowHigh.Level]().max_methods_D_D__D.getMonomorphicInstantiation(Code.max)
+    val result = TestDomain.mtyping.check(new TypeVars(),
+      SignatureTable.makeTable(Map(
+        Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
+          List(
+            MethodSignatures.le[LowHigh.Level](Param(0), Literal(TestDomain.DYN)),
+            MethodSignatures.le[LowHigh.Level](Param(1), Literal(TestDomain.DYN)),
+            MethodSignatures.le[LowHigh.Level](Return(), Literal(TestDomain.DYN))
+          ),
+          Effects.emptyEffect()))),
+      new FieldTable[LowHigh.Level](java.util.Collections.emptyMap()), Code.max)
+
+    val body = Code.max.retrieveActiveBody()
+    for { unit <- body.getUnits
+          stmt = unit.asInstanceOf[Stmt]
+          l <- body.getLocals
+        } {
+
+      noException should be thrownBy result.variableTyping.getBefore(dynInstantiation, stmt, l)
+      noException should be thrownBy result.variableTyping.getAfter(dynInstantiation, stmt, l)
+    }
+  }
+
   "type-checking max with a DD_D instantiation" should " have same vartyping as mappings_max_DD_D" in {
     val fakeResults = new AnalysisResults[LowHigh.Level]()
     val result = TestDomain.mtyping.check(new TypeVars(),
