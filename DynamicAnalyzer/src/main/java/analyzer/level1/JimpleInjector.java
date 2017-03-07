@@ -3,16 +3,15 @@ package analyzer.level1;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
 import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.LowMediumHigh;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.*;
-import soot.Type;
 import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
-import utils.exceptions.IllegalFlowException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
 
@@ -113,6 +112,8 @@ public class JimpleInjector {
      * which have to be inserted after the last position.
      */
     private static Unit lastPos;
+
+    private static Casts casts;
 
     /**
      * Stores the results of the static analysis. Use Lvel instead of Level because of conflicts with the LEVEL of the Logger.
@@ -1427,10 +1428,12 @@ public class JimpleInjector {
         }
     }
 
-    static <Lvel> void setStaticAnalaysisResults(VarTyping<Lvel> varTy, CxTyping<Lvel> cxTy, Instantiation<Lvel> inst) {
+    static <Lvel> void setStaticAnalaysisResults(VarTyping<Lvel> varTy, CxTyping<Lvel> cxTy, Instantiation<Lvel> inst,
+                                                 Casts c) {
         varTyping = varTy;
         cxTyping = cxTy;
         instantiation = inst;
+        casts = c;
     }
 
     /**
@@ -1438,11 +1441,6 @@ public class JimpleInjector {
      * @param aStmt         Jimple assign statement whose right-hand side is the cast
      */
     public static void handleCast(AssignStmt aStmt) {
-       Casts<LowMediumHigh.Level> casts =
-                new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
-                       "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
-                        "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
-                        "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
 
        logger.info("Found Cast " + aStmt.getUseBoxes().get(0).getValue() );
 

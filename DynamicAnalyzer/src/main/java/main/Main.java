@@ -35,7 +35,7 @@ public class Main {
 	 */
 	public static void main(String[] args)
 	{
-		execute(args, false, null,  false, 0);
+		execute(args, false, null,  false, 0, null);
 	}
 
 
@@ -48,7 +48,8 @@ public class Main {
 								boolean useExternalTyping,
 								Methods m,
 								boolean controllerIsActive,
-								int expectedException) {
+								int expectedException,
+							    Casts c) {
 
 		// Example instantiation of a instrumentation.Casts object
 		// TODO: Just an example... "execute" should be parameterized properly.
@@ -92,12 +93,20 @@ public class Main {
 
         // ====== Create / load fake static analysis results =====
 		Methods methods = m;
+		Casts casts = c;
 
 		// if no external Typing is supplied, make one up
 		if (! useExternalTyping) {
 
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
+
+			casts =
+					new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
+							"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
+							"de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
+							"de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
+
 
 			if (sootOptionsContainer.usePublicTyping()) {
 				methods = ResultsServer.createAllPublicMethods(allClasses);
@@ -111,7 +120,7 @@ public class Main {
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");
 		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(methods, controllerIsActive, expectedException);
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(methods, controllerIsActive, expectedException, casts);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 

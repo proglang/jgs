@@ -1,5 +1,6 @@
 package analyzer.level1;
 
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
@@ -37,12 +38,15 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
     Methods methods;
 	boolean controllerIsActive;
 	int expectedException;
+	Casts casts;
     public BodyAnalyzer(Methods m,
 						boolean controllerIsActive,
-						int expectedException) {
+						int expectedException,
+						Casts c) {
         methods = m;
         this.controllerIsActive = controllerIsActive;
         this.expectedException = expectedException;
+        casts = c;
     }
 
     /**
@@ -112,8 +116,8 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(methods.getVarTyping(sootMethod),
 				methods.getCxTyping(sootMethod),
-				methods.getMonomorphicInstantiation(sootMethod));
-				// das bekomme ich direkt from gradual constraint
+				methods.getMonomorphicInstantiation(sootMethod),
+				casts);
 
 		units = body.getUnits();
 
