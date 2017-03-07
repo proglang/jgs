@@ -4,10 +4,11 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
-import soot.Scene;
-import soot.SootMethod;
+import soot.G;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
+import main.*;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
 import java.util.Collections;
 
@@ -16,7 +17,7 @@ import java.util.Collections;
  * Launches the static analyzer, then the dynamic analyzer.
  *
  * Example:
- * -m pkg.ScratchMonomorphic -s GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic.java -p . GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes GradualConstraints/JGSSupport/target/scala-2.11/classes
+ * -m pkg.ScratchMonomorphic -s GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic.java -p . GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes GradualConstraints/JGSSupport/target/scala-2.11/classes -o sootOutput
  */
 public class Main {
     public static void main(String[] args) {
@@ -40,8 +41,9 @@ public class Main {
                        casts : ACasts[Level]) : instrumentation.Methods[Level]
          */
 
+        // Static Check
         Methods<LowHigh.Level> typeCheckResult = JgsCheck.typeCheck(
-                sootOptionsContainer.getMainclass(),            // eg pkg.ScratchMonomorphic
+                sootOptionsContainer.getMainclass(),
                 sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
                 sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
                 Collections.<String, JgsCheck.Annotation>emptyMap(),
@@ -49,15 +51,11 @@ public class Main {
                 new LowHigh(), casts
         );
 
-        for (SootMethod m : Scene.v().getMainClass().getMethods()) {
-            System.out.print("Checking result of method: " + m + ": ")   ;
-            try {
-                typeCheckResult.getMonomorphicInstantiation(m);
-                System.out.println("ok");
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        // run dynamic
+        // Dynamic Check
+        G.reset();
+        System.out.print("");
+        System.out.println("== START DYNAMIC ANALYSIS ==");
+        System.out.print("");
+        main.Main.execute(args, true, typeCheckResult, false, ExpectedException.NONE.getVal(), casts);
     }
 }

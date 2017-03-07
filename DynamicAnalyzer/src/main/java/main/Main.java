@@ -93,7 +93,7 @@ public class Main {
 		Scene.v().setSootClassPath(classPath);
 
 
-        // ====== Create / load fake static analysis results =====
+        // ====== Create / load fake static analysis results ======
 		Methods methods = m;
 		Casts casts = c;
 
@@ -103,6 +103,7 @@ public class Main {
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
 
+			// the default casts object. used only if explicitely specified that none is supplied externally
 			casts =
 					new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
 							"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
