@@ -107,6 +107,30 @@ public class TypeDomain<Level> {
         }
     }
 
+    /**
+     * @return The least upper bound of t1 and t2, if it exists
+     */
+    public Option<TypeViews.TypeView<Level>> lub(TypeViews.TypeView<Level> t1, final TypeViews.TypeView<Level> t2) {
+        if (t1.isStatic()) {
+            final Level l1 = t1.getLevel();
+            if (t2.isStatic()) {
+                return Option.apply(level(secDomain.lub(l1, t2.getLevel())));
+            } else {
+                return Option.empty();
+            }
+        } else if (t1.isDynamic()) {
+            if (t2.isStatic()) {
+                return Option.empty();
+            } else {
+                // t2 dynamic of public
+                return Option.apply(t1);
+            }
+        } else {
+            // t1 public
+            return Option.apply(t2);
+        }
+    }
+
     public boolean le(TypeView<Level> t1, final TypeView<Level> t2) {
         if (t1.isStatic()) {
             if (t2.isStatic()) {

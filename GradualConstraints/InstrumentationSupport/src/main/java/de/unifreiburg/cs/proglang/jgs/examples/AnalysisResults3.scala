@@ -56,6 +56,10 @@ class AnalysisResults3[Level] {
 
       override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
         makeInstantiation(Map(0 -> Dynamic[Level](), 1 -> Dynamic[Level]()), Dynamic[Level]())
+
+      override def getVarTyping(m: SootMethod): VarTyping[Level] = ???
+
+      override def getCxTyping(m: SootMethod): CxTyping[Level] = ???
     }
 
 
@@ -67,6 +71,10 @@ class AnalysisResults3[Level] {
 
     override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
       makeInstantiation(Map(0 -> Public[Level](), 1 -> Dynamic[Level]()), Dynamic[Level]())
+
+    override def getVarTyping(m: SootMethod): VarTyping[Level] = ???
+
+    override def getCxTyping(m: SootMethod): CxTyping[Level] = ???
   }
 
 
@@ -77,6 +85,10 @@ class AnalysisResults3[Level] {
 
       override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
         makeInstantiation(Map(0 -> Public[Level](), 1 -> Public[Level]()), Public[Level]())
+
+      override def getVarTyping(m: SootMethod): VarTyping[Level] = ???
+
+      override def getCxTyping(m: SootMethod): CxTyping[Level] = ???
     }
 
 

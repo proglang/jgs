@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
-import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.CTypeView
+import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{CTypeView, Lit, Variable}
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol
 import de.unifreiburg.cs.proglang.jgs.typing.{ConflictCause, TagMap}
@@ -145,4 +146,20 @@ abstract case class ConstraintSet[Level] (
     * Return the set of ctypes that strictly lower bound the the type variable <code>tv</code>.
     */
   def lowerBounds(tv : TypeVars.TypeVar) : Set[CTypeView[Level]]
+
+  /**
+    * Return the type that is the greatest lower bound of tv, if it exists.
+    *
+    * (If it does not exist, the type variable is polymorphic, i.e. it only depends on parameters)
+    */
+  def greatestLowerBound(tv : TypeVars.TypeVar) : Option[TypeView[Level]] = {
+    val bounds = lowerBounds(tv).filter(p => p match {
+      case Lit(t) => true
+      case Variable(v) => false
+    })
+    bounds.foldLeft(None : Option[TypeView[Level]])((res, ct) => ct match {
+      case Lit(t) => res.flatMap(t2 => types.lub(t, t2))
+      case Variable(v) => res
+    })
+  }
 }

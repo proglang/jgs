@@ -64,7 +64,10 @@ class AnalysisResults[Level] {
 
     def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
 
-    }
+    override def getVarTyping(m: SootMethod): VarTyping[Level] = ???
+
+    override def getCxTyping(m: SootMethod): CxTyping[Level] = ???
+  }
 
   val max_methods_D_D__D: Methods[Level] =
     new Methods[Level] {
@@ -72,7 +75,11 @@ class AnalysisResults[Level] {
 
       override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
         makeInstantiation(Map(0 -> Dynamic[Level](), 1 -> Dynamic[Level]()), Dynamic[Level]())
-  }
+
+      override def getVarTyping(m: SootMethod): VarTyping[Level] = ???
+
+      override def getCxTyping(m: SootMethod): CxTyping[Level] = ???
+    }
 
 
   // Utilities
