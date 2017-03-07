@@ -209,7 +209,6 @@ object JgsCheck {
                        casts : ACasts[Level]) : instrumentation.Methods[Level] = {
 
 
-
     val o: Options = Options.v()
     o.set_main_class(mainClass)
 
@@ -224,6 +223,14 @@ object JgsCheck {
     val c = s.loadClassAndSupport(mainClass)
     c.setApplicationClass()
 
+    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts)
+  }
+
+  def typeCheck[Level](s : Scene,
+                       externalMethodAnnotations : java.util.Map[String, Annotation],
+                       externalFieldAnnotations : java.util.Map[String, String],
+                       secdomain : SecDomain[Level],
+                       casts : ACasts[Level]) : instrumentation.Methods[Level] = {
     try {
       s.loadNecessaryClasses()
     } catch {
