@@ -38,11 +38,6 @@ public class Main {
 	}
 
 
-
-	/**
-     * Method which configures and executes soot.main.Main.
-     * @param args This arguments are delivered by main.Main.main.
-     */
 	public static void execute(String[] args,
 								boolean useExternalTyping,
 								Methods m,
@@ -50,8 +45,51 @@ public class Main {
 								int expectedException,
 							    Casts c) {
 
-		// Example instantiation of a instrumentation.Casts object
-		// TODO: Just an example... "execute" should be parameterized properly.
+
+		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+
+		String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
+
+
+		if (javaHome == null) {
+			throw new IllegalStateException("System property `java.home' is undefined");
+		}
+
+		// Setting the soot classpath
+		String classPath = Scene.v().getSootClassPath()
+				+ ":.:"
+				+ new File(javaHome, "lib/jce.jar").toString()
+				+ ":"
+				+ new File(javaHome, "lib/rt.jar").toString();
+
+		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
+		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
+			classPath += ":" + s;
+		}
+		for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
+			classPath += ":" + s;
+		}
+		Scene.v().setSootClassPath(classPath);
+
+		// those are needed because of soot-magic i guess
+		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
+		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
+
+		executeWithoutSootSetup(args, useExternalTyping, m, controllerIsActive, expectedException, c);
+	}
+
+
+
+	/**
+     * Method which configures and executes soot.main.Main.
+     * @param args This arguments are delivered by main.Main.main.
+     */
+	public static void executeWithoutSootSetup(String[] args,
+								boolean useExternalTyping,
+								Methods m,
+								boolean controllerIsActive,
+								int expectedException,
+							    Casts c) {
 
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
@@ -69,29 +107,6 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-        String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
-
-		if (javaHome == null) {
-			throw new IllegalStateException("System property `java.home' is undefined");
-		}
-    	
-		// Setting the soot classpath
-		String classPath = Scene.v().getSootClassPath()
-				+ ":.:"
-				+ new File(javaHome, "lib/jce.jar").toString()
-			    + ":"
-				+ new File(javaHome, "lib/rt.jar").toString();
-
-		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
-		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
-			classPath += ":" + s;
-		}
-		for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
-			classPath += ":" + s;
-		}
-		Scene.v().setSootClassPath(classPath);
-
 
         // ====== Create / load fake static analysis results ======
 		Methods methods = m;
@@ -119,9 +134,7 @@ public class Main {
 		}
         // =================================
 
-        // those are needed because of soot-magic i guess
-        Scene.v().addBasicClass("analyzer.level2.HandleStmt");
-		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
+
 
         BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(methods, controllerIsActive, expectedException, casts);
 

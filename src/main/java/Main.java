@@ -52,10 +52,11 @@ public class Main {
         );
 
         // Dynamic Check
-        G.reset();
+        //G.reset();
         System.out.print("");
         System.out.println("== START DYNAMIC ANALYSIS ==");
         System.out.print("");
-        main.Main.execute(args, true, typeCheckResult, false, ExpectedException.NONE.getVal(), casts);
+        main.Main.execute(args, true,
+                typeCheckResult, false, ExpectedException.NONE.getVal(), casts);
     }
 }
