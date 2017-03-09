@@ -95,9 +95,11 @@ public class Main {
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
                 sootOptionsContainer.getMainclass(),                    // adds the mainclass file
-                "-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
+                //"-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
                 "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
-                "--d", sootOptionsContainer.getOutputFolderAbsolutePath()));         // sets output folder
+                "--d", sootOptionsContainer.getOutputFolderAbsolutePath(),
+				"-w"	// this destroys the unit tests!
+				));         // sets output folder
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
@@ -139,13 +141,14 @@ public class Main {
         BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(methods, controllerIsActive, expectedException, casts);
 
 		PackManager.v()
-        	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
+        	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer));
 
-        soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
-        
+		Scene.v().addBasicClass("analyzer.level2.HandleStmt",SootClass.SIGNATURES);
+		soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
+
 		// compile to JAR.
 		utils.ant.AntRunner.run(sootOptionsContainer);
-        
+
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
 
@@ -153,7 +156,7 @@ public class Main {
 		// was ist der empfohlene weg, exceptions zu werfen aus einer analyse heraus.
 		// unsere situation: Rufen main.Main in unit tests auf, wewnn wir einmal expcept werfen, bricht
 		// alles ab, obwohl wir resetten.
-        
+
 	}
 
 
