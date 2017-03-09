@@ -163,6 +163,11 @@ public class TestDomain {
         return types.glb(l1, l2);
     }
 
+    public static Option<TypeView<Level>> tlub(TypeView<Level> l1,
+                                   TypeView<Level> l2) {
+        return types.lub(l1, l2);
+    }
+
     public static boolean tle(TypeView<Level> l1,
                               TypeView<Level> l2) {
         return types.le(l1, l2);

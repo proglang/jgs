@@ -26,6 +26,14 @@ public class TypeDomainTest {
         assertEquals(TLOW, tglb(THIGH, TLOW));
         assertEquals(PUB, tglb(THIGH, DYN));
         assertEquals(PUB, tglb(TLOW, DYN));
+        assertEquals(Option.apply(THIGH), tlub(THIGH, THIGH));
+        assertEquals(Option.apply(TLOW), tlub(TLOW, TLOW));
+        assertEquals(Option.apply(TLOW), tlub(TLOW, PUB));
+        assertEquals(Option.apply(DYN), tlub(DYN, PUB));
+        assertEquals(Option.apply(DYN), tlub( PUB, DYN));
+        assertEquals(Option.apply(THIGH), tlub(THIGH, TLOW));
+        assertEquals(Option.empty(), tlub(THIGH, DYN));
+        assertEquals(Option.empty(), tlub(TLOW, DYN));
         assertTrue("LOW <= HIGH", tle(TLOW, THIGH));
         assertFalse("HIGH /<= LOW", tle(THIGH, TLOW));
         assertFalse("DYN /<= LOW", tle(DYN, TLOW));

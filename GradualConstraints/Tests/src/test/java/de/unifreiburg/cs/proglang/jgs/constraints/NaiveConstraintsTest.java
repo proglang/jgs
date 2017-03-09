@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
+import scala.Option;
 import soot.IntType;
 import soot.SootField;
 
@@ -293,5 +294,48 @@ public class NaiveConstraintsTest {
                 CTypes.<Level>variable(cs.v1).inspect(),
                 CTypes.<Level>literal(TLOW).inspect());
         assertThat(res, is(expected.stream().collect(toSet())));
+    }
+
+    @Test
+    public void testGreatestLowerBounds() {
+        ConstraintSet<Level> cset;
+        Option<TypeViews.TypeView<Level>> res;
+        Option<TypeViews.TypeView<Level>> expected;
+
+        cset = makeNaive(asList(leC(literal(THIGH), variable(cs.v0)),
+                                                     leC(variable(cs.v1), variable(cs.v0)),
+                                                     leC(literal(TLOW), variable(cs.v1)),
+                                                     leC(variable(cs.v1), variable(cs.v2))));
+        res = cset.greatestLowerBound(cs.v0);
+        expected = Option.apply(THIGH);
+
+        assertThat(res, is(expected));
+
+        cset = makeNaive(asList(leC(literal(TLOW), variable(cs.v0)),
+                                leC(variable(cs.v1), variable(cs.v0)),
+                                leC(literal(THIGH), variable(cs.v1)),
+                                leC(variable(cs.v1), variable(cs.v2))));
+        res = cset.greatestLowerBound(cs.v0);
+        expected = Option.apply(THIGH);
+
+        assertThat(res, is(expected));
+
+        cset = makeNaive(asList(leC(literal(DYN), variable(cs.v0)),
+                                leC(variable(cs.v1), variable(cs.v0))  ,
+                                leC(literal(TLOW), variable(cs.v1)),
+                                leC(variable(cs.v1), variable(cs.v2))));
+        res = cset.greatestLowerBound(cs.v0);
+        expected = Option.empty();
+
+        assertThat(res, is(expected));
+
+        cset = makeNaive(asList(leC(variable(cs.v1), variable(cs.v0)),
+                                leC(variable(cs.v1), variable(cs.v0))  ,
+                                leC(variable(cs.v2), variable(cs.v1)),
+                                leC(variable(cs.v1), variable(cs.v2))));
+        res = cset.greatestLowerBound(cs.v0);
+        expected = Option.empty();
+
+        assertThat(res, is(expected));
     }
 }

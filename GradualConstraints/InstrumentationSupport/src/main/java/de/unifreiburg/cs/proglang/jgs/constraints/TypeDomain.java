@@ -115,14 +115,17 @@ public class TypeDomain<Level> {
             final Level l1 = t1.getLevel();
             if (t2.isStatic()) {
                 return Option.apply(level(secDomain.lub(l1, t2.getLevel())));
-            } else {
+            } else if (t2.isDynamic()){
                 return Option.empty();
+            } else {
+                // t2 is public
+                return Option.apply(t1);
             }
         } else if (t1.isDynamic()) {
             if (t2.isStatic()) {
                 return Option.empty();
             } else {
-                // t2 dynamic of public
+                // t2 dynamic or public
                 return Option.apply(t1);
             }
         } else {
