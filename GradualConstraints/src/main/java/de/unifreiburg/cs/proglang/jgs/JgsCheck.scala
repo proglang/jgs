@@ -25,7 +25,7 @@ import org.json4s._
 import org.json4s.jackson.{Json, Json4sScalaModule}
 import scopt.OptionParser
 import soot.options.Options
-import soot.{Scene, SootClass, SootField, SootMethod}
+import soot.{Scene, SootClass, SootField, SootMethod, VoidType}
 
 import scala.collection.JavaConversions._
 import scala.io.Source
@@ -401,12 +401,16 @@ object JgsCheck {
           yield i -> result.parameterInstantiation(i).getOrElse(
             throw new IllegalArgumentException(s"No monomorphic instantiation for paramter ${i}: ${m} \n ${signatureConstraints.toString}"))).toMap
 
-        val returnInstantiation = result.returnInstantiation.getOrElse(
-          throw new IllegalArgumentException(s"No monomorphic instantiation for return type: ${m} \n ${signatureConstraints.toString}")
-        )
+        val returnInstantiation = if (m.getReturnType == VoidType.v()) {
+          Failure(new IllegalArgumentException(s"Try to get type of a void method: ${m}"))
+        } else {
+          Success(result.returnInstantiation.getOrElse(
+            throw new IllegalArgumentException(s"No monomorphic instantiation for return type: ${m} \n ${signatureConstraints.toString}")
+          ))
+        }
 
         new Instantiation[Level] {
-          override def getReturn: Type[Level] = returnInstantiation
+          override def getReturn: Type[Level] = returnInstantiation.get
 
           override def get(param: Int): Type[Level] = paramInstantiation(param)
         }

@@ -157,9 +157,16 @@ abstract case class ConstraintSet[Level] (
       case Lit(t) => true
       case Variable(v) => false
     })
-    bounds.foldLeft(None : Option[TypeView[Level]])((res, ct) => ct match {
-      case Lit(t) => res.flatMap(t2 => types.lub(t, t2))
-      case Variable(v) => res
-    })
+    val firstStatic = bounds.find(ct => ct match {
+      case Lit(t) => true
+      case Variable(v) => false
+    }).map(_.asInstanceOf[Lit[Level]])
+
+    firstStatic.flatMap(lit =>
+      bounds.foldLeft(Option(lit.t))((res, ct) => ct match {
+        case Lit(t) => res.flatMap(t2 => types.lub(t, t2))
+        case Variable(v) => res
+      }
+    ))
   }
 }
