@@ -390,7 +390,7 @@ object JgsCheck {
 
     new instrumentation.Methods[Level] {
       def getResult(m : SootMethod) : MethodTyping.Result[Level] =
-        methodResults.getOrElse(m, throw new NoSuchElementException(s"No variable typing for method ${m}"))
+        methodResults.getOrElse(m, throw new NoSuchElementException(s"No typing result for method ${m}"))
 
       override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] = {
         val result = getResult(m)

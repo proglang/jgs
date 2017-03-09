@@ -10,11 +10,7 @@ import soot.Scene;
 import soot.SootMethod;
 
 import java.util.Collections;
-import java.util.HashMap;
 
-/**
- * Created by fennell on 3/6/17.
- */
 public class TypeCheckExample {
 
     public static void main(String[] args) {
@@ -34,7 +30,25 @@ public class TypeCheckExample {
         );
 
         for (SootMethod m : Scene.v().getMainClass().getMethods()) {
-            System.out.print("Checking result of method: " + m + ": ")   ;
+            System.out.print("Checking vartyping of method: " + m + ": ");
+            try {
+                typeCheckResult.getVarTyping(m);
+                System.out.println("ok");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        for (SootMethod m : Scene.v().getMainClass().getMethods()) {
+            System.out.print("Checking cxtyping of method: " + m + ": ");
+            try {
+                typeCheckResult.getCxTyping(m);
+                System.out.println("ok");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        for (SootMethod m : Scene.v().getMainClass().getMethods()) {
+            System.out.print("Checking instatiation of method: " + m + ": ")   ;
             try {
                 typeCheckResult.getMonomorphicInstantiation(m);
                 System.out.println("ok");
