@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "NSUPolicy";
+	public String name = "castDyn2DynSuccess";
 
 	private ExpectedException expectedException = ExpectedException.ILLEGAL_FLOW;
 
@@ -39,7 +39,7 @@ public class SingleEndToEndTest {
 	 * 
 	 * Here, the involvedVars would be new String[] {"java.lang.String_$r6"}
 	 */
-	private String[] involvedVars = new String[] {"int_i0"};
+	private String[] involvedVars = new String[] {"java.lang.Object_$r5"};
 
 	private Logger logger = L1Logger.getLogger();
 

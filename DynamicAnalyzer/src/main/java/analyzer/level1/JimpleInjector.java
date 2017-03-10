@@ -2,6 +2,8 @@ package analyzer.level1;
 
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
+import analyzer.level2.SecurityLevel;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
@@ -111,6 +113,8 @@ public class JimpleInjector {
      */
     private static Unit lastPos;
 
+    private static Casts casts;
+
     /**
      * Stores the results of the static analysis. Use Lvel instead of Level because of conflicts with the LEVEL of the Logger.
      */
@@ -118,6 +122,7 @@ public class JimpleInjector {
     private static CxTyping cxTyping;
     private static Instantiation instantiation;
 
+    
     /**
      * See method with same name in HandleStatement.
      *
@@ -1423,9 +1428,44 @@ public class JimpleInjector {
         }
     }
 
-    static <Lvel> void setStaticAnalaysisResults(VarTyping<Lvel> varTy, CxTyping<Lvel> cxTy, Instantiation<Lvel> inst) {
+    static <Lvel> void setStaticAnalaysisResults(VarTyping<Lvel> varTy, CxTyping<Lvel> cxTy, Instantiation<Lvel> inst,
+                                                 Casts c) {
         varTyping = varTy;
         cxTyping = cxTy;
         instantiation = inst;
+        casts = c;
+    }
+
+    /**
+     * Handle Casts.cast(String s, T local) method
+     * @param aStmt         Jimple assign statement whose right-hand side is the cast
+     */
+    public static void handleCast(AssignStmt aStmt) {
+
+       logger.info("Found Cast " + aStmt.getUseBoxes().get(0).getValue() );
+
+        if (casts.isValueCast(aStmt)) {
+            Casts.Conversion conversion = casts.getValueCast(aStmt);
+            Local leftHandLocal = (Local) aStmt.getLeftOp();
+
+            if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
+                // x = (? => BOTTOM) y		check
+                logger.info("Check that " + getSignatureForLocal(leftHandLocal) + " is less/equal " + conversion.getDestType().getLevel());
+                checkThatLe(leftHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
+            } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
+                // x = (H => ? ) y				Initialisierung
+               makeLocal(leftHandLocal, conversion.getSrcType().getLevel().toString(), aStmt);
+            } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
+                // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
+            } else {
+                // Static to Static, invalid casts should be caught by static analyzer. We double check:
+                if (! SecurityLevel.le( SecurityLevel.readLevel(conversion.getSrcType().getLevel().toString()) ,
+                                        SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()))) {
+                   // can't use that here, because exceptions during soot analysis will cause all UnitTests to fail
+                   // throw new IllegalFlowException("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
+                }
+                // else: treat like assign stmt, no extra instrumentation.
+            }
+        }
     }
 }

@@ -63,6 +63,9 @@ public class ExternalClasses {
 		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
 				+ "makeLow(java.lang.Object)>", new MakeLow());
 
+		// casts
+		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>", new DoCast());
+
 		// Dont do anything for ValueOf
 		methodMap.put("<java.lang.Boolean: java.lang.Boolean valueOf(boolean)>", new DoNothing());
 		methodMap.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new DoNothing());
@@ -112,6 +115,14 @@ public class ExternalClasses {
 					
 				}
 			} 
+		}
+	}
+
+	static class DoCast implements Command {
+		@Override
+		public void execute(Unit pos, Local[] params) {
+			logger.info("Cast at " + pos);
+			AnnotationValueSwitch.rightElement = RightElement.CAST;
 		}
 	}
 	

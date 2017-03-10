@@ -54,7 +54,8 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		NOT, NEW_ARRAY, NEW_UNDEF_OBJECT,
 		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD, 
 		SET_RETURN_LEVEL,
-		MAKE_HIGH, MAKE_MEDIUM, MAKE_LOW
+		MAKE_HIGH, MAKE_MEDIUM, MAKE_LOW,
+		CAST
 	} 
 	
 	protected static RightElement rightElement = RightElement.NOT;

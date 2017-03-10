@@ -9,7 +9,6 @@ import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.*;
-import utils.staticResults.implementation.Types;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,54 +34,72 @@ public class Main {
 	 */
 	public static void main(String[] args)
 	{
-
-		execute(args, false, null, null, null, false, 0);
+		execute(args, false, null,  false, 0, null);
 	}
 
-	/**
-	 * Run main with fake variable typing results.
-	 * @param args			arguments as list of strings
-	 * @param varMap		fake var Typing map
-	 * @param cxMap		fake cx Typing map
-	 * @param instantiationMap	fake instantiation map
-	 * @param expextedException define which exception we expect
-	 */
-	public static void mainWithFakeResults(String[] args,
-										   MSLMap<BeforeAfterContainer> varMap,
-										   MSMap<Types> cxMap,
-										   MIMap<Types> instantiationMap,
-										   boolean controllerIsActive,
-										   int expextedException) {
-		execute(args, true, varMap, cxMap, instantiationMap, controllerIsActive, expextedException);
+
+	public static void execute(String[] args,
+								boolean useExternalTyping,
+								Methods m,
+								boolean controllerIsActive,
+								int expectedException,
+							    Casts c) {
+
+
+		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+
+		String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
+
+
+		if (javaHome == null) {
+			throw new IllegalStateException("System property `java.home' is undefined");
+		}
+
+		// Setting the soot classpath
+		String classPath = Scene.v().getSootClassPath()
+				+ ":.:"
+				+ new File(javaHome, "lib/jce.jar").toString()
+				+ ":"
+				+ new File(javaHome, "lib/rt.jar").toString();
+
+		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
+		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
+			classPath += ":" + s;
+		}
+		for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
+			classPath += ":" + s;
+		}
+		Scene.v().setSootClassPath(classPath);
+
+		// those are needed because of soot-magic i guess
+		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
+		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
+
+		executeWithoutSootSetup(args, useExternalTyping, m, controllerIsActive, expectedException, c);
 	}
+
+
 
 	/**
      * Method which configures and executes soot.main.Main.
      * @param args This arguments are delivered by main.Main.main.
      */
-	private static void execute(String[] args,
-								boolean useFakeTyping,
-								MSLMap<BeforeAfterContainer> varMap,
-								MSMap<Types> cxMap,
-								MIMap<Types> instantiationMap,
+	public static void executeWithoutSootSetup(String[] args,
+								boolean useExternalTyping,
+								Methods m,
 								boolean controllerIsActive,
-								int expectedException) {
-
-		// Example instantiation of a instrumentation.Casts object
-		// TODO: Just an example... "execute" should be parameterized properly.
-		Casts<LowMediumHigh.Level> casts =
-				new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
-										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.cast",
-										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
-										 "de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
+								int expectedException,
+							    Casts c) {
 
         Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
                 sootOptionsContainer.getMainclass(),                    // adds the mainclass file
-                "-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
+                //"-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
                 "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
-                "--d", sootOptionsContainer.getOutputFolderAbsolutePath()));         // sets output folder
+                "--d", sootOptionsContainer.getOutputFolderAbsolutePath(),
+				"-w"	// this destroys the unit tests!
+				));         // sets output folder
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
@@ -93,71 +110,45 @@ public class Main {
 			e.printStackTrace();
 		}
 
-        String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
+        // ====== Create / load fake static analysis results ======
+		Methods methods = m;
+		Casts casts = c;
 
-		if (javaHome == null) {
-			throw new IllegalStateException("System property `java.home' is undefined");
-		}
-    	
-		// Setting the soot classpath
-		String classPath = Scene.v().getSootClassPath()
-				+ ":.:"
-				+ new File(javaHome, "lib/jce.jar").toString()
-			    + ":"
-				+ new File(javaHome, "lib/rt.jar").toString();
-
-		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
-		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
-			classPath += ":" + s;
-		}
-		Scene.v().setSootClassPath(classPath);
-
-
-        // ====== Create / load fake static analysis results =====
-		MSLMap<BeforeAfterContainer> varMapping;
-		MSMap<Types> cxMapping;
-		MIMap<Types> instantiationMapping;
-
-		// if no fake Typing is supplied, make everything dynamic
-		if (! useFakeTyping) {
-			varMapping = new MSLMap<>();
-			cxMapping = new MSMap<>();
-			instantiationMapping = new MIMap<>();
+		// if no external Typing is supplied, make one up
+		if (! useExternalTyping) {
 
             Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
 			allClasses.add(sootOptionsContainer.getMainclass());
 
-			if (sootOptionsContainer.usePublicTyping()) {
-				ResultsServer.setPublic(varMapping, allClasses);
-				ResultsServer.setPublic(cxMapping, allClasses);
-				ResultsServer.setPublic(instantiationMapping, allClasses);
-			} else {
-				ResultsServer.setDynamic(varMapping, allClasses);
-				ResultsServer.setDynamic(cxMapping, allClasses);
-				ResultsServer.setDynamic(instantiationMapping, allClasses);
-			}
+			// the default casts object. used only if explicitely specified that none is supplied externally
+			casts =
+					new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
+							"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
+							"de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
+							"de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
 
-		} else {
-			varMapping = varMap;
-			cxMapping = cxMap;
-			instantiationMapping = instantiationMap;
+
+			if (sootOptionsContainer.usePublicTyping()) {
+				methods = ResultsServer.createAllPublicMethods(allClasses);
+			} else {
+				methods = ResultsServer.createAllDynamicMethods(allClasses);
+			}
 		}
         // =================================
 
-        // those are needed because of soot-magic i guess
-        Scene.v().addBasicClass("analyzer.level2.HandleStmt");
-		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
 
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(varMapping, cxMapping, instantiationMapping, controllerIsActive, expectedException);
+
+        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(methods, controllerIsActive, expectedException, casts);
 
 		PackManager.v()
-        	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer)); 
+        	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer));
 
-        soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
-        
+		Scene.v().addBasicClass("analyzer.level2.HandleStmt",SootClass.SIGNATURES);
+		soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
+
 		// compile to JAR.
 		utils.ant.AntRunner.run(sootOptionsContainer);
-        
+
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
 
@@ -165,7 +156,7 @@ public class Main {
 		// was ist der empfohlene weg, exceptions zu werfen aus einer analyse heraus.
 		// unsere situation: Rufen main.Main in unit tests auf, wewnn wir einmal expcept werfen, bricht
 		// alles ab, obwohl wir resetten.
-        
+
 	}
 
 

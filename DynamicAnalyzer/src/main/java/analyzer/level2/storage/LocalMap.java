@@ -114,6 +114,9 @@ public class LocalMap {
 	 * @param signature
 	 */
 	public void initializeLocal(String signature) {
+		if (!localMap.containsKey(signature)) {
+			insertUninitializedLocal(signature);
+		}
 		if (!localMap.get(signature).isInitialized()) {
 			logger.info("Local " + signature + " initialized");
 			localMap.get(signature).initialize();
@@ -125,7 +128,11 @@ public class LocalMap {
 	 * @param signature
 	 * @return true iff local is initialized
 	 */
-	public boolean checkIfInitialized(String signature) {
+	public boolean checkIfInitialized(String signature)
+	{
+		if (!localMap.containsKey(signature)) {
+			insertUninitializedLocal(signature);
+		}
 		return localMap.get(signature).isInitialized();
 	}
 	
@@ -136,15 +143,17 @@ public class LocalMap {
 	 */
 	public Object getLevel(String signature) {
 		if (!localMap.containsKey(signature)) {
-			throw new InternalAnalyzerException("Expected local " 
-			+ signature + " not found in LocalMap");
+			//throw new InternalAnalyzerException("Expected local " + signature + " not found in LocalMap");
+			insertUninitializedLocal(signature);
 		}
 		initializeLocal(signature);
 		return localMap.get(signature).getSecurityLevel();
 	}
 	
 	public void setLevel(String signature, Object securitylevel) {
-
+		if (!localMap.containsKey(signature)) {
+			insertUninitializedLocal(signature);
+		}
 		localMap.put(signature, new SecurityOptional(securitylevel, true));
 	}
 	

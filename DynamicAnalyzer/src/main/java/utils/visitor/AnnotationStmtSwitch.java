@@ -112,8 +112,10 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			break; // This two cases are treated later
 		case MAKE_LOW:
 			break;
-		case SET_RETURN_LEVEL: // This will be handeled later (include by nico)
+		case SET_RETURN_LEVEL: // This will be handeled later (by nico)
 			break;
+		case CAST:	// will also be handled later
+				break;
 		default:
 			new InternalAnalyzerException("Unexpected Context: "
 					+ AnnotationValueSwitch.rightElement);
@@ -142,12 +144,11 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			break;
 		case SET_RETURN_LEVEL:
 			JimpleInjector.setReturnLevelAfterInvokeStmt(aStmt);
-		  // in eigene methode des jimpleInjector
-		  // l := get level of left-hand-side
-		  // l := l joined with objectmap.actualReturnLevel
-		  // set level of left-hand-side to l AFTER
-			// unitStore_After.insertElement(unitStore_After.new Element(invoke, pos));
-		break;
+			break;
+		case CAST:
+			logger.finest("Cast found at " + aStmt);
+			JimpleInjector.handleCast(aStmt);
+			break;
 		default:
 			break;
 		}

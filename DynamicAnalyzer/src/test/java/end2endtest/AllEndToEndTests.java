@@ -61,6 +61,20 @@ public class AllEndToEndTests {
 				
 				new Object[] { "BooleanPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_z1"} },
 
+				// ============= Casts ===========
+				new Object[] { "castStatic2Dyn_Success1", ExpectedException.NONE, new String[] {""} },
+				new Object[] { "castStatic2Dyn_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_"} },
+
+				new Object[] { "castDyn2Static_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r5"} },
+				new Object[] { "castDyn2Static_Fail2", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
+				new Object[] { "castDyn2Static_Success1", ExpectedException.NONE, new String[] {""} },
+				new Object[] { "castDyn2Static_Success2", ExpectedException.NONE, new String[] {""} },
+
+				new Object[] { "castDyn2DynSuccess", ExpectedException.NONE, new String[] {""} },
+
+				// not usable bc unit test cannot handle exception thrown in instrumentation phase
+				// new Object[] { "castStatic2Static_Fail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String"} },
+
 				new Object[] { "DirectPrintFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
 
 				// ExternalFail1 is fully tested in tests.end2endtest.compileToJarTests
@@ -133,7 +147,10 @@ public class AllEndToEndTests {
 				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
 				new Object[] { "SystemOut1", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
 				new Object[] { "SystemOut2", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
-				
+
+
+
+
 				// SimpleDebug is the test to try out stuff with - sort of a playground. Run only in SingleEndToEndTest
 				// new Object[] { "SimpleDebug", true, new String[] { "java.lang.String_r3" } },
 

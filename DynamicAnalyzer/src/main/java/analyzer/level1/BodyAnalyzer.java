@@ -1,7 +1,9 @@
 package analyzer.level1;
 
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
 import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
@@ -33,21 +35,18 @@ import java.util.logging.Logger;
  */
 public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
-	MSLMap<BeforeAfterContainer> varMapping;
-	MSMap<Types> cxMapping;
-	MIMap<Types> instantiationMapping;
+    Methods methods;
 	boolean controllerIsActive;
 	int expectedException;
-    public BodyAnalyzer(MSLMap<BeforeAfterContainer> varMap,
-                        MSMap<Types> cxMap,
-                        MIMap<Types> instantiationMap,
+	Casts casts;
+    public BodyAnalyzer(Methods m,
 						boolean controllerIsActive,
-						int expectedException) {
-        varMapping = varMap;
-        cxMapping = cxMap;
-        instantiationMapping = instantiationMap;
+						int expectedException,
+						Casts c) {
+        methods = m;
         this.controllerIsActive = controllerIsActive;
         this.expectedException = expectedException;
+        casts = c;
     }
 
     /**
@@ -57,7 +56,7 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 	@Override
 	protected void internalTransform(Body arg0, String arg1,
 				@SuppressWarnings("rawtypes") Map arg2) {
-		SootMethod method;
+		SootMethod sootMethod;
 		Body body;	
 		
 		/*
@@ -102,8 +101,8 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 				arg0.getMethod().getName());
 	
 		body = arg0;
-		method = body.getMethod();
-		fields = method.getDeclaringClass().getFields();	
+		sootMethod = body.getMethod();
+		fields = sootMethod.getDeclaringClass().getFields();
 
 		stmtSwitch = new AnnotationStmtSwitch(body);
 
@@ -115,11 +114,12 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		JimpleInjector.setBody(body);
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
-		JimpleInjector.setStaticAnalaysisResults(varMapping.getVar(method), cxMapping.getCx(method),
-					instantiationMapping.getInstantiation(method));
+		JimpleInjector.setStaticAnalaysisResults(methods.getVarTyping(sootMethod),
+				methods.getCxTyping(sootMethod),
+				methods.getMonomorphicInstantiation(sootMethod),
+				casts);
 
 		units = body.getUnits();
-		locals = body.getLocals();
 
 
 		// invokeHS should be at the beginning of every method-body. 
@@ -127,7 +127,7 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		JimpleInjector.invokeHS();
 		JimpleInjector.addNeededLocals();
 				
-		if (method.isMain()) {
+		if (sootMethod.isMain()) {
 			JimpleInjector.initHS();
 		}
 
@@ -138,7 +138,7 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		 * has to be added to the ObjectMap and its fields are added to the
 		 * new object
 		 */
-		if (method.getName().equals("<init>")) {
+		if (sootMethod.getName().equals("<init>")) {
 			logger.log(Level.INFO, "Entering <init>");
 			JimpleInjector.addInstanceObjectToObjectMap();
 						
@@ -151,9 +151,9 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 				}
 			}
 						
-		} else if (method.getName().equals("<clinit>")) {
+		} else if (sootMethod.getName().equals("<clinit>")) {
 			logger.log(Level.INFO, "Entering <clinit>");
-			SootClass sc = method.getDeclaringClass();
+			SootClass sc = sootMethod.getDeclaringClass();
 			JimpleInjector.addClassObjectToObjectMap(sc);
 						
 			// Add all static fields to ObjectMap
@@ -169,7 +169,8 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
 		// Add all locals to LocalMap except the locals which 
 		// are inserted for analysis purposes.
-		Iterator<Local> lit = locals.iterator();
+		// locals are not added anymore all at the beginning. Instead, they are added only when needed.
+		/*Iterator<Local> lit = locals.iterator();
 		while (lit.hasNext()) {
 			Local item = lit.next();
 			if (!(item.getName() == "local_for_Strings") 
@@ -179,9 +180,9 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 					&& !(item.getName() == "local_for_Objects") 
 					&& !(item.getName() == "local_level")
 					&& !(item.getName() == "hs")) {
-				JimpleInjector.addLocal(item);
+				//JimpleInjector.addLocal(item);
 			}
-		}
+		}*/
 
 				
 				

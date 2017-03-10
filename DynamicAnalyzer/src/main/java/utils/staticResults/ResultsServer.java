@@ -1,8 +1,10 @@
 package utils.staticResults;
 
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
 import soot.*;
 import soot.jimple.Stmt;
 import utils.staticResults.implementation.Dynamic;
+import utils.staticResults.implementation.MethodsImpl;
 import utils.staticResults.implementation.Public;
 import utils.staticResults.implementation.Types;
 
@@ -162,5 +164,29 @@ public class ResultsServer {
                 }
             }
         }
+    }
+
+    public static Methods createAllPublicMethods(Collection<String> allClasses) {
+        MSLMap varMap = new MSLMap();
+        MSMap cxMap = new MSMap();
+        MIMap implMap = new MIMap();
+
+        setPublic(varMap, allClasses);
+        setPublic(cxMap, allClasses);
+        setPublic(implMap, allClasses);
+
+        return new MethodsImpl(varMap, cxMap, implMap);
+    }
+
+    public static Methods createAllDynamicMethods(Collection<String> allClasses) {
+        MSLMap varMap = new MSLMap();
+        MSMap cxMap = new MSMap();
+        MIMap implMap = new MIMap();
+
+        setDynamic(varMap, allClasses);
+        setDynamic(cxMap, allClasses);
+        setDynamic(implMap, allClasses);
+
+        return new MethodsImpl(varMap, cxMap, implMap);
     }
 }
