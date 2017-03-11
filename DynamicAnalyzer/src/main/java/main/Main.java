@@ -46,38 +46,44 @@ public class Main {
 							    Casts c) {
 
 
-		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
-
-		String javaHome = System.getProperty("java.home");	//gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
-
-
-		if (javaHome == null) {
-			throw new IllegalStateException("System property `java.home' is undefined");
-		}
-
-		// Setting the soot classpath
-		String classPath = Scene.v().getSootClassPath()
-				+ ":.:"
-				+ new File(javaHome, "lib/jce.jar").toString()
-				+ ":"
-				+ new File(javaHome, "lib/rt.jar").toString();
-
-		// Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
-		for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
-			classPath += ":" + s;
-		}
-		for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
-			classPath += ":" + s;
-		}
-		Scene.v().setSootClassPath(classPath);
-
-		// those are needed because of soot-magic i guess
-		Scene.v().addBasicClass("analyzer.level2.HandleStmt");
-		Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
+	    doSootSetup(args);
 
 		executeWithoutSootSetup(args, useExternalTyping, m, controllerIsActive, expectedException, c);
 	}
 
+
+    public static void doSootSetup(String[] args) {
+
+
+        ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+
+        String javaHome = System.getProperty("java.home");    //gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
+
+
+        if (javaHome == null) {
+            throw new IllegalStateException("System property `java.home' is undefined");
+        }
+
+        // Setting the soot classpath
+        String classPath = Scene.v().getSootClassPath()
+                + ":.:"
+                + new File(javaHome, "lib/jce.jar").toString()
+                + ":"
+                + new File(javaHome, "lib/rt.jar").toString();
+
+        // Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
+        for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
+            classPath += ":" + s;
+        }
+        for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
+            classPath += ":" + s;
+        }
+        Scene.v().setSootClassPath(classPath);
+
+        // those are needed because of soot-magic i guess
+        Scene.v().addBasicClass("analyzer.level2.HandleStmt");
+        Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
+    }
 
 
 	/**
@@ -97,8 +103,7 @@ public class Main {
                 sootOptionsContainer.getMainclass(),                    // adds the mainclass file
                 //"-main-class", sootOptionsContainer.getMainclass(),     // specifies which file should be the mainclass
                 "-f", sootOptionsContainer.getOutputFormat(),           // sets output format
-                "--d", sootOptionsContainer.getOutputFolderAbsolutePath(),
-				"-w"	// this destroys the unit tests!
+                "--d", sootOptionsContainer.getOutputFolderAbsolutePath()
 				));         // sets output folder
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
@@ -143,7 +148,7 @@ public class Main {
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer));
 
-		Scene.v().addBasicClass("analyzer.level2.HandleStmt",SootClass.SIGNATURES);
+
 		soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
 
 		// compile to JAR.
