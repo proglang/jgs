@@ -49,8 +49,8 @@ public class JGS_End2EndTests {
     @Parameters(name = "Name: {0}")
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
-                new Object[]{"ScratchMonomorphic", ExpectedException.NONE, new String[]{""}},
-                new Object[]{"ScratchMonomorphic", ExpectedException.NONE, new String[]{""}}
+                new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}},
+                new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}}
         );
     }
 

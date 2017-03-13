@@ -8,7 +8,7 @@ import de.unifreiburg.cs.proglang.jgs.support.Constraints;
 import de.unifreiburg.cs.proglang.jgs.support.Effects;
 import de.unifreiburg.cs.proglang.jgs.support.Sec;
 
-public class ScratchMonomorphic {
+public class ScratchMonomorphic_Success {
 
     @Constraints({"LOW <= @0"})
     public static void main(String[] args) {
@@ -26,32 +26,13 @@ public class ScratchMonomorphic {
 
     static int aStatic = 0;
 
-    // dynamisch: ? <= @0
-    @Constraints({"? <= @0", "@ret <= ?"})
+    @Constraints({"LOW <= @0 ", "@0 <= @ret"})
     @Effects({})
-    static String aStaticMethod2(String s) {
-        String x = s;
-        //String x = Casts.cast("HIGH ~> ?", s);
-        if (x == null) {
-            x = "hi";
-            //return Casts.cast("? ~> LOW", x);
-            return "hi";
+    static int aStaticMethod(int i) {
+        if (i == 0) {
+            return 1;
         } else {
-            return null;
-        }
-    }
-
-    // dynamisch: ? <= @0
-    @Constraints({"LOW <= @0", "@ret <= LOW"})
-    @Effects({})
-    static String aStaticMethod(String s) {
-        String x = s;
-        //String x = Casts.cast("HIGH ~> ?", s);
-        if (x == null) {
-            //return Casts.cast("? ~> LOW", x);
-            return "hi";
-        } else {
-            return null;
+            return 0;
         }
     }
 

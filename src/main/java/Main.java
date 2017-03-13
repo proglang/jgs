@@ -16,7 +16,7 @@ import java.util.Collections;
  * Launches the static analyzer, then the dynamic analyzer.
  *
  * Example:
- * -m pkg.ScratchMonomorphic -s GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic.java -p . GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes GradualConstraints/JGSSupport/target/scala-2.11/classes -o sootOutput
+ * -m pkg.ScratchMonomorphic_Success -s GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic_Success.java -p . GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes GradualConstraints/JGSSupport/target/scala-2.11/classes -o sootOutput
  */
 public class Main {
     public static void main(String[] args) {
