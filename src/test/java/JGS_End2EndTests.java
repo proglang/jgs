@@ -50,7 +50,7 @@ public class JGS_End2EndTests {
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
                 new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}},
-                new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}}
+                new Object[]{"SimpleSuccess", ExpectedException.NONE, new String[]{""}}
         );
     }
 
@@ -60,7 +60,7 @@ public class JGS_End2EndTests {
      */
     public void test() {
 
-        String outputDir = "junit";
+        String outputDir = "jgs_unit";
 
         // compile
         String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
