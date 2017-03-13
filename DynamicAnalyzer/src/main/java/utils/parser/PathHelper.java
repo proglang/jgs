@@ -20,6 +20,6 @@ public class PathHelper {
 
         // folder working dir
         String folder_working_dir = loader.getResource("").getPath();
-        return new File(folder_working_dir).getParentFile().getParentFile().getParentFile().getParentFile();    // move up four levels
+        return new File(folder_working_dir).getParentFile().getParentFile().getParentFile();    // move up four levels
     }
 }
