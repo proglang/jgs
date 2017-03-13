@@ -4,6 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.support.*;
 
 public class ScratchMonomorphic {
 
+    @Constraints({"LOW <= @0"})
     public static void main(String[] args) {
 
     }
@@ -19,13 +20,17 @@ int answer = 42;
 
 static int aStatic = 0;
 
-@Constraints({"LOW <= @0 ", "@0 <= @ret"})
+// dynamisch: ? <= @0
+@Constraints({"LOW <= @0", "@ret <= LOW"})
 @Effects({})
-static int aStaticMethod(int i) {
-    if (i == 0) {
-       return 1;
+static String aStaticMethod(String s) {
+    String x = s;
+    //String x = Casts.cast("HIGH ~> ?", s);
+    if (x == null) {
+       //return Casts.cast("? ~> LOW", x);
+        return "hi";
      } else {
-        return 0;
+        return null;
         }
   }
 

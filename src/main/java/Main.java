@@ -1,3 +1,4 @@
+import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.JgsCheck;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
@@ -96,20 +97,20 @@ public class Main {
 
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         // run static
-        ACasts<LowHigh.Level> casts =
-                new CastsFromConstants<>(new TypeDomain<>(new LowHigh()),
+        ACasts<LowMediumHigh.Level> casts =
+                new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
                         "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object cast(java.lang.Object)>",
                         "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object castCx(java.lang.Object)>",
                         "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
 
         // Static Check
-        Methods<LowHigh.Level> typeCheckResult = JgsCheck.typeCheck(
+        Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 sootOptionsContainer.getMainclass(),
                 sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
                 sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
                 Collections.<String, JgsCheck.Annotation>emptyMap(),
                 Collections.<String, String>emptyMap(),
-                new LowHigh(), casts
+                new LowMediumHigh(), casts
         );
 
         // Dynamic Check

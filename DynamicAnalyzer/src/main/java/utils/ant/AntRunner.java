@@ -67,6 +67,7 @@ public class AntRunner {
                 "GradualConstraints/InstrumentationSupport/target/scala-2.11/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar" ));
         secDomain.setIncludes("de/unifreiburg/cs/proglang/jgs/constraints/SecDomain.class");
         secDomain.setIncludes("de/unifreiburg/cs/proglang/jgs/constraints/secdomains/UserDefined.class");
+        secDomain.setIncludes("de/unifreiburg/cs/proglang/jgs/constraints/secdomains/UserDefined$Edge.class");
         j.addZipfileset(secDomain);
 
         // add supplementary files

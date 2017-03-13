@@ -33,10 +33,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Edge;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SecurityLevel {
 	@SuppressWarnings("rawtypes")
-	// public static SecDomain secDomain = new LowMediumHigh();
-	public static SecDomain secDomain;
+	public static SecDomain secDomain = new LowMediumHigh();
+	//public static SecDomain secDomain;
 	
-	private static Object getSecDomainResource(String name) {	    
+	/*private static Object getSecDomainResource(String name) {
 	    InputStream in = Object.class.getResourceAsStream("/secdomain/" + name);
 	    if (in == null) {
 	        throw new RuntimeException(String.format("Cannot find secdomain resource: %s", name));
@@ -46,17 +46,17 @@ public class SecurityLevel {
 	    } catch (IOException | ClassNotFoundException e) {
 	        throw new RuntimeException(String.format("Error reading secdomain resource %s: %s", name, e));
 	    }
-	}
-	static {	
+	}*/
+	/*static {
 	    // TODO: read secdomain from resources
-	    /*
+	    *//*
 	        secDomain = new UserDefined((Set)getSecDomainResource("levels"), 
 	                                    (Set)getSecDomainResource("lt"),
 	                                    (Map)getSecDomainResource("lubMap"),
 	                                    (Map)getSecDomainResource("glbMap"),
 	                                    (String)getSecDomainResource("topLevel"),
 	                                    (String)getSecDomainResource("bottomLevel"));
-	                                    */
+	                                    *//*
 	    Set<String> levels = new HashSet<>(Arrays.asList("LOW", "MEDIUM", "HIGH"));
 	    Set<Edge> lt = new HashSet<>(Arrays.asList(new UserDefined.Edge("MEDIUM", "HIGH"),
 	                                               new UserDefined.Edge("LOW", "HIGH"),
@@ -78,7 +78,8 @@ public class SecurityLevel {
 	          glbMap.put(new Edge(l, "LOW"), "LOW");
 	      }	    
 	    secDomain = new UserDefined(levels, lt, lubMap, glbMap, "HIGH", "LOW");
-	}
+	    }
+	*/
 	
 	public static Object bottom() {
 		return secDomain.bottom();
