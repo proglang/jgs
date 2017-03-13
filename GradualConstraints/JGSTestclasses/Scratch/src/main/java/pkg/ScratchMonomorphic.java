@@ -20,6 +20,21 @@ int answer = 42;
 
 static int aStatic = 0;
 
+    // dynamisch: ? <= @0
+    @Constraints({"? <= @0", "@ret <= ?"})
+    @Effects({})
+    static String aStaticMethod2(String s) {
+        String x = s;
+        //String x = Casts.cast("HIGH ~> ?", s);
+        if (x == null) {
+            x = "hi";
+            //return Casts.cast("? ~> LOW", x);
+            return "hi";
+        } else {
+            return null;
+        }
+    }
+
 // dynamisch: ? <= @0
 @Constraints({"LOW <= @0", "@ret <= LOW"})
 @Effects({})
