@@ -50,7 +50,8 @@ public class JGS_End2EndTests {
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
                 new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}},
-                new Object[]{"SimpleSuccess", ExpectedException.NONE, new String[]{""}}
+                new Object[]{"SimpleSuccess", ExpectedException.NONE, new String[]{""}},
+                new Object[]{"SimpleFail", ExpectedException.NONE, new String[]{""}}
         );
     }
 
