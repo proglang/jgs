@@ -17,9 +17,9 @@ public class TypeCheckExample {
 
         ACasts<LowHigh.Level> casts =
                 new CastsFromConstants<>(new TypeDomain<>(new LowHigh()),
-                                         "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object cast(java.lang.Object)>",
-                                         "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object castCx(java.lang.Object)>",
-                                         "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
+                                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
+                                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCx(java.lang.Object)>",
+                                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
         Methods<LowHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 "pkg.ScratchMonomorphic",
                 new String[]{"GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic.java"},
