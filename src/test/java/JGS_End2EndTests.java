@@ -51,7 +51,7 @@ public class JGS_End2EndTests {
         return Arrays.asList(
                 new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}},
                 new Object[]{"SimpleSuccess", ExpectedException.NONE, new String[]{""}},
-                new Object[]{"SimpleFail", ExpectedException.NONE, new String[]{""}}
+                new Object[]{"SimpleCasts", ExpectedException.NONE, new String[]{""}}
         );
     }
 
