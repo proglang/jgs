@@ -99,9 +99,9 @@ public class Main {
         // run static
         ACasts<LowMediumHigh.Level> casts =
                 new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
-                        "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object cast(java.lang.Object)>",
-                        "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object castCx(java.lang.Object)>",
-                        "<de.unifreiburg.cs.proglang.jgs.instrumentation.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCx(java.lang.Object)>",
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
 
         // Static Check
         Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
