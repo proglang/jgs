@@ -206,7 +206,8 @@ object JgsCheck {
                        externalMethodAnnotations : java.util.Map[String, Annotation],
                        externalFieldAnnotations : java.util.Map[String, String],
                        secdomain : SecDomain[Level],
-                       casts : ACasts[Level]) : instrumentation.Methods[Level] = {
+                       casts : ACasts[Level],
+                       errors : java.util.List[String]) : instrumentation.Methods[Level] = {
 
 
     val o: Options = Options.v()
@@ -223,14 +224,15 @@ object JgsCheck {
     val c = s.loadClassAndSupport(mainClass)
     c.setApplicationClass()
 
-    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts)
+    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts, errors)
   }
 
   def typeCheck[Level](s : Scene,
                        externalMethodAnnotations : java.util.Map[String, Annotation],
                        externalFieldAnnotations : java.util.Map[String, String],
                        secdomain : SecDomain[Level],
-                       casts : ACasts[Level]) : instrumentation.Methods[Level] = {
+                       casts : ACasts[Level],
+                       errors : java.util.List[String]) : instrumentation.Methods[Level] = {
     try {
       s.loadNecessaryClasses()
     } catch {
@@ -384,7 +386,11 @@ object JgsCheck {
                methodTyping.check(new TypeVars(), signatures, fieldTable, m)
              }
            resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
-           _ = { println(s"* Type checking method ${m.toString}: ${resultReport}"); println() }
+           _ = {
+             val msg = s"* Type checking method ${m.toString}: ${resultReport}"
+             println(msg); println()
+             if (mresult.isLeft) errors.add(msg)
+           }
            result <- mresult.right.toOption
       } yield (m -> result)).toMap
 

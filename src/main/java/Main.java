@@ -9,9 +9,7 @@ import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -120,14 +118,20 @@ public class Main {
         externalMethods.put("<utils.analyzer.HelperClass: java.lang.Object makeLow(java.lang.Object)>",
                             new JgsCheck.Annotation(new String[]{"? <= @ret"},
                                                     new String[]{}));
+        List<String> errors = new ArrayList<>();
         Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 sootOptionsContainer.getMainclass(),
                 sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
                 sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
                 externalMethods,
                 externalFields,
-                new LowMediumHigh(), casts
+                new LowMediumHigh(), casts, errors
         );
+
+        if(!errors.isEmpty()) {
+            System.out.println("THERE WERE ERRORS DURING TYPCHECKING. ABORTING.");
+            System.exit(-1);
+        }
 
         // Dynamic Check
         // G.reset();

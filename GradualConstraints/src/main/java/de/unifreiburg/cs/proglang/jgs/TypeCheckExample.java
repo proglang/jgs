@@ -27,7 +27,7 @@ public class TypeCheckExample {
                         "GradualConstraints/JGSSupport/target/scala-2.11/classes"},
                 Collections.<String, JgsCheck.Annotation>emptyMap(),
                 Collections.<String, String>emptyMap(),
-                new LowHigh(), casts
+                new LowHigh(), casts, new java.util.ArrayList<String>()
         );
 
         for (SootMethod m : Scene.v().getMainClass().getMethods()) {
