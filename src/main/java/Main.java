@@ -114,6 +114,12 @@ public class Main {
         externalFields.put("<java.lang.System: java.io.PrintStream out>", "pub");
         Map<String, JgsCheck.Annotation> externalMethods = new HashMap<>();
         externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
+        externalMethods.put("<utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>",
+                            new JgsCheck.Annotation(new String[]{"? <= @ret"},
+                                                    new String[]{}));
+        externalMethods.put("<utils.analyzer.HelperClass: java.lang.Object makeLow(java.lang.Object)>",
+                            new JgsCheck.Annotation(new String[]{"? <= @ret"},
+                                                    new String[]{}));
         Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 sootOptionsContainer.getMainclass(),
                 sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),

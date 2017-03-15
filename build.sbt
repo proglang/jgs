@@ -43,7 +43,7 @@ lazy val GradualConstraints =
 
 lazy val jgs =
   (project in file(".")).
-    dependsOn(GradualConstraints, DynamicAnalyzer).
+    dependsOn(GradualConstraints, DynamicAnalyzer, ScratchTestclasses).
     settings(commonSettings:_*).
     settings(
     )
@@ -93,7 +93,7 @@ lazy val JGSSupport =
   (project in file("GradualConstraints/JGSSupport")).
     settings(setScalaVersion)
 
-lazy val ScratchTypeCheckExample =
-  (project in file ("GradualConstraints/JGSTestclasses/Scratch")).
-    dependsOn(JGSSupport).
+lazy val ScratchTestclasses =
+  (project in file ("JGSTestclasses/Scratch")).
+    dependsOn(JGSSupport, DynamicAnalyzer).
     settings(setScalaVersion)

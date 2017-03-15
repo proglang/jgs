@@ -13,7 +13,14 @@ public class SimpleCasts {
     @Constraints({"LOW <= @0 "})
     public static void main(String[] args) {
         String hello1 = null;
+        System.out.println(attemptFailingCast());
         String hello = (aStaticMethodWithCasts(hello1)); // fails at run-time due to an bad cast in aStaticMethodWithCasts
+    }
+
+    @Constraints({"LOW <= @ret"})
+    static String attemptFailingCast() {
+        String x = Casts.cast("HIGH ~> ?", "secret: 42");
+        return Casts.cast("? ~> LOW", x);
     }
 
     @Constraints({"HIGH <= @0 ", "@0 <= @ret"})
