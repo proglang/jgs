@@ -70,6 +70,17 @@ public class AntRunner {
         secDomain.setIncludes("de/unifreiburg/cs/proglang/jgs/constraints/secdomains/UserDefined$Edge.class");
         j.addZipfileset(secDomain);
 
+            // add JGSSupport
+            FileSet jgsSupport = new ZipFileSet();
+            jgsSupport.setDir(new File(folder_working_dir,
+                                      "GradualConstraints/JGSSupport/target/scala-2.11/classes" ));
+            jgsSupport.setIncludes("**/*.class");
+
+//            secDomain.setIncludes("de/unifreiburg/cs/proglang/jgs/constraints/SecDomain.class");
+//            secDomain.setIncludes("de/unifreiburg/cs/proglang/jgs/constraints/secdomains/UserDefined.class");
+//            secDomain.setIncludes("de/unifreiburg/cs/proglang/jgs/constraints/secdomains/UserDefined$Edge.class");
+        j.addFileset(jgsSupport);
+
         // add supplementary files
         ZipFileSet suppF = new ZipFileSet();
         suppF.setSrc(new File(folder_working_dir, "lib/commons-collections4-4.0.jar"));
