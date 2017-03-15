@@ -12,7 +12,7 @@ public class SimpleCasts {
 
     @Constraints({"LOW <= @0 "})
     public static void main(String[] args) {
-        String hello1 = "Hello World";
+        String hello1 = null;
         String hello = (aStaticMethodWithCasts(hello1)); // fails at run-time due to an bad cast in aStaticMethodWithCasts
     }
 
@@ -20,11 +20,14 @@ public class SimpleCasts {
     @Effects({})
     static String aStaticMethodWithCasts(String i) {
         String x = Casts.cast("HIGH ~> ?", i);
+        String result;
         if (i == null) {
-            return Casts.cast("? ~> LOW", x);
+            System.out.println("Attempting that illegal cast!");
+            result =  Casts.cast("? ~> LOW", x);
         } else {
-            return null;
+            result = null;
         }
+        return result;
     }
 
 }

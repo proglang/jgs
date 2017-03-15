@@ -21,7 +21,7 @@ int answer = 42;
 static int aStatic = 0;
 
     // dynamisch: ? <= @0
-    @Constraints({"? <= @0", "@ret <= ?"})
+    @Constraints({"? <= @0", "? <= @ret"})
     @Effects({})
     static String aStaticMethod2(String s) {
         String x = s;
@@ -36,7 +36,7 @@ static int aStatic = 0;
     }
 
 // dynamisch: ? <= @0
-@Constraints({"LOW <= @0", "@ret <= LOW"})
+@Constraints({"LOW <= @0", "LOW <= @ret"})
 @Effects({})
 static String aStaticMethod(String s) {
     String x = s;

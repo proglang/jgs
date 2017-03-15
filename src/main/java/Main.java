@@ -10,6 +10,9 @@ import utils.parser.ArgumentContainer;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This is the main entry point for jgs.
@@ -104,12 +107,19 @@ public class Main {
                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
 
         // Static Check
+        JgsCheck.log().setLevel(Level.WARNING);
+        // TODO: parse external methods and strings from yaml file
+        //  these placeholder values are UNSECURE and just for debugging.
+        Map<String, String> externalFields = new HashMap<>();
+        externalFields.put("<java.lang.System: java.io.PrintStream out>", "pub");
+        Map<String, JgsCheck.Annotation> externalMethods = new HashMap<>();
+        externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
         Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 sootOptionsContainer.getMainclass(),
                 sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
                 sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
-                Collections.<String, JgsCheck.Annotation>emptyMap(),
-                Collections.<String, String>emptyMap(),
+                externalMethods,
+                externalFields,
                 new LowMediumHigh(), casts
         );
 
