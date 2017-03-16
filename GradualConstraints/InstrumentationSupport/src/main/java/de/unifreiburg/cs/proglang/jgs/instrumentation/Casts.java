@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
 
+import soot.Value;
 import soot.jimple.Stmt;
 
 /**
@@ -15,6 +16,10 @@ public interface Casts<Level> {
         Type<Level> getDestType();
     }
 
+    interface ValueConversion<Level> extends Conversion<Level> {
+        Value getSrcValue();
+    }
+
     /**
      * @return true if statement <code>s</code> is a value cast.
      */
@@ -23,7 +28,7 @@ public interface Casts<Level> {
     /**
      * Get the ValueCast for statment <code>s</code>. Throws an <code>IllegalargumentException</code> if <code>isValueCast</code> returns false.
      */
-    Conversion<Level> getValueCast(Stmt s);
+    ValueConversion<Level> getValueCast(Stmt s);
 
     /**
      *

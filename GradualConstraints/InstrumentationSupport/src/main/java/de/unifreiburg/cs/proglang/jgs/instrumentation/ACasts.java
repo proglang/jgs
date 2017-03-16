@@ -4,6 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView;
 import de.unifreiburg.cs.proglang.jgs.typing.TypingException;
 import scala.Option;
 import scala.util.Try;
+import soot.Value;
 import soot.jimple.InvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
@@ -26,7 +27,7 @@ public abstract class ACasts<Level> implements Casts<Level> {
     }
 
     @Override
-    public Conversion<Level> getValueCast(Stmt s) {
+    public ValueConversion<Level> getValueCast(Stmt s) {
         try {
             Option<ValueCast<Level>> mcast = detectValueCastFromStmt(s);
             if (mcast.isDefined()) {
@@ -115,7 +116,7 @@ public abstract class ACasts<Level> implements Casts<Level> {
         }
     }
 
-    public static class ValueCast<Level> implements Casts.Conversion<Level> {
+    public static class ValueCast<Level> implements Casts.ValueConversion<Level> {
         public final TypeView<Level> sourceType;
         public final TypeView<Level> destType;
         public final Option<Var<?>> value;
@@ -175,6 +176,12 @@ public abstract class ACasts<Level> implements Casts<Level> {
         @Override
         public Type<Level> getDestType() {
             return this.destType;
+        }
+
+        @Override
+        public Value getSrcValue() {
+            // TODO: this blows up if we are casting a constant... we should provide values here instead of vars
+            return (Value)value.get().repr;
         }
     }
 

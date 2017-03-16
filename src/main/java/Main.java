@@ -112,11 +112,19 @@ public class Main {
         externalFields.put("<java.lang.System: java.io.PrintStream out>", "pub");
         Map<String, JgsCheck.Annotation> externalMethods = new HashMap<>();
         externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
+        externalMethods.put("<java.io.PrintStream: void println(java.lang.Object)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
+        externalMethods.put("<java.io.PrintStream: void println(int)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
         externalMethods.put("<utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>",
                             new JgsCheck.Annotation(new String[]{"? <= @ret"},
                                                     new String[]{}));
         externalMethods.put("<utils.analyzer.HelperClass: java.lang.Object makeLow(java.lang.Object)>",
                             new JgsCheck.Annotation(new String[]{"? <= @ret"},
+                                                    new String[]{}));
+        externalMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>",
+                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                                                    new String[]{}));
+        externalMethods.put("<java.lang.Integer: int intValue()>",
+                            new JgsCheck.Annotation(new String[]{},
                                                     new String[]{}));
         List<String> errors = new ArrayList<>();
         Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(

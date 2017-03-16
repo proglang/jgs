@@ -1150,11 +1150,12 @@ public class JimpleInjector {
                 local_for_Strings, StringConstant.v(level));
         Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 
-        if (varTyping.getBefore(instantiation, (Stmt) pos, l).isDynamic()) {
+        // TODO: why check for isDynamic here?
+        // if (varTyping.getBefore(instantiation, (Stmt) pos, l).isDynamic()) {
             unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
             unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
             lastPos = pos;
-        }
+        // }
     }
 
     /**
@@ -1442,19 +1443,20 @@ public class JimpleInjector {
      */
     public static void handleCast(AssignStmt aStmt) {
 
-       logger.info("Found Cast " + aStmt.getUseBoxes().get(0).getValue() );
 
         if (casts.isValueCast(aStmt)) {
-            Casts.Conversion conversion = casts.getValueCast(aStmt);
-            Local leftHandLocal = (Local) aStmt.getLeftOp();
+            Casts.ValueConversion conversion = casts.getValueCast(aStmt);
+            logger.info("Found value cast " + conversion);
+            // TODO: I am here
+            Local rightHandLocal = (Local) conversion.getSrcValue();
 
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
                 // x = (? => BOTTOM) y		check
-                logger.info("Check that " + getSignatureForLocal(leftHandLocal) + " is less/equal " + conversion.getDestType().getLevel());
-                checkThatLe(leftHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
+                logger.info("Check that " + getSignatureForLocal(rightHandLocal) + " is less/equal " + conversion.getDestType().getLevel());
+                checkThatLe(rightHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // x = (H => ? ) y				Initialisierung
-               makeLocal(leftHandLocal, conversion.getSrcType().getLevel().toString(), aStmt);
+               makeLocal(rightHandLocal, conversion.getSrcType().getLevel().toString(), aStmt);
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
             } else {

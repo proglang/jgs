@@ -1,4 +1,4 @@
-package pkg;
+package jgstestclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.Casts;
 import de.unifreiburg.cs.proglang.jgs.support.Constraints;
@@ -20,7 +20,8 @@ public class SimpleCasts {
 
     @Constraints({"LOW <= @ret"})
     static String attemptFailingCast() {
-        String x = Casts.cast("HIGH ~> ?", "secret: 42");
+        String v = "secret: 42";
+        String x = Casts.cast("HIGH ~> ?", v);
         return Casts.cast("? ~> LOW", x);
     }
 

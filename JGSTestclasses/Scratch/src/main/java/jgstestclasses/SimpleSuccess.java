@@ -1,4 +1,4 @@
-package testclasses;
+package jgstestclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.Constraints;
 

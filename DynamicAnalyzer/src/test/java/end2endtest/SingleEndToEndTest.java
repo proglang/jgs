@@ -51,7 +51,7 @@ public class SingleEndToEndTest {
 		// the output directory, where the compiled binary is put. 
 		String outputDir = "junit";
 		ClassCompiler.compile(name, outputDir);
-		ClassRunner.testClass(name, outputDir, expectedException, involvedVars);
+		ClassRunner.testClass(name, outputDir, "testclasses", expectedException, involvedVars);
 
 		logger.info("Finished executing testclasses." + name + "");
 	}

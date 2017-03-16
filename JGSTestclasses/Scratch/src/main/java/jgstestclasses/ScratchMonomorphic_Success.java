@@ -1,4 +1,4 @@
-package testclasses;
+package jgstestclasses;
 
 /**
  * Created by Nicolas Müller on 13.03.17.

@@ -39,7 +39,7 @@ public class ClassRunner {
 	 * @param className
 	 *            class to be run
 	 */
-	private static void runClass(String className, String outputDir) {
+	private static void runClass(String className, String packageName, String outputDir) {
 
 		Project project = new Project();
 		project.setName("ClassRunner");
@@ -58,7 +58,7 @@ public class ClassRunner {
 			path.createPathElement().setPath(url.getPath());
 		}
 		task.setClasspath(path);
-		task.setClassname("testclasses." + className);
+		task.setClassname(packageName + "." + className);
 		task.setFork(false);
 		task.setFailonerror(true);
 		task.setProject(project);
@@ -77,13 +77,13 @@ public class ClassRunner {
 	 * Run class and check whether the expected exception is found.
 	 * @author Regina Koenig, Nicolas Müller
 	 */
-	public static void testClass(String className, String outputDir,
+	public static void testClass(String className, String outputDir, String packageDir,
                                  ExpectedException expEx, String... involvedVars) {
 		
 		logger.info("Trying to run test " + className);
 
 		String fullPath = System.getProperty("user.dir") + "/sootOutput/"
-				+ outputDir + "/testclasses/" + className + ".class";
+				+ outputDir + "/" + packageDir + "/" + className + ".class";
 
 		if (!new File(fullPath).isFile()) {
 			logger.severe("File "
@@ -94,7 +94,8 @@ public class ClassRunner {
 		}
 
 		try {
-			runClass(className, outputDir);
+			// TODO: deal w/ package names correctly
+			runClass(className, packageDir.replace('/', '.'), outputDir);
 
 			// Fail if the class was running but an exception was expected
 			if (! expEx.equals(ExpectedException.NONE)) {

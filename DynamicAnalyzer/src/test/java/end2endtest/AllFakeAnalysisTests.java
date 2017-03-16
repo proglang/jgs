@@ -219,7 +219,7 @@ public class AllFakeAnalysisTests {
 
 
         ClassCompiler.compileWithFakeTyping(name, outputDir, fakeVarTypingsMap, fakeCxTypingsMap, fakeInstantiationMap, isActive, expEx.getVal());
-        ClassRunner.testClass(name, outputDir, expEx, involvedVars);
+        ClassRunner.testClass(name, outputDir, "testclasses", expEx, involvedVars);
 
         logger.info("Finished executing testclasses with fake analysis results." + name + "");
     }
