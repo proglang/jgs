@@ -1,4 +1,4 @@
-package pkg;
+package testclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.*;
 
