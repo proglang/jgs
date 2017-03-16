@@ -152,7 +152,12 @@ public class Main {
 		soot.Main.main(sootOptions.toArray(new String[sootOptions.size()]));
 
 		// compile to JAR.
-		utils.ant.AntRunner.run(sootOptionsContainer);
+		try {
+			utils.ant.AntRunner.run(sootOptionsContainer);
+		} catch (Exception e) {
+			L1Logger.getLogger().warning("ERROR trying to build the final jar: "
+										 + e.getMessage());
+		}
 
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
