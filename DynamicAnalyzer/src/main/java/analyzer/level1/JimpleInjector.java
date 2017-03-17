@@ -1443,20 +1443,21 @@ public class JimpleInjector {
      */
     public static void handleCast(AssignStmt aStmt) {
 
-
         if (casts.isValueCast(aStmt)) {
             Casts.ValueConversion conversion = casts.getValueCast(aStmt);
             logger.info("Found value cast " + conversion);
             // TODO: I am here
-            Local rightHandLocal = (Local) conversion.getSrcValue();
+
 
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
-                // x = (? => BOTTOM) y		check
+                // Check eines Security Wert: x = (? => LOW) y
+                Local rightHandLocal = (Local) conversion.getSrcValue();
+
                 logger.info("Check that " + getSignatureForLocal(rightHandLocal) + " is less/equal " + conversion.getDestType().getLevel());
                 checkThatLe(rightHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
-                // x = (H => ? ) y				Initialisierung
-               makeLocal(rightHandLocal, conversion.getSrcType().getLevel().toString(), aStmt);
+                // Initialisierung eines Security Wert: x = (H => ? ) y
+               makeLocal((Local) aStmt.getLeftOp(), conversion.getSrcType().getLevel().toString(), aStmt);
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
             } else {

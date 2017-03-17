@@ -7,7 +7,8 @@ import de.unifreiburg.cs.proglang.jgs.support.Casts;
  */
 public class castStatic2Dyn_Fail1 {
     public static void main(String[] args) {
-        String s = Casts.cast("HIGH ~> ?", "I'm high security");
+        String k = "I'm high sec";
+        String s = Casts.cast("HIGH ~> ?", k);
         System.out.println(s);
     }
 }
