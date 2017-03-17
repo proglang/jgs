@@ -14,19 +14,21 @@ import scala.collection.JavaConversions._
 /**
   * A map from statements to pre- and post- environments
   */
-case class EnvMap private (private val m : Map[Stmt, (EnvMap.MultiEnv, EnvMap.MultiEnv)]) {
+case class EnvMap private (private val m : Map[Stmt, (Set[TypeVar], (EnvMap.MultiEnv, EnvMap.MultiEnv))]) {
 
-  def putNew(s : Stmt, pre : Environment, post : Environment) : EnvMap = {
+  def putNew(s : Stmt, pc : TypeVar, pre : Environment, post : Environment) : EnvMap = {
     if (this.m.isDefinedAt(s)) {
       throw new IllegalArgumentException(s"Environment map already contains an entry for statement ${s}: ${this.m}")
     }
-    new EnvMap(this.m + (s -> (EnvMap.multiEnvFromEnv(pre), EnvMap.multiEnvFromEnv(post))))
+    new EnvMap(this.m + (s -> (Set(pc), (EnvMap.multiEnvFromEnv(pre), EnvMap.multiEnvFromEnv(post)))))
   }
 
 
   def join(other : EnvMap) : EnvMap = {
-    def joinPrePost(p1 : (EnvMap.MultiEnv, EnvMap.MultiEnv),  p2 : (EnvMap.MultiEnv, EnvMap.MultiEnv)) : (EnvMap.MultiEnv, EnvMap.MultiEnv) =
-      Extra.combinePairs(EnvMap.joinMultis, p1, p2)
+    def joinPrePost(p1 : (Set[TypeVar], (EnvMap.MultiEnv, EnvMap.MultiEnv)),
+                    p2 : (Set[TypeVar], (EnvMap.MultiEnv, EnvMap.MultiEnv)))
+    : (Set[TypeVar], (EnvMap.MultiEnv, EnvMap.MultiEnv)) =
+      (p1._1 ++ p2._1, Extra.combinePairs(EnvMap.joinMultis, p1._2, p2._2))
 
     new EnvMap(Extra.joinWith(joinPrePost, this.m, other.m))
   }
@@ -82,8 +84,9 @@ case class EnvMap private (private val m : Map[Stmt, (EnvMap.MultiEnv, EnvMap.Mu
   }
   */
 
-  def getPre(s : Stmt) : Option[EnvMap.MultiEnv] = m.get(s).map(_._1)
-  def getPost(s : Stmt) : Option[EnvMap.MultiEnv] = m.get(s).map(_._2)
+  def getPre(s : Stmt) : Option[EnvMap.MultiEnv] = m.get(s).map(_._2._1)
+  def getPost(s : Stmt) : Option[EnvMap.MultiEnv] = m.get(s).map(_._2._2)
+  def getPCs(s : Stmt) : Option[Set[TypeVar]] = m.get(s).map(_._1)
 
 
   def preAsConstraints[Level](mkConstraint : CType[Level] => Constraint[Level], s : Stmt, x : Var[_]) =
@@ -102,8 +105,8 @@ object EnvMap {
 
   def joinMultis(m1 : MultiEnv, m2 : MultiEnv) = Extra.joinWith((v1 : Set[TypeVar], v2 : Set[TypeVar]) => v1 ++ v2, m1, m2)
 
-  def apply(kv : (Stmt, (Environment, Environment))*) = {
-    val m = (for ((k, (v1, v2)) <- kv) yield k ->  (multiEnvFromEnv(v1), multiEnvFromEnv(v2))).toMap
+  def apply(kv : (Stmt, (Set[TypeVar], (Environment, Environment)))*) = {
+    val m = (for ((k, (pcs, (v1, v2))) <- kv) yield k ->  (pcs, (multiEnvFromEnv(v1), multiEnvFromEnv(v2)))).toMap
     new EnvMap(m)
   }
 

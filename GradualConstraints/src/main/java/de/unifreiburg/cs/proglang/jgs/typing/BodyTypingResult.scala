@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.typing
 
 import com.sun.istack.internal.NotNull
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.TypeVar
 import de.unifreiburg.cs.proglang.jgs.constraints._
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Var
 import de.unifreiburg.cs.proglang.jgs.signatures.Effects
@@ -26,13 +27,18 @@ object BodyTypingResult {
   }
 
   // Make a result with the env map for a single statement
-  def makeResult[LevelT](s : Stmt, constraints: ConstraintSet[LevelT], initialEnv : Environment, finalEnv: Environment, effects: Effects[LevelT], tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
-    new BodyTypingResult[LevelT](constraints, effects, finalEnv, tags, EnvMap(s -> (initialEnv, finalEnv)))
+  def makeResult[LevelT](s : Stmt,
+                         constraints: ConstraintSet[LevelT],
+                         pcs : Set[TypeVar],
+                         initialEnv : Environment, finalEnv: Environment,
+                         effects: Effects[LevelT],
+                         tags: TagMap[LevelT]): BodyTypingResult[LevelT] = {
+    new BodyTypingResult[LevelT](constraints, effects, finalEnv, tags, EnvMap(s -> (pcs, (initialEnv, finalEnv))))
   }
 
   // create a result from a given pre-statement environment with no constraints.
-  def trivialWithEnv[Level](s : Stmt, csets: ConstraintSetFactory[Level], env: Environment): BodyTypingResult[Level] = {
-    makeResult(s, csets.empty, env, env, emptyEffect[Level], TagMap.empty[Level])
+  def trivialWithEnv[Level](s : Stmt, csets: ConstraintSetFactory[Level], pcs : Set[TypeVar], env: Environment): BodyTypingResult[Level] = {
+    makeResult(s, csets.empty, pcs, env, env, emptyEffect[Level], TagMap.empty[Level])
   }
 
   // initial results at the beginning of type-checking a method

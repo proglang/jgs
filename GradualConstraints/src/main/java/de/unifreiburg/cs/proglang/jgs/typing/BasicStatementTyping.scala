@@ -223,7 +223,7 @@ class BasicStatementTyping[LevelT](
         constraints += (leDest.apply(variable(pc)));
       })
       val fin: Environment = env.add(Vars.fromLocal(writeVar), destTVar)
-      setResult(makeResult(stmt, csets.fromCollection(constraints), env, fin, extractEffects(rhs), sw.getTags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), pcs, env, fin, extractEffects(rhs), sw.getTags))
     }
 
     private def caseFieldDefinition(fieldRef: FieldRef, stmt: DefinitionStmt) {
@@ -275,7 +275,7 @@ class BasicStatementTyping[LevelT](
       else {
         Effects.emptyEffect[LevelT].add(fieldType)
       }
-      setResult(makeResult(stmt, csets.fromCollection(constraints), env, env, effects, tags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), pcs, env, env, effects, tags))
     }
 
     private def caseDefinitionStmt(stmt: DefinitionStmt) {
@@ -300,7 +300,7 @@ class BasicStatementTyping[LevelT](
     }
 
     private def noRestrictions(s : Stmt) {
-      setResult(trivialWithEnv(s, csets, env))
+      setResult(trivialWithEnv(s, csets, pcs, env))
     }
 
     override def caseIdentityStmt(stmt: IdentityStmt) {
@@ -321,6 +321,7 @@ class BasicStatementTyping[LevelT](
         setResult(makeResult(stmt, csets.fromCollection((Iterator(Constraints.le[LevelT](variable(env.get(r)), variable(tvars.ret))) ++
           this.pcs.iterator.map(pcVar => Constraints.le[LevelT](variable(pcVar),
             variable(tvars.ret())))).toList.asJavaCollection),
+          pcs,
           env, env,
           emptyEffect[LevelT],
           TagMap.empty[LevelT]))
@@ -343,7 +344,7 @@ class BasicStatementTyping[LevelT](
       val toCType: Function[Var[_], CTypes.CType[LevelT]] = v => variable(env.get(v))
       val sw: BasicStatementTyping[LevelT]#Gen#ExprSwitch = new ExprSwitch(leDest, toCType, constraints, destTVar, destCType)
       e.apply(sw)
-      setResult(makeResult(stmt, csets.fromCollection(constraints), env, env, extractEffects(e), sw.getTags))
+      setResult(makeResult(stmt, csets.fromCollection(constraints), pcs, env, env, extractEffects(e), sw.getTags))
     }
 
     // Cast for *trivial* if statements (that is, if-statements with a single successor;

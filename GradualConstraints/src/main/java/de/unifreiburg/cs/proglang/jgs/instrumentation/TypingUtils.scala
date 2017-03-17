@@ -40,19 +40,26 @@ class TypingUtils[Level] (secdomain : SecDomain[Level]){
       }
     }
 
+  def concreteLowerBound(tvs : Set[TypeVar],
+                         constraints: ConstraintSet[Level],
+                         instantiation: Instantiation[Level]): Type[Level] = {
+    val lbs = for {tv <- tvs; lb <- lowerBoundLiteralsOrParams(constraints, tv, instantiation)} yield lb
+    joinLowerBounds(lbs)
+  }
+
   def cxTypingFromEnvMap(envMap : EnvMap, constraints : ConstraintSet[Level]) : CxTyping[Level] =
     new CxTyping[Level] {
       override def get(instantiation: Instantiation[Level], s: Stmt): Type[Level] = {
-        // TODO: this is wrong.. only a placeholder
-        instrumentationType(Pub())
+        val pcs = envMap.getPCs(s).getOrElse{ throw new IllegalArgumentException(s"No context typing information for stmt ${s}")}
+        concreteLowerBound(pcs, constraints, instantiation)
       }
     }
+
 
   def varTypingFromEnvMap(envMap : EnvMap, constraints : ConstraintSet[Level]) : VarTyping[Level] = {
     def get(typing : EnvMap.MultiEnv, instantiation: Instantiation[Level], l: Local) = {
       val tvs = typing.getOrElse(Vars.fromLocal(l), Set())
-      val lbs = for { tv <- tvs ; lb <- lowerBoundLiteralsOrParams(constraints, tv, instantiation) } yield lb
-      joinLowerBounds(lbs)
+      concreteLowerBound(tvs, constraints, instantiation)
     }
     new VarTyping[Level] {
       override def getBefore(instantiation: Instantiation[Level], s: Stmt, l: Local): Type[Level] = {

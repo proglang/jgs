@@ -251,7 +251,7 @@ public class MethodBodyTyping<Level> {
 
             BodyTypingResult<Level> conditionResult = addConstraints(previous, csets.fromCollection(conditionConstraints));
             // generate results for each branch and join to final results
-            r = trivialCase(csets, conditionResult.envMap().putNew(s, conditionResult.env(), conditionResult.env()));
+            r = trivialCase(csets, conditionResult.envMap().putNew(s, newPc, conditionResult.env(), conditionResult.env()));
             for (Unit uBranch : successors) {
                 // do not recurse into visited branches again
                 if (visited.contains(Pair.of(newPc, uBranch))) {

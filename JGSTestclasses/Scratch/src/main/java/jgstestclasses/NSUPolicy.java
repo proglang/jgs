@@ -31,7 +31,6 @@ public class NSUPolicy {
 		@SuppressWarnings("unused")
 		int x = 3 + y;
 
-        System.out.println(x);
 	}
 
 }
