@@ -141,7 +141,7 @@ public class compileToJarTests {
         assertTrue("File not found: " + outJar.getAbsolutePath(), outJar.exists());
         assertTrue("File not found: " + addFile.getAbsolutePath(), addFile.exists());
 
-        // now run it and check wheter or not it produces an IllegalFlowException
+        // now run it and check wheter or not it produces an IFCError
         System.out.println("Running " + outJar.toString() + "...");
         File out = new File(outputPath + "/outStreamFile");
 
@@ -174,9 +174,9 @@ public class compileToJarTests {
                 Scanner scanner = new Scanner(out);
                 String text = scanner.useDelimiter("\\A").next();
                 if (hasIllegalFlow) {
-                    assertThat(text, containsString("IllegalFlowException"));
+                    assertThat(text, containsString("IFCError"));
                 } else {
-                    assertThat(text, not(containsString("IllegalFlowException")));
+                    assertThat(text, not(containsString("IFCError")));
                 }
                 scanner.close();
             } catch (Exception ex) {

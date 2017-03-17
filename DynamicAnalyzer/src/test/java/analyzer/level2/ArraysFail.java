@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -21,7 +21,7 @@ public class ArraysFail {
 		HandleStmt.init();
 	}
 	
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void readArray() {
 		
 		logger.log(Level.INFO, "READ ARRAY FAIL TEST STARTED");
@@ -61,7 +61,7 @@ public class ArraysFail {
 		
 	}
 	
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void writeArray() {
 
 		logger.log(Level.INFO, "WRITE ARRAY FAIL TEST STARTED");

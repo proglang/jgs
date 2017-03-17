@@ -53,7 +53,7 @@ public class JGS_End2EndTests {
                 new Object[]{"SimpleCast_Fail2", ExpectedException.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
                 new Object[]{"SimpleCast_Fail3", ExpectedException.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
                 new Object[]{"SimpleCast_Fail4", ExpectedException.ILLEGAL_FLOW, new String[]{"java.lang.String_r2"}},
-                new Object[]{"NSUPolicy", ExpectedException.ILLEGAL_FLOW, new String[]{""}},
+                new Object[]{"NSUPolicy", ExpectedException.NSU_FAILURE, new String[]{""}},
                 new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}},
                 new Object[]{"SimpleSuccess", ExpectedException.NONE, new String[]{""}},
                 new Object[]{"SimpleCasts", ExpectedException.ILLEGAL_FLOW, new String[]{""}}

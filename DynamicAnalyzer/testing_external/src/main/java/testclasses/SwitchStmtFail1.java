@@ -3,7 +3,7 @@ package testclasses;
 import utils.analyzer.HelperClass;
 
 /**
- * Implicit leak in switch Stmt. Must throw IllegalFlowException
+ * Implicit leak in switch Stmt. Must throw IFCError
  * @author Nicolas Müller
  *
  */

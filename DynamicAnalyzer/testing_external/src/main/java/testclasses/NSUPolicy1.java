@@ -19,13 +19,13 @@ public class NSUPolicy1 {
 		secret = HelperClass.makeHigh(5);
 		
 		if (secret > 0) {
-			y += 1;						// NSU IllegalFlowException
+			y += 1;						// NSU IFCError
 		}
 		
 		/**
 		 * This is necessary, because otherwise the compiler will just
 		 * throw away the updates of y inside the if, which will circumvent the
-		 * IllegalFlowException
+		 * IFCError
 		 */
 		@SuppressWarnings("unused")
 		int x = 3 + y;

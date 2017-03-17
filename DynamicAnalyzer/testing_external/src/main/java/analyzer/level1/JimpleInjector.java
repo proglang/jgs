@@ -991,7 +991,7 @@ public class JimpleInjector {
 	}
 
 	/**
-	 * Insert the following check: If Local l is high, throw new IllegalFlowException
+	 * Insert the following check: If Local l is high, throw new IFCError
 	 * @param pos
 	 * @param l
 	 */

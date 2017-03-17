@@ -2,6 +2,7 @@ package analyzer.level2;
 
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
+import utils.exceptions.IllegalFlowError;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L2Logger;
 import utils.staticResults.superfluousInstrumentation.ControllerFactory;
@@ -822,8 +823,8 @@ public class HandleStmt {
 		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_LE.getVal());
 		logger.info("Check if " + signature + " is less/equal " + level);
 		if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))){
-			handleStatementUtils.abort("Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" +
-			" which requires a security level of less/equal " + level );
+			handleStatementUtils.abort(new IllegalFlowError("Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" +
+									   " which requires a security level of less/equal " + level ));
 		}
 	}
 
@@ -838,7 +839,7 @@ public class HandleStmt {
 		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_PC_LE.getVal());
 		logger.info("About to print something somewhere. Requires to check that PC is less than " + level);
 		if (!SecurityLevel.le(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
-			handleStatementUtils.abort("Invalid security context: PC must be less/eqal " + level + ", but PC was " + localmap.getLocalPC());
+			handleStatementUtils.abort(new IllegalFlowError("Invalid security context: PC must be less/eqal " + level + ", but PC was " + localmap.getLocalPC()));
 		}
 	}
 }

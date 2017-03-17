@@ -2,11 +2,9 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 
@@ -22,7 +20,7 @@ public class SwitchStmtFail {
 		HandleStmt.init();
 	}
 
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void switchStmtLowTest() {
 		
 		LOGGER.log(Level.INFO, "SWITCH STMT FAIL TEST STARTED");

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Logger;
@@ -37,7 +37,7 @@ public class CheckThatNotHigh {
 		
 	}
 	
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void failTest() {
 		
 		LOGGER.info("CheckThatNotHigh-failTest started");

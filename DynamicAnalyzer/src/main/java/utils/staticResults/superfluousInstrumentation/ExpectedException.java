@@ -8,6 +8,7 @@ package utils.staticResults.superfluousInstrumentation;
 public enum ExpectedException {
     NONE(0),
     ILLEGAL_FLOW(1),
+    NSU_FAILURE(12),
     CHECK_LOCAL_PC_CALLED(2),
     ASSIGN_ARG_TO_LOCAL(3),
     JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL(4),

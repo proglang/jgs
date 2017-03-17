@@ -2,12 +2,10 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
 import tests.testclasses.TestSubClass;
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -31,9 +29,9 @@ public class ReturnStmtFail {
 	 * sec-value of ExternalClass.returnSometing(). But before that can happen, we need to check
 	 * if NSU policy holds (remeber: we mustn upgrade low-sec vars in high-sec PC environment. 
 	 * Thus, in assignReturnLevelToLocal, we perform the adequate NSU check (checkLocalPC), and since
-	 * we have here: local < PC => IllegalFlowException!
+	 * we have here: local < PC => IFCError!
 	 */
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void returnStmtTestFail() {
 		
 		logger.log(Level.INFO, "RETURN TEST STARTED");

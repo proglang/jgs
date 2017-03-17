@@ -2,12 +2,10 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
 import tests.testclasses.TestSubClass;
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 
@@ -23,7 +21,7 @@ public class AssignLocalsFail {
 		HandleStmt.init();
 	}
 
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignConstantToLocal() {
 		
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO LOCAL TEST STARTED");
@@ -42,7 +40,7 @@ public class AssignLocalsFail {
 	}
 	
 
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignLocalsToLocal() {
 		
 		logger.log(Level.INFO, "ASSIGN LOCALS TO LOCAL TEST STARTED");
@@ -74,7 +72,7 @@ public class AssignLocalsFail {
 	}
 	
 	/*
-	 * TestSubClass xy is not initialized here, so no NSU IllegalFlowException.
+	 * TestSubClass xy is not initialized here, so no NSU IFCError.
 	 */
 	@SuppressWarnings("unused")
 	@Test
@@ -102,10 +100,10 @@ public class AssignLocalsFail {
 	
 	/*
 	 * TestSubClass xy is d initialized here, so no NSU policy forces
-	 * an IllegalFlowException.
+	 * an IFCError.
 	 */
 	@SuppressWarnings("unused")
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignNewObjectToLocalFail() {
 		logger.log(Level.INFO, "ASSIGN NEW OBJECT TO LOCAL FAIL TEST STARTED");
 		
@@ -131,7 +129,7 @@ public class AssignLocalsFail {
 	
 	
 	/**
-	 * Testing IllegalFlowException thrown by the NSU Policy:
+	 * Testing IFCError thrown by the NSU Policy:
 	 * int high has high security value, and thus we cannot upgrade
 	 * the security-value of res from low to high.
 	 */
@@ -173,7 +171,7 @@ public class AssignLocalsFail {
 	
 	
 	@SuppressWarnings("unused")
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignMethodResultToLocalFail() {
 
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
@@ -209,7 +207,7 @@ public class AssignLocalsFail {
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL FAIL TEST STARTED");
 	
 	}
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignConstantAndLocalToLocal() {
 		
 		logger.log(Level.INFO, "ASSIGN CONSTANT AND LOCAL TO LOCAL FAIL TEST STARTED");

@@ -1,10 +1,10 @@
 package utils.exceptions;
 
-public class IllegalFlowException extends RuntimeException {
+public class IFCError extends RuntimeException {
 	
 	private static final long serialVersionUID = 6683567867045022307L;
 
-	public IllegalFlowException(String message) {
+	public IFCError(String message) {
 		super(message);
 		printStackTrace();
 	}

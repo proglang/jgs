@@ -83,7 +83,7 @@ public class Main {
         Scene.v().addBasicClass("java.security.AccessController");
         Scene.v().addBasicClass("java.util.concurrent.CopyOnWriteArrayList");
         Scene.v().addBasicClass("java.util.Map$Entry");
-        Scene.v().addBasicClass("utils.exceptions.IllegalFlowException");
+        Scene.v().addBasicClass("utils.exceptions.IFCError");
 
         Scene.v().addBasicClass("java.util.ConcurrentModificationException");
         Scene.v().addBasicClass("java.lang.Math");

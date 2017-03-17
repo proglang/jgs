@@ -2,12 +2,10 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
 import tests.testclasses.TestSubClass;
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -22,7 +20,7 @@ public class AssignFieldsFail {
 		HandleStmt.init();
 	}
 
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignConstantToField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
@@ -47,7 +45,7 @@ public class AssignFieldsFail {
 		hs.close();	
 	}
 	
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignLocalsToField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		
@@ -73,7 +71,7 @@ public class AssignFieldsFail {
 		hs.close();	
 	}
 	
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void assignLocalToForeignField() {
 		logger.log(Level.INFO, "ASSIGN CONSTANT TO FIELD FAIL TEST STARTED");
 		

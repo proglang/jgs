@@ -4,7 +4,7 @@ import utils.analyzer.HelperClass;
 
 /**
  * Most basic case of implicit information flow from x to y.
- * Must throw IllegalFlowException on byte_b1 (compiler will use a byte for int y)
+ * Must throw IFCError on byte_b1 (compiler will use a byte for int y)
  * @author Nicolas Müller
  *
  */

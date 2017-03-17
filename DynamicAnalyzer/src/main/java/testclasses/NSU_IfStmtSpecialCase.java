@@ -22,7 +22,7 @@ public class NSU_IfStmtSpecialCase {
 		/**
 		 * This is necessary, because otherwise the compiler will just
 		 * throw away the updates of y inside the if, which will circumvent the
-		 * IllegalFlowException
+		 * IFCError
 		 */
 		@SuppressWarnings("unused")
 		String z = y + "i exist only so that the compiler wont optimize y away";

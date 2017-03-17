@@ -9,8 +9,11 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
+import utils.exceptions.IFCError;
+import utils.exceptions.IllegalFlowError;
+import utils.exceptions.NSUError;
 import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetion;
-import utils.exceptions.IllegalFlowException;
+
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
 import utils.exceptions.SuperfluousInstrumentation.joinLevelOfLocalAndAssignmentLevelException;
@@ -112,11 +115,12 @@ public class ClassRunner {
 					logger.severe("Fail because exception was not expected");
 					fail();
 				case ILLEGAL_FLOW:
-					assertEquals(IllegalFlowException.class.toString(), e.getCause()
-							.getClass().toString());
+					// TODO: is there no better way of doing this comparison?
+					assertEquals(IllegalFlowError.class.toString(), e.getCause()
+														  .getClass().toString());
 
 					if (involvedVars.length < 1) {
-						logger.warning("No variables supplied for IllegalFlowException");
+						logger.warning("No variables supplied for IllegalFlowError");
 					}
 					for (String var : involvedVars) {
 						logger.info("Check whether " + var + " is contained in: "
@@ -128,6 +132,10 @@ public class ClassRunner {
 						}
 						assertTrue(e.getMessage().contains(var));
 					}
+					break;
+				case NSU_FAILURE:
+					assertEquals(NSUError.class.toString(), e.getCause()
+															 .getClass().toString());
 					break;
 				case CHECK_LOCAL_PC_CALLED:
 					assertEquals(LocalPcCalledException.class.toString(), e.getCause()

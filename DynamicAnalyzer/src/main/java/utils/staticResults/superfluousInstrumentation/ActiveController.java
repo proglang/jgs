@@ -30,7 +30,7 @@ public class ActiveController extends PassivController {
                             " throw an exception of type 0 - which is no exception!!");
                 case 1:
                     throw new InternalAnalyzerException("Some method in the HandleStmt requested to" +
-                            "throw an exception of type 1 - which is the IllegalFlowException, which" +
+                            "throw an exception of type 1 - which is the IFCError, which" +
                             "should not be thrown by the controller at all!");
                 case 2:
                     throw new LocalPcCalledException("Check local PC was called somewhere with an active controller");

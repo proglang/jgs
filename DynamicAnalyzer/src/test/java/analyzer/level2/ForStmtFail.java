@@ -2,7 +2,7 @@ package analyzer.level2;
 
 import org.junit.Before;
 import org.junit.Test;
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -18,7 +18,7 @@ public class ForStmtFail {
 	}
 	
 	/**
-	 * Would be an IllegalFlowException because of NSU, but since int res is
+	 * Would be an IFCError because of NSU, but since int res is
 	 * not initialized, it's not. See also forStmtLocalTestFail.
 	 */
 	@SuppressWarnings("unused")
@@ -54,7 +54,7 @@ public class ForStmtFail {
 	 * Same test as forStmtLocalTestSuccess, but this time, int res gets initialized.
 	 */
 	@SuppressWarnings("unused")
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void forStmtLocalTestFail() {
 		
 		logger.log(Level.INFO, "FOR STMT LOCAL TEST FAIL STARTED");
@@ -85,7 +85,7 @@ public class ForStmtFail {
 	}
 	
 	@SuppressWarnings("unused")
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void forStmtFieldTestFail() {
 		
 		logger.log(Level.INFO, "FOR STMT FIELD TEST FAIL STARTED");

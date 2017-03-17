@@ -5,7 +5,7 @@ import utils.analyzer.HelperClass;
 
 /**
  * Make integer high, then cast it back to low.
- * Must throw IllegalFlowException (java.lang.Object_$r5)
+ * Must throw IFCError (java.lang.Object_$r5)
  */
 public class castDyn2Static_Fail1 {
 

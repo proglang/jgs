@@ -1126,7 +1126,7 @@ public class JimpleInjector {
     }
 
     /**
-     * Insert the following check: If Local l is high, throw new IllegalFlowException
+     * Insert the following check: If Local l is high, throw new IFCError
      */
     public static void checkThatLe(Local l, String level, Unit pos) {
         logger.info("Check that " + l + " is not high");
@@ -1465,7 +1465,7 @@ public class JimpleInjector {
                 if (! SecurityLevel.le( SecurityLevel.readLevel(conversion.getSrcType().getLevel().toString()) ,
                                         SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()))) {
                    // can't use that here, because exceptions during soot analysis will cause all UnitTests to fail
-                   // throw new IllegalFlowException("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
+                   // throw new IFCError("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
                 }
                 // else: treat like assign stmt, no extra instrumentation.
             }

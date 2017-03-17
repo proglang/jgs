@@ -1,12 +1,9 @@
 package analyzer.level2;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -22,7 +19,7 @@ public class WhileStmtFail {
 	}
 
 	@SuppressWarnings("unused")
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void whileStmtFailTest() {
 		
 		LOGGER.log(Level.INFO, "WHILE STMT TEST STARTED");

@@ -86,7 +86,7 @@ public class AllEndToEndTests {
 				new Object[] { "DominatorNullPointer", ExpectedException.NONE, new String[] {} },
 				
 				new Object[] { "FieldsSuccess", ExpectedException.NONE, new String[] {} },
-				new Object[] { "FieldWriteFail", ExpectedException.ILLEGAL_FLOW, new String[] {"testclasses.FieldWriteFail<testclasses.FieldWriteFail: int field>"} },
+				new Object[] { "FieldWriteFail", ExpectedException.NSU_FAILURE, new String[] {"testclasses.FieldWriteFail<testclasses.FieldWriteFail: int field>"} },
 
 				new Object[] { "HighArgument", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
 
@@ -101,23 +101,23 @@ public class AllEndToEndTests {
 				new Object[] { "LowFieldHighInstance", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_z0"} },
 			
 				// Examples from readme.md
-				new Object[] { "NSUPolicy", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
-				new Object[] { "NSUPolicy2", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_$z2"} },
-				new Object[] { "NSUPolicy3", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSUPolicy4", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_r5"} },
+				new Object[] { "NSUPolicy", ExpectedException.NSU_FAILURE, new String[] {"int_i0"} },
+				new Object[] { "NSUPolicy2", ExpectedException.NSU_FAILURE, new String[] {"boolean_$z2"} },
+				new Object[] { "NSUPolicy3", ExpectedException.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSUPolicy4", ExpectedException.NSU_FAILURE, new String[] {"java.lang.String_r5"} },
 
 				// More NSU Tests
-				new Object[] { "NSU_FieldAccess", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccessStatic", ExpectedException.ILLEGAL_FLOW, new String[] {"int f"} },
+				new Object[] { "NSU_FieldAccess", ExpectedException.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccessStatic", ExpectedException.NSU_FAILURE, new String[] {"int f"} },
 				new Object[] { "NSU_FieldAccess2", ExpectedException.NONE, new String[] {} },
-				new Object[] { "NSU_FieldAccess3", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccess4", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] { "NSU_FieldAccess5", ExpectedException.ILLEGAL_FLOW, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess3", ExpectedException.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess4", ExpectedException.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] { "NSU_FieldAccess5", ExpectedException.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
 				
 				new Object[] { "NSU_ForLoopSuccess", ExpectedException.NONE, new String[] {} },
-				new Object[] { "NSU_ForLoopFail", ExpectedException.ILLEGAL_FLOW, new String[] {"byte_b1"} },
+				new Object[] { "NSU_ForLoopFail", ExpectedException.NSU_FAILURE, new String[] {"byte_b1"} },
 				
-				new Object[] { "NSU_SwitchStmtFail", ExpectedException.ILLEGAL_FLOW, new String[] { "java.lang.String_r1" } },
+				new Object[] { "NSU_SwitchStmtFail", ExpectedException.NSU_FAILURE, new String[] { "java.lang.String_r1" } },
 				
 				// two special cases, where compiler optimisation prevents NSU Exceptions
 				new Object[] { "NSU_IfStmtSpecialCase", ExpectedException.NONE, new String[] {  } },
@@ -161,7 +161,7 @@ public class AllEndToEndTests {
 				new Object[] { "SwitchStmt", ExpectedException.NONE, new String[] {} },
 				
 				new Object[] { "WhileLoop", ExpectedException.NONE, new String[] {} },
-				new Object[] { "WhileLoopFail", ExpectedException.ILLEGAL_FLOW, new String[] { "int_i1" } });
+				new Object[] { "WhileLoopFail", ExpectedException.NSU_FAILURE, new String[] { "int_i1" } });
 	}
 
 	@Test

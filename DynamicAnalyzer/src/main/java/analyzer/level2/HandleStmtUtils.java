@@ -2,8 +2,9 @@ package analyzer.level2;
 
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.exceptions.InternalAnalyzerException;
+import utils.exceptions.NSUError;
 import utils.logging.L2Logger;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 import utils.staticResults.superfluousInstrumentation.PassivController;
@@ -36,10 +37,10 @@ public class HandleStmtUtils {
 	/**
 	 * If the result of the check for localPC or globalPC is negative (that means,
 	 * that a LOW variable is written in a HIGH context), then
-	 * the analysis aborts with an {@link IllegalFlowException}.
+	 * the analysis aborts with an {@link IFCError}.
 	 */
-	protected void abort(String message) {
-		throw new IllegalFlowException(message);
+	protected void abort(IFCError e) {
+		throw e;
 	}
 	
 	//
@@ -48,7 +49,7 @@ public class HandleStmtUtils {
 
 	/**
 	 * NSU policy: For initialized locals, check if level of given local is greater 
-	 * than localPC. If it's not, throw IllegalFlowException
+	 * than localPC. If it's not, throw IFCError
 	 * @param signature signature of the local
 	 */
 	protected void checkLocalPC(String signature) {
@@ -74,7 +75,7 @@ public class HandleStmtUtils {
 
 
 		if (!SecurityLevel.le(lpc, level)) {
-			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
+			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + signature));
 		}
 	}
 	
@@ -93,7 +94,7 @@ public class HandleStmtUtils {
 
         controller.abortIfActiveAndExceptionIsType(ExpectedException.NONE.getVal());
 		if (!SecurityLevel.le(globalPC, fieldLevel)) {
-			abort(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature);
+			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature));
 		}	
 		
 		
@@ -113,7 +114,7 @@ public class HandleStmtUtils {
 		Object localsAndGPC = joinWithGPC(joinLocals(localForObject, localForIndex));
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
 		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
-			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
+			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + signature));
 		}	
 	}
 	
@@ -131,7 +132,7 @@ public class HandleStmtUtils {
 		Object localsAndGPC = joinWithGPC(localmap.getLevel(localForObject));
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
 		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
-			abort(ASSIGNMENT_ERROR_MESSAGE + signature);
+			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + signature));
 		}
 	}
 

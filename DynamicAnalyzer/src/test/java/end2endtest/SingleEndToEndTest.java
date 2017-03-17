@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * 
  * Note that three pieces of information need to be
  * supplied: 1) name, the name of the test 2) hasIllegalFlow, a boolean indicating
- * if test should throw an IllegalFlowException 3) involvedVars, the variables
+ * if test should throw an IFCError 3) involvedVars, the variables
  * where information is leaked
  * 
  * @author NicolasM
@@ -33,7 +33,7 @@ public class SingleEndToEndTest {
 	 * "AccessFieldsOfObjectsFail" :
 	 * 
 	 * "Assert: Is java.lang.String_$r6 contained in:
-	 * utils.exceptions.IllegalFlowException: Passed argument
+	 * utils.exceptions.IFCError: Passed argument
 	 * java.lang.String_$r6 with a high security level to a method which doesn't
 	 * allow it."
 	 * 

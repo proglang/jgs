@@ -33,7 +33,7 @@ public class NSUPolicy2 {
 		System.out.println(o.f);  // Not okay! Leaks information!
 		
 		o1.f = false;			// Okay
-		// o.f = true; 			// Not okay! NSU IllegalFlowException -> Test online in NSUPolicy3
+		// o.f = true; 			// Not okay! NSU IFCError -> Test online in NSUPolicy3
 		
 	}
 	

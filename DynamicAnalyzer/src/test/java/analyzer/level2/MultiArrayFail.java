@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Logger;
@@ -23,7 +23,7 @@ public class MultiArrayFail {
 	/**
 	 * NSU IFExept. Test with arrays.
 	 */
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void readArray() {
 		
 		logger.info("readArray fail test started");
@@ -87,7 +87,7 @@ public class MultiArrayFail {
 		String x = tmp[0];
 		hs.initializeVariable("String_x");		// Comment out to remove NSU IFExept
 		hs.checkLocalPC("String_x");
-		hs.setLevelOfLocal("String_x");			// IllegalFlowException thrown here, NSU
+		hs.setLevelOfLocal("String_x");			// IFCError thrown here, NSU
 		
 		hs.popLocalPC(123);
 		hs.close();
@@ -95,7 +95,7 @@ public class MultiArrayFail {
 		logger.info("readArray fail test finished");
 	}
 	
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void writeArray() {
 
 		logger.info("writeArray fail test started");

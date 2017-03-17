@@ -3,12 +3,10 @@ package analyzer.level2;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
 import tests.testclasses.TestSubClass;
-import utils.exceptions.IllegalFlowException;
+import utils.exceptions.IFCError;
 import utils.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -23,7 +21,7 @@ public class StaticFieldsFail {
 		HandleStmt.init();
 	}
 
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void internalStaticFieldFailTest() {
 		
 		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD FAIL TEST STARTED");
@@ -43,7 +41,7 @@ public class StaticFieldsFail {
 	}
 	
 	@SuppressWarnings("static-access")
-	@Test(expected = IllegalFlowException.class)
+	@Test(expected = IFCError.class)
 	public void externalStaticFieldFailTest() {
 		
 		LOGGER.log(Level.INFO, "EXTERNAL STATIC FIELD FAIL TEST STARTED");
