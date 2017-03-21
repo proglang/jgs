@@ -179,9 +179,13 @@ public abstract class ACasts<Level> implements Casts<Level> {
         }
 
         @Override
-        public Value getSrcValue() {
-            // TODO: this blows up if we are casting a constant... we should provide values here instead of vars
-            return (Value)value.get().repr;
+        public Option<Value> getSrcValue() {
+            // TODO: currently we assume that if there is no var, there is a constant. Might not be true. We store values in Casts instead of Vars
+            if (value.isDefined()) {
+                return Option.apply((Value)value.get().repr);
+            } else {
+                return Option.empty();
+            }
         }
     }
 

@@ -22,6 +22,7 @@ public class ArgParser {
     final static String OUTPUT_FOLDER_FLAG = "o";
     final static String ADDITIONAL_FILES_FLAG = "f";
     final static String PUBLIC_TYPING_FOR_JIMPLE = "x";
+    final static String VERBOSE = "v";
     final static String HELP = "h";
 
 	private static void printHelp(Options options) {
@@ -82,6 +83,10 @@ public class ArgParser {
 		filesToAdd.setArgs(Option.UNLIMITED_VALUES);
 		// options.addOption(filesToAdd);
 
+        Option verbose = new Option(VERBOSE, "verbose", false, "verbose logging");
+        verbose.setRequired(false);
+        options.addOption(verbose);
+
 		Option help = new Option(HELP, "help", false, "Print Help");
 		help.setRequired(false);
 		options.addOption(help);
@@ -136,12 +141,13 @@ public class ArgParser {
             //
 
             return new ArgumentContainer(mainclass,
-                    addDirsToClasspath,
-                    addClasses,
-                    toJimple,
-                    outputFolder,
-                    additionalFiles,
-                    usePublicTyping);
+                                         addDirsToClasspath,
+                                         addClasses,
+                                         toJimple,
+                                         outputFolder,
+                                         additionalFiles,
+                                         usePublicTyping,
+                                         cmd.hasOption(VERBOSE));
 
 			// if illegal input
 		} catch (ParseException e) {

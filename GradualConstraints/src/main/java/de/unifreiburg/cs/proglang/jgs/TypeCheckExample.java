@@ -10,6 +10,7 @@ import soot.Scene;
 import soot.SootMethod;
 
 import java.util.Collections;
+import java.util.logging.Logger;
 
 public class TypeCheckExample {
 
@@ -27,7 +28,8 @@ public class TypeCheckExample {
                         "GradualConstraints/JGSSupport/target/scala-2.11/classes"},
                 Collections.<String, JgsCheck.Annotation>emptyMap(),
                 Collections.<String, String>emptyMap(),
-                new LowHigh(), casts, new java.util.ArrayList<String>()
+                new LowHigh(), casts, Logger.getGlobal(),
+                new java.util.ArrayList<String>()
         );
 
         for (SootMethod m : Scene.v().getMainClass().getMethods()) {

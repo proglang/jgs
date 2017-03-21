@@ -52,10 +52,21 @@ public class Main {
 	}
 
 
+	// TODO: move to another package (or even project) as this kind of setup is used by the whole application, not only DA
     public static void doSootSetup(String[] args) {
 
-
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+
+		try {
+		    if (sootOptionsContainer.isVerbose()) {
+		 		L1Logger.setup(Level.ALL);
+                L1Logger.getLogger().info("Verbose logging activated");
+			} else {
+				L1Logger.setup(Level.WARNING);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
         String javaHome = System.getProperty("java.home");    //gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
@@ -107,7 +118,6 @@ public class Main {
 								int expectedException,
 							    Casts c) {
 
-        Level LOGGER_LEVEL = Level.ALL;
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
                 sootOptionsContainer.getMainclass(),                    // adds the mainclass file
@@ -118,12 +128,6 @@ public class Main {
 		for (String s : sootOptionsContainer.getAdditionalFiles()) {
 		    sootOptions.add(s);                                                         // add further files to be instrumented (-f flag)
         }
-        try {
-			System.out.println("Logger Init1");
-			L1Logger.setup(LOGGER_LEVEL);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
         // ====== Create / load fake static analysis results ======
 		Methods methods = m;

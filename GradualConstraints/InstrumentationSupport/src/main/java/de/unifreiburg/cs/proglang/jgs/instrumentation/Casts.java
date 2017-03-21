@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation;
 
 
+import scala.Option;
 import soot.Value;
 import soot.jimple.Stmt;
 
@@ -17,7 +18,7 @@ public interface Casts<Level> {
     }
 
     interface ValueConversion<Level> extends Conversion<Level> {
-        Value getSrcValue();
+        Option<Value> getSrcValue();
     }
 
     /**

@@ -27,9 +27,9 @@ public class L2Logger {
 	    	}
 	    }
 
-	    logger.setLevel(Level.ALL);
+	    logger.setLevel(Level.WARNING);
 	    handler = new ConsoleHandler();
-	    handler.setLevel(Level.ALL);
+	    handler.setLevel(Level.WARNING);
 
 	    // create a formatter
 	    formatter = new L2Formatter();

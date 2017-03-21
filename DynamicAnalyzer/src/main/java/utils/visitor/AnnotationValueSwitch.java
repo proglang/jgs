@@ -472,7 +472,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseStaticFieldRef(StaticFieldRef v) {	
 		rightElement = RightElement.NOT;
 		logger.finest("Static field reference identified " + v.toString());
-		System.out.println(		v.getField().getDeclaringClass());
+		logger.finest(		v.getField().getDeclaringClass().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
@@ -486,7 +486,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseInstanceFieldRef(InstanceFieldRef v) {	
 		rightElement = RightElement.NOT;
 		logger.finest("Instance field reference identified " + v.toString());	
-		System.out.println("kh" + v.getBase().toString());
+		logger.finest("kh" + v.getBase().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {

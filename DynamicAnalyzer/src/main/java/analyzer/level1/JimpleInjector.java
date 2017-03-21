@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
+import scala.Option;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
@@ -318,9 +319,9 @@ public class JimpleInjector {
         ArrayList<Type> parameterTypes = new ArrayList<>();
         parameterTypes.add(RefType.v("java.lang.Object"));
 
-        System.out.println("Adding class Object:" + sc.getName().replace(".", "/"));
+        logger.info("Adding class Object:" + sc.getName().replace(".", "/"));
         ClassConstant cc = ClassConstant.v(sc.getName().replace(".", "/"));
-        System.out.println("Value: " + cc.value);
+        logger.info("Value: " + cc.value);
 
         Expr addObj = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(
@@ -591,7 +592,7 @@ public class JimpleInjector {
         // units.getFirst is already a reference to @this
         // Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
         Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
-        System.out.println("Base " + f.getBase());
+        logger.info("Base " + f.getBase());
 
         Unit assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(fieldSignature));
@@ -818,7 +819,7 @@ public class JimpleInjector {
         SootField field = f.getField();
 
         String signature = getSignatureForField(field);
-        System.out.println("Signature of static field in jimple injector " + signature);
+        logger.info("Signature of static field in jimple injector " + signature);
 
         ArrayList<Type> parameterTypes = new ArrayList<>();
         parameterTypes.add(RefType.v("java.lang.Object"));
@@ -1446,15 +1447,22 @@ public class JimpleInjector {
         if (casts.isValueCast(aStmt)) {
             Casts.ValueConversion conversion = casts.getValueCast(aStmt);
             logger.info("Found value cast " + conversion);
-            // TODO: I am here
-
 
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
                 // Check eines Security Wert: x = (? => LOW) y
-                Local rightHandLocal = (Local) conversion.getSrcValue();
+                Option<Value> srcValue = conversion.getSrcValue();
+                if (srcValue.isDefined()) {
+                    Local rightHandLocal = (Local) srcValue.get();
 
-                logger.info("Check that " + getSignatureForLocal(rightHandLocal) + " is less/equal " + conversion.getDestType().getLevel());
-                checkThatLe(rightHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
+                    logger.info(
+                            "Check that " + getSignatureForLocal(rightHandLocal)
+                            + " is less/equal "
+                            + conversion.getDestType().getLevel());
+                    checkThatLe(rightHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
+
+                } else {
+                    logger.info("Found public src value in cast. Omitting checks.");
+                }
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Initialisierung eines Security Wert: x = (H => ? ) y
                makeLocal((Local) aStmt.getLeftOp(), conversion.getSrcType().getLevel().toString(), aStmt);

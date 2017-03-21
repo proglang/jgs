@@ -13,6 +13,7 @@ public class L1Logger {
 	private static ConsoleHandler handler;
 	private static L1Formatter formatter;
 	private static final String LOGGER_NAME = HandleStmt.class.getName();
+	private static Logger logger;
 
 	/**
 	 * Setup the logger.
@@ -21,7 +22,7 @@ public class L1Logger {
 	public static void setup(Level loggerlevel) throws IOException {
 
 		// get the global logger to configure it
-		Logger logger = Logger.getLogger(LOGGER_NAME);
+		logger = Logger.getLogger(LOGGER_NAME);
 		logger.setUseParentHandlers(false);
 
 		// remove standard handler
@@ -34,7 +35,7 @@ public class L1Logger {
 
 		logger.setLevel(loggerlevel);
 		handler = new ConsoleHandler();
-		handler.setLevel(Level.ALL);
+		handler.setLevel(loggerlevel);
 
 		// create a formatter
 		formatter = new L1Formatter();
@@ -43,6 +44,6 @@ public class L1Logger {
 	}
 	  
 	public static Logger getLogger() {
-		return Logger.getLogger(LOGGER_NAME);		  
+		return logger;
 	}
 }

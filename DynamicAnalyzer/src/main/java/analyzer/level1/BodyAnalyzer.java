@@ -89,15 +89,7 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
 		Logger logger = L1Logger.getLogger();
 		
-		try { 
-			System.out.println("Logger Init2");
-			L1Logger.setup(Level.ALL);
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "L1Logger couldn't be initialized properly");
-			e.printStackTrace();
-		}
-
-		logger.log(Level.SEVERE, "\n BODYTRANSFORM STARTED: {0}",
+		logger.log(Level.INFO, "\n BODYTRANSFORM STARTED: {0}",
 				arg0.getMethod().getName());
 	
 		body = arg0;

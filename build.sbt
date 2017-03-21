@@ -43,7 +43,7 @@ lazy val GradualConstraints =
 
 lazy val jgs =
   (project in file(".")).
-    dependsOn(GradualConstraints, DynamicAnalyzer, ScratchTestclasses).
+    dependsOn(GradualConstraints, DynamicAnalyzer, ScratchTestclasses, DemoTestclasses).
     settings(commonSettings:_*).
     settings(
     )
@@ -68,8 +68,9 @@ lazy val GradualConstraintsTests =
             "com.novocode" % "junit-interface" % "0.11" % "test",
             "org.scalactic" %% "scalactic" % "2.2.6",
             "org.scalatest" %% "scalatest" % "2.2.6" % "test"
-          ),
-      javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+          )
+       ,
+       javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
     )
 
 lazy val InstrumentationSupport =
@@ -95,5 +96,10 @@ lazy val JGSSupport =
 
 lazy val ScratchTestclasses =
   (project in file ("JGSTestclasses/Scratch")).
+    dependsOn(JGSSupport, DynamicAnalyzer).
+    settings(setScalaVersion)
+
+lazy val DemoTestclasses =
+  (project in file ("JGSTestclasses/Demo")).
     dependsOn(JGSSupport, DynamicAnalyzer).
     settings(setScalaVersion)

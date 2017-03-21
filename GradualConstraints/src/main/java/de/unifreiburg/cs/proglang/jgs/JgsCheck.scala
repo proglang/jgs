@@ -63,8 +63,6 @@ object JgsCheck {
    testMode: Boolean
   )
 
-  val log: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.log")
-  val debugLog: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.debug")
 
 
   // configure a json4s capable yaml parser
@@ -84,6 +82,10 @@ object JgsCheck {
   }
 
   def main(args: Array[String]): Unit = {
+
+    val log: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.log")
+    val debugLog: Logger = Logger.getLogger("de.unifreiburg.cs.proglang.jgs.typing.debug")
+
     val defOpt = Opt(
       sourcetree = Some(new File("JGSTestclasses/src")),
       support = new File("JGSSupport/bin"),
@@ -191,7 +193,7 @@ object JgsCheck {
             val csets = new NaiveConstraintsFactory(types)
             new Config(types, csets, opt)
         }
-        cfg.typeCheck(s, classes)
+        cfg.typeCheck(s, classes, log)
 
     }
 
@@ -207,6 +209,7 @@ object JgsCheck {
                        externalFieldAnnotations : java.util.Map[String, String],
                        secdomain : SecDomain[Level],
                        casts : ACasts[Level],
+                       log : Logger,
                        errors : java.util.List[String]) : instrumentation.Methods[Level] = {
 
 
@@ -224,7 +227,7 @@ object JgsCheck {
     val c = s.loadClassAndSupport(mainClass)
     c.setApplicationClass()
 
-    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts, errors)
+    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts, log, errors)
   }
 
   def typeCheck[Level](s : Scene,
@@ -232,6 +235,7 @@ object JgsCheck {
                        externalFieldAnnotations : java.util.Map[String, String],
                        secdomain : SecDomain[Level],
                        casts : ACasts[Level],
+                       log : Logger,
                        errors : java.util.List[String]) : instrumentation.Methods[Level] = {
     try {
       s.loadNecessaryClasses()
@@ -363,19 +367,17 @@ object JgsCheck {
       /** ***********************
         * Class hierarchy check
         * ************************/
-      println("Checking class hierarchy: ")
+      log.info("Checking class hierarchy: ")
       for (c <- classes; mSub <- c.getMethods; mSup <- Supertypes.findOverridden(mSub)) {
         val result = ClassHierarchyTyping.checkTwoMethods(csets, types, signatures, mSub, mSup)
-        print(s"* method ${mSub} overriding method ${mSup}: ")
-        println(Format.pprint(Format.classHierarchyCheck(result)))
+        log.info(s"* method ${mSub} overriding method ${mSup}: " + Format.pprint(Format.classHierarchyCheck(result)))
       }
-      println
 
 
       /** *********************
         * Method signature check
         ************************/
-      println("Checking method bodies: ")
+      log.info("Checking method bodies: ")
       val methodResults : Map[SootMethod, MethodTyping.Result[Level]] = (for {c <- classes if !c.isInterface
            m <- c.getMethods if !m.isAbstract
            methodTyping = new MethodTyping(csets, cstrs, casts)
@@ -388,8 +390,12 @@ object JgsCheck {
            resultReport = Format.pprint(mresult.fold(Format.typingException(_), Format.methodTypingResult(_)))
            _ = {
              val msg = s"* Type checking method ${m.toString}: ${resultReport}"
-             println(msg); println()
-             if (mresult.isLeft) errors.add(msg)
+             if (mresult.isLeft || ! mresult.right.get.isSuccess) {
+               errors.add(msg)
+               log.severe(msg)
+             } else {
+               log.info(msg)
+             }
            }
            result <- mresult.right.toOption
       } yield (m -> result)).toMap
@@ -440,7 +446,7 @@ object JgsCheck {
     val testCollector : TestCollector[Level] = TestCollector()
 
 
-    def typeCheck(s: Scene, classes: List[SootClass]): Unit = {
+    def typeCheck(s: Scene, classes: List[SootClass], log : Logger): Unit = {
 
       /** ****************************
         * Read configured signatures from file
@@ -491,7 +497,7 @@ object JgsCheck {
         case Success(value) => value
       }
 
-      def constructMappingCasts = {
+      def constructMappingCasts(log : Logger) = {
         val getAssocs: String => List[(String, String)] = sel =>
           for {
             JObject(entries) <- castJson \\ sel
@@ -506,11 +512,7 @@ object JgsCheck {
         }
 
         // TODO: some validation would be nice: (i) method exists in CP? (ii) conversion could be parsed? (iii) conversion is compatible?
-        /*
-      println(valueCasts)
-      println(contextCasts)
-      println(contextCastEnd)
-      */
+
         def makeCastMap(casts: Map[String, String]): Map[String, TypeViewConversion[Level]] = {
           for {
             (m, convString) <- casts
@@ -540,7 +542,7 @@ object JgsCheck {
         if (opt.genericCasts) {
           constructGenericCasts
         } else {
-          constructMappingCasts
+          constructMappingCasts(log)
         }
 
       // TODO:  finish this

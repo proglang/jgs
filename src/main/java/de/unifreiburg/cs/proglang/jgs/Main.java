@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
@@ -35,20 +36,31 @@ public class Main {
                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
 
         // Static Check
-        JgsCheck.log().setLevel(Level.WARNING);
         // TODO: parse external methods and strings from yaml file
         //  these placeholder values are UNSECURE and just for debugging.
         Map<String, String> externalFields = new HashMap<>();
         externalFields.put("<java.lang.System: java.io.PrintStream out>", "pub");
         Map<String, JgsCheck.Annotation> externalMethods = new HashMap<>();
-        externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
-        externalMethods.put("<java.io.PrintStream: void println(java.lang.Object)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
-        externalMethods.put("<java.io.PrintStream: void println(int)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
+        externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>",
+                            new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
+                                                    new String[]{"LOW"}));
+        externalMethods.put("<java.io.PrintStream: void println(java.lang.Object)>",
+                            new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
+                                                    new String[]{"LOW"}));
+        externalMethods.put("<java.io.PrintStream: void println(int)>",
+                            new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
+                                                    new String[]{"LOW"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>",
                             new JgsCheck.Annotation(new String[]{"? <= @ret"},
                                                     new String[]{}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeLow(java.lang.Object)>",
-                            new JgsCheck.Annotation(new String[]{"? <= @ret"},
+                            new JgsCheck.Annotation(new String[]{"? <= @ret", "@0 <= LOW"},
+                                                    new String[]{}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.String)>",
+                            new JgsCheck.Annotation(new String[]{},
+                                                    new String[]{"LOW"}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: java.lang.String readSecret()>",
+                            new JgsCheck.Annotation(new String[]{"HIGH <= @ret"},
                                                     new String[]{}));
         externalMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
@@ -63,19 +75,19 @@ public class Main {
                 sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
                 externalMethods,
                 externalFields,
-                new LowMediumHigh(), casts, errors
+                new LowMediumHigh(), casts,
+                L1Logger.getLogger(),
+                errors
         );
 
         if(!errors.isEmpty()) {
-            System.out.println("THERE WERE ERRORS DURING TYPCHECKING. ABORTING.");
+            System.err.println("THERE WERE ERRORS DURING TYPCHECKING. ABORTING.");
             System.exit(-1);
         }
 
         // Dynamic Check
         // G.reset();
-        System.out.print("");
-        System.out.println("== START DYNAMIC ANALYSIS ==");
-        System.out.print("");
+        L1Logger.getLogger().info("Start Instrumentation");
         main.Main.executeWithoutSootSetup(args, true,
                 typeCheckResult, false, ExpectedException.NONE.getVal(), casts);
     }

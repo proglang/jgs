@@ -35,7 +35,6 @@ public class HandleStmt {
 	 * {@link SecurityLevel} of the globalPC
 	 */
 	public HandleStmt() {
-		logger.log(Level.INFO, "Create new HandleStmt instance");
 		localmap = new LocalMap();
 		objectmap = ObjectMap.getInstance();
 	}
@@ -56,7 +55,6 @@ public class HandleStmt {
 	 * It triggers the setup of the logger.
 	 */
 	public static void init() {
-		logger.log(Level.INFO, "Init HandleStatement");
 		try {
 			L2Logger.setup();
 		} catch (IOException e) {

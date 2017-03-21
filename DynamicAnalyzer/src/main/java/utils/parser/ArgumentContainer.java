@@ -19,9 +19,10 @@ public class ArgumentContainer {
     private final String outputFolder;
     private final List<String> additionalFiles;
     private boolean usePublicTyping;
+    private final boolean verbose;
 
     ArgumentContainer(String mainclass, List<String> addDirsToClasspath, List<String> addClasses,
-                      boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping) {
+                      boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping, boolean verbose) {
         this.mainclass = mainclass;
         this.toJimple = toJimple;
         this.outputFolder = outputFolder;
@@ -29,6 +30,7 @@ public class ArgumentContainer {
         this.addDirsToClasspath = addDirsToClasspath;
         this.addClasses = addClasses;
         this.usePublicTyping = usePublicTyping;
+        this.verbose = verbose;
     }
 
     public String getMainclass() {
@@ -70,5 +72,9 @@ public class ArgumentContainer {
 
     public List<String> getAdditionalFiles() {
         return additionalFiles;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
     }
 }

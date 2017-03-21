@@ -23,4 +23,14 @@ public class IOUtils {
         }
         return result;
     }
+
+    /**
+     * Rudimentary method to print a secret to stdout. The secret is "crossed out". Just for demonstration purposes.
+     */
+    public static void printSecret(String secret) {
+        for (int i = 0; i < secret.length(); i++)  {
+            System.out.print("X");
+        }
+        System.out.println();
+    }
 }
