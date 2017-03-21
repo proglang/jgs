@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class MakeHigh {
 	
@@ -15,11 +15,11 @@ public class MakeHigh {
 		String[] arr = {"a", "b"};
 		String[][] mularr = { {"aa"},{"bb"}};
 		
-		local = HelperClass.makeHigh(local);
-		local = HelperClass.makeHigh("bg");
-		field = HelperClass.makeHigh(field);
-		arr[0] = HelperClass.makeHigh(arr[1]);
-		mularr[1] = HelperClass.makeHigh(mularr[1]);
+		local = DynamicLabel.makeHigh(local);
+		local = DynamicLabel.makeHigh("bg");
+		field = DynamicLabel.makeHigh(field);
+		arr[0] = DynamicLabel.makeHigh(arr[1]);
+		mularr[1] = DynamicLabel.makeHigh(mularr[1]);
 	}
 
 }

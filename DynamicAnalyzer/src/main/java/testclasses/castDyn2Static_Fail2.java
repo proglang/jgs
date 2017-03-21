@@ -1,7 +1,6 @@
 package testclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.Casts;
-import utils.analyzer.HelperClass;
 
 /**
  * Created by Nicolas Müller on 02.03.17.

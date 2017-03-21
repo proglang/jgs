@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Special case of NSU in this implementation. In theory, it should throw NSU,
@@ -13,7 +13,7 @@ public class NSU_SwitchStmtFail {
 
 	public static void main(String[] args) {
 		String y = "__";
-		int x = HelperClass.makeHigh(1);
+		int x = DynamicLabel.makeHigh(1);
 		switch (x) {
 		  case 1: 
 			  y += "Case 1"; 		// Should always NSU. However, NSU thrown only 

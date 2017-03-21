@@ -1,7 +1,7 @@
 package testclasses;
 
 import testclasses.utils.C;
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class NSU_FieldAccess2 {
 	//static int f = 0;
@@ -9,8 +9,8 @@ public class NSU_FieldAccess2 {
 
 		C b = new C();
 		C c = b;
-		c.f = HelperClass.makeHigh(c.f);
-		if (HelperClass.makeHigh(42) == 42) {
+		c.f = DynamicLabel.makeHigh(c.f);
+		if (DynamicLabel.makeHigh(42) == 42) {
 			c.f = true; // should be ok, c.f is HIGH		
 		}
 	}

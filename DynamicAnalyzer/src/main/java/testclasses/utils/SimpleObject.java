@@ -1,6 +1,6 @@
 package testclasses.utils;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 
 public class SimpleObject {
@@ -20,6 +20,6 @@ public class SimpleObject {
 	}
 	
 	public static int returnHigh(int x) {
-		return HelperClass.makeHigh(x);
+		return DynamicLabel.makeHigh(x);
 	}
 }

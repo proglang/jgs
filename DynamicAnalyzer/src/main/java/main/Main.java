@@ -70,15 +70,25 @@ public class Main {
                 + new File(javaHome, "lib/jce.jar").toString()
                 + ":"
                 + new File(javaHome, "lib/rt.jar").toString();
+		/*
+		String classPath = "."
+						   + ":"
+						   + new File(javaHome, "lib/jce.jar").toString()
+						   + ":"
+						   + new File(javaHome, "lib/rt.jar").toString();
+						   */
 
         // Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
         for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
-            classPath += ":" + s;
+            classPath = s + ":" + classPath;
         }
+        // TODO: why both?
         for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
             classPath += ":" + s;
         }
         Scene.v().setSootClassPath(classPath);
+
+		L1Logger.getLogger().info("Soot classpath: " + Scene.v().getSootClassPath());
 
         // those are needed because of soot-magic i guess
         Scene.v().addBasicClass("analyzer.level2.HandleStmt");

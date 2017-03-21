@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class ExternalFail2 {
 	public static void main(String[] args) {
@@ -11,6 +11,6 @@ public class ExternalFail2 {
 	}
 
 	public static int retH() {
-		return HelperClass.makeHigh(4);
+		return DynamicLabel.makeHigh(4);
 	}
 }

@@ -1,7 +1,6 @@
 package testclasses;
 
 import testclasses.utils.C;
-import utils.analyzer.HelperClass;
 
 /**
  * Created by Nicolas Müller on 07.02.17.

@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Test that must pass. Information flows from high x to y, but
@@ -10,9 +10,9 @@ import utils.analyzer.HelperClass;
  */
 public class PrivateVariableSuccess {
 	public static void main(String[] args) {
-		int z = HelperClass.makeHigh(4);
-		int x = HelperClass.makeHigh(3);
-		int y = HelperClass.makeLow(2);
+		int z = DynamicLabel.makeHigh(4);
+		int x = DynamicLabel.makeHigh(3);
+		int y = DynamicLabel.makeLow(2);
 		
 		// we test both the implicit flow inside main (below)
 		if (x > 0) { 

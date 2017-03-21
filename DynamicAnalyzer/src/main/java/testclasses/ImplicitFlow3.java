@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Obvious implicit information flow.
@@ -9,7 +9,7 @@ import utils.analyzer.HelperClass;
  */
 public class ImplicitFlow3 {
 	public static void main(String[] args) {
-		int secret = HelperClass.makeHigh(42);
+		int secret = DynamicLabel.makeHigh(42);
 		String message;
 		if (secret > 0) {
 			message = "Secret number is > 0";

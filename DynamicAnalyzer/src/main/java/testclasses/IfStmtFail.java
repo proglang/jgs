@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class IfStmtFail {
 
@@ -10,7 +10,7 @@ public class IfStmtFail {
 	 */
 	public static void main(String[] args) {
 		IfStmtFail thisObj = new IfStmtFail();
-		int sec = thisObj.multIfs(HelperClass.makeHigh(42));
+		int sec = thisObj.multIfs(DynamicLabel.makeHigh(42));
 		System.out.println(sec);
 	}
 

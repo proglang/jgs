@@ -1,7 +1,6 @@
 package testclasses;
 
 import testclasses.utils.C;
-import utils.analyzer.HelperClass;
 
 /**
  * Created by Nicolas Müller on 07.02.17.
@@ -10,7 +9,7 @@ public class NoNSU3_Fields {
 
     /**
      *          C b = new C();
-     *          C c = HelperClass.makeHigh(b);
+     *          C c = DynamicLabel.makeHigh(b);
      *          c.f = true;
      *
      *          This code throws a NSU error, since we access f through high sec-object c

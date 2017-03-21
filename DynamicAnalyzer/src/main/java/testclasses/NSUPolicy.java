@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Class to test the basics of NSU policy
@@ -13,8 +13,8 @@ public class NSUPolicy {
 		int y = 5;
 		int secret = 42;
 		
-		//y = HelperClass.makeLow(5);		// just for clarity
-		secret = HelperClass.makeHigh(5);
+		//y = DynamicLabel.makeLow(5);		// just for clarity
+		secret = DynamicLabel.makeHigh(5);
 		
 		if (secret > 0) {
 			y += 1;						// NSU IFCError, Illegal

@@ -90,7 +90,7 @@ lazy val InstrumentationSupport =
 
 
 lazy val JGSSupport =
-  (project in file("GradualConstraints/JGSSupport")).
+  (project in file("JGSSupport")).
     settings(setScalaVersion)
 
 lazy val ScratchTestclasses =

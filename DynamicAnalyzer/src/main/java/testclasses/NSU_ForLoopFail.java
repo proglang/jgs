@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Test using a for loop as an if statement.
@@ -10,7 +10,7 @@ import utils.analyzer.HelperClass;
 public class NSU_ForLoopFail {
 
 	public static void main(String[] args) {
-		int doUpdate = HelperClass.makeHigh(1);
+		int doUpdate = DynamicLabel.makeHigh(1);
 		int res = ForActingAsIf(doUpdate);
 		
 		// to make sure compiler doesn't optimize away

@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class WhileLoopFail {
 
@@ -15,7 +15,7 @@ public class WhileLoopFail {
 	 */
 	public static int simpleWhile(int x) {
 		int y = 0;
-		x = HelperClass.makeHigh(x);
+		x = DynamicLabel.makeHigh(x);
 		while (x < 10) {
 			y = x++;
 		}

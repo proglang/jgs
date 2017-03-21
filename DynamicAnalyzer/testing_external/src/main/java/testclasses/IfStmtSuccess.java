@@ -22,9 +22,9 @@ public class IfStmtSuccess {
 		int high = 1;
 		high = HelperClass.makeHigh(high);
 		thisObj.multIfs(high);
-		// retValue = thisObj.multIfs(HelperClass.makeHigh(3));
-		// retValue = thisObj.multIfs(HelperClass.makeHigh(5));
-		// retValue = thisObj.nestedIfs(HelperClass.makeHigh(4));
+		// retValue = thisObj.multIfs(DynamicLabel.makeHigh(3));
+		// retValue = thisObj.multIfs(DynamicLabel.makeHigh(5));
+		// retValue = thisObj.nestedIfs(DynamicLabel.makeHigh(4));
 	}
 
 	/**

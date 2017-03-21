@@ -1,11 +1,11 @@
 package testclasses;
 
 import testclasses.utils.C;
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class NSU_FieldAccess5 {
 	public static void main(String[] args) {
-		int secret = HelperClass.makeHigh(2);
+		int secret = DynamicLabel.makeHigh(2);
 		C c = new C();
 		c.f = false;
 		if (secret == 2) {

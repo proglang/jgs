@@ -1,11 +1,11 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 
 public class DominatorNullPointer {
 	public static void main(String[] args) {
-		int secret = HelperClass.makeHigh(42);
+		int secret = DynamicLabel.makeHigh(42);
 		int y = returnInt(secret);
 		
 	}

@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class FieldWriteFail {
 	static int field = 0;
@@ -14,7 +14,7 @@ public class FieldWriteFail {
 	 * @param x Integer
 	 */
 	public static void method(int x) {
-		int y = HelperClass.makeHigh(x);
+		int y = DynamicLabel.makeHigh(x);
 		if (y > 2) {
 			field += y;
 		}

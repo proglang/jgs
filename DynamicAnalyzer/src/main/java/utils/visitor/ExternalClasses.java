@@ -56,11 +56,11 @@ public class ExternalClasses {
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
 
 		//
-		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
+		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
 				+ "makeHigh(java.lang.Object)>", new MakeHigh());
-		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
+		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
 				+ "makeMedium(java.lang.Object)>", new MakeMedium());
-		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
+		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
 				+ "makeLow(java.lang.Object)>", new MakeLow());
 
 		// casts

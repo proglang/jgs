@@ -1,7 +1,8 @@
+package de.unifreiburg.cs.proglang.jgs;
 
-import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
+import de.unifreiburg.cs.proglang.jgs.Main;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class ArithmeticExpressionsFail {
 	
@@ -8,7 +8,7 @@ public class ArithmeticExpressionsFail {
 	 * @param args not used.
 	 */
 	public static void main(String[] args) {
-		int res = HelperClass.makeHigh(3);
+		int res = DynamicLabel.makeHigh(3);
 		if (res > 0) {
 			res = (res + 1) * 42;
 		}

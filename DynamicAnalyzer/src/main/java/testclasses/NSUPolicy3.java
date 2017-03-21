@@ -1,7 +1,7 @@
 package testclasses;
 
 import testclasses.utils.C;
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Working example from readme. Since two exceptions are to be thrown, also see NSUPolicy2
@@ -18,7 +18,7 @@ public class NSUPolicy3 {
 		
 		// o1, o2, o1.f and o2.f are all LOW
 		
-		boolean secret = HelperClass.makeHigh(true);
+		boolean secret = DynamicLabel.makeHigh(true);
 		C o;
 		if (secret) {
 			o = o1;

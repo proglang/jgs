@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Must fail. Currently, does not fail.
@@ -10,7 +10,7 @@ import utils.analyzer.HelperClass;
 public class SystemOut2 {
 	
 	public static void main(String[] args) {
-		System.out.println(HelperClass.makeHigh(3));
+		System.out.println(DynamicLabel.makeHigh(3));
 	}
 	
 }

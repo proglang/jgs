@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class FieldsSuccess {
 	
@@ -16,7 +16,7 @@ public class FieldsSuccess {
 	}
 	
 	public static void readField() {
-		field = HelperClass.makeHigh(field);
+		field = DynamicLabel.makeHigh(field);
 		// System.out.println("Value of Field:" + local);
 	}
 

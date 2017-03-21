@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class SimpleIfStmt {
 	
@@ -16,8 +16,8 @@ public class SimpleIfStmt {
 	 */
 	public static boolean simpleIfStmt(int x) {
 		boolean isPositive;
-		x = HelperClass.makeHigh(x);
-		isPositive = HelperClass.makeHigh(false);
+		x = DynamicLabel.makeHigh(x);
+		isPositive = DynamicLabel.makeHigh(false);
 		
 		if (x >= 0) {
 			isPositive = true;

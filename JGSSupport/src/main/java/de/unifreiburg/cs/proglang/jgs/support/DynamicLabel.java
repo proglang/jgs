@@ -1,4 +1,4 @@
-package utils.analyzer;
+package de.unifreiburg.cs.proglang.jgs.support;
 
 /**
  * Class to set the security-level of locals, fields and array-fields.
@@ -9,7 +9,9 @@ package utils.analyzer;
  * injector to inject appropriate code.
  * @author koenigr
  */
-public class HelperClass {
+// TODO: implement make(String, T) method where security level can be set as a string
+	// in the style of Casts.cast(String, T)
+public class DynamicLabel {
 
 	public static <T> T makeHigh(T value) {
 		return value;

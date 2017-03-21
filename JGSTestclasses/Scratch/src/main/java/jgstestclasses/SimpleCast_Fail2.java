@@ -3,8 +3,6 @@ package jgstestclasses;
 import de.unifreiburg.cs.proglang.jgs.support.Casts;
 import de.unifreiburg.cs.proglang.jgs.support.Constraints;
 
-import static utils.analyzer.HelperClass.makeHigh;
-
 public class SimpleCast_Fail2 {
 
     @Constraints({"LOW <= @0"})

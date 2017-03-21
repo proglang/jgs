@@ -102,7 +102,7 @@ public class AllEndToEndTests {
 			
 				// Examples from readme.md
 				new Object[] { "NSUPolicy", ExpectedException.NSU_FAILURE, new String[] {"int_i0"} },
-				new Object[] { "NSUPolicy2", ExpectedException.NSU_FAILURE, new String[] {"boolean_$z2"} },
+				new Object[] { "NSUPolicy2", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_$z2"} },
 				new Object[] { "NSUPolicy3", ExpectedException.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
 				new Object[] { "NSUPolicy4", ExpectedException.NSU_FAILURE, new String[] {"java.lang.String_r5"} },
 

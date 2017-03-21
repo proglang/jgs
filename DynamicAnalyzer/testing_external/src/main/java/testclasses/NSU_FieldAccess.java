@@ -9,7 +9,7 @@ public class NSU_FieldAccess {
 
 		C b = new C();
 		C c = HelperClass.makeHigh(b);
-		// c.f = HelperClass.makeHigh(c.f);
+		// c.f = DynamicLabel.makeHigh(c.f);
 		c.f = true; // should throw an error, since we access access f through
 					// high-sec c and PC = LOW
        // f = 1; // ok

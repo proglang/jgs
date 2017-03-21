@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * This should normally throw an NSU exception. However, because of compiler optimisations,
@@ -20,7 +20,7 @@ public class NSU_SwitchStmtSpecialCase {
 		 */
 		public static void simpleLookupSwitchVoid(int x) {
 			int y = 0;
-			x = HelperClass.makeHigh(x);
+			x = DynamicLabel.makeHigh(x);
 			switch (x) {
 			  case 1: 
 				  y = x; // should throw NSU!! but because of snd branch, it does not.

@@ -21,12 +21,12 @@ and directly set the securitylevel of the left argument
         $r3[0] = "a";
         $r3[1] = "b";
         r2 = $r3;
-        $r4 = staticinvoke <utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>(r1);
+        $r4 = staticinvoke <utils.analyzer.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>(r1);
         r5 = (java.lang.String) $r4;
         r6 = "bg";
         
         $r7 = <testclasses.MakeHigh: java.lang.String field>;
-        $r8 = staticinvoke <utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>($r7);
+        $r8 = staticinvoke <utils.analyzer.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>($r7);
         $r9 = (java.lang.String) $r8;
         <testclasses.MakeHigh: java.lang.String field> = $r9;
         return;

@@ -3,7 +3,7 @@ package jgstestclasses;
 import de.unifreiburg.cs.proglang.jgs.support.Casts;
 import de.unifreiburg.cs.proglang.jgs.support.Constraints;
 import de.unifreiburg.cs.proglang.jgs.support.Effects;
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class SimpleCasts {
 
@@ -27,13 +27,13 @@ public class SimpleCasts {
 
     @Constraints({"LOW <= @ret"})
     static String attemptFailingCastUsingMkHigh() {
-        String x = HelperClass.makeHigh("secret: 42");
+        String x = DynamicLabel.makeHigh("secret: 42");
         return Casts.cast("? ~> LOW", x);
     }
 
     static void attemptNSU() {
-        String x = HelperClass.makeHigh("secret: 42");
-        String low = HelperClass.makeLow("null");
+        String x = DynamicLabel.makeHigh("secret: 42");
+        String low = DynamicLabel.makeLow("null");
         System.out.println("attempting NSU");
         if (x != null) {
             low = "not null";
@@ -42,7 +42,7 @@ public class SimpleCasts {
 
     @Constraints({"? <= @ret"})
     static String attemptNSUAndReturn() {
-        String x = HelperClass.makeHigh("secret: 42");
+        String x = DynamicLabel.makeHigh("secret: 42");
         String low = "I guess the secret is `42'";
         String tmp = null;
         if (x != null) {

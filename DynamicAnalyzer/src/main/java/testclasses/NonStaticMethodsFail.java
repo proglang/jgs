@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class NonStaticMethodsFail {
 
@@ -10,7 +10,7 @@ public class NonStaticMethodsFail {
 	}
 	
 	public void nonStatic() {
-		int x = HelperClass.makeHigh(4);
+		int x = DynamicLabel.makeHigh(4);
 		System.out.println("Called a non-static method..");
 		System.out.println(x);
 	}

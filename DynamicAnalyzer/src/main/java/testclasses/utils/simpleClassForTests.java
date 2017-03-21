@@ -1,6 +1,6 @@
 package testclasses.utils;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 
 /**
@@ -13,7 +13,7 @@ public class simpleClassForTests {
 	 * @return string with high-security value
 	 */
 	public String provideSecretString() {
-		String s = HelperClass.makeHigh("i like donuts");
+		String s = DynamicLabel.makeHigh("i like donuts");
 		return s;
 	}
 }

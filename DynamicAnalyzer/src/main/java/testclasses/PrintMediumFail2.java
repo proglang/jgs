@@ -1,12 +1,12 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 import utils.printer.SecurePrinter;
 
 public class PrintMediumFail2 {
 	public static void main(String[] args) {
 		String hi = "This is high information";
-		hi = HelperClass.makeHigh(hi);
+		hi = DynamicLabel.makeHigh(hi);
 		SecurePrinter.printMedium(hi);
 	}
 }

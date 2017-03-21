@@ -1,7 +1,6 @@
 package testclasses;
 
-import java_cup.internal_error;
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 public class IfStmtSuccess {
 
@@ -20,11 +19,11 @@ public class IfStmtSuccess {
 		
 		// pass high security value
 		int high = 1;
-		high = HelperClass.makeHigh(high);
+		high = DynamicLabel.makeHigh(high);
 		thisObj.multIfs(high);
-		// retValue = thisObj.multIfs(HelperClass.makeHigh(3));
-		// retValue = thisObj.multIfs(HelperClass.makeHigh(5));
-		// retValue = thisObj.nestedIfs(HelperClass.makeHigh(4));
+		// retValue = thisObj.multIfs(DynamicLabel.makeHigh(3));
+		// retValue = thisObj.multIfs(DynamicLabel.makeHigh(5));
+		// retValue = thisObj.nestedIfs(DynamicLabel.makeHigh(4));
 	}
 
 	/**

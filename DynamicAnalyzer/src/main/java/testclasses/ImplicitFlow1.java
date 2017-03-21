@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Most basic case of implicit information flow from x to y.
@@ -10,7 +10,7 @@ import utils.analyzer.HelperClass;
  */
 public class ImplicitFlow1 {
 	public static void main(String[] args) {
-		int x = HelperClass.makeHigh(3);
+		int x = DynamicLabel.makeHigh(3);
 		int y;
 		if (x > 0) {
 			y = 42;

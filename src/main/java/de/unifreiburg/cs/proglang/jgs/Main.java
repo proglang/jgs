@@ -1,0 +1,82 @@
+package de.unifreiburg.cs.proglang.jgs;
+
+import analyzer.level2.storage.LowMediumHigh;
+import de.unifreiburg.cs.proglang.jgs.JgsCheck;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import utils.parser.ArgParser;
+import utils.parser.ArgumentContainer;
+import utils.staticResults.superfluousInstrumentation.ExpectedException;
+
+import java.util.*;
+import java.util.logging.Level;
+
+/**
+ * This is the main entry point for jgs.
+ * Launches the static analyzer, then the dynamic analyzer.
+ *
+ * Example:
+ * -m pkg.ScratchMonomorphic_Success -s GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic_Success.java -p . GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes GradualConstraints/JGSSupport/target/scala-2.11/classes -o sootOutput
+ */
+public class Main {
+    public static void main(String[] args) {
+
+        main.Main.doSootSetup(args);
+
+        ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+        // run static
+        ACasts<LowMediumHigh.Level> casts =
+                new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCx(java.lang.Object)>",
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
+
+        // Static Check
+        JgsCheck.log().setLevel(Level.WARNING);
+        // TODO: parse external methods and strings from yaml file
+        //  these placeholder values are UNSECURE and just for debugging.
+        Map<String, String> externalFields = new HashMap<>();
+        externalFields.put("<java.lang.System: java.io.PrintStream out>", "pub");
+        Map<String, JgsCheck.Annotation> externalMethods = new HashMap<>();
+        externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
+        externalMethods.put("<java.io.PrintStream: void println(java.lang.Object)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
+        externalMethods.put("<java.io.PrintStream: void println(int)>", new JgsCheck.Annotation(new String[]{}, new String[]{}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>",
+                            new JgsCheck.Annotation(new String[]{"? <= @ret"},
+                                                    new String[]{}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeLow(java.lang.Object)>",
+                            new JgsCheck.Annotation(new String[]{"? <= @ret"},
+                                                    new String[]{}));
+        externalMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>",
+                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                                                    new String[]{}));
+        externalMethods.put("<java.lang.Integer: int intValue()>",
+                            new JgsCheck.Annotation(new String[]{},
+                                                    new String[]{}));
+        List<String> errors = new ArrayList<>();
+        Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
+                sootOptionsContainer.getMainclass(),
+                sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
+                sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
+                externalMethods,
+                externalFields,
+                new LowMediumHigh(), casts, errors
+        );
+
+        if(!errors.isEmpty()) {
+            System.out.println("THERE WERE ERRORS DURING TYPCHECKING. ABORTING.");
+            System.exit(-1);
+        }
+
+        // Dynamic Check
+        // G.reset();
+        System.out.print("");
+        System.out.println("== START DYNAMIC ANALYSIS ==");
+        System.out.print("");
+        main.Main.executeWithoutSootSetup(args, true,
+                typeCheckResult, false, ExpectedException.NONE.getVal(), casts);
+    }
+}

@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Created by Nicolas Müller on 14.02.17.
@@ -8,7 +8,7 @@ import utils.analyzer.HelperClass;
 public class HighArgument {
     public static void main(String[] args) {
         int i = 42;
-        i = HelperClass.makeHigh(i);
+        i = DynamicLabel.makeHigh(i);
         callPrint(i);
     }
 

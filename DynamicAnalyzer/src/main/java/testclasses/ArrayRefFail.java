@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Information leaked by java.lang.String_$r7 in array pub.
@@ -22,7 +22,7 @@ public class ArrayRefFail {
 	 */
 	public static String[] read() {
 		String secret = "42";
-		secret = HelperClass.makeHigh(secret);
+		secret = DynamicLabel.makeHigh(secret);
 		String[] arr = {"41", secret, "43"};
 		return arr;
 	}

@@ -9,10 +9,6 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Parses the arguments from cmd into soot format. Soot format is like this:
- * [-f, c, -main-class, 
- * 	/Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer/testing_external,
- *  testclasses.NSUPolicy1, --d, /Users/NicolasM/Dropbox/hiwi/progLang/jgs/DynamicAnalyzer]
  * @author Nicolas Müller
  *
  */
@@ -20,7 +16,7 @@ public class ArgParser {
 
     // flags
     final static String MAINCLASS_FLAG = "m";
-    final static String ADD_DIRECTORIES_TO_CLASSPATH = "p";
+    final static String CLASSPATH = "cp";
     final static String OTHER_CLASSES_FOR_STATIC_ANALYZER = "s";
     final static String JIMPLE_FLAG = "j";
     final static String OUTPUT_FOLDER_FLAG = "o";
@@ -28,25 +24,12 @@ public class ArgParser {
     final static String PUBLIC_TYPING_FOR_JIMPLE = "x";
     final static String HELP = "h";
 
-	private static void printHelp() {
-		System.out.println(" ====== HELP ======= ");
-		System.out.println("-" + MAINCLASS_FLAG + ": Set mainclass ");
-        System.out.println("-" + JIMPLE_FLAG + ": Compile to Jimple. ");
-		System.out.println("-" + ADD_DIRECTORIES_TO_CLASSPATH + ": Set classpath for soot. Use to add multiple folders in several directories. ");
-        System.out.println("-" + OTHER_CLASSES_FOR_STATIC_ANALYZER + ": Add other classes to be analyzed");
-		System.out.println("-" + OUTPUT_FOLDER_FLAG + ": Set output folder. ");
-        System.out.println("-" + ADDITIONAL_FILES_FLAG + ": Add additional files to be processed (like testclasses.SomeHelperClassForMain)");
-        System.out.println("-" + PUBLIC_TYPING_FOR_JIMPLE + ": Developer's option. Uses all public typing and produces a reduced jimple file");
-		System.out.println("\nExamples:");
-		System.out.println("-m testclasses.NSUPolicy1");
-		System.out.println("-m testclasses.NSUPolicy1 -j");
-		System.out.println("-m testclasses.NSUPolicy1 -o /Users/NicolasM/myOutputFolder");
-		System.out.println("-m testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads");
-		System.out.println("-m testclasses.NSUPolicy1 -p /Users/NicolasM/Downloads/Users/NicolasM/Downloads -j");
-		System.out.println("-m testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java");
-		System.out.println("-m testclasses.NSUPolicy1 -f externalTest/main/utils/SomeClass.java some/absolut/path/to/additionalFile.java");
+	private static void printHelp(Options options) {
+	    HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("jgs", options);
 	}
 
+	// TODO: some options are unused at the moment. Clean up.
     public static ArgumentContainer getSootOptions(String[] args) {
 
         // locals variables to hold parsing results
@@ -63,24 +46,25 @@ public class ArgParser {
         // ======== PREPARE OPTIONS =========
 		Options options = new Options();
 
-        Option mainopt = new Option(MAINCLASS_FLAG, "mainclass", true,
-                "mainclass");
+        Option mainopt = new Option(MAINCLASS_FLAG,
+                                    "main-class",
+                                    true,
+                                    "the main-class of the application");
         mainopt.setRequired(true);
         options.addOption(mainopt);
 
 
-		Option addDirsToClasspathOption = new Option(ADD_DIRECTORIES_TO_CLASSPATH, "directory", true,
-				"Optional: Add directories to the soot classpath. Use if you want to add files (mainclass or via -f flag) that are" +
-                        "not contained in your current directory");
+		Option addDirsToClasspathOption = new Option(CLASSPATH, "classpath", true,
+				"set the classpath");
 		addDirsToClasspathOption.setRequired(false);
 		addDirsToClasspathOption.setArgs(Option.UNLIMITED_VALUES);
 		options.addOption(addDirsToClasspathOption);
 
 		Option addOtherClassesForStatic = new Option(OTHER_CLASSES_FOR_STATIC_ANALYZER, "otherClasses", true,
-		                "Add other Classes for the static analyzer");
+		                "Add other classes for the static analyzer");
 		addOtherClassesForStatic.setRequired(false);
 		addOtherClassesForStatic.setArgs(Option.UNLIMITED_VALUES);
-		options.addOption(addOtherClassesForStatic);
+		// options.addOption(addOtherClassesForStatic);
 
         Option format = new Option(JIMPLE_FLAG, "jimple", false,
                 "Optional: Output as Jimple instead of as compiled class");
@@ -88,7 +72,7 @@ public class ArgParser {
         options.addOption(format);
 
 		Option output = new Option(OUTPUT_FOLDER_FLAG, "output", true,
-                "Optional: Set output folder");
+                "Optional: set output folder");
 		output.setRequired(false);
 		options.addOption(output);
 
@@ -96,16 +80,11 @@ public class ArgParser {
                 "Optional: add additional files to instrumentation process");
 		filesToAdd.setRequired(false);
 		filesToAdd.setArgs(Option.UNLIMITED_VALUES);
-		options.addOption(filesToAdd);
+		// options.addOption(filesToAdd);
 
 		Option help = new Option(HELP, "help", false, "Print Help");
 		help.setRequired(false);
 		options.addOption(help);
-
-		Option publicTyping = new Option(PUBLIC_TYPING_FOR_JIMPLE, "publicTyping", false, "Developer's option: Run main with all public. Especially useful in" +
-                "combination with -" + JIMPLE_FLAG + "to print out the optimised jimple");
-		publicTyping.setRequired(false);
-		options.addOption(publicTyping);
 
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd;
@@ -114,7 +93,7 @@ public class ArgParser {
 
             // help flag
             if (cmd.hasOption("h")){
-                printHelp();
+                printHelp(options);
                 System.exit(0);
             }
 
@@ -122,8 +101,8 @@ public class ArgParser {
             mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
 
             // case p flag
-            if (cmd.hasOption(ADD_DIRECTORIES_TO_CLASSPATH)) {
-                for ( String s : cmd.getOptionValues(ADD_DIRECTORIES_TO_CLASSPATH)) {
+            if (cmd.hasOption(CLASSPATH)) {
+                for ( String s : cmd.getOptionValues(CLASSPATH)) {
                     File tmp = new File(s);
                     addDirsToClasspath.add(tmp.isAbsolute() ? s : new File(System.getProperty("user.dir"), s).getAbsolutePath());
                 }
@@ -166,8 +145,8 @@ public class ArgParser {
 
 			// if illegal input
 		} catch (ParseException e) {
-			printHelp();
-			System.exit(0);
+			printHelp(options);
+			System.exit(-1);
 		}
 
 	    throw new InternalAnalyzerException("This line must never be reached"); // compiler complains if i dont put this here?!
