@@ -61,7 +61,10 @@ public class Main {
                                                     new String[]{"LOW"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: java.lang.String readSecret()>",
                             new JgsCheck.Annotation(new String[]{"HIGH <= @ret"},
-                                                    new String[]{}));
+                                                    new String[]{"LOW"}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: java.lang.String read()>",
+                            new JgsCheck.Annotation(new String[]{},
+                                                    new String[]{"LOW"}));
         externalMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));

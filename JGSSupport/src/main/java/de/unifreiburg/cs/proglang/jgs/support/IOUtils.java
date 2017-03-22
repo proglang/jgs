@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.support;
 
-import java.io.Console;
+import java.io.*;
 
 /**
  * Utilities for security-aware IO.
@@ -19,7 +19,7 @@ public class IOUtils {
         String result = null;
         Console cons = System.console();
         if (cons != null) {
-            result = new String(cons.readPassword("Provide a secret: "));
+            result = new String(cons.readPassword("Enter a secret: "));
         }
         return result;
     }
@@ -32,5 +32,17 @@ public class IOUtils {
             System.out.print("X");
         }
         System.out.println();
+    }
+
+    /**
+     * Reads a line of public data from stdin.
+     */
+    public static String read() {
+        System.out.print("Enter public data: ");
+        try {
+            return new BufferedReader(new InputStreamReader(System.in)).readLine();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

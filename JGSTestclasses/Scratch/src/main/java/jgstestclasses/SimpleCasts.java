@@ -8,13 +8,12 @@ import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 public class SimpleCasts {
 
     @Constraints({"LOW <= @0 "})
+    @Effects("LOW")
     public static void main(String[] args) {
         String hello1 = null;
-        // attemptNSU(); // <-- uncomment me and comment below to get an error
         System.out.println(attemptFailingCast());
         System.out.println(attemptFailingCastUsingMkHigh());
-        attemptNSU(); // <-- comment me and uncomment above to get an error
-        System.out.println(attemptNSUAndReturn());
+        attemptNSU();
         String hello = (aStaticMethodWithCasts(hello1)); // fails at run-time due to an bad cast in aStaticMethodWithCasts
     }
 
@@ -31,6 +30,7 @@ public class SimpleCasts {
         return Casts.cast("? ~> LOW", x);
     }
 
+    @Effects("LOW")
     static void attemptNSU() {
         String x = DynamicLabel.makeHigh("secret: 42");
         String low = DynamicLabel.makeLow("null");

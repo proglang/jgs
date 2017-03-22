@@ -51,10 +51,10 @@ public class MethodTyping<Level> {
         public final VarTyping<Level> variableTyping;
         public final CxTyping<Level> cxTyping;
 
-        public final Map<Integer, Option<TypeView<Level>>> parameterInstantiation;
-        public final Option<TypeView<Level>> returnInstantiation;
+        public final Map<Integer, Option<Type<Level>>> parameterInstantiation;
+        public final Option<Type<Level>> returnInstantiation;
 
-        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects, ConflictResult<Level> conflicCauses, VarTyping<Level> variableTyping, CxTyping<Level> cxTyping, Map<Integer, Option<TypeView<Level>>> parameterInstantiation, Option<TypeView<Level>> returnInstantiation) {
+        public Result(TypeDomain<Level> types, ConstraintSet<Level> completeBodyConstraints, RefinementCheckResult<Level> refinementCheckResult, Effects<Level> sigEffects, Effects<Level> inferredEffects, Effects<Level> missedEffects, ConflictResult<Level> conflicCauses, VarTyping<Level> variableTyping, CxTyping<Level> cxTyping, Map<Integer, Option<Type<Level>>> parameterInstantiation, Option<Type<Level>> returnInstantiation) {
             this.types = types;
             this.completeBodyConstraints = completeBodyConstraints;
             this.refinementCheckResult = refinementCheckResult;
@@ -187,14 +187,16 @@ public class MethodTyping<Level> {
         ConstraintSet<Level> bodyConstraints =
                 r.getConstraints().asSignatureConstraints(tvars, JavaConversions.asScalaIterator(params.iterator()));
 
-        HashMap<Integer, Option<TypeView<Level>>> parameterInstantiation = new HashMap<>();
+        HashMap<Integer, Option<Type<Level>>> parameterInstantiation = new HashMap<>();
         for (int i = 0; i < method.getParameterCount(); i++) {
             TypeVar  v = tvars.param(Var.fromParam(i));
-            Option<TypeView<Level>> t = sigConstraints.greatestLowerBound(v);
+            // Option<TypeView<Level>> t = sigConstraints.greatestLowerBound(v);
+            Option<Type<Level>> t = sigConstraints.instrumentationType(v);
             parameterInstantiation.put(i, t);
         }
 
-        Option<TypeView<Level>> returnInstantiation = sigConstraints.greatestLowerBound(tvars.ret());
+        // Option<TypeView<Level>> returnInstantiation = sigConstraints.greatestLowerBound(tvars.ret());
+        Option<Type<Level>> returnInstantiation = sigConstraints.instrumentationType(tvars.ret());
 
 
         return new Result<>(cstrs.types(), r.getConstraints(),
@@ -213,7 +215,9 @@ public class MethodTyping<Level> {
                                 }
                             },
                             typingUtils.varTypingFromEnvMap(r.envMap(), r.constraints()),
-                            typingUtils.cxTypingFromEnvMap(r.envMap(), r.constraints()), parameterInstantiation, returnInstantiation);
+                            typingUtils.cxTypingFromEnvMap(r.envMap(), r.constraints()),
+                            parameterInstantiation,
+                            returnInstantiation);
     }
 
 

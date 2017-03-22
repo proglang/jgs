@@ -1,8 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs.constraints
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.{CTypeView, Lit, Variable}
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Var
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Pub, TypeView}
+import de.unifreiburg.cs.proglang.jgs.instrumentation.{Type, Var}
 import de.unifreiburg.cs.proglang.jgs.signatures.Symbol
 import de.unifreiburg.cs.proglang.jgs.typing.{ConflictCause, TagMap}
 
@@ -147,26 +147,112 @@ abstract case class ConstraintSet[Level] (
     */
   def lowerBounds(tv : TypeVars.TypeVar) : Set[CTypeView[Level]]
 
+  def upperBounds(tv : TypeVars.TypeVar) : Set[CTypeView[Level]]
+
   /**
     * Return the type that is the greatest lower bound of tv, if it exists.
-    *
-    * (If it does not exist, the type variable is polymorphic, i.e. it only depends on parameters)
     */
   def greatestLowerBound(tv : TypeVars.TypeVar) : Option[TypeView[Level]] = {
     val bounds = lowerBounds(tv).filter(p => p match {
       case Lit(t) => true
       case Variable(v) => false
     })
-    val firstStatic = bounds.find(ct => ct match {
+    val firstLit = bounds.find(ct => ct match {
       case Lit(t) => true
       case Variable(v) => false
     }).map(_.asInstanceOf[Lit[Level]])
 
-    firstStatic.flatMap(lit =>
+    firstLit.flatMap(lit =>
       bounds.foldLeft(Option(lit.t))((res, ct) => ct match {
         case Lit(t) => res.flatMap(t2 => types.lub(t, t2))
         case Variable(v) => res
       }
     ))
+  }
+
+  private sealed trait InstrumentationType extends Type[Level] {
+    override def isStatic: Boolean = this == Static
+
+    override def isDynamic: Boolean = this == Dynamic
+
+    override def isPublic: Boolean = this == Public
+
+    override def getLevel: Level =
+      // throw new UnsupportedOperationException("Try to get the security level from an instrumentation type")
+    // TODO: this is a bad hack. Fix it by not exposing a concrete security level through the Type interface
+      this match {
+        case Static => types.getSecDomain.bottom()
+        case Dynamic => throw new UnsupportedOperationException("dynamic type has not level")
+        case Public => throw new UnsupportedOperationException("public type has not level")
+      }
+  }
+
+  private case object Static extends InstrumentationType
+  private case object Dynamic extends InstrumentationType
+  private case object Public extends InstrumentationType
+
+  private def glb(t1 : InstrumentationType, t2 : InstrumentationType): InstrumentationType = {
+      t1 match {
+        case Static => t2 match {
+          case Static => Static
+          case _ => Public
+        }
+        case Dynamic => t2 match {
+          case Dynamic => Dynamic
+          case _ => Public
+        }
+        case Public => Public
+      }
+  }
+
+  private def lub(t1 : InstrumentationType, t2: InstrumentationType) : Option[InstrumentationType] = {
+    t1 match {
+      case Static => t2 match {
+        case Dynamic => None
+        case _ => Some(Static)
+      }
+      case Dynamic => t2 match {
+        case Static => None
+        case _ => Some(Dynamic)
+      }
+      case Public => Some(t2)
+    }
+  }
+
+  /**
+    * Return the instrumentation type of tv (i.e. whether tv is static, dynamic, or public), if it can be determined unambigously.
+    *
+    * Return None if tv is polymorphic.
+    *
+    * This method only works for satisfiable constraints
+    *
+    * @throws IllegalArgumentException when encountering conflicts in the constraints
+    */
+  def instrumentationType(tv : TypeVars.TypeVar) : Option[Type[Level]] = {
+    def fromCType(ct : CTypeView[Level]) : Option[InstrumentationType] =
+      ct match {
+        case Lit(t) => Some(t match {
+          case TypeViews.Lit(level) => Static
+          case Dyn() => Dynamic
+          case Pub() => Public
+        })
+        case Variable(v) => None
+      }
+    def iTypes (bounds : Seq[CTypeView[Level]]) : Seq[InstrumentationType] =
+      for {
+        ct <- bounds
+        itype <- fromCType(ct)
+      } yield itype
+
+    def fold1[A](xs : Seq[A], op : (A, A) => A ) : Option[A] = {
+      xs.headOption.map(hd => xs.fold(hd)(op))
+    }
+
+
+    val upLimit : Option[InstrumentationType] = fold1(iTypes(upperBounds(tv).to), glb)
+    val lowLimit = fold1(iTypes(lowerBounds(tv).to),
+      (t1 : InstrumentationType, t2 : InstrumentationType) =>
+        lub(t1, t2).getOrElse(throw new IllegalArgumentException(s"Unsatisfiable constraints: ${this}")))
+    upLimit.orElse(lowLimit)
   }
 }

@@ -76,6 +76,5 @@ public class JGS_End2EndTests {
         // run
         ClassRunner.testClass(name, outputDir, "jgstestclasses", expectedException, involvedVars);
 
-        logger.info("Finished executing testclasses." + name + "");
     }
 }

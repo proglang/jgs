@@ -25,7 +25,7 @@ object TypeViews {
 
     override def isPublic: Boolean = false
 
-    override def getLevel: Level = throw new IllegalArgumentException("dynamic type has not level")
+    override def getLevel: Level = throw new UnsupportedOperationException("dynamic type has not level")
   }
 
   case class Pub[Level]() extends TypeView[Level] {
@@ -35,6 +35,6 @@ object TypeViews {
 
     override def isPublic: Boolean = true
 
-    override def getLevel: Level = throw new IllegalArgumentException("public type has no level")
+    override def getLevel: Level = throw new UnsupportedOperationException("public type has no level")
   }
 }

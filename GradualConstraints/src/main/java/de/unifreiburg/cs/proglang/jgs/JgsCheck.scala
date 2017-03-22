@@ -409,7 +409,7 @@ object JgsCheck {
         val signatureConstraints = result.refinementCheckResult.abstractConstraints
 
         // check that we really can instantiate the method monomorphically.
-        val paramInstantiation : Map[Int, TypeView[Level]] = (for (i <- Range(0, m.getParameterCount))
+        val paramInstantiation : Map[Int, Type[Level]] = (for (i <- Range(0, m.getParameterCount))
           yield i -> result.parameterInstantiation(i).getOrElse(
             throw new IllegalArgumentException(s"No monomorphic instantiation for paramter ${i}: ${m} \n ${signatureConstraints.toString}"))).toMap
 
