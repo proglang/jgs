@@ -1126,10 +1126,14 @@ public class JimpleInjector {
 
     }
 
+    public static void checkThatLe(Local l, String level, Unit pos) {
+        checkThatLe(l, level, pos, "checkThatLe");
+    }
+
     /**
      * Insert the following check: If Local l is high, throw new IFCError
      */
-    public static void checkThatLe(Local l, String level, Unit pos) {
+    public static void checkThatLe(Local l, String level, Unit pos, String methodName) {
         logger.info("Check that " + l + " is not high");
 
         if (l == null) {
@@ -1147,7 +1151,7 @@ public class JimpleInjector {
 
         Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "checkThatLe", paramTypes, VoidType.v(), false),
+                        methodName, paramTypes, VoidType.v(), false),
                 local_for_Strings, StringConstant.v(level));
         Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 
@@ -1458,7 +1462,7 @@ public class JimpleInjector {
                             "Check that " + getSignatureForLocal(rightHandLocal)
                             + " is less/equal "
                             + conversion.getDestType().getLevel());
-                    checkThatLe(rightHandLocal, conversion.getDestType().getLevel().toString(), aStmt);
+                    checkThatLe(rightHandLocal, conversion.getDestType().getLevel().toString(), aStmt, "checkCastToStatic");
 
                 } else {
                     logger.info("Found public src value in cast. Omitting checks.");

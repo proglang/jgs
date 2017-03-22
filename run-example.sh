@@ -12,7 +12,7 @@ echo ==========================
 echo CHECK AND INSTRUMENT
 echo ==========================
 
-$JAVA_HOME/bin/java -jar lib/soot-2.5.0.jar -soot-classpath $CLASSPATH_COMPILE:$JAVA_HOME/lib/openjdk/jre/lib/rt.jar -main-class $EXAMPLE_CLASS -d $OUTPUT_JIMPLE $EXAMPLE_CLASS -f J
+# $JAVA_HOME/bin/java -jar lib/soot-2.5.0.jar -soot-classpath $CLASSPATH_COMPILE:$JAVA_HOME/lib/openjdk/jre/lib/rt.jar -main-class $EXAMPLE_CLASS -d $OUTPUT_JIMPLE $EXAMPLE_CLASS -f J
 
 sbt "run -m $EXAMPLE_CLASS -cp $CLASSPATH_COMPILE -o $OUTPUT_DIR $2"
 

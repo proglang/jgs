@@ -33,12 +33,4 @@ public class Demo1 {
         */
     }
 
-    @Constraints({"@0 ~ ?", "@1 <= pub"})
-    private static void printDyn(String value, boolean isSecret) {
-        if (isSecret)  {
-            IOUtils.printSecret(Casts.cast("? ~> HIGH", value));
-        } else {
-            System.out.println(Casts.cast("? ~> LOW", value));
-        }
-    }
 }

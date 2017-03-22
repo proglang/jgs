@@ -20,7 +20,7 @@ public class HandleStmtUtils {
 	private LocalMap localmap;
 	private static ObjectMap objectmap;
 
-	private final String ASSIGNMENT_ERROR_MESSAGE = "Found an illegal flow to ";
+	private final String NSU_ERROR_MESSAGE = "Sensitive update to ";
 	
 	protected HandleStmtUtils(LocalMap lm, ObjectMap om, PassivController controller) {
 		this.localmap = lm;
@@ -75,7 +75,7 @@ public class HandleStmtUtils {
 
 
 		if (!SecurityLevel.le(lpc, level)) {
-			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + signature));
+			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}
 	}
 	
@@ -94,7 +94,7 @@ public class HandleStmtUtils {
 
         controller.abortIfActiveAndExceptionIsType(ExpectedException.NONE.getVal());
 		if (!SecurityLevel.le(globalPC, fieldLevel)) {
-			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + object.toString() + signature));
+			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}	
 		
 		
@@ -114,7 +114,7 @@ public class HandleStmtUtils {
 		Object localsAndGPC = joinWithGPC(joinLocals(localForObject, localForIndex));
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
 		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
-			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + signature));
+			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}	
 	}
 	
@@ -132,7 +132,7 @@ public class HandleStmtUtils {
 		Object localsAndGPC = joinWithGPC(localmap.getLevel(localForObject));
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
 		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
-			abort(new NSUError(ASSIGNMENT_ERROR_MESSAGE + signature));
+			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}
 	}
 

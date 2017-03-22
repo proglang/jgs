@@ -17,8 +17,8 @@ public class Demo2 {
         printDyn(readDyn(secretMode), secretMode);
         secretMode = true;
         printDyn(readDyn(secretMode),
-                 secretMode // <-
-                 // false   // <- switch comments to get an RT error
+                 // secretMode // <-
+                 false   // <- switch comments to get an RT error
         );
     }
 

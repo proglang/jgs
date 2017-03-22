@@ -71,6 +71,9 @@ public class Main {
         externalMethods.put("<java.lang.Integer: int intValue()>",
                             new JgsCheck.Annotation(new String[]{},
                                                     new String[]{}));
+        externalMethods.put("<java.lang.String: boolean equals(java.lang.Object)>",
+                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                                                    new String[]{}));
         List<String> errors = new ArrayList<>();
         Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 sootOptionsContainer.getMainclass(),

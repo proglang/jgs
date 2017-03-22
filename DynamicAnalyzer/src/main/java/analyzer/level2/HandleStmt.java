@@ -817,14 +817,23 @@ public class HandleStmt {
 	 * @param signature			signature of the local to test
 	 * @param level				level which mustn't be exceeded
 	 */
+	// TODO: remove in favor of more specific checks (casts, etc)
 	public void checkThatLe(String signature, String level) {
-		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_LE.getVal());
-		logger.info("Check if " + signature + " is less/equal " + level);
-		if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))){
-			handleStatementUtils.abort(new IllegalFlowError("Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" +
-									   " which requires a security level of less/equal " + level ));
-		}
+		checkThatLe(signature, level, "Passed argument " + signature + " with level " + localmap.getLevel(signature) + " to some method" +
+															" which requires a security level of less/equal " + level);
 	}
+
+	public void checkCastToStatic(String signature, String level) {
+		checkThatLe(signature, level, "Illegal cast to static type " + level + " of " + signature + "(" + localmap.getLevel(signature) + ")");
+	}
+
+	public void checkThatLe(String signature, String level, String msg) {
+		controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_LE.getVal());
+		logger.info("Check if " + signature + " <= " + level);
+		if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))){
+			handleStatementUtils.abort(new IllegalFlowError(msg));
+		}
+    }
 
 	/**
 	 * This method is used if a print statement is identified. Print statements
