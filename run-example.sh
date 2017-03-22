@@ -1,7 +1,7 @@
 EXAMPLE_CLASS=$1
 CLASSPATH_COMPILE=JGSTestclasses/Demo/target/scala-2.11/classes:JGSTestclasses/Scratch/target/scala-2.11/classes:JGSSupport/target/scala-2.11/classes:DynamicAnalyzer/target/scala-2.11/classes
 CLASSPATH_RUN=.:DynamicAnalyzer/target/scala-2.11/classes:GradualConstraints/InstrumentationSupport/target/scala-2.11/classes:lib/commons-collections4-4.0.jar:JGSSupport/target/scala-2.11/classes
-OUTPUT_DIR=soot/Output
+OUTPUT_DIR=out-instrumented
 
 set -e
 
