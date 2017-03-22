@@ -33,8 +33,10 @@ import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Edge;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class SecurityLevel {
 	@SuppressWarnings("rawtypes")
-	public static SecDomain secDomain = new LowMediumHigh();
-	//public static SecDomain secDomain;
+	// public static SecDomain secDomain = new LowMediumHigh();
+	public static SecDomain secDomain =
+			UserDefined.lowHigh();
+			//UserDefined.aliceBobCharlie();
 	
 	/*private static Object getSecDomainResource(String name) {
 	    InputStream in = Object.class.getResourceAsStream("/secdomain/" + name);
@@ -47,39 +49,18 @@ public class SecurityLevel {
 	        throw new RuntimeException(String.format("Error reading secdomain resource %s: %s", name, e));
 	    }
 	}*/
-	/*static {
+	static {
 	    // TODO: read secdomain from resources
-	    *//*
+	    /*
 	        secDomain = new UserDefined((Set)getSecDomainResource("levels"), 
 	                                    (Set)getSecDomainResource("lt"),
 	                                    (Map)getSecDomainResource("lubMap"),
 	                                    (Map)getSecDomainResource("glbMap"),
 	                                    (String)getSecDomainResource("topLevel"),
 	                                    (String)getSecDomainResource("bottomLevel"));
-	                                    *//*
-	    Set<String> levels = new HashSet<>(Arrays.asList("LOW", "MEDIUM", "HIGH"));
-	    Set<Edge> lt = new HashSet<>(Arrays.asList(new UserDefined.Edge("MEDIUM", "HIGH"),
-	                                               new UserDefined.Edge("LOW", "HIGH"),
-	                                               new UserDefined.Edge("LOW", "MEDIUM")));
-	    Map<Edge, String> lubMap = new HashMap<>();
-	    for (String l : levels) {
-	        lubMap.put(new Edge(l, l), l);
-	        lubMap.put(new Edge(l, "HIGH"), "HIGH");
-	        lubMap.put(new Edge("HIGH", l), "HIGH");
-	        lubMap.put(new Edge("LOW", l), l);
-	        lubMap.put(new Edge(l, "LOW"), l);
+	                                   */
 	    }
-	    Map<Edge, String> glbMap = new HashMap<>();
-	      for (String l : levels) {
-	          glbMap.put(new Edge(l, l), l);
-	          glbMap.put(new Edge(l, "HIGH"), l);
-	          glbMap.put(new Edge("HIGH", l), l);
-	          glbMap.put(new Edge("LOW", l), "LOW");
-	          glbMap.put(new Edge(l, "LOW"), "LOW");
-	      }	    
-	    secDomain = new UserDefined(levels, lt, lubMap, glbMap, "HIGH", "LOW");
-	    }
-	*/
+
 	
 	public static Object bottom() {
 		return secDomain.bottom();

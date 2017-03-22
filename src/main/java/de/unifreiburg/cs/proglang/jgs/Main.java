@@ -1,9 +1,12 @@
 package de.unifreiburg.cs.proglang.jgs;
 
+import analyzer.level2.HandleStmt;
+import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.JgsCheck;
+import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
@@ -25,12 +28,15 @@ import java.util.logging.Level;
 public class Main {
     public static void main(String[] args) {
 
+        // SecDomain<String> secdomain = UserDefined.lowHigh(); // new LowMediumHigh();
+        SecDomain<String> secdomain = SecurityLevel.secDomain;
+
         main.Main.doSootSetup(args);
 
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         // run static
-        ACasts<LowMediumHigh.Level> casts =
-                new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
+        ACasts<String> casts =
+                new CastsFromConstants<>(new TypeDomain<>(secdomain),
                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCx(java.lang.Object)>",
                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
@@ -75,13 +81,14 @@ public class Main {
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));
         List<String> errors = new ArrayList<>();
-        Methods<LowMediumHigh.Level> typeCheckResult = JgsCheck.typeCheck(
+        Methods<String> typeCheckResult = JgsCheck.typeCheck(
                 sootOptionsContainer.getMainclass(),
                 sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
                 sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
                 externalMethods,
                 externalFields,
-                new LowMediumHigh(), casts,
+                secdomain,
+                casts,
                 L1Logger.getLogger(),
                 errors
         );
