@@ -35,8 +35,8 @@ public class SecurityLevel {
 	@SuppressWarnings("rawtypes")
 	// public static SecDomain secDomain = new LowMediumHigh();
 	public static SecDomain secDomain =
-			// UserDefined.lowHigh();
-			UserDefined.aliceBobCharlie();
+			UserDefined.lowHigh();
+			// UserDefined.aliceBobCharlie();
 	
 	/*private static Object getSecDomainResource(String name) {
 	    InputStream in = Object.class.getResourceAsStream("/secdomain/" + name);

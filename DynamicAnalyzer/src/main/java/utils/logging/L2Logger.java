@@ -16,7 +16,10 @@ public class L2Logger {
       private static final Level logLevel;
 	static {
 		logger = Logger.getLogger(LOGGER_NAME);
-        logLevel = System.getenv("JGS_VERBOSE_LOGGING").isEmpty() ?
+		String wantVerbose = System.getenv("JGS_VERBOSE_LOGGING");
+        logLevel = (wantVerbose == null
+					|| wantVerbose.isEmpty()
+					|| wantVerbose.equals("0")) ?
 				   Level.WARNING :
 				   Level.ALL;
 		logger.setLevel(logLevel);
