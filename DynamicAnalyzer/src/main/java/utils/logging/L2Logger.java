@@ -12,11 +12,19 @@ public class L2Logger {
 	  static private ConsoleHandler handler;
 	  static private L2Formatter formatter;
 	  private static final String LOGGER_NAME = HandleStmt.class.getName();
+	  private static final Logger logger;
+      private static final Level logLevel;
+	static {
+		logger = Logger.getLogger(LOGGER_NAME);
+        logLevel = System.getenv("JGS_VERBOSE_LOGGING").isEmpty() ?
+				   Level.WARNING :
+				   Level.ALL;
+		logger.setLevel(logLevel);
+	}
 
 	  static public void setup() throws IOException {
 
 	    // get the global logger to configure it
-	    Logger logger = Logger.getLogger(LOGGER_NAME);
 	    logger.setUseParentHandlers(false);
 
 	    // remove standard handler
@@ -27,9 +35,8 @@ public class L2Logger {
 	    	}
 	    }
 
-	    logger.setLevel(Level.WARNING);
 	    handler = new ConsoleHandler();
-	    handler.setLevel(Level.WARNING);
+	    handler.setLevel(logLevel);
 
 	    // create a formatter
 	    formatter = new L2Formatter();
@@ -40,6 +47,6 @@ public class L2Logger {
 	  }
 	  
 	  static public Logger getLogger() {
-		return Logger.getLogger(LOGGER_NAME);		  
+		return logger;
 	  }
 }
