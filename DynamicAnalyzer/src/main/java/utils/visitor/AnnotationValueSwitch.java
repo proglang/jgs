@@ -3,20 +3,17 @@ package utils.visitor;
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.jimple.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NotSupportedStmtException;
 import utils.logging.L1Logger;
 
 import java.util.logging.Logger;
 
-import org.junit.internal.runners.statements.InvokeMethod;
-
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
 	private Logger logger = L1Logger.getLogger();
 	private VisitorHelper vh = new VisitorHelper();
-	
+
 	/*
 	 * ???
 	 * UNDEF 
@@ -40,7 +37,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	/*
 	 * Type of the right expression in an assign statement. Certain types need to
 	 * be handled in a special way. Explanation:
-	 * NOT This is used for arithmetic expressions. The locals in the expressions
+	 * IGNORE This is used for arithmetic expressions. The locals in the expressions
 	 * 		are already handled, so its not neccessary to treat the expression
 	 *      in StmtSwitch
 	 * NEW_ARRAY 
@@ -51,15 +48,20 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 * MAKE_LOW ?????
 	 */
 	protected enum RightElement {
-		NOT, NEW_ARRAY, NEW_UNDEF_OBJECT,
+		IGNORE, NEW_ARRAY, NEW_UNDEF_OBJECT,
 		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD, 
 		SET_RETURN_LEVEL,
 		MAKE_HIGH, MAKE_MEDIUM, MAKE_LOW,
 		CAST
 	} 
 	
-	protected static RightElement rightElement = RightElement.NOT;
-	
+	private RightElement rightElement = RightElement.IGNORE;
+
+	public RightElement getRightElement() {
+		return rightElement;
+	}
+
+
 	/*
 	 * The statement which called the AnnotationValueSwitch. This variable is set
 	 * by AnnotationStmtSwitch.
@@ -73,7 +75,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
 		logger.finest("DoubleConstant identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 	
 	/**
@@ -83,7 +85,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
 		logger.finest("FloatConstant identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -93,7 +95,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseIntConstant(IntConstant v) {
 		logger.finest("IntConstant identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -103,7 +105,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseLongConstant(LongConstant v) {
 		logger.finest("LongConstant identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -113,7 +115,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseNullConstant(NullConstant v) {
 		logger.finest("NullConstant identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -123,7 +125,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseStringConstant(StringConstant v) {
 		logger.finest("StringConstant identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -133,7 +135,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseClassConstant(ClassConstant v) {
 		logger.finest("ClassConstant identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new InternalAnalyzerException();
 		}
@@ -141,7 +143,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void defaultCase(Object object) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("defaultCase");
 		}
@@ -155,7 +157,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseAddExpr(AddExpr v) {
 		logger.finest("Add Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -166,12 +168,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseAndExpr(AndExpr v) {
 		logger.finest("And Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CmpExpr");
 		}
@@ -179,7 +181,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CmpgExpr");
 		}
@@ -187,7 +189,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CmplExpr");
 		}
@@ -201,7 +203,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseDivExpr(DivExpr v) {
 		logger.finest("Div Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -212,12 +214,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseEqExpr(EqExpr v) {
 		logger.finest("Eq Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	@Override
 	public void caseNeExpr(NeExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("NeExpr");
 		}
@@ -225,7 +227,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseGeExpr(GeExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("GeExpr");
 		}
@@ -233,7 +235,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseGtExpr(GtExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("GtExpr");
 		}
@@ -241,7 +243,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLeExpr(LeExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("LeExpr");
 		}
@@ -249,7 +251,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLtExpr(LtExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("LtExpr");
 		}
@@ -263,7 +265,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseMulExpr(MulExpr v) {
 		logger.finest("Mul Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 
 	}
 
@@ -275,13 +277,13 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseOrExpr(OrExpr v) {
 		logger.finest("Or Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 
 	}
 
 	@Override
 	public void caseRemExpr(RemExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("RemExpr");
 		}
@@ -295,7 +297,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseShlExpr(ShlExpr v) {
 		logger.finest("Shl Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 
 	}
 
@@ -307,7 +309,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseShrExpr(ShrExpr v) {
 		logger.finest("Shr Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 
 	}
 
@@ -319,7 +321,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
 		logger.finest("Ushr Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -330,7 +332,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseSubExpr(SubExpr v) {
 		logger.finest("Sub Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	/**
@@ -341,12 +343,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseXorExpr(XorExpr v) {
 		logger.finest("Xor Expr identified " + callingStmt.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	}
 
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		logger.fine("Invoke expression is of type InterfaceInvoke");
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("InterfaceInvokeExpression");
@@ -356,30 +358,30 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseSpecialInvokeExpr(SpecialInvokeExpr v) {
 		logger.fine("Invoke expression is of type SpecialInvoke");
-		InvokeMethod(v);
+		caseMethodInvokation(v);
 	}
 
 	@Override
 	public void caseStaticInvokeExpr(StaticInvokeExpr v) {
 		logger.fine("Invoke expression is of type StaticInvoke");
-		InvokeMethod(v);
+		caseMethodInvokation(v);
 	}
 
 	@Override
 	public void caseVirtualInvokeExpr(VirtualInvokeExpr v) {
 		logger.fine("Invoke expression is of type VirtualInvoke");
-		InvokeMethod(v);
+		caseMethodInvokation(v);
 	}
 
 	@Override
 	public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
 		logger.fine("Invoke expression is of type DynamicInvoke");
-		InvokeMethod(v);
+		caseMethodInvokation(v);
 	}
 
 	@Override
 	public void caseCastExpr(CastExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 			
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			// new InternalAnalyzerException();
@@ -388,7 +390,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("InstanceOf");
 		}
@@ -435,7 +437,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 */
 	@Override
 	public void caseLengthExpr(LengthExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		logger.finest("LengthExpr identified: " + v.toString());
 //		if (actualContext == StmtContext.ASSIGNRIGHT) {
 //			// JimpleInjector.addLevelInAssignStmt(v, callingStmt);
@@ -450,7 +452,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNegExpr(NegExpr v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("NegExpr");
 		}
@@ -470,7 +472,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {	
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		logger.finest("Static field reference identified " + v.toString());
 		logger.finest(		v.getField().getDeclaringClass().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -484,7 +486,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {	
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		logger.finest("Instance field reference identified " + v.toString());	
 		logger.finest("kh" + v.getBase().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -504,7 +506,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CaughtExceptionRef");
 		}
@@ -532,26 +534,24 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 * Method to handly any invoke statement
 	 * @param v
 	 */
-	private void InvokeMethod(InvokeExpr v) {
-		
+	private void caseMethodInvokation(InvokeExpr v) {
+
+	    // TODO: this log message surely is confusing
 		logger.finest(v.toString());
-		rightElement = RightElement.NOT;
+		rightElement = RightElement.IGNORE;
 	
-		// AUSLAGERN in eine methode hier in eine private annotationValueSwitch
-		if (actualContext == StmtContext.INVOKE 
+		if (actualContext == StmtContext.INVOKE
 				|| actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			String method = v.getMethod().toString();
 
-			if (ExternalClasses.methodMap.containsKey(method)) {		// methodMap sind spezielle methoden, 
-					// die nicht instrumentiert werden (beispiel: makeHigh)
-				logger.fine("Found an external class " + method);
-				logger.fine("This class is treated in a special way");
-				ExternalClasses.receiveCommand(method, callingStmt, args);	
+			if (ExternalClasses.methodMap.containsKey(method)) {
+				logger.fine("Found special method: " + method);
+				rightElement = ExternalClasses.receiveCommand(method, callingStmt, args);
 			} else {
 				if (v.getMethod().getDeclaringClass().isLibraryClass()) {
 					// method is not instrumented and we have no special treatment for it... 
-					logger.severe("====== UNKNOWN LIBRARY METHOD " + method + " =======");
+					logger.severe("====== IGNORING UNKNOWN LIBRARY METHOD " + method + " =======");
 				}
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated as an internal class");

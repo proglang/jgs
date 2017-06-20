@@ -74,6 +74,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
 
+		valueSwitch = new AnnotationValueSwitch();
+
 		AssignStmt aStmt = stmt;
 		valueSwitch.callingStmt = aStmt;
 
@@ -100,35 +102,37 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 		Value leftOperand = aStmt.getLeftOp();
 
-		switch (AnnotationValueSwitch.rightElement) {
-		case NOT:
-			break; // That means that the right element is already handeled
-		case NEW_ARRAY:
-			JimpleInjector.addArrayToObjectMap((Local) leftOperand, aStmt);
-			break;
-		case NEW_UNDEF_OBJECT:
-			break;
-		case MAKE_HIGH:
-			break; // This two cases are treated later
-		case MAKE_LOW:
-			break;
-		case SET_RETURN_LEVEL: // This will be handeled later (by nico)
-			break;
-		case CAST:	// will also be handled later
+		switch (valueSwitch.getRightElement()) {
+			case IGNORE:
+				break; // That means that the right element is already handeled
+			case NEW_ARRAY:
+				JimpleInjector.addArrayToObjectMap((Local) leftOperand, aStmt);
 				break;
-		default:
-			new InternalAnalyzerException("Unexpected Context: "
-					+ AnnotationValueSwitch.rightElement);
+			case NEW_UNDEF_OBJECT:
+				break;
+			case MAKE_HIGH:
+				break; // This two cases are treated later
+			case MAKE_LOW:
+				break;
+			case MAKE_MEDIUM:
+				break;
+			case SET_RETURN_LEVEL: // This will be handeled later (by nico)
+				break;
+			case CAST:    // will also be handled later
+				break;
+			default:
+				new InternalAnalyzerException("Unexpected Context: "
+											  + valueSwitch.getRightElement());
 		}
 
 		leftOperand.apply(valueSwitch);
 
 		/*
 		 * This must be done after the regular valueSwitch. Otherwise the
-		 * returnlevel of the MakeHigh/MakeLow Method would overwrite the new
+		 * returnlevel of the MakeTop/MakeBot Method would overwrite the new
 		 * level of the local.
 		 */
-		switch (AnnotationValueSwitch.rightElement) {
+		switch (valueSwitch.getRightElement()) {
 		case MAKE_HIGH:
 			logger.finest("Make left operand high");
 			JimpleInjector.makeLocal((Local) leftOperand, "HIGH", aStmt);
@@ -153,10 +157,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			break;
 		}
 
-		// Information of rightElement must be reset after the assignstatement.
-		AnnotationValueSwitch.rightElement = RightElement.NOT;
-		// Reset actualContext to UNDEF
-		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override

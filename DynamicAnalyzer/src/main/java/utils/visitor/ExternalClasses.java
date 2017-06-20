@@ -11,6 +11,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+/**
+ * This class gathers instrumentation information about special classes and methods.
+ *
+ * These include
+ *
+ * - Methods that we abuse as annotation syntax. Examples:
+ *   - cast methods
+ *   - methods to set the dynamic label of a value makeHigh, ...
+ *
+ * - library methods that the Java compiler uses (like StringBuilder.append, Integer.valueOf)
+ *
+ * - ...
+ *
+ * TODO: there should be a way to externally specify commands.
+ */
 public class ExternalClasses {
 
 	static Logger logger = L1Logger.getLogger();
@@ -57,37 +72,43 @@ public class ExternalClasses {
 
 		//
 		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
-				+ "makeHigh(java.lang.Object)>", new MakeHigh());
+				+ "makeHigh(java.lang.Object)>", new MakeTop());
 		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
 				+ "makeMedium(java.lang.Object)>", new MakeMedium());
 		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
-				+ "makeLow(java.lang.Object)>", new MakeLow());
+				+ "makeLow(java.lang.Object)>", new MakeBot());
 
+        // TODO: cast methods should be read from an external spec
 		// casts
 		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>", new DoCast());
 
 		// Dont do anything for ValueOf
+        // TODO: this is almost certainly wrong.
 		methodMap.put("<java.lang.Boolean: java.lang.Boolean valueOf(boolean)>", new DoNothing());
 		methodMap.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new DoNothing());
 	}
 	
-	static void receiveCommand(String method,Unit pos, Local[] params) {
-		methodMap.get(method).execute(pos, params);
+	static AnnotationValueSwitch.RightElement receiveCommand(String method,
+															 Unit pos,
+															 Local[] params) {
+		return methodMap.get(method).execute(pos, params);
 	}
 	
 	
 	interface Command {
-		void execute(Unit pos, Local[] params);
+		AnnotationValueSwitch.RightElement execute(Unit pos, Local[] params);
 	}
 	
 	static class JoinLevels implements Command {
-		public void execute(Unit pos, Local[] params) {
+		@Override
+		public AnnotationValueSwitch.RightElement execute(Unit pos, Local[] params) {
 			logger.fine("Join levels for external class arguments");
 			for (Local param : params) {
 				if (param != null) {
 					JimpleInjector.addLevelInAssignStmt(param, pos);
 				}
 			}
+			return RightElement.IGNORE;
 		}
 	}
 	
@@ -98,7 +119,7 @@ public class ExternalClasses {
 			this.level = level;
 		}
 		
-		public void execute(Unit pos, Local[] params) {
+		public RightElement execute(Unit pos, Local[] params) {
 			logger.fine("Insert check that external class has no " + level + " arguments");
 			if (params == null || pos == null) {
 				throw new InternalAnalyzerException(
@@ -114,48 +135,50 @@ public class ExternalClasses {
 					JimpleInjector.checkThatLe(param, level, pos);
 					
 				}
-			} 
+			}
+			return RightElement.IGNORE;
 		}
 	}
 
 	static class DoCast implements Command {
 		@Override
-		public void execute(Unit pos, Local[] params) {
+		public RightElement execute(Unit pos, Local[] params) {
 			logger.info("Cast at " + pos);
-			AnnotationValueSwitch.rightElement = RightElement.CAST;
+			return RightElement.CAST;
 		}
 	}
 	
 	static class DoNothing implements Command	{
 		@Override
-		public void execute(Unit pos, Local[] params) {
+		public RightElement execute(Unit pos, Local[] params) {
 			logger.fine("Do nothing for external class");
-		}	
+			return RightElement.IGNORE;
+		}
 	}
 	
-	static class MakeHigh implements Command {
+	static class MakeTop implements Command {
 		@Override
-		public void execute(Unit pos, Local[] params) {
+		public RightElement execute(Unit pos, Local[] params) {
 			logger.info("Right element is a makeHigh method");
 			/*assert (params.length == 1);
 			logger.fine("Variable" + params[0].toString() + " is set to high");
 			JimpleInjector.makeLocalHigh(params[0], pos);*/
-			AnnotationValueSwitch.rightElement = RightElement.MAKE_HIGH;
+			return RightElement.MAKE_HIGH;
 		}
 	}
 	
 	static class MakeMedium implements Command {
 		@Override
-		public void execute(Unit pos, Local[] params) {
+		public RightElement execute(Unit pos, Local[] params) {
 			logger.info("Right element is a makeMedium method");
-			AnnotationValueSwitch.rightElement = RightElement.MAKE_MEDIUM;
+			return RightElement.MAKE_MEDIUM;
 		}
 	}
 	
-	static class MakeLow implements Command {
+	static class MakeBot implements Command {
 		@Override
-		public void execute(Unit pos, Local[] params) {
-			AnnotationValueSwitch.rightElement = RightElement.MAKE_LOW;
+		public RightElement execute(Unit pos, Local[] params) {
+			return RightElement.MAKE_LOW;
 		}
 	}
 }

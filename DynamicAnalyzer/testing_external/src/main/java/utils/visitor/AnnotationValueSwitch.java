@@ -83,7 +83,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	/*
 	 * Type of the right expression in an assign statement. Certain types need to
 	 * be handled in a special way. Explanation:
-	 * NOT This is used for arithmetic expressions. The locals in the expressions
+	 * IGNORE This is used for arithmetic expressions. The locals in the expressions
 	 * 		are already handled, so its not neccessary to treat the expression
 	 *      in StmtSwitch
 	 * NEW_ARRAY 
