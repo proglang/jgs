@@ -15,14 +15,26 @@ public class L1Logger {
 	private static final String LOGGER_NAME = HandleStmt.class.getName();
 	private static Logger logger;
 
+
+	static {
+		logger = Logger.getLogger(LOGGER_NAME);
+		String wantVerbose = System.getenv("JGS_VERBOSE_LOGGING");
+        /*
+		logLevel = (wantVerbose == null
+					|| wantVerbose.isEmpty()
+					|| wantVerbose.equals("0")) ?
+				   Level.WARNING :
+				   Level.ALL;
+		logger.setLevel(logLevel);
+		*/
+	}
+
 	/**
 	 * Setup the logger.
 	 * @param loggerlevel Define maximum level.
 	 */
 	public static void setup(Level loggerlevel) throws IOException {
 
-		// get the global logger to configure it
-		logger = Logger.getLogger(LOGGER_NAME);
 		logger.setUseParentHandlers(false);
 
 		// remove standard handler
