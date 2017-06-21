@@ -1,6 +1,8 @@
 EXAMPLE_CLASS=$1
-CLASSPATH_COMPILE=JGSTestclasses/Demo/target/scala-2.11/classes:JGSTestclasses/Scratch/target/scala-2.11/classes:JGSSupport/target/scala-2.11/classes:DynamicAnalyzer/target/scala-2.11/classes
-CLASSPATH_RUN=.:DynamicAnalyzer/target/scala-2.11/classes:GradualConstraints/InstrumentationSupport/target/scala-2.11/classes:lib/commons-collections4-4.0.jar:JGSSupport/target/scala-2.11/classes
+# CLASSPATH_SECDOMAIN=UserDefinedSecurityDomain/target/scala-2.11/classes
+CLASSPATH_SECDOMAIN=LMHSecurityDomain/target/scala-2.11/classes
+CLASSPATH_COMPILE=JGSTestclasses/Demo/target/scala-2.11/classes:JGSTestclasses/Scratch/target/scala-2.11/classes:JGSSupport/target/scala-2.11/classes:${CLASSPATH_SECDOMAIN}:DynamicAnalyzer/target/scala-2.11/classes
+CLASSPATH_RUN=.:${CLASSPATH_SECDOMAIN}:DynamicAnalyzer/target/scala-2.11/classes:GradualConstraints/InstrumentationSupport/target/scala-2.11/classes:lib/commons-collections4-4.0.jar:JGSSupport/target/scala-2.11/classes
 OUTPUT_DIR=out-instrumented
 OUTPUT_JIMPLE=out-original
 
@@ -14,7 +16,7 @@ echo ==========================
 
 # $JAVA_HOME/bin/java -jar lib/soot-2.5.0.jar -soot-classpath $CLASSPATH_COMPILE:$JAVA_HOME/lib/openjdk/jre/lib/rt.jar -main-class $EXAMPLE_CLASS -d $OUTPUT_JIMPLE $EXAMPLE_CLASS -f J
 
-sbt "run -m $EXAMPLE_CLASS -cp $CLASSPATH_COMPILE -o $OUTPUT_DIR $2"
+JGS_SECDOMAIN_CLASSES=${CLASSPATH_SECDOMAIN} sbt "run -m $EXAMPLE_CLASS -scp $CLASSPATH_SECDOMAIN -cp $CLASSPATH_COMPILE -o $OUTPUT_DIR $2"
 
 
 echo ==========================

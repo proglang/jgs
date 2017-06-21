@@ -1,6 +1,8 @@
 package utils.parser;
 
 import java.io.File;
+import java.net.URL;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -13,7 +15,8 @@ public class ArgumentContainer {
     static final String VALUE_NOT_SET = "!_!_VALUE_NOT_SET_!_!";
 
     private final String mainclass;
-    private final List<String> addDirsToClasspath;
+    private final Deque<String> addDirsToClasspath;
+    private final List<URL> secDomainClasspath;
     private final List<String> addClasses;
     private final boolean toJimple;
     private final String outputFolder;
@@ -21,9 +24,10 @@ public class ArgumentContainer {
     private boolean usePublicTyping;
     private final boolean verbose;
 
-    ArgumentContainer(String mainclass, List<String> addDirsToClasspath, List<String> addClasses,
+    ArgumentContainer(String mainclass, Deque<String> addDirsToClasspath, List<URL> secDomainClasspath, List<String> addClasses,
                       boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping, boolean verbose) {
         this.mainclass = mainclass;
+        this.secDomainClasspath = secDomainClasspath;
         this.toJimple = toJimple;
         this.outputFolder = outputFolder;
         this.additionalFiles = additionalFiles;
@@ -38,7 +42,7 @@ public class ArgumentContainer {
         return mainclass;
     }
 
-    public List<String> getAddDirsToClasspath() {
+    public Deque<String> getAddDirsToClasspath() {
         return addDirsToClasspath;
     }
 
@@ -76,5 +80,9 @@ public class ArgumentContainer {
 
     public boolean isVerbose() {
         return verbose;
+    }
+
+    public List<URL> getSecDomainClasspath() {
+        return secDomainClasspath;
     }
 }

@@ -1,11 +1,9 @@
-package analyzer.level2.storage;
+package de.unifreiburg.cs.proglang.jgs.rt;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 import java.util.Arrays;
 import java.util.Iterator;
-
-import utils.exceptions.InternalAnalyzerException;
 
 // TODO: remove
 public class LowMediumHigh implements SecDomain<LowMediumHigh.Level> { 
@@ -52,7 +50,7 @@ public class LowMediumHigh implements SecDomain<LowMediumHigh.Level> {
 		case LOW:
 			return true;
 		default:
-			throw new InternalAnalyzerException("Weird level: " + l1);
+			throw new RuntimeException("Weird level: " + l1);
 		}
 	}
 

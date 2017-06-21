@@ -4,9 +4,9 @@ import org.apache.commons.cli.*;
 import utils.exceptions.InternalAnalyzerException;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * @author Nicolas Müller
@@ -17,6 +17,7 @@ public class ArgParser {
     // flags
     final static String MAINCLASS_FLAG = "m";
     final static String CLASSPATH = "cp";
+    final static String SECDOMAIN_CLASSPATH = "scp";
     final static String OTHER_CLASSES_FOR_STATIC_ANALYZER = "s";
     final static String JIMPLE_FLAG = "j";
     final static String OUTPUT_FOLDER_FLAG = "o";
@@ -37,7 +38,8 @@ public class ArgParser {
         String mainclass;
         boolean toJimple;
         String outputFolder;
-        List<String> addDirsToClasspath = new ArrayList<>();
+        Deque<String> addDirsToClasspath = new LinkedList<>();
+        List<URL> secDomainClasspath = new ArrayList<>();
         List<String> addClasses = new ArrayList<>();
         List<String> additionalFiles = new ArrayList<>();
         boolean usePublicTyping;
@@ -57,10 +59,17 @@ public class ArgParser {
 
 		Option addDirsToClasspathOption = new Option(CLASSPATH, "classpath", true,
 				"set the classpath");
-		addDirsToClasspathOption.setRequired(false);
-		addDirsToClasspathOption.setArgs(Option.UNLIMITED_VALUES);
-		options.addOption(addDirsToClasspathOption);
+        addDirsToClasspathOption.setRequired(false);
+        addDirsToClasspathOption.setArgs(Option.UNLIMITED_VALUES);
+        options.addOption(addDirsToClasspathOption);
+        Option addDirsToSecdomainClasspathOption =
+                new Option(SECDOMAIN_CLASSPATH, "secdomain-classpath", true,
+                           "set the classpath of the security domain to be used");
+        addDirsToSecdomainClasspathOption.setRequired(false);
+        addDirsToSecdomainClasspathOption.setArgs(Option.UNLIMITED_VALUES);
+        options.addOption(addDirsToSecdomainClasspathOption);
 
+        // TODO: This probably can be removed
 		Option addOtherClassesForStatic = new Option(OTHER_CLASSES_FOR_STATIC_ANALYZER, "otherClasses", true,
 		                "Add other classes for the static analyzer");
 		addOtherClassesForStatic.setRequired(false);
@@ -107,9 +116,25 @@ public class ArgParser {
 
             // case p flag
             if (cmd.hasOption(CLASSPATH)) {
-                for ( String s : cmd.getOptionValues(CLASSPATH)) {
-                    File tmp = new File(s);
-                    addDirsToClasspath.add(tmp.isAbsolute() ? s : new File(System.getProperty("user.dir"), s).getAbsolutePath());
+                for ( String path : cmd.getOptionValues(CLASSPATH)) {
+                    for (String s : path.split(":")) {
+                        File tmp = new File(s);
+                        // TODO: not sure if making path elements absolut makes sense.
+                        addDirsToClasspath.add(tmp.isAbsolute() ? s :
+                                               new File(System.getProperty("user.dir"), s).getAbsolutePath());
+
+                    }
+                }
+            }
+
+            // case scp flag
+            if (cmd.hasOption(SECDOMAIN_CLASSPATH)) {
+                for (String path : cmd.getOptionValues(SECDOMAIN_CLASSPATH)) {
+                    for (String s : path.split(":")) {
+                        File tmp = new File(s);
+                        addDirsToClasspath.addFirst(tmp.getAbsolutePath());
+                        secDomainClasspath.add(tmp.toURI().toURL());
+                    }
                 }
             }
 
@@ -142,6 +167,7 @@ public class ArgParser {
 
             return new ArgumentContainer(mainclass,
                                          addDirsToClasspath,
+                                         secDomainClasspath,
                                          addClasses,
                                          toJimple,
                                          outputFolder,
@@ -150,11 +176,15 @@ public class ArgParser {
                                          cmd.hasOption(VERBOSE));
 
 			// if illegal input
+            // TODO: handle bad options (exit) in main
 		} catch (ParseException e) {
 			printHelp(options);
 			System.exit(-1);
-		}
+		} catch (MalformedURLException e) {
+		    System.err.println("Error parsing url: " + e.getMessage());
+            System.exit(-1);
+        }
 
-	    throw new InternalAnalyzerException("This line must never be reached"); // compiler complains if i dont put this here?!
+        throw new InternalAnalyzerException("This line must never be reached"); // compiler complains if i dont put this here?!
 	}
 }

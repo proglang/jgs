@@ -4,14 +4,20 @@ import analyzer.level2.CurrentSecurityDomain;
 import de.unifreiburg.cs.proglang.jgs.JgsCheck;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import org.apache.tools.ant.taskdefs.Classloader;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 /**
@@ -24,12 +30,36 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
 
-        // SecDomain<String> secdomain = UserDefined.lowHigh(); // new LowMediumHigh();
-        SecDomain<String> secdomain = CurrentSecurityDomain.INSTANCE;
-
         main.Main.doSootSetup(args);
-
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+
+        SecDomain<String> secdomain;
+        /*
+        List<URL> secDomainclassPath = sootOptionsContainer.getSecDomainClasspath();
+        try {
+            URLClassLoader secDomainCl = new URLClassLoader(secDomainclassPath.toArray(new URL[0]));
+        // SecDomain<String> secdomain = UserDefined.lowHigh(); // new LowMediumHigh();
+
+            secdomain =
+                    (SecDomain<String>) Class.forName("analyzer.level2.CurrentSecurityDomain",
+                                                      true, secDomainCl)
+                                             .getField("INSTANCE").get(null);
+        } catch (IllegalAccessException
+                | NoSuchFieldException
+                | ClassNotFoundException
+                | ClassCastException e) {
+            // TODO: standardized error messages and program abort
+            System.err.println("Unable to get security domain: "
+                               + e.toString()
+                               + "\n  "
+                               + e.getMessage());
+            System.exit(-1);
+            throw new RuntimeException("Should have exited here");
+        }
+        */
+        secdomain = CurrentSecurityDomain.INSTANCE;
+
+
         // run static
         ACasts<String> casts =
                 new CastsFromConstants<>(new TypeDomain<>(secdomain),

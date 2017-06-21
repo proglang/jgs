@@ -46,6 +46,11 @@ lazy val jgs =
     dependsOn(GradualConstraints, DynamicAnalyzer, ScratchTestclasses, DemoTestclasses).
     settings(commonSettings:_*).
     settings(
+      unmanagedClasspath in Runtime ++= {
+        sys.env.get("JGS_SECDOMAIN_CLASSES")
+          .map(path => path.split(":").map(new File(_)).toList)
+          .getOrElse(List())
+      }
     )
 
 lazy val DynamicAnalyzer =
@@ -102,4 +107,14 @@ lazy val ScratchTestclasses =
 lazy val DemoTestclasses =
   (project in file ("JGSTestclasses/Demo")).
     dependsOn(JGSSupport, DynamicAnalyzer).
+    settings(setScalaVersion)
+
+lazy val UserDefinedSecurityDomain =
+  (project in file ("UserDefinedSecurityDomain")).
+    dependsOn(InstrumentationSupport).
+    settings(setScalaVersion)
+
+lazy val LMHSecurityDomain =
+  (project in file ("LMHSecurityDomain")).
+    dependsOn(InstrumentationSupport).
     settings(setScalaVersion)

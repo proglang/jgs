@@ -4,6 +4,8 @@ package analyzer.level2;
 import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
+import java.lang.reflect.InvocationTargetException;
+
 
 /**
  *
@@ -11,7 +13,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CurrentSecurityDomain {
 	@SuppressWarnings("rawtypes")
-	public static final SecDomain INSTANCE = new LowMediumHigh();
+	public static final SecDomain INSTANCE;
 //	public static final SecDomain secDomain =
 //			UserDefined.lowHigh();
 			// UserDefined.aliceBobCharlie();
@@ -37,7 +39,19 @@ public class CurrentSecurityDomain {
 	                                    (String)getSecDomainResource("topLevel"),
 	                                    (String)getSecDomainResource("bottomLevel"));
 	                                   */
-	    }
+		try {
+			INSTANCE = (SecDomain)Class.forName("de.unifreiburg.cs.proglang.jgs.rt.CurrentSecurityDomainInstance")
+                     .getMethod("get").invoke(null);
+		} catch ( IllegalAccessException
+                | NoSuchMethodException
+				| InvocationTargetException
+				| ClassNotFoundException
+				e) {
+		    System.err.println("Cannot load security domain: " + e.toString());
+            System.exit(-1);
+			throw new RuntimeException("This is unexpected. Should have exited here!");
+		}
+	}
 
 	
 	public static Object bottom() {
