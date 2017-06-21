@@ -39,7 +39,7 @@ public class ReturnStmtFail {
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		hs.addLocal("int_res1");
 		
 		// Initialize int_res1 !
@@ -51,7 +51,7 @@ public class ReturnStmtFail {
 		
 		TestSubClass tsc = new TestSubClass();
 		res1 = tsc.methodWithConstReturn();
-		assertEquals(SecurityLevel.bottom(), hs.getActualReturnLevel());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res1");			// IFexception thrown here
 		
 
@@ -70,7 +70,7 @@ public class ReturnStmtFail {
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		hs.addLocal("int_res1");
 		
 		@SuppressWarnings("unused")
@@ -79,7 +79,7 @@ public class ReturnStmtFail {
 		
 		TestSubClass tsc = new TestSubClass();
 		res1 = tsc.methodWithConstReturn();
-		assertEquals(SecurityLevel.bottom(), hs.getActualReturnLevel());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getActualReturnLevel());
 		hs.assignReturnLevelToLocal("int_res1");
 		
 

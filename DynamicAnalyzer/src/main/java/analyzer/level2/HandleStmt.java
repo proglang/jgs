@@ -38,7 +38,7 @@ public class HandleStmt {
     /**
      * This must be called at the beginning of every method in the analyzed
      * code. It creates a new LocalMap for the method and adjusts the
-     * {@link SecurityLevel} of the globalPC
+     * {@link CurrentSecurityDomain} of the globalPC
      */
     public HandleStmt() {
         localmap = new LocalMap();
@@ -135,7 +135,7 @@ public class HandleStmt {
                 signature, object});
         handleStatementUtils.checkIfObjectExists(object);
         Object fieldLevel = objectmap.setField(object, signature,
-                                               SecurityLevel.bottom());
+                                               CurrentSecurityDomain.bottom());
         if (!objectmap.containsField(object, signature)) {
             throw new InternalAnalyzerException("Add field " + signature
                                                 + " to ObjectMap failed");
@@ -237,7 +237,7 @@ public class HandleStmt {
         logger.log(Level.INFO, "Set SecurityLevel of field {0} to HIGH",
                    signature);
         handleStatementUtils.checkIfObjectExists(object);
-        objectmap.setField(object, signature, SecurityLevel.top());
+        objectmap.setField(object, signature, CurrentSecurityDomain.top());
     }
 
     /**
@@ -250,7 +250,7 @@ public class HandleStmt {
         logger.log(Level.INFO, "Set SecurityLevel of field {0} to LOW",
                    signature);
         handleStatementUtils.checkIfObjectExists(object);
-        objectmap.setField(object, signature, SecurityLevel.bottom());
+        objectmap.setField(object, signature, CurrentSecurityDomain.bottom());
     }
 
     /**
@@ -296,7 +296,7 @@ public class HandleStmt {
     public void makeLocal(String signature, String level) {
         logger.info("Set level of local " + signature + " to " + level);
         localmap.initializeLocal(signature);
-        localmap.setLevel(signature, SecurityLevel.readLevel(level));
+        localmap.setLevel(signature, CurrentSecurityDomain.readLevel(level));
         logger.info("New securitylevel of local " + signature + " is "
                     + localmap.getLevel(signature));
     }
@@ -445,7 +445,7 @@ public class HandleStmt {
     public void assignReturnLevelToLocal(String signature) {
         handleStatementUtils.checkLocalPC(signature);
         setLevelOfLocal(signature, objectmap.getActualReturnLevel());
-        objectmap.setActualReturnLevel(SecurityLevel.top());
+        objectmap.setActualReturnLevel(CurrentSecurityDomain.top());
     }
 
     /**
@@ -457,11 +457,11 @@ public class HandleStmt {
 														   .getVal());
         logger.log(Level.INFO, "Return a constant value.");
         objectmap.setActualReturnLevel(handleStatementUtils
-                                               .joinWithLPC(SecurityLevel
+                                               .joinWithLPC(CurrentSecurityDomain
 																	.bottom
 																			()));
         logger.info("Actual return level is: "
-                    + handleStatementUtils.joinWithLPC(SecurityLevel.bottom())
+                    + handleStatementUtils.joinWithLPC(CurrentSecurityDomain.bottom())
                                           .toString());
     }
 
@@ -834,7 +834,7 @@ public class HandleStmt {
     public void checkThatLe(String signature, String level, String msg) {
         controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_LE.getVal());
         logger.info("Check if " + signature + " <= " + level);
-        if (!SecurityLevel.le(localmap.getLevel(signature), SecurityLevel.readLevel(level))) {
+        if (!CurrentSecurityDomain.le(localmap.getLevel(signature), CurrentSecurityDomain.readLevel(level))) {
             handleStatementUtils.abort(new IllegalFlowError(msg));
         }
     }
@@ -852,7 +852,7 @@ public class HandleStmt {
         logger.info(
                 "About to print something somewhere. Requires to check that PC is less than "
                 + level);
-        if (!SecurityLevel.le(localmap.getLocalPC(), SecurityLevel.readLevel(level))) {
+        if (!CurrentSecurityDomain.le(localmap.getLocalPC(), CurrentSecurityDomain.readLevel(level))) {
             handleStatementUtils.abort(new IllegalFlowError("Invalid security "
                                                             + "context: PC "
                                                             + "must be "

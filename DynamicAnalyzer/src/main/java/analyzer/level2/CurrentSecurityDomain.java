@@ -1,41 +1,19 @@
 package analyzer.level2;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-//public enum SecurityLevel {
-//	LOW1, HIGH1;
-//	
-//	public static Object bottom() {
-//		return LOW1;
-//	}
-//	
-//	public static Object top() {
-//		return HIGH1;
-//	}
-//}
-
-import java.io.File;
-
-import analyzer.level2.storage.LowHigh;
 import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined.Edge;
 
 
+/**
+ *
+ */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class SecurityLevel {
+public class CurrentSecurityDomain {
 	@SuppressWarnings("rawtypes")
-	// public static SecDomain secDomain = new LowMediumHigh();
-	public static SecDomain secDomain =
-			UserDefined.lowHigh();
+	public static final SecDomain INSTANCE = new LowMediumHigh();
+//	public static final SecDomain secDomain =
+//			UserDefined.lowHigh();
 			// UserDefined.aliceBobCharlie();
 	
 	/*private static Object getSecDomainResource(String name) {
@@ -63,26 +41,26 @@ public class SecurityLevel {
 
 	
 	public static Object bottom() {
-		return secDomain.bottom();
+		return INSTANCE.bottom();
 	}
 	
 	public static Object top() {
-		return secDomain.top();
+		return INSTANCE.top();
 	}
 
 	@SuppressWarnings("unchecked")
 	public static Object lub(Object l1, Object l2) {
-		return secDomain.lub(l1, l2);
+		return INSTANCE.lub(l1, l2);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static Object glb(Object l1, Object l2) {
-		return secDomain.glb(l1, l2);
+		return INSTANCE.glb(l1, l2);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static boolean le(Object l1, Object l2) {
-		return secDomain.le(l1, l2);
+		return INSTANCE.le(l1, l2);
 	}
 	
 	/**
@@ -93,10 +71,10 @@ public class SecurityLevel {
 	 */
 	@SuppressWarnings("unchecked")
 	public static boolean lt(Object l1, Object l2) {
-		return secDomain.le(l1, l2) && !l1.equals(l2);
+		return INSTANCE.le(l1, l2) && !l1.equals(l2);
 	}
 	
 	public static Object readLevel(String level) {
-		return secDomain.readLevel(level);
+		return INSTANCE.readLevel(level);
 	}
 }

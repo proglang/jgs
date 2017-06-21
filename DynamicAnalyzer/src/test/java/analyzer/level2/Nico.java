@@ -2,8 +2,6 @@ package analyzer.level2;
 
 import static org.junit.Assert.assertEquals;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,16 +25,16 @@ public class Nico {
 		hs.addLocal("int_x");
 		hs.setLevelOfLocal("int_x");
 		int x = 1;
-		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_x"));
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("int_x"));
 		
 		hs.addLocal("int_y");
 		hs.setLevelOfLocal("int_y");
 		int y = 2;
 		hs.makeLocal("int_y", "HIGH");
-		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_y"));
+		assertEquals(CurrentSecurityDomain.top(), hs.getLocalLevel("int_y"));
 
-		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
-		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getGlobalPC());
 		
 		
 		hs.close();

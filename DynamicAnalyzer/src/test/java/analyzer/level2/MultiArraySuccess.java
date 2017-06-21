@@ -104,7 +104,7 @@ public class MultiArraySuccess {
 		hs.setLevelOfArrayField(twoD, Integer.toString(1), "String[][]_twoD");
 		twoD[1] = tmp2;
 
-		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("String[][]_twoD"));
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("String[][]_twoD"));
 		
 		hs.close();
 		

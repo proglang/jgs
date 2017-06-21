@@ -68,7 +68,7 @@ public class ArraysSuccess {
 		@SuppressWarnings("unused")
 		String x = a[i];
 		
-		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("String_x"));
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("String_x"));
 		
 		hs.close();
 		
@@ -101,7 +101,7 @@ public class ArraysSuccess {
 		hs.setLevelOfArrayField(a, Integer.toString(i), "String[]_a", "int_i");
 		a[i] = "3";
 		
-		assertEquals(SecurityLevel.bottom(), hs.getFieldLevel(a, Integer.toString(i)));
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getFieldLevel(a, Integer.toString(i)));
 		
 		hs.close();
 		

@@ -1,7 +1,7 @@
 package analyzer.level2.storage;
 
 
-import analyzer.level2.SecurityLevel;
+import analyzer.level2.CurrentSecurityDomain;
 
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
@@ -35,7 +35,7 @@ public class ObjectMap{
 	private static ObjectMap instance = null;
 	private static Object actualReturnLevel;
 	private static ArrayList<Object> actualArguments;
-	private static Object assignStmtLevel = SecurityLevel.bottom();
+	private static Object assignStmtLevel = CurrentSecurityDomain.bottom();
 
 
 	/**
@@ -43,8 +43,8 @@ public class ObjectMap{
 	 */
 	private ObjectMap() {
 		globalPC = new LinkedList<Object>();
-		globalPC.push(SecurityLevel.bottom()); 
-		actualReturnLevel = SecurityLevel.bottom();		// was top!?!
+		globalPC.push(CurrentSecurityDomain.bottom());
+		actualReturnLevel = CurrentSecurityDomain.bottom();		// was top!?!
 		actualArguments = new ArrayList<Object>();
 		innerMap = new ReferenceIdentityMap<Object, 
 				HashMap<String, Object>>(
@@ -107,7 +107,7 @@ public class ObjectMap{
 	 * Push a new globalPC on the stack. This is needed when a method
 	 * is invoked in the analyzed code.
 	 * @param securityLevel new security-level for globalPC
-	 * @return recently pushed {@link SecurityLevel} 
+	 * @return recently pushed {@link CurrentSecurityDomain}
 	 */
 	public Object pushGlobalPC(Object securityLevel) {
 		globalPC.push(securityLevel);
@@ -168,12 +168,12 @@ public class ObjectMap{
 	/**
 	 * Clear the Object map. This operation removes all elements from innerMap 
 	 * and globalPC stack. The stack then contains only one element 
-	 * {@link SecurityLevel}.bottom().
+	 * {@link CurrentSecurityDomain}.bottom().
 	 */
 	public void flush() {
 		innerMap.clear();
 		globalPC.clear();
-		globalPC.push(SecurityLevel.bottom());
+		globalPC.push(CurrentSecurityDomain.bottom());
 	}
  
   
@@ -188,7 +188,7 @@ public class ObjectMap{
 			insertNewObject(object);
 		}
 		if (!innerMap.get(object).containsKey(field)) {
-			setField(object, field, SecurityLevel.bottom());
+			setField(object, field, CurrentSecurityDomain.bottom());
 		}
 		return innerMap.get(object).get(field);
 	}
@@ -218,7 +218,7 @@ public class ObjectMap{
 	 * @return security-level
 	 */
 	Object addField(Object object, String field) {
-		innerMap.get(object).put(field, SecurityLevel.bottom());
+		innerMap.get(object).put(field, CurrentSecurityDomain.bottom());
 		return innerMap.get(object).get(field);
 	}
   
@@ -278,7 +278,7 @@ public class ObjectMap{
 	 * Set the security-level of the actual assign statement to default-vaule.
 	 */
 	public void clearAssignmentLevel() {
-		assignStmtLevel = SecurityLevel.bottom();
+		assignStmtLevel = CurrentSecurityDomain.bottom();
 	}
   
 }

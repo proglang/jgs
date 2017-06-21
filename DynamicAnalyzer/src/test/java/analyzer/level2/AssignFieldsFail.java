@@ -38,7 +38,7 @@ public class AssignFieldsFail {
 
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
-		hs.pushGlobalPC(SecurityLevel.top());
+		hs.pushGlobalPC(CurrentSecurityDomain.top());
 		hs.checkGlobalPC(this, "int_field");
 		hs.setLevelOfField(this, "int_field");
 		
@@ -54,7 +54,7 @@ public class AssignFieldsFail {
 		hs.addObjectToObjectMap(this);
 		
 		hs.addFieldToObjectMap(this, "int_field");
-		hs.addLocal("int_local", SecurityLevel.bottom());
+		hs.addLocal("int_local", CurrentSecurityDomain.bottom());
 		
 		/* Assign Local to Field
 		 *  int field = local;
@@ -64,7 +64,7 @@ public class AssignFieldsFail {
 
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(this, "int_field");
-		hs.pushGlobalPC(SecurityLevel.top());
+		hs.pushGlobalPC(CurrentSecurityDomain.top());
 		hs.checkGlobalPC(this, "int_field");
 		hs.setLevelOfField(this, "int_field");
 		
@@ -95,9 +95,9 @@ public class AssignFieldsFail {
 		
 		// field = LOW, gpc = HIGH
 		hs.makeFieldLow(o, "int_pField");
-		hs.pushGlobalPC(SecurityLevel.top());
+		hs.pushGlobalPC(CurrentSecurityDomain.top());
 		
-		assertEquals(SecurityLevel.bottom(), hs.joinLevelOfLocalAndAssignmentLevel("int_local"));
+		assertEquals(CurrentSecurityDomain.bottom(), hs.joinLevelOfLocalAndAssignmentLevel("int_local"));
 		hs.checkGlobalPC(o, "int_field");
 		hs.setLevelOfField(o, "int_pField");
 		o.pField = local;

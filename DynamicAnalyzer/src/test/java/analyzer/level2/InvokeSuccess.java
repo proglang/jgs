@@ -3,9 +3,6 @@ package analyzer.level2;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,13 +90,13 @@ public class InvokeSuccess {
 		 */
 		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 		xy.methodWithParams(a, b, c);
-		assertEquals(SecurityLevel.bottom(), hs.getActualReturnLevel());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getActualReturnLevel());
     	
     	
 		hs.makeLocal("int_b", "HIGH");
 		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 		xy.methodWithParams(a, b, c);
-		assertEquals(SecurityLevel.top(), hs.getActualReturnLevel());
+		assertEquals(CurrentSecurityDomain.top(), hs.getActualReturnLevel());
     	
 		hs.close();
 	    

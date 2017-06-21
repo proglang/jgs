@@ -74,7 +74,7 @@ public class HandleStmtUtils {
 				new Object[] {signature, level, lpc });
 
 
-		if (!SecurityLevel.le(lpc, level)) {
+		if (!CurrentSecurityDomain.le(lpc, level)) {
 			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}
 	}
@@ -93,7 +93,7 @@ public class HandleStmtUtils {
 		Object globalPC = objectmap.getGlobalPC();
 
         controller.abortIfActiveAndExceptionIsType(ExpectedException.NONE.getVal());
-		if (!SecurityLevel.le(globalPC, fieldLevel)) {
+		if (!CurrentSecurityDomain.le(globalPC, fieldLevel)) {
 			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}	
 		
@@ -113,7 +113,7 @@ public class HandleStmtUtils {
 				});
 		Object localsAndGPC = joinWithGPC(joinLocals(localForObject, localForIndex));
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
-		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
+		if (!CurrentSecurityDomain.le(localsAndGPC, fieldLevel)) {
 			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}	
 	}
@@ -131,7 +131,7 @@ public class HandleStmtUtils {
 					});
 		Object localsAndGPC = joinWithGPC(localmap.getLevel(localForObject));
 		Object fieldLevel = objectmap.getFieldLevel(object, signature);
-		if (!SecurityLevel.le(localsAndGPC, fieldLevel)) {
+		if (!CurrentSecurityDomain.le(localsAndGPC, fieldLevel)) {
 			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
 		}
 	}
@@ -147,9 +147,9 @@ public class HandleStmtUtils {
 	 * @return the new security-level
 	 */
 	protected Object joinLocals(String... stringList) {
-		Object result = SecurityLevel.bottom();
+		Object result = CurrentSecurityDomain.bottom();
 		for (String op: stringList) {
-			result = SecurityLevel.lub(result, localmap.getLevel(op));
+			result = CurrentSecurityDomain.lub(result, localmap.getLevel(op));
 		}
 		return result;
 	}
@@ -161,7 +161,7 @@ public class HandleStmtUtils {
 	 */
 	protected Object joinWithLPC(Object securityLevel) {
 		Object localPC = localmap.getLocalPC();
-		Object result = SecurityLevel.lub(localPC, securityLevel);
+		Object result = CurrentSecurityDomain.lub(localPC, securityLevel);
 		logger.log(Level.INFO, "Local PC is {0}, security Level/assignementLevel is {1}, results in {2}",
 				new Object[] { localPC, securityLevel, result });
 		return result;
@@ -170,15 +170,15 @@ public class HandleStmtUtils {
 
 	protected Object joinWithGPC(Object securityLevel) {
 		Object globalPC = objectmap.getGlobalPC();
-		Object result = SecurityLevel.lub(globalPC, securityLevel);
+		Object result = CurrentSecurityDomain.lub(globalPC, securityLevel);
 		return result;
 	}
 	
 
 	protected Object joinLevels(Object... levels) {
-		Object res = SecurityLevel.bottom();
+		Object res = CurrentSecurityDomain.bottom();
 		for (Object securityLevel: levels) {
-			res = SecurityLevel.lub(res, securityLevel);
+			res = CurrentSecurityDomain.lub(res, securityLevel);
 		}
 		return res;
 	}

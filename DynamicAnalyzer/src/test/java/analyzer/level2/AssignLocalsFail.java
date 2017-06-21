@@ -28,8 +28,8 @@ public class AssignLocalsFail {
 		
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
-		hs.addLocal("int_x", SecurityLevel.bottom());
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.addLocal("int_x", CurrentSecurityDomain.bottom());
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		// x = LOW, lpc = HIGH
 		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x");
@@ -49,7 +49,7 @@ public class AssignLocalsFail {
 		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_x");
 		hs.addLocal("int_y");
-		hs.addLocal("int_z", SecurityLevel.top());
+		hs.addLocal("int_z", CurrentSecurityDomain.top());
 		
 		/*
 		 *  Assign Locals to Local
@@ -57,12 +57,12 @@ public class AssignLocalsFail {
 		 *  1. Check if Level(x) >= lpc
 		 *  2. Assign Join(y, z, lpc) to x
 		 */
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		// x = LOW, lpc = HIGH
-		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_x"));
-		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_y"));
-		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_z"));
-		assertEquals(SecurityLevel.top(), hs.getLocalPC());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("int_x"));
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("int_y"));
+		assertEquals(CurrentSecurityDomain.top(), hs.getLocalLevel("int_z"));
+		assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
 		hs.joinLevelOfLocalAndAssignmentLevel("int_y");
 		hs.joinLevelOfLocalAndAssignmentLevel("int_z");
 		hs.checkLocalPC("int_x");
@@ -85,7 +85,7 @@ public class AssignLocalsFail {
 		
 		TestSubClass xy;
 		
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		
 		hs.checkLocalPC("TestSubClass_xy");
 		hs.setLevelOfLocal("TestSubClass_xy");
@@ -114,7 +114,7 @@ public class AssignLocalsFail {
 		
 		TestSubClass xy;
 		
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		hs.checkLocalPC("TestSubClass_xy");
 		hs.setLevelOfLocal("TestSubClass_xy");
 		xy = new TestSubClass();
@@ -143,7 +143,7 @@ public class AssignLocalsFail {
 		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
-		hs.addLocal("int_high", SecurityLevel.top());
+		hs.addLocal("int_high", CurrentSecurityDomain.top());
 		
 		TestSubClass ts = new TestSubClass();
 		int res ;
@@ -181,7 +181,7 @@ public class AssignLocalsFail {
 		
 		hs.addLocal("TestSubClass_ts");
 		hs.addLocal("int_res");
-		hs.addLocal("int_high", SecurityLevel.top());
+		hs.addLocal("int_high", CurrentSecurityDomain.top());
 		TestSubClass ts = new TestSubClass();
 		int res ;
 		int high = 0;
@@ -220,7 +220,7 @@ public class AssignLocalsFail {
 		 */
 		
 		hs.addLocal("int_x");
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 		hs.checkLocalPC("int_x");
 		hs.setLevelOfLocal("int_x"); // Just ignore the constants

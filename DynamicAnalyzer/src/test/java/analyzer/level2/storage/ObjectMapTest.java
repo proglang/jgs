@@ -4,9 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 
+import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.ObjectMap;
 import org.junit.Before;
 import org.junit.Test;
 import utils.logging.L2Logger;
@@ -41,9 +40,9 @@ public class ObjectMapTest {
 		logger.info("GLOBAL PC TEST STARTED");
 		
 		ObjectMap m = ObjectMap.getInstance();
-		assertEquals(SecurityLevel.bottom(), m.getGlobalPC());
-		m.pushGlobalPC(SecurityLevel.top());
-		assertEquals(SecurityLevel.top(), m.getGlobalPC());
+		assertEquals(CurrentSecurityDomain.bottom(), m.getGlobalPC());
+		m.pushGlobalPC(CurrentSecurityDomain.top());
+		assertEquals(CurrentSecurityDomain.top(), m.getGlobalPC());
 
 		logger.info("GLOBAL PC TEST FINISHED");
 	}
@@ -85,13 +84,13 @@ public class ObjectMapTest {
 		
 		m.addField(o, f1);
 		m.addField(o, f2);
-		m.setField(o, f3, SecurityLevel.top());
+		m.setField(o, f3, CurrentSecurityDomain.top());
 		
 		Object o2 = new Object();
 		m.insertNewObject(o2);
 		
-		m.setField(o2, f1, SecurityLevel.top());
-		m.setField(o2, f2, SecurityLevel.bottom());
+		m.setField(o2, f1, CurrentSecurityDomain.top());
+		m.setField(o2, f2, CurrentSecurityDomain.bottom());
 		m.addField(o2, f3);
 
 		logger.info("FIELDS IN OBJECT MAP TEST FINISHED");

@@ -39,7 +39,7 @@ public class MultiArrayFail {
 		 * String[][] arr = new String[][]{{"a"},{"b"}};
 		 * String x = arr[1][0];
 		 */ 
-		hs.pushLocalPC(SecurityLevel.top(), 123);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		
 		String[][] arr = new String[2][];
 		hs.addArrayToObjectMap(arr);
@@ -141,7 +141,7 @@ public class MultiArrayFail {
 		arr[0] = inner1;
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
-		hs.setLevelOfLocal("String[][]_arr", SecurityLevel.top());
+		hs.setLevelOfLocal("String[][]_arr", CurrentSecurityDomain.top());
 		hs.checkArrayWithGlobalPC(arr, Integer.toString(1), "String[][]_arr");
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;

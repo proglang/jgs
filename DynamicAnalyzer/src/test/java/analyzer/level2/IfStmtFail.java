@@ -28,22 +28,22 @@ public class IfStmtFail {
 		hs.setLevelOfLocal("int_x");
 		int x = 1;
 		hs.makeLocal("int_x", "HIGH");
-		assertEquals(SecurityLevel.top(), hs.getLocalLevel("int_x"));
+		assertEquals(CurrentSecurityDomain.top(), hs.getLocalLevel("int_x"));
 		
 		hs.addLocal("int_y");
 		hs.checkLocalPC("int_y");
 		hs.setLevelOfLocal("int_y");
 		@SuppressWarnings("unused")
 		int y = 1;
-		assertEquals(SecurityLevel.bottom(), hs.getLocalLevel("int_y"));
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("int_y"));
 
-		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
-		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getGlobalPC());
 		
 		hs.checkCondition("123", "int_x");
 		if (x == 1) {
-			assertEquals(SecurityLevel.top(), hs.getLocalPC());
-			assertEquals(SecurityLevel.top(), hs.getGlobalPC());	
+			assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
+			assertEquals(CurrentSecurityDomain.top(), hs.getGlobalPC());
 			
 			hs.checkLocalPC("int_y");
 			hs.setLevelOfLocal("int_y");
@@ -53,8 +53,8 @@ public class IfStmtFail {
 		}
 		
 
-		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
-		assertEquals(SecurityLevel.bottom(), hs.getGlobalPC());	
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getGlobalPC());
 		
 		
 		System.out.println("IF STMT FAIL TEST FINISHED");

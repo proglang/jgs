@@ -1,6 +1,6 @@
 package analyzer.level2.storage;
 
-import analyzer.level2.SecurityLevel;
+import analyzer.level2.CurrentSecurityDomain;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L2Logger;
 
@@ -27,8 +27,8 @@ public class LocalMap {
 	private HashMap<String, SecurityOptional> localMap = new HashMap<String, SecurityOptional>();
 	
 	public LocalMap() {
-		localPC.push(new LPCDominatorPair(SecurityLevel.bottom() , -1));
-		localMap.put("DEFAULT_LOW", new SecurityOptional(SecurityLevel.bottom(), true));
+		localPC.push(new LPCDominatorPair(CurrentSecurityDomain.bottom() , -1));
+		localMap.put("DEFAULT_LOW", new SecurityOptional(CurrentSecurityDomain.bottom(), true));
 	}
 	
 	/**
@@ -98,7 +98,7 @@ public class LocalMap {
 	 * @param signature The signature of the local.
 	 */
 	public void insertLocal(String signature) {
-		localMap.put(signature, new SecurityOptional(SecurityLevel.bottom(), true) );
+		localMap.put(signature, new SecurityOptional(CurrentSecurityDomain.bottom(), true) );
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class LocalMap {
 	 * @param signature
 	 */
 	public void insertUninitializedLocal(String signature) {
-		localMap.put(signature, new SecurityOptional(SecurityLevel.bottom(), false));
+		localMap.put(signature, new SecurityOptional(CurrentSecurityDomain.bottom(), false));
 	}
 	
 	/**

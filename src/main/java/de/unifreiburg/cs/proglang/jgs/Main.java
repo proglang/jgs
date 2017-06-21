@@ -1,12 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs;
 
-import analyzer.level2.HandleStmt;
-import analyzer.level2.SecurityLevel;
-import analyzer.level2.storage.LowMediumHigh;
+import analyzer.level2.CurrentSecurityDomain;
 import de.unifreiburg.cs.proglang.jgs.JgsCheck;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
@@ -16,7 +13,6 @@ import utils.parser.ArgumentContainer;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * This is the main entry point for jgs.
@@ -29,7 +25,7 @@ public class Main {
     public static void main(String[] args) {
 
         // SecDomain<String> secdomain = UserDefined.lowHigh(); // new LowMediumHigh();
-        SecDomain<String> secdomain = SecurityLevel.secDomain;
+        SecDomain<String> secdomain = CurrentSecurityDomain.INSTANCE;
 
         main.Main.doSootSetup(args);
 

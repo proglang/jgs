@@ -32,7 +32,7 @@ public class StaticFieldsFail {
 		hs.addObjectToObjectMap(this.getClass());
 		hs.addFieldToObjectMap(this.getClass(), "int_field");
 		
-		hs.pushGlobalPC(SecurityLevel.top());
+		hs.pushGlobalPC(CurrentSecurityDomain.top());
 		hs.checkGlobalPC(this.getClass(), "int_field");
 		hs.setLevelOfField(this.getClass(), "int_field");
 			
@@ -57,7 +57,7 @@ public class StaticFieldsFail {
 		assertTrue(hs.containsFieldInObjectMap(TestSubClass.class, "int_sField"));
 		assertTrue(hs.containsFieldInObjectMap(tsc.getClass(), "int_sField"));
 		
-		hs.pushGlobalPC(SecurityLevel.top());
+		hs.pushGlobalPC(CurrentSecurityDomain.top());
 		
 		hs.checkGlobalPC(tsc.getClass(), "int_sField");
 		hs.setLevelOfField(tsc.getClass(), "int_sField");

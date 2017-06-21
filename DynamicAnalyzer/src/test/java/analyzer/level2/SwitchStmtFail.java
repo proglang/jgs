@@ -28,35 +28,35 @@ public class SwitchStmtFail {
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
 		
-		hs.addLocal("int_x", SecurityLevel.top());
+		hs.addLocal("int_x", CurrentSecurityDomain.top());
 		int x = 0;
-		hs.addLocal("int_y", SecurityLevel.bottom());
+		hs.addLocal("int_y", CurrentSecurityDomain.bottom());
 		@SuppressWarnings("unused")
 		int y = 0;
 		
-		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 		
 		hs.checkCondition("123", "int_x");
 		switch (x) {
 		
 		  case 0: 
-			  assertEquals(SecurityLevel.top(), hs.getLocalPC()); 
+			  assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
 			  hs.checkLocalPC("int_y");
 			  hs.setLevelOfLocal("int_y");
 			  x += 2;
 			  hs.exitInnerScope("123");
 			  break;
 		  case 1:  
-			  assertEquals(SecurityLevel.top(), hs.getLocalPC()); 
+			  assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
 			  hs.exitInnerScope("123");
 			  break;
 		  default:  
-			  assertEquals(SecurityLevel.top(), hs.getLocalPC()); 
+			  assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
 			  hs.exitInnerScope("123");
 			  break;
 		} 
 
-		assertEquals(SecurityLevel.bottom(), hs.getLocalPC());
+		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 
 		LOGGER.log(Level.INFO, "SWITCH STMT FAIL TEST FINISHED");
 	}

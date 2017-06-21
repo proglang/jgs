@@ -32,7 +32,7 @@ public class WhileStmtFail {
 		hs.setLevelOfLocal("int_x");
 		int x = 0;
 		
-		hs.addLocal("int_y", SecurityLevel.top());
+		hs.addLocal("int_y", CurrentSecurityDomain.top());
 		int y = 0;
 		
 		hs.checkCondition("123", "int_y");

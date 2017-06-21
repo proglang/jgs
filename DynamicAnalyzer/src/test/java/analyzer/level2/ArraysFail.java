@@ -37,7 +37,7 @@ public class ArraysFail {
 		hs.addArrayToObjectMap(a);
 		
 		int i = 2;
-		hs.pushLocalPC(SecurityLevel.top(), 12);
+		hs.pushLocalPC(CurrentSecurityDomain.top(), 12);
 		
 		
 		assertTrue(hs.containsObjectInObjectMap(a));
@@ -74,7 +74,7 @@ public class ArraysFail {
 		hs.addArrayToObjectMap(a);
 		assertTrue(hs.containsObjectInObjectMap(a));
 		assertEquals(3, hs.getNumberOfFieldsInObjectMap(a));
-		hs.setLevelOfLocal("String[]_a", SecurityLevel.top());
+		hs.setLevelOfLocal("String[]_a", CurrentSecurityDomain.top());
 		
 		
 		/*

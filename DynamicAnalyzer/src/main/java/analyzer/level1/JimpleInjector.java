@@ -2,7 +2,7 @@ package analyzer.level1;
 
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
-import analyzer.level2.SecurityLevel;
+import analyzer.level2.CurrentSecurityDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
@@ -1474,8 +1474,8 @@ public class JimpleInjector {
                 // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
             } else {
                 // Static to Static, invalid casts should be caught by static analyzer. We double check:
-                if (! SecurityLevel.le( SecurityLevel.readLevel(conversion.getSrcType().getLevel().toString()) ,
-                                        SecurityLevel.readLevel(conversion.getDestType().getLevel().toString()))) {
+                if (! CurrentSecurityDomain.le(CurrentSecurityDomain.readLevel(conversion.getSrcType().getLevel().toString()) ,
+                                               CurrentSecurityDomain.readLevel(conversion.getDestType().getLevel().toString()))) {
                    // can't use that here, because exceptions during soot analysis will cause all UnitTests to fail
                    // throw new IFCError("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
                 }
