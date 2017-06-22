@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.DynamicMethods;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
 import org.apache.tools.ant.taskdefs.Classloader;
 import utils.logging.L1Logger;
@@ -107,17 +108,22 @@ public class Main {
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));
         List<String> errors = new ArrayList<>();
-        Methods<String> typeCheckResult = JgsCheck.typeCheck(
-                sootOptionsContainer.getMainclass(),
-                sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
-                sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
-                externalMethods,
-                externalFields,
-                secdomain,
-                casts,
-                L1Logger.getLogger(),
-                errors
-        );
+        Methods<String> typeCheckResult;
+        if (sootOptionsContainer.isOnlyDynamic()) {
+            typeCheckResult = new DynamicMethods<>();
+        } else {
+            typeCheckResult = JgsCheck.typeCheck(
+                    sootOptionsContainer.getMainclass(),
+                    sootOptionsContainer.getAddClassesToClasspath().toArray(new String[0]),
+                    sootOptionsContainer.getAddDirsToClasspath().toArray(new String[0]),
+                    externalMethods,
+                    externalFields,
+                    secdomain,
+                    casts,
+                    L1Logger.getLogger(),
+                    errors
+            );
+        }
 
         if(!errors.isEmpty()) {
             System.err.println("THERE WERE ERRORS DURING TYPCHECKING. ABORTING.");

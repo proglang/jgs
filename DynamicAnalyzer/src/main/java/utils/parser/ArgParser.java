@@ -16,6 +16,7 @@ public class ArgParser {
 
     // flags
     final static String MAINCLASS_FLAG = "m";
+    final static String ONLY_DYNAMIC_FLAG = "onlydynamic";
     final static String CLASSPATH = "cp";
     final static String SECDOMAIN_CLASSPATH = "scp";
     final static String OTHER_CLASSES_FOR_STATIC_ANALYZER = "s";
@@ -96,6 +97,11 @@ public class ArgParser {
         verbose.setRequired(false);
         options.addOption(verbose);
 
+        Option onlyDynamic = new Option(ONLY_DYNAMIC_FLAG, "ignore static types and perform pure dynamic enforcement");
+        onlyDynamic.setRequired(false);
+        options.addOption(onlyDynamic);
+
+
 		Option help = new Option(HELP, "help", false, "Print Help");
 		help.setRequired(false);
 		options.addOption(help);
@@ -173,7 +179,8 @@ public class ArgParser {
                                          outputFolder,
                                          additionalFiles,
                                          usePublicTyping,
-                                         cmd.hasOption(VERBOSE));
+                                         cmd.hasOption(VERBOSE),
+                                         cmd.hasOption(ONLY_DYNAMIC_FLAG));
 
 			// if illegal input
             // TODO: handle bad options (exit) in main

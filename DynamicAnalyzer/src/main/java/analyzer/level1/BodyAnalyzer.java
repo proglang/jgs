@@ -1,21 +1,13 @@
 package analyzer.level1;
 
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
 import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
-import utils.staticResults.BeforeAfterContainer;
-import utils.staticResults.MIMap;
-import utils.staticResults.MSLMap;
-import utils.staticResults.MSMap;
-import utils.staticResults.implementation.Types;
 import utils.visitor.AnnotationStmtSwitch;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -57,8 +49,9 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 	protected void internalTransform(Body arg0, String arg1,
 				@SuppressWarnings("rawtypes") Map arg2) {
 		SootMethod sootMethod;
-		Body body;	
-		
+		Body body;
+
+
 		/*
 		 * Chain<Unit> units contains for TestProgramm Simple:
 		 * 
@@ -118,8 +111,13 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		// It creates a map for locals.
 		JimpleInjector.invokeHS();
 		JimpleInjector.addNeededLocals();
-				
-		if (sootMethod.isMain()) {
+
+		// We have to initialize the run-time system at the very beginning.
+		// That is, either
+		// - at the beginning of the clinit of the Main class (which is // the class that contains the main method), *if it exists*, or
+		// - if there is no clinit, at the beginning of main
+		// TODO: the run-time system should inititalize itself lazily, perhaps (i.e., on-demand)
+		if (isFirstApplicationMethodToRun(sootMethod)) {
 			JimpleInjector.initHS();
 		}
 
@@ -199,5 +197,41 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		JimpleInjector.addUnitsToChain();			
 		
 		JimpleInjector.closeHS();
+	}
+
+	/**
+	 * Return the very first method (of the app) to run.
+	 * Either clinit of the
+	 * Main-class, or main.
+	 */
+	private boolean isFirstApplicationMethodToRun(SootMethod firstMethodCand) {
+		// TODO: this does not work, because "no main method set".. why?
+	    /*SootClass mainClass = Scene.v().getMainMethod().getDeclaringClass();
+		for (SootMethod m : mainClass.getMethods()) {
+			if (m.getName().equals("<clinit>")) {
+			    return m;
+			}
+		}
+		return Scene.v().getMainMethod();
+		*/
+	    if (firstMethodCand.isMain()) {
+			for (SootMethod m : firstMethodCand.getDeclaringClass().getMethods()) {
+				if (m.getName().equals("<clinit>")) {
+					return false;
+				}
+			}
+			// there is no clinit in the main-class
+			return true;
+		} else if (firstMethodCand.getName().equals("<clinit>")){
+			for (SootMethod m : firstMethodCand.getDeclaringClass().getMethods()) {
+				if (m.isMain()) {
+					return true; // we are clinit, and in the main class
+				}
+			}
+			// we are another clinit, not in the main class
+			return false;
+		} else {
+			return false; // neither clinit nor main method
+		}
 	}
 }

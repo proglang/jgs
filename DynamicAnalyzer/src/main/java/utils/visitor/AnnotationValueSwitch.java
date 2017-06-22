@@ -350,9 +350,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
 		rightElement = RightElement.IGNORE;
 		logger.fine("Invoke expression is of type InterfaceInvoke");
+		/*
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("InterfaceInvokeExpression");
 		}
+		*/
+		caseMethodInvokation(v);
 	}
 
 	@Override

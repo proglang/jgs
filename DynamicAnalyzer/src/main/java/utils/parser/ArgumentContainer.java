@@ -21,11 +21,12 @@ public class ArgumentContainer {
     private final boolean toJimple;
     private final String outputFolder;
     private final List<String> additionalFiles;
+    private final boolean onlyDynamic;
     private boolean usePublicTyping;
     private final boolean verbose;
 
     ArgumentContainer(String mainclass, Deque<String> addDirsToClasspath, List<URL> secDomainClasspath, List<String> addClasses,
-                      boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping, boolean verbose) {
+                      boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping, boolean verbose, boolean onlyDynamic) {
         this.mainclass = mainclass;
         this.secDomainClasspath = secDomainClasspath;
         this.toJimple = toJimple;
@@ -35,6 +36,7 @@ public class ArgumentContainer {
         this.addClasses = addClasses;
         this.usePublicTyping = usePublicTyping;
         this.verbose = verbose;
+        this.onlyDynamic = onlyDynamic;
     }
 
     public String getMainclass() {
@@ -84,5 +86,9 @@ public class ArgumentContainer {
 
     public List<URL> getSecDomainClasspath() {
         return secDomainClasspath;
+    }
+
+    public boolean isOnlyDynamic() {
+        return onlyDynamic;
     }
 }

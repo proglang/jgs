@@ -46,17 +46,22 @@ public class ExternalClasses {
 					new JoinLevels());
 		methodMap.put("<java.lang.String: java.lang.String "
 				+ "substring(int,int)>", new JoinLevels());
-		
+		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.StringUtil: java.util.List bits(java.lang.String)>", new JoinLevels());
+
 		// Methods where the argument must have LOW argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
 				 new MaxLevelAllowedForPrintOutput("LOW"));
-		methodMap.put("<java.io.PrintStream: void println(int)>", 
+		methodMap.put("<java.io.PrintStream: void print(java.lang.String)>",
+					  new MaxLevelAllowedForPrintOutput("LOW"));
+		methodMap.put("<java.io.PrintStream: void println(int)>",
 				 new MaxLevelAllowedForPrintOutput("LOW"));
 		methodMap.put("<java.io.PrintStream: void println(boolean)>", 
 				 new MaxLevelAllowedForPrintOutput("LOW"));
 		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
 				 new MaxLevelAllowedForPrintOutput("LOW"));
-		
+		methodMap.put("<java.io.PrintStream: void println()>",
+					  new MaxLevelAllowedForPrintOutput("LOW"));
+
 		// Methods where the argument must have either LOW or MEDIUM argument
 		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.Object)>", 
 				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
@@ -82,10 +87,13 @@ public class ExternalClasses {
 		// casts
 		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>", new DoCast());
 
-		// Dont do anything for ValueOf
-        // TODO: this is almost certainly wrong.
+		// Dont do anything for ValueOf... its level is determined by the method's receiver
 		methodMap.put("<java.lang.Boolean: java.lang.Boolean valueOf(boolean)>", new DoNothing());
 		methodMap.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new DoNothing());
+		methodMap.put("<java.util.List: java.util.Iterator iterator()>", new DoNothing());
+		methodMap.put("<java.util.Iterator: boolean hasNext()>", new DoNothing());
+		methodMap.put("<java.util.Iterator: java.lang.Object next()>", new DoNothing());
+		methodMap.put("<java.lang.Boolean: boolean booleanValue()>", new DoNothing());
 	}
 	
 	static AnnotationValueSwitch.RightElement receiveCommand(String method,
