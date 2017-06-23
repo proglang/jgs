@@ -4,21 +4,15 @@ import analyzer.level2.CurrentSecurityDomain;
 import de.unifreiburg.cs.proglang.jgs.JgsCheck;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefined;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.DynamicMethods;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
-import org.apache.tools.ant.taskdefs.Classloader;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 
 /**
@@ -75,8 +69,11 @@ public class Main {
         externalFields.put("<java.lang.System: java.io.PrintStream out>", "pub");
         Map<String, JgsCheck.Annotation> externalMethods = new HashMap<>();
         externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
-                                                    new String[]{"LOW"}));
+                            Annotations.lowSink(1));
+        externalMethods.put("<java.io.PrintStream: void print(java.lang.String)>",
+                            Annotations.lowSink(1));
+        externalMethods.put("<java.io.PrintStream: void println()>",
+                            Annotations.lowSink(0));
         externalMethods.put("<java.io.PrintStream: void println(java.lang.Object)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
                                                     new String[]{"LOW"}));
@@ -107,6 +104,14 @@ public class Main {
         externalMethods.put("<java.lang.String: boolean equals(java.lang.Object)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.StringUtil: java.util.List bits(java.lang.String)>",
+                            Annotations.pureInputToOutput(1));
+        externalMethods.put("<java.util.List: java.util.Iterator iterator()>",
+                            Annotations.polymorphicGetter());
+        externalMethods.put("<java.util.Iterator: boolean hasNext()>", Annotations.polymorphicGetter());
+        externalMethods.put("<java.util.Iterator: java.lang.Object next()>", Annotations.polymorphicGetter());
+        externalMethods.put("<java.lang.Boolean: boolean "
+                                             + "booleanValue()>", Annotations.polymorphicGetter());
         List<String> errors = new ArrayList<>();
         Methods<String> typeCheckResult;
         if (sootOptionsContainer.isOnlyDynamic()) {
