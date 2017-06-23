@@ -53,6 +53,7 @@ public class Demo1 {
 //        example1();
 //        example2();
 //        example3(true);
+        example3(false);
         example4();
     }
 

@@ -17,6 +17,7 @@ public class ArgParser {
     // flags
     final static String MAINCLASS_FLAG = "m";
     final static String ONLY_DYNAMIC_FLAG = "onlydynamic";
+    final static String FORCE_MONOMORPHIC_METHODS = "forcemonomorphic";
     final static String CLASSPATH = "cp";
     final static String SECDOMAIN_CLASSPATH = "scp";
     final static String OTHER_CLASSES_FOR_STATIC_ANALYZER = "s";
@@ -101,6 +102,10 @@ public class ArgParser {
         onlyDynamic.setRequired(false);
         options.addOption(onlyDynamic);
 
+        Option forceMonomorphic = new Option(FORCE_MONOMORPHIC_METHODS, "extend signatures such that all methods are monomorphic (polymorphic parameter become public parameter)");
+        forceMonomorphic.setRequired(false);
+        options.addOption(forceMonomorphic);
+
 
 		Option help = new Option(HELP, "help", false, "Print Help");
 		help.setRequired(false);
@@ -167,7 +172,9 @@ public class ArgParser {
                 Collections.addAll(additionalFiles, cmd.getOptionValues(ADDITIONAL_FILES_FLAG));
             }
 
-           usePublicTyping = cmd.hasOption(PUBLIC_TYPING_FOR_JIMPLE);
+            usePublicTyping = cmd.hasOption(PUBLIC_TYPING_FOR_JIMPLE);
+
+            boolean forceMonomorphicMethods = cmd.hasOption(FORCE_MONOMORPHIC_METHODS);
 
             //
 
@@ -180,7 +187,7 @@ public class ArgParser {
                                          additionalFiles,
                                          usePublicTyping,
                                          cmd.hasOption(VERBOSE),
-                                         cmd.hasOption(ONLY_DYNAMIC_FLAG));
+                                         cmd.hasOption(ONLY_DYNAMIC_FLAG), forceMonomorphicMethods);
 
 			// if illegal input
             // TODO: handle bad options (exit) in main

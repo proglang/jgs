@@ -11,19 +11,18 @@ import static de.unifreiburg.cs.proglang.jgs.support.StringUtil.bits;
  */
 public class Demo2 {
 
-    /* "makeHigh" is a special method, that adds a high-security label to the
-     string */
-    @Sec("HIGH")
+    @Sec("HIGH") // <-- This tells the type system that "secret" is a secret
     public static String secret = "The secret is: 42";
 
     /* The system knows that "println" is not suitable for high-typed
     values. All these leaks can be detected now.  */
 
     @Effects({"LOW"})
+    //         ^-- these annotation are required for checking implicit flows
+    // during typing (cf. "throws" clauses in Java)
     public static void example1() {
         System.out.println(secret); // a pretty obvious leak. Even "grepable"
     }
-
 
     @Effects({"LOW"})
     public static void example2() {
@@ -62,7 +61,8 @@ public class Demo2 {
 //        example1();
 //        example2();
 //        example3(true);
-        example4();
+        example3(false); // cannot run!
+//        example4();
     }
 
 }

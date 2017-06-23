@@ -24,9 +24,10 @@ public class ArgumentContainer {
     private final boolean onlyDynamic;
     private boolean usePublicTyping;
     private final boolean verbose;
+    private final boolean forceMonomorphicMethods;
 
     ArgumentContainer(String mainclass, Deque<String> addDirsToClasspath, List<URL> secDomainClasspath, List<String> addClasses,
-                      boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping, boolean verbose, boolean onlyDynamic) {
+                      boolean toJimple, String outputFolder, List<String> additionalFiles, boolean usePublicTyping, boolean verbose, boolean onlyDynamic, boolean forceMonomorphicMethods) {
         this.mainclass = mainclass;
         this.secDomainClasspath = secDomainClasspath;
         this.toJimple = toJimple;
@@ -37,6 +38,7 @@ public class ArgumentContainer {
         this.usePublicTyping = usePublicTyping;
         this.verbose = verbose;
         this.onlyDynamic = onlyDynamic;
+        this.forceMonomorphicMethods = forceMonomorphicMethods;
     }
 
     public String getMainclass() {
@@ -90,5 +92,9 @@ public class ArgumentContainer {
 
     public boolean isOnlyDynamic() {
         return onlyDynamic;
+    }
+
+    public boolean forceMonomorphicMethods() {
+        return this.forceMonomorphicMethods;
     }
 }

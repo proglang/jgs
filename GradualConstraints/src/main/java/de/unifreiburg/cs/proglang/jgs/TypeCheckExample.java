@@ -29,7 +29,8 @@ public class TypeCheckExample {
                 Collections.<String, JgsCheck.Annotation>emptyMap(),
                 Collections.<String, String>emptyMap(),
                 new LowHigh(), casts, Logger.getGlobal(),
-                new java.util.ArrayList<String>()
+                new java.util.ArrayList<String>(),
+                false
         );
 
         for (SootMethod m : Scene.v().getMainClass().getMethods()) {

@@ -14,6 +14,7 @@ object JgsDemo {
       case "--demo" :: path :: rest => nextOption(rest) + ('demo -> path)
       case "--only-dynamic" :: rest => nextOption(rest) + ('only_dynamic -> "-onlydynamic")
       case "--create-jimple" :: rest => nextOption(rest) + ('create_jimple -> "-j")
+      case "--force-monomorphic-methods" :: rest => nextOption(rest) + ('force_monomorphic_methods -> "-forcemonomorphic")
       case s :: rest if !s.startsWith("-") => nextOption(rest) + ('class -> s)
       case s :: rest => println("Unkown option" + s); printUsage; sys.exit(-1)
       case Nil => Map()
@@ -54,7 +55,8 @@ object JgsDemo {
       "run", "-m", classToRun, "-cp", classpathCompile, "-o", outputDir
     ) ++
       options.get('only_dynamic).toList ++
-      options.get('create_jimple).toList
+      options.get('create_jimple).toList ++
+      options.get('force_monomorphic_methods)
       ).mkString(" ")
     val sbtProcess = Process(
       (Seq("sbt", s"; ${secdomainProject}/compile ; ${demoProject}/compile ; ${sbtJgsRunCommand}")),

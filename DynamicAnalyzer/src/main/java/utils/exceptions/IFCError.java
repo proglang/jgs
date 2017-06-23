@@ -6,7 +6,6 @@ public class IFCError extends RuntimeException {
 
 	public IFCError(String message) {
 		super(message);
-		printStackTrace();
 	}
 		
 }

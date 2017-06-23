@@ -126,7 +126,8 @@ public class Main {
                     secdomain,
                     casts,
                     L1Logger.getLogger(),
-                    errors
+                    errors,
+                    sootOptionsContainer.forceMonomorphicMethods()
             );
         }
 

@@ -4,6 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 import java.util.*;
 
+
 public class UserDefined implements SecDomain<String> {
 
 

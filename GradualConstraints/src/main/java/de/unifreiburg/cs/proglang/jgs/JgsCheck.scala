@@ -210,7 +210,8 @@ object JgsCheck {
                        secdomain : SecDomain[Level],
                        casts : ACasts[Level],
                        log : Logger,
-                       errors : java.util.List[String]) : instrumentation.Methods[Level] = {
+                       errors : java.util.List[String],
+                       forceMonomorphicMethods : Boolean) : instrumentation.Methods[Level] = {
 
 
     val o: Options = Options.v()
@@ -227,7 +228,8 @@ object JgsCheck {
     val c = s.loadClassAndSupport(mainClass)
     c.setApplicationClass()
 
-    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts, log, errors)
+    typeCheck(s, externalMethodAnnotations, externalFieldAnnotations, secdomain, casts, log, errors,
+      forceMonomorphicMethods = forceMonomorphicMethods)
   }
 
   def typeCheck[Level](s : Scene,
@@ -236,7 +238,8 @@ object JgsCheck {
                        secdomain : SecDomain[Level],
                        casts : ACasts[Level],
                        log : Logger,
-                       errors : java.util.List[String]) : instrumentation.Methods[Level] = {
+                       errors : java.util.List[String],
+                       forceMonomorphicMethods : Boolean) : instrumentation.Methods[Level] = {
     try {
       s.loadNecessaryClasses()
     } catch {
@@ -358,10 +361,34 @@ object JgsCheck {
       }
       }
 
+      val monomorphicOverrides : Map[SootMethod, Signature[Level]] =
+        if (forceMonomorphicMethods) {
+          val tvs = new TypeVars
+          for ((m, sig) <- signatureMap) yield {
+            val params : Set[Symbol[Level]] = Symbols.methodParameters[Level](m).toSet
+            val cs : List[Constraint[Level]] =
+              sig.constraints.toTypingConstraints(Symbols.identityMapping(tvs, params + Symbol.ret[Level])).toList
+            val cset = csets.fromCollection(cs)
+            val additionalConstraints =
+              for {
+                i <- 0 until m.getParameterCount
+                tv = tvs.param(Var.fromParam(i))
+                if cset.instrumentationType(tv).isEmpty
+              } yield {
+                log.warning(s"Forcing monomorphic parameters of method ${m}: ${0} <= pub")
+                MethodSignatures.makeSigConstraint(Symbol.param(i), Symbol.literal(types.pub()), ConstraintKind.LE)
+            }
+            val newSig = sig.addConstraints(additionalConstraints.toIterator)
+            (m -> newSig)
+          }
+        } else Map()
+
       /** ***********************************
         * set signature table and field table
         * *****************************/
-      val signatures = SignatureTable.makeTable[Level](signatureMap ++ specialSignatures ++ configuredSignatures)
+      val signatures = SignatureTable.makeTable[Level](
+        signatureMap ++ specialSignatures ++ configuredSignatures ++ monomorphicOverrides
+      )
       val fieldTable = new FieldTable[Level](fieldMap ++ configuredFields)
 
       /** ***********************
