@@ -2,10 +2,11 @@ package utils.visitor;
 
 import analyzer.level1.JimpleInjector;
 import soot.Local;
+import soot.SootMethod;
 import soot.Unit;
 import utils.exceptions.InternalAnalyzerException;
 import utils.logging.L1Logger;
-import utils.visitor.AnnotationValueSwitch.RightElement;
+import utils.visitor.AnnotationValueSwitch.RequiredActionForRHS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,87 +37,100 @@ public class ExternalClasses {
 		classMap.add("java.lang.StringBuilder"); // TODO notwendig?
 	}
 	
-	protected static HashMap<String, Command> methodMap = new HashMap<String,Command>();
+	private static HashMap<String, Command> instrumentationForSpecialMethods = new HashMap<String,Command>();
 
 	static {
 		
 		// Methods where the return level is the join of the arguments levels
-		methodMap.put("<java.lang.StringBuilder: java.lang.StringBuilder "
-					+ "append(java.lang.String)>",
-					new JoinLevels());
-		methodMap.put("<java.lang.String: java.lang.String "
-				+ "substring(int,int)>", new JoinLevels());
-		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.StringUtil: java.util.List bits(java.lang.String)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.StringBuilder "
+											 + "append(java.lang.String)>",
+											 new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String "
+											 + "substring(int,int)>", new
+				JoinLevels());
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.StringUtil: java.util.List bits(java.lang.String)>", new JoinLevels());
 
 		// Methods where the argument must have LOW argument
-		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
-				 new MaxLevelAllowedForPrintOutput("LOW"));
-		methodMap.put("<java.io.PrintStream: void print(java.lang.String)>",
-					  new MaxLevelAllowedForPrintOutput("LOW"));
-		methodMap.put("<java.io.PrintStream: void println(int)>",
-				 new MaxLevelAllowedForPrintOutput("LOW"));
-		methodMap.put("<java.io.PrintStream: void println(boolean)>", 
-				 new MaxLevelAllowedForPrintOutput("LOW"));
-		methodMap.put("<java.io.PrintStream: void println(java.lang.Object)>", 
-				 new MaxLevelAllowedForPrintOutput("LOW"));
-		methodMap.put("<java.io.PrintStream: void println()>",
-					  new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(java.lang.String)>",
+											 new MaxLevelAllowedForPrintOutput
+													 ("LOW"));
+		instrumentationForSpecialMethods.put("<java.io.PrintStream: void print(java.lang.String)>",
+											 new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(int)>",
+											 new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(boolean)>",
+											 new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(java.lang.Object)>",
+											 new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println()>",
+											 new MaxLevelAllowedForPrintOutput("LOW"));
 
 		// Methods where the argument must have either LOW or MEDIUM argument
-		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.Object)>", 
-				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
-		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.int)>", 
-				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
-		methodMap.put("<utils.printer.SecurePrinter: void printMedium(java.lang.String)>", 
-				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
-		methodMap.put("<utils.printer.SecurePrinter: void printMedium(boolean)>", 
-				 new MaxLevelAllowedForPrintOutput("MEDIUM"));
+		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(java.lang.Object)>",
+											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
+		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(java.lang.int)>",
+											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
+		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(java.lang.String)>",
+											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
+		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(boolean)>",
+											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		
 		// Methods where we don't do anything
-		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Object: void <init>()>", new DoNothing());
 
 		//
-		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
-				+ "makeHigh(java.lang.Object)>", new MakeTop());
-		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
-				+ "makeMedium(java.lang.Object)>", new MakeMedium());
-		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
-				+ "makeLow(java.lang.Object)>", new MakeBot());
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs"
+											 + ".support.DynamicLabel: java.lang.Object "
+											 + "makeHigh(java.lang.Object)>", new MakeTop());
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs"
+											 + ".support.DynamicLabel: java.lang.Object "
+											 + "makeMedium(java.lang.Object)>", new MakeMedium());
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
+											 + "makeLow(java.lang.Object)>", new MakeBot());
 
         // TODO: cast methods should be read from an external spec
 		// casts
-		methodMap.put("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>", new DoCast());
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>", new DoCast());
 
-		// Dont do anything for ValueOf... its level is determined by the method's receiver
-		methodMap.put("<java.lang.Boolean: java.lang.Boolean valueOf(boolean)>", new DoNothing());
-		methodMap.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new DoNothing());
-		methodMap.put("<java.util.List: java.util.Iterator iterator()>", new DoNothing());
-		methodMap.put("<java.util.Iterator: boolean hasNext()>", new DoNothing());
-		methodMap.put("<java.util.Iterator: java.lang.Object next()>", new DoNothing());
-		methodMap.put("<java.lang.Boolean: boolean booleanValue()>", new DoNothing());
+		// Dont do anything for ValueOf... its level is determined by the
+		// method's receiver
+		instrumentationForSpecialMethods.put("<java.lang.Boolean: java.lang"
+											 + ".Boolean valueOf(boolean)>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.util.List: java.util.Iterator iterator()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.util.Iterator: boolean hasNext()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.util.Iterator: java.lang.Object next()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Boolean: boolean "
+											 + "booleanValue()>", new DoNothing());
 	}
-	
-	static AnnotationValueSwitch.RightElement receiveCommand(String method,
-															 Unit pos,
-															 Local[] params) {
-		return methodMap.get(method).execute(pos, params);
+
+	public static boolean isSpecialMethod(SootMethod m) {
+		return instrumentationForSpecialMethods.containsKey(m.toString());
+	}
+
+	static AnnotationValueSwitch.RequiredActionForRHS instrumentSpecialMethod(SootMethod method,
+																			  Unit pos,
+																			  Local[] params) {
+		return instrumentationForSpecialMethods.get(method.toString())
+											   .execute(pos, params);
 	}
 	
 	
 	interface Command {
-		AnnotationValueSwitch.RightElement execute(Unit pos, Local[] params);
+		AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params);
 	}
-	
+
+	// TODO: the commands should be abstract. Then we can move ExternalClasses to InstrumentationSupport (where it belongs, together with the external signatures for type checking
 	static class JoinLevels implements Command {
 		@Override
-		public AnnotationValueSwitch.RightElement execute(Unit pos, Local[] params) {
+		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
 			logger.fine("Join levels for external class arguments");
 			for (Local param : params) {
 				if (param != null) {
 					JimpleInjector.addLevelInAssignStmt(param, pos);
 				}
 			}
-			return RightElement.IGNORE;
+			return AnnotationValueSwitch.RequiredActionForRHS.IGNORE;
 		}
 	}
 	
@@ -127,7 +141,7 @@ public class ExternalClasses {
 			this.level = level;
 		}
 		
-		public RightElement execute(Unit pos, Local[] params) {
+		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
 			logger.fine("Insert check that external class has no " + level + " arguments");
 			if (params == null || pos == null) {
 				throw new InternalAnalyzerException(
@@ -144,49 +158,49 @@ public class ExternalClasses {
 					
 				}
 			}
-			return RightElement.IGNORE;
+			return AnnotationValueSwitch.RequiredActionForRHS.IGNORE;
 		}
 	}
 
 	static class DoCast implements Command {
 		@Override
-		public RightElement execute(Unit pos, Local[] params) {
+		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
 			logger.info("Cast at " + pos);
-			return RightElement.CAST;
+			return AnnotationValueSwitch.RequiredActionForRHS.CAST;
 		}
 	}
 	
 	static class DoNothing implements Command	{
 		@Override
-		public RightElement execute(Unit pos, Local[] params) {
+		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
 			logger.fine("Do nothing for external class");
-			return RightElement.IGNORE;
+			return AnnotationValueSwitch.RequiredActionForRHS.IGNORE;
 		}
 	}
 	
 	static class MakeTop implements Command {
 		@Override
-		public RightElement execute(Unit pos, Local[] params) {
+		public RequiredActionForRHS execute(Unit pos, Local[] params) {
 			logger.info("Right element is a makeHigh method");
 			/*assert (params.length == 1);
 			logger.fine("Variable" + params[0].toString() + " is set to high");
 			JimpleInjector.makeLocalHigh(params[0], pos);*/
-			return RightElement.MAKE_HIGH;
+			return AnnotationValueSwitch.RequiredActionForRHS.MAKE_HIGH;
 		}
 	}
 	
 	static class MakeMedium implements Command {
 		@Override
-		public RightElement execute(Unit pos, Local[] params) {
+		public RequiredActionForRHS execute(Unit pos, Local[] params) {
 			logger.info("Right element is a makeMedium method");
-			return RightElement.MAKE_MEDIUM;
+			return AnnotationValueSwitch.RequiredActionForRHS.MAKE_MEDIUM;
 		}
 	}
 	
 	static class MakeBot implements Command {
 		@Override
-		public RightElement execute(Unit pos, Local[] params) {
-			return RightElement.MAKE_LOW;
+		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
+			return AnnotationValueSwitch.RequiredActionForRHS.MAKE_LOW;
 		}
 	}
 }

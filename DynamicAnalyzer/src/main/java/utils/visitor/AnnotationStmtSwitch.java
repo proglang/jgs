@@ -29,7 +29,6 @@ import soot.jimple.ThrowStmt;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NotSupportedStmtException;
 import utils.logging.L1Logger;
-import utils.visitor.AnnotationValueSwitch.RightElement;
 import utils.visitor.AnnotationValueSwitch.StmtContext;
 
 import java.util.ArrayList;
@@ -102,7 +101,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 		Value leftOperand = aStmt.getLeftOp();
 
-		switch (valueSwitch.getRightElement()) {
+		switch (valueSwitch.getRequiredActionForRHS()) {
 			case IGNORE:
 				break; // That means that the right element is already handeled
 			case NEW_ARRAY:
@@ -122,7 +121,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				break;
 			default:
 				new InternalAnalyzerException("Unexpected Context: "
-											  + valueSwitch.getRightElement());
+											  + valueSwitch.getRequiredActionForRHS());
 		}
 
 		leftOperand.apply(valueSwitch);
@@ -132,7 +131,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		 * returnlevel of the MakeTop/MakeBot Method would overwrite the new
 		 * level of the local.
 		 */
-		switch (valueSwitch.getRightElement()) {
+		switch (valueSwitch.getRequiredActionForRHS()) {
 		case MAKE_HIGH:
 			logger.finest("Make left operand high");
 			JimpleInjector.makeLocal((Local) leftOperand, "HIGH", aStmt);
