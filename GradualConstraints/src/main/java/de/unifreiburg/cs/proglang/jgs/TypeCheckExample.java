@@ -3,9 +3,8 @@ package de.unifreiburg.cs.proglang.jgs;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.Scene;
 import soot.SootMethod;
 
@@ -21,7 +20,7 @@ public class TypeCheckExample {
                                          "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
                                          "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCx(java.lang.Object)>",
                                          "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
-        Methods<LowHigh.Level> typeCheckResult = JgsCheck.typeCheck(
+        MethodTypings<LowHigh.Level> typeCheckResult = JgsCheck.typeCheck(
                 "pkg.ScratchMonomorphic",
                 new String[]{"GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic.java"},
                 new String[]{".", "GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes",

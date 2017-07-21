@@ -4,10 +4,9 @@ import analyzer.level2.CurrentSecurityDomain;
 import de.unifreiburg.cs.proglang.jgs.JgsCheck;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.DynamicMethods;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.DynamicMethodTypings;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
@@ -113,9 +112,9 @@ public class Main {
         externalMethods.put("<java.lang.Boolean: boolean "
                                              + "booleanValue()>", Annotations.polymorphicGetter());
         List<String> errors = new ArrayList<>();
-        Methods<String> typeCheckResult;
+        MethodTypings<String> typeCheckResult;
         if (sootOptionsContainer.isOnlyDynamic()) {
-            typeCheckResult = new DynamicMethods<>();
+            typeCheckResult = new DynamicMethodTypings<>();
         } else {
             typeCheckResult = JgsCheck.typeCheck(
                     sootOptionsContainer.getMainclass(),

@@ -41,7 +41,7 @@ public class Code {
     // A placeholder for the targets of if statements
     static Stmt placeholder = j.newNopStmt();
 
-    // Methods for max:
+    // MethodTypings for max:
     /*
       int max(int p0, int p1) {
         int x;
@@ -107,7 +107,7 @@ public class Code {
                                 );
 
 
-    // Methods For ExampleTests3
+    // MethodTypings For ExampleTests3
     /*
       int update_on_bool(bool p0, int p1) {
           int x;

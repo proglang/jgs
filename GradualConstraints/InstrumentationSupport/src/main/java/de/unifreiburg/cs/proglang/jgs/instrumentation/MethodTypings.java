@@ -3,9 +3,12 @@ package de.unifreiburg.cs.proglang.jgs.instrumentation;
 import soot.SootMethod;
 
 /**
- * A mapping from methods to their instantiations.
+ * A mapping from methods to their typing information and instantiations.
+ *
+ * The type checker generates this information. It is consumed the
+ * instrumentation (DynamicAnalyzer) to identify dynamic code to instrument.
  */
-public interface Methods<Level> {
+public interface MethodTypings<Level> {
 
     /**
      * Return the single instantiation for a monomorphic method. Throws an {@code IllegalArgumentException} if the method is not monomorphic.

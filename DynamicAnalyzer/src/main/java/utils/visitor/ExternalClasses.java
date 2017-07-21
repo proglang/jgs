@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * These include
  *
- * - Methods that we abuse as annotation syntax. Examples:
+ * - MethodTypings that we abuse as annotation syntax. Examples:
  *   - cast methods
  *   - methods to set the dynamic label of a value makeHigh, ...
  *
@@ -42,7 +42,7 @@ public class ExternalClasses {
 
 	static {
 		
-		// Methods where the return level is the join of the arguments levels
+		// MethodTypings where the return level is the join of the arguments levels
 		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.StringBuilder "
 											 + "append(java.lang.String)>",
 											 new JoinLevels());
@@ -51,7 +51,7 @@ public class ExternalClasses {
 				JoinLevels());
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.StringUtil: java.util.List bits(java.lang.String)>", new JoinLevels());
 
-		// Methods where the argument must have LOW argument
+		// MethodTypings where the argument must have LOW argument
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(java.lang.String)>",
 											 new MaxLevelAllowedForPrintOutput
 													 ("LOW"));
@@ -66,7 +66,7 @@ public class ExternalClasses {
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println()>",
 											 new MaxLevelAllowedForPrintOutput("LOW"));
 
-		// Methods where the argument must have either LOW or MEDIUM argument
+		// MethodTypings where the argument must have either LOW or MEDIUM argument
 		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(java.lang.Object)>",
 											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(java.lang.int)>",
@@ -76,7 +76,7 @@ public class ExternalClasses {
 		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(boolean)>",
 											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		
-		// Methods where we don't do anything
+		// MethodTypings where we don't do anything
 		instrumentationForSpecialMethods.put("<java.lang.Object: void <init>()>", new DoNothing());
 
 		//

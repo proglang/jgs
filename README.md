@@ -9,7 +9,7 @@ This project is work in progress. Currently, it consists of the following sub-pr
 - `DynamicAnalyzer`: an implementation of dynamic information flow
   control, based on the no-sensitive-upgrade (NSU) policy.
 - `GradualConstraints`: Definition and generation of typing
-  constraints for Java methods with gradual security types.
+  constraints for Java methodTypings with gradual security types.
 - `TaintTracking`: a fairly complete implementation of a simple security type
   checker for (sequential) Java. The project `Testcases` contains test cases for
   `TaintTracking`.

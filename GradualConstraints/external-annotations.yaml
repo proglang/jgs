@@ -1,4 +1,4 @@
-methods:
+methodTypings:
   - "<de.unifreiburg.cs.proglang.jgs.support.IO: void printInt(int)>": { "constraints": ["@0 <= [bot]"], "effects": ["[bot]"] }
   - "<java.lang.Integer: java.lang.Integer valueOf(int)>": { "constraints": ["@0 <= @ret"], "effects": [] }
   - "<java.lang.Integer: int intValue()>": { "constraints": [], "effects": [] }

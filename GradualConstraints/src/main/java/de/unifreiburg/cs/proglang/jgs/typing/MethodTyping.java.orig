@@ -28,7 +28,7 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.Symbol.methodParameters;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Context for typing methods Created by fennell on 1/12/16.
+ * Context for typing methodTypings Created by fennell on 1/12/16.
  */
 public class MethodTyping<Level> {
     final private ConstraintSetFactory<Level> csets;
@@ -111,7 +111,7 @@ public class MethodTyping<Level> {
     /**
      * @param csets Factory for constraint sets
      * @param cstrs The domain of constraints
-     * @param casts Specification of cast methods
+     * @param casts Specification of cast methodTypings
      */
     public MethodTyping(ConstraintSetFactory<Level> csets, Constraints<Level> cstrs, Casts<Level> casts) {
         this.csets = csets;

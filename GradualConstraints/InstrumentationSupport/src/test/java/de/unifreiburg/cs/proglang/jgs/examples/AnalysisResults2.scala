@@ -49,8 +49,8 @@ class AnalysisResults2[Level] {
 
   // Returns "a mapping from methods to their instantiations".
   // Returns D_D__D, basically.
-  val sum_methods_D_D__D: Methods[Level] =
-    new Methods[Level] {
+  val sum_methods_D_D__D: MethodTypings[Level] =
+    new MethodTypings[Level] {
       override def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
 
       override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
@@ -64,8 +64,8 @@ class AnalysisResults2[Level] {
 
   // Returns "a mapping from methods to their instantiations".
   // Returns P_D__D, basically.
-  val sum_methods_P_D__D: Methods[Level] =
-  new Methods[Level] {
+  val sum_methods_P_D__D: MethodTypings[Level] =
+  new MethodTypings[Level] {
     override def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
 
     override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =

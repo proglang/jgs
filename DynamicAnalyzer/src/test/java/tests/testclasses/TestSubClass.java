@@ -3,7 +3,7 @@ package tests.testclasses;
 import analyzer.level2.HandleStmt;
 
 /**
- * Methods which are used by the JUnit tests in test.analyzer.level2
+ * MethodTypings which are used by the JUnit tests in test.analyzer.level2
  * @author Regina Koenig, NicolasM
  *
  */

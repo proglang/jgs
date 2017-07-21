@@ -8,13 +8,13 @@ import utils.staticResults.MSLMap;
 import utils.staticResults.MSMap;
 
 /**
- * Created by Nicolas Müller on 06.03.17.
+ * Fake type analysis results that take their information
  */
-public class MethodsImpl implements Methods {
+public class MethodTypingsFromMaps implements MethodTypings {
     MSLMap map1;
     MSMap map2;
     MIMap map3;
-    public MethodsImpl(MSLMap m1, MSMap m2, MIMap m3){
+    public MethodTypingsFromMaps(MSLMap m1, MSMap m2, MIMap m3){
         map1 = m1;
         map2 = m2;
         map3 = m3;

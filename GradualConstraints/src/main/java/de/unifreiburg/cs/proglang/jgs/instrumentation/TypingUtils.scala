@@ -12,7 +12,7 @@ import soot.{Local, SootField}
 import soot.jimple.Stmt
 
 /**
-  * Methods for creating fieldtypings.
+  * MethodTypings for creating fieldtypings.
   */
 class TypingUtils[Level] (secdomain : SecDomain[Level]){
 

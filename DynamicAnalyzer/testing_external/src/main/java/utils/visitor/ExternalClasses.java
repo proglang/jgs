@@ -25,14 +25,14 @@ public class ExternalClasses {
 
 	static {
 		
-		// Methods where the return level is the join of the arguments levels
+		// MethodTypings where the return level is the join of the arguments levels
 		methodMap.put("<java.lang.StringBuilder: java.lang.StringBuilder "
 					+ "append(java.lang.String)>",
 					new JoinLevels());
 		methodMap.put("<java.lang.String: java.lang.String "
 				+ "substring(int,int)>", new JoinLevels());
 		
-		// Methods where the argument cannot have a High argument
+		// MethodTypings where the argument cannot have a High argument
 		methodMap.put("<java.io.PrintStream: void println(java.lang.String)>", 
 				 new NoHighAllowedForPrintOutput());
 		methodMap.put("<java.io.PrintStream: void println(int)>", 

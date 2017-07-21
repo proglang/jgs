@@ -2,7 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.examples;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import org.junit.Test;
@@ -38,12 +38,12 @@ public class ExampleTests2 {
 
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
-        Methods<LowHigh.Level> methods = results.sum_methods_D_D__D(); // this is probably a list of methods
+        MethodTypings<LowHigh.Level> methodTypings = results.sum_methods_D_D__D(); // this is probably a list of methodTypings
         VarTyping<LowHigh.Level> varTyping = results.sum_varTyping();  // für jedes statement und pc steht drin, ob dyn oder stat überprüft werden soll
         CxTyping<LowHigh.Level> cxTyping = results.sum_cxTyping();     // WHATS THAT? The level of the PC for each statement?! why the weird name?
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.sum);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.sum);         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;
@@ -81,12 +81,12 @@ public class ExampleTests2 {
 
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
-        Methods<LowHigh.Level> methods = results.sum_methods_P_D__D(); // this is probably a list of methods
+        MethodTypings<LowHigh.Level> methodTypings = results.sum_methods_P_D__D(); // this is probably a list of methodTypings
         VarTyping<LowHigh.Level> varTyping = results.sum_varTyping();  // für jedes statement und pc steht drin, ob dyn oder stat überprüft werden soll
         CxTyping<LowHigh.Level> cxTyping = results.sum_cxTyping();     // WHATS THAT? The level of the PC for each statement?! why the weird name?
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.sum);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.sum);         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;

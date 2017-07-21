@@ -13,7 +13,7 @@ SootClass sclass = Scene.v().getSootClass("class_name");
 SootMethod smethod = sclass.getMethodByName("method_name");
 SootField sfield = sclass.getField("field_name");
 
-List<SootMethod> methods = sclass.getMethods();
+List<SootMethod> methodTypings = sclass.getMethods();
 Chain<SootField> fields = sclass.getFields();
 ```
 

@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 /**
  * JimpleInjector is called by the AnnotatorStmtSwitch and AnnotatorValueSwitch.
- * Inserts additional statements into a methods body.
+ * Inserts additional statements into a methodTypings body.
  *
  * @author Regina Koenig (2015)
  */
@@ -78,26 +78,26 @@ public class JimpleInjector {
             "local_for_Strings", RefType.v("java.lang.String"));
 
     /**
-     * This local is needed for methods
+     * This local is needed for methodTypings
      * with more than two arguments.
      */
     private static Local local_for_Strings2 = Jimple.v().newLocal(
             "local_for_Strings2", RefType.v("java.lang.String"));
     /**
-     * This locals is needed for methods
+     * This locals is needed for methodTypings
      * with more than two arguments.
      */
     private static Local local_for_Strings3 = Jimple.v().newLocal(
             "local_for_Strings3", RefType.v("java.lang.String"));
 
     /**
-     * Local where String arrays can be stored. Needed to store arguments for injected methods.
+     * Local where String arrays can be stored. Needed to store arguments for injected methodTypings.
      */
     private static Local local_for_String_Arrays = Jimple.v().newLocal(
             "local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 
     /**
-     * Local where Objects can be stored as arguments for injected methods.
+     * Local where Objects can be stored as arguments for injected methodTypings.
      */
     private static Local local_for_Objects = Jimple.v().newLocal(
             "local_for_Objects", RefType.v("java.lang.Object"));
@@ -869,7 +869,7 @@ public class JimpleInjector {
      * String localForIndex)} .
      *
      * @param a   -ArrayRef. The reference to the array-field
-     * @param pos -Unit- The assignStmt in the analyzed methods body, where this
+     * @param pos -Unit- The assignStmt in the analyzed methodTypings body, where this
      *            reference appears.
      */
     public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
@@ -1288,7 +1288,7 @@ public class JimpleInjector {
     }
 	
 /*
- * Internal methods
+ * Internal methodTypings
  */
 
     /**
@@ -1344,7 +1344,7 @@ public class JimpleInjector {
 
     /**
      * Add all locals which are needed from JimpleInjector to store values
-     * of parameters for invoked methods.
+     * of parameters for invoked methodTypings.
      */
     static void addNeededLocals() {
         locals.add(local_for_Strings);

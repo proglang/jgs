@@ -1,5 +1,5 @@
-virtualInvoke  => usual methods
+virtualInvoke  => usual methodTypings
 SpecialInvoke  => for constructors
 DynamicInvoke
-StaticInvoke => static methods
+StaticInvoke => static methodTypings
 InterfaceInvoke

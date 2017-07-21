@@ -3,7 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.examples;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import org.junit.Test;
 import soot.Local;
@@ -47,14 +47,14 @@ public class ExampleTests {
     public void test_max_D_D__D() {
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
-        Methods<LowHigh.Level> methods = results.max_methods_D_D__D();
+        MethodTypings<LowHigh.Level> methodTypings = results.max_methods_D_D__D();
         VarTyping<LowHigh.Level> varTyping = results.max_varTyping(); // für jedes statement und pc steht drin, ob dyn oder stat überprüft werden soll
         CxTyping<LowHigh.Level> cxTyping = results.max_cxTyping();
 
         // first get an instantiation for max
         // instantiation is a Soot object of type SootMethod. It is created in Code.java, and contains all the soot Statements the max programm
         // consits of.
-        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.max);
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.max);
 
         // lets look at the individual statements:
         Stmt s;
@@ -100,11 +100,11 @@ public class ExampleTests {
      * Now the second parameter of max is public
      */
     public void test_max_D_P__D() {
-        Methods<LowHigh.Level> methods = results.max_methods_D_P__D();
+        MethodTypings<LowHigh.Level> methodTypings = results.max_methods_D_P__D();
         VarTyping<LowHigh.Level> varTyping = results.max_varTyping();
         CxTyping<LowHigh.Level> cxTyping = results.max_cxTyping();
 
-        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.max);
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.max);
 
         Stmt s;
         Local x = Code.localX;

@@ -3,7 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.examples;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import org.junit.Test;
 import soot.Local;
@@ -37,12 +37,12 @@ public class ExampleTests3 {
 
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
-        Methods<LowHigh.Level> methods = results.up_methods_D_D__D();
+        MethodTypings<LowHigh.Level> methodTypings = results.up_methods_D_D__D();
         VarTyping<LowHigh.Level> varTyping = results.up_varTyping();
         CxTyping<LowHigh.Level> cxTyping = results.up_cxTyping();
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;
@@ -96,12 +96,12 @@ public class ExampleTests3 {
 
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
-        Methods<LowHigh.Level> methods = results.up_methods_P_D__D();
+        MethodTypings<LowHigh.Level> methodTypings = results.up_methods_P_D__D();
         VarTyping<LowHigh.Level> varTyping = results.up_varTyping();
         CxTyping<LowHigh.Level> cxTyping = results.up_cxTyping();
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;
@@ -154,12 +154,12 @@ public class ExampleTests3 {
 
         // Assume we get the following objects from the type analysis
         // (we are using the LowHigh lattice)
-        Methods<LowHigh.Level> methods = results.up_methods_P_P__P();
+        MethodTypings<LowHigh.Level> methodTypings = results.up_methods_P_P__P();
         VarTyping<LowHigh.Level> varTyping = results.up_varTyping();
         CxTyping<LowHigh.Level> cxTyping = results.up_cxTyping();
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methods.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;

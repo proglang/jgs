@@ -1,10 +1,10 @@
 package utils.staticResults;
 
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.*;
 import soot.jimple.Stmt;
 import utils.staticResults.implementation.Dynamic;
-import utils.staticResults.implementation.MethodsImpl;
+import utils.staticResults.implementation.MethodTypingsFromMaps;
 import utils.staticResults.implementation.Public;
 import utils.staticResults.implementation.Types;
 
@@ -166,7 +166,7 @@ public class ResultsServer {
         }
     }
 
-    public static Methods createAllPublicMethods(Collection<String> allClasses) {
+    public static MethodTypings createAllPublicMethods(Collection<String> allClasses) {
         MSLMap varMap = new MSLMap();
         MSMap cxMap = new MSMap();
         MIMap implMap = new MIMap();
@@ -175,10 +175,10 @@ public class ResultsServer {
         setPublic(cxMap, allClasses);
         setPublic(implMap, allClasses);
 
-        return new MethodsImpl(varMap, cxMap, implMap);
+        return new MethodTypingsFromMaps(varMap, cxMap, implMap);
     }
 
-    public static Methods createAllDynamicMethods(Collection<String> allClasses) {
+    public static MethodTypings createAllDynamicMethods(Collection<String> allClasses) {
         MSLMap varMap = new MSLMap();
         MSMap cxMap = new MSMap();
         MIMap implMap = new MIMap();
@@ -187,6 +187,6 @@ public class ResultsServer {
         setDynamic(cxMap, allClasses);
         setDynamic(implMap, allClasses);
 
-        return new MethodsImpl(varMap, cxMap, implMap);
+        return new MethodTypingsFromMaps(varMap, cxMap, implMap);
     }
 }

@@ -64,7 +64,7 @@ and throws an "IllegalFlowException" if executed.
 java -cp .:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar   testclasses.NameOfTest
 ```
 Note on `.:../bin:../../../DEPS/gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar:../../../DEPS/commons-collections4-4.0/commons-collections4-4.0.jar`:
-To run the class file successfully, we have to provide more that just the file, because it contains instrumented code: methods and classes 
+To run the class file successfully, we have to provide more that just the file, because it contains instrumented code: methodTypings and classes
 which also have to be available to the program at runtime!
 
 ## Unit tests

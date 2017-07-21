@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Methods for JGS' run-time enforcement. This class makes up the main part of
+ * MethodTypings for JGS' run-time enforcement. This class makes up the main part of
  * the run-time system.
  *
  * @author Regina Koenig (2015)

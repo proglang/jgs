@@ -1,7 +1,7 @@
 package analyzer.level1;
 
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Methods;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.*;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
@@ -27,15 +27,15 @@ import java.util.logging.Logger;
  */
 public class BodyAnalyzer<Lvel> extends BodyTransformer{
 
-    Methods methods;
+    MethodTypings methodTypings;
 	boolean controllerIsActive;
 	int expectedException;
 	Casts casts;
-    public BodyAnalyzer(Methods m,
+    public BodyAnalyzer(MethodTypings m,
 						boolean controllerIsActive,
 						int expectedException,
 						Casts c) {
-        methods = m;
+        methodTypings = m;
         this.controllerIsActive = controllerIsActive;
         this.expectedException = expectedException;
         casts = c;
@@ -99,10 +99,10 @@ public class BodyAnalyzer<Lvel> extends BodyTransformer{
 		JimpleInjector.setBody(body);
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
-		JimpleInjector.setStaticAnalaysisResults(methods.getVarTyping(sootMethod),
-				methods.getCxTyping(sootMethod),
-				methods.getMonomorphicInstantiation(sootMethod),
-				casts);
+		JimpleInjector.setStaticAnalaysisResults(methodTypings.getVarTyping(sootMethod),
+                                                 methodTypings.getCxTyping(sootMethod),
+                                                 methodTypings.getMonomorphicInstantiation(sootMethod),
+                                                 casts);
 
 		units = body.getUnits();
 

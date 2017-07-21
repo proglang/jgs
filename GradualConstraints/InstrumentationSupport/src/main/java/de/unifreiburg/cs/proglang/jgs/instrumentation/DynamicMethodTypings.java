@@ -4,7 +4,7 @@ import soot.Local;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 
-public class DynamicMethods<Level> implements Methods<Level> {
+public class DynamicMethodTypings<Level> implements MethodTypings<Level> {
     private final Type<Level> dyn = new Type<Level>() {
         @Override
         public boolean isStatic() {

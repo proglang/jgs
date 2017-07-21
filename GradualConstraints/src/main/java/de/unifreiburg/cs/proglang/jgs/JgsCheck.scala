@@ -211,7 +211,7 @@ object JgsCheck {
                        casts : ACasts[Level],
                        log : Logger,
                        errors : java.util.List[String],
-                       forceMonomorphicMethods : Boolean) : instrumentation.Methods[Level] = {
+                       forceMonomorphicMethods : Boolean) : MethodTypings[Level] = {
 
 
     val o: Options = Options.v()
@@ -239,7 +239,7 @@ object JgsCheck {
                        casts : ACasts[Level],
                        log : Logger,
                        errors : java.util.List[String],
-                       forceMonomorphicMethods : Boolean) : instrumentation.Methods[Level] = {
+                       forceMonomorphicMethods : Boolean) : MethodTypings[Level] = {
     try {
       s.loadNecessaryClasses()
     } catch {
@@ -427,7 +427,7 @@ object JgsCheck {
            result <- mresult.right.toOption
       } yield (m -> result)).toMap
 
-    new instrumentation.Methods[Level] {
+    new MethodTypings[Level] {
       def getResult(m : SootMethod) : MethodTyping.Result[Level] =
         methodResults.getOrElse(m, throw new NoSuchElementException(s"No typing result for method ${m}"))
 
