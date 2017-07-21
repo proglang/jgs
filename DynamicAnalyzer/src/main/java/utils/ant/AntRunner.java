@@ -18,6 +18,8 @@ import utils.parser.ArgumentContainer;
 import utils.parser.PathHelper;
 
 
+// TODO: replace with an task that copies all required run-time classes into a directory... jar is just a bonus
+// TODO: Adapt the jar-build-test (or what they are called) to use that directory
 public class AntRunner {
 
 

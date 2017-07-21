@@ -10,7 +10,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 /**
- * Hand-crafted jimple classes to illustrate how "selecitve" intrumentation should work.
+ * Hand-crafted jimple classes to illustrate how "selective" instrumentation should work.
  */
 public class Code {
 

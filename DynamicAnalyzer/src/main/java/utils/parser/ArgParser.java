@@ -84,8 +84,8 @@ public class ArgParser {
         options.addOption(format);
 
 		Option output = new Option(OUTPUT_FOLDER_FLAG, "output", true,
-                "Optional: set output folder");
-		output.setRequired(false);
+                "set output folder");
+		output.setRequired(true);
 		options.addOption(output);
 
 		Option filesToAdd = new Option(ADDITIONAL_FILES_FLAG, "files", true,

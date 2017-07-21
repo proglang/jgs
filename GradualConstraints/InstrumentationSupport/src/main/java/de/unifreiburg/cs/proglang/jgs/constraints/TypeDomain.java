@@ -2,8 +2,6 @@ package de.unifreiburg.cs.proglang.jgs.constraints;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains
         .UnknownSecurityLevelException;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
-import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser;
 import org.apache.commons.collections4.Transformer;
 import org.apache.commons.collections4.iterators.IteratorChain;
 import org.apache.commons.collections4.iterators.TransformIterator;
@@ -60,17 +58,18 @@ public class TypeDomain<Level> {
      * "pub" reads as the public type.
      */
     public TypeView<Level> readType(String s) {
-        if (s.equals("?")) {
-            return dyn();
-        } else if (s.equals("pub")) {
-            return pub();
-        } else {
-            try {
-                Level level = secDomain.readLevel(s);
-                return this.level(level);
-            } catch (UnknownSecurityLevelException e){
-                throw new UnknownTypeException(s);
-            }
+        switch (s) {
+            case "?":
+                return dyn();
+            case "pub":
+                return pub();
+            default:
+                try {
+                    Level level = secDomain.readLevel(s);
+                    return this.level(level);
+                } catch (UnknownSecurityLevelException e) {
+                    throw new UnknownTypeException(s);
+                }
         }
     }
 
@@ -110,20 +109,20 @@ public class TypeDomain<Level> {
     /**
      * @return The least upper bound of t1 and t2, if it exists
      */
-    public Option<TypeViews.TypeView<Level>> lub(TypeViews.TypeView<Level> t1, final TypeViews.TypeView<Level> t2) {
+    public Option<TypeView<Level>> lub(TypeView<Level> t1, final TypeView<Level> t2) {
         if (t1.isStatic()) {
             final Level l1 = t1.getLevel();
             if (t2.isStatic()) {
                 return Option.apply(level(secDomain.lub(l1, t2.getLevel())));
             } else if (t2.isDynamic()){
-                return Option.empty();
+                return Option.<TypeView<Level>>empty();
             } else {
                 // t2 is public
                 return Option.apply(t1);
             }
         } else if (t1.isDynamic()) {
             if (t2.isStatic()) {
-                return Option.empty();
+                return Option.<TypeView<Level>>empty();
             } else {
                 // t2 dynamic or public
                 return Option.apply(t1);
@@ -144,7 +143,6 @@ public class TypeDomain<Level> {
             }
         } else if (t1.isDynamic()) {
             return t2.equals(dyn);
-
         } else { // t1.isPublic()
             return true;
         }

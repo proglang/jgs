@@ -1,11 +1,9 @@
 package de.unifreiburg.cs.proglang.jgs.instrumentation
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts.{CxCast, ValueCast}
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastUtils.TypeViewConversion
 import de.unifreiburg.cs.proglang.jgs.jimpleutils.Vars
-import de.unifreiburg.cs.proglang.jgs.signatures.parse.AnnotationParser
 import soot.jimple.{StaticInvokeExpr, StringConstant}
 
 import scala.util.{Failure, Success, Try}
