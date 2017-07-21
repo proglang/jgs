@@ -26,16 +26,14 @@ import java.util.stream.Stream;
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level;
 import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.*;
-import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.makeTable;
+import static de.unifreiburg.cs.proglang.jgs.signatures.SignatureTable.of;
 import static java.util.Arrays.asList;
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * Some example "code" data for unit testing
- * <p>
- * Created by fennell on 11/16/15.
+ * Some manually constructed jimple structures for unit testing the type checker.
  */
 public class Code {
 
@@ -121,7 +119,7 @@ public class Code {
         fieldMap.put(testStaticDynField_int, DYN);
 
         // freeze field map
-        this.fields = new FieldTable<>(fieldMap);
+        this.fields = FieldTable.of(fieldMap);
 
         Map<SootMethod, Signature<Level>> sigMap = new HashMap<>();
         Param<Level> param_x = new Param<>(0);
@@ -193,7 +191,7 @@ public class Code {
                                                              sigCstrs.collect(toList()), Effects.emptyEffect()));
 
         // freeze signatures
-        this.signatures = makeTable(sigMap);
+        this.signatures = of(sigMap);
     }
 
 
@@ -211,7 +209,9 @@ public class Code {
         // set the statements for the body.. first the identity statements, then the bodyStmts
         if (!m.isStatic()) {
             body.getLocals().add(localThis);
-            body.getUnits().add(Jimple.v().newIdentityStmt(localThis, Jimple.v().newThisRef(testClass.getType())));
+            Stmt s = Jimple.v().newIdentityStmt(localThis,
+                                               Jimple.v().newThisRef(testClass.getType()));
+            body.getUnits().add(s);
         }
         IntStream.range(0, params.size()).forEach(pos -> {
             Local l = params.get(pos);

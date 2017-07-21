@@ -386,10 +386,10 @@ object JgsCheck {
       /** ***********************************
         * set signature table and field table
         * *****************************/
-      val signatures = SignatureTable.makeTable[Level](
+      val signatures = SignatureTable.of[Level](
         signatureMap ++ specialSignatures ++ configuredSignatures ++ monomorphicOverrides
       )
-      val fieldTable = new FieldTable[Level](fieldMap ++ configuredFields)
+      val fieldTable = FieldTable.of[Level](fieldMap ++ configuredFields)
 
       /** ***********************
         * Class hierarchy check

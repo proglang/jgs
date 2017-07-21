@@ -1,10 +1,10 @@
 package de.unifreiburg.cs.proglang.jgs.examples
 
 import soot.jimple.{Expr, IfStmt, Jimple, Stmt}
-import soot.{ Body, SootClass, SootMethod, Scene, VoidType, PatchingChain, Local, ValueBox}
+import soot.{Body, Local, PatchingChain, Scene, SootClass, SootMethod, ValueBox, VoidType}
 
-import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 
 class BodyBuilder private  {

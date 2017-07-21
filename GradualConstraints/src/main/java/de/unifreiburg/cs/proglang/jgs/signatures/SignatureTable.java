@@ -14,14 +14,14 @@ import static de.unifreiburg.cs.proglang.jgs.signatures.MethodSignatures.makeSig
  */
 public class SignatureTable<Level> {
 
+    private final Map<SootMethod, Signature<Level>> signatureMap;
+
     /**
      * Create a new table from a map.
      */
-    public static <Level> SignatureTable<Level> makeTable(Map<SootMethod, Signature<Level>> signatureMap) {
+    public static <Level> SignatureTable<Level> of(Map<SootMethod, Signature<Level>> signatureMap) {
         return new SignatureTable<>(new HashMap<>(signatureMap));
     }
-
-    private final Map<SootMethod, Signature<Level>> signatureMap;
 
     private SignatureTable(Map<SootMethod, Signature<Level>> signatureMap) {
         this.signatureMap = signatureMap;
@@ -31,7 +31,7 @@ public class SignatureTable<Level> {
         HashMap<SootMethod, Signature<Level>> freshTable =
                 new HashMap<>(this.signatureMap);
         freshTable.put(m, makeSignature(m.getParameterCount(), constraints, effects));
-        return makeTable(freshTable);
+        return of(freshTable);
     }
 
     @Override

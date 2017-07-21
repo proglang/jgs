@@ -1,8 +1,5 @@
 package utils.staticResults
 
-import de.unifreiburg.cs.proglang.jgs.examples.ExampleTypes.Public
-
-import scala.collection.immutable.HashMap
 
 /**
   * Create a custom typing for a given.

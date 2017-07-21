@@ -10,20 +10,23 @@ import java.util.Map;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.*;
 
+/**
+ * A table mapping fields to their security types.
+ */
 public class FieldTable<Level> {
+
+    public static <Level> FieldTable<Level> of(Map<SootField, TypeView<Level>> fieldTable) {
+        return new FieldTable<>(new HashMap<SootField, TypeView<Level>>(fieldTable));
+    }
 
     private final Map<SootField, TypeView<Level>> fieldTable;
 
-    public FieldTable(Map<SootField, TypeView<Level>> fieldTable) {
-        this.fieldTable = new HashMap<>(fieldTable);
+    private FieldTable(Map<SootField, TypeView<Level>> fieldTable) {
+        this.fieldTable = fieldTable;
     }
 
     public Option<TypeView<Level>> get(SootField f) {
         return Option.apply(fieldTable.get(f));
-    }
-
-    public Map<SootField, TypeView<Level>> getRawTable() {
-        return Collections.unmodifiableMap(this.fieldTable);
     }
 
     @Override
