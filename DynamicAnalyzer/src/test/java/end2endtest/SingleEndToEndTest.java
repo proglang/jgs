@@ -1,9 +1,9 @@
 package end2endtest;
 
+import analyzer.level2.SecurityMonitoringEvent;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
-import utils.staticResults.superfluousInstrumentation.ExpectedException;
 import org.junit.Test;
 import utils.logging.L1Logger;
 
@@ -25,7 +25,7 @@ public class SingleEndToEndTest {
 
 	public String name = "castDyn2Static_Fail2";
 
-	private ExpectedException expectedException = ExpectedException.ILLEGAL_FLOW;
+	private SecurityMonitoringEvent securityMonitoringEvent = SecurityMonitoringEvent.ILLEGAL_FLOW;
 
 	/**
 	 * Define the involved vars here. Involved vars are those that are present
@@ -51,7 +51,8 @@ public class SingleEndToEndTest {
 		// the output directory, where the compiled binary is put. 
 		String outputDir = "junit";
 		ClassCompiler.compile(name, outputDir);
-		ClassRunner.testClass(name, outputDir, "testclasses", expectedException, involvedVars);
+		ClassRunner.testClass(name, outputDir, "testclasses",
+                              securityMonitoringEvent, involvedVars);
 
 		logger.info("Finished executing testclasses." + name + "");
 	}

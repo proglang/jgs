@@ -1,9 +1,8 @@
 package de.unifreiburg.cs.proglang.jgs;
 
+import analyzer.level2.SecurityMonitoringEvent;
 import classfiletests.utils.ClassRunner;
 
-import de.unifreiburg.cs.proglang.jgs.Main;
-import utils.staticResults.superfluousInstrumentation.ExpectedException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -18,7 +17,7 @@ import java.util.logging.Logger;
 public class JGS_End2EndTests {
 
     private final String name;
-    private final ExpectedException expectedException;
+    private final SecurityMonitoringEvent securityMonitoringEvents;
     private final String[] involvedVars;
 
     /**
@@ -26,17 +25,18 @@ public class JGS_End2EndTests {
      *
      * @param name
      *            Name of the class
-     * @param expectedException
+     * @param securityMonitoringEvents
      *            specifiy if, and what kind of exception is expected
      * @param involvedVars
      *            variables which are expected to be involved in the exception
      */
-    public JGS_End2EndTests(String name, ExpectedException expectedException,
+    public JGS_End2EndTests(String name, SecurityMonitoringEvent
+            securityMonitoringEvents,
                             String... involvedVars) {
 
         this.name = name;
         this.involvedVars = involvedVars;
-        this.expectedException = expectedException;
+        this.securityMonitoringEvents = securityMonitoringEvents;
     }
 
     Logger logger = L1Logger.getLogger();
@@ -50,14 +50,14 @@ public class JGS_End2EndTests {
     @Parameters(name = "Name: {0}")
     public static Iterable<Object[]> generateParameters() {
         return Arrays.asList(
-                new Object[]{"SimpleCast_Fail", ExpectedException.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
-                new Object[]{"SimpleCast_Fail2", ExpectedException.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
-                new Object[]{"SimpleCast_Fail3", ExpectedException.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
-                new Object[]{"SimpleCast_Fail4", ExpectedException.ILLEGAL_FLOW, new String[]{"java.lang.String_r2"}},
-                new Object[]{"NSUPolicy", ExpectedException.NSU_FAILURE, new String[]{""}},
-                new Object[]{"ScratchMonomorphic_Success", ExpectedException.NONE, new String[]{""}},
-                new Object[]{"SimpleSuccess", ExpectedException.NONE, new String[]{""}},
-                new Object[]{"SimpleCasts", ExpectedException.ILLEGAL_FLOW, new String[]{""}}
+                new Object[]{"SimpleCast_Fail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
+                new Object[]{"SimpleCast_Fail2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
+                new Object[]{"SimpleCast_Fail3", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
+                new Object[]{"SimpleCast_Fail4", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{"java.lang.String_r2"}},
+                new Object[]{"NSUPolicy", SecurityMonitoringEvent.NSU_FAILURE, new String[]{""}},
+                new Object[]{"ScratchMonomorphic_Success", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"SimpleSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
+                new Object[]{"SimpleCasts", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}
         );
     }
 
@@ -74,7 +74,8 @@ public class JGS_End2EndTests {
         Main.main(args);
 
         // run
-        ClassRunner.testClass(name, outputDir, "jgstestclasses", expectedException, involvedVars);
+        ClassRunner.testClass(name, outputDir, "jgstestclasses",
+                              securityMonitoringEvents, involvedVars);
 
     }
 }

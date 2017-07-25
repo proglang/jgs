@@ -6,9 +6,8 @@ import utils.exceptions.IFCError;
 import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NSUError;
 import utils.logging.L2Logger;
-import utils.staticResults.superfluousInstrumentation.ExpectedException;
-import utils.staticResults.superfluousInstrumentation.PassivController;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +19,7 @@ public class HandleStmtUtils {
 	private LocalMap localmap;
 	private static ObjectMap objectmap;
 
-	private final String NSU_ERROR_MESSAGE = "Sensitive update to ";
+	public final static String NSU_ERROR_MESSAGE = "Sensitive update to ";
 	
 	protected HandleStmtUtils(LocalMap lm, ObjectMap om, PassivController controller) {
 		this.localmap = lm;
@@ -47,59 +46,6 @@ public class HandleStmtUtils {
 	// PC check operations
 	//
 
-	/**
-	 * NSU policy: For initialized locals, check if level of given local is greater 
-	 * than localPC. If it's not, throw IFCError
-	 * @param signature signature of the local
-	 */
-	protected void checkLocalPC(String signature) {
-
-	    // check if this call is superfluous
-        controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_LOCAL_PC_CALLED.getVal());
-
-		if (localmap == null) {
-			throw new InternalAnalyzerException("LocalMap is not assigned");
-		}
-		//check if local is initialized
-		if (!localmap.checkIfInitialized(signature)) {
-			logger.log(Level.INFO, "Local {0} has not yet been initialized", signature);
-			localmap.initializeLocal(signature);
-			return;
-		}
-		
-		// the following check must only be executed if local is initialised
-		Object level = localmap.getLevel(signature); 
-		Object lpc = localmap.getLocalPC();
-		logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC", 
-				new Object[] {signature, level, lpc });
-
-
-		if (!CurrentSecurityDomain.le(lpc, level)) {
-			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
-		}
-	}
-	
-	/**
-	 * Check if level of given field is greater than globalPC.
-	 * @param signature signature of the field
-	 */
-	protected void checkGlobalPC(Object object, String signature) {
-		logger.log(Level.INFO, "Check if level of field {0} ({1}) >= gpc ({1})",
-				new Object[] {
-				 signature, objectmap.getFieldLevel(object, signature),
-				 objectmap.getGlobalPC()
-				});
-		Object fieldLevel = objectmap.getFieldLevel(object, signature);
-		Object globalPC = objectmap.getGlobalPC();
-
-        controller.abortIfActiveAndExceptionIsType(ExpectedException.NONE.getVal());
-		if (!CurrentSecurityDomain.le(globalPC, fieldLevel)) {
-			abort(new NSUError(NSU_ERROR_MESSAGE + signature));
-		}	
-		
-		
-	}
-	
 	/**
 	 * Check if level of given array field is greater than globalPC.
 	 * This method is for the case, that the index is stored in a variable.

@@ -1,7 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs;
 
 import analyzer.level2.CurrentSecurityDomain;
-import de.unifreiburg.cs.proglang.jgs.JgsCheck;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
@@ -10,7 +9,6 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
 import java.util.*;
 
@@ -138,7 +136,7 @@ public class Main {
         // Dynamic Check
         // G.reset();
         L1Logger.getLogger().info("Start Instrumentation");
-        main.Main.executeWithoutSootSetup(args, true,
-                typeCheckResult, false, ExpectedException.NONE.getVal(), casts);
+        main.Main.executeWithoutSootSetup(args,
+                                          typeCheckResult, casts);
     }
 }

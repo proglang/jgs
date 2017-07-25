@@ -4,10 +4,8 @@ import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
 import utils.exceptions.IllegalFlowError;
 import utils.exceptions.InternalAnalyzerException;
+import utils.exceptions.NSUError;
 import utils.logging.L2Logger;
-import utils.staticResults.superfluousInstrumentation.ControllerFactory;
-import utils.staticResults.superfluousInstrumentation.ExpectedException;
-import utils.staticResults.superfluousInstrumentation.PassivController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,9 +13,11 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static analyzer.level2.HandleStmtUtils.NSU_ERROR_MESSAGE;
+
 /**
- * MethodTypings for JGS' run-time enforcement. This class makes up the main part of
- * the run-time system.
+ * MethodTypings for JGS' run-time enforcement. This class makes up the main
+ * part of the run-time system.
  *
  * @author Regina Koenig (2015)
  */
@@ -51,10 +51,10 @@ public class HandleStmt {
      * of exception we expect
      */
     public void initHandleStmtUtils(boolean controllerIsActive, int
-			exptectedException) {
+            exptectedException) {
         this.controller =
                 ControllerFactory.returnSuperfluousInstrumentationController
-						(controllerIsActive, exptectedException);
+                        (controllerIsActive, exptectedException);
         handleStatementUtils =
                 new HandleStmtUtils(localmap, objectmap, this.controller);
         objectmap.pushGlobalPC(handleStatementUtils.joinLevels(
@@ -424,12 +424,15 @@ public class HandleStmt {
      * @return new SecurityLevel of local
      */
     public Object assignArgumentToLocal(int pos, String signature) {
-        controller.abortIfActiveAndExceptionIsType(ExpectedException
-														   .ASSIGN_ARG_TO_LOCAL.getVal());
+
+        // In case somebody wonders: we do not need to check the local pc
+        // here. In Jimple, argument-to-local assignments (JIdentityStmt) are always
+        // the beginning of the method, where the context is public
+
         localmap.setLevel(signature,
                           handleStatementUtils.joinWithLPC(objectmap
-																   .getArgLevelAt
-                                  (pos)));
+                                                                   .getArgLevelAt
+                                                                           (pos)));
         // if not initialized, initialize it:
         localmap.initializeLocal(signature);
         return localmap.getLevel(signature);
@@ -443,8 +446,10 @@ public class HandleStmt {
      * @param signature signature of local
      */
     public void assignReturnLevelToLocal(String signature) {
-        handleStatementUtils.checkLocalPC(signature);
-        setLevelOfLocal(signature, objectmap.getActualReturnLevel());
+        Object returnLevel = objectmap.getActualReturnLevel();
+
+        checkLocalPC(signature);
+        setLevelOfLocal(signature, returnLevel);
         objectmap.setActualReturnLevel(CurrentSecurityDomain.top());
     }
 
@@ -452,16 +457,16 @@ public class HandleStmt {
      * Set Returnlevel to SecurityLevel.bottom().
      */
     public void returnConstant() {
-        controller.abortIfActiveAndExceptionIsType(ExpectedException
-														   .RETURN_CONSTANT
-														   .getVal());
         logger.log(Level.INFO, "Return a constant value.");
+
         objectmap.setActualReturnLevel(handleStatementUtils
-                                               .joinWithLPC(CurrentSecurityDomain
-																	.bottom
-																			()));
+                                               .joinWithLPC
+                                                       (CurrentSecurityDomain
+                                                                .bottom
+                                                                        ()));
         logger.info("Actual return level is: "
-                    + handleStatementUtils.joinWithLPC(CurrentSecurityDomain.bottom())
+                    + handleStatementUtils.joinWithLPC(CurrentSecurityDomain
+                                                               .bottom())
                                           .toString());
     }
 
@@ -471,9 +476,11 @@ public class HandleStmt {
      * @param signature signature of local
      */
     public void returnLocal(String signature) {
+        Object level = localmap.getLevel(signature);
         logger.log(Level.INFO, "Return Local {0} with level {1}", new Object[]{
-                signature, localmap.getLevel(signature)});
-        objectmap.setActualReturnLevel(localmap.getLevel(signature));
+                signature, level});
+
+        objectmap.setActualReturnLevel(level);
     }
 
     /**
@@ -483,14 +490,14 @@ public class HandleStmt {
      */
     public void storeArgumentLevels(String... arguments) {
         // unfortunately, when printing out constants, storeArgumentLevels is
-		// still added by the jimpleInjector.
+        // still added by the jimpleInjector.
         // if we can change that needs to be investiaged, changing the
-		// central line 1096 in
+        // central line 1096 in
         // jimpleInjector.storeArgumentLevels:               dynamicArgsExist
         // = true;
         // we get tons of java.lang.verify errors...
-        // controller.abortIfActiveAndExceptionIsType(ExpectedException
-		// .STORE_ARGUMENT_LEVELS.getVal());
+        // controller.abortIfActiveAndExceptionIsType(SecurityMonitoringEvent
+        // .STORE_ARGUMENT_LEVELS.getVal());
         logger.info("Store arguments " + Arrays.toString(arguments)
                     + " in LocalMap");
         ArrayList<Object> levelArr = new ArrayList<Object>();
@@ -514,8 +521,8 @@ public class HandleStmt {
         logger.info("Check condition of ifStmt");
         localmap.pushLocalPC(handleStatementUtils
                                      .joinWithLPC(handleStatementUtils
-														  .joinLocals(args)),
-							 Integer
+                                                          .joinLocals(args)),
+                             Integer
                                      .valueOf(dominatorIdentity));
         objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap
                                                                         .getLocalPC()));
@@ -532,7 +539,7 @@ public class HandleStmt {
     public void exitInnerScope(String dominatorIdentity) {
         while (localmap.dominatorIdentityEquals(Integer
                                                         .valueOf
-																(dominatorIdentity))) {
+                                                                (dominatorIdentity))) {
             logger.info("Pop LPC for identity " + dominatorIdentity);
             localmap.popLocalPC(Integer.valueOf(dominatorIdentity));
             objectmap.popGlobalPC();    // pop needs to be removed
@@ -549,8 +556,7 @@ public class HandleStmt {
      * @return security-level of the local.
      */
     public Object joinLevelOfLocalAndAssignmentLevel(String local) {
-        controller.abortIfActiveAndExceptionIsType(ExpectedException
-														   .JOIN_LEVEL_OF_LOCAL_AND_ASSIGNMENT_LEVEL.getVal());
+
         localmap.initializeLocal(local);
         Object localLevel = localmap.getLevel(local);
         objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(
@@ -571,7 +577,7 @@ public class HandleStmt {
      * @return SecurityLevel of the field.
      */
     public Object joinLevelOfFieldAndAssignmentLevel(Object object, String
-			field) {
+            field) {
         Object fieldLevel = objectmap.getFieldLevel(object, field);
         logger.log(
                 Level.INFO,
@@ -596,7 +602,7 @@ public class HandleStmt {
         logger.log(
                 Level.INFO,
                 "Set assignment-level to level {0} (which is the level of "
-				+ "local {1})",
+                + "local {1})",
                 new Object[]{fieldLevel, field});
         objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(
                 objectmap.getAssignmentLevel(), fieldLevel));
@@ -625,20 +631,11 @@ public class HandleStmt {
      * @param signature
      */
     public void setReturnLevelAfterInvokeStmt(String signature) {
-        controller.abortIfActiveAndExceptionIsType(ExpectedException
-														   .SET_RETURN_LEVEL_AFTER_INVOKE_STMT.getVal());
-        // in eigene methode des jimpleInjector
-        // l := get level of left-hand-side
-        // l := l joined with objectmap.actualReturnLevel
-        // set level of left-hand-side to l AFTER
-        // unitStore_After.insertElement(unitStore_After.new Element(invoke,
-        // pos));
-        controller.abortIfActiveAndExceptionIsType(ExpectedException
-                                                           .SET_RETURN_AFTER_INVOKE.getVal());
+
         Object leftHandSideSecValue = localmap.getLevel(signature);
         leftHandSideSecValue =
                 handleStatementUtils.joinLevels(objectmap
-														.getActualReturnLevel(),
+                                                        .getActualReturnLevel(),
                                                 leftHandSideSecValue);
         setLevelOfLocal(signature, leftHandSideSecValue);
     }
@@ -685,7 +682,6 @@ public class HandleStmt {
                         field,
                         handleStatementUtils.joinWithGPC(objectmap
                                                                  .getAssignmentLevel())});
-        // handleStatementUtils.checkGlobalPC(object, field);
         objectmap.setField(object, field, handleStatementUtils
                 .joinWithGPC(objectmap.getAssignmentLevel()));
         logger.log(Level.INFO, "New level of field {0} is {1}", new Object[]{
@@ -711,7 +707,7 @@ public class HandleStmt {
      */
     public Object setLevelOfArrayField(Object object, String field,
                                        String localForObject, String
-											   localForIndex) {
+                                               localForIndex) {
         logger.log(
                 Level.INFO,
                 "Set level of array-field {0} to {1}",
@@ -784,7 +780,8 @@ public class HandleStmt {
      * @param localForIndex
      */
     public void checkArrayWithGlobalPC(Object object, String signature,
-                                       String localForObject, String localForIndex) {
+                                       String localForObject, String
+                                               localForIndex) {
         handleStatementUtils.checkArrayWithGlobalPC(object, signature,
                                                     localForObject,
                                                     localForIndex);
@@ -796,18 +793,46 @@ public class HandleStmt {
      * @param object
      * @param field
      */
-    public void checkGlobalPC(Object object, String field) { // weiteres arg: Object addLevel
-        // localpc bei statischen feldern, localpc + referenz bei instanzfeldern
-        handleStatementUtils.checkGlobalPC(object, field);
+    public void checkGlobalPC(Object object, String field) {
+        Object fieldLevel = objectmap.getFieldLevel(object, field);
+        Object globalPC = objectmap.getGlobalPC();
+
+        if (!CurrentSecurityDomain.le(globalPC, fieldLevel)) {
+            handleStatementUtils.abort(new NSUError(NSU_ERROR_MESSAGE + field));
+        }
     }
 
     /**
      * Check if local > localPC
      *
+     * NSU policy: For initialized locals, check if level of given local is greater
+     * than localPC. If it's not, throw IFCError
+     *
      * @param signature the local to test against the localPC
      */
+    // TODO: checking the local pc is only a "partial" enforcement primitive, that is, it is never useful by itself. E.g. it is used in assignments and method returns. So, it should be packed together with the other actions needed for the "complete" enforcement primitive.
+    // TODO: before fixing the issue above, check why returning from functions  and assignments are different cases.
     public void checkLocalPC(String signature) {
-        handleStatementUtils.checkLocalPC(signature);
+        if (localmap == null) {
+            throw new InternalAnalyzerException("LocalMap is not assigned");
+        }
+        //check if local is initialized
+        if (!localmap.checkIfInitialized(signature)) {
+            logger.log(Level.INFO, "Local {0} has not yet been initialized", signature);
+            localmap.initializeLocal(signature);
+            return;
+        }
+
+        // the following check must only be executed if local is initialised
+        Object level = localmap.getLevel(signature);
+        Object lpc = localmap.getLocalPC();
+        logger.log(Level.INFO, "Check if level of local {0} ({1}) >= lpc ({2}) --- checkLocalPC",
+                   new Object[] {signature, level, lpc });
+
+
+        if (!CurrentSecurityDomain.le(lpc, level)) {
+            handleStatementUtils.abort(new NSUError(NSU_ERROR_MESSAGE + signature));
+        }
     }
 
     /**
@@ -816,7 +841,8 @@ public class HandleStmt {
      * @param signature signature of the local to test
      * @param level     level which mustn't be exceeded
      */
-    // TODO: remove in favor of more specific checks (casts, etc)
+    // TODO: This method is called whenever a local variable is compared to a security level. This comparison happens in several cases: casts, passing of arguments, maybe more. These cases should be distinguished.
+    // against remove in favor of more specific checks (casts, etc)
     public void checkThatLe(String signature, String level) {
         checkThatLe(signature, level,
                     "Passed argument " + signature + " with level "
@@ -832,9 +858,10 @@ public class HandleStmt {
     }
 
     public void checkThatLe(String signature, String level, String msg) {
-        controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_LE.getVal());
         logger.info("Check if " + signature + " <= " + level);
-        if (!CurrentSecurityDomain.le(localmap.getLevel(signature), CurrentSecurityDomain.readLevel(level))) {
+
+        if (!CurrentSecurityDomain.le(localmap.getLevel(signature),
+                                      CurrentSecurityDomain.readLevel(level))) {
             handleStatementUtils.abort(new IllegalFlowError(msg));
         }
     }
@@ -848,11 +875,14 @@ public class HandleStmt {
      */
     @SuppressWarnings("unused")
     public void checkThatPCLe(String level) {
-        controller.abortIfActiveAndExceptionIsType(ExpectedException.CHECK_THAT_PC_LE.getVal());
+
         logger.info(
-                "About to print something somewhere. Requires to check that PC is less than "
+                "About to print something somewhere. Requires to check that "
+                + "PC is less than "
                 + level);
-        if (!CurrentSecurityDomain.le(localmap.getLocalPC(), CurrentSecurityDomain.readLevel(level))) {
+
+        if (!CurrentSecurityDomain.le(localmap.getLocalPC(),
+                                      CurrentSecurityDomain.readLevel(level))) {
             handleStatementUtils.abort(new IllegalFlowError("Invalid security "
                                                             + "context: PC "
                                                             + "must be "

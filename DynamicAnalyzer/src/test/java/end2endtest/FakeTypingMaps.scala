@@ -1,11 +1,16 @@
-package utils.staticResults
+package end2endtest
+
+import analyzer.level2.storage.LowMediumHigh
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Type
+
+import scala.collection.JavaConverters._
 
 
 /**
   * Create a custom typing for a given.
   * Tuple in map is of type (bool, bool), representing (Dynamic, Dynamic)
   */
-object CustomTyping {
+object FakeTypingMaps {
 
 
   // locals: r0, b0, b1, i2, $r1
@@ -63,6 +68,17 @@ object CustomTyping {
     ("$r1 = <java.lang.System: java.io.PrintStream out>", "i2") -> (true, true),
     ("virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2)", "i2") -> (true, true)
   )
+
+  def asJavaMap(m : Map[(String, String), (Boolean, Boolean)]) : java.util.Map[Tuple2[String, String], Tuple2[Type[LowMediumHigh.Level], Type[LowMediumHigh.Level]]] = {
+    def boolToType(isDynamic : Boolean) : Type[LowMediumHigh.Level] =
+      if (isDynamic) new utils.staticResults.implementation.Dynamic[LowMediumHigh.Level]()
+      else new utils.staticResults.implementation.Public[LowMediumHigh.Level]()
+    (for {
+      (k, (before, after)) <- m
+    } yield k -> (boolToType(before), boolToType(after))).asJava
+  }
+
+  val LowPlusPublicAsJava = asJavaMap(LowPlusPublic)
 
 
   /**

@@ -1,7 +1,6 @@
 package analyzer.level2;
 
 
-import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 
 import java.lang.reflect.InvocationTargetException;

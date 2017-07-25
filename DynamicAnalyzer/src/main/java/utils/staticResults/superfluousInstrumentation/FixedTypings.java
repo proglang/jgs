@@ -1,5 +1,6 @@
 package utils.staticResults.superfluousInstrumentation;
 
+import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import soot.Local;
 import soot.SootMethod;
@@ -12,16 +13,16 @@ import utils.staticResults.implementation.Public;
  */
 public class FixedTypings {
     // Var, Cx & Instantiation all return Dynamic on any requests
-    public static final <L> Methods<L> allDynamic() {
+    public static final <L> MethodTypings<L> allDynamic() {
         return new All<>(new Dynamic<L>());
     }
 
     // Var, Cx & Instantiation all return Public on any requests
-    public static final <L> Methods<L> allPublic() {
+    public static final <L> MethodTypings<L> allPublic() {
         return new All<>(new Public<L>());
     }
 
-    private static class All<T> implements Methods<T> {
+    private static class All<T> implements MethodTypings<T> {
 
         private final Type<T> constantType;
 

@@ -1,4 +1,4 @@
-lazy val setScalaVersion = scalaVersion := "2.11.7"
+lazy val setScalaVersion = scalaVersion := "2.11.11"
 
 lazy val commonSettings = Seq(
 
@@ -10,6 +10,7 @@ lazy val commonSettings = Seq(
     "org.apache.commons" % "commons-lang3" % "3.4",
     "org.apache.commons" % "commons-collections4" % "4.1"
   )
+
 )
 
 lazy val gradConstraintsDeps = Seq(

@@ -1,4 +1,4 @@
-package utils.staticResults.superfluousInstrumentation;
+package analyzer.level2;
 
 /**
  * Created by Nicolas Müller on 06.02.17.

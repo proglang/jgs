@@ -25,16 +25,14 @@ import java.util.logging.Logger;
  * @author koenigr
  *
  */
-public class BodyAnalyzer<Lvel> extends BodyTransformer{
+public class BodyAnalyzer<L> extends BodyTransformer{
 
-    MethodTypings methodTypings;
+    MethodTypings<L> methodTypings;
 	boolean controllerIsActive;
 	int expectedException;
-	Casts casts;
-    public BodyAnalyzer(MethodTypings m,
-						boolean controllerIsActive,
-						int expectedException,
-						Casts c) {
+	Casts<L> casts;
+    public BodyAnalyzer(MethodTypings<L> m,
+						Casts<L> c) {
         methodTypings = m;
         this.controllerIsActive = controllerIsActive;
         this.expectedException = expectedException;

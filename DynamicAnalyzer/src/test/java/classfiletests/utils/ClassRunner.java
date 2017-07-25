@@ -1,24 +1,24 @@
 package classfiletests.utils;
 
+import static analyzer.level2.SecurityMonitoringEvent.ILLEGAL_FLOW;
+import static analyzer.level2.SecurityMonitoringEvent.NSU_FAILURE;
+import static analyzer.level2.SecurityMonitoringEvent.PASSED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import analyzer.level2.SecurityMonitoringEvent;
+import end2endtest.EventChecker;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
-import utils.exceptions.IFCError;
 import utils.exceptions.IllegalFlowError;
 import utils.exceptions.NSUError;
-import utils.exceptions.SuperfluousInstrumentation.AssignArgumentToLocalExcpetion;
 
-import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
-import utils.exceptions.SuperfluousInstrumentation.joinLevelOfLocalAndAssignmentLevelException;
 import utils.logging.L1Logger;
-import utils.staticResults.superfluousInstrumentation.ExpectedException;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -37,7 +37,7 @@ public class ClassRunner {
 	private static final String TARGET_NAME = "exec";
 
 	/**
-	 * Runs the given class via Apache Ant.
+	 * Runs the given class via Apache Ant in the same JVM instance.
 	 * 
 	 * @param className
 	 *            class to be run
@@ -56,6 +56,7 @@ public class ClassRunner {
 		path.createPathElement().setPath("./sootOutput/" + outputDir);
 		path.createPathElement().setPath("./bin");
 
+		// TODO: if we don't fork, why do I need to set the classpath?
 		for (URL url : ((URLClassLoader) ClassLoader.getSystemClassLoader())
 				.getURLs()) {
 			path.createPathElement().setPath(url.getPath());
@@ -71,6 +72,7 @@ public class ClassRunner {
 		project.addTarget(target);
 		project.setDefault(TARGET_NAME);
 
+		// TODO: check if this is right and explain why
 		target.execute();
 		project.executeTarget(project.getDefaultTarget());
 
@@ -81,18 +83,21 @@ public class ClassRunner {
 	 * @author Regina Koenig, Nicolas Müller
 	 */
 	public static void testClass(String className, String outputDir, String packageDir,
-                                 ExpectedException expEx, String... involvedVars) {
-		
+								 SecurityMonitoringEvent expectedException, // TODO: the type "SecurityMonitoringEvent" has the wrong name (or is the wrong type)
+								 String... involvedVars) {
+
 		logger.info("Trying to run test " + className);
 
 		String fullPath = System.getProperty("user.dir") + "/sootOutput/"
-				+ outputDir + "/" + packageDir + "/" + className + ".class";
+						  + outputDir + "/" + packageDir + "/" + className
+						  + ".class";
 
 		if (!new File(fullPath).isFile()) {
 			logger.severe("File "
-					+ fullPath
-					+ " not found. Something weird is going on, because the test should automatically"
-					+ "compile the desired file and put it into the correct folder.");
+						  + fullPath
+						  + " not found. Something weird is going on, because the test should automatically"
+
+						  + "compile the desired file and put it into the correct folder.");
 			fail();
 		}
 
@@ -100,16 +105,46 @@ public class ClassRunner {
 			// TODO: deal w/ package names correctly
 			runClass(className, packageDir.replace('/', '.'), outputDir);
 
-			// Fail if the class was running but an exception was expected
-			if (! expEx.equals(ExpectedException.NONE)) {
-				logger.severe("Expected exception is not found");
-				fail();
+			// check if we did expect and Exception
+			if (!expectedException.equals(PASSED)) {
+				fail("No IFC error thrown. Expected: " + expectedException);
 			}
+		}
+		// first check the security exceptions
+		catch (BuildException buildExc) {
+			// We have an exception thrown by ANT
+			Throwable e = buildExc.getCause();
+			// the ANT exceptions are built with a different classloader, so
+			// we cannot use "instanceof" to compare with what we expect. So
+			// we compare the names of the classes.
+			if (hasClassNameOf(e, NSUError.class)) {
+				assertExpectedException(e, NSU_FAILURE, expectedException);
+			} else if (hasClassNameOf(e, IllegalFlowError.class)) {
+				assertExpectedException(e, ILLEGAL_FLOW, expectedException);
+			} else {
+				String message =  "Unexpected Exception: " + e.toString();
+				logger.severe(message);
+				e.printStackTrace();
+				fail(message);
+			}
+		} catch (IllegalFlowError e) {
+			assertExpectedException(e, ILLEGAL_FLOW, expectedException);
+		}
+		// TODO: check for instrumentation events here
+		catch (EventChecker.MissingEventException | EventChecker.UnexpectedEventException e) {
+		    e.printStackTrace();
+		    fail(e.getMessage());
 		} catch (Exception e) {
-			logger.severe("Found exception " + e.getClass().toString());
-			e.printStackTrace();
+			throw new RuntimeException("Unexpected Exception", e);
+		}
 
-			switch (expEx) {
+
+
+
+		/*
+		if (expectetEvents.contains(SecurityMonitoringEvent.ILLEGAL_FLOW))
+
+			switch (expectetEvents) {
 				case NONE:
 				    // fail if no expection was expected
 					logger.severe("Fail because exception was not expected");
@@ -157,7 +192,24 @@ public class ClassRunner {
 					throw new InternalAnalyzerException("Unknown exception found!");
 			}
 		}
-
+		*/
 	}
 
+	/**
+	 *  Check that a particular (security) exception matches an expected one.
+	 *  Call JUnits "fail" if not.
+	 */
+	private static void assertExpectedException(Throwable caughtException,
+												SecurityMonitoringEvent currentEvent,
+												SecurityMonitoringEvent expectedEvent) {
+		if (!expectedEvent.equals(currentEvent)) {
+			caughtException.printStackTrace();
+			fail("Unexpected exception thrown:" + caughtException
+				 + "\n Expected: " + expectedEvent);
+		}
+	}
+
+	private static boolean hasClassNameOf(Throwable e, Class<? extends Throwable> eClass) {
+		return e.getClass().toString().equals(eClass.toString());
+	}
 }

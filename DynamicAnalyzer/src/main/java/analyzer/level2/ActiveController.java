@@ -1,4 +1,4 @@
-package utils.staticResults.superfluousInstrumentation;
+package analyzer.level2;
 
 import utils.exceptions.SuperfluousInstrumentation.*;
 import utils.exceptions.InternalAnalyzerException;
@@ -15,7 +15,7 @@ public class ActiveController extends PassivController {
 
     /**
      * If called, aborts execution with {@link LocalPcCalledException}. Overwrites method in {@link PassivController}.
-     * expectedException is where the caller specifies which exception we expect, see {@link ExpectedException}.
+     * expectedException is where the caller specifies which exception we expect, see {@link SecurityMonitoringEvent}.
      * Exception is only thrown if expectation of caller matches the kind of expection this controller is looking for
      * If controller is not expecting any exception at all (e.g. this.kindOfexception == 0),
      * it throws exceptions allways.

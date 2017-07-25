@@ -8,7 +8,6 @@ import soot.*;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.*;
 import utils.staticResults.superfluousInstrumentation.FixedTypings;
 
 import java.io.File;
@@ -41,21 +40,26 @@ public class Main {
 	 */
 	public static void main(String[] args)
 	{
-		execute(args, false, null,  false, 0, null);
+		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+		MethodTypings methodTypings;
+		if (sootOptionsContainer.usePublicTyping()) {
+			methodTypings = FixedTypings.allPublic();
+		} else {
+			methodTypings = FixedTypings.allDynamic();
+		}
+
+		execute(args, FixedTypings.allDynamic(), NoCasts.apply());
 	}
 
 
 	public static void execute(String[] args,
-								boolean useExternalTyping,
-								Methods m,
-								boolean controllerIsActive,
-								int expectedException,
+								MethodTypings m,
 							    Casts c) {
 
 
 	    doSootSetup(args);
 
-		executeWithoutSootSetup(args, useExternalTyping, m, controllerIsActive, expectedException, c);
+		executeWithoutSootSetup(args, m, c);
 	}
 
 
@@ -133,12 +137,9 @@ public class Main {
      * Method which configures and executes soot.main.Main.
      * @param args This arguments are delivered by main.Main.main.
      */
-	public static void executeWithoutSootSetup(String[] args,
-								boolean useExternalTyping,
-								Methods m,
-								boolean controllerIsActive,
-								int expectedException,
-							    Casts c) {
+	public static <L> void executeWithoutSootSetup(String[] args,
+												   MethodTypings<L> m,
+												   Casts<L> c) {
 
 		ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
         LinkedList<String> sootOptions = new LinkedList<>(Arrays.asList(
@@ -152,34 +153,11 @@ public class Main {
         }
 
         // ====== Create / load fake static analysis results ======
-		Methods methods = m;
-		Casts casts = c;
-
-		// if no external Typing is supplied, make one up
-		if (! useExternalTyping) {
-
-            Collection<String> allClasses = sootOptionsContainer.getAdditionalFiles();
-			allClasses.add(sootOptionsContainer.getMainclass());
-
-			// the default casts object. used only if explicitely specified that none is supplied externally
-			casts =
-					new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),
-							"<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
-							"de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCx",
-							"de.unifreiburg.cs.proglang.jgs.instrumentation.Casts.castCxEnd");
+		MethodTypings<L> methodTypings = m;
+		Casts<L> casts = c;
 
 
-			if (sootOptionsContainer.usePublicTyping()) {
-				methods = ResultsServer.createAllPublicMethods(allClasses);
-			} else {
-				methods = FixedTypings.allDynamic();
-			}
-		}
-        // =================================
-
-
-
-        BodyAnalyzer<LowMediumHigh.Level> banalyzer = new BodyAnalyzer(methods, controllerIsActive, expectedException, casts);
+        BodyAnalyzer<L> banalyzer = new BodyAnalyzer<>(methodTypings, casts);
 
 		PackManager.v()
         	.getPack("jtp").add(new Transform("jtp.analyzer", banalyzer));
