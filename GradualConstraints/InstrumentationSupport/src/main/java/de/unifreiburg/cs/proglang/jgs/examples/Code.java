@@ -4,6 +4,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.jimple.parser.node.TBoolConstant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -167,7 +168,11 @@ public class Code {
                                          List<? extends Type> params,
                                          Type ret,
                                          Body b) {
-        SootMethod m = new SootMethod(name, params, ret);
+        List<Type> typeParams = new ArrayList<>();
+        for (Type ty : params) {
+            typeParams.add(ty);
+        }
+        SootMethod m = new SootMethod(name, typeParams, ret);
         cl.addMethod(m);
         m.setActiveBody(b);
         return m;

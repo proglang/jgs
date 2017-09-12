@@ -27,8 +27,8 @@ object Methods {
            if t.isInstanceOf[VisibilityAnnotationTag];
            a <- t.asInstanceOf[VisibilityAnnotationTag].getAnnotations.asScala
            if a.getType == annotationType;
-           i <- 0 until a.getNumElems
-      ) yield extract(a.getElemAt(i))
+           e <- a.getElems.asScala
+      ) yield extract(e)
   }
 
   def extractStringAnnotation(annotationType: String, tags: Iterator[Tag]): java.util.List[String] = {

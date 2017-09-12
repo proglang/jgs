@@ -143,6 +143,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	@Override
+	public void caseMethodHandle(MethodHandle methodHandle) {
+		throw new NotSupportedStmtException("method handle");
+	}
+
+	@Override
 	public void defaultCase(Object object) {
 		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {

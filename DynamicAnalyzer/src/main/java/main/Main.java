@@ -9,11 +9,18 @@ import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
 import utils.staticResults.*;
+import utils.staticResults.superfluousInstrumentation.FixedTypings;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.SignatureSpi;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+
+import static soot.SootClass.SIGNATURES;
 
 
 /**
@@ -97,13 +104,28 @@ public class Main {
         for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
             classPath += ":" + s;
         }
-        Scene.v().setSootClassPath(classPath);
+
+        // Add the current classpath to soots classpath
+		// TODO: this is only a quick hack for testing. We should figure out precicely how the soot classpath should look.
+		List<String> cpath = new ArrayList<>();
+        // TODO: Lu: I'm also not sure what a "ContextClassLoader" is. (pasted from https://stackoverflow.com/questions/11613988/how-to-get-classpath-from-classloader)
+        ClassLoader cxClassloader = Thread.currentThread().getContextClassLoader();
+        if (cxClassloader instanceof URLClassLoader) {
+			for (URL url : Arrays.asList(((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs())) {
+
+				cpath.add(url.getFile());
+			}
+		} else {
+        	throw new RuntimeException("Cannot get URLs needed for the soot classpath from current contextclassloader");
+		}
+
+		Scene.v().setSootClassPath(String.join(":", cpath) + ":" + classPath);
 
 		L1Logger.getLogger().info("Soot classpath: " + Scene.v().getSootClassPath());
 
         // those are needed because of soot-magic i guess
-        Scene.v().addBasicClass("analyzer.level2.HandleStmt");
-        Scene.v().addBasicClass("analyzer.level2.SecurityLevel");
+        Scene.v().addBasicClass("analyzer.level2.HandleStmt", SIGNATURES);
+        Scene.v().addBasicClass("analyzer.level2.SecurityLevel", SIGNATURES);
     }
 
 
@@ -150,7 +172,7 @@ public class Main {
 			if (sootOptionsContainer.usePublicTyping()) {
 				methods = ResultsServer.createAllPublicMethods(allClasses);
 			} else {
-				methods = ResultsServer.createAllDynamicMethods(allClasses);
+				methods = FixedTypings.allDynamic();
 			}
 		}
         // =================================

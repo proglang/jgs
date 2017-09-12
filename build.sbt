@@ -36,8 +36,7 @@ lazy val GradualConstraints =
     dependsOn(InstrumentationSupport).
     settings(commonSettings:_*).
     settings(
-      libraryDependencies ++= gradConstraintsDeps,
-      javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
+      libraryDependencies ++= gradConstraintsDeps
     )
 
 
@@ -58,8 +57,7 @@ lazy val DynamicAnalyzer =
     dependsOn(InstrumentationSupport, JGSSupport).
     settings(commonSettings:_*).
     settings(
-      libraryDependencies ++= dynAnalyzerDeps,
-      javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
+      libraryDependencies ++= dynAnalyzerDeps
     )
 
 lazy val GradualConstraintsTests =
@@ -74,8 +72,6 @@ lazy val GradualConstraintsTests =
             "org.scalactic" %% "scalactic" % "2.2.6",
             "org.scalatest" %% "scalatest" % "2.2.6" % "test"
           )
-       ,
-       javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
     )
 
 lazy val InstrumentationSupport =
@@ -87,7 +83,6 @@ lazy val InstrumentationSupport =
           "org.json4s" %% "json4s-jackson" % "3.3.0",
           "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.7.4"
         ),
-      javacOptions ++= Seq("-source", "1.7", "-target", "1.7"),
       artifactName := {
         (sv : ScalaVersion , mod : ModuleID , artifact : Artifact) => "gradualconstraints_" + Artifact.artifactName(sv, mod, artifact)
       }

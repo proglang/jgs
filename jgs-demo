@@ -52,18 +52,29 @@ object JgsDemo {
     val classToRun = options.getOrElse('class, {printUsage() ; throw new IllegalArgumentException("No class-to-run specified ") })
 
     val sbtJgsRunCommand : String = (List(
-      "run", "-m", classToRun, "-cp", classpathCompile, "-o", outputDir
+      "runMain", "de.unifreiburg.cs.proglang.jgs.Main", "-m", classToRun, "-cp", classpathCompile, "-o", outputDir
     ) ++
       options.get('only_dynamic).toList ++
       options.get('create_jimple).toList ++
       options.get('force_monomorphic_methods)
       ).mkString(" ")
-    val sbtProcess = Process(
-      (Seq("sbt", s"; ${secdomainProject}/compile ; ${demoProject}/compile ; ${sbtJgsRunCommand}")),
+
+    println(s"Compiling: ${secdomainProject}, ${demoProject}")
+    val sbtCompileProcess =
+      Process(
+      (Seq("sbt", s"; ${secdomainProject}/compile ; ${demoProject}/compile")),
       None,
       "JGS_SECDOMAIN_CLASSES" -> secdomainCP
     )
-    run(sbtProcess)
+    run(sbtCompileProcess)
+
+    println("Running sbt with: " + sbtJgsRunCommand)
+    val sbtRunProcess = Process(
+      (Seq("sbt", s"${sbtJgsRunCommand}")),
+      None,
+      "JGS_SECDOMAIN_CLASSES" -> secdomainCP
+    )
+    run(sbtRunProcess)
 
     Seq("java", "-cp", s"${outputDir}:${classpathRun}", classToRun).!
   }
