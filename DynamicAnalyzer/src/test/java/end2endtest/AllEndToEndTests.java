@@ -53,7 +53,7 @@ public class AllEndToEndTests {
 				new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, new String[] {  } },
 				new Object[] { "AccessFieldsOfObjectsSuccess", ExpectedException.NONE, new String[] {} },
 				
-				new Object[] { "ArithmeticExpressionsFail", ExpectedException.ILLEGAL_FLOW, new String[] { "int_i0" } },
+				new Object[] { "ArithmeticExpressionsFail", ExpectedException.ILLEGAL_FLOW, new String[] {  } },
 				new Object[] { "ArithmeticExpressionsSuccess", ExpectedException.NONE, new String[] {} },
 				
 				new Object[] { "ArrayRefFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_$r7"} },
@@ -66,7 +66,7 @@ public class AllEndToEndTests {
 				new Object[] { "castStatic2Dyn_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_"} },
 
 				new Object[] { "castDyn2Static_Fail1", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.Integer_$r4"} },
-				new Object[] { "castDyn2Static_Fail2", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_r1"} },
+				new Object[] { "castDyn2Static_Fail2", ExpectedException.ILLEGAL_FLOW, new String[] {} },
 				new Object[] { "castDyn2Static_Success1", ExpectedException.NONE, new String[] {""} },
 				new Object[] { "castDyn2Static_Success2", ExpectedException.NONE, new String[] {""} },
 
@@ -129,7 +129,7 @@ public class AllEndToEndTests {
 				new Object[] { "MulArrayFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_$r"} },
 				
 				// Testing implicit and explicit flow with classes (which is unimplemented currently)
-				new Object[] { "NewClassFail1", ExpectedException.ILLEGAL_FLOW, new String[] {"testclasses.utils.C_r4"} },
+				new Object[] { "NewClassFail1", ExpectedException.ILLEGAL_FLOW, new String[] {} },
 				
 				new Object[] { "NonStaticMethodsSuccess", ExpectedException.NONE, new String[] {} },
 				new Object[] { "NonStaticMethodsFail", ExpectedException.ILLEGAL_FLOW, new String[] {"int_i0"} },
@@ -141,7 +141,7 @@ public class AllEndToEndTests {
 				
 				// Acting with Mediums!
 				new Object[] { "PrintMediumSuccess", ExpectedException.NONE, new String[] {} },
-				new Object[] { "PrintMediumFail", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_r3"} },
+				new Object[] { "PrintMediumFail", ExpectedException.ILLEGAL_FLOW, new String[] {} },
 				new Object[] { "PrintMediumFail2", ExpectedException.ILLEGAL_FLOW, new String[] {"java.lang.String_r3"} },
 				
 				// SystemOut1 and SystemOut2 are nearly the same! but behave differently!!
