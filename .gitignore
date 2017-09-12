@@ -30,7 +30,8 @@ target/
 
 ## compilation output
 *.iml
-.idea/
+.idea/*
+!/.idea/runConfigurations/
 out/
 bin/
 # ant/
