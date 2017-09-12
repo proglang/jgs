@@ -37,7 +37,6 @@ import java.util.logging.Logger;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
 
-	AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch();
 	Logger logger = L1Logger.getLogger();
 	Body body;
 
@@ -48,16 +47,14 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
 		logger.fine("\n > > > Breakpoint statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
 
-		valueSwitch.callingStmt = stmt;
+		AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch(stmt, StmtContext.INVOKE);
 
 		InvokeStmt iStmt = stmt;
-		valueSwitch.actualContext = StmtContext.INVOKE;
 
 		logger.fine("\n > > > Invoke Statement identified < < <");
 
@@ -66,104 +63,94 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		invokeExpr.apply(valueSwitch);
 
 		logger.finer("Method has return type: " + invokeExpr.getType());
-
-		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
 
-		valueSwitch = new AnnotationValueSwitch();
 
-		AssignStmt aStmt = stmt;
-		valueSwitch.callingStmt = aStmt;
-
-		valueSwitch.actualContext = StmtContext.ASSIGNRIGHT;
-
-		if (aStmt.getDefBoxes().size() != 1) {
+		if (stmt.getDefBoxes().size() != 1) {
 			throw new InternalAnalyzerException(
 					"Unexpected number of elements on "
 							+ "the left side of assign statement");
 		}
 
-		logger.fine("\n > > > ASSIGN STATEMENT identified: " + aStmt + " < < <");
+		logger.fine("\n > > > ASSIGN STATEMENT identified: " + stmt + " < < <");
 		// two lines below are useless information?!
 		// logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() +
 		// " < < <");
 		// logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() +
 		// " < < <");
 
-		for (int i = 0; i < aStmt.getUseBoxes().size(); i++) {
-			aStmt.getUseBoxes().get(i).getValue().apply(valueSwitch);
+		AnnotationValueSwitch rightValueSwitch = new AnnotationValueSwitch(stmt, StmtContext.ASSIGNRIGHT);
+		for (int i = 0; i < stmt.getUseBoxes().size(); i++) {
+			stmt.getUseBoxes().get(i).getValue().apply(rightValueSwitch);
 		}
 
-		valueSwitch.actualContext = StmtContext.ASSIGNLEFT;
+		Value leftOperand = stmt.getLeftOp();
 
-		Value leftOperand = aStmt.getLeftOp();
+		rightValueSwitch.getRequiredActionForRHS().ifPresent(action -> {
+			switch (action) {
+				case NEW_ARRAY:
+					JimpleInjector.addArrayToObjectMap((Local) leftOperand, stmt);
+					break;
+				case NEW_UNDEF_OBJECT:
+					break;
+				case MAKE_HIGH:
+					break; // This two cases are treated later
+				case MAKE_LOW:
+					break;
+				case MAKE_MEDIUM:
+					break;
+				case SET_RETURN_LEVEL: // This will be handeled later (by nico)
+					break;
+				case CAST:    // will also be handled later
+					break;
+				default:
+					new InternalAnalyzerException("Unexpected action: "
+												  + action);
+			}
+		});
 
-		switch (valueSwitch.getRequiredActionForRHS()) {
-			case IGNORE:
-				break; // That means that the right element is already handeled
-			case NEW_ARRAY:
-				JimpleInjector.addArrayToObjectMap((Local) leftOperand, aStmt);
-				break;
-			case NEW_UNDEF_OBJECT:
-				break;
-			case MAKE_HIGH:
-				break; // This two cases are treated later
-			case MAKE_LOW:
-				break;
-			case MAKE_MEDIUM:
-				break;
-			case SET_RETURN_LEVEL: // This will be handeled later (by nico)
-				break;
-			case CAST:    // will also be handled later
-				break;
-			default:
-				new InternalAnalyzerException("Unexpected Context: "
-											  + valueSwitch.getRequiredActionForRHS());
-		}
-
-		leftOperand.apply(valueSwitch);
+		AnnotationValueSwitch leftValueSwitch = new AnnotationValueSwitch(stmt, StmtContext.ASSIGNLEFT);
+		leftOperand.apply(leftValueSwitch);
 
 		/*
 		 * This must be done after the regular valueSwitch. Otherwise the
 		 * returnlevel of the MakeTop/MakeBot Method would overwrite the new
 		 * level of the local.
 		 */
-		switch (valueSwitch.getRequiredActionForRHS()) {
-		case MAKE_HIGH:
-			logger.finest("Make left operand high");
-			JimpleInjector.makeLocal((Local) leftOperand, "HIGH", aStmt);
-			// JimpleInjector.makeLocalHigh((Local) leftOperand, aStmt);
-			break;
-		case MAKE_MEDIUM:
-			logger.finest("Make left operand medium");
-			JimpleInjector.makeLocal((Local) leftOperand, "MEDIUM", aStmt);
-		case MAKE_LOW:
-			logger.finest("Make left operand low");
-			// JimpleInjector.makeLocalLow((Local) leftOperand, aStmt);
-			JimpleInjector.makeLocal((Local) leftOperand, "LOW", aStmt);
-			break;
-		case SET_RETURN_LEVEL:
-			JimpleInjector.setReturnLevelAfterInvokeStmt(aStmt);
-			break;
-		case CAST:
-			logger.finest("Cast found at " + aStmt);
-			JimpleInjector.handleCast(aStmt);
-			break;
-		default:
-			break;
-		}
+		rightValueSwitch.getRequiredActionForRHS().ifPresent(action -> {
+			switch (action) {
+				case MAKE_HIGH:
+					logger.finest("Make left operand high");
+					JimpleInjector.makeLocal((Local) leftOperand, "HIGH", stmt);
+					break;
+				case MAKE_MEDIUM:
+					logger.finest("Make left operand medium");
+					JimpleInjector.makeLocal((Local) leftOperand, "MEDIUM", stmt);
+				case MAKE_LOW:
+					logger.finest("Make left operand low");
+					JimpleInjector.makeLocal((Local) leftOperand, "LOW", stmt);
+					break;
+				case SET_RETURN_LEVEL:
+					JimpleInjector.setReturnLevelAfterInvokeStmt(stmt);
+					break;
+				case CAST:
+					logger.finest("Cast found at " + stmt);
+					JimpleInjector.handleCast(stmt);
+					break;
+				default:
+					break;
+			}
+		});
 
 	}
 
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
 
-		valueSwitch.callingStmt = stmt;
-
-		valueSwitch.actualContext = StmtContext.IDENTITY;
+		AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch(stmt, StmtContext.IDENTITY);
 
 		logger.fine("\n > > > Identity statement identified < < <");
 
@@ -184,28 +171,23 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 					"Unexpected type of right value "
 							+ stmt.getRightOp().toString() + " in IdentityStmt");
 		}
-
-		valueSwitch.actualContext = StmtContext.UNDEF;
 	}
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
 		logger.fine("\n > > > Enter monitor statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 		throw new NotSupportedStmtException("EnterMonitorStmt");
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
 		logger.fine("\n > > > Exit monitor statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 		throw new NotSupportedStmtException("ExitMonitorStmt");
 	}
 
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
 		logger.fine("\n > > > Goto statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 		logger.fine("GOTO: " + stmt.toString());
 	}
 
@@ -248,7 +230,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
 		logger.fine("\n > > > Lookup switch statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 		logger.finest("Use and def boxes of SwitchStmt: "
 				+ stmt.getUseAndDefBoxes().toString());
 
@@ -286,14 +267,12 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
 		logger.fine("\n > > > Ret statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 		throw new NotSupportedStmtException("RetStmt");
 	}
 
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
 		logger.fine("\n > > > Return statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 		logger.finer("Use boxes: " + stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
 		// JimpleInjector.popGlobalPC();
@@ -308,7 +287,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
 		logger.fine("\n > > > Return void statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 	}
 
 	/*
@@ -318,7 +296,6 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
 		logger.fine("\n > > > Table switch statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 		logger.finest("Use and def boxes of SwitchStmt: "
 				+ stmt.getUseAndDefBoxes().toString());
 
@@ -352,14 +329,11 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
 		logger.fine("\n > > > Throw statement identified < < <");
-		valueSwitch.callingStmt = stmt;
 	}
 
 	@Override
 	public void defaultCase(Object obj) {
 		logger.fine("\n > > > Default case of statements identified < < <");
 		throw new NotSupportedStmtException("DefaultCase");
-		// valueSwitch.callingStmt = stmt;
-
 	}
 }

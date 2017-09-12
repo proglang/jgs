@@ -50,7 +50,7 @@ public class AllEndToEndTests {
 	@Parameters(name = "Name: {0}")
 	public static Iterable<Object[]> generateParameters() {
 		return Arrays.asList(
-				new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, new String[] { "java.lang.String_$r6" } },
+				new Object[] { "AccessFieldsOfObjectsFail", ExpectedException.ILLEGAL_FLOW, new String[] {  } },
 				new Object[] { "AccessFieldsOfObjectsSuccess", ExpectedException.NONE, new String[] {} },
 				
 				new Object[] { "ArithmeticExpressionsFail", ExpectedException.ILLEGAL_FLOW, new String[] { "int_i0" } },

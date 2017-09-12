@@ -10,6 +10,7 @@ import utils.visitor.AnnotationValueSwitch.RequiredActionForRHS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -108,7 +109,7 @@ public class ExternalClasses {
 		return instrumentationForSpecialMethods.containsKey(m.toString());
 	}
 
-	static AnnotationValueSwitch.RequiredActionForRHS instrumentSpecialMethod(SootMethod method,
+	static Optional<AnnotationValueSwitch.RequiredActionForRHS> instrumentSpecialMethod(SootMethod method,
 																			  Unit pos,
 																			  Local[] params) {
 		return instrumentationForSpecialMethods.get(method.toString())
@@ -117,20 +118,20 @@ public class ExternalClasses {
 	
 	
 	interface Command {
-		AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params);
+		Optional<RequiredActionForRHS> execute(Unit pos, Local[] params);
 	}
 
 	// TODO: the commands should be abstract. Then we can move ExternalClasses to InstrumentationSupport (where it belongs, together with the external signatures for type checking
 	static class JoinLevels implements Command {
 		@Override
-		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
+		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.fine("Join levels for external class arguments");
 			for (Local param : params) {
 				if (param != null) {
 					JimpleInjector.addLevelInAssignStmt(param, pos);
 				}
 			}
-			return AnnotationValueSwitch.RequiredActionForRHS.IGNORE;
+			return Optional.empty();
 		}
 	}
 	
@@ -141,7 +142,7 @@ public class ExternalClasses {
 			this.level = level;
 		}
 		
-		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
+		public Optional<AnnotationValueSwitch.RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.fine("Insert check that external class has no " + level + " arguments");
 			if (params == null || pos == null) {
 				throw new InternalAnalyzerException(
@@ -158,49 +159,49 @@ public class ExternalClasses {
 					
 				}
 			}
-			return AnnotationValueSwitch.RequiredActionForRHS.IGNORE;
+			return Optional.empty();
 		}
 	}
 
 	static class DoCast implements Command {
 		@Override
-		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
+		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.info("Cast at " + pos);
-			return AnnotationValueSwitch.RequiredActionForRHS.CAST;
+			return Optional.of(AnnotationValueSwitch.RequiredActionForRHS.CAST);
 		}
 	}
 	
 	static class DoNothing implements Command	{
 		@Override
-		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
+		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.fine("Do nothing for external class");
-			return AnnotationValueSwitch.RequiredActionForRHS.IGNORE;
+			return Optional.empty();
 		}
 	}
 	
 	static class MakeTop implements Command {
 		@Override
-		public RequiredActionForRHS execute(Unit pos, Local[] params) {
+		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.info("Right element is a makeHigh method");
 			/*assert (params.length == 1);
 			logger.fine("Variable" + params[0].toString() + " is set to high");
 			JimpleInjector.makeLocalHigh(params[0], pos);*/
-			return AnnotationValueSwitch.RequiredActionForRHS.MAKE_HIGH;
+			return Optional.of(RequiredActionForRHS.MAKE_HIGH);
 		}
 	}
 	
 	static class MakeMedium implements Command {
 		@Override
-		public RequiredActionForRHS execute(Unit pos, Local[] params) {
+		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.info("Right element is a makeMedium method");
-			return AnnotationValueSwitch.RequiredActionForRHS.MAKE_MEDIUM;
+			return Optional.of(RequiredActionForRHS.MAKE_MEDIUM);
 		}
 	}
 	
 	static class MakeBot implements Command {
 		@Override
-		public AnnotationValueSwitch.RequiredActionForRHS execute(Unit pos, Local[] params) {
-			return AnnotationValueSwitch.RequiredActionForRHS.MAKE_LOW;
+		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
+			return Optional.of(RequiredActionForRHS.MAKE_LOW);
 		}
 	}
 }

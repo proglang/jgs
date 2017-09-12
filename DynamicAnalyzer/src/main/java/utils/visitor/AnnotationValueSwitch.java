@@ -8,12 +8,21 @@ import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NotSupportedStmtException;
 import utils.logging.L1Logger;
 
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
+
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
 	private Logger logger = L1Logger.getLogger();
 	private VisitorHelper vh = new VisitorHelper();
+
+	public AnnotationValueSwitch(Stmt stmt, StmtContext cx) {
+	    this.callingStmt = stmt;
+	    this.actualContext = cx;
+	}
 
 	/*
 	 * ???
@@ -33,7 +42,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		RETURN, GOTO, IF, SWITCH, THROW
 	}
 	
-	protected StmtContext actualContext = StmtContext.UNDEF;
+	private StmtContext actualContext = StmtContext.UNDEF;
 	
 	/*
 	 * Type of the right expression in an assign statement. Certain types need to
@@ -49,17 +58,26 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 * MAKE_LOW ?????
 	 */
 	protected enum RequiredActionForRHS {
-		IGNORE, NEW_ARRAY, NEW_UNDEF_OBJECT,
+		NEW_ARRAY, NEW_UNDEF_OBJECT,
 		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD, 
 		SET_RETURN_LEVEL,
 		MAKE_HIGH, MAKE_MEDIUM, MAKE_LOW,
 		CAST
 	} 
 	
-	private RequiredActionForRHS requiredActionForRHS = RequiredActionForRHS.IGNORE;
+	private Set<RequiredActionForRHS> requiredActionForRHS =
+			new HashSet<>();
 
-	public RequiredActionForRHS getRequiredActionForRHS() {
-		return requiredActionForRHS;
+	private void setRequiredActionForRHS(Optional<RequiredActionForRHS> maybeAction) {
+		maybeAction.ifPresent(action -> requiredActionForRHS.add(action));
+	}
+
+	public Optional<RequiredActionForRHS> getRequiredActionForRHS() {
+		if (requiredActionForRHS.size() > 1) {
+			throw new IllegalStateException("More than one action was collected: "
+											+ requiredActionForRHS.toString());
+		}
+		return requiredActionForRHS.stream().findFirst();
 	}
 
 
@@ -67,7 +85,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 * The statement which called the AnnotationValueSwitch. This variable is set
 	 * by AnnotationStmtSwitch.
 	 */
-	protected Stmt callingStmt;
+	private Stmt callingStmt;
 
 	/**
 	 * It is not neccessary to treat a constant.
@@ -76,7 +94,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
 		logger.finest("DoubleConstant identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 	
 	/**
@@ -86,7 +103,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseFloatConstant(FloatConstant v) {
 		logger.finest("FloatConstant identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -96,7 +112,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseIntConstant(IntConstant v) {
 		logger.finest("IntConstant identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -106,7 +121,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseLongConstant(LongConstant v) {
 		logger.finest("LongConstant identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -116,7 +130,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseNullConstant(NullConstant v) {
 		logger.finest("NullConstant identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -126,7 +139,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseStringConstant(StringConstant v) {
 		logger.finest("StringConstant identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -136,7 +148,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseClassConstant(ClassConstant v) {
 		logger.finest("ClassConstant identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new InternalAnalyzerException();
 		}
@@ -149,7 +160,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void defaultCase(Object object) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("defaultCase");
 		}
@@ -163,7 +173,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseAddExpr(AddExpr v) {
 		logger.finest("Add Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -174,12 +183,10 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseAndExpr(AndExpr v) {
 		logger.finest("And Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CmpExpr");
 		}
@@ -187,7 +194,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CmpgExpr");
 		}
@@ -195,7 +201,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CmplExpr");
 		}
@@ -209,7 +214,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseDivExpr(DivExpr v) {
 		logger.finest("Div Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -220,12 +224,10 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseEqExpr(EqExpr v) {
 		logger.finest("Eq Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	@Override
 	public void caseNeExpr(NeExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("NeExpr");
 		}
@@ -233,7 +235,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseGeExpr(GeExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("GeExpr");
 		}
@@ -241,7 +242,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseGtExpr(GtExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("GtExpr");
 		}
@@ -249,7 +249,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLeExpr(LeExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("LeExpr");
 		}
@@ -257,7 +256,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseLtExpr(LtExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("LtExpr");
 		}
@@ -271,7 +269,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseMulExpr(MulExpr v) {
 		logger.finest("Mul Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 
 	}
 
@@ -283,13 +280,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseOrExpr(OrExpr v) {
 		logger.finest("Or Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 
 	}
 
 	@Override
 	public void caseRemExpr(RemExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("RemExpr");
 		}
@@ -303,7 +298,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseShlExpr(ShlExpr v) {
 		logger.finest("Shl Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 
 	}
 
@@ -315,7 +309,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseShrExpr(ShrExpr v) {
 		logger.finest("Shr Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 
 	}
 
@@ -327,7 +320,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseUshrExpr(UshrExpr v) {
 		logger.finest("Ushr Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -338,7 +330,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseSubExpr(SubExpr v) {
 		logger.finest("Sub Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	/**
@@ -349,12 +340,10 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	@Override
 	public void caseXorExpr(XorExpr v) {
 		logger.finest("Xor Expr identified " + callingStmt.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 	}
 
 	@Override
 	public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		logger.fine("Invoke expression is of type InterfaceInvoke");
 		/*
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -390,8 +379,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCastExpr(CastExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
-			
+
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			// new InternalAnalyzerException();
 		}
@@ -399,7 +387,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInstanceOfExpr(InstanceOfExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("InstanceOf");
 		}
@@ -407,7 +394,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNewArrayExpr(NewArrayExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.NEW_ARRAY;
+		setRequiredActionForRHS(Optional.of(RequiredActionForRHS.NEW_ARRAY));
 		logger.finest("New Array expression identified: " + callingStmt.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 		// TODO
@@ -416,7 +403,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.NEW_ARRAY;
+		setRequiredActionForRHS(Optional.of(RequiredActionForRHS.NEW_ARRAY));
 		logger.finest("New Multiarray expression identified: " + callingStmt.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			new InternalAnalyzerException();
@@ -425,7 +412,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNewExpr(NewExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.NEW_UNDEF_OBJECT;
+		setRequiredActionForRHS(Optional.of(RequiredActionForRHS.NEW_UNDEF_OBJECT));
 		logger.finest("NewExpr identified " + v.getBaseType());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			// new InternalAnalyzerException("new Expr");
@@ -446,7 +433,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 */
 	@Override
 	public void caseLengthExpr(LengthExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		logger.finest("LengthExpr identified: " + v.toString());
 //		if (actualContext == StmtContext.ASSIGNRIGHT) {
 //			// JimpleInjector.addLevelInAssignStmt(v, callingStmt);
@@ -461,7 +447,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseNegExpr(NegExpr v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("NegExpr");
 		}
@@ -481,7 +466,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseStaticFieldRef(StaticFieldRef v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		logger.finest("Static field reference identified " + v.toString());
 		logger.finest(		v.getField().getDeclaringClass().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -495,8 +479,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseInstanceFieldRef(InstanceFieldRef v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
-		logger.finest("Instance field reference identified " + v.toString());	
+		logger.finest("Instance field reference identified " + v.toString());
 		logger.finest("kh" + v.getBase().toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			JimpleInjector.addLevelInAssignStmt(v, callingStmt);
@@ -515,7 +498,6 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCaughtExceptionRef(CaughtExceptionRef v) {
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
 			throw new NotSupportedStmtException("CaughtExceptionRef");
 		}
@@ -547,8 +529,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	    // TODO: this log message surely is confusing
 		logger.finest(v.toString());
-		requiredActionForRHS = RequiredActionForRHS.IGNORE;
-	
+
 		if (actualContext == StmtContext.INVOKE
 				|| actualContext == StmtContext.ASSIGNRIGHT ) {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
@@ -556,7 +537,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 			if (ExternalClasses.isSpecialMethod(method)) {
 				logger.fine("Found special method: " + method);
-				requiredActionForRHS = ExternalClasses.instrumentSpecialMethod(method, callingStmt, args);
+				setRequiredActionForRHS(ExternalClasses.instrumentSpecialMethod(method, callingStmt, args));
 			} else {
 				if (v.getMethod().getDeclaringClass().isLibraryClass()) {
 					// method is not instrumented and we have no special treatment for it... 
@@ -566,7 +547,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated as an internal class");
 				// JimpleInjector.pushToGlobalPC(LocalPC JOIN GlobalPC)
-				requiredActionForRHS = RequiredActionForRHS.SET_RETURN_LEVEL;
+				setRequiredActionForRHS(Optional.of(RequiredActionForRHS.SET_RETURN_LEVEL));
 				// aber überall noch mal checken ob nirgendwo das right element
 				// überschrieben wird, d.h. ob das hier eine eindeutige 
 				// positioin ist
