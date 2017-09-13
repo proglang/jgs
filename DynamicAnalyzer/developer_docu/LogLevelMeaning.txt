@@ -1,0 +1,26 @@
+In Order to communicate the LocLevel and there meanings.
+
+SEVERE:
+	The absolute highest and worst thinkable Szenario, 
+	e.g. catching (unexcepted) Exceptions.
+
+WARNING:
+	Some case, that may cause throwing an exception
+	or something else, the may be called warning.
+
+INFO:
+	Messages, that tent to inform the User of something.
+	Here shall not be any Debug Messages.
+
+CONFIG:
+	Messages, that are used for Configuration, this may be 
+	the highest debugging level.
+
+FINE:
+	Messages, that are lower configurations and higher debug messages.
+
+FINER:
+	The normal Debug Level, where The Enter and Exit Logs are present.
+
+FINEST:
+	Debug Messages, that are used to debug in very detail.

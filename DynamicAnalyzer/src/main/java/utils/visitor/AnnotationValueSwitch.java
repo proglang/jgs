@@ -453,6 +453,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	@Override
+	@Deprecated
 	public void caseArrayRef(ArrayRef v) {
 		logger.finest("Array reference identified " + v.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
@@ -465,6 +466,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	@Override
+	@Deprecated
 	public void caseStaticFieldRef(StaticFieldRef v) {
 		logger.finest("Static field reference identified " + v.toString());
 		logger.finest(		v.getField().getDeclaringClass().toString());
@@ -478,6 +480,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	@Override
+	@Deprecated
 	public void caseInstanceFieldRef(InstanceFieldRef v) {
 		logger.finest("Instance field reference identified " + v.toString());
 		logger.finest("kh" + v.getBase().toString());
@@ -510,6 +513,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	@Override
+	@Deprecated
 	public void caseLocal(Local l) {	
 		logger.finest("Local identified " + l.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {

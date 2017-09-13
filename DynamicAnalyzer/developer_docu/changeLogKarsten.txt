@@ -1,0 +1,13 @@
+WEEK 1:
+	* Introducing into Project
+	* Naming the TODOs
+
+	WEDNESDAY:
+	* Created Class LeftAssignValueSwitch
+	 - Added Documentation
+	 - Renamed into LHSInstrumentationSwitch
+	 - Replaced AnnotationValueSwitch by this at AnnotationStmtSwith
+	* Defined Log Levels
+	* 
+
+

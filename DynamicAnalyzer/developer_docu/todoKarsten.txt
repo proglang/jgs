@@ -1,0 +1,12 @@
+TODOs:
+
+* Removing the unwanted local variables in the Jimple output
+	-> Restructuring the AnnotationValueSwitch into Left and Right,
+	   may want to have a Super Class throwing only Exceptions,
+	   Such that left Child then only implements the needed Methods.
+
+* Restructuring the Logger, that it has 
+	- more readable output.
+	- structured usage.
+
+* In general: Add (good) documentation!

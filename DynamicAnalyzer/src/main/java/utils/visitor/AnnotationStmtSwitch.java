@@ -112,7 +112,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			}
 		});
 
-		AnnotationValueSwitch leftValueSwitch = new AnnotationValueSwitch(stmt, StmtContext.ASSIGNLEFT);
+		LHSInstrumentationSwitch leftValueSwitch = new LHSInstrumentationSwitch(stmt);
 		leftOperand.apply(leftValueSwitch);
 
 		/*
