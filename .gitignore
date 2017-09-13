@@ -32,6 +32,7 @@ target/
 *.iml
 .idea/*
 !/.idea/runConfigurations/
+!/.idea/codeStyleSettings.xml
 out/
 bin/
 # ant/
