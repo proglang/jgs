@@ -99,6 +99,8 @@ public class AllEndToEndTests {
 				new Object[] { "ImplicitFlow3", ExpectedException.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
 
 				new Object[] { "LowFieldHighInstance", ExpectedException.ILLEGAL_FLOW, new String[] {"boolean_z0"} },
+				new Object[] { "PutfieldHighObject", ExpectedException.ILLEGAL_FLOW, new String[] {} },
+				new Object[] { "PutfieldHighObjectNSU", ExpectedException.NSU_FAILURE, new String[] {} },
 			
 				// Examples from readme.md
 				new Object[] { "NSUPolicy", ExpectedException.NSU_FAILURE, new String[] {"int_i0"} },

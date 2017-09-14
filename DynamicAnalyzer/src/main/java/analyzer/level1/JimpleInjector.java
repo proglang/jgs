@@ -484,7 +484,6 @@ public class JimpleInjector {
      */
     public static void makeLocal(Local local, String level, Unit pos) {
         logger.info("Setting " + local + "to new level " + level);
-
         ArrayList<Type> paramTypes = new ArrayList<>();
         paramTypes.add(RefType.v("java.lang.String"));
         paramTypes.add(RefType.v("java.lang.String"));
@@ -722,13 +721,13 @@ public class JimpleInjector {
         // if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
         // and we especially do not need to perform a NSU check!
         if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
 
-        // insert NSU check only if PC is dynamic!
-        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-            unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
-        }
-        unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+            // insert NSU check only if PC is dynamic!
+            if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
+            }
+            unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
         }
         lastPos = pos;
     }
@@ -743,8 +742,7 @@ public class JimpleInjector {
     public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
         logger.log(Level.INFO, "Set level to field {0} in assignStmt in method {1}",
                 new Object[]{f.getField().getSignature(), b.getMethod().getName()});
-
-//		if (!(units.getFirst() instanceof IdentityStmt) 
+//		if (!(units.getFirst() instanceof IdentityStmt)
 //				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
 //				instanceof ThisRef)) {
 //			System.out.println(units.getFirst().getUseBoxes().toString());

@@ -68,24 +68,37 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseAssignStmt(AssignStmt stmt) {
 
+		logger.fine("case AssignStmt with: "+stmt);
 
+		// Abort, if more then One Element on the LHS
 		if (stmt.getDefBoxes().size() != 1) {
-			throw new InternalAnalyzerException(
-					"Unexpected number of elements on "
-							+ "the left side of assign statement");
+			throw new InternalAnalyzerException("Unexpected number of Elements "
+												+ "on Left Hand Side "
+												+ "of Assign statement: "
+												+ stmt.getDefBoxes().size());
 		}
 
-		logger.fine("\n > > > ASSIGN STATEMENT identified: " + stmt + " < < <");
-		// two lines below are useless information?!
-		// logger.finer(" > > > left side: " + aStmt.getDefBoxes().toString() +
-		// " < < <");
-		// logger.finer(" > > > right side: " + aStmt.getUseBoxes().toString() +
-		// " < < <");
+		// Switching the Right hand side values using the RHSInstrumentationSwitch
+		/*
+		RHSInstrumentationSwitch rhsValSwitch = new RHSInstrumentationSwitch(stmt);
+		for (ValueBox val : stmt.getRightOp().getUseBoxes()) {
+			val.getValue().apply(rhsValSwitch);
+		}
+		//*/
 
+		// Old Code to assure, that we have it.
 		AnnotationValueSwitch rightValueSwitch = new AnnotationValueSwitch(stmt, StmtContext.ASSIGNRIGHT);
-		for (int i = 0; i < stmt.getUseBoxes().size(); i++) {
-			stmt.getUseBoxes().get(i).getValue().apply(rightValueSwitch);
+	/*	for (int i = 0; i < stmt.getUseBoxes().size(); i++) {
+			Value val = stmt.getUseBoxes().get(i).getValue();
+			val.apply(rightValueSwitch);
 		}
+		//*/
+
+		stmt.getRightOp().apply(rightValueSwitch);
+		for (ValueBox val : stmt.getRightOp().getUseBoxes()) {
+			val.getValue().apply(rightValueSwitch);
+		}
+		//*/
 
 		Value leftOperand = stmt.getLeftOp();
 
@@ -97,54 +110,33 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				case NEW_UNDEF_OBJECT:
 					break;
 				case MAKE_HIGH:
+					logger.finest("Make left operand high");
+					JimpleInjector.makeLocal((Local) leftOperand, "HIGH", stmt);
 					break; // This two cases are treated later
 				case MAKE_LOW:
+					logger.finest("Make left operand low");
+					JimpleInjector.makeLocal((Local) leftOperand, "LOW", stmt);
 					break;
 				case MAKE_MEDIUM:
+					logger.finest("Make left operand medium");
+					JimpleInjector.makeLocal((Local) leftOperand, "MEDIUM", stmt);
 					break;
 				case SET_RETURN_LEVEL: // This will be handeled later (by nico)
+					JimpleInjector.setReturnLevelAfterInvokeStmt(stmt);
 					break;
 				case CAST:    // will also be handled later
+					logger.finest("Cast found at " + stmt);
+					JimpleInjector.handleCast(stmt);
 					break;
 				default:
 					new InternalAnalyzerException("Unexpected action: "
 												  + action);
 			}
 		});
+		// TODO: LHS shouldn't be executed in all cases, but currently some cases like handleCast may rely on it.
 
 		LHSInstrumentationSwitch leftValueSwitch = new LHSInstrumentationSwitch(stmt);
-		leftOperand.apply(leftValueSwitch);
-
-		/*
-		 * This must be done after the regular valueSwitch. Otherwise the
-		 * returnlevel of the MakeTop/MakeBot Method would overwrite the new
-		 * level of the local.
-		 */
-		rightValueSwitch.getRequiredActionForRHS().ifPresent(action -> {
-			switch (action) {
-				case MAKE_HIGH:
-					logger.finest("Make left operand high");
-					JimpleInjector.makeLocal((Local) leftOperand, "HIGH", stmt);
-					break;
-				case MAKE_MEDIUM:
-					logger.finest("Make left operand medium");
-					JimpleInjector.makeLocal((Local) leftOperand, "MEDIUM", stmt);
-				case MAKE_LOW:
-					logger.finest("Make left operand low");
-					JimpleInjector.makeLocal((Local) leftOperand, "LOW", stmt);
-					break;
-				case SET_RETURN_LEVEL:
-					JimpleInjector.setReturnLevelAfterInvokeStmt(stmt);
-					break;
-				case CAST:
-					logger.finest("Cast found at " + stmt);
-					JimpleInjector.handleCast(stmt);
-					break;
-				default:
-					break;
-			}
-		});
-
+		stmt.getLeftOp().apply(leftValueSwitch);
 	}
 
 	@Override
