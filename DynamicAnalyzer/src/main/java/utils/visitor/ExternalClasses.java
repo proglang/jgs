@@ -43,12 +43,19 @@ public class ExternalClasses {
 	static {
 		
 		// MethodTypings where the return level is the join of the arguments levels
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: void <init>()>",
+											 new DoNothing());
 		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.StringBuilder "
 											 + "append(java.lang.String)>",
 											 new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.StringBuilder "
+											 + "append(int)>",
+											 new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String "
-											 + "substring(int,int)>", new
-				JoinLevels());
+											 + "substring(int,int)>", new JoinLevels());
+
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.String toString()>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String toString()>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.StringUtil: java.util.List bits(java.lang.String)>", new JoinLevels());
 
 		// MethodTypings where the argument must have LOW argument
@@ -97,12 +104,17 @@ public class ExternalClasses {
 		// method's receiver
 		instrumentationForSpecialMethods.put("<java.lang.Boolean: java.lang"
 											 + ".Boolean valueOf(boolean)>", new DoNothing());
-		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Integer: int intValue()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.List: java.util.Iterator iterator()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.Iterator: boolean hasNext()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.Iterator: java.lang.Object next()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.lang.Boolean: boolean "
 											 + "booleanValue()>", new DoNothing());
+
+		// Handling of uninstrumented methods that occur in the testcases
+		instrumentationForSpecialMethods.put("<testclasses.utils.SimpleObject: void <init>()>", new DoNothing());
 	}
 
 	public static boolean isSpecialMethod(SootMethod m) {
