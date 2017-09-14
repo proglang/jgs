@@ -3,6 +3,7 @@ package analyzer.level1;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
 import analyzer.level2.CurrentSecurityDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefinedUtils;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
@@ -1450,36 +1451,39 @@ public class JimpleInjector {
 
         if (casts.isValueCast(aStmt)) {
             Casts.ValueConversion conversion = casts.getValueCast(aStmt);
-            logger.info("Found value cast " + conversion);
+            logger.fine("Found value cast: " + conversion);
 
             if (conversion.getSrcType().isDynamic() && !conversion.getDestType().isDynamic()) {
                 // Check eines Security Wert: x = (? => LOW) y
+                logger.fine("Convertion is: dynamic->static");
                 Option<Value> srcValue = conversion.getSrcValue();
                 if (srcValue.isDefined()) {
                     Local rightHandLocal = (Local) srcValue.get();
 
-                    logger.info(
-                            "Check that " + getSignatureForLocal(rightHandLocal)
-                            + " is less/equal "
-                            + conversion.getDestType().getLevel());
-                    checkThatLe(rightHandLocal, conversion.getDestType().getLevel().toString(), aStmt, "checkCastToStatic");
+                    Object destLevel = conversion.getDestType().getLevel();
+                    logger.fine( "Inserting check: "
+                                 + getSignatureForLocal(rightHandLocal)
+                                 + " <= "
+                                 + destLevel);
+                    checkThatLe(rightHandLocal, destLevel.toString(), aStmt, "checkCastToStatic");
 
                 } else {
-                    logger.info("Found public src value in cast. Omitting checks.");
+                    logger.info("Source value is pubilc. Not inserting checks.");
                 }
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Initialisierung eines Security Wert: x = (H => ? ) y
-               makeLocal((Local) aStmt.getLeftOp(), conversion.getSrcType().getLevel().toString(), aStmt);
+                logger.fine("Conversion is: static->dynamic");
+                Object srcLevel = conversion.getSrcType().getLevel();
+                logger.fine("Setting destination variable to: " + srcLevel);
+               makeLocal((Local) aStmt.getLeftOp(), srcLevel.toString(), aStmt);
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
+                logger.fine("Conversion is: dynamic->dynamic");
+                logger.fine("Ignoring trivial conversion.");
                 // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
             } else {
-                // Static to Static, invalid casts should be caught by static analyzer. We double check:
-                if (! CurrentSecurityDomain.le(CurrentSecurityDomain.readLevel(conversion.getSrcType().getLevel().toString()) ,
-                                               CurrentSecurityDomain.readLevel(conversion.getDestType().getLevel().toString()))) {
-                   // can't use that here, because exceptions during soot analysis will cause all UnitTests to fail
-                   // throw new IFCError("illegal cast from Static[" + conversion.getSrcType().getLevel()+"] to Static["+ conversion.getDestType().getLevel() + "]");
-                }
-                // else: treat like assign stmt, no extra instrumentation.
+                logger.fine("Conversion is: static->static");
+                logger.fine("Ignoring trivial conversion.");
+                // TODO: we should throw an exception here, as this should be ruled out by the typechecker. However, currently we mess up soot so much when throwing at this point, that JUnit dies immediatly.
             }
         }
     }
