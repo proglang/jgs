@@ -1467,6 +1467,8 @@ public class JimpleInjector {
                                  + destLevel);
                     checkThatLe(rightHandLocal, destLevel.toString(), aStmt, "checkCastToStatic");
 
+                    logger.fine("Setting destination variable to: " + destLevel);
+                    makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
                 } else {
                     logger.info("Source value is pubilc. Not inserting checks.");
                 }
@@ -1475,15 +1477,16 @@ public class JimpleInjector {
                 logger.fine("Conversion is: static->dynamic");
                 Object srcLevel = conversion.getSrcType().getLevel();
                 logger.fine("Setting destination variable to: " + srcLevel);
-               makeLocal((Local) aStmt.getLeftOp(), srcLevel.toString(), aStmt);
+                makeLocal((Local) aStmt.getLeftOp(), srcLevel.toString(), aStmt);
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 logger.fine("Conversion is: dynamic->dynamic");
                 logger.fine("Ignoring trivial conversion.");
-                // Dynamic -> Dynamic is treated like assign stmt, no extra instrumentation.
+                // TODO: casts should be run on the rhs and set the "assignment level" here.
             } else {
                 logger.fine("Conversion is: static->static");
                 logger.fine("Ignoring trivial conversion.");
-                // TODO: we should throw an exception here, as this should be ruled out by the typechecker. However, currently we mess up soot so much when throwing at this point, that JUnit dies immediatly.
+                // TODO: casts should be run on the rhs and set the "assignment level" here.
+                // TODO: if for some reason the type analysis is not available, we should check that the conversion is correct here
             }
         }
     }
