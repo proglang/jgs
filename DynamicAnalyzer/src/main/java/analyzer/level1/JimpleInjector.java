@@ -620,11 +620,10 @@ public class JimpleInjector {
     public static void setLevelOfAssignStmt(Local l, Unit pos) {
         logger.info("Setting level in assign statement");
 
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
 
         String signature = getSignatureForLocal(l);
 
+        // ToDo: Remove, when ready - currently other Methods rely on it
         Stmt assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
 
@@ -641,22 +640,32 @@ public class JimpleInjector {
                         Scene.v().getObjectType(),
                         false),
                 //*/
-                local_for_Strings);
+                StringConstant.v(signature));
         Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic
+
         Expr checkLocalPC = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+                hs,
+                // Old Code
+                JimpleFactory.getAllMethodsOf(HandleStmt.class).get("checkLocalPC"),
+                /*//
+                Scene.v().makeMethodRef(
+                        Scene.v().getSootClass(HANDLE_CLASS),
                         "checkLocalPC", paramTypes,
                         VoidType.v(),
-                        false), local_for_Strings);
+                        false),
+                //*/
+                StringConstant.v(signature));
         Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
 
         // TODO i did comment this out for some reason .. but why?
         // if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
         // and we especially do not need to perform a NSU check!
         if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
+
+            // ToDo: Remove, when ready - currently other Methods rely on it
             unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
 
             // insert NSU check only if PC is dynamic!

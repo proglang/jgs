@@ -63,8 +63,9 @@ public class JimpleFactory {
     /**
      * Returns a Map of Method names to the SootMethodRef, such it could be
      * directly accessed over the Map Interface. <br>
-     * <b>Note:</b> This Map is cached, so the Access should be O(1), at least in
-     * the average Case. In The first call it calculates the Map.
+     * <b>Note:</b> This Map is not cached (anymore). It could only be cached, if
+     * Soot.Reset() would work proper.
+     * See <a href="https://mailman.cs.mcgill.ca/pipermail/soot-list/2008-December/002174.html">This article</a>.
      * <br><br>
      * <b>Example</b>: Let C be a Class, which at least the Method some(), then
      * use JimpleFactory.getAllMethodsOf(C.class).get("some") to get the SootMethodRef.
@@ -74,8 +75,8 @@ public class JimpleFactory {
      * @return A Map that maps the name of a Method to the SootMethodRef
      */
     public static Map<String, SootMethodRef> getAllMethodsOf (Class c) {
-        if (cache.containsKey(c.getName()))
-            return cache.get(c.getName());
+      //  if (cache.containsKey(c.getName()))
+      //      return cache.get(c.getName());
         Map content = new HashMap<>();
         for (Method m : c.getMethods()) {
             SootMethodRef mRef = Scene.v().makeMethodRef(
@@ -87,7 +88,7 @@ public class JimpleFactory {
 
             content.put(m.getName(), mRef);
         }
-        cache.put(c.getName(), content);
+     //   cache.put(c.getName(), content);
         return content;
     }
 
