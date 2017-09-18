@@ -632,17 +632,11 @@ public class JimpleInjector {
 
         // insert setLevelOfLocal, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
-        Expr invokeSetLevel = fac.createExpr("setLevelOfLocal", StringConstant.v(signature));
-
-        Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
+        Unit invoke = fac.createStmt("setLevelOfLocal", StringConstant.v(signature));
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic
-
-        Expr checkLocalPC = fac.createExpr("checkLocalPC", StringConstant.v(signature)) ;
-
-
-        Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
+        Unit checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
 
         // TODO i did comment this out for some reason .. but why?
         // if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
@@ -693,27 +687,11 @@ public class JimpleInjector {
         // insert: checkGlobalPC(Object, String)
         // why do we check the global PC? Because the field is possibily visible everywhere, check that sec-value of field is greater
         // or equal than the global PC.
-        System.out.println(hs == Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS)));
-        Expr checkGlobalPC = fac.createExpr("checkGlobalPC", tmpLocal, local_for_Strings);
-        /*
-                Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "checkGlobalPC",
-                        parameterTypes, VoidType.v(), false),
-                tmpLocal, local_for_Strings);
-                //*/
-        Unit checkGlobalPCExpr = Jimple.v().newInvokeStmt(checkGlobalPC);
+        Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC", tmpLocal, StringConstant.v(fieldSignature));
 
-        // insert setLevelOfField, which sets Level of Field to the join of gPC and right-hand side of assign stmt sec-value join
-        Expr addObj = fac.createExpr( "setLevelOfField", tmpLocal, local_for_Strings);
-        /*
-                Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField",
-                        parameterTypes, Scene.v().getObjectType(), false),
-                tmpLocal, local_for_Strings);
-                //*/
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        // insert setLevelOfField, which sets Level of Field to the join of gPC
+        // and right-hand side of assign stmt sec-value join
+        Unit assignExpr = fac.createStmt( "setLevelOfField", tmpLocal, StringConstant.v(fieldSignature));
 
         // pushInstanceLevelToGlobalPC and popGlobalPC take the instance, push to global pc; and pop afterwards.
         // see NSU_FieldAccess tests why this is needed
