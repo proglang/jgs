@@ -5,6 +5,7 @@ import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import soot.*;
+import utils.jimple.JimpleFactory;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
@@ -197,6 +198,7 @@ public class Main {
 
 		// for multiple runs, soot needs to be reset, which is done in the following line
 		G.reset();
+		JimpleFactory.reset();
 
 		// open question:
 		// was ist der empfohlene weg, exceptions zu werfen aus einer analyse heraus.

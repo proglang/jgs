@@ -629,35 +629,26 @@ public class JimpleInjector {
 
         // insert setLevelOfLocal, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
-        Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
+        Expr invokeSetLevel = JimpleFactory.createExpr(hs, HandleStmt.class, "setLevelOfLocal", StringConstant.v(signature));
+        /*
+                Jimple.v().newVirtualInvokeExpr(
                 hs,
                 JimpleFactory.getAllMethodsOf(HandleStmt.class).get("setLevelOfLocal"),
-                // Old Code.
-                /*
-                Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS),
-                        "setLevelOfLocal", paramTypes,
-                        Scene.v().getObjectType(),
-                        false),
-                //*/
                 StringConstant.v(signature));
+        //*/
         Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic
 
-        Expr checkLocalPC = Jimple.v().newVirtualInvokeExpr(
+        Expr checkLocalPC = JimpleFactory.createExpr(hs, HandleStmt.class, "checkLocalPC", StringConstant.v(signature)) ;
+                // Old Code, that probably never work again
+            /*    Jimple.v().newVirtualInvokeExpr(
                 hs,
-                // Old Code
                 JimpleFactory.getAllMethodsOf(HandleStmt.class).get("checkLocalPC"),
-                /*//
-                Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS),
-                        "checkLocalPC", paramTypes,
-                        VoidType.v(),
-                        false),
-                //*/
                 StringConstant.v(signature));
+        //*/
+
         Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
 
         // TODO i did comment this out for some reason .. but why?

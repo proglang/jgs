@@ -1,6 +1,9 @@
 package utils.jimple;
 
 import soot.*;
+import soot.jimple.Expr;
+import soot.jimple.Jimple;
+import soot.jimple.VirtualInvokeExpr;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -63,33 +66,90 @@ public class JimpleFactory {
     /**
      * Returns a Map of Method names to the SootMethodRef, such it could be
      * directly accessed over the Map Interface. <br>
-     * <b>Note:</b> This Map is not cached (anymore). It could only be cached, if
-     * Soot.Reset() would work proper.
-     * See <a href="https://mailman.cs.mcgill.ca/pipermail/soot-list/2008-December/002174.html">This article</a>.
+     * <b>Note:</b> This Map is cached (again). The Access so shall be O(1) in
+     * average.
      * <br><br>
-     * <b>Example</b>: Let C be a Class, which at least the Method some(), then
-     * use JimpleFactory.getAllMethodsOf(C.class).get("some") to get the SootMethodRef.
+     * <b>Note:</b> The Key String is not only the name of the Method, but also
+     * the type Signature. <br>
+     * <b>Example</b>: Let C be a Class, which at least the Method some(int, String),
+     * then use JimpleFactory.getAllMethodsOf(C.class).get("some int, java.util.String")
+     * to get the SootMethodRef.
      * @param c The Class Type of that class which Methods are needed as SootMethodRefs,
      *          such that they could be inserted as a call with the help of the
      *          Soot - Framework.
      * @return A Map that maps the name of a Method to the SootMethodRef
+     * @see JimpleFactory#generateKey(String, Type...)
      */
     public static Map<String, SootMethodRef> getAllMethodsOf (Class c) {
-      //  if (cache.containsKey(c.getName()))
-      //      return cache.get(c.getName());
+        if (cache.containsKey(c.getName()))
+            return cache.get(c.getName());
         Map content = new HashMap<>();
         for (Method m : c.getMethods()) {
+            List<Type> types = createParameters(m.getParameterTypes());
             SootMethodRef mRef = Scene.v().makeMethodRef(
                     Scene.v().getSootClass(c.getName()),
                     m.getName(),
-                    createParameters(m.getParameterTypes()),
+                    types,
                     toSootType(m.getReturnType()),
                     java.lang.reflect.Modifier.isStatic(m.getModifiers()));
 
-            content.put(m.getName(), mRef);
+            // Creating a key, that contains not only the name, but also
+            // the Signature of the Types, such that overloaded Methods are
+            // supported.
+            // Extract it as own Function, such that the access is easier and
+            // it is assured, that every one has the same key.
+            content.put(generateKey(m.getName(), types.toArray(new Type[0])), mRef);
         }
-     //   cache.put(c.getName(), content);
+        cache.put(c.getName(), content);
         return content;
     }
 
+    /**
+     * Calculates the key for a given Method name with the given Types as signature.
+     * @param method The name of the Method, that wants to be accessed by this key.
+     * @param signature A List of Types defining the signature of the method.
+     * @return The key String to access the Map, in order to gain the SootMethodRef
+     * @see JimpleFactory#getAllMethodsOf(Class)
+     */
+    public static String generateKey(String method, Type... signature) {
+        List<Type> types = Arrays.asList(signature);
+        String key = types.isEmpty() ? method : method + " ";
+        for (Type t : types) {
+            key += t + ", ";
+        }
+        // Cut off the last Comma
+        return types.isEmpty() ? key : key.substring(0, key.length() - 2);
+    }
+
+    /**
+     * Resets the cache. This function shall be called directly after (or before)
+     * Soot is reset. Because, if Soot is reset and this function is not called,
+     * then there are hard internal problems.
+     */
+    public static void reset() { cache.clear(); }
+
+    /**
+     * Creates an Expression, that can be used to create a Unit, which can then be inserted.
+     * @param base The Local Variable, that will be used to execute the invoke.
+     *             (At least it seems to be logical. May look {@link Jimple#newVirtualInvokeExpr})
+     * @param callRef The Class, that contains the Method that shall be executed.
+     * @param callMethod The Name of the Method, that shall be Executed.
+     * @param args A list of Values, that are passed by the execution of the invokeStmt.
+     *             It is also used to calculate the signature of the method, in case of overloading.
+     * @return A VirtualInvokeExpr, that can be used to create a new Unit, means an invokeStmt.
+     */
+    public static VirtualInvokeExpr createExpr(Local base, Class callRef, String callMethod, Value... args) {
+        // Creating a the list of Types as signature, due to the given values.
+        List<Type> sign = new ArrayList<>(args.length);
+        for (Value val : args) { sign.add(val.getType()); }
+
+        // Use the signature to get the key.
+        String key = generateKey(callMethod, sign.toArray(new Type[0]));
+
+        // Getting the right SootMethod using that key
+        SootMethodRef method = getAllMethodsOf(callRef).get(key);
+
+        // Creating and return the Expression
+        return Jimple.v().newVirtualInvokeExpr(base, method, args);
+    }
 }
