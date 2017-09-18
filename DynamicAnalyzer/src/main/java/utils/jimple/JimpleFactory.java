@@ -74,7 +74,13 @@ public class JimpleFactory {
         }
     }
 
-
+    /**
+     * Creates a VirtualInvokeExpr that can be turned into an Stmt, such that
+     * it could be inserted.
+     * @param method The Method, that shall be executed by the created Expr
+     * @param args The Arguments, that shall be passed to the called Method.
+     * @return A VirtualInvokeExpr, that could be inserted.
+     */
     public VirtualInvokeExpr createExpr(String method, Value... args) {
         if (!cache.containsKey(method))
             throw new NoSuchElementException("Couldn't find the Method: "+method);
@@ -110,7 +116,15 @@ public class JimpleFactory {
         return Jimple.v().newVirtualInvokeExpr(instance, sootMethod, args);
     }
 
-    public InvokeStmt createStmt(String callMethod, Value... args) {
-        return Jimple.v().newInvokeStmt(createExpr(callMethod, args));
+    /**
+     * Creates a Stmt using the Parameters. This statement could be inserted by
+     * the JimpleInjector directly.
+     * @param method The Method, that shall be executed by the created Expr
+     * @param args The Arguments, that shall be passed to the called Method.
+     * @return A Stmt, that the JimpleInjector could inject.
+     * @see JimpleFactory#createExpr(String, Value...) 
+     */
+    public InvokeStmt createStmt(String method, Value... args) {
+        return Jimple.v().newInvokeStmt(createExpr(method, args));
     }
 }
