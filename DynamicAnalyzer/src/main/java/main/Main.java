@@ -120,7 +120,9 @@ public class Main {
 				cpath.add(url.getFile());
 			}
 		} else {
-        	throw new RuntimeException("Cannot get URLs needed for the soot classpath from current contextclassloader");
+        	// throw new RuntimeException("Cannot get URLs needed for the soot classpath from current contextclassloader");
+			L1Logger.getLogger().warning("Cannot get URLs needed for the soot classpath from current contextclassloader.\n "
+										 + "(Ignore this warning when running under sbt).");
 		}
 
 		Scene.v().setSootClassPath(String.join(":", cpath) + ":" + classPath);

@@ -47,9 +47,9 @@ lazy val jgs =
     settings(commonSettings:_*).
     settings(
       unmanagedClasspath in Runtime ++= {
-        sys.env.get("JGS_SECDOMAIN_CLASSES")
-          .map(path => path.split(":").map(new File(_)).toList)
-          .getOrElse(List())
+        // List(baseDirectory.value / "LMHSecurityDomain/target/scala-2.11/lmhsecuritydomain_2.11-0.1-SNAPSHOT.jar")
+        sys.env.get("JGS_SECDOMAIN_JARS")
+          .map(path => path.split(":").map(new File(_)).toList).getOrElse(List())
       }
     )
 
