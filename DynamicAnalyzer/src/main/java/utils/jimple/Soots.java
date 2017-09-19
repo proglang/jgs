@@ -18,6 +18,51 @@ import java.util.List;
 public class Soots {
 
     /**
+     * Tells whether the given type Name is a primitive type or not
+     * @param typeName that may be something like "int" or "java.lang.String" or..
+     * @return true, if it is primitive and false otherwise.
+     */
+    public static boolean isPrimitiveType(String typeName) {
+        switch (typeName) {
+            case "boolean" : return true;
+            case "byte": return true;
+            case "char": return true;
+            case "double" : return true;
+            case "float" : return true;
+            case "int" : return true;
+            case "long" : return true;
+            case "short": return true;
+            case "void" : return true;
+            case "null" : return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Returns the Class of the primitive Type, that is given in the String
+     * @param typeName The name of a primitive type, such as "int"
+     * @return The class of that primitive Type
+     * @throws IllegalArgumentException when the String is not primitive.
+     */
+    public static Class getPrimitiveType(String typeName) {
+        switch (typeName) {
+            case "boolean" : return boolean.class;
+            case "byte": return byte.class;
+            case "char": return char.class;
+            case "double" : return double.class;
+            case "float" : return float.class;
+            case "int" : return int.class;
+            case "long" : return long.class;
+            case "short": return short.class;
+            case "void" : return void.class;
+            case "null" : return null;
+            default:
+                throw new IllegalArgumentException("The String is no name of an primitive data type: "+typeName);
+        }
+    }
+
+    /**
      * Creates a Type out of a given Parameter as Class.
      * @param param The Parameter of a {@link Method} or its return Type.
      * @return The SootType, that refers to the given parameter Type

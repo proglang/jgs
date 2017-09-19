@@ -182,19 +182,8 @@ public class JimpleInjector {
     static void initHandleStmtUtils(boolean controllerIsActive, int expectedException) {
         logger.log(Level.INFO, "Set Handle Stmt Utils and aktive/passive Mode of superfluous instrumentation checker");
 
-
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(BooleanType.v());
-        paramTypes.add(IntType.v());
-
-        Expr invHS = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "initHandleStmtUtils",
-                        paramTypes, VoidType.v(), false),
-                IntConstant.v(controllerIsActive ? 1 : 0),
-                IntConstant.v(expectedException)
-        );
-        Unit inv = Jimple.v().newInvokeStmt(invHS);
+        Unit inv = fac.createStmt("initHandleStmtUtils", IntConstant.v(controllerIsActive ? 1 : 0),
+                             IntConstant.v(expectedException));
 
         unitStore_After.insertElement(unitStore_After.new Element(inv, lastPos));
         lastPos = inv;
@@ -212,6 +201,7 @@ public class JimpleInjector {
                 Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "init", paramTypes, VoidType.v(), true));
         Unit init = Jimple.v().newInvokeStmt(invokeInit);
+
         unitStore_After.insertElement(unitStore_After.new Element(init, lastPos));
         lastPos = init;
     }
