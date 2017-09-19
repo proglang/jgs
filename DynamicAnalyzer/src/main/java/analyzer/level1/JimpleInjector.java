@@ -167,12 +167,17 @@ public class JimpleInjector {
         locals.add(hs);
         Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(
                 RefType.v(HANDLE_CLASS)));
+
+        Unit inv = fac.createStmt(HANDLE_CLASS);
+
+        /* Recplace old code
         ArrayList<Type> paramTypes = new ArrayList<>();
         Expr specialIn = Jimple.v().newSpecialInvokeExpr(
                 hs, Scene.v().makeConstructorRef(
                         Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
 
         Unit inv = Jimple.v().newInvokeStmt(specialIn);
+        // Replacing old code */
 
         unitStore_Before.insertElement(unitStore_Before.new Element(inv, lastPos));
         unitStore_Before.insertElement(unitStore_Before.new Element(in, inv));

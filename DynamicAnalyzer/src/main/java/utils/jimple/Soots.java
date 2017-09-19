@@ -33,7 +33,6 @@ public class Soots {
             case "long" : return true;
             case "short": return true;
             case "void" : return true;
-            case "null" : return true;
             default:
                 return false;
         }
@@ -56,7 +55,6 @@ public class Soots {
             case "long" : return long.class;
             case "short": return short.class;
             case "void" : return void.class;
-            case "null" : return null;
             default:
                 throw new IllegalArgumentException("The String is no name of an primitive data type: "+typeName);
         }
