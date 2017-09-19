@@ -9,7 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
  * @author Nicolas Müller
  *
  */
-public class NSUPolicy {
+public class NSUPolicyWithMakeHigh {
 
 	@Constraints({"LOW <= @0 "})
 	public static void main(String[] args) {
@@ -17,7 +17,7 @@ public class NSUPolicy {
 		int secret = 42;
 		
 		//y = DynamicLabel.makeLow(5);		// just for clarity
-		secret = Casts.cast("HIGH ~> ?", 5);
+		secret = DynamicLabel.makeHigh(5);
 		
 		if (secret > 0) {
 			y += 1;						// NSU IFCError, Illegal

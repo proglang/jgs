@@ -55,6 +55,7 @@ public class JGS_End2EndTests {
                 new Object[]{"SimpleCast_Fail3", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{"java.lang.Integer_$r5"}},
                 new Object[]{"SimpleCast_Fail4", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{"java.lang.String_r2"}},
                 new Object[]{"NSUPolicy", SecurityMonitoringEvent.NSU_FAILURE, new String[]{""}},
+                new Object[]{"NSUPolicyWithMakeHigh", SecurityMonitoringEvent.NSU_FAILURE, new String[]{""}},
                 new Object[]{"ScratchMonomorphic_Success", SecurityMonitoringEvent.PASSED, new String[]{""}},
                 new Object[]{"SimpleSuccess", SecurityMonitoringEvent.PASSED, new String[]{""}},
                 new Object[]{"SimpleCasts", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}
