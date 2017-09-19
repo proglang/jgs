@@ -178,7 +178,13 @@ public class JimpleFactory {
         return Jimple.v().newInvokeStmt(createExpr(method, args));
     }
 
-    private String calcKey(List<Type> types) {
+    /**
+     * Calculates the Key String to Save the Signature of a Method
+     * out of the Types of the Signature passed as a List.
+     * @param types A List of Type, that shall be translated into a String
+     * @return A String containing the Signature of the given Types.
+     */
+    public static String calcKey(List<Type> types) {
         String key = "";
         for (Type t : types) { key += t + ", "; }
         return types.isEmpty() ? key : key.substring(0, key.length() - 2);
