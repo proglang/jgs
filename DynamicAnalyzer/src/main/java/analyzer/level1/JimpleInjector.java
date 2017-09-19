@@ -153,7 +153,6 @@ public class JimpleInjector {
         extralocals = false;
 
         lastPos = getUnitOf(units, getStartPos(body));
-
         fac.initialise();
     }
 

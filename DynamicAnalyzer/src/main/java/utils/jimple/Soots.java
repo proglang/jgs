@@ -26,6 +26,7 @@ public class Soots {
      * @throws IllegalStateException if the given parameter is an unsupported primitive type.
      */
     public static Type toSootType(Class param) {
+        if (param == null) return NullType.v();
         if (param.isPrimitive()) {
             switch (param.getName()) {
                 case "boolean" : return BooleanType.v();
@@ -41,7 +42,12 @@ public class Soots {
                     throw new IllegalStateException("Unsupported Primative Type: "+param.getName());
             }
         }
-        // if not primitive, then it is hopefully a RefType
+        // if not primitive, then it hopefully is a RefType
+        if (param.isArray()) {
+            int dim = param.getName().lastIndexOf("[") + 1;
+            String type = param.getTypeName().replaceAll("\\[\\]", "");
+            return ArrayType.v(RefType.v(type), dim);
+        }
         return RefType.v(param.getTypeName());
     }
 
