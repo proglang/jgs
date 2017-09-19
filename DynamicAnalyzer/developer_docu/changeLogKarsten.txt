@@ -8,6 +8,7 @@ WEEK 1:
 	 - Renamed into LHSInstrumentationSwitch
 	 - Replaced AnnotationValueSwitch by this at AnnotationStmtSwith
 	* Defined Log Levels
-	* 
+	* Created Class RHSInstrumentationSwitch
+	* Optimization of AnnotationStmtSwitch.caseAssignExpr
 
 

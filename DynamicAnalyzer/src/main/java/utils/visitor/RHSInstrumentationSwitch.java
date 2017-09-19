@@ -5,6 +5,7 @@ import soot.Local;
 import soot.jimple.*;
 import utils.logging.L1Logger;
 
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -28,7 +29,7 @@ public class RHSInstrumentationSwitch extends AbstractJimpleValueSwitch {
 
     /** Saves the Statement, that calls the referring Method of its type.
      * The Statement shall be known at creation of the Switch. */
-    private final Stmt callStmt;
+    private final AssignStmt callStmt;
 
     /**
      * Creates a new Value Switch for the Right Side of an Assignment.
@@ -37,7 +38,7 @@ public class RHSInstrumentationSwitch extends AbstractJimpleValueSwitch {
      * @param call The Assignment Stmt, that is found in the
      * {@link AnnotationStmtSwitch::caseAssignStmt } and calls the apply Method.
      */
-    public RHSInstrumentationSwitch(Stmt call) {
+    public RHSInstrumentationSwitch(AssignStmt call) {
         callStmt = call;
         logger.finer("Created RightAssignVS for: "+call);
     }
@@ -96,9 +97,42 @@ public class RHSInstrumentationSwitch extends AbstractJimpleValueSwitch {
 
     // </editor-fold>
 
-    // <editor-fold desc="Invoke Cases">
+    // <editor-fold desc="Array Cases">
 
+    /**
+     * On the right hand side of an assignment could be an array declaration.
+     * Let l = new int[1]; be the statement, then new int[1] would be the given
+     * newArrayExpression v
+     * @param v The NewArrayExpr, that is calling this case fulfilling the Visitor Pattern.
+     * @see JimpleInjector::addArrayToObjectMap
+     */
+    @Override
+    public void caseNewArrayExpr(NewArrayExpr v) {
+        logger.finest("case NewArrayExpr: " + v);
+        JimpleInjector.addArrayToObjectMap((Local) callStmt.getLeftOp(), callStmt);
+    }
 
+    /**
+     * On the right hand side of an assignment could be an multiArray declaration.
+     * Let l = new int[1][6]; be the statement, then new int[1][6] would be the given
+     * newMultiArrayExpression v
+     * @param v The NewMultiArrayExpr, that is calling this case fulfilling the Visitor Pattern.
+     * @see JimpleInjector::addArrayToObjectMap
+     */
+    @Override
+    public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
+        logger.finest("case NewMultiArrayExpr: " + v);
+        JimpleInjector.addArrayToObjectMap((Local) callStmt.getLeftOp(), callStmt);
+    }
 
     // </editor-fold>
+
+    // <editor-fold desc="Invoke Cases">
+
+    // </editor-fold>
+
+    @Override
+    public void defaultCase(Object obj) {
+
+    }
 }

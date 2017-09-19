@@ -99,7 +99,9 @@ public class AllEndToEndTests {
 				new Object[] {"ImplicitFlow2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
 				new Object[] {"ImplicitFlow3", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"Invalid security context"} },
 
-				new Object[] {"LowFieldHighInstance", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"boolean_z0"} },
+				new Object[] { "LowFieldHighInstance", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"boolean_z0"} },
+				new Object[] { "PutfieldHighObject", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {} },
+				new Object[] { "PutfieldHighObjectNSU", SecurityMonitoringEvent.NSU_FAILURE, new String[] {} },
 			
 				// Examples from readme.md
 				new Object[] {"NSUPolicy", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int_i0"} },

@@ -393,6 +393,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	@Override
+	@Deprecated
 	public void caseNewArrayExpr(NewArrayExpr v) {
 		setRequiredActionForRHS(Optional.of(RequiredActionForRHS.NEW_ARRAY));
 		logger.finest("New Array expression identified: " + callingStmt.toString());
@@ -402,6 +403,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	@Override
+	@Deprecated
 	public void caseNewMultiArrayExpr(NewMultiArrayExpr v) {
 		setRequiredActionForRHS(Optional.of(RequiredActionForRHS.NEW_ARRAY));
 		logger.finest("New Multiarray expression identified: " + callingStmt.toString());
@@ -542,21 +544,27 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 			if (ExternalClasses.isSpecialMethod(method)) {
 				logger.fine("Found special method: " + method);
 				setRequiredActionForRHS(ExternalClasses.instrumentSpecialMethod(method, callingStmt, args));
+
 			} else {
+
 				if (v.getMethod().getDeclaringClass().isLibraryClass()) {
 					// method is not instrumented and we have no special treatment for it... 
 					logger.severe("====== IGNORING UNKNOWN LIBRARY METHOD " + method + " =======");
                     // TODO: why don't we exit here? (otherwise we are not ignoring the library method)
 				}
+
 				logger.fine("Found an external class " + method);
 				logger.fine("This class is treated as an internal class");
 				// JimpleInjector.pushToGlobalPC(LocalPC JOIN GlobalPC)
+
 				setRequiredActionForRHS(Optional.of(RequiredActionForRHS.SET_RETURN_LEVEL));
+
 				// aber überall noch mal checken ob nirgendwo das right element
 				// überschrieben wird, d.h. ob das hier eine eindeutige 
 				// positioin ist
 				JimpleInjector.storeArgumentLevels(callingStmt, args);	// this is where we could push a global pc
 			}
+
 		} else {
 			throw new InternalAnalyzerException(
 					"Unexpected Context for Invoke Expression");

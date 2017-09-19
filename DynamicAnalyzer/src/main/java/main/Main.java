@@ -5,6 +5,7 @@ import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import soot.*;
+import utils.jimple.JimpleFactory;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
@@ -73,7 +74,7 @@ public class Main {
 		 		L1Logger.setup(Level.ALL);
                 L1Logger.getLogger().info("Verbose logging activated");
 			} else {
-				L1Logger.setup(Level.WARNING);
+				L1Logger.setup(Level.INFO);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

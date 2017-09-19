@@ -46,7 +46,7 @@ public class LHSInstrumentationSwitch extends AbstractJimpleValueSwitch {
      * The Case of a local Variable is interesting for the Left Side of an Assignment.
      * Let l = 5; be the callStmt, then the given Local shall be l
      * @param l The Local, that is calling this case fulfilling the Visitor Pattern.
-     * @see JimpleInjector::setLevelOfAssignStmt
+     * @see JimpleInjector#setLevelOfAssignStmt
      */
     @Override
     public void caseLocal(Local l) {

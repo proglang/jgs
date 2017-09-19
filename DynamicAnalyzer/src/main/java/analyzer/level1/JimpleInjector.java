@@ -3,7 +3,7 @@ package analyzer.level1;
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
 import analyzer.level2.CurrentSecurityDomain;
-import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.UserDefinedUtils;
+import analyzer.level2.HandleStmt;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
@@ -15,6 +15,7 @@ import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.exceptions.InternalAnalyzerException;
+import utils.jimple.JimpleFactory;
 import utils.logging.L1Logger;
 
 import java.util.*;
@@ -22,33 +23,47 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * JimpleInjector is called by the AnnotatorStmtSwitch and AnnotatorValueSwitch.
- * Inserts additional statements into a methodTypings body.
+ * JimpleInjector is handles the inserts of additional instructions in a methods
+ * body, such that the Dynamic Checking is possible.
  *
- * @author Regina Koenig (2015)
+ * @author Regina Koenig (2015), Karsten Fix (2017)
+ * @version 2.0
  */
 public class JimpleInjector {
 
-    /**
-     * String for the HandleStmt class.
-     */
+    /** String for the HandleStmt class. */
     private static final String HANDLE_CLASS = "analyzer.level2.HandleStmt";
 
+    /** Local which holds the object of HandleStmt. */
+    private static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
 
-    /**
-     * The body of the actually analyzed method.
-     */
+    private static JimpleFactory fac = new JimpleFactory(HandleStmt.class, hs);
+
+    // <editor-fold desc="Fields for Body Analysis">
+
+    /** The body of the actually analyzed method. */
     private static Body b = Jimple.v().newBody();
 
-    /**
-     * Chain with all units in the actual method-body.
-     */
+    /** Chain with all units in the actual method-body.*/
     private static Chain<Unit> units = b.getUnits();
 
-    /**
-     * Chain with all locals in the actual method-body.
-     */
+    /** Chain with all locals in the actual method-body. */
     private static Chain<Local> locals = b.getLocals();
+
+    /**
+     * Stores the position of
+     * <ul>
+     *     <li>the last unit which was analyzed in the unit chain</li>
+     *     <li><b>or</b> the last inserted unit</li>
+     * </ul>
+     * This is needed for further units, which have to be inserted after this
+     * position.
+     */
+    private static Unit lastPos;
+
+    // </editor-fold>
+
+    // <editor-fold desc="Fields for Injections"
 
     /**
      * Chain containing all new units which have to be set
@@ -62,58 +77,35 @@ public class JimpleInjector {
      */
     private static UnitStore unitStore_Before = new UnitStore("UnitStore_Before");
 
-    /**
-     * Local which holds the object of HandleStmt.
-     */
-    private static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
+    // </editor-fold>
 
-    /**
-     * Boolean to check whether the extra locals had already been added.
-     */
+    // <editor-fold desc="Locals, that shall be removed">
+
+    /** Boolean to check whether the extra locals had already been added. */
+    // Todo: Remove when ready
     private static boolean extralocals = false;
 
-    /**
-     * Local wto store String values.
-     */
+    /** Local wto store String values. */
     private static Local local_for_Strings = Jimple.v().newLocal(
             "local_for_Strings", RefType.v("java.lang.String"));
 
-    /**
-     * This local is needed for methodTypings
-     * with more than two arguments.
-     */
-    private static Local local_for_Strings2 = Jimple.v().newLocal(
-            "local_for_Strings2", RefType.v("java.lang.String"));
-    /**
-     * This locals is needed for methodTypings
-     * with more than two arguments.
-     */
-    private static Local local_for_Strings3 = Jimple.v().newLocal(
-            "local_for_Strings3", RefType.v("java.lang.String"));
+    /** This local is needed for methods with more than two arguments. */
+    private static Local local_for_Strings2 = Jimple.v().newLocal("local_for_Strings2", RefType.v("java.lang.String"));
 
-    /**
-     * Local where String arrays can be stored. Needed to store arguments for injected methodTypings.
-     */
-    private static Local local_for_String_Arrays = Jimple.v().newLocal(
-            "local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
+    /** This locals is needed for methods with more than two arguments. */
+    private static Local local_for_Strings3 = Jimple.v().newLocal("local_for_Strings3", RefType.v("java.lang.String"));
 
-    /**
-     * Local where Objects can be stored as arguments for injected methodTypings.
-     */
-    private static Local local_for_Objects = Jimple.v().newLocal(
-            "local_for_Objects", RefType.v("java.lang.Object"));
+    /** Local where String arrays can be stored. Needed to store arguments for injected methods. */
+    private static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 
-    /**
-     * Logger.
-     */
+    /** Local where Objects can be stored as arguments for injected methods. */
+    private static Local local_for_Objects = Jimple.v().newLocal("local_for_Objects", RefType.v("java.lang.Object"));
+
+    // </editor-fold>
+
+    /** Logger */
     private static Logger logger = L1Logger.getLogger();
 
-    /**
-     * Stores the position of the last unit which was analyzed in the unit chain or the last
-     * inserted unit. Is needed for further units,
-     * which have to be inserted after the last position.
-     */
-    private static Unit lastPos;
 
     private static Casts casts;
 
@@ -124,7 +116,6 @@ public class JimpleInjector {
     private static CxTyping cxTyping;
     private static Instantiation instantiation;
 
-    
     /**
      * See method with same name in HandleStatement.
      *
@@ -158,19 +149,14 @@ public class JimpleInjector {
         units = b.getUnits();
         locals = b.getLocals();
 
+        // TODO: Remove this flag, when ready to remove
         extralocals = false;
 
-        // Insert after the setting of all arguments and the @this-reference,
-        // since Jimple would otherwise complain.
-        int startPos = getStartPos(body);
-        Iterator<Unit> uIt = units.iterator();
-        for (int i = 0; i <= startPos; i++) {
-            lastPos = uIt.next();
-        }
-
-        logger.info("Start position is " + lastPos.toString());
-
+        lastPos = getUnitOf(units, getStartPos(body));
+        fac.initialise();
     }
+
+    // <editor-fold desc="HandleStmt Related Methods">
 
     /**
      * Add "hs = new HandleStmt()" expression to Jimplecode.
@@ -181,12 +167,17 @@ public class JimpleInjector {
         locals.add(hs);
         Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(
                 RefType.v(HANDLE_CLASS)));
+
+        Unit inv = fac.createStmt(HANDLE_CLASS);
+
+        /* Recplace old code
         ArrayList<Type> paramTypes = new ArrayList<>();
         Expr specialIn = Jimple.v().newSpecialInvokeExpr(
                 hs, Scene.v().makeConstructorRef(
                         Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
 
         Unit inv = Jimple.v().newInvokeStmt(specialIn);
+        // Replacing old code */
 
         unitStore_Before.insertElement(unitStore_Before.new Element(inv, lastPos));
         unitStore_Before.insertElement(unitStore_Before.new Element(in, inv));
@@ -196,24 +187,12 @@ public class JimpleInjector {
     static void initHandleStmtUtils(boolean controllerIsActive, int expectedException) {
         logger.log(Level.INFO, "Set Handle Stmt Utils and aktive/passive Mode of superfluous instrumentation checker");
 
-
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(BooleanType.v());
-        paramTypes.add(IntType.v());
-
-        Expr invHS = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "initHandleStmtUtils",
-                        paramTypes, VoidType.v(), false),
-                IntConstant.v(controllerIsActive ? 1 : 0),
-                IntConstant.v(expectedException)
-        );
-        Unit inv = Jimple.v().newInvokeStmt(invHS);
+        Unit inv = fac.createStmt("initHandleStmtUtils", IntConstant.v(controllerIsActive ? 1 : 0),
+                             IntConstant.v(expectedException));
 
         unitStore_After.insertElement(unitStore_After.new Element(inv, lastPos));
         lastPos = inv;
     }
-
 
     /**
      * Injects the constructor call of HandleStmt into the analyzed method.
@@ -227,6 +206,7 @@ public class JimpleInjector {
                 Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "init", paramTypes, VoidType.v(), true));
         Unit init = Jimple.v().newInvokeStmt(invokeInit);
+
         unitStore_After.insertElement(unitStore_After.new Element(init, lastPos));
         lastPos = init;
     }
@@ -247,10 +227,9 @@ public class JimpleInjector {
         units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
     }
 
-	/*
-     * Adding Elements to map
-	 */
+    // </editor-fold>
 
+    // <editor-fold desc="Local Related Methods">
 
     /**
      * Add a new local.
@@ -273,6 +252,41 @@ public class JimpleInjector {
         unitStore_After.insertElement(unitStore_After.new Element(ass, lastPos));
         lastPos = ass;
     }
+
+    /**
+     * Include a new handleStatement.setLevelOfLocal(local, level)
+     *
+     * @param local local
+     * @param level the level to assign to the local
+     * @param pos   position where to insert the handleStatmenent
+     */
+    public static void makeLocal(Local local, String level, Unit pos) {
+        logger.info("Setting " + local + "to new level " + level);
+        ArrayList<Type> paramTypes = new ArrayList<>();
+        paramTypes.add(RefType.v("java.lang.String"));
+        paramTypes.add(RefType.v("java.lang.String"));
+
+        // local_for_Strings = getSignatureForLocal(local)
+        String signature = getSignatureForLocal(local);
+        Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+
+        // makeLocal(local_for_Strings, "HIHG", position);
+        Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
+                hs,
+                Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
+                                        "makeLocal", paramTypes,
+                                        VoidType.v(), false),
+                local_for_Strings, StringConstant.v(level));
+        Unit setLevelOfL = Jimple.v().newInvokeStmt(invokeSetLevel);
+
+        unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
+        unitStore_After.insertElement(unitStore_After.new Element(setLevelOfL, sig));
+        lastPos = setLevelOfL;
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Add To Object Map - Methods">
 
     /**
      * Add the instance of the actual class-object to the object map.
@@ -444,96 +458,10 @@ public class JimpleInjector {
         unitStore_After.insertElement(unitStore_After.new Element(assignExpr, pos));
         lastPos = assignExpr;
     }
-	
-	/*
-	 * Change level of elements
-	 */
 
-//	/**
-//	 * Set the security-level of a local to HIGH.
-//	 * @param local Local
-//	 * @param pos Unit where this local occurs
-//	 */
-//	public static void makeLocalHigh(Local local, Unit pos) {
-//		logger.log(Level.INFO, "Make Local {0} high in method {1}",
-//			new Object[] {getSignatureForLocal(local), b.getMethod().getName()});
-//		
-//		ArrayList<Type> paramTypes = new ArrayList<Type>();
-//		paramTypes.add(RefType.v("java.lang.String"));
-//		
-//		String signature = getSignatureForLocal(local);
-//		Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-//		
-//		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
-//				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-//				"makeLocalHigh", paramTypes, VoidType.v(),false),
-//				local_for_Strings);
-//		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
-//		
-//
-//		unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
-//		unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
-//		lastPos = ass;
-//	}
+    // </editor-fold>
 
-    /**
-     * Include a new handleStatement.setLevelOfLocal(local, level)
-     *
-     * @param local local
-     * @param level the level to assign to the local
-     * @param pos   position where to insert the handleStatmenent
-     */
-    public static void makeLocal(Local local, String level, Unit pos) {
-        logger.info("Setting " + local + "to new level " + level);
-
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
-        paramTypes.add(RefType.v("java.lang.String"));
-
-        // local_for_Strings = getSignatureForLocal(local)
-        String signature = getSignatureForLocal(local);
-        Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-
-        // makeLocal(local_for_Strings, "HIHG", position);
-        Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
-                hs,
-                Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "makeLocal", paramTypes,
-                        VoidType.v(), false),
-                local_for_Strings, StringConstant.v(level));
-        Unit setLevelOfL = Jimple.v().newInvokeStmt(invokeSetLevel);
-
-        unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
-        unitStore_After.insertElement(unitStore_After.new Element(setLevelOfL, sig));
-        lastPos = setLevelOfL;
-    }
-
-//	/**
-//	 * Set the security-level of a local to LOW.
-//	 * @param local Local
-//	 * @param pos Unit where this local occurs
-//	 */
-//	public static void makeLocalLow(Local local, Unit pos) {
-//		logger.log(Level.INFO, "Make Local {0} low in method {1}",
-//			new Object[] {getSignatureForLocal(local), b.getMethod().getName()});
-//		
-//		ArrayList<Type> paramTypes = new ArrayList<Type>();
-//		paramTypes.add(RefType.v("java.lang.String"));
-//		
-//		String signature = getSignatureForLocal(local);
-//		Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
-//		
-//		Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
-//				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-//				"makeLocalLow", paramTypes, VoidType.v(),false), local_for_Strings);
-//		Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
-//		
-//
-//		unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
-//		unitStore_After.insertElement(unitStore_After.new Element(ass, sig));
-//		lastPos = ass;
-//	}
-
+    // <editor-fold desc="Add Level In Assign Stmt - Methods -> Interesting for RHS">
     /**
      * Add the level of a local on the right side of an assign statement.
      *
@@ -566,12 +494,6 @@ public class JimpleInjector {
             lastPos = pos;
         }
     }
-
-
-    /*******************************************************************************************
-     * AssignStmt Functions.
-     ******************************************************************************************/
-
 
     /**
      * Add the level of a field of an object. It can be the field of the actually
@@ -689,47 +611,41 @@ public class JimpleInjector {
         //}
     }
 
+    // </editor-fold>
+
+    // <editor-fold desc="Set Level of Assign Stmt - Methods -> Interesting for LHS">
 
     public static void setLevelOfAssignStmt(Local l, Unit pos) {
         logger.info("Setting level in assign statement");
 
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
-
         String signature = getSignatureForLocal(l);
 
+        // ToDo: Remove, when ready - currently other Methods rely on it
         Stmt assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
 
         // insert setLevelOfLocal, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
-        Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "setLevelOfLocal", paramTypes,
-                        Scene.v().getObjectType(),
-                        false), local_for_Strings);
-        Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
+        Unit invoke = fac.createStmt("setLevelOfLocal", StringConstant.v(signature));
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic
-        Expr checkLocalPC = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "checkLocalPC", paramTypes,
-                        VoidType.v(),
-                        false), local_for_Strings);
-        Unit checkLocalPCExpr = Jimple.v().newInvokeStmt(checkLocalPC);
+        Unit checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
 
         // TODO i did comment this out for some reason .. but why?
         // if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
         // and we especially do not need to perform a NSU check!
         if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
-        unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
 
-        // insert NSU check only if PC is dynamic!
-        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-            unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
-        }
-        unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
+            // ToDo: Remove, when ready - currently other Methods rely on it
+            unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
+
+
+            // insert NSU check only if PC is dynamic!
+            if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
+                unitStore_Before.insertElement(unitStore_Before.new Element(checkLocalPCExpr, pos));
+            }
+            unitStore_Before.insertElement(unitStore_Before.new Element(invoke, pos));
         }
         lastPos = pos;
     }
@@ -742,22 +658,10 @@ public class JimpleInjector {
      * @param pos The statement where this field occurs
      */
     public static void setLevelOfAssignStmt(InstanceFieldRef f, Unit pos) {
-        logger.log(Level.INFO, "Set level to field {0} in assignStmt in method {1}",
-                new Object[]{f.getField().getSignature(), b.getMethod().getName()});
-
-//		if (!(units.getFirst() instanceof IdentityStmt) 
-//				|| !(units.getFirst().getUseBoxes().get(0).getValue() 
-//				instanceof ThisRef)) {
-//			System.out.println(units.getFirst().getUseBoxes().toString());
-//			throw new InternalAnalyzerException("Expected @this reference");
-//		}
+        logger.info("Set level of field "+f.getField().getSignature()
+                    +" in assign Statement located in" + b.getMethod().getName());
 
         String fieldSignature = getSignatureForField(f.getField());
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-        parameterTypes.add(RefType.v("java.lang.String"));
-
 
         // Retrieve the object it belongs to
         Local tmpLocal = (Local) f.getBase();
@@ -766,39 +670,22 @@ public class JimpleInjector {
                 local_for_Strings, StringConstant.v(fieldSignature));
 
         // push and pop security level of instance to globalPC
-        Unit pushInstanceLevelToGlobalPC = Jimple.v().newInvokeStmt(
-                Jimple.v().newVirtualInvokeExpr(
-                        hs, Scene.v().makeMethodRef(
-                                Scene.v().getSootClass(HANDLE_CLASS), "pushInstanceLevelToGlobalPC",
-                                Collections.<Type>singletonList(RefType.v("java.lang.String")),
-                                VoidType.v(), false),
-                        StringConstant.v(getSignatureForLocal(tmpLocal)))
-        );
+        Unit pushInstanceLevelToGlobalPC
+                = fac.createStmt("pushInstanceLevelToGlobalPC",
+                                           StringConstant.v(getSignatureForLocal(tmpLocal)));
 
-        Unit popGlobalPC = Jimple.v().newInvokeStmt(
-                Jimple.v().newVirtualInvokeExpr(
-                        hs, Scene.v().makeMethodRef(
-                                Scene.v().getSootClass(HANDLE_CLASS), "popGlobalPC",
-                                Collections.<Type>emptyList(), RefType.v("java.lang.Object"), false))
-        );
+
+        Unit popGlobalPC = fac.createStmt("popGlobalPC");
+
 
         // insert: checkGlobalPC(Object, String)
         // why do we check the global PC? Because the field is possibily visible everywhere, check that sec-value of field is greater
         // or equal than the global PC.
-        Expr checkGlobalPC = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "checkGlobalPC",
-                        parameterTypes, VoidType.v(), false),
-                tmpLocal, local_for_Strings);
-        Unit checkGlobalPCExpr = Jimple.v().newInvokeStmt(checkGlobalPC);
+        Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC", tmpLocal, StringConstant.v(fieldSignature));
 
-        // insert setLevelOfField, which sets Level of Field to the join of gPC and right-hand side of assign stmt sec-value join
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "setLevelOfField",
-                        parameterTypes, Scene.v().getObjectType(), false),
-                tmpLocal, local_for_Strings);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        // insert setLevelOfField, which sets Level of Field to the join of gPC
+        // and right-hand side of assign stmt sec-value join
+        Unit assignExpr = fac.createStmt( "setLevelOfField", tmpLocal, StringConstant.v(fieldSignature));
 
         // pushInstanceLevelToGlobalPC and popGlobalPC take the instance, push to global pc; and pop afterwards.
         // see NSU_FieldAccess tests why this is needed
@@ -865,9 +752,7 @@ public class JimpleInjector {
      * distinguishes two cases, one case where the index of the referenced array-field
      * is a constant number and the other case, where the index is stored in a local variable.
      * In the second case, the signature of the local variable also must be passed as an
-     * argument to {@link analyzer.level2.HandleStmt
-     * #setLevelOfArrayField(Object o, int field, String localForObject,
-     * String localForIndex)} .
+     * argument to {@link analyzer.level2.HandleStmt#setLevelOfArrayField} .
      *
      * @param a   -ArrayRef. The reference to the array-field
      * @param pos -Unit- The assignStmt in the analyzed methodTypings body, where this
@@ -960,6 +845,8 @@ public class JimpleInjector {
         lastPos = pos;
     }
 
+    // </editor-fold>
+
     /**
      * Note: Altough method is not used by jimpleInjector, the corresponding handleStatement method is used in the manually instrumented tests.
      */
@@ -971,11 +858,18 @@ public class JimpleInjector {
         ArrayList<Type> parameterTypes = new ArrayList<>();
         parameterTypes.add(RefType.v("java.lang.String"));
 
+
+
         Expr assignRet = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "assignReturnLevelToLocal",
-                        parameterTypes, VoidType.v(), false),
+                hs,
+                Scene.v().makeMethodRef(
+                        Scene.v().getSootClass(HANDLE_CLASS),
+                        "assignReturnLevelToLocal",
+                        parameterTypes,
+                        VoidType.v(),
+                        false),
                 StringConstant.v(getSignatureForLocal(l)));
+
         Unit assignExpr = Jimple.v().newInvokeStmt(assignRet);
 
         unitStore_After.insertElement(unitStore_After.new Element(assignExpr, pos));
@@ -988,10 +882,14 @@ public class JimpleInjector {
         ArrayList<Type> parameterTypes = new ArrayList<>();
         parameterTypes.add(IntType.v());
         parameterTypes.add(RefType.v("java.lang.String"));
+
         Expr assignArg = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
+                hs,
+                Scene.v().makeMethodRef(
                         Scene.v().getSootClass(HANDLE_CLASS), "assignArgumentToLocal",
-                        parameterTypes, Scene.v().getObjectType(), false),
+                        parameterTypes,
+                        Scene.v().getObjectType(),
+                        false),
                 IntConstant.v(posInArgList),
                 StringConstant.v(getSignatureForLocal(local))
         );
@@ -1004,6 +902,7 @@ public class JimpleInjector {
             lastPos = assignExpr;
         }
     }
+
 
 
     /*******************************************************************************************
@@ -1347,6 +1246,7 @@ public class JimpleInjector {
      * Add all locals which are needed from JimpleInjector to store values
      * of parameters for invoked methodTypings.
      */
+    // Todo: Remove, when ready
     static void addNeededLocals() {
         locals.add(local_for_Strings);
         locals.add(local_for_String_Arrays);
@@ -1355,71 +1255,91 @@ public class JimpleInjector {
         b.validate();
     }
 
+    // <editor-fold desc="Signature Calculation Methods">
+
     /**
+     * Calculates and returns the Signature of a given Local
      * @param l the local which signature is to be retrieved
      * @return corresponding signature
+     * @see Local#getType()
+     * @see Local#getName()
      */
     private static String getSignatureForLocal(Local l) {
         return l.getType() + "_" + l.getName();
     }
 
     /**
-     * @param f field
-     * @return signature of field
+     * Calculates and returns the Signature of given SootField
+     * @param f The Field of which the signature is required.
+     * @return The signature of the SootField
+     * @see SootField#getSignature()
      */
     private static String getSignatureForField(SootField f) {
         return f.getSignature();
     }
 
     /**
-     * Create the signature of an array-field based on the index.
+     * Creates the signature of an array-field based on the index.
      * It simply returns the int-value as string.
      *
-     * @param a -ArrayRef-
-     * @return -String- The signature for the array-field.
+     * @param a The ArrayRef of which the Signature is required.
+     * @return The signature for the array-field.
+     * @throws InternalAnalyzerException if the index type is not int.
      */
     private static String getSignatureForArrayField(ArrayRef a) {
-        logger.fine("Type of index: " + a.getIndex().getType());
-        String result;
-        if (Objects.equals(a.getIndex().getType().toString(), "int")) {
-            result = a.getIndex().toString();
-        } else {
+        if (!Objects.equals(a.getIndex().getType().toString(), "int")) {
             throw new InternalAnalyzerException("Unexpected type of index");
         }
-        logger.info("Signature of array field in jimple injector is: " + result);
-        return result;
+        return a.getIndex().toString();
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Jimple Helper Methods">
+
+    /**
+     * Calculates the start position for inserting further units.
+     * @param b The Body, that may contain Units.
+     * @return the start position of the first Unit.
+     */
+    private static int getStartPos(Body b) {
+        // Getting the Method, that is currently calculated.
+        SootMethod m = b.getMethod();
+
+       /* Depending on the number of arguments and whether it is a static method
+       * or a Constructor the position is calculated.
+       * Because there are statements, which shouldn't be preceded by other
+       * statements.
+       * */
+
+        int startPos = (!m.isStatic()) ? 1 : 0;
+        startPos = (m.isConstructor()) ? startPos + 1 : startPos;
+        startPos += m.getParameterCount();
+
+        logger.fine("Calculated start position: " + startPos + " of " +b);
+        return startPos;
     }
 
     /**
-     * Method which calculates the start position for inserting further units.
-     * It depends on the number of arguments and whether it is a static method,
-     * or not, because there are statements, which shouldn't be preceeded by
-     * other statements.
-     *
-     * @return the computed start position as int.
+     * Gets the Unit, that is stored in the given units at the given Position.
+     * @param units The Chain of Units, that contains severall Units
+     * @param pos The position of the Unit, that is wanted to be extracted.
+     * @return The unit at the given position.
+     * @throws IndexOutOfBoundsException if the Position is greater the number of
+     * units in the given Unit chain or lower 0.
      */
-    private static int getStartPos(Body b) {
-        int startPos = 0;
-
-        SootMethod m = b.getMethod();
-
-        // If the method is not static the @this reference must be skipped.
-        if (!m.isStatic()) {
-            startPos++;
+    private static Unit getUnitOf(Chain<Unit> units, int pos) {
+        if (pos < 0 || pos >= units.size())
+            throw new IndexOutOfBoundsException("No legal index: "+pos);
+        int idx = 0;
+        for (Unit u : units) {
+            if (idx == pos) return u;
+            idx++;
         }
-
-        if (m.isConstructor()) {
-            startPos++;
-        }
-
-        // Skip the @parameter-references
-        int numOfParams = m.getParameterCount();
-        startPos += numOfParams;
-
-        logger.info("Calculated start position: " + startPos);
-
-        return startPos;
+        return null;
     }
+
+    // </editor-fold>
 
     /**
      * This method is only for debugging purposes.
