@@ -80,7 +80,6 @@ public class AllEndToEndTests {
 				new Object[] {"DirectPrintFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.Object_$r3"} },
 
 				// ExternalFail1 is fully tested in tests.end2endtest.compileToJarTests
-				new Object[] { "ExternalFail1", true, new String[] {} },
 				new Object[] {"ExternalFail2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0"} },
 				
 				new Object[] {"EqualObjectsVerifySuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
