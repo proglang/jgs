@@ -22,6 +22,8 @@ WEEK 2:
     * Refining JimpleFactory
 
     WEDNESDAY:
-
+    * Created BoolConstant as extension of IntConstant.
+    * Updated JimpleFactory to Support Array Types.
+    * JimpleInjector Code Optimization
 
 

@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class JimpleInjector {
 
     /** String for the HandleStmt class. */
-    private static final String HANDLE_CLASS = "analyzer.level2.HandleStmt";
+    private static final String HANDLE_CLASS = HandleStmt.class.getName();
 
     /** Local which holds the object of HandleStmt. */
     private static Local hs = Jimple.v().newLocal("hs", RefType.v(HANDLE_CLASS));
@@ -169,7 +169,7 @@ public class JimpleInjector {
         Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(
                 RefType.v(HANDLE_CLASS)));
 
-        Unit inv = fac.createStmt(HANDLE_CLASS);
+        Unit inv = fac.createStmt(HandleStmt.class.getName());
 
         /* Recplace old code
         ArrayList<Type> paramTypes = new ArrayList<>();
@@ -807,24 +807,10 @@ public class JimpleInjector {
         }
 
         // checkArrayWithGlobalPC
-        /* Replacing
-        Expr checkArrayGlobalPC = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "checkArrayWithGlobalPC", parameterTypes,
-                        VoidType.v(), false), args);
-        Unit checkArrayGlobalPCExpr = Jimple.v().newInvokeStmt(checkArrayGlobalPC);
-        // Replaced by */
         Unit checkArrayGlobalPCExpr = fac.createStmt("checkArrayWithGlobalPC", args.toArray(new Value[0]));
 
 
         // setLevelOfArrayField
-        /* Replacing
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "setLevelOfArrayField", parameterTypes,
-                        Scene.v().getObjectType(), false), args);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-        // Replaced by */
         Unit assignExpr = fac.createStmt("setLevelOfArrayField", args.toArray(new Value[0]));
 
         unitStore_Before.insertElement(

@@ -19,18 +19,23 @@ import java.util.function.Supplier;
  */
 public class JimpleFactory {
 
+    // <editor-fold desc="Cache Definitions">
     /** Defines a Cache, that allows a quick access to the Class Methods */
     private Map<String, Map<String, SootMethodRef>> methodCache = new HashMap<>();
 
     /** Caches the Constructor Methods, that are used for special invokes */
     private Map<String, Map<String, SootMethodRef>> constructorCache = new HashMap<>();
+    // </editor-fold>
 
+    // <editor-fold desc="Reference Definitions">
     /** Defines the Class for which this Factory is created. */
     private Class reference;
 
     /** Defines the Local, that shall be used to create Jimple Statements */
     private Local instance;
+    // </editor-fold>
 
+    // <editor-fold desc="Initialise Methods">
     /**
      * Creates a new JimpleFactory for the given Class and the given Local, that
      * is an instance of the Class for the Soot Framework.
@@ -107,7 +112,9 @@ public class JimpleFactory {
         }
         // </editor-fold>
     }
+    //</editor-fold>
 
+    // <editor-fold desc="Cache Interaction">
     /**
      * Gets the cached SootMethodRef for the given name and values.
      * It is either cached in the constructorCache or in the methodCache.
@@ -226,7 +233,9 @@ public class JimpleFactory {
         }
         return sootMethod;
     }
+    // </editor-fold>
 
+    // <editor-fold desc="Expr Creation">
     /**
      * Creates new new SpecialInvokeExpr, that represents a Constructor.
      * @param name The name of the Constructor
@@ -261,7 +270,9 @@ public class JimpleFactory {
     private StaticInvokeExpr createStaticExpr(String name, Value... args) {
         return Jimple.v().newStaticInvokeExpr(getMethodRefFor(name, args), args);
     }
+    // </editor-fold>
 
+    //<editor-fold desc="Stmt Creation Public">
     /**
      * Creates a Stmt using the Parameters. This statement could be inserted by
      * the JimpleInjector directly.
@@ -284,7 +295,9 @@ public class JimpleFactory {
         else op = createVirtualExpr(name,args);
         return Jimple.v().newInvokeStmt(op);
     }
+    // </editor-fold>
 
+    // <editor-fold desc="Internal Helper Methods">
     /**
      * Calculates the Key String to Save the Signature of a Method
      * out of the Types of the Signature passed as a List.
@@ -296,4 +309,5 @@ public class JimpleFactory {
         for (Type t : types) { key += t + ", "; }
         return types.isEmpty() ? key : key.substring(0, key.length() - 2);
     }
+    // </editor-fold>
 }
