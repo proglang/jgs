@@ -33,7 +33,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * Some manually constructed jimple structures for unit testing the type checker.
+ * Some manually constructed jimple structures and (initial) type
+ * environments initial type for unit testing the type checker
  */
 public class Code {
 
@@ -71,6 +72,10 @@ public class Code {
         return result;
     }
 
+    /**
+     * Create a new
+     * @param tvars
+     */
     public Code(TypeVars tvars) {
 
 

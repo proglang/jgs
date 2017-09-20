@@ -32,6 +32,10 @@ import soot.jimple.StaticInvokeExpr;
 import static de.unifreiburg.cs.proglang.jgs.util.Interop.asJavaStream;
 import static java.util.stream.Collectors.toSet;
 
+/**
+ * This class provides global definitions for unit-testing the type checker,
+ * like security levels, type variables, names of special methods, etc
+ */
 public class TestDomain {
 
     public static final LowHigh levels = new LowHigh();
