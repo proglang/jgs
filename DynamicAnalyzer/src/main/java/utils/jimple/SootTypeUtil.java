@@ -15,7 +15,7 @@ import java.util.List;
  * @author Karsten Fix, 18.08.17
  * @version 1.0
  */
-public class Soots {
+public class SootTypeUtil {
 
     /**
      * Tells whether the given type Name is a primitive type or not
@@ -98,7 +98,7 @@ public class Soots {
      * Creates a list of SootTypes that are used as parameters
      * @param args An array of Classes, that are used as parameters.
      * @return a List of SootType parameters
-     * @see Soots#toSootType
+     * @see SootTypeUtil#toSootType
      * @see Class#getMethods()
      */
     public static List<Type> createParameters(Class... args) {

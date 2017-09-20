@@ -299,7 +299,7 @@ public class JimpleInjector {
         String fieldSignature = getSignatureForField(field);
         Value tmpLocal =  units.getFirst().getDefBoxes().get(0).getValue();
 
-        // Todo: is that the same? All tests passing...
+        // Todo: is that the same? All tests passing...-> Write Test, that fails, because it is wrong...
         // tmpLocal = ClassConstant.v(field.getDeclaringClass().getName().replace(".", "/"));
 
         Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings,
@@ -347,10 +347,10 @@ public class JimpleInjector {
     }
 
     /**
-     * Add a new array to objectMap.
+     * Inserts {@link HandleStmt#addArrayToObjectMap(Object[])} call into the Jimple Code.
      *
      * @param a   The Local where the array is stored.
-     * @param pos Unit where the array occurs.
+     * @param pos Unit where the array occurs, after that position the invoke Stmt will be inserted.
      */
     public static void addArrayToObjectMap(Local a, Unit pos) {
         logger.info("Add array "+a+" with type "+a.getType()+" to ObjectMap in method " + b.getMethod().getName());
@@ -362,29 +362,25 @@ public class JimpleInjector {
     // </editor-fold>
 
     // <editor-fold desc="Add Level In Assign Stmt - Methods -> Interesting for RHS">
+
     /**
      * Add the level of a local on the right side of an assign statement.
+     * Inserts {@link HandleStmt#joinLevelOfLocalAndAssignmentLevel(String)} into the Jimple Code
      *
      * @param local Local
      * @param pos   Unit where the local occurs
      */
     public static void addLevelInAssignStmt(Local local, Unit pos) {
-        logger.info("Adding level in assign statement");
+        logger.info("Adding level of "+local+"in assign statement of Method: "+b.getMethod().getName());
 
         ArrayList<Type> paramTypes = new ArrayList<>();
         paramTypes.add(RefType.v("java.lang.String"));
 
         String signature = getSignatureForLocal(local);
-
         Stmt assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
 
-        Expr invokeAddLevel = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "joinLevelOfLocalAndAssignmentLevel", paramTypes,
-                        Scene.v().getObjectType(),
-                        false), local_for_Strings);
-        Unit invoke = Jimple.v().newInvokeStmt(invokeAddLevel);
+        Unit invoke = fac.createStmt("joinLevelOfLocalAndAssignmentLevel", StringConstant.v(signature));
 
         // only insert the joinLevelOfLocal.. stmt if local is in fact dynamically checked
         // TODO CX is irrelevant here?
@@ -398,34 +394,23 @@ public class JimpleInjector {
     /**
      * Add the level of a field of an object. It can be the field of the actually
      * analyzed object or the field
+     * Inserts {@link HandleStmt#joinLevelOfFieldAndAssignmentLevel(Object, String)} into the Jimple Code
      *
      * @param f   Reference to the instance field
      * @param pos The statement where this field occurs
      */
     public static void addLevelInAssignStmt(InstanceFieldRef f, Unit pos) {
-        logger.log(Level.INFO, "Adding level of field {0} in assignStmt in method {1}",
-                new Object[]{f.getField().getSignature(), b.getMethod().getName()});
+        logger.info("Adding level of field "+f.getField().getSignature()+" in assignStmt in method "+  b.getMethod().getName());
 
         String fieldSignature = getSignatureForField(f.getField());
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-        parameterTypes.add(RefType.v("java.lang.String"));
 
         // units.getFirst is already a reference to @this
         // Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
         Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
-        logger.info("Base " + f.getBase());
-
         Unit assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(fieldSignature));
 
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "joinLevelOfFieldAndAssignmentLevel",
-                        parameterTypes, Scene.v().getObjectType(), false),
-                local_for_Objects, local_for_Strings);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel", f.getBase(), StringConstant.v(fieldSignature));
 
         // TODO CANNOT CAST ..
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
@@ -437,19 +422,16 @@ public class JimpleInjector {
     }
 
     /**
+     * Inserts {@link HandleStmt#joinLevelOfFieldAndAssignmentLevel(Object, String)} into the Jimple Code
+     *
      * @param f   the field
      * @param pos the position where to insert the statement
      */
     public static void addLevelInAssignStmt(StaticFieldRef f, Unit pos) {
-        logger.info("Adding Level of static Field " + f.toString() + " in assign stmt");
+        logger.info("Adding Level of static Field " + f + " in Method "+b.getMethod());
 
         SootField field = f.getField();
-
         String signature = getSignatureForField(field);
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-        parameterTypes.add(RefType.v("java.lang.String"));
 
         SootClass sc = field.getDeclaringClass();
 
@@ -459,14 +441,12 @@ public class JimpleInjector {
         Unit assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
 
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "joinLevelOfFieldAndAssignmentLevel", parameterTypes,
-                        Scene.v().getObjectType(), false),
-                local_for_Objects, local_for_Strings);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel",
+                                         ClassConstant.v(sc.getName().replace(".", "/")),
+                                         StringConstant.v(signature)
+                                         );
 
-        // TODO cannot cast StaticFieldref to Local!
+            // TODO cannot cast StaticFieldref to Local!
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
             unitStore_Before.insertElement(
                     unitStore_Before.new Element(assignDeclaringClass, pos));
@@ -478,31 +458,23 @@ public class JimpleInjector {
 
     /**
      * Add the level of a read array field to the security-level-list.
+     * Inserts {@link HandleStmt#joinLevelOfArrayFieldAndAssignmentLevel(Object, String)} into Jimple Code
      *
      * @param a   -ArrayRef- The referenced array field
      * @param pos -Unit- The position where this reference occurs
      */
     public static void addLevelInAssignStmt(ArrayRef a, Unit pos) {
-        logger.info("Add Level of Array " + a.toString() + " in assign stmt");
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-        parameterTypes.add(RefType.v("java.lang.String"));
+        logger.info("Add Level of Array " + a + " in assign stmt: "+pos);
 
         String signature = getSignatureForArrayField(a);
+
         Unit assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
 
         unitStore_Before.insertElement(unitStore_Before.new Element(assignSignature, pos));
         lastPos = assignSignature;
 
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "joinLevelOfArrayFieldAndAssignmentLevel", parameterTypes,
-                        Scene.v().getObjectType(), false),
-                a.getBase(), local_for_Strings);
-
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        Unit assignExpr = fac.createStmt("joinLevelOfArrayFieldAndAssignmentLevel", a.getBase(), StringConstant.v(signature));
 
         // TODO CANNOT CAST ...
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) a).isDynamic()) {

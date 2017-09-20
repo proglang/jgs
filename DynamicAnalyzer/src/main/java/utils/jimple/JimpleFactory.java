@@ -8,7 +8,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * This Class provides some Factory Methods, that may help to Create Jimple Expressions
@@ -65,7 +64,7 @@ public class JimpleFactory {
 
             // Getting the Signature List as List of Type. And use it to calculate
             // a String Representation, that can be used as key for the overloads
-            List<Type> types = Soots.createParameters(c.getParameterTypes());
+            List<Type> types = SootTypeUtil.createParameters(c.getParameterTypes());
             String key = calcKey(types);
 
             SootMethodRef cRef = Scene.v().makeConstructorRef(
@@ -91,13 +90,13 @@ public class JimpleFactory {
 
             // Getting the Signature List as List of Type. And use it to calculate
             // a String Representation, that can be used as key for the overloads
-            List<Type> types = Soots.createParameters(m.getParameterTypes());
+            List<Type> types = SootTypeUtil.createParameters(m.getParameterTypes());
             String key = calcKey(types);
 
             // Calculating the SootMethodRef for the current Method m
             SootMethodRef mRef = Scene.v().makeMethodRef(
                     Scene.v().getSootClass(reference.getName()),
-                    m.getName(), types, Soots.toSootType(m.getReturnType()),
+                    m.getName(), types, SootTypeUtil.toSootType(m.getReturnType()),
                     java.lang.reflect.Modifier.isStatic(m.getModifiers()));
 
             // Adding the calculated Method in the cache and warn/inform the user
@@ -168,16 +167,16 @@ public class JimpleFactory {
                     catch (ClassNotFoundException e) {
                         // The primitive data types are not creatable with Class.forClass
                         // do it manually here
-                        if (Soots.isPrimitiveType(savArg))
-                            savArgsClasses.add(Soots.getPrimitiveType(savArg));
+                        if (SootTypeUtil.isPrimitiveType(savArg))
+                            savArgsClasses.add(SootTypeUtil.getPrimitiveType(savArg));
                         else if (savArg.contains("[]")) {
                             int beg = savArg.indexOf("[]");
                             int end = savArg.lastIndexOf("[]");
                             int dim = ((end - beg) / 2) + 1;
                             Class base = null;
                             String baseString = savArg.replaceAll("\\[]", "");
-                            if (Soots.isPrimitiveType(baseString))
-                                base = Soots.getPrimitiveType(baseString);
+                            if (SootTypeUtil.isPrimitiveType(baseString))
+                                base = SootTypeUtil.getPrimitiveType(baseString);
                             if (base == null) {
                                 try {
                                     base = Class.forName(baseString);
@@ -199,15 +198,15 @@ public class JimpleFactory {
                     catch (ClassNotFoundException e) {
                         // The primitive data types are not creatable with Class.forClass
                         // do it manually here
-                        if (Soots.isPrimitiveType(arg.getType().toString()))
-                            argsClass.add(Soots.getPrimitiveType(arg.getType().toString()));
+                        if (SootTypeUtil.isPrimitiveType(arg.getType().toString()))
+                            argsClass.add(SootTypeUtil.getPrimitiveType(arg.getType().toString()));
                         // Array Types need special Handling as well.
                         else if (arg.getType() instanceof ArrayType) {
                             ArrayType arr = (ArrayType) arg.getType();
                             int[] dim = new int[arr.numDimensions];
                             Class base = null;
-                            if (Soots.isPrimitiveType(arr.baseType.toString()))
-                                base = Soots.getPrimitiveType(arr.baseType.toString());
+                            if (SootTypeUtil.isPrimitiveType(arr.baseType.toString()))
+                                base = SootTypeUtil.getPrimitiveType(arr.baseType.toString());
                             if (base == null) {
                                 try {
                                     base = Class.forName(arr.baseType.toString());
