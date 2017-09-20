@@ -170,6 +170,23 @@ public class JimpleFactory {
                         // do it manually here
                         if (Soots.isPrimitiveType(savArg))
                             savArgsClasses.add(Soots.getPrimitiveType(savArg));
+                        else if (savArg.contains("[]")) {
+                            int beg = savArg.indexOf("[]");
+                            int end = savArg.lastIndexOf("[]");
+                            int dim = ((end - beg) / 2) + 1;
+                            Class base = null;
+                            String baseString = savArg.replaceAll("\\[]", "");
+                            if (Soots.isPrimitiveType(baseString))
+                                base = Soots.getPrimitiveType(baseString);
+                            if (base == null) {
+                                try {
+                                    base = Class.forName(baseString);
+                                } catch (ClassNotFoundException inner) {
+                                    new IllegalStateException("Class cast failed for array value: "+savArg);
+                                }
+                            }
+                            savArgsClasses.add(Array.newInstance(base, dim).getClass());
+                        }
                         else throw new IllegalStateException("Class cast failed for: " + savArg);
                     }
                 }

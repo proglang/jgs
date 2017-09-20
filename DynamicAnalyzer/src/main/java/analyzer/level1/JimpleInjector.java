@@ -298,6 +298,10 @@ public class JimpleInjector {
 
         String fieldSignature = getSignatureForField(field);
         Value tmpLocal =  units.getFirst().getDefBoxes().get(0).getValue();
+
+        // Todo: is that the same? All tests passing...
+        // tmpLocal = ClassConstant.v(field.getDeclaringClass().getName().replace(".", "/"));
+
         Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings,
                                                         StringConstant.v(fieldSignature));
 
@@ -311,10 +315,11 @@ public class JimpleInjector {
     }
 
     /**
-     * Add a static field. This field is added to its corresponding class object.
+     * Inserts {@link HandleStmt#addFieldToObjectMap(Object, String)}
      *
-     * @param field SootField
+     * @param field The Field that shall be added to the Object Map.
      */
+    // Todo: May be the same as addInstanceField, difference could be figured out by field.isStatic() ?!
     static void addStaticFieldToObjectMap(SootField field) {
         logger.info("Adding static Field " + field + " to Object Map in method "+b.getMethod().getName());
 
@@ -326,7 +331,7 @@ public class JimpleInjector {
 
         Unit assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
-        
+
         Unit assignExpr = fac.createStmt("addFieldToObjectMap",
                                     ClassConstant.v(sc.getName().replace(".", "/")),
                                     StringConstant.v(signature));
@@ -348,24 +353,8 @@ public class JimpleInjector {
      * @param pos Unit where the array occurs.
      */
     public static void addArrayToObjectMap(Local a, Unit pos) {
-        logger.log(Level.INFO, "Add array {0} to ObjectMap in method {1}",
-                new Object[]{a, b.getMethod().getName()});
-
-        logger.log(Level.INFO, "Object type of array: " + a.getType()
-                + " and type " + a.getClass());
-        logger.log(Level.FINEST, "at position {0}", pos.toString());
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(ArrayType.v(
-                RefType.v("java.lang.Object"), 1));
-
-
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "addArrayToObjectMap",
-                        parameterTypes, VoidType.v(), false), a);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-
+        logger.info("Add array "+a+" with type "+a.getType()+" to ObjectMap in method " + b.getMethod().getName());
+        Unit assignExpr = fac.createStmt("addArrayToObjectMap", a);
         unitStore_After.insertElement(unitStore_After.new Element(assignExpr, pos));
         lastPos = assignExpr;
     }
