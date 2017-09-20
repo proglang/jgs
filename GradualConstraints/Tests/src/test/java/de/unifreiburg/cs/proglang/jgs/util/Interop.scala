@@ -29,4 +29,6 @@ object Interop {
     StreamSupport.stream(Spliterators.spliteratorUnknownSize(i.asJava, Spliterator.ORDERED), false)
   }
 
+  def asScalaSet[T](s : java.util.Set[T]) : Set[T] = s.asScala.toSet
+
 }

@@ -7,7 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import utils.logging.L1Logger;
 import main.Main;
-import utils.staticResults.superfluousInstrumentation.FixedTypings;
+import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 
 /**
  * Compiles a given class using the main.Main.main method.

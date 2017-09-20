@@ -1,13 +1,13 @@
 package end2endtest;
 
 import analyzer.level2.storage.LowMediumHigh;
-import de.unifreiburg.cs.proglang.jgs.examples.ExampleTypes;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
+import de.unifreiburg.cs.proglang.jgs.typing.ExampleTypes;
 import soot.Local;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import utils.staticResults.implementation.Dynamic;
-import utils.staticResults.superfluousInstrumentation.FixedTypings;
+import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 
 /**
  * Desribe how we want the fake analysis results the be

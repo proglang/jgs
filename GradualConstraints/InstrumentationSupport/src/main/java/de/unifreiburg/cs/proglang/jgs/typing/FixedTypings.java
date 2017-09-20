@@ -1,25 +1,23 @@
-package utils.staticResults.superfluousInstrumentation;
+package de.unifreiburg.cs.proglang.jgs.typing;
 
-import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import soot.Local;
 import soot.SootMethod;
 import soot.jimple.Stmt;
-import utils.staticResults.implementation.Dynamic;
-import utils.staticResults.implementation.Public;
 
 /**
  * Fixed method typings, like "ALL_DYNAMIC" that work without type analysis.
  */
 public class FixedTypings {
+
     // Var, Cx & Instantiation all return Dynamic on any requests
     public static final <L> MethodTypings<L> allDynamic() {
-        return new All<>(new Dynamic<L>());
+        return new All<>(new ExampleTypes.Dynamic());
     }
 
     // Var, Cx & Instantiation all return Public on any requests
     public static final <L> MethodTypings<L> allPublic() {
-        return new All<>(new Public<L>());
+        return new All<>(new ExampleTypes.Public<L>());
     }
 
     private static class All<T> implements MethodTypings<T> {

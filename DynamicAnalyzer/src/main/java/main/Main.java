@@ -1,24 +1,19 @@
 package main;
 
 import analyzer.level1.BodyAnalyzer;
-import analyzer.level2.storage.LowMediumHigh;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import soot.*;
-import utils.jimple.JimpleFactory;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
-import utils.staticResults.superfluousInstrumentation.FixedTypings;
+import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.SignatureSpi;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import static soot.SootClass.SIGNATURES;
 

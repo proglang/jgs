@@ -1,13 +1,12 @@
 package end2endtest;
 
-import analyzer.level2.SecurityMonitorLog;
 import analyzer.level2.SecurityMonitoringEvent;
 import analyzer.level2.storage.LowMediumHigh;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import utils.exceptions.IFCError;
-import utils.staticResults.superfluousInstrumentation.FixedTypings;
+import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

@@ -405,8 +405,10 @@ object JgsCheck {
         * Method signature check
         ************************/
       log.info("Checking method bodies: ")
-      val methodResults : Map[SootMethod, MethodTyping.Result[Level]] = (for {c <- classes if !c.isInterface
-           m <- c.getMethods if !m.isAbstract
+      val relevantMethods : Seq[SootMethod] =
+        for {c <- classes if !c.isInterface
+             m <- c.getMethods if !m.isAbstract } yield m
+      val methodResults : Map[SootMethod, MethodTyping.Result[Level]] = (for { m <- relevantMethods
            methodTyping = new MethodTyping(csets, cstrs, casts)
            // TODO: clarify the difference between TypingException and TypingAssertionFailure
            mresult = catching(classOf[TypingException],
@@ -427,7 +429,7 @@ object JgsCheck {
            result <- mresult.right.toOption
       } yield (m -> result)).toMap
 
-    new MethodTypings[Level] {
+    val mtyping = new MethodTypings[Level] {
       def getResult(m : SootMethod) : MethodTyping.Result[Level] =
         methodResults.getOrElse(m, throw new NoSuchElementException(s"No typing result for method ${m}"))
 
@@ -440,7 +442,9 @@ object JgsCheck {
           yield i -> result.parameterInstantiation(i).getOrElse(
             throw new IllegalArgumentException(s"No monomorphic instantiation for paramter ${i}: ${m} \n ${signatureConstraints.toString}"))).toMap
 
-        val returnInstantiation = if (m.getReturnType == VoidType.v()) {
+        val mIsVoid = m.getReturnType == VoidType.v()
+
+        val returnInstantiation = if (mIsVoid) {
           Failure(new IllegalArgumentException(s"Try to get type of a void method: ${m}"))
         } else {
           Success(result.returnInstantiation.getOrElse(
@@ -452,6 +456,11 @@ object JgsCheck {
           override def getReturn: Type[Level] = returnInstantiation.get
 
           override def get(param: Int): Type[Level] = paramInstantiation(param)
+
+          override def toString: String =
+            s"Instantiation for ${m}: \n " +
+            s"Parameters: ${paramInstantiation} \n " +
+            s"return: ${if (mIsVoid) "void" else returnInstantiation}"
         }
 
       }
@@ -465,7 +474,8 @@ object JgsCheck {
       override def getEffectType(m: SootMethod): Effect[Level] = ???
     }
 
-    }
+    mtyping
+  }
 
   class Config[Level](val types: TypeDomain[Level],
                       val csets: ConstraintSetFactory[Level],

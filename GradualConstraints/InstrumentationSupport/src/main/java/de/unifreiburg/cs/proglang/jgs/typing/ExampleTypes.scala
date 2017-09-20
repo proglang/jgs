@@ -1,4 +1,4 @@
-package de.unifreiburg.cs.proglang.jgs.examples
+package de.unifreiburg.cs.proglang.jgs.typing
 
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Type
 

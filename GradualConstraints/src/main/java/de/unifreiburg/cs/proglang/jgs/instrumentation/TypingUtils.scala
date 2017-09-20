@@ -11,6 +11,8 @@ import de.unifreiburg.cs.proglang.jgs.typing.EnvMap
 import soot.{Local, SootField}
 import soot.jimple.Stmt
 
+import scala.collection.JavaConversions._
+
 /**
   * MethodTypings for creating fieldtypings.
   */
@@ -29,6 +31,8 @@ class TypingUtils[Level] (secdomain : SecDomain[Level]){
         case Pub() => secdomain.bottom()
         case Dyn() => throw new IllegalArgumentException("Trying to get a level from a dynamic type")
       }
+
+      override def toString: String = tv.toString
     }
 
   def fieldTypingfromFieldTable(t: FieldTable[Level]): FieldTyping[Level] =
@@ -78,7 +82,7 @@ class TypingUtils[Level] (secdomain : SecDomain[Level]){
   /**
     * Returns the literals or parameters that form lower bounds of type variable tv
     */
-  private def lowerBoundLiteralsOrParams(constraints : ConstraintSet[Level],
+  def lowerBoundLiteralsOrParams(constraints : ConstraintSet[Level],
                                                 tv : TypeVar,
                                                 instantiation : Instantiation[Level])
     : Set[Type[Level]] = for {lb <- constraints.lowerBounds(tv)

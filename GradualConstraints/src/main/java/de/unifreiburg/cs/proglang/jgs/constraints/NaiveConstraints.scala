@@ -24,7 +24,7 @@ import scala.collection._
   */
 object NaiveConstraints {
 
-  private[constraints] def close[Level](cs: java.util.Set[Constraint[Level]]): java.util.Set[Constraint[Level]] = {
+  def close[Level](cs: java.util.Set[Constraint[Level]]): java.util.Set[Constraint[Level]] = {
     val isLeConstraint = (c: Constraint[Level]) => c.kind.equals(ConstraintKind.LE)
     val result: mutable.HashSet[Constraint[Level]] = mutable.HashSet(cs.asScala.toSeq: _*)
     val old: mutable.HashSet[Constraint[Level]] = mutable.HashSet()
@@ -270,7 +270,7 @@ class NaiveConstraints[Level](types: TypeDomain[Level], cs: Set[Constraint[Level
   // TODO: if we take lower bounds of compatibility constraints, the name is misleading. Clarify this.
   override def lowerBounds(tv: TypeVar): Set[CTypeView[Level]] = {
     for { c <- NaiveConstraints.close[Level](this.cs).toSet
-          if c.getRhs == CTypes.variable(tv)
+          if (c.getRhs == CTypes.variable(tv)) && c.kind == ConstraintKind.LE
         } yield c.getLhs.inspect()
     }
 

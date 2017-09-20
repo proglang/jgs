@@ -1,6 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.examples
 
-import de.unifreiburg.cs.proglang.jgs.examples.ExampleTypes.{Dynamic, Public}
+import de.unifreiburg.cs.proglang.jgs.typing.ExampleTypes.{Dynamic, Public}
 import de.unifreiburg.cs.proglang.jgs.instrumentation._
 import soot.{Local, SootMethod}
 import soot.jimple.Stmt
