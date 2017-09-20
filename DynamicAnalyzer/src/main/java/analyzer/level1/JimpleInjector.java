@@ -15,6 +15,7 @@ import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
 import utils.dominator.DominatorFinder;
 import utils.exceptions.InternalAnalyzerException;
+import utils.jimple.BoolConstant;
 import utils.jimple.JimpleFactory;
 import utils.logging.L1Logger;
 
@@ -187,8 +188,8 @@ public class JimpleInjector {
     static void initHandleStmtUtils(boolean controllerIsActive, int expectedException) {
         logger.log(Level.INFO, "Set Handle Stmt Utils and aktive/passive Mode of superfluous instrumentation checker");
 
-        Unit inv = fac.createStmt("initHandleStmtUtils", IntConstant.v(controllerIsActive ? 1 : 0),
-                             IntConstant.v(expectedException));
+        Unit inv = fac.createStmt("initHandleStmtUtils", BoolConstant.v(controllerIsActive),
+                                  IntConstant.v(expectedException));
 
         unitStore_After.insertElement(unitStore_After.new Element(inv, lastPos));
         lastPos = inv;
@@ -760,19 +761,12 @@ public class JimpleInjector {
             extralocals = true;
         }
 
-        // Define the types of the arguments for HandleStmt.setLevelOfArrayField()
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object")); // for Object o
-        parameterTypes.add(RefType.v("java.lang.String")); // for String field
-        parameterTypes.add(RefType.v("java.lang.String")); // for String localForObject
-
-        Value objectO = a.getBase();
         String signatureForField = getSignatureForArrayField(a);
         String signatureForObjectLocal = getSignatureForLocal((Local) a.getBase());
 
         // List for the arguments for HandleStmt.setLevelOfArrayField()
         List<Value> args = new ArrayList<>();
-        args.add(objectO);
+        args.add(a.getBase());
 
         // Store all string-arguments in locals for strings and assign the locals to the
         // argument list.
@@ -781,8 +775,8 @@ public class JimpleInjector {
         Unit assignObjectSignature = Jimple.v().newAssignStmt(local_for_Strings2,
                 StringConstant.v(signatureForObjectLocal));
 
-        args.add(local_for_Strings);
-        args.add(local_for_Strings2);
+        args.add(StringConstant.v(signatureForField));
+        args.add(StringConstant.v(signatureForObjectLocal));
 
 
         if (!(a.getIndex() instanceof Local)) {
@@ -800,11 +794,12 @@ public class JimpleInjector {
 
             // add a further parameter type for String localForIndex and
             // add it to the arguments-list.
-            parameterTypes.add(RefType.v("java.lang.String"));
+
             String localSignature = getSignatureForLocal((Local) a.getIndex());
             Unit assignIndexSignature = Jimple.v().newAssignStmt(local_for_Strings3,
                     StringConstant.v(localSignature));
-            args.add(local_for_Strings3);
+
+            args.add(StringConstant.v(localSignature));
 
             unitStore_Before.insertElement(unitStore_Before.new Element(
                     assignIndexSignature, pos));
@@ -812,19 +807,25 @@ public class JimpleInjector {
         }
 
         // checkArrayWithGlobalPC
+        /* Replacing
         Expr checkArrayGlobalPC = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "checkArrayWithGlobalPC", parameterTypes,
                         VoidType.v(), false), args);
         Unit checkArrayGlobalPCExpr = Jimple.v().newInvokeStmt(checkArrayGlobalPC);
+        // Replaced by */
+        Unit checkArrayGlobalPCExpr = fac.createStmt("checkArrayWithGlobalPC", args.toArray(new Value[0]));
 
 
         // setLevelOfArrayField
+        /* Replacing
         Expr addObj = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "setLevelOfArrayField", parameterTypes,
                         Scene.v().getObjectType(), false), args);
         Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        // Replaced by */
+        Unit assignExpr = fac.createStmt("setLevelOfArrayField", args.toArray(new Value[0]));
 
         unitStore_Before.insertElement(
                 unitStore_Before.new Element(assignFieldSignature, pos));

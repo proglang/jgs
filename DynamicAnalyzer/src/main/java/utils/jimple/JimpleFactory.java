@@ -4,6 +4,7 @@ import soot.*;
 import soot.jimple.*;
 import utils.logging.L1Logger;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -175,8 +176,24 @@ public class JimpleFactory {
                         // The primitive data types are not creatable with Class.forClass
                         // do it manually here
                         if (Soots.isPrimitiveType(arg.getType().toString()))
-                            savArgsClasses.add(Soots.getPrimitiveType(arg.getType().toString()));
-                        else throw  new IllegalStateException("Class cast failed for given value: "+arg);
+                            argsClass.add(Soots.getPrimitiveType(arg.getType().toString()));
+                        // Array Types need special Handling as well.
+                        else if (arg.getType() instanceof ArrayType) {
+                            ArrayType arr = (ArrayType) arg.getType();
+                            int[] dim = new int[arr.numDimensions];
+                            Class base = null;
+                            if (Soots.isPrimitiveType(arr.baseType.toString()))
+                                base = Soots.getPrimitiveType(arr.baseType.toString());
+                            if (base == null) {
+                                try {
+                                    base = Class.forName(arr.baseType.toString());
+                                } catch (ClassNotFoundException inner) {
+                                    new IllegalStateException("Class cast failed for given array value: "+arg + " with Type: " + arg.getType());
+                                }
+                            }
+                            argsClass.add(Array.newInstance(base, dim).getClass());
+                        }
+                        else throw  new IllegalStateException("Class cast failed for given value: "+arg + " with Type: " + arg.getType());
                     }
                 }
                 // </editor-fold>
@@ -186,7 +203,7 @@ public class JimpleFactory {
                     if (!savArgsClasses.get(i).isAssignableFrom(argsClass.get(i)))
                         // In Case one type does not fit throw an exception
                         throw new IllegalArgumentException("Type "+argsClass.get(i)
-                                                           + " does not match required Type "+ savArgsClasses.get(i));
+                                                           + " does not match required Type "+ savArgsClasses.get(i) + " for Method: "+name);
                 }
                 //</editor-fold>
 
