@@ -707,11 +707,7 @@ public class JimpleInjector {
         SootField field = f.getField();
 
         String signature = getSignatureForField(field);
-        logger.info("Signature of static field in jimple injector " + signature);
 
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-        parameterTypes.add(RefType.v("java.lang.String"));
 
         SootClass sc = field.getDeclaringClass();
 
@@ -722,20 +718,16 @@ public class JimpleInjector {
                 local_for_Strings, StringConstant.v(signature));
 
         // insert: checkGlobalPC(Object, String)
-        Expr checkGlobalPC = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "checkGlobalPC",
-                        parameterTypes, VoidType.v(), false),
-                local_for_Objects, local_for_Strings);
-        Unit checkGlobalPCExpr = Jimple.v().newInvokeStmt(checkGlobalPC);
+        Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC",
+                ClassConstant.v(sc.getName().replace(".", "/")),
+                StringConstant.v(signature)
+                );
 
         // Add setLevelOfField
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "setLevelOfField", parameterTypes,
-                        Scene.v().getObjectType(), false),
-                local_for_Objects, local_for_Strings);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        Unit assignExpr = fac.createStmt("setLevelOfField",
+                ClassConstant.v(sc.getName().replace(".", "/")),
+                StringConstant.v(signature)
+                );
 
         unitStore_Before.insertElement(
                 unitStore_Before.new Element(assignDeclaringClass, pos));
