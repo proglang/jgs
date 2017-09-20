@@ -160,10 +160,12 @@ public class JimpleInjector {
     // <editor-fold desc="HandleStmt Related Methods">
 
     /**
-     * Add "hs = new HandleStmt()" expression to Jimplecode.
+     * Creates the Local hs in Jimple Code,
+     * assigns "hs = new HandleStmt()" and invokes the Constructor within the
+     * created Jimple Code.
      */
     static void invokeHS() {
-        logger.log(Level.INFO, "Invoke HandleStmt in method {0}", b.getMethod().getName());
+        logger.info("Invoke HandleStmt in method " + b.getMethod().getName());
 
         locals.add(hs);
         Unit in = Jimple.v().newAssignStmt(hs, Jimple.v().newNewExpr(
@@ -171,24 +173,22 @@ public class JimpleInjector {
 
         Unit inv = fac.createStmt(HandleStmt.class.getName());
 
-        /* Recplace old code
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        Expr specialIn = Jimple.v().newSpecialInvokeExpr(
-                hs, Scene.v().makeConstructorRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), paramTypes));
-
-        Unit inv = Jimple.v().newInvokeStmt(specialIn);
-        // Replacing old code */
-
         unitStore_Before.insertElement(unitStore_Before.new Element(inv, lastPos));
         unitStore_Before.insertElement(unitStore_Before.new Element(in, inv));
         lastPos = inv;
     }
 
+    /**
+     * Inserts a call of {@link HandleStmt#initHandleStmtUtils(boolean, int)}
+     * into the generated Jimple Code after the Last Position.
+     * @param controllerIsActive {@link HandleStmt#initHandleStmtUtils(boolean, int)}
+     * @param expectedException {@link HandleStmt#initHandleStmtUtils(boolean, int)}
+     */
     static void initHandleStmtUtils(boolean controllerIsActive, int expectedException) {
-        logger.log(Level.INFO, "Set Handle Stmt Utils and aktive/passive Mode of superfluous instrumentation checker");
+        logger.info("Set Handle Stmt Utils and active/passive Mode of superfluous instrumentation checker");
 
-        Unit inv = fac.createStmt("initHandleStmtUtils", BoolConstant.v(controllerIsActive),
+        Unit inv = fac.createStmt("initHandleStmtUtils",
+                                  BoolConstant.v(controllerIsActive),
                                   IntConstant.v(expectedException));
 
         unitStore_After.insertElement(unitStore_After.new Element(inv, lastPos));
@@ -196,36 +196,23 @@ public class JimpleInjector {
     }
 
     /**
-     * Injects the constructor call of HandleStmt into the analyzed method.
+     * Inserts {@link HandleStmt#init()}.
      */
     static void initHS() {
-        logger.log(Level.INFO, "Initialize HandleStmt in method {0}",
-                b.getMethod().getName());
+        logger.info("Initializing HandleStmt in method" + b.getMethod().getName());
 
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        Expr invokeInit = Jimple.v().newStaticInvokeExpr(
-                Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "init", paramTypes, VoidType.v(), true));
-        Unit init = Jimple.v().newInvokeStmt(invokeInit);
-
+        Unit init = fac.createStmt("init");
         unitStore_After.insertElement(unitStore_After.new Element(init, lastPos));
         lastPos = init;
     }
 
     /**
-     * Injects the HandleStmt.close() method. This method should be injected at the
+     * Injects the {@link HandleStmt#close()}, because it should be injected at the
      * end of every analyzed method.
      */
     static void closeHS() {
-        logger.log(Level.INFO, "Close HandleStmt in method {0} {1}",
-                new Object[]{b.getMethod().getName(),
-                        System.getProperty("line.separator")});
-
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        Expr invokeClose = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "close", paramTypes, VoidType.v(), false));
-        units.insertBefore(Jimple.v().newInvokeStmt(invokeClose), units.getLast());
+        logger.info("Closing HandleStmt in Method "+b.getMethod().getName());
+        units.insertBefore(fac.createStmt("close"), units.getLast());
     }
 
     // </editor-fold>
@@ -233,52 +220,35 @@ public class JimpleInjector {
     // <editor-fold desc="Local Related Methods">
 
     /**
-     * Add a new local.
+     * Inserts a call of {@link HandleStmt#addLocal(String)}.
      *
-     * @param local The Local
+     * @param local The Local, that shall be added. Its signature will be calculated
+     * @see HandleStmt#addLocal(String)
+     * @see JimpleInjector#getSignatureForLocal(Local)
      */
     public static void addLocal(Local local) {
+        logger.info("Add Local " + getSignatureForLocal(local) + " in Method " + b.getMethod().getName());
 
-        logger.log(Level.INFO, "Add Local {0} in method {1}", new Object[]{
-                getSignatureForLocal(local), b.getMethod().getName()});
-
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
-
-        Expr invokeAddLocal = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "addLocal", paramTypes, VoidType.v(), false), StringConstant.v(getSignatureForLocal(local)));
-        Unit ass = Jimple.v().newInvokeStmt(invokeAddLocal);
-
-        unitStore_After.insertElement(unitStore_After.new Element(ass, lastPos));
-        lastPos = ass;
+        Unit add = fac.createStmt("addLocal", StringConstant.v(getSignatureForLocal(local)));
+        unitStore_After.insertElement(unitStore_After.new Element(add, lastPos));
+        lastPos = add;
     }
 
     /**
-     * Include a new handleStatement.setLevelOfLocal(local, level)
+     * Inserts {@link HandleStmt#makeLocal(String, String)} into the Jimple Code
      *
-     * @param local local
+     * @param local local The Local with level shall be adjusted.
      * @param level the level to assign to the local
-     * @param pos   position where to insert the handleStatmenent
+     * @param pos   position where to insert the created Stmt.
      */
     public static void makeLocal(Local local, String level, Unit pos) {
         logger.info("Setting " + local + "to new level " + level);
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
-        paramTypes.add(RefType.v("java.lang.String"));
 
         // local_for_Strings = getSignatureForLocal(local)
         String signature = getSignatureForLocal(local);
         Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
 
-        // makeLocal(local_for_Strings, "HIHG", position);
-        Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
-                hs,
-                Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                                        "makeLocal", paramTypes,
-                                        VoidType.v(), false),
-                local_for_Strings, StringConstant.v(level));
-        Unit setLevelOfL = Jimple.v().newInvokeStmt(invokeSetLevel);
+        Unit setLevelOfL = fac.createStmt("makeLocal", StringConstant.v(signature), StringConstant.v(level));
 
         unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
         unitStore_After.insertElement(unitStore_After.new Element(setLevelOfL, sig));
@@ -290,100 +260,48 @@ public class JimpleInjector {
     // <editor-fold desc="Add To Object Map - Methods">
 
     /**
+     * Inserts a call of {@link HandleStmt#addObjectToObjectMap(Object)}
+     *
      * Add the instance of the actual class-object to the object map.
      * This is only done in "init".
      */
     static void addInstanceObjectToObjectMap() {
-
-        // Check if the first unit is a reference to the actual object
-        if (!(units.getFirst() instanceof IdentityStmt)
-                || !(units.getFirst().getUseBoxes().get(0).getValue()
-                instanceof ThisRef)) {
-            throw new InternalAnalyzerException("Expected @this reference");
-        }
-
-        String thisObj = units.getFirst().getUseBoxes().get(0).getValue().toString();
-
-        logger.log(Level.INFO, "Add object {0} to ObjectMap in method {1}",
-                new Object[]{thisObj, b.getMethod().getName()});
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap",
-                        parameterTypes, VoidType.v(), false),
-                units.getFirst().getDefBoxes().get(0).getValue());
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-
+        logger.info("Add object "+units.getFirst().getUseBoxes().get(0).getValue()+" to ObjectMap in method "+ b.getMethod().getName());
+        assureThisRef();
+        Unit assignExpr = fac.createStmt("addObjectToObjectMap", units.getFirst().getDefBoxes().get(0).getValue());
         unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
         lastPos = assignExpr;
-
     }
 
     /**
-     * Add a class object. Needed for static fields.
+     * Inserts a call of {@link HandleStmt#addObjectToObjectMap(Object)}, what is
+     * needed for static fields
      *
-     * @param sc SootClass.
+     * @param sc The SootClass that represents the Class that provides the static field
      */
     static void addClassObjectToObjectMap(SootClass sc) {
-
-        logger.log(Level.INFO, "Add object {0} to ObjectMap in method {1}",
-                new Object[]{sc.getName(), b.getMethod().getName()});
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-
-        logger.info("Adding class Object:" + sc.getName().replace(".", "/"));
-        ClassConstant cc = ClassConstant.v(sc.getName().replace(".", "/"));
-        logger.info("Value: " + cc.value);
-
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "addObjectToObjectMap",
-                        parameterTypes, VoidType.v(), false),
-                ClassConstant.v(sc.getName().replace(".", "/")));
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
-
+        logger.info("Add object "+sc.getName()+" to ObjectMap in method " + b.getMethod().getName());
+        Unit assignExpr = fac.createStmt("addObjectToObjectMap", ClassConstant.v(sc.getName().replace(".", "/")));
         unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
         lastPos = assignExpr;
     }
 
     /**
-     * Add a field to the object map.
+     * Inserts {@link HandleStmt#addFieldToObjectMap(Object, String)}
      *
-     * @param field the SootField.
+     * @param field The Field that shall be added to the Object Map.
      */
     static void addInstanceFieldToObjectMap(SootField field) {
-        logger.log(Level.INFO, "Adding field {0} to ObjectMap in method {1}",
-                new Object[]{field.getSignature(), b.getMethod().getName()});
+        logger.info("Adding field "+field.getSignature()+" to ObjectMap in method " + b.getMethod().getName());
 
-        if (!(units.getFirst() instanceof IdentityStmt)
-                || !(units.getFirst().getUseBoxes().get(0).getValue()
-                instanceof ThisRef)) {
-            throw new InternalAnalyzerException("Expected @this reference");
-        }
+        assureThisRef();
 
         String fieldSignature = getSignatureForField(field);
-
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-        parameterTypes.add(RefType.v("java.lang.String"));
-
-        Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
-
+        Value tmpLocal =  units.getFirst().getDefBoxes().get(0).getValue();
         Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings,
-                StringConstant.v(fieldSignature));
+                                                        StringConstant.v(fieldSignature));
 
-
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "addFieldToObjectMap",
-                        parameterTypes, Scene.v().getObjectType(), false),
-                tmpLocal, local_for_Strings);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        Unit assignExpr = fac.createStmt("addFieldToObjectMap", tmpLocal, StringConstant.v(fieldSignature));
 
         unitStore_After.insertElement(
                 unitStore_After.new Element(assignSignature, lastPos));
@@ -398,14 +316,9 @@ public class JimpleInjector {
      * @param field SootField
      */
     static void addStaticFieldToObjectMap(SootField field) {
-        logger.info("Adding static Field " + field.toString() + " to Object Map");
+        logger.info("Adding static Field " + field + " to Object Map in method "+b.getMethod().getName());
 
         String signature = getSignatureForField(field);
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.Object"));
-        parameterTypes.add(RefType.v("java.lang.String"));
-
         SootClass sc = field.getDeclaringClass();
 
         Unit assignDeclaringClass = Jimple.v().newAssignStmt(
@@ -413,13 +326,10 @@ public class JimpleInjector {
 
         Unit assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
-
-        Expr addObj = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "addFieldToObjectMap", parameterTypes,
-                        Scene.v().getObjectType(), false),
-                local_for_Objects, local_for_Strings);
-        Unit assignExpr = Jimple.v().newInvokeStmt(addObj);
+        
+        Unit assignExpr = fac.createStmt("addFieldToObjectMap",
+                                    ClassConstant.v(sc.getName().replace(".", "/")),
+                                    StringConstant.v(signature));
 
         unitStore_After.insertElement(
                 unitStore_After.new Element(assignDeclaringClass, lastPos));
@@ -1169,6 +1079,19 @@ public class JimpleInjector {
 /*
  * Internal methodTypings
  */
+
+    /**
+     * Assures that a "@this" reference is present
+     * @throws InternalAnalyzerException if not present.
+     */
+    private static void assureThisRef() {
+        Unit first = units.getFirst();
+        Value obj = first.getUseBoxes().get(0).getValue();
+        // Check if the first unit is a reference to the actual object
+        if (!( first instanceof IdentityStmt ) || !( obj instanceof ThisRef )) {
+            throw new InternalAnalyzerException("Expected @this reference");
+        }
+    }
 
     /**
      *
