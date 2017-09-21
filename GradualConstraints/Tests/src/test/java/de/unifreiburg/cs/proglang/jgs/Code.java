@@ -61,6 +61,8 @@ public class Code {
     public final Environment init;
     public final FieldTable<Level> fields;
     public final SootMethod ignore0Low1ReturnHigh;
+    public final SootMethod testCallee_int__int;
+    public final SootMethod testCalleeRestricted_int__int;
 
     private static SootClass makeFreshClass(String name) {
         // reset the testClass
@@ -157,6 +159,33 @@ public class Code {
                 makeSignature(this.testCallee_int_int__int.getParameterCount(),
                               sigCstrs.collect(toList()),
                               Effects.emptyEffect()));
+        // Method:
+        // int testCallee_int__int (int)
+        //   with {@param1 <= @ret} effect {}
+        this.testCallee_int__int = new SootMethod("testCallee",
+                                                      asList(IntType.v()),
+                                                      IntType.v(), Modifier.ABSTRACT);
+        this.testClass.addMethod(testCallee_int__int);
+        sigCstrs = Stream.of(leS(param_x, Symbol$.MODULE$.ret()));
+        sigMap.put(this.testCallee_int__int,
+                   makeSignature(this.testCallee_int__int.getParameterCount(),
+                                 sigCstrs.collect(toList()),
+                                 Effects.emptyEffect()));
+
+        // Method:
+        // int testCallee_int__int (int)
+        //   with {HIGH <= @param1, @param1 <= @ret} effect {}
+        this.testCalleeRestricted_int__int = new SootMethod("testCalleeRestricted",
+                                                  asList(IntType.v()),
+                                                  IntType.v(), Modifier.ABSTRACT);
+        this.testClass.addMethod(testCalleeRestricted_int__int);
+        sigCstrs = Stream.of(leS(param_x, Symbol$.MODULE$.ret()),
+                             leS(Symbol$.MODULE$.literal(THIGH), param_x));
+        sigMap.put(this.testCalleeRestricted_int__int,
+                   makeSignature(this.testCalleeRestricted_int__int.getParameterCount(),
+                                 sigCstrs.collect(toList()),
+                                 Effects.emptyEffect()));
+
 
         // Method:
         // int ignoreSnd(int, int)
@@ -201,7 +230,7 @@ public class Code {
 
 
     /**
-     * Create a method conveniently. The method is added to the class "TestClass". Parameters can be given as an
+     * Create a non-abstract method conveniently. The method is added to the class "TestClass". Parameters can be given as an
      * (positional) array of local variables (the "identity statements", required by Soot to map parameters to local
      * variables, are inserted automatically)
      */

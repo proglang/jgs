@@ -17,6 +17,11 @@ import java.util.Map;
 // TODO: change the toString() method of type variables to be more generic.. they should not be read by users anyway. That's what "inspect" is for.
 public class TypeVars {
 
+    private int nextId = 0;
+
+    protected int freshId() {
+        return nextId++;
+    }
 
     public TypeVars() {
     }
@@ -65,6 +70,21 @@ public class TypeVars {
 
         public TypeVar forContext(Stmt s) {
             return new ForContext(s);
+        }
+
+        public TypeVar forInternalUse(String description) {
+            String id = "INTERNAL#" + freshId() + "[" + description + "]";
+            return new TypeVar() {
+                @Override
+                public TypeVarViews.TypeVarView inspect() {
+                    return new TypeVarViews.Internal(id);
+                }
+
+                @Override
+                public String toString() {
+                    return id;
+                }
+            };
         }
 
         private class ForLocal implements TypeVar {

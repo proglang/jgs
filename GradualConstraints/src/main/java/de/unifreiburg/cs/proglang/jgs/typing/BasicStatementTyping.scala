@@ -147,16 +147,11 @@ class BasicStatementTyping[LevelT](
         }
         val sig: Signature[LevelT] = getSignature(m)
         val instantiation: mutable.HashMap[jgs.signatures.Symbol[LevelT], CTypes.CType[LevelT]] = mutable.HashMap()
-        val argTypes: List[Option[TypeVars.TypeVar]] = args.map(mv => mv.map(env.get)).toList
-        (0 until argCount).foreach(i => {
-          val mat = argTypes.get(i);
-          mat.foreach(at => {
-            instantiation.put(jgs.signatures.Symbol.param(i), variable(at));
-          });
-          if (!mat.isDefined) {
-            instantiation.put(jgs.signatures.Symbol.param(i), literal(cstrs.types.pub));
-          }
-        })
+        (0 until argCount).zip(args).foreach{ case (i, maybeArg) => {
+          val paramSym = jgs.signatures.Symbol.param[LevelT](i)
+          val argType = maybeArg.map(env.get).getOrElse(tvars.forInternalUse("Upper bound for " + paramSym.toString))
+          instantiation.put(paramSym, variable(argType))
+        }}
         instantiation += jgs.signatures.Symbol.ret[LevelT] -> variable(destTVar)
         val tagMap: mutable.Map[Constraint[LevelT], TypeVarTags.TypeVarTag] = mutable.HashMap()
         sig.constraints.stream.foreach(sc => {

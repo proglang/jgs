@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import de.unifreiburg.cs.proglang.jgs.signatures.Symbol$;
 
 import static de.unifreiburg.cs.proglang.jgs.TestDomain.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
@@ -31,6 +32,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.*;
 import static de.unifreiburg.cs.proglang.jgs.Functions.*;
+
 
 
 public class MethodBodyTypingTest {
@@ -120,6 +122,50 @@ public class MethodBodyTypingTest {
                 finalResult -> new HashSet<>(asList(pc, code.init.get(code.varX), code.init.get(code.varY),
                         code.init.get(code.varZ), code.init.get(code.varO), finalResult.finalTypeVariableOf(code.varY))));
 
+    }
+
+    @Test
+    public void testCallWithConstant() throws TypingException {
+        /*
+        x = testCallee(42);
+         */
+        Stmt ass = j.newAssignStmt(code.localX,
+                                   j.newVirtualInvokeExpr(code.localT,
+                                                          code.testCallee_int__int.makeRef(),
+                                                          IntConstant.v(42)
+                                                          ));
+        Body b = BodyBuilder.begin()
+                            .seq(ass)
+                            .build();
+        assertEquivalentConstraints(
+                b,
+                finalResult -> makeNaive(asList(leC(code.init.get(code.varT), finalResult.finalTypeVariableOf(code.varX)))),
+                finalResult -> Stream.of(finalResult.finalTypeVariableOf(code.varX),
+                                         finalResult.finalTypeVariableOf(code.varT))
+                                     .collect(toSet()));
+    }
+
+    @Test
+    public void testCallWithConstantAndLowerBoundRestriction() throws TypingException {
+        /*
+        x = testCalleeRestricted(42);
+         */
+        Stmt ass = j.newAssignStmt(code.localX,
+                                   j.newVirtualInvokeExpr(code.localT,
+                                                          code.testCalleeRestricted_int__int.makeRef(),
+                                                          IntConstant.v(42)
+                                   ));
+        Body b = BodyBuilder.begin()
+                            .seq(ass)
+                            .build();
+        assertEquivalentConstraints(
+                b,
+                finalResult -> makeNaive(asList(
+                        leC(CHIGH, finalResult.finalTypeVariableOf(code.varX)),
+                        leC(code.init.get(code.varT), finalResult.finalTypeVariableOf(code.varX)))),
+                finalResult -> Stream.of(finalResult.finalTypeVariableOf(code.varX),
+                                         finalResult.finalTypeVariableOf(code.varT))
+                                     .collect(toSet()));
     }
 
     @Test

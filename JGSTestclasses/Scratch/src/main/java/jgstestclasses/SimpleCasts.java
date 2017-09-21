@@ -55,12 +55,11 @@ public class SimpleCasts {
     }
 
     @Constraints({"HIGH <= @0 ", "@0 <= @ret"})
-    @Effects({})
+    @Effects({"LOW"})
     static String aStaticMethodWithCasts(String i) {
         String x = Casts.cast("HIGH ~> ?", i);
         String result;
         if (i == null) {
-            System.out.println("Attempting that illegal cast!");
             result =  Casts.cast("? ~> LOW", x);
         } else {
             result = null;
