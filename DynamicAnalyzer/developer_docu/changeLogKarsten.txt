@@ -11,4 +11,19 @@ WEEK 1:
 	* Created Class RHSInstrumentationSwitch
 	* Optimization of AnnotationStmtSwitch.caseAssignExpr
 
+	THURSDAY:
+	FRIDAY:
+
+WEEK 2:
+    MONDAY:
+    * Creating JimpleFactory
+
+    TUESDAY:
+    * Refining JimpleFactory
+
+    WEDNESDAY:
+    * Created BoolConstant as extension of IntConstant.
+    * Updated JimpleFactory to Support Array Types.
+    * JimpleInjector Code Optimization
+
 

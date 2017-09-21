@@ -4,10 +4,10 @@ import soot.*;
 import soot.jimple.*;
 import utils.logging.L1Logger;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * This Class provides some Factory Methods, that may help to Create Jimple Expressions
@@ -18,18 +18,23 @@ import java.util.function.Supplier;
  */
 public class JimpleFactory {
 
+    // <editor-fold desc="Cache Definitions">
     /** Defines a Cache, that allows a quick access to the Class Methods */
     private Map<String, Map<String, SootMethodRef>> methodCache = new HashMap<>();
 
     /** Caches the Constructor Methods, that are used for special invokes */
     private Map<String, Map<String, SootMethodRef>> constructorCache = new HashMap<>();
+    // </editor-fold>
 
+    // <editor-fold desc="Reference Definitions">
     /** Defines the Class for which this Factory is created. */
     private Class reference;
 
     /** Defines the Local, that shall be used to create Jimple Statements */
     private Local instance;
+    // </editor-fold>
 
+    // <editor-fold desc="Initialise Methods">
     /**
      * Creates a new JimpleFactory for the given Class and the given Local, that
      * is an instance of the Class for the Soot Framework.
@@ -59,7 +64,7 @@ public class JimpleFactory {
 
             // Getting the Signature List as List of Type. And use it to calculate
             // a String Representation, that can be used as key for the overloads
-            List<Type> types = Soots.createParameters(c.getParameterTypes());
+            List<Type> types = SootTypeUtil.createParameters(c.getParameterTypes());
             String key = calcKey(types);
 
             SootMethodRef cRef = Scene.v().makeConstructorRef(
@@ -85,13 +90,13 @@ public class JimpleFactory {
 
             // Getting the Signature List as List of Type. And use it to calculate
             // a String Representation, that can be used as key for the overloads
-            List<Type> types = Soots.createParameters(m.getParameterTypes());
+            List<Type> types = SootTypeUtil.createParameters(m.getParameterTypes());
             String key = calcKey(types);
 
             // Calculating the SootMethodRef for the current Method m
             SootMethodRef mRef = Scene.v().makeMethodRef(
                     Scene.v().getSootClass(reference.getName()),
-                    m.getName(), types, Soots.toSootType(m.getReturnType()),
+                    m.getName(), types, SootTypeUtil.toSootType(m.getReturnType()),
                     java.lang.reflect.Modifier.isStatic(m.getModifiers()));
 
             // Adding the calculated Method in the cache and warn/inform the user
@@ -106,7 +111,9 @@ public class JimpleFactory {
         }
         // </editor-fold>
     }
+    //</editor-fold>
 
+    // <editor-fold desc="Cache Interaction">
     /**
      * Gets the cached SootMethodRef for the given name and values.
      * It is either cached in the constructorCache or in the methodCache.
@@ -160,8 +167,25 @@ public class JimpleFactory {
                     catch (ClassNotFoundException e) {
                         // The primitive data types are not creatable with Class.forClass
                         // do it manually here
-                        if (Soots.isPrimitiveType(savArg))
-                            savArgsClasses.add(Soots.getPrimitiveType(savArg));
+                        if (SootTypeUtil.isPrimitiveType(savArg))
+                            savArgsClasses.add(SootTypeUtil.getPrimitiveType(savArg));
+                        else if (savArg.contains("[]")) {
+                            int beg = savArg.indexOf("[]");
+                            int end = savArg.lastIndexOf("[]");
+                            int dim = ((end - beg) / 2) + 1;
+                            Class base = null;
+                            String baseString = savArg.replaceAll("\\[]", "");
+                            if (SootTypeUtil.isPrimitiveType(baseString))
+                                base = SootTypeUtil.getPrimitiveType(baseString);
+                            if (base == null) {
+                                try {
+                                    base = Class.forName(baseString);
+                                } catch (ClassNotFoundException inner) {
+                                    new IllegalStateException("Class cast failed for array value: "+savArg);
+                                }
+                            }
+                            savArgsClasses.add(Array.newInstance(base, dim).getClass());
+                        }
                         else throw new IllegalStateException("Class cast failed for: " + savArg);
                     }
                 }
@@ -174,9 +198,25 @@ public class JimpleFactory {
                     catch (ClassNotFoundException e) {
                         // The primitive data types are not creatable with Class.forClass
                         // do it manually here
-                        if (Soots.isPrimitiveType(arg.getType().toString()))
-                            savArgsClasses.add(Soots.getPrimitiveType(arg.getType().toString()));
-                        else throw  new IllegalStateException("Class cast failed for given value: "+arg);
+                        if (SootTypeUtil.isPrimitiveType(arg.getType().toString()))
+                            argsClass.add(SootTypeUtil.getPrimitiveType(arg.getType().toString()));
+                        // Array Types need special Handling as well.
+                        else if (arg.getType() instanceof ArrayType) {
+                            ArrayType arr = (ArrayType) arg.getType();
+                            int[] dim = new int[arr.numDimensions];
+                            Class base = null;
+                            if (SootTypeUtil.isPrimitiveType(arr.baseType.toString()))
+                                base = SootTypeUtil.getPrimitiveType(arr.baseType.toString());
+                            if (base == null) {
+                                try {
+                                    base = Class.forName(arr.baseType.toString());
+                                } catch (ClassNotFoundException inner) {
+                                    new IllegalStateException("Class cast failed for given array value: "+arg + " with Type: " + arg.getType());
+                                }
+                            }
+                            argsClass.add(Array.newInstance(base, dim).getClass());
+                        }
+                        else throw  new IllegalStateException("Class cast failed for given value: "+arg + " with Type: " + arg.getType());
                     }
                 }
                 // </editor-fold>
@@ -186,7 +226,7 @@ public class JimpleFactory {
                     if (!savArgsClasses.get(i).isAssignableFrom(argsClass.get(i)))
                         // In Case one type does not fit throw an exception
                         throw new IllegalArgumentException("Type "+argsClass.get(i)
-                                                           + " does not match required Type "+ savArgsClasses.get(i));
+                                                           + " does not match required Type "+ savArgsClasses.get(i) + " for Method: "+name);
                 }
                 //</editor-fold>
 
@@ -209,7 +249,9 @@ public class JimpleFactory {
         }
         return sootMethod;
     }
+    // </editor-fold>
 
+    // <editor-fold desc="Expr Creation">
     /**
      * Creates new new SpecialInvokeExpr, that represents a Constructor.
      * @param name The name of the Constructor
@@ -244,7 +286,9 @@ public class JimpleFactory {
     private StaticInvokeExpr createStaticExpr(String name, Value... args) {
         return Jimple.v().newStaticInvokeExpr(getMethodRefFor(name, args), args);
     }
+    // </editor-fold>
 
+    //<editor-fold desc="Stmt Creation Public">
     /**
      * Creates a Stmt using the Parameters. This statement could be inserted by
      * the JimpleInjector directly.
@@ -267,7 +311,9 @@ public class JimpleFactory {
         else op = createVirtualExpr(name,args);
         return Jimple.v().newInvokeStmt(op);
     }
+    // </editor-fold>
 
+    // <editor-fold desc="Internal Helper Methods">
     /**
      * Calculates the Key String to Save the Signature of a Method
      * out of the Types of the Signature passed as a List.
@@ -279,4 +325,5 @@ public class JimpleFactory {
         for (Type t : types) { key += t + ", "; }
         return types.isEmpty() ? key : key.substring(0, key.length() - 2);
     }
+    // </editor-fold>
 }

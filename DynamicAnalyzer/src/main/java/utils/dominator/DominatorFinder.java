@@ -2,6 +2,7 @@ package utils.dominator;
 
 import soot.Body;
 import soot.Unit;
+import soot.jimple.Stmt;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;
@@ -49,7 +50,8 @@ public class DominatorFinder {
 	 * @return Hashvalue of immerdiate dominator.
 	 */
 	public static String getImmediateDominatorIdentity(Unit node) {
-		Unit dom = (Unit) pdfinder.getImmediateDominator(node); 
+		Unit dom = (Unit) pdfinder.getImmediateDominator(node);
+
 		if (dom != null) {
 		    String id = getIdentityForUnit(dom);
 		    // we have an immediate postdominator
