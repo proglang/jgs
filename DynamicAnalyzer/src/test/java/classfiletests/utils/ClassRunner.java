@@ -73,7 +73,7 @@ public class ClassRunner {
 		project.addTarget(target);
 		project.setDefault(TARGET_NAME);
 
-		// TODO: check if this is right and explain why
+		// TODO: check if this is right and explain why (the double execute)
 		target.execute();
 		project.executeTarget(project.getDefaultTarget());
 
