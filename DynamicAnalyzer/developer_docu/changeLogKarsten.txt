@@ -26,4 +26,7 @@ WEEK 2:
     * Updated JimpleFactory to Support Array Types.
     * JimpleInjector Code Optimization
 
+    THURSDAY:
+    * Creating Dominator for ifs, that finds locals
+
 
