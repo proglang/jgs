@@ -813,12 +813,13 @@ public class HandleStmt {
     // TODO: checking the local pc is only a "partial" enforcement primitive, that is, it is never useful by itself. E.g. it is used in assignments and method returns. So, it should be packed together with the other actions needed for the "complete" enforcement primitive.
     // TODO: before fixing the issue above, check why returning from functions  and assignments are different cases.
     public void checkLocalPC(String signature) {
+        logger.log(Level.INFO, "NSU check for local {0}", signature);
         if (localmap == null) {
-            throw new InternalAnalyzerException("LocalMap is not assigned");
+            throw new InternalAnalyzerException("LocalMap is null");
         }
         //check if local is initialized
         if (!localmap.checkIfInitialized(signature)) {
-            logger.log(Level.INFO, "Local {0} has not yet been initialized", signature);
+            logger.log(Level.INFO, "Local {0} has not yet been initialized; skipping NSU check", signature);
             localmap.initializeLocal(signature);
             return;
         }
