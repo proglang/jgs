@@ -16,6 +16,7 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
 import utils.exceptions.IllegalFlowError;
+import utils.exceptions.InternalAnalyzerException;
 import utils.exceptions.NSUError;
 
 import utils.logging.L1Logger;
@@ -102,40 +103,43 @@ public class ClassRunner {
 		}
 
 		try {
-			// TODO: deal w/ package names correctly
-			runClass(className, packageDir.replace('/', '.'), outputDir);
+			try {
+				// TODO: deal w/ package names correctly
+				runClass(className, packageDir.replace('/', '.'), outputDir);
 
-			// check if we did expect and Exception
-			if (!expectedException.equals(PASSED)) {
-				fail("No IFC error thrown. Expected: " + expectedException);
+				// check if we did expect and Exception
+				if (!expectedException.equals(PASSED)) {
+					fail("No IFC error thrown. Expected: " + expectedException);
+
+				}
 			}
-		}
-		// first check the security exceptions
-		catch (BuildException buildExc) {
-			// We have an exception thrown by ANT
-			Throwable e = buildExc.getCause();
-			// the ANT exceptions are built with a different classloader, so
-			// we cannot use "instanceof" to compare with what we expect. So
-			// we compare the names of the classes.
-			if (hasClassNameOf(e, NSUError.class)) {
-				assertExpectedException(e, NSU_FAILURE, expectedException);
-			} else if (hasClassNameOf(e, IllegalFlowError.class)) {
-				assertExpectedException(e, ILLEGAL_FLOW, expectedException);
-			} else {
-				String message =  "Unexpected Exception: " + e.toString();
-				logger.severe(message);
-				e.printStackTrace();
-				fail(message);
+			// first check the security exceptions
+			catch (BuildException buildExc) {
+				// We have an exception thrown by ANT
+				Throwable e = buildExc.getCause();
+				// the ANT exceptions are built with a different classloader, so
+				// we cannot use "instanceof" to compare with what we expect. So
+				// we compare the names of the classes.
+				if (e == null) {
+					throw new InternalAnalyzerException("Unexpected BuildException", buildExc);
+				} else if (hasClassNameOf(e, NSUError.class)) {
+					assertExpectedException(e, NSU_FAILURE, expectedException);
+				} else if (hasClassNameOf(e, IllegalFlowError.class)) {
+					assertExpectedException(e, ILLEGAL_FLOW, expectedException);
+				} else {
+					String message = "Unexpected Exception: " + e.toString();
+					logger.severe(message);
+					e.printStackTrace();
+					fail(message);
+				}
 			}
-		} catch (IllegalFlowError e) {
-			assertExpectedException(e, ILLEGAL_FLOW, expectedException);
 		}
 		// TODO: check for instrumentation events here
 		catch (EventChecker.MissingEventException | EventChecker.UnexpectedEventException e) {
 		    e.printStackTrace();
 		    fail(e.getMessage());
 		} catch (Exception e) {
-			throw new RuntimeException("Unexpected Exception", e);
+			throw new RuntimeException("Unexpected Exception (see cause)", e);
 		}
 
 
