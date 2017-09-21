@@ -837,6 +837,19 @@ public class HandleStmt {
     }
 
     /**
+     * Check if the current PC is public (i.e. bottom). This methods
+     * functions as an NSU check for (non-dynamic) public variable which
+     * don't require a cast.
+     */
+    public void checkNonSensitiveLocalPC() {
+        logger.info("NSU check for updating public a variable");
+       if (!CurrentSecurityDomain.le(localmap.getLocalPC(),
+                                     CurrentSecurityDomain.bottom())) {
+          handleStatementUtils.abort(new NSUError("Sensitive update to public variable"));
+       }
+    }
+
+    /**
      * Check level of signature is less/equal than @param level
      *
      * @param signature signature of the local to test

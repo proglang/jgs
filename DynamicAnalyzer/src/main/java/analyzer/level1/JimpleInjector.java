@@ -501,8 +501,14 @@ public class JimpleInjector {
         Unit invoke = fac.createStmt("setLevelOfLocal", StringConstant.v(signature));
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
-        // only needs to be done if CxTyping of Statement is Dynamic
-        Unit checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
+        // only needs to be done if CxTyping of Statement is Dynamic.
+        // Also, if the variable to update is public, the PC should be "bottom"
+        Unit checkLocalPCExpr;
+        if (varTyping.getBefore(instantiation, (Stmt)pos, l).isPublic()) {
+            checkLocalPCExpr = fac.createStmt("checkNonSensitiveLocalPC");
+        } else {
+            checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
+        }
 
         // TODO i did comment this out for some reason .. but why?
         // if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
