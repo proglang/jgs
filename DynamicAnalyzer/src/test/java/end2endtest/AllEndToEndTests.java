@@ -125,6 +125,7 @@ public class AllEndToEndTests {
 				// two special cases, where compiler optimisation prevents NSU Exceptions
 				new Object[] {"NSU_IfStmtSpecialCase", SecurityMonitoringEvent.PASSED, new String[] {  } },
 				new Object[] {"NSU_SwitchStmtSpecialCase", SecurityMonitoringEvent.PASSED, new String[] {  } },
+				new Object[] {"NoNSUForUninitializedVariables", SecurityMonitoringEvent.PASSED, new String[] {  } },
 
 				new Object[] {"MakeHigh", SecurityMonitoringEvent.PASSED, new String[] {} },
 				
