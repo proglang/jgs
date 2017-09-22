@@ -1,10 +1,14 @@
 package utils.visitor;
 
 import analyzer.level1.JimpleInjector;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Type;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
 import soot.Local;
 import soot.jimple.*;
 import utils.logging.L1Logger;
 
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -21,7 +25,7 @@ import java.util.logging.Logger;
  *
  * @author Karsten Fix, 13.Sept 2017
  */
-public class LHSInstrumentationSwitch extends AbstractJimpleValueSwitch {
+public class LHSInstrumentationSwitch<L> extends AbstractJimpleValueSwitch {
 
     /** Gets the Logger to log different, important messages */
     private final Logger logger = L1Logger.getLogger();

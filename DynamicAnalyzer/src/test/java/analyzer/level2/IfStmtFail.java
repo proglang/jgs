@@ -25,14 +25,14 @@ public class IfStmtFail {
 		
 		hs.addLocal("int_x");
 		hs.checkLocalPC("int_x");
-		hs.setLevelOfLocal("int_x");
+		hs.setLocalToCurrentAssingmentLevel("int_x");
 		int x = 1;
-		hs.makeLocal("int_x", "HIGH");
+		hs.setLocalFromString("int_x", "HIGH");
 		assertEquals(CurrentSecurityDomain.top(), hs.getLocalLevel("int_x"));
 		
 		hs.addLocal("int_y");
 		hs.checkLocalPC("int_y");
-		hs.setLevelOfLocal("int_y");
+		hs.setLocalToCurrentAssingmentLevel("int_y");
 		@SuppressWarnings("unused")
 		int y = 1;
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("int_y"));
@@ -46,7 +46,7 @@ public class IfStmtFail {
 			assertEquals(CurrentSecurityDomain.top(), hs.getGlobalPC());
 			
 			hs.checkLocalPC("int_y");
-			hs.setLevelOfLocal("int_y");
+			hs.setLocalToCurrentAssingmentLevel("int_y");
 			y = 2;
 			
 			hs.exitInnerScope("123");

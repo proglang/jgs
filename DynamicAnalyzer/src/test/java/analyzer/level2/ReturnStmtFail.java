@@ -43,7 +43,7 @@ public class ReturnStmtFail {
 		hs.addLocal("int_res1");
 		
 		// Initialize int_res1 !
-		hs.initializeVariable("int_res1");
+		hs.setLocal("int_res1", CurrentSecurityDomain.bottom());
 		
 		@SuppressWarnings("unused")
 		int res1;

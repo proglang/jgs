@@ -77,7 +77,7 @@ public class MultiArrayFail {
 		hs.addLocal("String[]_tmp");
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(1));
 		hs.checkLocalPC("String[]_tmp");
-		hs.setLevelOfLocal("String[]_tmp");
+		hs.setLocalToCurrentAssingmentLevel("String[]_tmp");
 		String[] tmp = arr[1];
 		
 		hs.addLocal("String_x");
@@ -85,9 +85,9 @@ public class MultiArrayFail {
 		
 		@SuppressWarnings("unused")
 		String x = tmp[0];
-		hs.initializeVariable("String_x");		// Comment out to remove NSU IFExept
+		hs.setLocalToCurrentAssingmentLevel("String_x");		// Comment out to remove NSU IFExept
 		hs.checkLocalPC("String_x");
-		hs.setLevelOfLocal("String_x");			// IFCError thrown here, NSU
+		hs.setLocalToCurrentAssingmentLevel("String_x");			// IFCError thrown here, NSU
 		
 		hs.popLocalPC(123);
 		hs.close();
@@ -141,7 +141,7 @@ public class MultiArrayFail {
 		arr[0] = inner1;
 		
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_inner2");
-		hs.setLevelOfLocal("String[][]_arr", CurrentSecurityDomain.top());
+		hs.setLocal("String[][]_arr", CurrentSecurityDomain.top());
 		hs.checkArrayWithGlobalPC(arr, Integer.toString(1), "String[][]_arr");
 		hs.setLevelOfArrayField(arr, Integer.toString(1), "String[][]_arr");
 		arr[1] = inner2;
@@ -149,7 +149,7 @@ public class MultiArrayFail {
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(0));
 		hs.addLocal("String[]_tmp");
 		hs.checkLocalPC("String[]_tmp");
-		hs.setLevelOfLocal("String[]_tmp");
+		hs.setLocalToCurrentAssingmentLevel("String[]_tmp");
 		String[] tmp = arr[0];
 		
 		hs.checkArrayWithGlobalPC(tmp, Integer.toString(0), "String[][]_tmp");

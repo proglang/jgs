@@ -38,7 +38,7 @@ public class InvokeSuccess {
 		 * 2. Add Fields to ObjectMap
 		 */
 		
-		hs.setLevelOfLocal("TestSubClass_xy");
+		hs.setLocalToCurrentAssingmentLevel("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(2, hs.getNumberOfFieldsInObjectMap(xy)); // The third field is static
@@ -93,7 +93,7 @@ public class InvokeSuccess {
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getActualReturnLevel());
     	
     	
-		hs.makeLocal("int_b", "HIGH");
+		hs.setLocalFromString("int_b", "HIGH");
 		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 		xy.methodWithParams(a, b, c);
 		assertEquals(CurrentSecurityDomain.top(), hs.getActualReturnLevel());

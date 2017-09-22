@@ -29,12 +29,14 @@ public class ForStmtSuccess {
 		hs.addLocal("int_res");
 		
 		int res = 0;
-		
+
+		hs.setLocal("int_i", CurrentSecurityDomain.bottom());
+
 		hs.checkCondition("123", "int_i");
 		for (int i = 0;i < 1; i++) {
 			
 			hs.checkLocalPC("int_res");
-			hs.setLevelOfLocal("int_res");
+			hs.setLocalToCurrentAssingmentLevel("int_res");
 			res = 2;
 			
 			hs.exitInnerScope("123");
@@ -59,6 +61,8 @@ public class ForStmtSuccess {
 		
 		int i = 0; // Local
 		int res; // Field
+
+		hs.setLocal("int_i", CurrentSecurityDomain.bottom());
 		
 		hs.checkCondition("123", "int_i");
 		for (i = 0;i < 1; i++) {

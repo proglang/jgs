@@ -80,7 +80,7 @@ public class AssignFieldsFail {
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_local");
-		hs.setLevelOfLocal("int_local");
+		hs.setLocalToCurrentAssingmentLevel("int_local");
 		int local = 2;
 		
 		hs.addLocal("TestSubClass_o");

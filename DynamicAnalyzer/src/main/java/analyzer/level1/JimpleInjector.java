@@ -2,14 +2,11 @@ package analyzer.level1;
 
 import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
-import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.VarTyping;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import scala.Option;
 import soot.*;
+import soot.Type;
 import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
@@ -22,6 +19,7 @@ import utils.logging.L1Logger;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * JimpleInjector is handles the inserts of additional instructions in a methods
@@ -116,6 +114,10 @@ public class JimpleInjector {
     private static VarTyping varTyping;
     private static CxTyping cxTyping;
     private static Instantiation instantiation;
+    /**
+     * The list of locals of the body *before* instrumentation.
+     */
+    private static List<Local> originalLocals;
 
     /**
      * See method with same name in HandleStatement.
@@ -149,6 +151,7 @@ public class JimpleInjector {
         b = body;
         units = b.getUnits();
         locals = b.getLocals();
+        originalLocals = new ArrayList<>(locals);
 
         // TODO: Remove this flag, when ready to remove
         extralocals = false;
@@ -215,9 +218,26 @@ public class JimpleInjector {
         units.insertBefore(fac.createStmt("close"), units.getLast());
     }
 
+
     // </editor-fold>
 
     // <editor-fold desc="Local Related Methods">
+
+
+    /**
+     * Injects registration calls at the top of a method for each dynamic local variable.
+     */
+    public static void registerDynamicLocals() {
+         Stmt firstStmt = (Stmt)b.getUnits().getFirst();
+        for (Local l : originalLocals) {
+            if (varTyping.getBefore(instantiation,firstStmt, l).isDynamic())
+                // TODO: find a better solution for "lastPos"
+           unitStore_After.insertElement(unitStore_After.new Element(
+                   fac.createStmt("startTrackingLocal",
+                                  StringConstant.v(getSignatureForLocal(l))),
+                   lastPos));
+        }
+    }
 
     /**
      * Inserts a call of {@link HandleStmt#addLocal(String)}.
@@ -235,7 +255,7 @@ public class JimpleInjector {
     }
 
     /**
-     * Inserts {@link HandleStmt#makeLocal(String, String)} into the Jimple Code
+     * Inserts {@link HandleStmt#setLocalFromString(String, String)} into the Jimple Code
      *
      * @param local local The Local with level shall be adjusted.
      * @param level the level to assign to the local
@@ -248,7 +268,7 @@ public class JimpleInjector {
         String signature = getSignatureForLocal(local);
         Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
 
-        Unit setLevelOfL = fac.createStmt("makeLocal", StringConstant.v(signature), StringConstant.v(level));
+        Unit setLevelOfL = fac.createStmt("setLocalFromString", StringConstant.v(signature), StringConstant.v(level));
 
         unitStore_After.insertElement(unitStore_After.new Element(sig, pos));
         unitStore_After.insertElement(unitStore_After.new Element(setLevelOfL, sig));
@@ -496,22 +516,36 @@ public class JimpleInjector {
         Stmt assignSignature = Jimple.v().newAssignStmt(
                 local_for_Strings, StringConstant.v(signature));
 
-        // insert setLevelOfLocal, which accumulates the PC and the right-hand side of the assign stmt.
+        // insert setLocalToCurrentAssingmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
-        Unit invoke = fac.createStmt("setLevelOfLocal", StringConstant.v(signature));
+        Unit invoke = fac.createStmt("setLocalToCurrentAssingmentLevel", StringConstant.v(signature));
+
+        Stmt stmt = (Stmt)pos;
+        de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
+        de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeAfter = varTyping.getAfter(instantiation, stmt, l);
+        if (typeBefore.isDynamic()
+            && !typeAfter.isDynamic()) {
+            logger.fine("Local type switches from dynamic -> static");
+            // dynamic -> static
+            JimpleInjector.stopTrackingLocal(l, stmt);
+        } else if (!typeBefore.isDynamic() && typeAfter.isDynamic()) {
+            logger.fine("Local type switches from static -> dynamic");
+            // static -> dynamic
+            JimpleInjector.startTrackingLocal(l, stmt);
+        }
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic.
         // Also, if the variable to update is public, the PC should be "bottom"
         Unit checkLocalPCExpr;
-        if (varTyping.getBefore(instantiation, (Stmt)pos, l).isPublic()) {
+        if (typeBefore.isPublic()) {
             checkLocalPCExpr = fac.createStmt("checkNonSensitiveLocalPC");
         } else {
             checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
         }
 
         // TODO i did comment this out for some reason .. but why?
-        // if variable l is not dynamic after stmt pos, we do not need to call setLevelOfLocal at all,
+        // if variable l is not dynamic after stmt pos, we do not need to call setLocalToCurrentAssingmentLevel at all,
         // and we especially do not need to perform a NSU check!
         if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
 
@@ -754,6 +788,9 @@ public class JimpleInjector {
 
         // only assign Argument to Local if Argument is of Dynamic Type
         if (instantiation.get(posInArgList).isDynamic()) {
+            String localSig = getSignatureForLocal(local);
+            unitStore_After.insertElement(unitStore_After.new Element(
+                    fac.createStmt("startTrackingLocal", StringConstant.v(localSig)), lastPos));
             unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
             lastPos = assignExpr;
         }
@@ -1278,5 +1315,22 @@ public class JimpleInjector {
                 // TODO: if for some reason the type analysis is not available, we should check that the conversion is correct here
             }
         }
+    }
+
+    /**
+     * Insert "startTrackingLocal" call.
+     */
+    public static void startTrackingLocal(Local l, Stmt callStmt) {
+
+        unitStore_After.insertElement(unitStore_After.new Element(fac.createStmt("startTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
+                           callStmt));
+    }
+
+    /**
+     * Insert "stopTrackingLocal" call.
+     */
+    public static void stopTrackingLocal(Local l, Stmt callStmt) {
+        unitStore_After.insertElement(unitStore_After.new Element(fac.createStmt("stopTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
+                                                                    callStmt));
     }
 }

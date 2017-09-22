@@ -29,7 +29,7 @@ public class WhileStmtFail {
 		
 		hs.addLocal("int_x");
 		hs.checkLocalPC("int_x");
-		hs.setLevelOfLocal("int_x");
+		hs.setLocalToCurrentAssingmentLevel("int_x");
 		int x = 0;
 		
 		hs.addLocal("int_y", CurrentSecurityDomain.top());
@@ -40,11 +40,11 @@ public class WhileStmtFail {
 			
 			hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 			hs.checkLocalPC("int_x");
-			hs.setLevelOfLocal("int_x");
+			hs.setLocalToCurrentAssingmentLevel("int_x");
 			x += 1;
 			hs.joinLevelOfLocalAndAssignmentLevel("int_y");
 			hs.checkLocalPC("int_y");
-			hs.setLevelOfLocal("int_y");
+			hs.setLocalToCurrentAssingmentLevel("int_y");
 			y += 1;
 			
 			hs.exitInnerScope("123");

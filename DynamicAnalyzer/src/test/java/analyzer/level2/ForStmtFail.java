@@ -30,7 +30,7 @@ public class ForStmtFail {
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_i");
-		hs.makeLocal("int_i", "HIGH");
+		hs.setLocalFromString("int_i", "HIGH");
 		hs.addLocal("int_res");
 		
 		int res = 0;
@@ -39,7 +39,7 @@ public class ForStmtFail {
 		for (int i = 0;i < 1; i++) {
 			
 			hs.checkLocalPC("int_res");
-			hs.setLevelOfLocal("int_res");
+			hs.setLocalToCurrentAssingmentLevel("int_res");
 			res = 2;
 			
 			hs.exitInnerScope("123");
@@ -62,18 +62,18 @@ public class ForStmtFail {
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_i");
-		hs.makeLocal("int_i","HIGH");
+		hs.setLocalFromString("int_i", "HIGH");
 		hs.addLocal("int_res");
 		
 		int res = 0;
 		
-		hs.initializeVariable("int_res");
+		hs.setLocal("int_res", CurrentSecurityDomain.bottom());
 		
 		hs.checkCondition("123", "int_i");
 		for (int i = 0;i < 1; i++) {
 			
 			hs.checkLocalPC("int_res");
-			hs.setLevelOfLocal("int_res");
+			hs.setLocalToCurrentAssingmentLevel("int_res");
 			res = 2;
 			
 			hs.exitInnerScope("123");
@@ -94,7 +94,7 @@ public class ForStmtFail {
 		hs.initHandleStmtUtils(false, 0);
 		hs.addObjectToObjectMap(this);
 		hs.addLocal("int_i");
-		hs.makeLocal("int_i", "HIGH");
+		hs.setLocalFromString("int_i", "HIGH");
 		hs.addFieldToObjectMap(this, "int_res");
 		
 		int i = 0; // Local

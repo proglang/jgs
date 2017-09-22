@@ -50,7 +50,7 @@ public class ArraysFail {
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(a, Integer.toString(i));
 		hs.joinLevelOfLocalAndAssignmentLevel("int_i");
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_a");
-		hs.setLevelOfLocal("String_x");
+		hs.setLocalToCurrentAssingmentLevel("String_x");
 		@SuppressWarnings("unused")
 		String x = a[i];
 		
@@ -74,7 +74,7 @@ public class ArraysFail {
 		hs.addArrayToObjectMap(a);
 		assertTrue(hs.containsObjectInObjectMap(a));
 		assertEquals(3, hs.getNumberOfFieldsInObjectMap(a));
-		hs.setLevelOfLocal("String[]_a", CurrentSecurityDomain.top());
+		hs.setLocal("String[]_a", CurrentSecurityDomain.top());
 		
 		
 		/*

@@ -7,16 +7,21 @@ import utils.logging.L2Logger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 
 /**
- * The LocalMap stores the locals of a methodbody and its corresponding security levels.
- * These security Levels are stored in the OptinalSecurity class, which acts as a 
- * container. It provides a flag "isInitialized" and throw an Exception if security
- * level of uninitialized local is queried.
- * @author Regina König (2015), Nicolas Müller (2016)
+ * The LocalMap
+ * 1. maps the dynamically tracked locals of a method body to their current security levels.
+ * 2. Maintains the stack of local pcs.
+ *
+ * Any local not present in the map is not dynamically tracked (i.e. statically checked).
+ * A dynamically tracked local may be "uninitialized".
+ *
+ * @author Regina König (2015), Nicolas Müller (2016), fennell (2017)
  *
  */
 public class LocalMap {
@@ -24,11 +29,10 @@ public class LocalMap {
 	private Logger logger = L2Logger.getLogger();
 	
 	private LinkedList<LPCDominatorPair> localPC = new LinkedList<LPCDominatorPair>();
-	private HashMap<String, SecurityOptional> localMap = new HashMap<String, SecurityOptional>();
+	private HashMap<String, Optional<Object>> localMap = new HashMap<>();
 	
 	public LocalMap() {
 		localPC.push(new LPCDominatorPair(CurrentSecurityDomain.bottom() , -1));
-		localMap.put("DEFAULT_LOW", new SecurityOptional(CurrentSecurityDomain.bottom(), true));
 	}
 	
 	/**
@@ -90,15 +94,15 @@ public class LocalMap {
 	 * @param securityLevel Its securitylevel.
 	 */
 	public void insertLocal(String signature, Object securityLevel) {
-		localMap.put(signature, new SecurityOptional(securityLevel, true) );
+		localMap.put(signature, Optional.of(securityLevel));
 	}
 	
 	/**
 	 * Insert a new local into localMap with default security-level.
 	 * @param signature The signature of the local.
 	 */
-	public void insertLocal(String signature) {
-		localMap.put(signature, new SecurityOptional(CurrentSecurityDomain.bottom(), true) );
+	public void insertLocalAsBottom(String signature) {
+		localMap.put(signature, Optional.of(CurrentSecurityDomain.bottom()));
 	}
 
 	/**
@@ -106,34 +110,32 @@ public class LocalMap {
 	 * @param signature
 	 */
 	public void insertUninitializedLocal(String signature) {
-		localMap.put(signature, new SecurityOptional(CurrentSecurityDomain.bottom(), false));
+		localMap.put(signature, Optional.empty());
 	}
-	
+
+	public void removeLocal(String signature) {
+		localMap.remove(signature);
+	}
+
+
 	/**
-	 * Initialize a local. Check if initialized is actually redundant, but logger needs it.
-	 * @param signature
+	 * Return true iff the local is tracked.
 	 */
-	public void initializeLocal(String signature) {
-		if (!localMap.containsKey(signature)) {
-			insertUninitializedLocal(signature);
-		}
-		if (!localMap.get(signature).isInitialized()) {
-			logger.info("Local " + signature + " initialized");
-			localMap.get(signature).initialize();
-		}
+	public boolean isTracked(String signature) {
+		return localMap.containsKey(signature);
 	}
+
 	
 	/**
-	 * Return local's initialized flag.
-	 * @param signature
-	 * @return true iff local is initialized
+	 * Return true iff the local is initialized.
+     * @throws IllegalArgumentException when "signature" is not tracked.
 	 */
 	public boolean checkIfInitialized(String signature)
 	{
-		if (!localMap.containsKey(signature)) {
-			insertUninitializedLocal(signature);
+	   	if (!isTracked(signature))  {
+	   		throw new IllegalArgumentException(String.format("Local %s is not tracked", signature));
 		}
-		return localMap.get(signature).isInitialized();
+		return localMap.get(signature).isPresent();
 	}
 	
 	/**
@@ -142,26 +144,34 @@ public class LocalMap {
 	 * @return The new securitylevel.
 	 */
 	public Object getLevel(String signature) {
+		Object result;
 		if (!localMap.containsKey(signature)) {
-			//throw new InternalAnalyzerException("Expected local " + signature + " not found in LocalMap");
-			insertUninitializedLocal(signature);
+			logger.log(Level.INFO, "Local `{0}' is not tracked", signature);
+			result = CurrentSecurityDomain.bottom();
+		} else {
+			Optional<Object> maybeResult = localMap.get(signature);
+			if (maybeResult.isPresent()) {
+				result = maybeResult.get();
+			} else {
+				throw new InternalAnalyzerException(String.format("Local %s is not initialized", signature));
+			}
 		}
-		initializeLocal(signature);
-		return localMap.get(signature).getSecurityLevel();
+		logger.log(Level.INFO, "Getting label of {0}: {1}", new Object[]{ signature, result} );
+		return result;
 	}
 	
 	public void setLevel(String signature, Object securitylevel) {
 		if (!localMap.containsKey(signature)) {
 			insertUninitializedLocal(signature);
 		}
-		localMap.put(signature, new SecurityOptional(securitylevel, true));
+		localMap.put(signature, Optional.of(securitylevel));
 	}
 	
 	/**
 	 * Print elements of localmap in a readable form.
 	 */
 	public void printElements() {
-		for (Map.Entry<String, SecurityOptional> entry : localMap.entrySet()) {
+		for (Map.Entry<String, Optional<Object>> entry : localMap.entrySet()) {
 			System.out.println("Key " + entry.getKey() + " , Value: " 
 					+ entry.getValue());
 		}

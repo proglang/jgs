@@ -129,7 +129,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 					JimpleInjector.handleCast(stmt);
 					break;
 				default:
-					new InternalAnalyzerException("Unexpected action: "
+					throw new InternalAnalyzerException("Unexpected action: "
 												  + action);
 			}
 		});
@@ -158,6 +158,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 			// TODO im Grunde nicht nötig...
 		} else if (stmt.getRightOp() instanceof CaughtExceptionRef) {
 			logger.fine("Right operand in IdentityStmt is a CaughtException");
+			throw new InternalAnalyzerException("Catching exceptions is not supported");
 		} else {
 			throw new InternalAnalyzerException(
 					"Unexpected type of right value "

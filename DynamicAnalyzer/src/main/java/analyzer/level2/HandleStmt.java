@@ -219,15 +219,6 @@ public class HandleStmt {
     }
 
     /**
-     * Initialize a given variable
-     *
-     * @param signature Name of the variable
-     */
-    public void initializeVariable(String signature) {
-        localmap.initializeLocal(signature);
-    }
-
-    /**
      * Set the level of a field to SecurityLevel.top().
      *
      * @param object    object containing the field
@@ -289,13 +280,11 @@ public class HandleStmt {
      * @return SecurityLevel
      */
     protected Object getLocalLevel(String signature) {
-        localmap.initializeLocal(signature);
         return localmap.getLevel(signature);
     }
 
-    public void makeLocal(String signature, String level) {
+    public void setLocalFromString(String signature, String level) {
         logger.info("Set level of local " + signature + " to " + level);
-        localmap.initializeLocal(signature);
         localmap.setLevel(signature, CurrentSecurityDomain.readLevel(level));
         logger.info("New securitylevel of local " + signature + " is "
                     + localmap.getLevel(signature));
@@ -433,8 +422,6 @@ public class HandleStmt {
                           handleStatementUtils.joinWithLPC(objectmap
                                                                    .getArgLevelAt
                                                                            (pos)));
-        // if not initialized, initialize it:
-        localmap.initializeLocal(signature);
         return localmap.getLevel(signature);
     }
 
@@ -449,7 +436,7 @@ public class HandleStmt {
         Object returnLevel = objectmap.getActualReturnLevel();
 
         checkLocalPC(signature);
-        setLevelOfLocal(signature, returnLevel);
+        setLocal(signature, returnLevel);
         objectmap.setActualReturnLevel(CurrentSecurityDomain.top());
     }
 
@@ -489,20 +476,10 @@ public class HandleStmt {
      * @param arguments List of arguments
      */
     public void storeArgumentLevels(String... arguments) {
-        // unfortunately, when printing out constants, storeArgumentLevels is
-        // still added by the jimpleInjector.
-        // if we can change that needs to be investiaged, changing the
-        // central line 1096 in
-        // jimpleInjector.storeArgumentLevels:               dynamicArgsExist
-        // = true;
-        // we get tons of java.lang.verify errors...
-        // controller.abortIfActiveAndExceptionIsType(SecurityMonitoringEvent
-        // .STORE_ARGUMENT_LEVELS.getVal());
         logger.info("Store arguments " + Arrays.toString(arguments)
                     + " in LocalMap");
         ArrayList<Object> levelArr = new ArrayList<Object>();
         for (String el : arguments) {
-            localmap.initializeLocal(el);
             levelArr.add(localmap.getLevel(el));
         }
         objectmap.setActualArguments(levelArr);
@@ -557,7 +534,6 @@ public class HandleStmt {
      */
     public Object joinLevelOfLocalAndAssignmentLevel(String local) {
 
-        localmap.initializeLocal(local);
         Object localLevel = localmap.getLevel(local);
         objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(
                 objectmap.getAssignmentLevel(), localLevel));
@@ -616,10 +592,9 @@ public class HandleStmt {
      * @param level     security-level
      * @return The new security-level
      */
-    public Object setLevelOfLocal(String signature, Object securitylevel) {
+    public Object setLocal(String signature, Object securitylevel) {
         logger.log(Level.INFO, "Set level of local {0} to {1}", new Object[]{
                 signature, securitylevel});
-        localmap.initializeLocal(signature);
         localmap.setLevel(signature, securitylevel);
         return localmap.getLevel(signature);
     }
@@ -637,7 +612,7 @@ public class HandleStmt {
                 handleStatementUtils.joinLevels(objectmap
                                                         .getActualReturnLevel(),
                                                 leftHandSideSecValue);
-        setLevelOfLocal(signature, leftHandSideSecValue);
+        setLocal(signature, leftHandSideSecValue);
     }
 
     /**
@@ -647,7 +622,7 @@ public class HandleStmt {
      * @param signature signature of the local
      * @return new security-level
      */
-    public Object setLevelOfLocal(String signature) {
+    public Object setLocalToCurrentAssingmentLevel(String signature) {
         // Then, calc new level:
         // for assignments like a = x + y, we need to calculate the
         // new security-value of a: this sec-value depends either on
@@ -820,7 +795,6 @@ public class HandleStmt {
         //check if local is initialized
         if (!localmap.checkIfInitialized(signature)) {
             logger.log(Level.INFO, "Local {0} has not yet been initialized; skipping NSU check", signature);
-            localmap.initializeLocal(signature);
             return;
         }
 
@@ -906,5 +880,17 @@ public class HandleStmt {
                                                             localmap
                                                                     .getLocalPC()));
         }
+    }
+
+    public void startTrackingLocal(String signature) {
+        logger.log(Level.INFO, "Start tracking local {0}",signature);
+        if (!localmap.isTracked(signature)) {
+            localmap.insertUninitializedLocal(signature);
+        }
+    }
+
+    public void stopTrackingLocal(String signature) {
+        logger.log(Level.INFO, "Stop tracking local {0}",signature);
+        localmap.removeLocal(signature);
     }
 }

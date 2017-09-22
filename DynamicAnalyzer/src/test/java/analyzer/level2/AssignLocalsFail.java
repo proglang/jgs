@@ -32,7 +32,7 @@ public class AssignLocalsFail {
 		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		// x = LOW, lpc = HIGH
 		hs.checkLocalPC("int_x");
-		hs.setLevelOfLocal("int_x");
+		hs.setLocalToCurrentAssingmentLevel("int_x");
 		hs.popLocalPC(123);
 		hs.close();
 		
@@ -66,7 +66,7 @@ public class AssignLocalsFail {
 		hs.joinLevelOfLocalAndAssignmentLevel("int_y");
 		hs.joinLevelOfLocalAndAssignmentLevel("int_z");
 		hs.checkLocalPC("int_x");
-		hs.setLevelOfLocal("int_x");
+		hs.setLocalToCurrentAssingmentLevel("int_x");
 		
 		
 	}
@@ -88,7 +88,7 @@ public class AssignLocalsFail {
 		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		
 		hs.checkLocalPC("TestSubClass_xy");
-		hs.setLevelOfLocal("TestSubClass_xy");
+		hs.setLocalToCurrentAssingmentLevel("TestSubClass_xy");
 		xy = new TestSubClass();
 		
 		hs.popLocalPC(123);
@@ -110,13 +110,13 @@ public class AssignLocalsFail {
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("TestSubClass_xy");
-		hs.initializeVariable("TestSubClass_xy");
+		hs.setLocal("TestSubClass_xy", CurrentSecurityDomain.bottom());
 		
 		TestSubClass xy;
 		
 		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		hs.checkLocalPC("TestSubClass_xy");
-		hs.setLevelOfLocal("TestSubClass_xy");
+		hs.setLocalToCurrentAssingmentLevel("TestSubClass_xy");
 		xy = new TestSubClass();
 		
 		hs.popLocalPC(123);
@@ -155,7 +155,7 @@ public class AssignLocalsFail {
 		
 			//hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");	//assignment level is low here. why needed?!
 			hs.checkLocalPC("int_res");
-			hs.setLevelOfLocal("int_res"); //exception expected here!
+			hs.setLocalToCurrentAssingmentLevel("int_res"); //exception expected here!
 			res = ts.methodWithConstReturn();	// res is low, ts
 			hs.assignReturnLevelToLocal("int_res");
 			
@@ -186,7 +186,7 @@ public class AssignLocalsFail {
 		int res ;
 		int high = 0;
 		
-		hs.initializeVariable("int_res");
+		hs.setLocal("int_res", CurrentSecurityDomain.bottom());
 		
 		hs.checkCondition("123", "int_high");
 		
@@ -194,7 +194,7 @@ public class AssignLocalsFail {
 		
 			// hs.joinLevelOfLocalAndAssignmentLevel("TestSubClass_ts");
 			hs.checkLocalPC("int_res");
-			hs.setLevelOfLocal("int_res"); //exception expected here!
+			hs.setLocalToCurrentAssingmentLevel("int_res"); //exception expected here!
 			res = ts.methodWithConstReturn();
 			hs.assignReturnLevelToLocal("int_res");
 			
@@ -223,7 +223,7 @@ public class AssignLocalsFail {
 		hs.pushLocalPC(CurrentSecurityDomain.top(), 123);
 		hs.joinLevelOfLocalAndAssignmentLevel("int_x");
 		hs.checkLocalPC("int_x");
-		hs.setLevelOfLocal("int_x"); // Just ignore the constants
+		hs.setLocalToCurrentAssingmentLevel("int_x"); // Just ignore the constants
 		
 		hs.popLocalPC(123);
 		hs.close();
