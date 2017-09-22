@@ -1,5 +1,6 @@
 package utils.dominator;
 
+import org.apache.commons.collections4.map.HashedMap;
 import soot.Body;
 import soot.Unit;
 import soot.Value;
@@ -11,7 +12,9 @@ import soot.toolkits.graph.MHGPostDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;
 import utils.logging.L1Logger;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -36,13 +39,19 @@ public class WriteEffectCollector<Type extends Value> {
     /** Caches all instances of the given Type, that
      * are updated of the influence of an if stmt
      **/
-    private Map<Unit, Set<Type>> instanceCache;
+    private Map<Unit, Set<Type>> instanceCache = new HashMap<>();
+
+    /** Saves all Graph Elements, that have been visited during the Search */
+    private Set<GraphElement> visitCache = new HashSet<>();
+
+    /** Defines that Element, that caused the Last branching recursion call */
+    private GraphElement currentBranch;
 
     private Class typeClass;
 
-    private int callDepth = 0;
+    private int callDepth = -1;
 
-    private Logger logger = L1Logger.getLogger();
+    private Logger logger = Logger.getLogger(this.getClass().getName());
 
     public WriteEffectCollector(Class typeClass, Body b) {
         graph = new BriefUnitGraph(b);
@@ -50,57 +59,90 @@ public class WriteEffectCollector<Type extends Value> {
         preDom = new MHGDominatorsFinder<>(graph);
         instanceCache = new HashMap<>();
         this.typeClass = typeClass;
+        logger.setLevel(Level.FINE);
     }
 
-    private Set<Type> proceess(GraphElement element) {
-        logger.fine("Processing Write Effect on depth: "+callDepth);
 
-        // Initialising the Set of instances
-        Set<Type> instances = new HashSet<>();
+    private void process(GraphElement element, Set<Type> instances) {
+        callDepth++;
+        System.out.println("Processing Write Effect of :"+element+" on depth: "+callDepth + " and visited "+visitCache.size());
 
-        if (element == null) return instances;
+        // End of Recursion One:
+        // if the sequence of Successors has reached the end
+        if (element == null) return;
+
+        // End of Recursion Two:
+        // in Case the element is the Post Dominator of the last branching element.
+        // This assures, that one branch is processed after the other.
+        if (currentBranch != null && element.equals(currentBranch.getPostDom())) return;
+
+        // Todo Decide what to Do exactly
+        if (visitCache.contains(element)) System.out.println("Seen once before");
+
+        // Saving Element into cache
+        visitCache.add(element);
 
         // In Case the Element is branching, then there shall be a call of 
-        // recursion        
+        // recursion. That's the case of an if (or a while - there is no difference here)
         if (element.isBranchingForwards()) {
+            System.out.println("Found Branching Element: "+element + " on Depth: "+ callDepth);
 
-        }
+            // Every new branch shall have its own new Set, that collects the
+            // Writing Effect of this new branch
+            Set<Type> branchInst = new HashSet<>();
+            currentBranch = element;
 
-        // Collecting Assignments
-        element.content.apply(new AbstractStmtSwitch() {
-            @Override
-            public void caseAssignStmt(AssignStmt stmt) {
-                if (typeClass.isInstance(stmt.getLeftOp())) {
-                    instances.add((Type) stmt.getLeftOp());
-                }
+            for (GraphElement branch : element.getSuccessors()) {
+                process(branch, branchInst);
             }
-        });
+            // After processing store it within the cache
+            instanceCache.put(element.getPostDom().content, branchInst);
+            // Reset the last branching, because this branch is now processed, completely
+            currentBranch = null;
+            // Continue with the Post Dominator, everything in between shall be processed
+            process(element.getPostDom(), instances);
+        } else {
+            // Collecting Assignments
+            element.content.apply(new AbstractStmtSwitch() {
+                @Override
+                public void caseAssignStmt(AssignStmt stmt) {
+                    if (typeClass.isInstance(stmt.getLeftOp())) {
+                        System.out.println("Collected "+stmt.getLeftOp() + " on depth "+callDepth);
+                        instances.add((Type) stmt.getLeftOp());
+                    }
+                }
+            });
 
-        instances.addAll(proceess(element.getSuccessor()));
-        return instances;
+            process(element.getSuccessor(), instances);
+        }
     }
 
-    public Set<Type> get() {
+    public Set<Type> get(Unit endIf) {
         // System.out.println(graph.getTails().get(0));
+        // Can go away later */
+
+        visitCache.clear();
+        process(new GraphElement(graph.getHeads().get(0)), new HashSet<>());
+        return instanceCache.get(endIf);
+    }
+
+    public Set<Type> getAll() {
+        visitCache.clear();
+        process(new GraphElement(graph.getHeads().get(0)), new HashSet<>());
+
+        Set<Type> all = new HashSet<>();
+        for (Set<Type> subs: instanceCache.values()) {
+            all.addAll(subs);
+        }
+        return all;
+    }
+
+    public void printBodyGraph() {
         for (Unit u : graph) {
             GraphElement elm = new GraphElement(u);
-            System.out.println("Unit in Graph: "+ elm);
-
-            if (elm.isBranchingForwards()) {
-                for (GraphElement suc : elm.getSuccessors())
-                    System.out.println("\tSucs: " + suc);
-            }
-
-            if (elm.isBranchingBackwards()) {
-                for (GraphElement suc : elm.getPredecessors())
-                    System.out.println("\tPred: " + suc);
-            }
-
-         //   System.out.println();
+            System.out.println(elm);
         }
-
-
-        return proceess(new GraphElement(graph.getHeads().get(0)));
+        System.out.println();
     }
 
     // <editor-fold desc="Graph Element for easier processing">
@@ -260,6 +302,15 @@ public class WriteEffectCollector<Type extends Value> {
         @Override
         public String toString() {
             return "GraphElement["+content+"]@"+position;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked cast")
+        public boolean equals(Object o) {
+            System.out.println(this + " ? "+ o);
+            boolean b =  o != null && (o.getClass() == GraphElement.class) && position == (((GraphElement) o).position);
+            System.out.println(b);
+            return b;
         }
 
         // </editor-fold>
