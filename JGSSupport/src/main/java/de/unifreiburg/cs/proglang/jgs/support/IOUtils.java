@@ -34,6 +34,10 @@ public class IOUtils {
         System.out.println();
     }
 
+    public static void printPublicDynamic(String msg) {
+        System.out.println(msg);
+    }
+
     /**
      * Reads a line of public data from stdin.
      */

@@ -286,8 +286,6 @@ public class HandleStmt {
     public void setLocalFromString(String signature, String level) {
         logger.info("Set level of local " + signature + " to " + level);
         localmap.setLevel(signature, CurrentSecurityDomain.readLevel(level));
-        logger.info("New securitylevel of local " + signature + " is "
-                    + localmap.getLevel(signature));
     }
 
 

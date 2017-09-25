@@ -161,10 +161,11 @@ public class LocalMap {
 	}
 	
 	public void setLevel(String signature, Object securitylevel) {
-		if (!localMap.containsKey(signature)) {
-			insertUninitializedLocal(signature);
+	    if (localMap.containsKey(signature)) {
+			localMap.put(signature, Optional.of(securitylevel));
+		} else {
+	    	logger.log(Level.INFO, "Untracked local {0}", signature)
 		}
-		localMap.put(signature, Optional.of(securitylevel));
 	}
 	
 	/**

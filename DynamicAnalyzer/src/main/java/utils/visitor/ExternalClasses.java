@@ -72,6 +72,8 @@ public class ExternalClasses {
 											 new MaxLevelAllowedForPrintOutput("LOW"));
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println()>",
 											 new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printPublicDynamic(java.lang.String)>",
+											 new MaxLevelAllowedForPrintOutput("LOW"));
 
 		// MethodTypings where the argument must have either LOW or MEDIUM argument
 		instrumentationForSpecialMethods.put("<utils.printer.SecurePrinter: void printMedium(java.lang.Object)>",
