@@ -623,11 +623,10 @@ public class HandleStmt {
      * @return new security-level
      */
     public Object setLocalToCurrentAssingmentLevel(String signature) {
-        // Then, calc new level:
-        // for assignments like a = x + y, we need to calculate the
-        // new security-value of a: this sec-value depends either on
-        // the local PC (for example, if inside a high-if), or on either
-        // of the right-hand variables' sec-value, which is accumulated
+        // For assignments like a = x + y, we need to calculate the
+        // new security-level of a: this sec-level depends either on
+        // the local PC (for example, if inside a high-security if), or on either
+        // of the right-hand variables' sec-levels, which is accumulated
         // in the assignmentLevel
         Object newSecValue = handleStatementUtils.joinWithLPC(objectmap
                                                                       .getAssignmentLevel());
