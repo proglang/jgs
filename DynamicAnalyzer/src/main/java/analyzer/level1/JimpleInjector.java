@@ -1,7 +1,9 @@
 package analyzer.level1;
 
 import analyzer.level1.storage.UnitToInsert;
+import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import scala.Option;
 import soot.*;
@@ -1283,7 +1285,13 @@ public class JimpleInjector {
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Initialisierung eines Security Wert: x = (H => ? ) y
                 logger.fine("Conversion is: static->dynamic");
-                Object srcLevel = conversion.getSrcType().getLevel();
+                Object srcLevel;
+                de.unifreiburg.cs.proglang.jgs.instrumentation.Type type = conversion.getSrcType();
+                if (type.isPublic()) {
+                    srcLevel = CurrentSecurityDomain.bottom();
+                } else {
+                    srcLevel = type.getLevel();
+                }
                 logger.fine("Setting destination variable to: " + srcLevel);
                 makeLocal((Local) aStmt.getLeftOp(), srcLevel.toString(), aStmt);
             } else if ( conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {

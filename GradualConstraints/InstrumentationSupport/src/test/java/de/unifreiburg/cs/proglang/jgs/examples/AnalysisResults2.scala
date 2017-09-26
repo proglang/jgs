@@ -53,7 +53,7 @@ class AnalysisResults2[Level] {
     new MethodTypings[Level] {
       override def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
 
-      override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
+      override def getSingleInstantiation(m: SootMethod, defaultType : Type[Level]): Instantiation[Level] =
         makeInstantiation(Map(0 -> Dynamic[Level](), 1 -> Dynamic[Level]()), Dynamic[Level]())
 
       override def getVarTyping(m: SootMethod): VarTyping[Level] = ???
@@ -68,7 +68,7 @@ class AnalysisResults2[Level] {
   new MethodTypings[Level] {
     override def getEffectType(m: SootMethod): Effect[Level] = makeEmptyEffect()
 
-    override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] =
+    override def getSingleInstantiation(m: SootMethod, defaultType : Type[Level]): Instantiation[Level] =
       makeInstantiation(Map(0 -> Public[Level](), 1 -> Dynamic[Level]()), Dynamic[Level]())
 
     override def getVarTyping(m: SootMethod): VarTyping[Level] = ???

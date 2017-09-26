@@ -11,12 +11,12 @@ import soot.jimple.Stmt;
 public class FixedTypings {
 
     // Var, Cx & Instantiation all return Dynamic on any requests
-    public static final <L> MethodTypings<L> allDynamic() {
-        return new All<>(new ExampleTypes.Dynamic());
+    public static <L> MethodTypings<L> allDynamic() {
+        return new All<>(new ExampleTypes.Dynamic<>());
     }
 
     // Var, Cx & Instantiation all return Public on any requests
-    public static final <L> MethodTypings<L> allPublic() {
+    public static <L> MethodTypings<L> allPublic() {
         return new All<>(new ExampleTypes.Public<L>());
     }
 
@@ -29,7 +29,7 @@ public class FixedTypings {
         }
 
         @Override
-        public Instantiation<T> getMonomorphicInstantiation(SootMethod m) {
+        public Instantiation<T> getSingleInstantiation(SootMethod m, Type<T> defaultType) {
             return new Instantiation<T>() {
                 @Override
                 public Type<T> get(int param) {

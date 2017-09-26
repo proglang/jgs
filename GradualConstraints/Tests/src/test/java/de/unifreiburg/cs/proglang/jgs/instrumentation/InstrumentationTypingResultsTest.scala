@@ -4,7 +4,7 @@ import java.util.Collections
 
 import de.unifreiburg.cs.proglang.jgs.TestDomain
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.{Dyn, Pub}
-import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars}
+import de.unifreiburg.cs.proglang.jgs.constraints.{TypeDomain, TypeVars, TypeViews}
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh.Level
 import de.unifreiburg.cs.proglang.jgs.examples.{AnalysisResults, Code}
@@ -84,7 +84,7 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
   "max_DD_D's example mappings" should "correspond to mappings_max_DD_D" in {
     val results = new AnalysisResults[LowHigh]()
     mappingsFromResults(
-      results.max_methods_D_D__D.getMonomorphicInstantiation(Code.max),
+      results.max_methods_D_D__D.getSingleInstantiation(Code.max, Dyn()),
       results.max_cxTyping,
       results.max_varTyping,
       Code.max) should be(mappings_max_DD_D)
@@ -151,7 +151,7 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
 
   "vartyping" should "be complete for all statements of max" in {
 
-    val dynInstantiation = new AnalysisResults[LowHigh.Level]().max_methods_D_D__D.getMonomorphicInstantiation(Code.max)
+    val dynInstantiation = new AnalysisResults[LowHigh.Level]().max_methods_D_D__D.getSingleInstantiation(Code.max, Dyn())
     val result = TestDomain.mtyping.check(new TypeVars(),
       SignatureTable.of(Map(
         Code.max -> MethodSignatures.makeSignature[LowHigh.Level](2,
@@ -190,7 +190,7 @@ class InstrumentationTypingResultsTest extends FlatSpec with Matchers {
     val expected = for (m <- mappings_max_DD_D) yield m.copy(cxPhase = P)
 
     mappingsFromResults[LowHigh.Level](
-      fakeResults.max_methods_D_D__D.getMonomorphicInstantiation(Code.max),
+      fakeResults.max_methods_D_D__D.getSingleInstantiation(Code.max, Dyn()),
       publicCxTyping,
       result.variableTyping,
       Code.max

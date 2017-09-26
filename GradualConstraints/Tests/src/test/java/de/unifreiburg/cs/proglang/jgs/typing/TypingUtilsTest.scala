@@ -17,15 +17,16 @@ import de.unifreiburg.cs.proglang.jgs.TestDomain._
 import java.util.stream.Collectors.toSet
 
 import de.unifreiburg.cs.proglang.jgs.constraints.CTypeViews.CTypeView
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.Dyn
 import junit.framework.Assert._
 
 class TypingUtilsTest {
   final private val tvs = new TypeVars
   final private val code = new Code(tvs)
   final private val typingUtils = new TypingUtils[LowHigh.Level](levels)
-  // ..getMonomorphicInstantiation has a dummy argument.. allDynamic does not care
+  // ..getSingleInstantiation has a dummy argument.. allDynamic does not care
   val dynInstantiation: Instantiation[LowHigh.Level] =
-    FixedTypings.allDynamic[LowHigh.Level]().getMonomorphicInstantiation(code.ignore0Low1ReturnHigh);
+    FixedTypings.allDynamic[LowHigh.Level]().getSingleInstantiation(code.ignore0Low1ReturnHigh, Dyn());
 
   @Test def testLowerBounds(): Unit = {
     val cs = csets.fromCollection(asList(leC(CDYN, code.tvarX),

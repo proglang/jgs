@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.examples;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
@@ -54,7 +55,7 @@ public class ExampleTests {
         // first get an instantiation for max
         // instantiation is a Soot object of type SootMethod. It is created in Code.java, and contains all the soot Statements the max programm
         // consits of.
-        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.max);
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getSingleInstantiation(Code.max, new TypeViews.Dyn<>());
 
         // lets look at the individual statements:
         Stmt s;
@@ -104,7 +105,7 @@ public class ExampleTests {
         VarTyping<LowHigh.Level> varTyping = results.max_varTyping();
         CxTyping<LowHigh.Level> cxTyping = results.max_cxTyping();
 
-        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.max);
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getSingleInstantiation(Code.max, new TypeViews.Dyn<>());
 
         Stmt s;
         Local x = Code.localX;

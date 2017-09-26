@@ -4,8 +4,8 @@ import analyzer.level2.CurrentSecurityDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
-import de.unifreiburg.cs.proglang.jgs.instrumentation.DynamicMethodTypings;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
+import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 import utils.logging.L1Logger;
 import utils.parser.ArgParser;
 import utils.parser.ArgumentContainer;
@@ -118,7 +118,7 @@ public class Main {
         List<String> errors = new ArrayList<>();
         MethodTypings<String> typeCheckResult;
         if (sootOptionsContainer.isOnlyDynamic()) {
-            typeCheckResult = new DynamicMethodTypings<>();
+            typeCheckResult = FixedTypings.allDynamic();
         } else {
             typeCheckResult = JgsCheck.typeCheck(
                     sootOptionsContainer.getMainclass(),

@@ -19,8 +19,8 @@ class FakeMethodTypings {
 
 
         @Override
-        public Instantiation<LowMediumHigh.Level> getMonomorphicInstantiation(SootMethod m) {
-            return FixedTypings.<LowMediumHigh.Level>allDynamic().getMonomorphicInstantiation(m);
+        public Instantiation<LowMediumHigh.Level> getSingleInstantiation(SootMethod m, Type<LowMediumHigh.Level> defaultType) {
+            return FixedTypings.<LowMediumHigh.Level>allDynamic().getSingleInstantiation(m, defaultType);
         }
 
         @Override
@@ -44,8 +44,8 @@ class FakeMethodTypings {
 
 
         @Override
-        public Instantiation<LowMediumHigh.Level> getMonomorphicInstantiation(SootMethod m) {
-            return FixedTypings.<LowMediumHigh.Level>allDynamic().getMonomorphicInstantiation(m);
+        public Instantiation<LowMediumHigh.Level> getSingleInstantiation(SootMethod m, Type<LowMediumHigh.Level> defaultType) {
+            return FixedTypings.<LowMediumHigh.Level>allDynamic().getSingleInstantiation(m, defaultType);
         }
 
         @Override
@@ -78,8 +78,8 @@ class FakeMethodTypings {
              */
             new MethodTypings<LowMediumHigh.Level>() {
                 @Override
-                public Instantiation<LowMediumHigh.Level> getMonomorphicInstantiation(SootMethod m) {
-                    return FixedTypings.<LowMediumHigh.Level>allPublic().getMonomorphicInstantiation(m);
+                public Instantiation<LowMediumHigh.Level> getSingleInstantiation(SootMethod m, Type<LowMediumHigh.Level> defaultType) {
+                    return FixedTypings.<LowMediumHigh.Level>allPublic().getSingleInstantiation(m, defaultType);
                 }
 
                 private Type<LowMediumHigh.Level> fromBool(boolean isDynamic) {

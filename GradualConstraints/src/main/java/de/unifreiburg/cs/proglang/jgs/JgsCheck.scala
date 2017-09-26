@@ -433,23 +433,20 @@ object JgsCheck {
       def getResult(m : SootMethod) : MethodTyping.Result[Level] =
         methodResults.getOrElse(m, throw new NoSuchElementException(s"No typing result for method ${m}"))
 
-      override def getMonomorphicInstantiation(m: SootMethod): Instantiation[Level] = {
+      override def getSingleInstantiation(m: SootMethod, defaultType : Type[Level]): Instantiation[Level] = {
         val result = getResult(m)
         val signatureConstraints = result.refinementCheckResult.abstractConstraints
 
         // check that we really can instantiate the method monomorphically.
         val paramInstantiation : Map[Int, Type[Level]] = (for (i <- Range(0, m.getParameterCount))
-          yield i -> result.parameterInstantiation(i).getOrElse(
-            throw new IllegalArgumentException(s"No monomorphic instantiation for paramter ${i}: ${m} \n ${signatureConstraints.toString}"))).toMap
+          yield i -> result.parameterInstantiation(i).getOrElse(defaultType)).toMap
 
         val mIsVoid = m.getReturnType == VoidType.v()
 
         val returnInstantiation = if (mIsVoid) {
           Failure(new IllegalArgumentException(s"Try to get type of a void method: ${m}"))
         } else {
-          Success(result.returnInstantiation.getOrElse(
-            throw new IllegalArgumentException(s"No monomorphic instantiation for return type: ${m} \n ${signatureConstraints.toString}")
-          ))
+          Success(result.returnInstantiation.getOrElse(defaultType))
         }
 
         new Instantiation[Level] {

@@ -11,9 +11,14 @@ import soot.SootMethod;
 public interface MethodTypings<Level> {
 
     /**
-     * Return the single instantiation for a monomorphic method. Throws an {@code IllegalArgumentException} if the method is not monomorphic.
+     * Return a single instantiation for a method. In case a parameter is
+     * polymorphic, the instantiation will return "defaultType".
+     *
+     * @param defaultType The type to return by the instantiation in case a
+     *                    parameter is polymorphic (i.e. can be either
+     *                    dynamic or static).
      */
-    Instantiation<Level> getMonomorphicInstantiation(SootMethod m);
+    Instantiation<Level> getSingleInstantiation(SootMethod m, Type<Level> defaultType);
 
     /**
      * @return The variable typing for method m.

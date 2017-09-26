@@ -1,5 +1,6 @@
 package analyzer.level1;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.*;
@@ -99,7 +100,8 @@ public class BodyAnalyzer<L> extends BodyTransformer{
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(methodTypings.getVarTyping(sootMethod),
                                                  methodTypings.getCxTyping(sootMethod),
-                                                 methodTypings.getMonomorphicInstantiation(sootMethod),
+                                                 // We set the default type to dyn; our RT-system is able to handle untracked variables.
+                                                 methodTypings.getSingleInstantiation(sootMethod, new TypeViews.Dyn<>()),
                                                  casts);
 
 		units = body.getUnits();

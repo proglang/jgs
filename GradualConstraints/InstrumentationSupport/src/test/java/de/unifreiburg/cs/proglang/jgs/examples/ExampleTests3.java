@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.examples;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CxTyping;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
@@ -42,7 +43,7 @@ public class ExampleTests3 {
         CxTyping<LowHigh.Level> cxTyping = results.up_cxTyping();
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getSingleInstantiation(Code.update, new TypeViews.Dyn<>());         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;
@@ -101,7 +102,7 @@ public class ExampleTests3 {
         CxTyping<LowHigh.Level> cxTyping = results.up_cxTyping();
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getSingleInstantiation(Code.update, new TypeViews.Dyn<>());         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;
@@ -159,7 +160,7 @@ public class ExampleTests3 {
         CxTyping<LowHigh.Level> cxTyping = results.up_cxTyping();
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.update);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getSingleInstantiation(Code.update, new TypeViews.Dyn<>());         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;

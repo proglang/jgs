@@ -1,6 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs;
 
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.ACasts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.CastsFromConstants;
@@ -53,7 +54,7 @@ public class TypeCheckExample {
         for (SootMethod m : Scene.v().getMainClass().getMethods()) {
             System.out.print("Checking instatiation of method: " + m + ": ")   ;
             try {
-                typeCheckResult.getMonomorphicInstantiation(m);
+                typeCheckResult.getSingleInstantiation(m, new TypeViews.Dyn<>());
                 System.out.println("ok");
             } catch (Exception e) {
                 System.out.println(e.getMessage());

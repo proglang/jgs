@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs.examples;
 
+import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.constraints.secdomains.LowHigh;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Instantiation;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
@@ -43,7 +44,7 @@ public class ExampleTests2 {
         CxTyping<LowHigh.Level> cxTyping = results.sum_cxTyping();     // WHATS THAT? The level of the PC for each statement?! why the weird name?
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.sum);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getSingleInstantiation(Code.sum, new TypeViews.Dyn<>());         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;
@@ -86,7 +87,7 @@ public class ExampleTests2 {
         CxTyping<LowHigh.Level> cxTyping = results.sum_cxTyping();     // WHATS THAT? The level of the PC for each statement?! why the weird name?
 
         // first get an instantiation for max WHATS THAT?
-        Instantiation<LowHigh.Level> instantiation = methodTypings.getMonomorphicInstantiation(Code.sum);         // Instantiation of type D_D__D
+        Instantiation<LowHigh.Level> instantiation = methodTypings.getSingleInstantiation(Code.sum, new TypeViews.Dyn<>());         // Instantiation of type D_D__D
 
         // lets look at the individual statements:
         Stmt s;
