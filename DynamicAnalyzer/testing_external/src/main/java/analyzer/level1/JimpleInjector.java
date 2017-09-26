@@ -1,6 +1,5 @@
 package analyzer.level1;
 
-import analyzer.level1.storage.UnitStore;
 import analyzer.level1.storage.UnitStore.Element;
 import soot.ArrayType;
 import soot.Body;
