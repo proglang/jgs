@@ -6,7 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.support.*;
  * Returning a high-security value from a method.
  * Created by fennell on 25.09.17.
  */
-public class DynamicMethodReturningHighValue {
+public class InitializeLocalWithDynamicField {
 
     @Constraints("? <= @ret")
     static String theAnswer() {
