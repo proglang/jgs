@@ -164,7 +164,7 @@ public class LocalMap {
 	    if (localMap.containsKey(signature)) {
 			localMap.put(signature, Optional.of(securitylevel));
 		} else {
-	    	logger.log(Level.INFO, "Untracked local {0}", signature)
+	    	logger.log(Level.INFO, "Not setting level of untracked local {0}", signature);
 		}
 	}
 	

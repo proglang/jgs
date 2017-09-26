@@ -789,9 +789,9 @@ public class JimpleInjector {
         // only assign Argument to Local if Argument is of Dynamic Type
         if (instantiation.get(posInArgList).isDynamic()) {
             String localSig = getSignatureForLocal(local);
+            unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
             unitStore_After.insertElement(unitStore_After.new Element(
                     fac.createStmt("startTrackingLocal", StringConstant.v(localSig)), lastPos));
-            unitStore_After.insertElement(unitStore_After.new Element(assignExpr, lastPos));
             lastPos = assignExpr;
         }
     }
@@ -1322,7 +1322,7 @@ public class JimpleInjector {
      */
     public static void startTrackingLocal(Local l, Stmt callStmt) {
 
-        unitStore_After.insertElement(unitStore_After.new Element(fac.createStmt("startTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
+        unitStore_Before.insertElement(unitStore_Before.new Element(fac.createStmt("startTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
                            callStmt));
     }
 
@@ -1330,7 +1330,7 @@ public class JimpleInjector {
      * Insert "stopTrackingLocal" call.
      */
     public static void stopTrackingLocal(Local l, Stmt callStmt) {
-        unitStore_After.insertElement(unitStore_After.new Element(fac.createStmt("stopTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
+        unitStore_Before.insertElement(unitStore_Before.new Element(fac.createStmt("stopTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
                                                                     callStmt));
     }
 }
