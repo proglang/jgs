@@ -122,7 +122,6 @@ public class BodyAnalyzer<L> extends BodyTransformer{
 		}
 
         JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
-		JimpleInjector.registerDynamicLocals();
 
 		/*
 		 * If the method is the constructor, the newly created object

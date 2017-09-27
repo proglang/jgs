@@ -254,23 +254,24 @@ public class HandleStmt {
         logger.log(Level.INFO, "Insert Local {0} with Level {1} to LocalMap",
                    new Object[]{signature, level});
         handleStatementUtils.checkThatLocalDoesNotExist(signature);
-        localmap.insertLocal(signature, level);
+        localmap.setLevel(signature, level);
     }
 
     /**
      * Add an uninitialized local to LocalMap with default SecurityLevel LOW.
      * Used for declaration, e.g: "int i;"
      *
+     * An uninitialized local is an untracked local, so this method should
+     * not be used at all.
+     *
      * @param signature signature of the local
      */
+    @Deprecated
     public void addLocal(String signature) {
         logger.log(Level.INFO,
                    "Add Local {0} with SecurityLevel.bottom() to LocalMap",
                    signature);
         handleStatementUtils.checkThatLocalDoesNotExist(signature);
-        localmap.insertUninitializedLocal(signature); // add uninit local with
-        // default sec-level
-        // bottom
     }
 
     /**
@@ -790,8 +791,8 @@ public class HandleStmt {
             throw new InternalAnalyzerException("LocalMap is null");
         }
         //check if local is initialized
-        if (!localmap.checkIfInitialized(signature)) {
-            logger.log(Level.INFO, "Local {0} has not yet been initialized; skipping NSU check", signature);
+        if (!localmap.isTracked(signature)) {
+            logger.log(Level.INFO, "Local {0} is not tracked; skipping NSU check", signature);
             return;
         }
 
@@ -876,13 +877,6 @@ public class HandleStmt {
                                                             + "was " +
                                                             localmap
                                                                     .getLocalPC()));
-        }
-    }
-
-    public void startTrackingLocal(String signature) {
-        logger.log(Level.INFO, "Start tracking local {0}",signature);
-        if (!localmap.isTracked(signature)) {
-            localmap.insertUninitializedLocal(signature);
         }
     }
 

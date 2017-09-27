@@ -135,7 +135,7 @@ public class HandleStmtUtils {
 	 * @param signature
 	 */
 	protected void checkThatLocalDoesNotExist(String signature) {
-		if (localmap.contains(signature)) {
+		if (localmap.isTracked(signature)) {
 			throw new InternalAnalyzerException("Trying to add local " + signature 
 				+ " to LocalMap, but it is already in the LocalMap.");
 		}

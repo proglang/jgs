@@ -224,21 +224,6 @@ public class JimpleInjector {
 
 
     /**
-     * Injects registration calls at the top of a method for each dynamic local variable.
-     */
-    public static void registerDynamicLocals() {
-         Stmt firstStmt = (Stmt)b.getUnits().getFirst();
-        for (Local l : originalLocals) {
-            if (varTyping.getBefore(instantiation,firstStmt, l).isDynamic())
-                // TODO: find a better solution for "lastPos"
-           unitStore_After.add(new UnitToInsert(
-                   fac.createStmt("startTrackingLocal",
-                                  StringConstant.v(getSignatureForLocal(l))),
-                   lastPos));
-        }
-    }
-
-    /**
      * Inserts a call of {@link HandleStmt#addLocal(String)}.
      *
      * @param local The Local, that shall be added. Its signature will be calculated
@@ -522,6 +507,9 @@ public class JimpleInjector {
         Stmt stmt = (Stmt)pos;
         de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
         de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeAfter = varTyping.getAfter(instantiation, stmt, l);
+
+        // TODO-no-initialize: remove
+        /*
         if (typeBefore.isDynamic()
             && !typeAfter.isDynamic()) {
             logger.fine("Local type switches from dynamic -> static");
@@ -532,6 +520,7 @@ public class JimpleInjector {
             // static -> dynamic
             JimpleInjector.startTrackingLocal(l, stmt);
         }
+        */
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic.
@@ -788,9 +777,7 @@ public class JimpleInjector {
         // only assign Argument to Local if Argument is of Dynamic Type
         if (instantiation.get(posInArgList).isDynamic()) {
             String localSig = getSignatureForLocal(local);
-            Stmt startTracking = fac.createStmt("startTrackingLocal", StringConstant.v(localSig));
-            unitStore_After.add(new UnitToInsert(startTracking, lastPos));
-            unitStore_After.add(new UnitToInsert(assignExpr, startTracking));
+            unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
             lastPos = assignExpr;
         }
     }
@@ -1307,14 +1294,6 @@ public class JimpleInjector {
         }
     }
 
-    /**
-     * Insert "startTrackingLocal" call.
-     */
-    public static void startTrackingLocal(Local l, Stmt callStmt) {
-
-        unitStore_Before.add(new UnitToInsert(fac.createStmt("startTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
-                                              callStmt));
-    }
 
     /**
      * Insert "stopTrackingLocal" call.
