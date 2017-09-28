@@ -29,4 +29,8 @@ WEEK 2:
     THURSDAY:
     * Creating Dominator for ifs, that finds locals
 
+WEEK 3:
+    THURSDAY:
+
+
 

@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author Karsten Fix, 21.09.17
  */
-public class WriteEffectCollector<Type extends Value> {
+public class WriteEffectCollector {
 
     // <editor-fold desc="Graph Members for finding Dominator and Processing ">
     /** The graph, that is the base for all calculations */
@@ -39,33 +39,48 @@ public class WriteEffectCollector<Type extends Value> {
     /** Caches all instances of the given Type, that
      * are updated of the influence of an if stmt
      **/
-    private Map<Unit, Set<Type>> instanceCache = new HashMap<>();
+    private Map<Unit, Set<Value>> instanceCache = new HashMap<>();
 
     /** Saves all Graph Elements, that have been visited during the Search */
-    private Set<GraphElement> visitCache = new HashSet<>();
+    private List<GraphElement> visitCache = new ArrayList<>();
 
     /** Defines that Element, that caused the Last branching recursion call */
     private GraphElement currentBranch;
-
-    private Class typeClass;
 
     private int callDepth = -1;
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public WriteEffectCollector(Class typeClass, Body b) {
+    /**
+     * Creates a new WriteEffectCollector for the given body.
+     * @param b The body that shall be analyzed for having write Effects.
+     */
+    public WriteEffectCollector(Body b) {
         graph = new BriefUnitGraph(b);
         postDom = new MHGPostDominatorsFinder<>(graph);
         preDom = new MHGDominatorsFinder<>(graph);
         instanceCache = new HashMap<>();
-        this.typeClass = typeClass;
         logger.setLevel(Level.FINE);
     }
 
+    /**
+     * Collects all write Effects within the Body.
+     */
+    public void collectWriteEffect() {
+        visitCache.clear(); callDepth = -1;
+        process(new GraphElement(graph.getHeads().get(0)), new HashSet<>());
+    }
 
-    private void process(GraphElement element, Set<Type> instances) {
+    /**
+     * Processes the Write Effect Recursive.
+     * This method is the heart of this class.
+     * @param element The GraphElement, that is currently inspected by the Method.
+     * @param instances The Set of Values, that have been collected so far, as
+     *                  being a write Effect.
+     */
+    private void process(GraphElement element, Set<Value> instances) {
         callDepth++;
-        System.out.println("Processing Write Effect of :"+element+" on depth: "+callDepth + " and visited "+visitCache.size());
+        logger.fine("Processing Write Effect of :"+element+" on depth: "+callDepth + " and visited "+visitCache.size());
 
         // End of Recursion One:
         // if the sequence of Successors has reached the end
@@ -76,67 +91,120 @@ public class WriteEffectCollector<Type extends Value> {
         // This assures, that one branch is processed after the other.
         if (currentBranch != null && element.equals(currentBranch.getPostDom())) return;
 
-        // Todo Decide what to Do exactly
-        if (visitCache.contains(element)) System.out.println("Seen once before");
-
-        // Saving Element into cache
-        visitCache.add(element);
-
         // In Case the Element is branching, then there shall be a call of 
         // recursion. That's the case of an if (or a while - there is no difference here)
         if (element.isBranchingForwards()) {
-            System.out.println("Found Branching Element: "+element + " on Depth: "+ callDepth);
+
+            logger.fine("Contains? "+element);
+            if (visitCache.contains(element)) return; // System.out.println("Seen once before: " + element);
+
+            // Saving Element into cache
+            visitCache.add(element);
+            logger.fine("Added: "+element);
+
+            logger.fine("Found Branching Element: "+element + " on Depth: "+ callDepth);
 
             // Every new branch shall have its own new Set, that collects the
             // Writing Effect of this new branch
-            Set<Type> branchInst = new HashSet<>();
+            Set<Value> branchInst = new HashSet<>();
             currentBranch = element;
 
             for (GraphElement branch : element.getSuccessors()) {
                 process(branch, branchInst);
             }
+
             // After processing store it within the cache
-            instanceCache.put(element.getPostDom().content, branchInst);
+            // If no post dominator is present, simply do nothing
+            if (element.getPostDom() == null) return;
+
+            Set<Value> branchInstanceCache = instanceCache.get(element.getPostDom().content);
+            if (branchInstanceCache == null) instanceCache.put(element.getPostDom().content, branchInst);
+            else branchInstanceCache.addAll(branchInst);
+
+            logger.fine("Cached collection: " + branchInst + " for post dom: "+element.getPostDom());
+
             // Reset the last branching, because this branch is now processed, completely
             currentBranch = null;
             // Continue with the Post Dominator, everything in between shall be processed
             process(element.getPostDom(), instances);
+
         } else {
             // Collecting Assignments
             element.content.apply(new AbstractStmtSwitch() {
                 @Override
                 public void caseAssignStmt(AssignStmt stmt) {
-                    if (typeClass.isInstance(stmt.getLeftOp())) {
-                        System.out.println("Collected "+stmt.getLeftOp() + " on depth "+callDepth);
-                        instances.add((Type) stmt.getLeftOp());
-                    }
+                    logger.fine("Collected "+stmt.getLeftOp() + " on depth "+callDepth);
+                    instances.add(stmt.getLeftOp());
                 }
             });
-
             process(element.getSuccessor(), instances);
         }
     }
 
-    public Set<Type> get(Unit endIf) {
-        // System.out.println(graph.getTails().get(0));
-        // Can go away later */
+    private void removeBranchFromVisit(GraphElement element) {
+        if (currentBranch == null)
+            throw new IllegalStateException("There is no branch, that could be removed");
 
-        visitCache.clear();
-        process(new GraphElement(graph.getHeads().get(0)), new HashSet<>());
-        return instanceCache.get(endIf);
+        if (element.equals(currentBranch.getPostDom())) return;
+        System.out.println("Removing> "+element);
+        visitCache.remove(element);
+        removeBranchFromVisit(element.getSuccessor());
     }
 
-    public Set<Type> getAll() {
-        visitCache.clear();
-        process(new GraphElement(graph.getHeads().get(0)), new HashSet<>());
+    /**
+     * Gets the Write Effect of a given Unit. This unit has to be a post dominator
+     * of an if of which the Write Effect was calculated.
+     * @param typeClass The Class of the Value (or Subclass of Value) which is interesting
+     *                  to be considered. As Example: Local.class for all Locals, that
+     *                  are within the calculated Write Effect.
+     * @param endIf The Post Dominator of the if (or while or for etc) of which
+     *              the Write Effect is calculated.
+     * @param <Type> The Parameter Type of the subclass of Value, that is given as
+     *              a class.
+     * @return A Set of those Values (or Subtypes) that are the Write Effect of the given
+     * endIf Unit <b>or an EmptySet</b>, if there is no Write Effect. <br>
+     *     <b>NOTE:</b> It could be, that {@link WriteEffectCollector#collectWriteEffect()} was not
+     *     called before.
+     */
+    public <Type extends Value> Set<Type> get(Class<Type> typeClass, Unit endIf) {
+        if (!instanceCache.containsKey(endIf)) return Collections.emptySet();
 
+        Set<Type> t = new HashSet<>();
+        for (Value val : instanceCache.get(endIf)) {
+            if (typeClass.isInstance(val)) t.add((Type) val);
+        }
+        return t;
+    }
+
+    /**
+     * Gets a set of all Write Effects appearing in the analyzed body.
+     * This is the Union of all Sets, that could be gained from {@link WriteEffectCollector#get(Class, Unit)}.
+     * Without having any Post Dominator, you could use this function to
+     * iterate over all Write Effects.
+     * @param typeClass The Class of the Value (or Subclass of Value) which is interesting
+     *                  to be considered. As Example: Local.class for all Locals, that
+     *                  are within the calculated Write Effect.
+     * @param <Type> The Parameter Type of the subclass of Value, that is given as
+     *              a class.
+     * @return A Set of all Values (or Subtypes), such that the Union of all Sets of Write Effects are this Set.
+     *     <b>or an EmptySet</b>, if there is no Write Effect. <br>
+     *     <b>NOTE:</b> It could be, that {@link WriteEffectCollector#collectWriteEffect()} was not
+     *     called before.
+     */
+    public <Type extends Value> Set<Type> getAll(Class<Type> typeClass) {
         Set<Type> all = new HashSet<>();
-        for (Set<Type> subs: instanceCache.values()) {
-            all.addAll(subs);
+        for (Set<Value> subs: instanceCache.values()) {
+            for (Value val : subs) {
+                if (typeClass.isInstance(val))
+                    all.add((Type) val);
+            }
         }
         return all;
     }
 
+    /**
+     * Prints the Chain of Methods, as Graph Elements, for easier debugging
+     */
     public void printBodyGraph() {
         for (Unit u : graph) {
             GraphElement elm = new GraphElement(u);
@@ -307,9 +375,9 @@ public class WriteEffectCollector<Type extends Value> {
         @Override
         @SuppressWarnings("unchecked cast")
         public boolean equals(Object o) {
-            System.out.println(this + " ? "+ o);
+            // System.out.println(this + " ? "+ o);
             boolean b =  o != null && (o.getClass() == GraphElement.class) && position == (((GraphElement) o).position);
-            System.out.println(b);
+            // System.out.println(b);
             return b;
         }
 

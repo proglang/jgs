@@ -180,6 +180,7 @@ public class BodyAnalyzer<L> extends BodyTransformer{
 			
 			// Check if the statements is a postdominator for an IfStmt.
 			if (DominatorFinder.containsStmt(item)) {
+
 				JimpleInjector.exitInnerScope(item);
 				logger.log(Level.INFO, "Exit inner scope with identity {0}", 
 					DominatorFinder.getIdentityForUnit(item));

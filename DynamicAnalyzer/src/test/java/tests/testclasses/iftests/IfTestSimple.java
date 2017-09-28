@@ -9,6 +9,7 @@ public class IfTestSimple {
             b = 3 * c;
         } else {
             a = 42;
+            c = b * a;
         }
         return (a + b + c);
     }
