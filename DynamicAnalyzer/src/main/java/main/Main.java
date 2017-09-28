@@ -108,7 +108,8 @@ public class Main {
         // Add the current classpath to soots classpath
 		// TODO: this is only a quick hack for testing. We should figure out precicely how the soot classpath should look.
 		List<String> cpath = new ArrayList<>();
-        // TODO: Lu: I'm also not sure what a "ContextClassLoader" is. (pasted from https://stackoverflow.com/questions/11613988/how-to-get-classpath-from-classloader)
+        // TODO: Lu: I'm also not sure what a "ContextClassLoader" is.
+		// (pasted from https://stackoverflow.com/questions/11613988/how-to-get-classpath-from-classloader)
         ClassLoader cxClassloader = Thread.currentThread().getContextClassLoader();
         if (cxClassloader instanceof URLClassLoader) {
 			for (URL url : Arrays.asList(((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs())) {
