@@ -596,15 +596,11 @@ public class JimpleInjector {
         // checkArrayWithGlobalPC
         Unit checkArrayGlobalPCExpr = fac.createStmt("checkArrayWithGlobalPC", args.toArray(new Value[0]));
 
-
         // setLevelOfArrayField
         Unit assignExpr = fac.createStmt("setLevelOfArrayField", args.toArray(new Value[0]));
 
-
-        unitStore_Before.add(
-                new UnitToInsert(checkArrayGlobalPCExpr, pos));
-        unitStore_Before.add(
-                new UnitToInsert(assignExpr, pos));
+        unitStore_Before.add(new UnitToInsert(checkArrayGlobalPCExpr, pos));
+        unitStore_Before.add(new UnitToInsert(assignExpr, pos));
         lastPos = pos;
     }
 
