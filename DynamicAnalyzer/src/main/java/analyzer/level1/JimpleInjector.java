@@ -84,9 +84,6 @@ public class JimpleInjector {
     // Todo: Remove when ready
     private static boolean extralocals = false;
 
-    /** This local is needed for methods with more than two arguments. */
-    private static Local local_for_Strings2 = Jimple.v().newLocal("local_for_Strings2", RefType.v("java.lang.String"));
-
     /** This locals is needed for methods with more than two arguments. */
     private static Local local_for_Strings3 = Jimple.v().newLocal("local_for_Strings3", RefType.v("java.lang.String"));
 
@@ -593,7 +590,6 @@ public class JimpleInjector {
 
         // Add extra locals for arguments
         if (!extralocals) {
-            locals.add(local_for_Strings2);
             locals.add(local_for_Strings3);
             extralocals = true;
         }
@@ -609,8 +605,7 @@ public class JimpleInjector {
         // argument list.
 
 
-        Unit assignObjectSignature = Jimple.v().newAssignStmt(local_for_Strings2,
-                StringConstant.v(signatureForObjectLocal));
+
 
         args.add(StringConstant.v(signatureForField));
         args.add(StringConstant.v(signatureForObjectLocal));
@@ -650,8 +645,7 @@ public class JimpleInjector {
         // setLevelOfArrayField
         Unit assignExpr = fac.createStmt("setLevelOfArrayField", args.toArray(new Value[0]));
 
-        unitStore_Before.add(
-                new UnitToInsert(assignObjectSignature, pos));
+
         unitStore_Before.add(
                 new UnitToInsert(checkArrayGlobalPCExpr, pos));
         unitStore_Before.add(
