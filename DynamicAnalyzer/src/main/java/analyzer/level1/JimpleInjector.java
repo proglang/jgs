@@ -80,15 +80,8 @@ public class JimpleInjector {
 
     // <editor-fold desc="Locals, that shall be removed">
 
-    /** Boolean to check whether the extra locals had already been added. */
-    // Todo: Remove when ready
-    private static boolean extralocals = false;
-
     /** Local where String arrays can be stored. Needed to store arguments for injected methods. */
     private static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
-
-    /** Local where Objects can be stored as arguments for injected methods. */
-    private static Local local_for_Objects = Jimple.v().newLocal("local_for_Objects", RefType.v("java.lang.Object"));
 
     // </editor-fold>
 
@@ -134,9 +127,6 @@ public class JimpleInjector {
         units = b.getUnits();
         locals = b.getLocals();
         originalLocals = new ArrayList<>(locals);
-
-        // TODO: Remove this flag, when ready to remove
-        extralocals = false;
 
         lastPos = getUnitOf(units, getStartPos(body));
         fac.initialise();
@@ -306,15 +296,11 @@ public class JimpleInjector {
         String signature = getSignatureForField(field);
         SootClass sc = field.getDeclaringClass();
 
-        Unit assignDeclaringClass = Jimple.v().newAssignStmt(
-                local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-
         Unit assignExpr = fac.createStmt("addFieldToObjectMap",
                                     ClassConstant.v(sc.getName().replace(".", "/")),
                                     StringConstant.v(signature));
 
-        unitStore_After.add(new UnitToInsert(assignDeclaringClass, lastPos));
-        unitStore_After.add(new UnitToInsert(assignExpr, assignDeclaringClass));
+        unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
         lastPos = assignExpr;
     }
 
@@ -370,15 +356,10 @@ public class JimpleInjector {
 
         String fieldSignature = getSignatureForField(f.getField());
 
-        // units.getFirst is already a reference to @this
-        // Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
-        Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
-
         Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel", f.getBase(), StringConstant.v(fieldSignature));
 
         // TODO CANNOT CAST ..
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
-            unitStore_Before.add(new UnitToInsert(assignBase, pos));
             unitStore_Before.add(new UnitToInsert(assignExpr, pos));
             lastPos = pos;
         //}
@@ -398,9 +379,6 @@ public class JimpleInjector {
 
         SootClass sc = field.getDeclaringClass();
 
-        Unit assignDeclaringClass = Jimple.v().newAssignStmt(
-                local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-
         Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel",
                                          ClassConstant.v(sc.getName().replace(".", "/")),
                                          StringConstant.v(signature)
@@ -408,7 +386,6 @@ public class JimpleInjector {
 
             // TODO cannot cast StaticFieldref to Local!
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
-            unitStore_Before.add(new UnitToInsert(assignDeclaringClass, pos));
             unitStore_Before.add(new UnitToInsert(assignExpr, pos));
             lastPos = pos;
         //}
@@ -546,9 +523,6 @@ public class JimpleInjector {
 
         SootClass sc = field.getDeclaringClass();
 
-        Unit assignDeclaringClass = Jimple.v().newAssignStmt(
-                local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-
 
         // insert: checkGlobalPC(Object, String)
         Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC",
@@ -562,8 +536,6 @@ public class JimpleInjector {
                 StringConstant.v(signature)
                 );
 
-        unitStore_Before.add(
-                new UnitToInsert(assignDeclaringClass, pos));
         if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
             unitStore_Before.add(new UnitToInsert(checkGlobalPCExpr, pos));
         }
@@ -584,11 +556,6 @@ public class JimpleInjector {
      */
     public static void setLevelOfAssignStmt(ArrayRef a, Unit pos) {
         logger.info("Set level of array " + a.toString() + " in assign stmt");
-
-        // Add extra locals for arguments
-        if (!extralocals) {
-            extralocals = true;
-        }
 
         String signatureForField = getSignatureForArrayField(a);
         String signatureForObjectLocal = getSignatureForLocal((Local) a.getBase());
@@ -973,7 +940,6 @@ public class JimpleInjector {
     // Todo: Remove, when ready
     static void addNeededLocals() {
         locals.add(local_for_String_Arrays);
-        locals.add(local_for_Objects);
 
         b.validate();
     }
