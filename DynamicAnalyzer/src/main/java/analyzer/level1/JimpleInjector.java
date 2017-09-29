@@ -84,9 +84,6 @@ public class JimpleInjector {
     // Todo: Remove when ready
     private static boolean extralocals = false;
 
-    /** Local wto store String values. */
-    private static Value interScopeValue = StringConstant.v("int_i0");
-
     /** This local is needed for methods with more than two arguments. */
     private static Local local_for_Strings2 = Jimple.v().newLocal("local_for_Strings2", RefType.v("java.lang.String"));
 
@@ -241,7 +238,6 @@ public class JimpleInjector {
         logger.info("Setting " + local + "to new level " + level);
 
         String signature = getSignatureForLocal(local);
-        interScopeValue =  StringConstant.v(signature);
 
         Unit setLevelOfL = fac.createStmt("setLocalFromString",
                                           StringConstant.v(signature),
@@ -298,8 +294,6 @@ public class JimpleInjector {
         // Todo: is that the same? All tests passing...-> Write Test, that fails, because it is wrong...
         // tmpLocal = ClassConstant.v(field.getDeclaringClass().getName().replace(".", "/"));
 
-        interScopeValue = StringConstant.v(fieldSignature);
-
         Unit assignExpr = fac.createStmt("addFieldToObjectMap", tmpLocal, StringConstant.v(fieldSignature));
 
         unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
@@ -320,8 +314,6 @@ public class JimpleInjector {
 
         Unit assignDeclaringClass = Jimple.v().newAssignStmt(
                 local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
-
-        interScopeValue = StringConstant.v(signature);
 
         Unit assignExpr = fac.createStmt("addFieldToObjectMap",
                                     ClassConstant.v(sc.getName().replace(".", "/")),
@@ -360,7 +352,6 @@ public class JimpleInjector {
         logger.info("Adding level of "+local+"in assign statement of Method: "+b.getMethod().getName());
 
         String signature = getSignatureForLocal(local);
-        interScopeValue =  StringConstant.v(signature);
 
         Unit invoke = fac.createStmt("joinLevelOfLocalAndAssignmentLevel", StringConstant.v(signature));
 
@@ -388,7 +379,6 @@ public class JimpleInjector {
         // units.getFirst is already a reference to @this
         // Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
         Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
-        interScopeValue =  StringConstant.v(fieldSignature);
 
         Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel", f.getBase(), StringConstant.v(fieldSignature));
 
@@ -417,8 +407,6 @@ public class JimpleInjector {
         Unit assignDeclaringClass = Jimple.v().newAssignStmt(
                 local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
 
-        interScopeValue = StringConstant.v(signature);
-
         Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel",
                                          ClassConstant.v(sc.getName().replace(".", "/")),
                                          StringConstant.v(signature)
@@ -444,8 +432,6 @@ public class JimpleInjector {
 
         String signature = getSignatureForArrayField(a);
 
-        interScopeValue = StringConstant.v(signature);
-
         Unit assignExpr = fac.createStmt("joinLevelOfArrayFieldAndAssignmentLevel", a.getBase(), StringConstant.v(signature));
 
         // TODO CANNOT CAST ...
@@ -463,9 +449,6 @@ public class JimpleInjector {
         logger.info("Setting level in assign statement");
 
         String signature = getSignatureForLocal(l);
-
-        // ToDo: Remove, when ready - currently other Methods rely on it
-        interScopeValue = StringConstant.v(signature);
 
         // insert setLocalToCurrentAssingmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
@@ -527,7 +510,6 @@ public class JimpleInjector {
 
         // Retrieve the object it belongs to
         Local tmpLocal = (Local) f.getBase();
-        interScopeValue = StringConstant.v(fieldSignature);
 
         // push and pop security level of instance to globalPC
         Unit pushInstanceLevelToGlobalPC
@@ -573,7 +555,6 @@ public class JimpleInjector {
         Unit assignDeclaringClass = Jimple.v().newAssignStmt(
                 local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
 
-        interScopeValue = StringConstant.v(signature);
 
         // insert: checkGlobalPC(Object, String)
         Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC",
@@ -627,7 +608,6 @@ public class JimpleInjector {
         // Store all string-arguments in locals for strings and assign the locals to the
         // argument list.
 
-        interScopeValue = StringConstant.v(signatureForField);
 
         Unit assignObjectSignature = Jimple.v().newAssignStmt(local_for_Strings2,
                 StringConstant.v(signatureForObjectLocal));
@@ -723,8 +703,6 @@ public class JimpleInjector {
 
     public static void returnLocal(Local l, Unit pos) {
         logger.info("Return Local "+ getSignatureForLocal(l));
-
-        interScopeValue = StringConstant.v(getSignatureForLocal(l));
 
         Stmt returnL = fac.createStmt("returnLocal", StringConstant.v(getSignatureForLocal(l)));
 
@@ -832,12 +810,11 @@ public class JimpleInjector {
         paramTypes.add(RefType.v("java.lang.String"));
 
         String signature = getSignatureForLocal(l);
-        interScopeValue = StringConstant.v(signature);
 
         Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         methodName, paramTypes, VoidType.v(), false),
-                interScopeValue, StringConstant.v(level));
+                StringConstant.v(signature), StringConstant.v(level));
         Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 
         // TODO: why check for isDynamic here?
@@ -898,7 +875,6 @@ public class JimpleInjector {
         logger.info("Identity of Dominator of \"" + pos.toString()
                 + "\" is " + domIdentity);
 
-        interScopeValue = StringConstant.v(domIdentity);
 
         // Add all locals to string array
         Expr newStringArray = Jimple.v().newNewArrayExpr(
@@ -921,7 +897,7 @@ public class JimpleInjector {
         Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "checkCondition", paramTypes, VoidType.v(), false),
-                interScopeValue, local_for_String_Arrays);
+                StringConstant.v(domIdentity), local_for_String_Arrays);
         Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
 
         unitStore_Before.add(new UnitToInsert(assignNewArray, pos));
@@ -951,13 +927,10 @@ public class JimpleInjector {
         logger.info("Dominator \"" + pos.toString()
                 + "\" has identity " + domIdentity);
 
-
-        interScopeValue = StringConstant.v(domIdentity);
-
         Expr specialIn = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "exitInnerScope", paramTypes, VoidType.v(), false),
-                interScopeValue);
+                StringConstant.v(domIdentity));
 
         Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
