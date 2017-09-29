@@ -21,8 +21,7 @@ import java.util.logging.Logger;
  */
 
 public class DominatorFinder {
-	private static MHGPostDominatorsFinder pdfinder;
-	private static UnitGraph graph;
+	private static MHGPostDominatorsFinder<Unit> pdfinder;
 	private static HashMap<Unit, String> domList;
 	
 	// ID-counter for identifying postdominators 
@@ -36,9 +35,8 @@ public class DominatorFinder {
 	 * @param body The body of the actual analyzed method.
 	 */
 	public static void init(Body body) {
-		graph = new BriefUnitGraph(body);
-		pdfinder = new MHGPostDominatorsFinder(graph);
-		domList = new HashMap<Unit, String>();
+		pdfinder = new MHGPostDominatorsFinder<>(new BriefUnitGraph(body));
+		domList = new HashMap<>();
 		identity = 0;
 	}
 
@@ -50,7 +48,7 @@ public class DominatorFinder {
 	 * @return Hashvalue of immerdiate dominator.
 	 */
 	public static String getImmediateDominatorIdentity(Unit node) {
-		Unit dom = (Unit) pdfinder.getImmediateDominator(node);
+		Unit dom = pdfinder.getImmediateDominator(node);
 
 		if (dom != null) {
 		    String id = getIdentityForUnit(dom);

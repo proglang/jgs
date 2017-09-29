@@ -71,8 +71,8 @@ public class JimpleFactory {
                     Scene.v().getSootClass(reference.getName()),types);
 
             if (overloads.containsKey(key))
-                L1Logger.getLogger().info("Overwriting ConstructorRef for: "+c.getName() + "(" + key + ")");
-            else L1Logger.getLogger().info("Creating ConstructorRef for: "+c.getName() + "(" + key + ")");
+                L1Logger.getLogger().fine("Overwriting ConstructorRef for: "+c.getName() + "(" + key + ")");
+            else L1Logger.getLogger().fine("Creating ConstructorRef for: "+c.getName() + "(" + key + ")");
 
             overloads.put(key, cRef);
             if (!constructorCache.containsKey(c.getName()))
@@ -102,8 +102,8 @@ public class JimpleFactory {
             // Adding the calculated Method in the cache and warn/inform the user
             // for changes, that might not be wanted.
             if (overloads.containsKey(key))
-                L1Logger.getLogger().info("Overwriting SootMethodRef for: "+m.getName() + "(" + key + ")");
-            else L1Logger.getLogger().info("Creating SootMethodRef for: "+m.getName() + "(" + key + ")");
+                L1Logger.getLogger().fine("Overwriting SootMethodRef for: "+m.getName() + "(" + key + ")");
+            else L1Logger.getLogger().fine("Creating SootMethodRef for: "+m.getName() + "(" + key + ")");
 
             overloads.put(key, mRef);
             if (!methodCache.containsKey(m.getName()))
@@ -181,7 +181,7 @@ public class JimpleFactory {
                                 try {
                                     base = Class.forName(baseString);
                                 } catch (ClassNotFoundException inner) {
-                                    new IllegalStateException("Class cast failed for array value: "+savArg);
+                                    throw new IllegalStateException("Class cast failed for array value: "+savArg);
                                 }
                             }
                             savArgsClasses.add(Array.newInstance(base, dim).getClass());
@@ -211,7 +211,7 @@ public class JimpleFactory {
                                 try {
                                     base = Class.forName(arr.baseType.toString());
                                 } catch (ClassNotFoundException inner) {
-                                    new IllegalStateException("Class cast failed for given array value: "+arg + " with Type: " + arg.getType());
+                                    throw new IllegalStateException("Class cast failed for given array value: "+arg + " with Type: " + arg.getType());
                                 }
                             }
                             argsClass.add(Array.newInstance(base, dim).getClass());
@@ -232,7 +232,7 @@ public class JimpleFactory {
 
                 // If no Exception is thrown, then we could assign here
                 sootMethod = entry.getValue();
-                L1Logger.getLogger().info("Used the signature: "+entry.getKey()+
+                L1Logger.getLogger().fine("Used the signature: "+entry.getKey()+
                                           " as suitable for wanted call of "
                                           +name+"("+key+")");
             }
@@ -245,7 +245,7 @@ public class JimpleFactory {
         }
         //</editor-fold>
         else {
-            L1Logger.getLogger().info("Used identical signature for call of "+name);
+            L1Logger.getLogger().fine("Used identical signature for call of "+name);
         }
         return sootMethod;
     }

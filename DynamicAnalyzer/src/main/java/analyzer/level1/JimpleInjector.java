@@ -202,7 +202,7 @@ public class JimpleInjector {
      * Inserts {@link HandleStmt#init()}.
      */
     static void initHS() {
-        logger.info("Initializing HandleStmt in method" + b.getMethod().getName());
+        logger.info("Initializing HandleStmt in method: " + b.getMethod().getName());
 
         Unit init = fac.createStmt("init");
         unitStore_After.add(new UnitToInsert(init, lastPos));

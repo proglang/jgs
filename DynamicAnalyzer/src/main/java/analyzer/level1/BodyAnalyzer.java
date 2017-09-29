@@ -1,5 +1,6 @@
 package analyzer.level1;
 
+import analyzer.level2.HandleStmt;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
@@ -137,6 +138,7 @@ public class BodyAnalyzer<L> extends BodyTransformer {
 		// </editor-fold>
 				
 
+		// Analyzing Every Statement, step by step.
 		for (Unit unit: units) {
 			// Check if the statements is a postdominator for an IfStmt.
 			if (DominatorFinder.containsStmt(unit)) {
@@ -155,30 +157,23 @@ public class BodyAnalyzer<L> extends BodyTransformer {
 	}
 
 	/**
-	 * Return the very first method (of the app) to run.
-	 * Either clinit of the
-	 * Main-class, or main.
+	 * Specifies, if the given Method is the First Application Method,
+	 * such that {@link HandleStmt#init()} is not inserted to much, it is enough
+	 * to call it at the very begging.
+	 * @param method The Method, that is tested.
+	 * @return true, iff the given Method is the first Application Method.
 	 */
-	private boolean isFirstApplicationMethodToRun(SootMethod firstMethodCand) {
-		// TODO: this does not work, because "no main method set".. why?
-	    /*SootClass mainClass = Scene.v().getMainMethod().getDeclaringClass();
-		for (SootMethod m : mainClass.getMethods()) {
-			if (m.getName().equals("<clinit>")) {
-			    return m;
-			}
-		}
-		return Scene.v().getMainMethod();
-		*/
-	    if (firstMethodCand.isMain()) {
-			for (SootMethod m : firstMethodCand.getDeclaringClass().getMethods()) {
+	private boolean isFirstApplicationMethodToRun(SootMethod method) {
+	    if (method.isMain()) {
+			for (SootMethod m : method.getDeclaringClass().getMethods()) {
 				if (m.getName().equals("<clinit>")) {
 					return false;
 				}
 			}
 			// there is no clinit in the main-class
 			return true;
-		} else if (firstMethodCand.getName().equals("<clinit>")){
-			for (SootMethod m : firstMethodCand.getDeclaringClass().getMethods()) {
+		} else if (method.getName().equals("<clinit>")){
+			for (SootMethod m : method.getDeclaringClass().getMethods()) {
 				if (m.isMain()) {
 					return true; // we are clinit, and in the main class
 				}

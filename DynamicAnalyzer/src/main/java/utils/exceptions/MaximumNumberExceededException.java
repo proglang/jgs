@@ -1,6 +1,6 @@
 package utils.exceptions;
 
-public class MaximumNumberExceededException extends Exception {
+public class MaximumNumberExceededException extends RuntimeException {
 
 	/**
 	 * 
@@ -12,7 +12,5 @@ public class MaximumNumberExceededException extends Exception {
 	 */
 	public MaximumNumberExceededException(String message) {
 		super(message);
-		printStackTrace();
-		System.exit(0);
 	}
 }
