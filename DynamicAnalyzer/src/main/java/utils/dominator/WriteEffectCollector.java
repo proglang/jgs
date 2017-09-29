@@ -141,16 +141,6 @@ public class WriteEffectCollector {
         }
     }
 
-    private void removeBranchFromVisit(GraphElement element) {
-        if (currentBranch == null)
-            throw new IllegalStateException("There is no branch, that could be removed");
-
-        if (element.equals(currentBranch.getPostDom())) return;
-        System.out.println("Removing> "+element);
-        visitCache.remove(element);
-        removeBranchFromVisit(element.getSuccessor());
-    }
-
     /**
      * Gets the Write Effect of a given Unit. This unit has to be a post dominator
      * of an if of which the Write Effect was calculated.

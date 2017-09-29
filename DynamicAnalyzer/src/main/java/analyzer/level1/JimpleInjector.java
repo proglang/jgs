@@ -134,6 +134,7 @@ public class JimpleInjector {
                         false), local_for_Strings);
         Unit invoke = Jimple.v().newInvokeStmt(setReturnLevel);
 
+
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
         if ( varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
             unitStore_After.add(new UnitToInsert(invoke, pos));

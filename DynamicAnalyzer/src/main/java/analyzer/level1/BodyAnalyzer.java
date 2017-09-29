@@ -15,86 +15,68 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This Analyzer is applied to every method.
- * If it's the main method, then ...
- * For each constructor, an new Object and Field Map is inserted into the ObjectMap.
+ * This Analyzer extends the Body Transformer of the Soot Framework,
+ * so the {@link BodyAnalyzer#internalTransform(Body, String, Map)} is called
+ * from Soot for every Methods Body of the analyzed Code.
+ *
+ * The BodyAnalyzer decides for every body what shall be inserted into
+ * the Body.
+ * E.g for each constructor, an new Object and Field Map is inserted into the ObjectMap.
  * For each method, a HandleStmt object is inserted (which contains a local Map 
  * for the Locals and the localPC).
  * Then every Local is inserted into this map.
  * At least it iterates over all Units and calls the appropriate operation
  * At the end (but before the return statement) it calls HandleStmt.close()
- * @author koenigr
+ * @author koenigr, Karsten Fix (2017)
  *
  */
-public class BodyAnalyzer<L> extends BodyTransformer{
+public class BodyAnalyzer<L> extends BodyTransformer {
 
-    MethodTypings<L> methodTypings;
-	boolean controllerIsActive;
-	int expectedException;
-	Casts<L> casts;
-    public BodyAnalyzer(MethodTypings<L> m,
-						Casts<L> c) {
+    private MethodTypings<L> methodTypings;
+	private boolean controllerIsActive;
+	private int expectedException;
+	private Casts<L> casts;
+
+	private Logger logger = L1Logger.getLogger();
+
+	/**
+	 * Constructs an new BodyAnalyzer with the given
+	 * @param m
+	 * @param c
+	 */
+    public BodyAnalyzer(MethodTypings<L> m, Casts<L> c) {
         methodTypings = m;
         this.controllerIsActive = controllerIsActive;
         this.expectedException = expectedException;
         casts = c;
     }
 
-    /**
-	 * internalTransform is an internal soot method, which is called somewhere along the way.
-	 * for us, it serves as an entry point to the instrumentation process
+	/**
+	 * This Method is called from the Soot Framework. In this Specific Implementation
+	 * it inserts some invokes of the {@link analyzer.level2.HandleStmt}.
+	 *
+	 * @param body The Body of the Method, that is analyzed and may be instrumented.
+	 * @param s The Phase Name of this Soot Phase, in this case it should be "jtp.analyzer"
+	 * @param map A Map of Options, that could be defined and passed to this Method. These
+	 *            Options can be passed as command line arguments. As defined by Soot.
 	 */
 	@Override
-	protected void internalTransform(Body arg0, String arg1,
-				@SuppressWarnings("rawtypes") Map arg2) {
-		SootMethod sootMethod;
-		Body body;
+	protected void internalTransform(Body body, String s, Map<String, String> map) {
+		logger.info(" Analyze of :" + body.getMethod().getName() + " started.");
 
+		SootMethod sootMethod = body.getMethod();
 
-		/*
-		 * Chain<Unit> units contains for TestProgramm Simple:
-		 * 
-		 * [r0 := @parameter0: java.lang.String[], r1 = "Hello World", 
-		 * $r2 = staticinvoke <utils.analyzer.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>(r1),
-		 * r3 = (java.lang.String) $r2, $r4 = <java.lang.System: java.io.PrintStream out>, 
-		 * virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r3), return]
-		 * Invoke HandleStmt in method main
-		 */
-		Chain<Unit> units;
-		
-		/*
-		 * Chain<Local> locals contains for TestProgramm Simple:
-		 * 
-		 * [r0, r1, $r2, r3, $r4]
-		 */
-		Chain<Local> locals;
-		AnnotationStmtSwitch stmtSwitch;
-		
-		
-		/*
-		 * hain<SootField> fields contains for TestProgramm Simple:
-		 *
-		 * []		//empty
-		 */
-		Chain<SootField> fields;
+		Chain<Unit> units  = body.getUnits();
 
+		AnnotationStmtSwitch stmtSwitch =  new AnnotationStmtSwitch(body);
+		Chain<SootField> fields = sootMethod.getDeclaringClass().getFields();
 
-		Logger logger = L1Logger.getLogger();
-		
-		logger.log(Level.INFO, "\n BODYTRANSFORM STARTED: {0}",
-				arg0.getMethod().getName());
-	
-		body = arg0;
-		sootMethod = body.getMethod();
-		fields = sootMethod.getDeclaringClass().getFields();
-
-		stmtSwitch = new AnnotationStmtSwitch(body);
 
 		DominatorFinder.init(body);
 
-		// für jeden methodenbody wird der Bodyanalyzer einmal "ausgeführt"
-        // Intraprozedurale Methode
-        // Body-Analyz implementiert Analyse in EINER Methode. Neu aufgerufen für jede Methode
+		// The JimpleInjector actually inserts the invokes, that we decide to insert.
+		// In order, that the righteous body got the inserts, we have to set up the
+		// Body for the Injections.
 		JimpleInjector.setBody(body);
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
@@ -104,7 +86,6 @@ public class BodyAnalyzer<L> extends BodyTransformer{
                                                  methodTypings.getSingleInstantiation(sootMethod, new TypeViews.Dyn<>()),
                                                  casts);
 
-		units = body.getUnits();
 
 
 		// invokeHS should be at the beginning of every method-body. 
@@ -123,80 +104,53 @@ public class BodyAnalyzer<L> extends BodyTransformer{
 
         JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
 
+		// <editor-fold desc="Add Fields to Object Map, either static or instance; determined by Method name">
+
 		/*
 		 * If the method is the constructor, the newly created object
 		 * has to be added to the ObjectMap and its fields are added to the
 		 * new object
 		 */
 		if (sootMethod.getName().equals("<init>")) {
-			logger.log(Level.INFO, "Entering <init>");
 			JimpleInjector.addInstanceObjectToObjectMap();
 						
 			// Add all instance fields to ObjectMap
-			Iterator<SootField> fIt = fields.iterator();
-			while (fIt.hasNext()) {
-				SootField item = fIt.next();
-				if (!item.isStatic()) {
-					JimpleInjector.addInstanceFieldToObjectMap(item);
+			for (SootField f : fields) {
+				if (!f.isStatic()) {
+					JimpleInjector.addInstanceFieldToObjectMap(f);
 				}
 			}
 						
 		} else if (sootMethod.getName().equals("<clinit>")) {
-			logger.log(Level.INFO, "Entering <clinit>");
+
 			SootClass sc = sootMethod.getDeclaringClass();
 			JimpleInjector.addClassObjectToObjectMap(sc);
-						
+
 			// Add all static fields to ObjectMap
-			Iterator<SootField> fIt = fields.iterator();
-			while (fIt.hasNext()) {
-				SootField item = fIt.next();
-				if (item.isStatic()) {
-					JimpleInjector.addStaticFieldToObjectMap(item);
-				} 
+			for (SootField f : fields) {
+				if (f.isStatic()) {
+					JimpleInjector.addStaticFieldToObjectMap(f);
+				}
 			}
 		}
+
+		// </editor-fold>
 				
 
-		// Add all locals to LocalMap except the locals which 
-		// are inserted for analysis purposes.
-		// locals are not added anymore all at the beginning. Instead, they are added only when needed.
-		/*Iterator<Local> lit = locals.iterator();
-		while (lit.hasNext()) {
-			Local item = lit.next();
-			if (!(item.getName() == "local_for_Strings") 
-					&& !(item.getName() == "local_for_String_Arrays")
-					&& !(item.getName() == "local_for_Strings2") 
-					&& !(item.getName() == "local_for_Strings3") 
-					&& !(item.getName() == "local_for_Objects") 
-					&& !(item.getName() == "local_level")
-					&& !(item.getName() == "hs")) {
-				//JimpleInjector.addLocal(item);
-			}
-		}*/
-
-				
-				
-		Iterator<Unit> uit = units.iterator();
-		while (uit.hasNext()) {
-			Unit item = uit.next();
-			
+		for (Unit unit: units) {
 			// Check if the statements is a postdominator for an IfStmt.
-			if (DominatorFinder.containsStmt(item)) {
-
-				JimpleInjector.exitInnerScope(item);
-				logger.log(Level.INFO, "Exit inner scope with identity {0}", 
-					DominatorFinder.getIdentityForUnit(item));
-
-				DominatorFinder.removeStmt(item);
+			if (DominatorFinder.containsStmt(unit)) {
+				JimpleInjector.exitInnerScope(unit);
+				logger.info("Exit inner scope with identity" +	DominatorFinder.getIdentityForUnit(unit));
+				DominatorFinder.removeStmt(unit);
 			}
 			
 			// Add further statements using JimpleInjector.
-			item.apply(stmtSwitch);
+			unit.apply(stmtSwitch);
 		}
 		
 		// Apply all changes.
-		JimpleInjector.addUnitsToChain();			
-		
+		JimpleInjector.addUnitsToChain();
 		JimpleInjector.closeHS();
 	}
 
