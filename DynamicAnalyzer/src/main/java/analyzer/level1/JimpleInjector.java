@@ -3,7 +3,6 @@ package analyzer.level1;
 import analyzer.level1.storage.UnitToInsert;
 import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
-import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import scala.Option;
 import soot.*;
@@ -18,7 +17,6 @@ import utils.jimple.JimpleFactory;
 import utils.logging.L1Logger;
 
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -57,13 +55,16 @@ public class JimpleInjector {
      * This is needed for further units, which have to be inserted after this
      * position.
      */
-    // TODO: handling the "last positions" like this is absolutely horrible. Cf. also the code in "addUnitsToChain". Instead of this mess, there should be two maps "stmt -> listof(stmt)", mapping to statements-to-be-inserted before, and after a given original statement, respectively.
+    // TODO: handling the "last positions" like this is absolutely horrible.
+    // Cf. also the code in "addUnitsToChain". Instead of this mess, there should be two maps "stmt -> listof(stmt)",
+    // mapping to statements-to-be-inserted before, and after a given original statement, respectively.
     private static Unit lastPos;
 
     // </editor-fold>
 
     // <editor-fold desc="Fields for Injections"
-/**
+
+    /**
      * Chain containing all new units which have to be set
      * after a given position.
      */
@@ -84,8 +85,7 @@ public class JimpleInjector {
     private static boolean extralocals = false;
 
     /** Local wto store String values. */
-    private static Local local_for_Strings = Jimple.v().newLocal(
-            "local_for_Strings", RefType.v("java.lang.String"));
+    private static Value interScopeValue = StringConstant.v("int_i0");
 
     /** This local is needed for methods with more than two arguments. */
     private static Local local_for_Strings2 = Jimple.v().newLocal("local_for_Strings2", RefType.v("java.lang.String"));
@@ -108,11 +108,12 @@ public class JimpleInjector {
     private static Casts casts;
 
     /**
-     * Stores the results of the static analysis. Use Lvel instead of Level because of conflicts with the LEVEL of the Logger.
+     * Stores the results of the static analysis. Use Level instead of Level because of conflicts with the LEVEL of the Logger.
      */
     private static VarTyping varTyping;
     private static CxTyping cxTyping;
     private static Instantiation instantiation;
+
     /**
      * The list of locals of the body *before* instrumentation.
      */
@@ -123,18 +124,8 @@ public class JimpleInjector {
      *
      * @param pos   Statement / Unit where to insert setReturnLevelAfterInvokeStmt
      */
-    public static void setReturnLevelAfterInvokeStmt(Unit pos) {
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
-
-        Expr setReturnLevel = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "setReturnLevelAfterInvokeStmt", paramTypes,
-                        VoidType.v(),
-                        false), local_for_Strings);
-        Unit invoke = Jimple.v().newInvokeStmt(setReturnLevel);
-
-
+    public static void setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
+        Unit invoke = fac.createStmt("setReturnLevelAfterInvokeStmt", StringConstant.v(getSignatureForLocal(l)));
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
         if ( varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
             unitStore_After.add(new UnitToInsert(invoke, pos));
@@ -249,14 +240,14 @@ public class JimpleInjector {
     public static void makeLocal(Local local, String level, Unit pos) {
         logger.info("Setting " + local + "to new level " + level);
 
-        // local_for_Strings = getSignatureForLocal(local)
         String signature = getSignatureForLocal(local);
-        Stmt sig = Jimple.v().newAssignStmt(local_for_Strings, StringConstant.v(signature));
+        interScopeValue =  StringConstant.v(signature);
 
-        Unit setLevelOfL = fac.createStmt("setLocalFromString", StringConstant.v(signature), StringConstant.v(level));
+        Unit setLevelOfL = fac.createStmt("setLocalFromString",
+                                          StringConstant.v(signature),
+                                          StringConstant.v(level));
 
-        unitStore_After.add(new UnitToInsert(sig, pos));
-        unitStore_After.add(new UnitToInsert(setLevelOfL, sig));
+        unitStore_After.add(new UnitToInsert(setLevelOfL, pos));
         lastPos = setLevelOfL;
     }
 
@@ -307,15 +298,11 @@ public class JimpleInjector {
         // Todo: is that the same? All tests passing...-> Write Test, that fails, because it is wrong...
         // tmpLocal = ClassConstant.v(field.getDeclaringClass().getName().replace(".", "/"));
 
-        Unit assignSignature = Jimple.v().newAssignStmt(local_for_Strings,
-                                                        StringConstant.v(fieldSignature));
+        interScopeValue = StringConstant.v(fieldSignature);
 
         Unit assignExpr = fac.createStmt("addFieldToObjectMap", tmpLocal, StringConstant.v(fieldSignature));
 
-        unitStore_After.add(
-                new UnitToInsert(assignSignature, lastPos));
-        unitStore_After.add(
-                new UnitToInsert(assignExpr, assignSignature));
+        unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
         lastPos = assignExpr;
     }
 
@@ -334,21 +321,15 @@ public class JimpleInjector {
         Unit assignDeclaringClass = Jimple.v().newAssignStmt(
                 local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
 
-        Unit assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signature));
+        interScopeValue = StringConstant.v(signature);
 
         Unit assignExpr = fac.createStmt("addFieldToObjectMap",
                                     ClassConstant.v(sc.getName().replace(".", "/")),
                                     StringConstant.v(signature));
 
-        unitStore_After.add(
-                new UnitToInsert(assignDeclaringClass, lastPos));
-        unitStore_After.add(
-                new UnitToInsert(assignSignature, assignDeclaringClass));
-        unitStore_After.add(
-                new UnitToInsert(assignExpr, assignSignature));
+        unitStore_After.add(new UnitToInsert(assignDeclaringClass, lastPos));
+        unitStore_After.add(new UnitToInsert(assignExpr, assignDeclaringClass));
         lastPos = assignExpr;
-
     }
 
     /**
@@ -378,19 +359,14 @@ public class JimpleInjector {
     public static void addLevelInAssignStmt(Local local, Unit pos) {
         logger.info("Adding level of "+local+"in assign statement of Method: "+b.getMethod().getName());
 
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
-
         String signature = getSignatureForLocal(local);
-        Stmt assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signature));
+        interScopeValue =  StringConstant.v(signature);
 
         Unit invoke = fac.createStmt("joinLevelOfLocalAndAssignmentLevel", StringConstant.v(signature));
 
         // only insert the joinLevelOfLocal.. stmt if local is in fact dynamically checked
         // TODO CX is irrelevant here?
         if (varTyping.getAfter(instantiation, (Stmt) pos, local).isDynamic()) {
-            unitStore_Before.add(new UnitToInsert(assignSignature, pos));
             unitStore_Before.add(new UnitToInsert(invoke, pos));
             lastPos = pos;
         }
@@ -412,15 +388,13 @@ public class JimpleInjector {
         // units.getFirst is already a reference to @this
         // Local tmpLocal = (Local) units.getFirst().getDefBoxes().get(0).getValue();
         Unit assignBase = Jimple.v().newAssignStmt(local_for_Objects, f.getBase());
-        Unit assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(fieldSignature));
+        interScopeValue =  StringConstant.v(fieldSignature);
 
         Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel", f.getBase(), StringConstant.v(fieldSignature));
 
         // TODO CANNOT CAST ..
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
             unitStore_Before.add(new UnitToInsert(assignBase, pos));
-            unitStore_Before.add(new UnitToInsert(assignSignature, pos));
             unitStore_Before.add(new UnitToInsert(assignExpr, pos));
             lastPos = pos;
         //}
@@ -443,8 +417,7 @@ public class JimpleInjector {
         Unit assignDeclaringClass = Jimple.v().newAssignStmt(
                 local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
 
-        Unit assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signature));
+        interScopeValue = StringConstant.v(signature);
 
         Unit assignExpr = fac.createStmt("joinLevelOfFieldAndAssignmentLevel",
                                          ClassConstant.v(sc.getName().replace(".", "/")),
@@ -453,9 +426,7 @@ public class JimpleInjector {
 
             // TODO cannot cast StaticFieldref to Local!
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
-            unitStore_Before.add(
-                    new UnitToInsert(assignDeclaringClass, pos));
-            unitStore_Before.add(new UnitToInsert(assignSignature, pos));
+            unitStore_Before.add(new UnitToInsert(assignDeclaringClass, pos));
             unitStore_Before.add(new UnitToInsert(assignExpr, pos));
             lastPos = pos;
         //}
@@ -473,11 +444,7 @@ public class JimpleInjector {
 
         String signature = getSignatureForArrayField(a);
 
-        Unit assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signature));
-
-        unitStore_Before.add(new UnitToInsert(assignSignature, pos));
-        lastPos = assignSignature;
+        interScopeValue = StringConstant.v(signature);
 
         Unit assignExpr = fac.createStmt("joinLevelOfArrayFieldAndAssignmentLevel", a.getBase(), StringConstant.v(signature));
 
@@ -498,8 +465,7 @@ public class JimpleInjector {
         String signature = getSignatureForLocal(l);
 
         // ToDo: Remove, when ready - currently other Methods rely on it
-        Stmt assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signature));
+        interScopeValue = StringConstant.v(signature);
 
         // insert setLocalToCurrentAssingmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
@@ -537,11 +503,6 @@ public class JimpleInjector {
         // if variable l is not dynamic after stmt pos, we do not need to call setLocalToCurrentAssingmentLevel at all,
         // and we especially do not need to perform a NSU check!
         if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
-
-            // ToDo: Remove, when ready - currently other Methods rely on it
-            unitStore_Before.add(new UnitToInsert(assignSignature, pos));
-
-
             // insert NSU check only if PC is dynamic!
             if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
                 unitStore_Before.add(new UnitToInsert(checkLocalPCExpr, pos));
@@ -566,9 +527,7 @@ public class JimpleInjector {
 
         // Retrieve the object it belongs to
         Local tmpLocal = (Local) f.getBase();
-
-        Unit assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(fieldSignature));
+        interScopeValue = StringConstant.v(fieldSignature);
 
         // push and pop security level of instance to globalPC
         Unit pushInstanceLevelToGlobalPC
@@ -591,7 +550,6 @@ public class JimpleInjector {
         // pushInstanceLevelToGlobalPC and popGlobalPC take the instance, push to global pc; and pop afterwards.
         // see NSU_FieldAccess tests why this is needed
         unitStore_Before.add(new UnitToInsert(pushInstanceLevelToGlobalPC, pos));
-        unitStore_Before.add(new UnitToInsert(assignSignature, pos));
         // only if context ist dynamic / pc is dynamc
         if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
             unitStore_Before.add(new UnitToInsert(checkGlobalPCExpr, pos));
@@ -615,8 +573,7 @@ public class JimpleInjector {
         Unit assignDeclaringClass = Jimple.v().newAssignStmt(
                 local_for_Objects, ClassConstant.v(sc.getName().replace(".", "/")));
 
-        Unit assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signature));
+        interScopeValue = StringConstant.v(signature);
 
         // insert: checkGlobalPC(Object, String)
         Unit checkGlobalPCExpr = fac.createStmt("checkGlobalPC",
@@ -632,7 +589,6 @@ public class JimpleInjector {
 
         unitStore_Before.add(
                 new UnitToInsert(assignDeclaringClass, pos));
-        unitStore_Before.add(new UnitToInsert(assignSignature, pos));
         if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
             unitStore_Before.add(new UnitToInsert(checkGlobalPCExpr, pos));
         }
@@ -670,8 +626,9 @@ public class JimpleInjector {
 
         // Store all string-arguments in locals for strings and assign the locals to the
         // argument list.
-        Unit assignFieldSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signatureForField));
+
+        interScopeValue = StringConstant.v(signatureForField);
+
         Unit assignObjectSignature = Jimple.v().newAssignStmt(local_for_Strings2,
                 StringConstant.v(signatureForObjectLocal));
 
@@ -714,8 +671,6 @@ public class JimpleInjector {
         Unit assignExpr = fac.createStmt("setLevelOfArrayField", args.toArray(new Value[0]));
 
         unitStore_Before.add(
-                new UnitToInsert(assignFieldSignature, pos));
-        unitStore_Before.add(
                 new UnitToInsert(assignObjectSignature, pos));
         unitStore_Before.add(
                 new UnitToInsert(checkArrayGlobalPCExpr, pos));
@@ -731,97 +686,49 @@ public class JimpleInjector {
      */
     @SuppressWarnings("unused")
     public static void assignReturnLevelToLocal(Local l, Unit pos) {
-        logger.log(Level.INFO, "Assign return level of invoked method to local {0}",
-                getSignatureForLocal(l));
+        logger.info("Assign return level of invoked method to local "+getSignatureForLocal(l));
 
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.String"));
-
-
-
-        Expr assignRet = Jimple.v().newVirtualInvokeExpr(
-                hs,
-                Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS),
-                        "assignReturnLevelToLocal",
-                        parameterTypes,
-                        VoidType.v(),
-                        false),
-                StringConstant.v(getSignatureForLocal(l)));
-
-        Unit assignExpr = Jimple.v().newInvokeStmt(assignRet);
+        Unit assignExpr = fac.createStmt("assignReturnLevelToLocal", StringConstant.v(getSignatureForLocal(l)));
 
         unitStore_After.add(new UnitToInsert(assignExpr, pos));
         lastPos = assignExpr;
     }
 
     public static void assignArgumentToLocal(int posInArgList, Local local) {
-        logger.log(Level.INFO, "Assign argument level to local " + local.toString());
+        logger.info("Assign argument level to local " + local);
 
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(IntType.v());
-        parameterTypes.add(RefType.v("java.lang.String"));
-
-        Expr assignArg = Jimple.v().newVirtualInvokeExpr(
-                hs,
-                Scene.v().makeMethodRef(
-                        Scene.v().getSootClass(HANDLE_CLASS), "assignArgumentToLocal",
-                        parameterTypes,
-                        Scene.v().getObjectType(),
-                        false),
-                IntConstant.v(posInArgList),
-                StringConstant.v(getSignatureForLocal(local))
-        );
-
-        Unit assignExpr = Jimple.v().newInvokeStmt(assignArg);
+        Unit assignExpr = fac.createStmt("assignArgumentToLocal",
+                                    IntConstant.v(posInArgList),
+                                    StringConstant.v(getSignatureForLocal(local)));
 
         // only assign Argument to Local if Argument is of Dynamic Type
         if (instantiation.get(posInArgList).isDynamic()) {
-            String localSig = getSignatureForLocal(local);
             unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
             lastPos = assignExpr;
         }
     }
 
-
-
-    /*******************************************************************************************
-     *	Inter-scope functions.
-     ******************************************************************************************/
-
-
+    /**
+     * Inserts an invoke of {@link HandleStmt#returnConstant()}
+     * @param retStmt The invoke is inserted before the retStmt.
+     */
     public static void returnConstant(Unit retStmt) {
-        logger.log(Level.INFO, "Return a constant value");
-
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-
-        Expr returnConst = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
-                Scene.v().getSootClass(HANDLE_CLASS), "returnConstant",
-                parameterTypes, VoidType.v(), false));
+        logger.info("Return a constant value");
 
         if (instantiation.getReturn().isDynamic()) {
             unitStore_Before.add(new UnitToInsert(
-                    Jimple.v().newInvokeStmt(returnConst), retStmt));
+                    fac.createStmt("returnConstant"), retStmt));
         }
     }
 
     public static void returnLocal(Local l, Unit pos) {
-        logger.log(Level.INFO, "Return Local {0}", getSignatureForLocal(l));
+        logger.info("Return Local "+ getSignatureForLocal(l));
 
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        parameterTypes.add(RefType.v("java.lang.String"));
+        interScopeValue = StringConstant.v(getSignatureForLocal(l));
 
-        Stmt sig = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(getSignatureForLocal(l)));
-
-        Expr returnLocal = Jimple.v().newVirtualInvokeExpr(hs, Scene.v().makeMethodRef(
-                Scene.v().getSootClass(HANDLE_CLASS), "returnLocal", parameterTypes,
-                VoidType.v(), false), local_for_Strings);
-
-        Stmt returnL = Jimple.v().newInvokeStmt(returnLocal);
+        Stmt returnL = fac.createStmt("returnLocal", StringConstant.v(getSignatureForLocal(l)));
 
         if (instantiation.getReturn().isDynamic()) {
-            unitStore_Before.add(new UnitToInsert(sig, pos));
             unitStore_Before.add(new UnitToInsert(returnL, pos));
             lastPos = pos;
         }
@@ -840,7 +747,7 @@ public class JimpleInjector {
     // map und nimmt sich von da die level der gerade übergebenen argumente.
     public static void storeArgumentLevels(Unit pos, Local... lArguments) {
 
-        logger.log(Level.INFO, "Store Arguments for next method in method {0}",
+        logger.info("Store Arguments for next method in method " +
                 b.getMethod().getName());
 
         int length = lArguments.length;
@@ -925,19 +832,16 @@ public class JimpleInjector {
         paramTypes.add(RefType.v("java.lang.String"));
 
         String signature = getSignatureForLocal(l);
-
-        Stmt assignSignature = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(signature));
+        interScopeValue = StringConstant.v(signature);
 
         Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         methodName, paramTypes, VoidType.v(), false),
-                local_for_Strings, StringConstant.v(level));
+                interScopeValue, StringConstant.v(level));
         Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);
 
         // TODO: why check for isDynamic here?
         // if (varTyping.getBefore(instantiation, (Stmt) pos, l).isDynamic()) {
-            unitStore_Before.add(new UnitToInsert(assignSignature, pos));
             unitStore_Before.add(new UnitToInsert(invoke, pos));
             lastPos = pos;
         // }
@@ -982,8 +886,7 @@ public class JimpleInjector {
      */
     public static void checkCondition(Unit pos, Local... locals) {
 
-        logger.log(Level.INFO, "Check condition in method {0}", b.getMethod());
-        logger.log(Level.INFO, "IfStmt: {0}", pos.toString());
+        logger.info("Check condition in method " + b.getMethod()+ " IfStmt: " + pos);
 
         int numberOfLocals = locals.length;
         ArrayList<Type> paramTypes = new ArrayList<>();
@@ -994,8 +897,8 @@ public class JimpleInjector {
         String domIdentity = DominatorFinder.getImmediateDominatorIdentity(pos);
         logger.info("Identity of Dominator of \"" + pos.toString()
                 + "\" is " + domIdentity);
-        Stmt assignHashVal = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(domIdentity));
+
+        interScopeValue = StringConstant.v(domIdentity);
 
         // Add all locals to string array
         Expr newStringArray = Jimple.v().newNewArrayExpr(
@@ -1018,7 +921,7 @@ public class JimpleInjector {
         Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "checkCondition", paramTypes, VoidType.v(), false),
-                local_for_Strings, local_for_String_Arrays);
+                interScopeValue, local_for_String_Arrays);
         Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
 
         unitStore_Before.add(new UnitToInsert(assignNewArray, pos));
@@ -1027,8 +930,6 @@ public class JimpleInjector {
             unitStore_After.add(new UnitToInsert(u, lastPos));
             lastPos = u;
         }
-        unitStore_After.add(new UnitToInsert(assignHashVal, lastPos));
-        lastPos = assignHashVal;
         unitStore_After.add(new UnitToInsert(invokeCC, lastPos));
         lastPos = invokeCC;
 
@@ -1041,7 +942,7 @@ public class JimpleInjector {
      * @param pos The position of this stmt.
      */
     public static void exitInnerScope(Unit pos) {
-        logger.log(Level.INFO, "Exit inner scope in method {0}", b.getMethod().getName());
+        logger.info("Exit inner scope in method " + b.getMethod().getName());
 
         ArrayList<Type> paramTypes = new ArrayList<>();
         paramTypes.add(RefType.v("java.lang.String"));
@@ -1050,19 +951,16 @@ public class JimpleInjector {
         logger.info("Dominator \"" + pos.toString()
                 + "\" has identity " + domIdentity);
 
-        Stmt assignHashVal = Jimple.v().newAssignStmt(
-                local_for_Strings, StringConstant.v(domIdentity));
 
+        interScopeValue = StringConstant.v(domIdentity);
 
         Expr specialIn = Jimple.v().newVirtualInvokeExpr(
                 hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
                         "exitInnerScope", paramTypes, VoidType.v(), false),
-                local_for_Strings);
+                interScopeValue);
 
         Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
-        unitStore_Before.add(
-                new UnitToInsert(assignHashVal, pos));
         unitStore_Before.add(new UnitToInsert(inv, pos));
         lastPos = pos;
     }
@@ -1090,10 +988,7 @@ public class JimpleInjector {
     static void addUnitsToChain() {
 
         // First add all elements from unitStore_Before
-        Iterator<UnitToInsert> uIt = unitStore_Before.iterator();
-
-        while (uIt.hasNext()) {
-            UnitToInsert item = uIt.next();
+        for (UnitToInsert item : unitStore_Before) {
             if (item.getPosition() == null) {
                 units.addFirst(item.getUnit());
             } else {
@@ -1102,10 +997,7 @@ public class JimpleInjector {
         }
 
         // Now add all elements from unitStore_After
-        uIt = unitStore_After.iterator();
-
-        while (uIt.hasNext()) {
-            UnitToInsert item = uIt.next();
+        for (UnitToInsert item : unitStore_After) {
 
             if (item.getPosition() == null) {
                 units.addFirst(item.getUnit());
@@ -1126,7 +1018,6 @@ public class JimpleInjector {
      */
     // Todo: Remove, when ready
     static void addNeededLocals() {
-        locals.add(local_for_Strings);
         locals.add(local_for_String_Arrays);
         locals.add(local_for_Objects);
 
@@ -1233,8 +1124,8 @@ public class JimpleInjector {
         }
     }
 
-    static <Lvel> void setStaticAnalaysisResults(VarTyping<Lvel> varTy, CxTyping<Lvel> cxTy, Instantiation<Lvel> inst,
-                                                 Casts c) {
+    static <Level> void setStaticAnalaysisResults(VarTyping<Level> varTy, CxTyping<Level> cxTy, Instantiation<Level> inst,
+                                                  Casts c) {
         varTyping = varTy;
         cxTyping = cxTy;
         instantiation = inst;

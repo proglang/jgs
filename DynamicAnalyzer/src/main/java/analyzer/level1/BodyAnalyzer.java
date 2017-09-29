@@ -10,9 +10,7 @@ import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationStmtSwitch;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -31,12 +29,12 @@ import java.util.logging.Logger;
  * @author koenigr, Karsten Fix (2017)
  *
  */
-public class BodyAnalyzer<L> extends BodyTransformer {
+public class BodyAnalyzer<Level> extends BodyTransformer {
 
-    private MethodTypings<L> methodTypings;
+    private MethodTypings<Level> methodTypings;
 	private boolean controllerIsActive;
 	private int expectedException;
-	private Casts<L> casts;
+	private Casts<Level> casts;
 
 	private Logger logger = L1Logger.getLogger();
 
@@ -45,10 +43,8 @@ public class BodyAnalyzer<L> extends BodyTransformer {
 	 * @param m
 	 * @param c
 	 */
-    public BodyAnalyzer(MethodTypings<L> m, Casts<L> c) {
+    public BodyAnalyzer(MethodTypings<Level> m, Casts<Level> c) {
         methodTypings = m;
-        this.controllerIsActive = controllerIsActive;
-        this.expectedException = expectedException;
         casts = c;
     }
 
