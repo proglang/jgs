@@ -35,6 +35,7 @@ public class JimpleInjector {
 
     private static JimpleFactory fac = new JimpleFactory(HandleStmt.class, hs);
 
+
     // <editor-fold desc="Fields for Body Analysis">
 
     /** The body of the actually analyzed method. */
@@ -609,6 +610,8 @@ public class JimpleInjector {
 
     // </editor-fold>
 
+    // <editor-fold desc="Assign Stmt - Method -> Interesting for Identity Stmt">
+
     /**
      * Note: Altough method is not used by jimpleInjector, the corresponding handleStatement method is used in the manually instrumented tests.
      */
@@ -636,6 +639,9 @@ public class JimpleInjector {
         }
     }
 
+    //</editor-fold>
+
+    // <editor-fold desc="Return Invokes">
     /**
      * Inserts an invoke of {@link HandleStmt#returnConstant()}
      * @param retStmt The invoke is inserted before the retStmt.
@@ -659,6 +665,8 @@ public class JimpleInjector {
             lastPos = pos;
         }
     }
+
+    //</editor-fold>
 
     /**
      * Store the levels of all arguments in a list in ObjectMap. If an
