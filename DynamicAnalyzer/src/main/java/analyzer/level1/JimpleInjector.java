@@ -84,9 +84,6 @@ public class JimpleInjector {
     // Todo: Remove when ready
     private static boolean extralocals = false;
 
-    /** This locals is needed for methods with more than two arguments. */
-    private static Local local_for_Strings3 = Jimple.v().newLocal("local_for_Strings3", RefType.v("java.lang.String"));
-
     /** Local where String arrays can be stored. Needed to store arguments for injected methods. */
     private static Local local_for_String_Arrays = Jimple.v().newLocal("local_for_String_Arrays", ArrayType.v(RefType.v("java.lang.String"), 1));
 
@@ -590,7 +587,6 @@ public class JimpleInjector {
 
         // Add extra locals for arguments
         if (!extralocals) {
-            locals.add(local_for_Strings3);
             extralocals = true;
         }
 
@@ -623,19 +619,10 @@ public class JimpleInjector {
             // "Object o, String field, String localForObject, String localForIndex".
 
             logger.fine("Index value for the array field is stored in a local");
-
             // add a further parameter type for String localForIndex and
             // add it to the arguments-list.
-
             String localSignature = getSignatureForLocal((Local) a.getIndex());
-            Unit assignIndexSignature = Jimple.v().newAssignStmt(local_for_Strings3,
-                    StringConstant.v(localSignature));
-
             args.add(StringConstant.v(localSignature));
-
-            unitStore_Before.add(new UnitToInsert(
-                    assignIndexSignature, pos));
-
         }
 
         // checkArrayWithGlobalPC
