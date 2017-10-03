@@ -69,7 +69,7 @@ public class Main {
 		 		L1Logger.setup(Level.ALL);
                 L1Logger.getLogger().info("Verbose logging activated");
 			} else {
-				L1Logger.setup(Level.INFO);
+				L1Logger.setup(Level.FINE);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

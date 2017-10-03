@@ -109,4 +109,34 @@ public class SootTypeUtil {
         }
         return params;
     }
+
+    /**
+     * Calculates the First Unit within a given Body, that could be used to
+     * insert further more other Units either before or after this returned Unit.
+     * <br><b>Because</b> there are some Units, that have to be at the very beginning
+     * of a chain. By using this function it is guaranteed, that those Units remain
+     * at that place.
+     * @param b The body, where furthermore Units are going to be inserted.
+     * @return That first Unit, where those Units could be inserted even before.
+     */
+    public static Unit getFirstUnit(Body b) {
+        // Getting the Method, that is currently calculated.
+        SootMethod m = b.getMethod();
+
+       /* Depending on the number of arguments and whether it is a static method
+       * or a Constructor the position is calculated.
+       * Because there are statements, which shouldn't be preceded by other
+       * statements.
+       * */
+        int pos = (!m.isStatic()) ? 1 : 0;
+        pos = (m.isConstructor()) ? pos + 1 : pos;
+        pos += m.getParameterCount();
+
+        int idx = 0;
+        for (Unit u : b.getUnits()) {
+            if (idx == pos) return u;
+            idx++;
+        }
+        return b.getUnits().getLast();
+    }
 }
