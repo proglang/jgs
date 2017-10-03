@@ -10,6 +10,8 @@ import utils.dominator.DominatorFinder;
 import utils.logging.L1Logger;
 import utils.visitor.AnnotationStmtSwitch;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -68,6 +70,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		AnnotationStmtSwitch stmtSwitch =  new AnnotationStmtSwitch(body);
 		Chain<SootField> fields = sootMethod.getDeclaringClass().getFields();
 
+		// Using a copy, such that JimpleInjector could inject directly.
+		ArrayList<Unit> unmod = new ArrayList<>(units);
 
 		DominatorFinder.init(body);
 
@@ -132,17 +136,17 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		}
 
 		// </editor-fold>
-				
+
 
 		// Analyzing Every Statement, step by step.
-		for (Unit unit: units) {
+		for (Unit unit: unmod) {
 			// Check if the statements is a postdominator for an IfStmt.
 			if (DominatorFinder.containsStmt(unit)) {
 				JimpleInjector.exitInnerScope(unit);
 				logger.info("Exit inner scope with identity" +	DominatorFinder.getIdentityForUnit(unit));
 				DominatorFinder.removeStmt(unit);
 			}
-			
+
 			// Add further statements using JimpleInjector.
 			unit.apply(stmtSwitch);
 		}
