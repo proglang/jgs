@@ -65,27 +65,6 @@ public class JimpleInjector {
 
     // </editor-fold>
 
-    // <editor-fold desc="Fields for Injections"
-
-    // private static HashListedMap<Unit, Unit> insertBefore = new HashListedMap<>();
-    // private static HashListedMap<Unit, Unit> insertAfter = new HashListedMap<>();
-
-    /**
-     * Chain containing all new units which have to be set
-     * after a given position.
-     */
-    // Todo:removing...
-    // private static Queue<UnitToInsert> unitStore_After = new LinkedList<>();
-
-    /**
-     * Chain containing all new units which have to be set
-     * before a given position.
-     */
-    // Todo:removing...
-    // private static Queue<UnitToInsert> unitStore_Before = new LinkedList<>();
-
-    // </editor-fold>
-
     // <editor-fold desc="Locals, that shall be removed">
 
     /** Local where String arrays can be stored. Needed to store arguments for injected methods. */
@@ -121,8 +100,6 @@ public class JimpleInjector {
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
         if ( varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {
             units.insertAfter(invoke, pos);
-            // insertAfter.add(pos, invoke);
-            // unitStore_After.add(new UnitToInsert(invoke, pos));
         }
     }
 
@@ -159,11 +136,6 @@ public class JimpleInjector {
         Unit inv = fac.createStmt(HandleStmt.class.getName());
 
         units.insertBefore(Arrays.asList(in, inv), lastPos);
-        // insertBefore.addAll(lastPos, Arrays.asList(in, inv));
-        /*
-        unitStore_Before.add(new UnitToInsert(inv, lastPos));
-        unitStore_Before.add(new UnitToInsert(in, inv));
-        //*/
         lastPos = inv;
     }
 
@@ -180,8 +152,7 @@ public class JimpleInjector {
                                   BoolConstant.v(controllerIsActive),
                                   IntConstant.v(expectedException));
 
-        // unitStore_After.add(new UnitToInsert(inv, lastPos));
-        // insertAfter.add(lastPos, inv);
+
         units.insertAfter(inv, lastPos);
         lastPos = inv;
     }
@@ -193,8 +164,7 @@ public class JimpleInjector {
         logger.info("Initializing HandleStmt in method: " + b.getMethod().getName());
 
         Unit init = fac.createStmt("init");
-        // unitStore_After.add(new UnitToInsert(init, lastPos));
-        // insertAfter.add(lastPos, init);
+
         units.insertAfter(init, lastPos);
         lastPos = init;
     }
@@ -225,8 +195,6 @@ public class JimpleInjector {
         logger.info("Add Local " + getSignatureForLocal(local) + " in Method " + b.getMethod().getName());
 
         Unit add = fac.createStmt("addLocal", StringConstant.v(getSignatureForLocal(local)));
-        // unitStore_After.add(new UnitToInsert(add, lastPos));
-        // insertAfter.add(lastPos, add);
         units.insertAfter(add, lastPos);
         lastPos = add;
     }
@@ -247,8 +215,6 @@ public class JimpleInjector {
                                           StringConstant.v(signature),
                                           StringConstant.v(level));
 
-        // unitStore_After.add(new UnitToInsert(setLevelOfL, pos));
-        // insertAfter.add(pos, setLevelOfL);
         units.insertAfter(setLevelOfL, pos);
         lastPos = setLevelOfL;
     }
@@ -267,8 +233,6 @@ public class JimpleInjector {
         logger.info("Add object "+units.getFirst().getUseBoxes().get(0).getValue()+" to ObjectMap in method "+ b.getMethod().getName());
         assureThisRef();
         Unit assignExpr = fac.createStmt("addObjectToObjectMap", units.getFirst().getDefBoxes().get(0).getValue());
-        // unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
-        // insertAfter.add(lastPos, assignExpr);
         units.insertAfter(assignExpr, lastPos);
         lastPos = assignExpr;
     }
@@ -282,8 +246,6 @@ public class JimpleInjector {
     static void addClassObjectToObjectMap(SootClass sc) {
         logger.info("Add object "+sc.getName()+" to ObjectMap in method " + b.getMethod().getName());
         Unit assignExpr = fac.createStmt("addObjectToObjectMap", ClassConstant.v(sc.getName().replace(".", "/")));
-        // unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
-        // insertAfter.add(lastPos, assignExpr);
         units.insertAfter(assignExpr, lastPos);
         lastPos = assignExpr;
     }
@@ -306,8 +268,6 @@ public class JimpleInjector {
 
         Unit assignExpr = fac.createStmt("addFieldToObjectMap", tmpLocal, StringConstant.v(fieldSignature));
 
-        // unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
-        // insertAfter.add(lastPos, assignExpr);
         units.insertAfter(assignExpr, lastPos);
         lastPos = assignExpr;
     }
@@ -328,8 +288,6 @@ public class JimpleInjector {
                                     ClassConstant.v(sc.getName().replace(".", "/")),
                                     StringConstant.v(signature));
 
-        // unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
-        // insertAfter.add(lastPos, assignExpr);
         units.insertAfter(assignExpr, lastPos);
         lastPos = assignExpr;
     }
@@ -343,8 +301,6 @@ public class JimpleInjector {
     public static void addArrayToObjectMap(Local a, Unit pos) {
         logger.info("Add array "+a+" with type "+a.getType()+" to ObjectMap in method " + b.getMethod().getName());
         Unit assignExpr = fac.createStmt("addArrayToObjectMap", a);
-        // unitStore_After.add(new UnitToInsert(assignExpr, pos));
-        // insertAfter.add(pos, assignExpr);
         units.insertAfter(assignExpr, pos);
         lastPos = assignExpr;
     }
@@ -370,8 +326,6 @@ public class JimpleInjector {
         // only insert the joinLevelOfLocal.. stmt if local is in fact dynamically checked
         // TODO CX is irrelevant here?
         if (varTyping.getAfter(instantiation, (Stmt) pos, local).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(invoke, pos));
-            // insertBefore.add(pos, invoke);
             units.insertBefore(invoke, pos);
             lastPos = pos;
         }
@@ -394,8 +348,6 @@ public class JimpleInjector {
 
         // TODO CANNOT CAST ..
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(assignExpr, pos));
-            // insertBefore.add(pos, assignExpr);
             units.insertBefore(assignExpr, pos);
             lastPos = pos;
         //}
@@ -422,8 +374,6 @@ public class JimpleInjector {
 
             // TODO cannot cast StaticFieldref to Local!
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) f).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(assignExpr, pos));
-            // insertBefore.add(pos, assignExpr);
             units.insertBefore(assignExpr, pos);
             lastPos = pos;
         //}
@@ -445,8 +395,6 @@ public class JimpleInjector {
 
         // TODO CANNOT CAST ...
         //if (varTyping.getAfter(instantiation, (Stmt) pos, (Local) a).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(assignExpr, pos));
-            // insertBefore.add(pos, assignExpr);
             units.insertBefore(assignExpr, pos);
             lastPos = pos;
         //}
@@ -499,12 +447,8 @@ public class JimpleInjector {
         if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
             // insert NSU check only if PC is dynamic!
             if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-                // unitStore_Before.add(new UnitToInsert(checkLocalPCExpr, pos));
-                // insertBefore.add(pos, checkLocalPCExpr);
                 units.insertBefore(checkLocalPCExpr, pos);
             }
-            // unitStore_Before.add(new UnitToInsert(invoke, pos));
-            // insertBefore.add(pos, invoke);
             units.insertBefore(invoke, pos);
         }
         lastPos = pos;
@@ -546,22 +490,13 @@ public class JimpleInjector {
 
         // pushInstanceLevelToGlobalPC and popGlobalPC take the instance, push to global pc; and pop afterwards.
         // see NSU_FieldAccess tests why this is needed
-
-        //unitStore_Before.add(new UnitToInsert(pushInstanceLevelToGlobalPC, pos));
-        // insertBefore.add(pos, pushInstanceLevelToGlobalPC);
         units.insertBefore(pushInstanceLevelToGlobalPC, pos);
 
         // only if context ist dynamic / pc is dynamc
         if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(checkGlobalPCExpr, pos));
-            // insertBefore.add(pos, checkGlobalPCExpr);
             units.insertBefore(checkGlobalPCExpr, pos);
         }
-        /*
-        unitStore_Before.add(new UnitToInsert(assignExpr, pos));
-        unitStore_Before.add(new UnitToInsert(popGlobalPC, pos));
-        //*/
-        // insertBefore.addAll(pos, Arrays.asList(assignExpr, popGlobalPC));
+
         units.insertBefore(Arrays.asList(assignExpr, popGlobalPC), pos);
         lastPos = pos;
     }
@@ -591,12 +526,9 @@ public class JimpleInjector {
                 );
 
         if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(checkGlobalPCExpr, pos));
-            // insertBefore.add(pos, checkGlobalPCExpr);
             units.insertBefore(checkGlobalPCExpr, pos);
         }
-        // unitStore_Before.add(new UnitToInsert(assignExpr, pos));
-        // insertBefore.add(pos, assignExpr);
+
         units.insertBefore(assignExpr, pos);
         lastPos = pos;
     }
@@ -656,11 +588,6 @@ public class JimpleInjector {
         // setLevelOfArrayField
         Unit assignExpr = fac.createStmt("setLevelOfArrayField", args.toArray(new Value[0]));
 
-        /*
-        unitStore_Before.add(new UnitToInsert(checkArrayGlobalPCExpr, pos));
-        unitStore_Before.add(new UnitToInsert(assignExpr, pos));
-        //*/
-        // insertBefore.addAll(pos, Arrays.asList(checkArrayGlobalPCExpr, assignExpr));
         units.insertBefore(Arrays.asList(checkArrayGlobalPCExpr, assignExpr), pos);
         lastPos = pos;
     }
@@ -677,11 +604,7 @@ public class JimpleInjector {
         logger.info("Assign return level of invoked method to local "+getSignatureForLocal(l));
 
         Unit assignExpr = fac.createStmt("assignReturnLevelToLocal", StringConstant.v(getSignatureForLocal(l)));
-
-        // unitStore_After.add(new UnitToInsert(assignExpr, pos));
-        // insertAfter.add(pos, assignExpr);
         units.insertAfter(assignExpr, pos);
-
         lastPos = assignExpr;
     }
 
@@ -694,9 +617,6 @@ public class JimpleInjector {
 
         // only assign Argument to Local if Argument is of Dynamic Type
         if (instantiation.get(posInArgList).isDynamic()) {
-
-            // unitStore_After.add(new UnitToInsert(assignExpr, lastPos));
-            // insertAfter.add(lastPos, assignExpr);
             units.insertAfter(assignExpr, lastPos);
             lastPos = assignExpr;
         }
@@ -713,8 +633,6 @@ public class JimpleInjector {
         logger.info("Return a constant value");
 
         if (instantiation.getReturn().isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(fac.createStmt("returnConstant"), retStmt));
-            // insertBefore.add(retStmt, fac.createStmt("returnConstant"));
             units.insertBefore(fac.createStmt("returnConstant"), retStmt);
         }
     }
@@ -725,8 +643,6 @@ public class JimpleInjector {
         Stmt returnL = fac.createStmt("returnLocal", StringConstant.v(getSignatureForLocal(l)));
 
         if (instantiation.getReturn().isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(returnL, pos));
-            // insertBefore.add(pos, returnL);
             units.insertBefore(returnL, pos);
             lastPos = pos;
         }
@@ -798,21 +714,15 @@ public class JimpleInjector {
         // only store arguments if it's even neccessary (e.g. one of the arguments is public)
         // if no argument is dynamic, don't even call storeArgumentLevels
         if(dynamicArgsExist) {
-            // unitStore_Before.add(new UnitToInsert(assignNewStringArray, pos));
-            // insertBefore.add(pos, assignNewStringArray);
             units.insertBefore(assignNewStringArray, pos);
         }
         for (Unit el : tmpUnitArray) {
             if (el != null) {
                 // if el.equals(null), the corresponding local is public. See loop above.
-                // unitStore_Before.add(new UnitToInsert(el, pos));
-                // insertBefore.add(pos, el);
                 units.insertBefore(el, pos);
             }
         }
         if (dynamicArgsExist) {
-            // unitStore_Before.add(new UnitToInsert(invokeStoreArgs, pos));
-            // insertBefore.add(pos, invokeStoreArgs);
             units.insertBefore(invokeStoreArgs, pos);
             lastPos = pos;
         }
@@ -847,8 +757,6 @@ public class JimpleInjector {
 
         // TODO: why check for isDynamic here?
         // if (varTyping.getBefore(instantiation, (Stmt) pos, l).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(invoke, pos));
-            // insertBefore.add(pos, invoke);
             units.insertBefore(invoke, pos);
             lastPos = pos;
         // }
@@ -878,8 +786,6 @@ public class JimpleInjector {
 
         // only if PC is dynamic
         if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-            // unitStore_Before.add(new UnitToInsert(invoke, pos));
-            // insertBefore.add(pos, invoke);
             units.insertBefore(invoke, pos);
             lastPos = pos;
         }
@@ -932,19 +838,14 @@ public class JimpleInjector {
                 StringConstant.v(domIdentity), local_for_String_Arrays);
         Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
 
-        // unitStore_Before.add(new UnitToInsert(assignNewArray, pos));
-        // insertBefore.add(pos, assignNewArray);
+
         units.insertBefore(assignNewArray, pos);
 
         lastPos = assignNewArray;
         for (Unit u : tmpUnitList) {
-            // unitStore_After.add(new UnitToInsert(u, lastPos));
-            // insertAfter.add(lastPos, u);
             units.insertAfter(u, lastPos);
             lastPos = u;
         }
-        // unitStore_After.add(new UnitToInsert(invokeCC, lastPos));
-        // insertAfter.add(lastPos, invokeCC);
         units.insertAfter(invokeCC, lastPos);
         lastPos = invokeCC;
 
@@ -973,8 +874,6 @@ public class JimpleInjector {
 
         Unit inv = Jimple.v().newInvokeStmt(specialIn);
 
-        // unitStore_Before.add(new UnitToInsert(inv, pos));
-        //insertBefore.add(pos, inv);
         units.insertBefore(inv, pos);
         lastPos = pos;
     }
@@ -1000,51 +899,6 @@ public class JimpleInjector {
      *
      */
     static void addUnitsToChain() {
-        /*
-
-        for (Unit u : insertBefore.getSortedKeys()) {
-             units.insertBefore(insertBefore.get(u), u);
-            System.out.println("Before " + u);
-            for (Unit ib : insertBefore.get(u)) {
-                System.out.println("\t" + ib);
-            }
-        }
-
-        for (Unit u : insertAfter.getSortedKeys()) {
-             units.insertAfter(insertAfter.get(u), u);
-            System.out.println("After " + u);
-            for (Unit ib : insertAfter.get(u)) {
-                System.out.println("\t" + ib);
-            }
-        }
-
-        insertBefore.clear(); insertAfter.clear();
-        // Nothing to do anymore, because it is already inserted only validate*/
-
-        /*
-        // First add all elements from unitStore_Before
-        for (UnitToInsert item : unitStore_Before) {
-            if (item.getPosition() == null) {
-                units.addFirst(item.getUnit());
-            } else {
-                units.insertBefore(item.getUnit(), item.getPosition());
-            }
-        }
-
-        // Now add all elements from unitStore_After
-        for (UnitToInsert item : unitStore_After) {
-
-            if (item.getPosition() == null) {
-                units.addFirst(item.getUnit());
-            } else {
-                units.insertAfter(item.getUnit(), item.getPosition());
-            }
-        }
-
-        unitStore_After.clear();
-        unitStore_Before.clear();
-        // Replaced by new version */
-
         b.validate();
     }
 
@@ -1226,9 +1080,6 @@ public class JimpleInjector {
      * Insert "stopTrackingLocal" call.
      */
     public static void stopTrackingLocal(Local l, Stmt callStmt) {
-        // unitStore_Before.add(new UnitToInsert(fac.createStmt("stopTrackingLocal", StringConstant.v(getSignatureForLocal(l))),
-        //                                   callStmt));
-        // insertBefore.add(callStmt, fac.createStmt("stopTrackingLocal", StringConstant.v(getSignatureForLocal(l))));
         units.insertBefore(fac.createStmt("stopTrackingLocal", StringConstant.v(getSignatureForLocal(l))), callStmt);
     }
 }
