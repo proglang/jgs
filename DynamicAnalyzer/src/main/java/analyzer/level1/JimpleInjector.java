@@ -1,6 +1,5 @@
 package analyzer.level1;
 
-import analyzer.level1.storage.UnitToInsert;
 import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
@@ -10,7 +9,6 @@ import soot.Type;
 import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
-import utils.HashListedMap;
 import utils.dominator.DominatorFinder;
 import utils.exceptions.InternalAnalyzerException;
 import utils.jimple.BoolConstant;
