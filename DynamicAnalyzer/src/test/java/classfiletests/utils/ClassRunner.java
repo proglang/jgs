@@ -34,7 +34,7 @@ import java.io.File;
  */
 public class ClassRunner {
 
-	private static Logger logger = L1Logger.getLogger();
+	private static Logger logger = Logger.getLogger(ClassRunner.class.getName());
 	private static final String TARGET_NAME = "exec";
 
 	/**

@@ -37,7 +37,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	private int expectedException;
 	private Casts<Level> casts;
 
-	private Logger logger = L1Logger.getLogger();
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	/**
 	 * Constructs an new BodyAnalyzer with the given

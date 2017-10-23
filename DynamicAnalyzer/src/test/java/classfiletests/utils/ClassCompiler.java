@@ -15,7 +15,7 @@ import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
  */
 public class ClassCompiler {
 
-	private static final Logger logger = L1Logger.getLogger();
+	private static final Logger logger = Logger.getLogger(ClassCompiler.class.getName());
 	// TODO: the cast method names, as well as the secdomain should not be hardcoded at this point
 	private static final Casts<LowMediumHigh.Level> casts =
 			new CastsFromConstants<>(new TypeDomain<>(new LowMediumHigh()),

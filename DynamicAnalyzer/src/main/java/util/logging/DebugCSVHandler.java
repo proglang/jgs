@@ -22,7 +22,7 @@ public class DebugCSVHandler extends FileHandler {
      *         does not have LoggingPermission("control")
      */
     public DebugCSVHandler() throws IOException, SecurityException {
-        super("debugLog.csv", Integer.MAX_VALUE, 1, false);
+        super("%h/jgs/debugLog.csv", Integer.MAX_VALUE, 1, false);
 
        this.setLevel(Level.ALL);
        this.setFormatter(new CSVFormatter());

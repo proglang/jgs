@@ -71,7 +71,7 @@ public class JimpleInjector {
     // </editor-fold>
 
     /** Logger */
-    private static Logger logger = L1Logger.getLogger();
+    private static Logger logger = Logger.getLogger(JimpleInjector.class.getName());;
 
 
     private static Casts casts;
