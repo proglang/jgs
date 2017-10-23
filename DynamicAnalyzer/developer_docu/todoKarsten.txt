@@ -10,3 +10,5 @@ TODOs:
 	- structured usage.
 
 * In general: Add (good) documentation!
+* In general: Code Optimization, such that it is more readable at those places, it is necessary
+* Adding Dynamic Policy

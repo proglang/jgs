@@ -315,6 +315,12 @@ public class JimpleInjector {
      * @param pos   Unit where the local occurs
      */
     public static void addLevelInAssignStmt(Local local, Unit pos) {
+        // Checking, if current Policy is NSU, before performing the NSU_Check.
+        // Means: If not, then we can break up here.
+        if (DynamicPolicy.selected != DynamicPolicy.Policy.NSU_POLICY) {
+            logger.info("Do not use NSU Policy.");
+            return;
+        }
         logger.info("Adding level of "+local+"in assign statement of Method: "+b.getMethod().getName());
 
         String signature = getSignatureForLocal(local);
@@ -403,6 +409,12 @@ public class JimpleInjector {
     // <editor-fold desc="Set Level of Assign Stmt - Methods -> Interesting for LHS">
 
     public static void setLevelOfAssignStmt(Local l, Unit pos) {
+        // Checking, if current Policy is NSU, before performing the NSU_Check.
+        // Means: If not, then we can break up here.
+        if (DynamicPolicy.selected != DynamicPolicy.Policy.NSU_POLICY) {
+            logger.info("Do not use NSU Policy.");
+            return;
+        }
         logger.info("Setting level in assign statement");
 
         String signature = getSignatureForLocal(l);
@@ -411,36 +423,19 @@ public class JimpleInjector {
         // The local's sec-value is then set to that sec-value.
         Unit invoke = fac.createStmt("setLocalToCurrentAssingmentLevel", StringConstant.v(signature));
 
-        Stmt stmt = (Stmt)pos;
+        Stmt stmt = (Stmt) pos;
         de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
-        de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeAfter = varTyping.getAfter(instantiation, stmt, l);
-
-        // TODO-no-initialize: remove
-        /*
-        if (typeBefore.isDynamic()
-            && !typeAfter.isDynamic()) {
-            logger.fine("Local type switches from dynamic -> static");
-            // dynamic -> static
-            JimpleInjector.stopTrackingLocal(l, stmt);
-        } else if (!typeBefore.isDynamic() && typeAfter.isDynamic()) {
-            logger.fine("Local type switches from static -> dynamic");
-            // static -> dynamic
-            JimpleInjector.startTrackingLocal(l, stmt);
-        }
-        */
 
         // insert checkLocalPC to perform NSU check (aka check that level of local greater/equal level of lPC)
         // only needs to be done if CxTyping of Statement is Dynamic.
         // Also, if the variable to update is public, the PC should be "bottom"
-        Unit checkLocalPCExpr;
-        if (typeBefore.isPublic()) {
-            checkLocalPCExpr = fac.createStmt("checkNonSensitiveLocalPC");
-        } else {
-            checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
-        }
+        Unit checkLocalPCExpr = typeBefore.isPublic()
+                                ? fac.createStmt("checkNonSensitiveLocalPC")
+                                : fac.createStmt("checkLocalPC", StringConstant.v(signature));
 
         // TODO i did comment this out for some reason .. but why?
-        // if variable l is not dynamic after stmt pos, we do not need to call setLocalToCurrentAssingmentLevel at all,
+        // if variable l is not dynamic after stmt pos,
+        // we do not need to call setLocalToCurrentAssingmentLevel at all,
         // and we especially do not need to perform a NSU check!
         if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
             // insert NSU check only if PC is dynamic!
