@@ -1,7 +1,7 @@
 package analysis;
 
-import static utils.AnalysisUtils.generateFileName;
-import static utils.AnalysisUtils.getSignatureOfMethod;
+import static util.AnalysisUtils.generateFileName;
+import static util.AnalysisUtils.getSignatureOfMethod;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import security.ILevel;
 import security.ILevelMediator;
 import soot.SootClass;
 import soot.SootMethod;
-import utils.AnalysisUtils;
+import util.AnalysisUtils;
 import extractor.UsedObjectStore;
 
 /**

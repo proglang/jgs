@@ -1,4 +1,4 @@
-package utils;
+package util;
 
 import static resource.Configuration.DEF_CLASS_NAME;
 import static resource.Configuration.DEF_PATH_JAVA;

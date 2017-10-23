@@ -7,11 +7,11 @@ import static soot.Modifier.PUBLIC;
 import static soot.Modifier.STATIC;
 import static soot.SootMethod.constructorName;
 import static soot.SootMethod.staticInitializerName;
-import static utils.AnalysisUtils.extractLineNumber;
-import static utils.AnalysisUtils.generateFileName;
-import static utils.AnalysisUtils.generateLevelFunctionName;
-import static utils.AnalysisUtils.isClinitMethod;
-import static utils.AnalysisUtils.isInitMethod;
+import static util.AnalysisUtils.extractLineNumber;
+import static util.AnalysisUtils.generateFileName;
+import static util.AnalysisUtils.generateLevelFunctionName;
+import static util.AnalysisUtils.isClinitMethod;
+import static util.AnalysisUtils.isInitMethod;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ import soot.tagkit.AnnotationTag;
 import soot.tagkit.SourceLnPosTag;
 import soot.tagkit.Tag;
 import soot.tagkit.VisibilityAnnotationTag;
-import utils.AnalysisUtils;
+import util.AnalysisUtils;
 
 /**
  * <h1>JUnit tests of class {@link AnalysisUtils}</h1>

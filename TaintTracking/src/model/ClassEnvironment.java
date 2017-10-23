@@ -7,7 +7,7 @@ import static constraints.ConstraintsUtils.getContainedLevelsOfSet;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getSignatureOfClass;
+import static util.AnalysisUtils.getSignatureOfClass;
 
 import java.util.ArrayList;
 import java.util.HashSet;

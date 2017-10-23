@@ -29,7 +29,7 @@ public class testclasses.AccessFieldsOfObjectsFail extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0, local_for_String_Arrays;
-        testclasses.utils.SimpleObject $r2;
+        testclasses.util.SimpleObject $r2;
         java.lang.Object $r3, local_for_Objects;
         java.lang.String $r4, $r5, local_for_Strings;
         java.io.PrintStream $r6;
@@ -45,15 +45,15 @@ public class testclasses.AccessFieldsOfObjectsFail extends java.lang.Object
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(0, 0);
 
-        local_for_Strings = "testclasses.utils.SimpleObject_$r2";
+        local_for_Strings = "testclasses.util.SimpleObject_$r2";
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: void checkLocalPC(java.lang.String)>(local_for_Strings);
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfLocal(java.lang.String)>(local_for_Strings);
 
-        $r2 = new testclasses.utils.SimpleObject;
+        $r2 = new testclasses.util.SimpleObject;
 
-        specialinvoke $r2.<testclasses.utils.SimpleObject: void <init>()>();
+        specialinvoke $r2.<testclasses.util.SimpleObject: void <init>()>();
 
         local_for_Strings = "java.lang.Object_$r3";
 
@@ -83,9 +83,9 @@ public class testclasses.AccessFieldsOfObjectsFail extends java.lang.Object
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>(local_for_Strings);
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void pushInstanceLevelToGlobalPC(java.lang.String)>("testclasses.utils.SimpleObject_$r2");
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void pushInstanceLevelToGlobalPC(java.lang.String)>("testclasses.util.SimpleObject_$r2");
 
-        local_for_Strings = "<testclasses.utils.SimpleObject: java.lang.String field>";
+        local_for_Strings = "<testclasses.util.SimpleObject: java.lang.String field>";
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: void checkGlobalPC(java.lang.Object,java.lang.String)>($r2, local_for_Strings);
 
@@ -93,7 +93,7 @@ public class testclasses.AccessFieldsOfObjectsFail extends java.lang.Object
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object popGlobalPC()>();
 
-        $r2.<testclasses.utils.SimpleObject: java.lang.String field> = $r4;
+        $r2.<testclasses.util.SimpleObject: java.lang.String field> = $r4;
 
         local_for_Objects = class "java/lang/System";
 
@@ -111,11 +111,11 @@ public class testclasses.AccessFieldsOfObjectsFail extends java.lang.Object
 
         local_for_Objects = $r2;
 
-        local_for_Strings = "<testclasses.utils.SimpleObject: java.lang.String field>";
+        local_for_Strings = "<testclasses.util.SimpleObject: java.lang.String field>";
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfFieldAndAssignmentLevel(java.lang.Object,java.lang.String)>(local_for_Objects, local_for_Strings);
 
-        local_for_Strings = "testclasses.utils.SimpleObject_$r2";
+        local_for_Strings = "testclasses.util.SimpleObject_$r2";
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>(local_for_Strings);
 
@@ -125,7 +125,7 @@ public class testclasses.AccessFieldsOfObjectsFail extends java.lang.Object
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfLocal(java.lang.String)>(local_for_Strings);
 
-        $r5 = $r2.<testclasses.utils.SimpleObject: java.lang.String field>;
+        $r5 = $r2.<testclasses.util.SimpleObject: java.lang.String field>;
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: void checkThatPCLe(java.lang.String)>("LOW");
 

@@ -51,7 +51,7 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
-import utils.AnalysisUtils;
+import util.AnalysisUtils;
 import constraints.ComponentPlaceholder;
 import constraints.ConstraintsSet;
 import extractor.UsedObjectStore;

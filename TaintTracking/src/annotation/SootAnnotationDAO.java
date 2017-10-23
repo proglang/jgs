@@ -1,21 +1,21 @@
 package annotation;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getJNISignature;
-import static utils.AnalysisUtils.jniSignatureToJavaPath;
-import static utils.ExtendedJNI.EXT_JNI_ANNOTATION;
-import static utils.ExtendedJNI.EXT_JNI_CLASS;
-import static utils.ExtendedJNI.JNI_ARRAY;
-import static utils.ExtendedJNI.JNI_BOOLEAN;
-import static utils.ExtendedJNI.JNI_BYTE;
-import static utils.ExtendedJNI.JNI_CHAR;
-import static utils.ExtendedJNI.JNI_DOUBLE;
-import static utils.ExtendedJNI.JNI_ENUM;
-import static utils.ExtendedJNI.JNI_FLOAT;
-import static utils.ExtendedJNI.JNI_INT;
-import static utils.ExtendedJNI.JNI_LONG;
-import static utils.ExtendedJNI.JNI_SHORT;
-import static utils.ExtendedJNI.JNI_STRING;
+import static util.AnalysisUtils.getJNISignature;
+import static util.AnalysisUtils.jniSignatureToJavaPath;
+import static util.ExtendedJNI.EXT_JNI_ANNOTATION;
+import static util.ExtendedJNI.EXT_JNI_CLASS;
+import static util.ExtendedJNI.JNI_ARRAY;
+import static util.ExtendedJNI.JNI_BOOLEAN;
+import static util.ExtendedJNI.JNI_BYTE;
+import static util.ExtendedJNI.JNI_CHAR;
+import static util.ExtendedJNI.JNI_DOUBLE;
+import static util.ExtendedJNI.JNI_ENUM;
+import static util.ExtendedJNI.JNI_FLOAT;
+import static util.ExtendedJNI.JNI_INT;
+import static util.ExtendedJNI.JNI_LONG;
+import static util.ExtendedJNI.JNI_SHORT;
+import static util.ExtendedJNI.JNI_STRING;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

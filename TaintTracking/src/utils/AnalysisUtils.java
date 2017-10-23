@@ -1,4 +1,4 @@
-package utils;
+package util;
 
 import static java.util.logging.Level.ALL;
 import static java.util.logging.Level.OFF;
@@ -20,17 +20,17 @@ import static soot.SootMethod.constructorName;
 import static soot.SootMethod.staticInitializerName;
 import static soot.options.Options.output_format_jimple;
 import static soot.options.Options.src_prec_java;
-import static utils.ExtendedJNI.JNI_ARRAY;
-import static utils.ExtendedJNI.JNI_BOOLEAN;
-import static utils.ExtendedJNI.JNI_BYTE;
-import static utils.ExtendedJNI.JNI_CHAR;
-import static utils.ExtendedJNI.JNI_CLASS;
-import static utils.ExtendedJNI.JNI_DOUBLE;
-import static utils.ExtendedJNI.JNI_FLOAT;
-import static utils.ExtendedJNI.JNI_INT;
-import static utils.ExtendedJNI.JNI_LONG;
-import static utils.ExtendedJNI.JNI_SHORT;
-import static utils.ExtendedJNI.JNI_VOID;
+import static util.ExtendedJNI.JNI_ARRAY;
+import static util.ExtendedJNI.JNI_BOOLEAN;
+import static util.ExtendedJNI.JNI_BYTE;
+import static util.ExtendedJNI.JNI_CHAR;
+import static util.ExtendedJNI.JNI_CLASS;
+import static util.ExtendedJNI.JNI_DOUBLE;
+import static util.ExtendedJNI.JNI_FLOAT;
+import static util.ExtendedJNI.JNI_INT;
+import static util.ExtendedJNI.JNI_LONG;
+import static util.ExtendedJNI.JNI_SHORT;
+import static util.ExtendedJNI.JNI_VOID;
 
 import java.lang.reflect.Method;
 import java.nio.file.FileSystems;

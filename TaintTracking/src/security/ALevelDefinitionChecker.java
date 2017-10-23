@@ -21,7 +21,7 @@ import static security.ALevelDefinition.SIGNATURE_LIB_METHOD;
 import static security.ALevelDefinition.SIGNATURE_LIB_PARAM;
 import static security.ALevelDefinition.SIGNATURE_LIB_RETURN;
 import static security.ALevelDefinition.SIGNATURE_LUB;
-import static utils.AnalysisUtils.generateSignature;
+import static util.AnalysisUtils.generateSignature;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -48,7 +48,7 @@ import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.util.Chain;
-import utils.AnalysisUtils;
+import util.AnalysisUtils;
 import annotation.JavaAnnotationDAO;
 import constraints.ComponentParameterRef;
 import constraints.ComponentReturnRef;

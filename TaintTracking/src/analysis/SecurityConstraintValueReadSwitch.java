@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getDimension;
+import static util.AnalysisUtils.getDimension;
 
 import java.util.HashSet;
 import java.util.Set;

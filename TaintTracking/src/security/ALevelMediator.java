@@ -1,14 +1,14 @@
 package security;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.extractAnnotationTagWithType;
-import static utils.AnalysisUtils.extractVisibilityAnnotationTag;
-import static utils.AnalysisUtils.getJNISignature;
-import static utils.AnalysisUtils.getSignatureOfClass;
-import static utils.AnalysisUtils.getSignatureOfField;
-import static utils.AnalysisUtils.getSignatureOfMethod;
-import static utils.AnalysisUtils.hasAnnotationOfType;
-import static utils.AnalysisUtils.hasVisibilityAnnnotationTag;
+import static util.AnalysisUtils.extractAnnotationTagWithType;
+import static util.AnalysisUtils.extractVisibilityAnnotationTag;
+import static util.AnalysisUtils.getJNISignature;
+import static util.AnalysisUtils.getSignatureOfClass;
+import static util.AnalysisUtils.getSignatureOfField;
+import static util.AnalysisUtils.getSignatureOfMethod;
+import static util.AnalysisUtils.hasAnnotationOfType;
+import static util.AnalysisUtils.hasVisibilityAnnnotationTag;
 
 import java.util.ArrayList;
 import java.util.Arrays;

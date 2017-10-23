@@ -6,9 +6,9 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
-import utils.logging.L1Logger;
-import utils.parser.ArgParser;
-import utils.parser.ArgumentContainer;
+import util.logging.L1Logger;
+import util.parser.ArgParser;
+import util.parser.ArgumentContainer;
 
 import java.util.*;
 

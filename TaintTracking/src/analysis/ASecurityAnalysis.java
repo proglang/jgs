@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getSignatureOfMethod;
+import static util.AnalysisUtils.getSignatureOfMethod;
 import logging.AnalysisLog;
 import model.AnalyzedMethodEnvironment;
 import model.MethodEnvironment;
@@ -9,8 +9,8 @@ import security.ILevelMediator;
 import soot.SootMethod;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.scalar.ForwardFlowAnalysis;
-import utils.Debugger;
-import utils.Debugger.Header;
+import util.Debugger;
+import util.Debugger.Header;
 import exception.AnalysisException;
 import exception.EnvironmentNotFoundException;
 import extractor.UsedObjectStore;

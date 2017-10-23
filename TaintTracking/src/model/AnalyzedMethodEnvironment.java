@@ -2,10 +2,10 @@ package model;
 
 import static resource.Messages.addArticle;
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.extractLineNumber;
-import static utils.AnalysisUtils.generateFileName;
-import static utils.AnalysisUtils.getSignatureOfMethod;
-import static utils.AnalysisUtils.isClinitMethod;
+import static util.AnalysisUtils.extractLineNumber;
+import static util.AnalysisUtils.generateFileName;
+import static util.AnalysisUtils.getSignatureOfMethod;
+import static util.AnalysisUtils.isClinitMethod;
 import logging.AnalysisLog;
 import model.Cause.ArrayAssignCause;
 import model.Cause.AssignCause;
@@ -17,7 +17,7 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.jimple.ArrayRef;
 import soot.jimple.Stmt;
-import utils.AnalysisUtils;
+import util.AnalysisUtils;
 import analysis.SecurityLevelAnalysis;
 import constraints.LEQConstraint;
 

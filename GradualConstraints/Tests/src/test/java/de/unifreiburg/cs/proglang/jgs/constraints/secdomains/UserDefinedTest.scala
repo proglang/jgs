@@ -8,7 +8,7 @@ class UserDefinedTest extends FlatSpec with Matchers {
   import UserDefinedLevels._
 
 
-  // some utils for converting between Edge and (String, String)
+  // some util for converting between Edge and (String, String)
   def closeTransitively(edges : Set[(String, String)]) : Set[Edge] =
     UserDefinedUtils.closeTransitively(asEdgeSet(edges))
   def asEdgeSet(edges : Set[(String, String)]) : Set[Edge] = (for {(left, right) <- edges} yield new Edge(left, right))

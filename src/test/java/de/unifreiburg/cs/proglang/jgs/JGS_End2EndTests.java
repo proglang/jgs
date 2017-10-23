@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import utils.logging.L1Logger;
+import util.logging.L1Logger;
 
 import java.util.Arrays;
 import java.util.logging.Logger;

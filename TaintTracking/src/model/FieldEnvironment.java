@@ -3,8 +3,8 @@ package model;
 import static main.AnalysisType.CONSTRAINTS;
 import static main.AnalysisType.LEVELS;
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getDimension;
-import static utils.AnalysisUtils.getSignatureOfField;
+import static util.AnalysisUtils.getDimension;
+import static util.AnalysisUtils.getSignatureOfField;
 
 import java.util.ArrayList;
 import java.util.List;

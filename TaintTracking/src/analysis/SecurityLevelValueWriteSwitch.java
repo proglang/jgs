@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getSignatureOfField;
+import static util.AnalysisUtils.getSignatureOfField;
 import model.AnalyzedMethodEnvironment;
 import model.FieldEnvironment;
 import model.MethodEnvironment.MethodParameter;

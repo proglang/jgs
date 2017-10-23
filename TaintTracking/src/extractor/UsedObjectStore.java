@@ -1,9 +1,9 @@
 package extractor;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getSignatureOfClass;
-import static utils.AnalysisUtils.getSignatureOfField;
-import static utils.AnalysisUtils.getSignatureOfMethod;
+import static util.AnalysisUtils.getSignatureOfClass;
+import static util.AnalysisUtils.getSignatureOfField;
+import static util.AnalysisUtils.getSignatureOfMethod;
 
 import java.util.HashMap;
 import java.util.Map;

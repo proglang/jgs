@@ -1,7 +1,7 @@
 package analysis;
 
 import static resource.Messages.getMsg;
-import static utils.AnalysisUtils.getSignatureOfMethod;
+import static util.AnalysisUtils.getSignatureOfMethod;
 
 import java.util.ArrayList;
 import java.util.List;
