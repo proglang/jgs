@@ -1,11 +1,11 @@
-package utils.visitor;
+package util.visitor;
 
 import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.Unit;
-import utils.exceptions.InternalAnalyzerException;
-import utils.logging.L1Logger;
-import utils.visitor.AnnotationValueSwitch.RightElement;
+import util.exceptions.InternalAnalyzerException;
+import util.logging.L1Logger;
+import util.visitor.AnnotationValueSwitch.RightElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,9 +44,9 @@ public class ExternalClasses {
 		
 		
 		methodMap.put("<java.lang.Object: void <init>()>", new DoNothing());
-		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
+		methodMap.put("<util.analyzer.HelperClass: java.lang.Object "
 				+ "makeHigh(java.lang.Object)>", new MakeHigh());
-		methodMap.put("<utils.analyzer.HelperClass: java.lang.Object "
+		methodMap.put("<util.analyzer.HelperClass: java.lang.Object "
 				+ "makeLow(java.lang.Object)>", new MakeLow());
 	}
 	

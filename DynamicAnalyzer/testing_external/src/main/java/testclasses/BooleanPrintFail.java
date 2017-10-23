@@ -1,10 +1,10 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import util.analyzer.HelperClass;
 
 /**
  * If explicit leak does not throw exception, 
- * check main.utils.externalClasses, line 35
+ * check main.util.externalClasses, line 35
  * for missing type
  * 
  * @author Nicolas Müller

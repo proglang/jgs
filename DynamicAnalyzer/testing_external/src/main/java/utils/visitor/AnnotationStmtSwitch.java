@@ -1,4 +1,4 @@
-package utils.visitor;
+package util.visitor;
 
 import analyzer.level1.JimpleInjector;
 import soot.Body;
@@ -26,11 +26,11 @@ import soot.jimple.StmtSwitch;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.ThisRef;
 import soot.jimple.ThrowStmt;
-import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.NotSupportedStmtException;
-import utils.logging.L1Logger;
-import utils.visitor.AnnotationValueSwitch.RightElement;
-import utils.visitor.AnnotationValueSwitch.StmtContext;
+import util.exceptions.InternalAnalyzerException;
+import util.exceptions.NotSupportedStmtException;
+import util.logging.L1Logger;
+import util.visitor.AnnotationValueSwitch.RightElement;
+import util.visitor.AnnotationValueSwitch.StmtContext;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,11 +15,11 @@ import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
 
-import utils.exceptions.IllegalFlowError;
-import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.NSUError;
+import util.exceptions.IllegalFlowError;
+import util.exceptions.InternalAnalyzerException;
+import util.exceptions.NSUError;
 
-import utils.logging.L1Logger;
+import util.logging.L1Logger;
 
 import java.net.URL;
 import java.net.URLClassLoader;

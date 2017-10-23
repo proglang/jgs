@@ -9,11 +9,11 @@ import soot.Type;
 import soot.jimple.*;
 import soot.jimple.internal.JAssignStmt;
 import soot.util.Chain;
-import utils.dominator.DominatorFinder;
-import utils.exceptions.InternalAnalyzerException;
-import utils.jimple.BoolConstant;
-import utils.jimple.JimpleFactory;
-import utils.logging.L1Logger;
+import util.dominator.DominatorFinder;
+import util.exceptions.InternalAnalyzerException;
+import util.jimple.BoolConstant;
+import util.jimple.JimpleFactory;
+import util.logging.L1Logger;
 
 import java.util.*;
 import java.util.logging.Logger;

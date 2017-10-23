@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.exceptions.IllegalFlowException;
+import util.exceptions.IllegalFlowException;
 
 /**
  * Currently, modulus % is not supported. Must throw exception to remind us.

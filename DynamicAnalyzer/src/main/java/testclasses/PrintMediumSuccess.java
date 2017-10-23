@@ -1,7 +1,7 @@
 package testclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
-import utils.printer.SecurePrinter;
+import util.printer.SecurePrinter;
 
 public class PrintMediumSuccess {
 	public static void main(String[] args) {

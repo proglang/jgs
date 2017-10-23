@@ -1,4 +1,4 @@
-package utils.parser;
+package util.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.cli.*;
 
-import utils.exceptions.IllegalArgumentsException;
+import util.exceptions.IllegalArgumentsException;
 
 public class Parser2 {
 	

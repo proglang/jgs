@@ -8,7 +8,7 @@ package testclasses;
  *          |            |
  *        DYN(LOW)     PUBLIC
  *
- * returns DYN(LOW). See {@link utils.staticResults.FakeTypingMaps}
+ * returns DYN(LOW). See {@link util.staticResults.FakeTypingMaps}
  */
 public class LowPlusPublic {
     public static void main(String[] args) {

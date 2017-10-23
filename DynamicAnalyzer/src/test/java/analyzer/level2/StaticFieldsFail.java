@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import tests.testclasses.TestSubClass;
-import utils.exceptions.IFCError;
-import utils.logging.L2Logger;
+import util.exceptions.IFCError;
+import util.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

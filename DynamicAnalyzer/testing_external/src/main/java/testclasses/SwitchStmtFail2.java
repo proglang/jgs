@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import util.analyzer.HelperClass;
 
 /**
  * Implicit leak in switch Stmt. Must throw IFCError

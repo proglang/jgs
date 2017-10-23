@@ -1,4 +1,4 @@
-package utils.visitor;
+package util.visitor;
 
 import analyzer.level1.JimpleInjector;
 import soot.Local;
@@ -49,9 +49,9 @@ import soot.jimple.ThisRef;
 import soot.jimple.UshrExpr;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.XorExpr;
-import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.NotSupportedStmtException;
-import utils.logging.L1Logger;
+import util.exceptions.InternalAnalyzerException;
+import util.exceptions.NotSupportedStmtException;
+import util.logging.L1Logger;
 
 import java.util.logging.Logger;
 

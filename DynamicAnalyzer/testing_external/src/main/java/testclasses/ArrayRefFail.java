@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import util.analyzer.HelperClass;
 
 /**
  * Information leaked by java.lang.String_$r7 in array pub.

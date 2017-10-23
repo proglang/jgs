@@ -6,12 +6,11 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.*;
 import soot.util.Chain;
-import utils.dominator.DominatorFinder;
-import utils.logging.L1Logger;
-import utils.visitor.AnnotationStmtSwitch;
+import util.dominator.DominatorFinder;
+import util.logging.L1Logger;
+import util.visitor.AnnotationStmtSwitch;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
 

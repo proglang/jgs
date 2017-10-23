@@ -114,12 +114,12 @@ public class compileToJarTests {
 
     @Test
     public void staticMethodsFail() {
-        runAndTestJar("StaticMethodsFail", "testclasses.utils.SimpleObject", true);
+        runAndTestJar("StaticMethodsFail", "testclasses.util.SimpleObject", true);
     }
 
     @Test
     public void externalFail1() {
-        runAndTestJar("ExternalFail1", "testclasses.utils.simpleClassForTests", true);
+        runAndTestJar("ExternalFail1", "testclasses.util.simpleClassForTests", true);
     }
 
     /**

@@ -1,6 +1,6 @@
 package analyzer.level2.storage;
 
-import utils.exceptions.InternalAnalyzerException;
+import util.exceptions.InternalAnalyzerException;
 
 /**
  * This class is a container for Security Values.

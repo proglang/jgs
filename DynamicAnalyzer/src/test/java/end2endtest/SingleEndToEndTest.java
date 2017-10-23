@@ -5,7 +5,7 @@ import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
 import org.junit.Test;
-import utils.logging.L1Logger;
+import util.logging.L1Logger;
 
 import java.util.logging.Logger;
 
@@ -33,7 +33,7 @@ public class SingleEndToEndTest {
 	 * "AccessFieldsOfObjectsFail" :
 	 * 
 	 * "Assert: Is java.lang.String_$r6 contained in:
-	 * utils.exceptions.IFCError: Passed argument
+	 * util.exceptions.IFCError: Passed argument
 	 * java.lang.String_$r6 with a high security level to a method which doesn't
 	 * allow it."
 	 * 

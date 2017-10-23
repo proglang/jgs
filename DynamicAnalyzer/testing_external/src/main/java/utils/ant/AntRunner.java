@@ -1,4 +1,4 @@
-package utils.ant;
+package util.ant;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -29,7 +29,7 @@ public class AntRunner {
 		outputFolder = outputFolder.replace(".", "/");
 		
 		createProperties(mainClass, pathToMainClass, outputFolder);
-		File buildFile = new File("src/utils/ant/build.xml");
+		File buildFile = new File("src/util/ant/build.xml");
 		
 		
 		Project p = new Project();
@@ -61,7 +61,7 @@ public class AntRunner {
 	 */
 	private static void createProperties(String mainClass, String pathToMainClass, String outputFolder) {
 		try  { 
-			PrintWriter writer = new PrintWriter("src/utils/ant/build.properties", "UTF-8");
+			PrintWriter writer = new PrintWriter("src/util/ant/build.properties", "UTF-8");
 			writer.write("# File to set mainClass and outputFolder\n");
 			writer.write("mainClass=" + mainClass + "\n");
 			writer.write("pathToMainClass=" + pathToMainClass + "\n");

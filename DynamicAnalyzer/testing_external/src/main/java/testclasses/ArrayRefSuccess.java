@@ -1,7 +1,7 @@
 package testclasses;
 
 
-import utils.analyzer.HelperClass;
+import util.analyzer.HelperClass;
 
 /**
  * Array access test which does not violate information flow policy.

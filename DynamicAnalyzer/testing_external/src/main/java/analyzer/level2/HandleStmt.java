@@ -2,8 +2,8 @@ package analyzer.level2;
 
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
-import utils.exceptions.InternalAnalyzerException;
-import utils.logging.L2Logger;
+import util.exceptions.InternalAnalyzerException;
+import util.logging.L2Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;

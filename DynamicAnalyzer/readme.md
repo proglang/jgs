@@ -83,7 +83,7 @@ To get you started, here is a very brief introduction into the source code:
 IllegalFlowExceptions are at the core of DA: They indicate a possible leak of information, and terminate execution of the program. There are two conceptually different ways to cause an IllegalFlowException in this implementation:
 
 ### Public Outputs
-The easiest way to leak data is to leak it to a public output. Public outputs are defined in `utils.visitor.ExternalClasses`. Currently, these are:
+The easiest way to leak data is to leak it to a public output. Public outputs are defined in `util.visitor.ExternalClasses`. Currently, these are:
 - `<java.io.PrintStream: void println(java.lang.String)>`
 - `<java.io.PrintStream: void println(int)>`
 - `<java.io.PrintStream: void println(boolean)>`

@@ -1,8 +1,8 @@
 package analyzer.level2.storage;
 
 import analyzer.level2.SecurityLevel;
-import utils.exceptions.InternalAnalyzerException;
-import utils.logging.L2Logger;
+import util.exceptions.InternalAnalyzerException;
+import util.logging.L2Logger;
 
 import java.util.HashMap;
 import java.util.LinkedList;

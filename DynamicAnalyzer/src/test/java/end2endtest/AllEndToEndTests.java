@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import utils.logging.L1Logger;
+import util.logging.L1Logger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -106,16 +106,16 @@ public class AllEndToEndTests {
 				// Examples from readme.md
 				new Object[] {"NSUPolicy", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int_i0"} },
 				new Object[] {"NSUPolicy2", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"boolean_$z2"} },
-				new Object[] {"NSUPolicy3", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] {"NSUPolicy3", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
 				new Object[] {"NSUPolicy4", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"java.lang.String_r5"} },
 
 				// More NSU Tests
-				new Object[] {"NSU_FieldAccess", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] {"NSU_FieldAccess", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
 				new Object[] {"NSU_FieldAccessStatic", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"int f"} },
 				new Object[] {"NSU_FieldAccess2", SecurityMonitoringEvent.PASSED, new String[] {} },
-				new Object[] {"NSU_FieldAccess3", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] {"NSU_FieldAccess4", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
-				new Object[] {"NSU_FieldAccess5", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.utils.C: boolean f>"} },
+				new Object[] {"NSU_FieldAccess3", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
+				new Object[] {"NSU_FieldAccess4", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
+				new Object[] {"NSU_FieldAccess5", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"<testclasses.util.C: boolean f>"} },
 				
 				new Object[] {"NSU_ForLoopSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
 				new Object[] {"NSU_ForLoopFail", SecurityMonitoringEvent.NSU_FAILURE, new String[] {"byte_b1"} },
@@ -133,7 +133,7 @@ public class AllEndToEndTests {
 				new Object[] {"MulArrayFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"java.lang.String_$r"} },
 				
 				// Testing implicit and explicit flow with classes (which is unimplemented currently)
-				new Object[] {"NewClassFail1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"testclasses.utils.C_r4"} },
+				new Object[] {"NewClassFail1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"testclasses.util.C_r4"} },
 				
 				new Object[] {"NonStaticMethodsSuccess", SecurityMonitoringEvent.PASSED, new String[] {} },
 				new Object[] {"NonStaticMethodsFail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[] {"int_i0"} },

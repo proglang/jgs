@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import analyzer.level2.storage.LowMediumHigh;
 import de.unifreiburg.cs.proglang.jgs.constraints.TypeDomain;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
-import utils.logging.L1Logger;
+import util.logging.L1Logger;
 import main.Main;
 import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 

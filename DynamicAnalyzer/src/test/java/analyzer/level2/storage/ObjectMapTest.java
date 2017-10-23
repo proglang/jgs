@@ -8,7 +8,7 @@ import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
 import org.junit.Before;
 import org.junit.Test;
-import utils.logging.L2Logger;
+import util.logging.L2Logger;
 
 import java.util.logging.Logger;
 

@@ -1,7 +1,7 @@
 package analyzer.level2;
 
-import utils.exceptions.SuperfluousInstrumentation.*;
-import utils.exceptions.InternalAnalyzerException;
+import util.exceptions.SuperfluousInstrumentation.*;
+import util.exceptions.InternalAnalyzerException;
 
 /**
  * A Controller to check if superfluous instrumentation is present. Extends {@link PassivController}, which is its

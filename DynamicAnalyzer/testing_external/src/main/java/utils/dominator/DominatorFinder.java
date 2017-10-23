@@ -1,12 +1,12 @@
-package utils.dominator;
+package util.dominator;
 
 import soot.Body;
 import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
 import soot.toolkits.graph.UnitGraph;
-import utils.exceptions.MaximumNumberExceededException;
-import utils.logging.L1Logger;
+import util.exceptions.MaximumNumberExceededException;
+import util.logging.L1Logger;
 
 import java.lang.Long;
 import java.util.HashMap;

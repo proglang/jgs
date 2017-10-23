@@ -1,4 +1,4 @@
-package utils.parser;
+package util.parser;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;

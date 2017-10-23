@@ -2,10 +2,13 @@ package main;
 
 import analyzer.level1.BodyAnalyzer;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
+import scala.collection.immutable.Stream;
 import soot.*;
-import utils.logging.L1Logger;
-import utils.parser.ArgParser;
-import utils.parser.ArgumentContainer;
+import util.logging.DebugCSVHandler;
+import util.logging.L1Logger;
+import util.logging.SOutHandler;
+import util.parser.ArgParser;
+import util.parser.ArgumentContainer;
 import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 
 import java.io.File;
@@ -13,7 +16,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static soot.SootClass.SIGNATURES;
 
@@ -29,7 +35,7 @@ public class Main {
 	 * code to check for information leak). Use appropriate arguments to indicate
 	 * which test will be compiled, and what the output format should be.
 	 *
-     * To see which command line args to use, go to the parser in utils.parser, or run the main (this one) without any
+     * To see which command line args to use, go to the parser in util.parser, or run the main (this one) without any
      * arguments, which'll print the help.
 	 *
 	 * @param args Commandline-Args for analysis
@@ -43,7 +49,6 @@ public class Main {
 		} else {
 			methodTypings = FixedTypings.allDynamic();
 		}
-
 		execute(args, FixedTypings.allDynamic(), NoCasts.apply());
 	}
 
@@ -51,10 +56,7 @@ public class Main {
 	public static void execute(String[] args,
 								MethodTypings m,
 							    Casts c) {
-
-
 	    doSootSetup(args);
-
 		executeWithoutSootSetup(args, m, c);
 	}
 
@@ -64,16 +66,35 @@ public class Main {
 
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
 
+        // <editor-fold desc="Logger set up">
+
+        // Setting up the loggers of the different levels.
+		// The logger for the instrumentation, is the Package Name of the BodyAnalyser.
+		Logger l1 = Logger.getLogger(BodyAnalyzer.class.getPackage().getName());
+
+		// Avoiding passing the Messages more up. Abd removing all standart
+		// Handlers, such that the Messages only appearing, where we want.
+		l1.setUseParentHandlers(false);
+		for (Handler h : l1.getHandlers()) l1.removeHandler(h);
+
+		// Adding all Handlers, that we want. There so is the Debug Handler
+		// and a console Handler
+		SOutHandler h = new SOutHandler();
 		try {
-		    if (sootOptionsContainer.isVerbose()) {
-		 		L1Logger.setup(Level.ALL);
-                L1Logger.getLogger().info("Verbose logging activated");
-			} else {
-				L1Logger.setup(Level.FINE);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			l1.addHandler(new DebugCSVHandler());
+			l1.addHandler(h);
+		} catch (IOException e) { e.printStackTrace(); }
+
+		// for the Console Handler it could be decided which Level
+		// should be used.
+		if (sootOptionsContainer.isVerbose()) {
+			h.setLevel(Level.ALL);
+		} else {
+			h.setLevel(Level.FINE);
 		}
+		// </editor-fold>
+
+
 
         String javaHome = System.getProperty("java.home");    //gets the path to java home, here: "/Library/Java/JavaVirtualMachines/jdk1.7.0_79.jdk/Contents/Home/jre"
 
@@ -96,7 +117,7 @@ public class Main {
 						   + new File(javaHome, "lib/rt.jar").toString();
 						   */
 
-        // Adding the arguments given by the user via the -p flag. See utils.parser.ArgParser
+        // Adding the arguments given by the user via the -p flag. See util.parser.ArgParser
         for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
             classPath = s + ":" + classPath;
         }

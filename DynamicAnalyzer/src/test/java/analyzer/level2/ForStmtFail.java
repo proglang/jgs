@@ -2,8 +2,8 @@ package analyzer.level2;
 
 import org.junit.Before;
 import org.junit.Test;
-import utils.exceptions.IFCError;
-import utils.logging.L2Logger;
+import util.exceptions.IFCError;
+import util.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

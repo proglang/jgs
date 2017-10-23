@@ -2,7 +2,7 @@ package testclasses;
 
 import org.junit.Ignore;
 
-import utils.analyzer.HelperClass;
+import util.analyzer.HelperClass;
 
 /**
  * Class to test the basics of NSU policy

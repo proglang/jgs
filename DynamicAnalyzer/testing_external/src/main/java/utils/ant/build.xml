@@ -15,11 +15,11 @@
     	</fileset>
     	
     	<fileset dir="../../../bin">
-    	   	<include name="utils/test/*.class"/>	
+    	   	<include name="util/test/*.class"/>
     	 </fileset>
     	
     	<fileset dir="../../../bin">
-    	    <include name="utils/analyzer/HelperClass.class"/>	
+    	    <include name="util/analyzer/HelperClass.class"/>
     	</fileset>
     	
     	<fileset dir="../../../bin">
@@ -27,7 +27,7 @@
     	</fileset>	
     	
     	<fileset dir="../../../bin">
-    	    <include name="utils/**"/>	
+    	    <include name="util/**"/>
     	</fileset>
     	
     	<zipgroupfileset dir="../../../../../DEPS" includes="gradualconstraints_instrumentationsupport_2.11-0.1-SNAPSHOT.jar">

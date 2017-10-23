@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import utils.logging.L2Logger;
+import util.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

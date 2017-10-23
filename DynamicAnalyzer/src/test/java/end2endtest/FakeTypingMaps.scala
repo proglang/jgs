@@ -71,8 +71,8 @@ object FakeTypingMaps {
 
   def asJavaMap(m : Map[(String, String), (Boolean, Boolean)]) : java.util.Map[Tuple2[String, String], Tuple2[Type[LowMediumHigh.Level], Type[LowMediumHigh.Level]]] = {
     def boolToType(isDynamic : Boolean) : Type[LowMediumHigh.Level] =
-      if (isDynamic) new utils.staticResults.implementation.Dynamic[LowMediumHigh.Level]()
-      else new utils.staticResults.implementation.Public[LowMediumHigh.Level]()
+      if (isDynamic) new util.staticResults.implementation.Dynamic[LowMediumHigh.Level]()
+      else new util.staticResults.implementation.Public[LowMediumHigh.Level]()
     (for {
       (k, (before, after)) <- m
     } yield k -> (boolToType(before), boolToType(after))).asJava

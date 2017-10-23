@@ -6,7 +6,7 @@ import de.unifreiburg.cs.proglang.jgs.typing.ExampleTypes;
 import soot.Local;
 import soot.SootMethod;
 import soot.jimple.Stmt;
-import utils.staticResults.implementation.Dynamic;
+import util.staticResults.implementation.Dynamic;
 import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 
 /**

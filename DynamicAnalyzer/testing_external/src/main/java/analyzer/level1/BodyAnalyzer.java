@@ -8,9 +8,9 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
 import soot.util.Chain;
-import utils.dominator.DominatorFinder;
-import utils.logging.L1Logger;
-import utils.visitor.AnnotationStmtSwitch;
+import util.dominator.DominatorFinder;
+import util.logging.L1Logger;
+import util.visitor.AnnotationStmtSwitch;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -46,7 +46,7 @@ public class BodyAnalyzer extends BodyTransformer{
 		 * Chain<Unit> units contains for TestProgramm Simple:
 		 * 
 		 * [r0 := @parameter0: java.lang.String[], r1 = "Hello World", 
-		 * $r2 = staticinvoke <utils.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>(r1), 
+		 * $r2 = staticinvoke <util.analyzer.HelperClass: java.lang.Object makeHigh(java.lang.Object)>(r1),
 		 * r3 = (java.lang.String) $r2, $r4 = <java.lang.System: java.io.PrintStream out>, 
 		 * virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r3), return]
 		 * Invoke HandleStmt in method main

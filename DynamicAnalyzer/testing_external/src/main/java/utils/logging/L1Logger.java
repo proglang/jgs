@@ -1,4 +1,4 @@
-package utils.logging;
+package util.logging;
 
 import analyzer.level2.HandleStmt;
 

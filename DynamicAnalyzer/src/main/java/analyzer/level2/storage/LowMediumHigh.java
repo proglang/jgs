@@ -5,7 +5,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import utils.exceptions.InternalAnalyzerException;
+import util.exceptions.InternalAnalyzerException;
 
 // TODO: remove
 public class LowMediumHigh implements SecDomain<LowMediumHigh.Level> { 

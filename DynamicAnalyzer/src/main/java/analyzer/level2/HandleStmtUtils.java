@@ -2,12 +2,11 @@ package analyzer.level2;
 
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
-import utils.exceptions.IFCError;
-import utils.exceptions.InternalAnalyzerException;
-import utils.exceptions.NSUError;
-import utils.logging.L2Logger;
+import util.exceptions.IFCError;
+import util.exceptions.InternalAnalyzerException;
+import util.exceptions.NSUError;
+import util.logging.L2Logger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

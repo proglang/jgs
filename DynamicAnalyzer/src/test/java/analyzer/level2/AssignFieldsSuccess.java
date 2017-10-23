@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import tests.testclasses.TestSubClass;
-import utils.logging.L2Logger;
+import util.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

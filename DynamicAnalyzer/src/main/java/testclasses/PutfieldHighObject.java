@@ -2,7 +2,6 @@ package testclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 import testclasses.utils.C;
-import utils.staticResults.implementation.Dynamic;
 
 public class PutfieldHighObject {
 

@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.analyzer.HelperClass;
+import util.analyzer.HelperClass;
 
 // Must obviously fail. See SystemOut2 for comparison and why we need
 // this test.

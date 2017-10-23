@@ -2,7 +2,7 @@ package de.unifreiburg.cs.proglang.jgs.rt;
 
 import analyzer.level2.SecurityMonitorLog;
 import analyzer.level2.SimpleSecurityMonitorLog;
-import utils.logging.L2Logger;
+import util.logging.L2Logger;
 
 /**
  * The default monitor log for testing. It does nothing except logging.

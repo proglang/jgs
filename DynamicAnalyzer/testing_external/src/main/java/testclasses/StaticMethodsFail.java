@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.test.SimpleObject;
+import util.test.SimpleObject;
 
 /**
  * Not working, because SimpleObject somehow does not get instrumented

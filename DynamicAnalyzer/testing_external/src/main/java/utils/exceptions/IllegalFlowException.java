@@ -1,4 +1,4 @@
-package utils.exceptions;
+package util.exceptions;
 
 public class IllegalFlowException extends RuntimeException {
 	

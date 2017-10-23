@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import utils.exceptions.IFCError;
+import util.exceptions.IFCError;
 
 
 public class IfStmtFail {

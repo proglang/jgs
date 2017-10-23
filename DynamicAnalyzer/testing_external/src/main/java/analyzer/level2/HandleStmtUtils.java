@@ -3,9 +3,9 @@ package analyzer.level2;
 import analyzer.level2.SecurityLevel;
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
-import utils.exceptions.IllegalFlowException;
-import utils.exceptions.InternalAnalyzerException;
-import utils.logging.L2Logger;
+import util.exceptions.IllegalFlowException;
+import util.exceptions.InternalAnalyzerException;
+import util.logging.L2Logger;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

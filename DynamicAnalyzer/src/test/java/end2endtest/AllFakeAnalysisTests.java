@@ -5,14 +5,14 @@ import analyzer.level2.storage.LowMediumHigh;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
-import utils.exceptions.IFCError;
+import util.exceptions.IFCError;
 import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import utils.Controller;
-import utils.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
-import utils.logging.L1Logger;
+import util.Controller;
+import util.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
+import util.logging.L1Logger;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -68,7 +68,7 @@ public class AllFakeAnalysisTests {
 
 
                 // =========================================================================
-                // custom typing. See utils.staticResults.CustomTyping
+                // custom typing. See util.staticResults.CustomTyping
                 // =========================================================================
 
                 // to make sure the Custom Typing works, FakeMethodTypings.CUSTOM_LowPlusPublic_AllDynamic makes everything (important) dynamic.
@@ -108,7 +108,7 @@ public class AllFakeAnalysisTests {
                 new Object[] {"NSUPolicy", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // NSU on fields.
-                new Object[] {"NSUPolicy3", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] {"NSUPolicy3", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.util.C: boolean f>"} },
                 new Object[] {"NSUPolicy3", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // NSU on static fields
@@ -116,20 +116,20 @@ public class AllFakeAnalysisTests {
                 new Object[] {"NSU_FieldAccessStatic", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // NSU on static fields
-                new Object[] {"NSU_FieldAccess", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] {"NSU_FieldAccess", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.util.C: boolean f>"} },
                 new Object[] {"NSU_FieldAccess", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 new Object[] {"NSU_FieldAccess2", null, FixedTypings.allDynamic(), Controller.PASSIVE , new String[] {} },    // does not throw an IllFlow Except
                 new Object[] {"NSU_FieldAccess2", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
                 new Object[] {"NSU_FieldAccess2", null, FakeMethodTypings.VAR_AND_CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
-                new Object[] {"NSU_FieldAccess3", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] {"NSU_FieldAccess3", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.util.C: boolean f>"} },
                 new Object[] {"NSU_FieldAccess3", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
-                new Object[] {"NSU_FieldAccess4", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] {"NSU_FieldAccess4", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.util.C: boolean f>"} },
                 new Object[] {"NSU_FieldAccess4", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
-                new Object[] {"NSU_FieldAccess5", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.utils.C: boolean f>"} },
+                new Object[] {"NSU_FieldAccess5", SecurityMonitoringEvent.NSU_FAILURE, FixedTypings.allDynamic(), Controller.PASSIVE, new String[] {"<testclasses.util.C: boolean f>"} },
                 new Object[] {"NSU_FieldAccess5", null, FakeMethodTypings.CX_PUBLIC, Controller.PASSIVE, new String[] {} },
 
                 // =========================================================================

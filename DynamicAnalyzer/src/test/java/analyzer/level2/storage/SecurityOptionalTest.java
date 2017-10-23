@@ -8,7 +8,7 @@ import analyzer.level2.HandleStmt;
 import org.junit.Before;
 import org.junit.Test;
 
-import utils.exceptions.InternalAnalyzerException;
+import util.exceptions.InternalAnalyzerException;
 
 
 public class SecurityOptionalTest {

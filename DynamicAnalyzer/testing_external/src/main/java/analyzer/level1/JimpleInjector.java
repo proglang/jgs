@@ -26,9 +26,9 @@ import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.ThisRef;
 import soot.util.Chain;
-import utils.dominator.DominatorFinder;
-import utils.exceptions.InternalAnalyzerException;
-import utils.logging.L1Logger;
+import util.dominator.DominatorFinder;
+import util.exceptions.InternalAnalyzerException;
+import util.logging.L1Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;

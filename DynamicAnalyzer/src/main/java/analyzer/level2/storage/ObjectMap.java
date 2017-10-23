@@ -6,7 +6,7 @@ import analyzer.level2.CurrentSecurityDomain;
 import org.apache.commons.collections4.map.AbstractReferenceMap;
 import org.apache.commons.collections4.map.ReferenceIdentityMap;
 
-import utils.exceptions.InternalAnalyzerException;
+import util.exceptions.InternalAnalyzerException;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -4,7 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * If explicit leak does not throw exception, 
- * check main.utils.externalClasses, line 35
+ * check main.util.externalClasses, line 35
  * for missing type
  * 
  * @author Nicolas Müller

@@ -1,6 +1,6 @@
 package testclasses;
 
-import utils.test.simpleClassForTests;
+import util.test.simpleClassForTests;
 
 public class ExternalFail1 {
 	public static void main(String[] args) {
