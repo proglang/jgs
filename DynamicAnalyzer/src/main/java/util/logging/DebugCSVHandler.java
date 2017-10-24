@@ -26,6 +26,5 @@ public class DebugCSVHandler extends FileHandler {
 
        this.setLevel(Level.ALL);
        this.setFormatter(new CSVFormatter());
-        System.out.println("Created. New CSV");
     }
 }

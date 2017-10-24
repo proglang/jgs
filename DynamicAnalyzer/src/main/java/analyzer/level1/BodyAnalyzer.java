@@ -7,6 +7,7 @@ import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.*;
 import soot.util.Chain;
 import util.dominator.DominatorFinder;
+import util.dominator.WriteEffectCollector;
 import util.logging.L1Logger;
 import util.visitor.AnnotationStmtSwitch;
 
@@ -60,19 +61,24 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	 */
 	@Override
 	protected void internalTransform(Body body, String s, Map<String, String> map) {
-		logger.info(" Analyze of :" + body.getMethod().getName() + " started.");
+		logger.info(" Analyze of :\"" + body.getMethod().getName() + "\" started.");
 
 		SootMethod sootMethod = body.getMethod();
-
 		Chain<Unit> units  = body.getUnits();
 
 		AnnotationStmtSwitch stmtSwitch =  new AnnotationStmtSwitch(body);
 		Chain<SootField> fields = sootMethod.getDeclaringClass().getFields();
 
 		// Using a copy, such that JimpleInjector could inject directly.
-		ArrayList<Unit> unmod = new ArrayList<>(units);
+		ArrayList<Unit> unMod = new ArrayList<>(units);
 
 		DominatorFinder.init(body);
+
+		WriteEffectCollector wec = null;
+		if (DynamicPolicy.selected == DynamicPolicy.Policy.HYBRID_ENFORCEMENT) {
+			wec =  new WriteEffectCollector(body);
+			wec.collectWriteEffect();
+		}
 
 		// The JimpleInjector actually inserts the invokes, that we decide to insert.
 		// In order, that the righteous body got the inserts, we have to set up the
@@ -138,7 +144,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 
 		// Analyzing Every Statement, step by step.
-		for (Unit unit: unmod) {
+		for (Unit unit: unMod) {
 			// Check if the statements is a postdominator for an IfStmt.
 			if (DominatorFinder.containsStmt(unit)) {
 				JimpleInjector.exitInnerScope(unit);
@@ -148,6 +154,12 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 			// Add further statements using JimpleInjector.
 			unit.apply(stmtSwitch);
+
+			if (wec != null) {
+				for (Local l : wec.get(Local.class, unit)) {
+					logger.info("Updating " + l);
+				}
+			}
 		}
 		
 		// Apply all changes.
