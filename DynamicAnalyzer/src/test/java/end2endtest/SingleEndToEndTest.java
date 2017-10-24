@@ -41,7 +41,7 @@ public class SingleEndToEndTest {
 	 */
 	private String[] involvedVars = new String[] {};
 
-	private Logger logger = L1Logger.getLogger();
+	private static final Logger logger = Logger.getLogger(SingleEndToEndTest.class.getName());
 
 	@Test
 	public void test() {

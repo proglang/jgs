@@ -21,10 +21,10 @@ import java.util.logging.Logger;
  *
  * @author Karsten Fix, 13.Sept 2017
  */
-public class LHSInstrumentationSwitch<L> extends AbstractJimpleValueSwitch {
+public class LHSInstrumentationSwitch extends AbstractJimpleValueSwitch {
 
     /** Gets the Logger to log different, important messages */
-    private final Logger logger = L1Logger.getLogger();
+    private static final Logger logger = Logger.getLogger(LHSInstrumentationSwitch.class.getName());
 
     /** Saves the Statement, that calls the referring Method of its type.
      * The Statement shall be known at creation of the Switch. */

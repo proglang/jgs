@@ -4,6 +4,8 @@ import analyzer.level2.SecurityMonitoringEvent;
 import classfiletests.utils.ClassCompiler;
 import classfiletests.utils.ClassRunner;
 
+import main.Main;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -41,7 +43,12 @@ public class AllEndToEndTests {
 		this.securityMonitoringEvent = securityMonitoringEvent;
 	}
 
-	Logger logger = L1Logger.getLogger();
+	private static final Logger logger = Logger.getLogger(AllEndToEndTests.class.getName());
+
+	@Before
+	public void setupLogger() {
+		Main.setupLogger();
+	}
 
 	/**
 	 * Create an Iterable for all testclasses. Arguments: String name, boolean

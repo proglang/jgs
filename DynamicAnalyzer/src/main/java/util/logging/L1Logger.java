@@ -14,20 +14,6 @@ import java.util.logging.Logger;
 public class L1Logger {
 
 	/** Defines the Logger for the Level 1, that is the instrumentation */
-	public static final Logger logger = Logger.getLogger(BodyAnalyzer.class.getPackage().getName());
+	public static final Logger logger = Logger.getLogger("analyzer");
 
-	static {
-		// Avoids calling parent loggers up the namespace.
-		logger.setUseParentHandlers(false);
-
-		// remove all standard handlers
-		Handler[] handlers = logger.getHandlers();
-		for (Handler h : handlers) logger.removeHandler(h);
-
-
-	}
-	  
-	public static Logger getLogger() {
-		return logger;
-	}
 }

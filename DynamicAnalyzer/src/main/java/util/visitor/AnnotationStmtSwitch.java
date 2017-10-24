@@ -37,8 +37,9 @@ import java.util.logging.Logger;
 
 public class AnnotationStmtSwitch implements StmtSwitch {
 
-	Logger logger = L1Logger.getLogger();
-	Body body;
+	private static final Logger logger = Logger.getLogger(AnnotationStmtSwitch.class.getName());
+
+	private Body body;
 
 	public AnnotationStmtSwitch(Body body) {
 		this.body = body;
@@ -46,7 +47,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseBreakpointStmt(BreakpointStmt stmt) {
-		logger.fine("\n > > > Breakpoint statement identified < < <");
+		logger.fine("> > > Breakpoint statement identified < < <");
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 		InvokeStmt iStmt = stmt;
 
-		logger.fine("\n > > > Invoke Statement identified < < <");
+		logger.fine("> > > Invoke Statement identified < < <");
 
 		InvokeExpr invokeExpr = iStmt.getInvokeExpr();
 
@@ -144,7 +145,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 		AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch(stmt, StmtContext.IDENTITY);
 
-		logger.fine("\n > > > Identity statement identified < < <");
+		logger.fine(" > > > Identity statement identified < < <");
 
 		// for all statements i = parameter[0]
 		if (stmt.getRightOp() instanceof ParameterRef) {
@@ -168,19 +169,19 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseEnterMonitorStmt(EnterMonitorStmt stmt) {
-		logger.fine("\n > > > Enter monitor statement identified < < <");
+		logger.fine(" > > > Enter monitor statement identified < < <");
 		throw new NotSupportedStmtException("EnterMonitorStmt");
 	}
 
 	@Override
 	public void caseExitMonitorStmt(ExitMonitorStmt stmt) {
-		logger.fine("\n > > > Exit monitor statement identified < < <");
+		logger.fine(" > > > Exit monitor statement identified < < <");
 		throw new NotSupportedStmtException("ExitMonitorStmt");
 	}
 
 	@Override
 	public void caseGotoStmt(GotoStmt stmt) {
-		logger.fine("\n > > > Goto statement identified < < <");
+		logger.fine(" > > > Goto statement identified < < <");
 		logger.fine("GOTO: " + stmt.toString());
 	}
 
@@ -190,7 +191,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	 */
 	@Override
 	public void caseIfStmt(IfStmt stmt) {
-		logger.fine("\n > > > If statement identified < < <");
+		logger.fine(" > > > If statement identified < < <");
 
 		logger.finest("Use and def boxes of IfStmt: "
 				+ stmt.getUseAndDefBoxes().toString());
@@ -222,7 +223,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseLookupSwitchStmt(LookupSwitchStmt stmt) {
-		logger.fine("\n > > > Lookup switch statement identified < < <");
+		logger.fine(" > > > Lookup switch statement identified < < <");
 		logger.finest("Use and def boxes of SwitchStmt: "
 				+ stmt.getUseAndDefBoxes().toString());
 
@@ -254,18 +255,18 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseNopStmt(NopStmt stmt) {
-		logger.fine("\n > > > Nop statement identified < < <");
+		logger.fine(" > > > Nop statement identified < < <");
 	}
 
 	@Override
 	public void caseRetStmt(RetStmt stmt) {
-		logger.fine("\n > > > Ret statement identified < < <");
+		logger.fine(" > > > Ret statement identified < < <");
 		throw new NotSupportedStmtException("RetStmt");
 	}
 
 	@Override
 	public void caseReturnStmt(ReturnStmt stmt) {
-		logger.fine("\n > > > Return statement identified < < <");
+		logger.fine(" > > > Return statement identified < < <");
 		logger.finer("Use boxes: " + stmt.getUseBoxes().toString());
 		Value val = stmt.getUseBoxes().get(0).getValue();
 		// JimpleInjector.popGlobalPC();
@@ -279,7 +280,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseReturnVoidStmt(ReturnVoidStmt stmt) {
-		logger.fine("\n > > > Return void statement identified < < <");
+		logger.fine(" > > > Return void statement identified < < <");
 	}
 
 	/*
@@ -288,7 +289,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	 */
 	@Override
 	public void caseTableSwitchStmt(TableSwitchStmt stmt) {
-		logger.fine("\n > > > Table switch statement identified < < <");
+		logger.fine(" > > > Table switch statement identified < < <");
 		logger.finest("Use and def boxes of SwitchStmt: "
 				+ stmt.getUseAndDefBoxes().toString());
 
@@ -321,12 +322,12 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 
 	@Override
 	public void caseThrowStmt(ThrowStmt stmt) {
-		logger.fine("\n > > > Throw statement identified < < <");
+		logger.fine(" > > > Throw statement identified < < <");
 	}
 
 	@Override
 	public void defaultCase(Object obj) {
-		logger.fine("\n > > > Default case of statements identified < < <");
+		logger.fine(" > > > Default case of statements identified < < <");
 		throw new NotSupportedStmtException("DefaultCase");
 	}
 }

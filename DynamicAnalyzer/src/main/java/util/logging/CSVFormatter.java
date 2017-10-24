@@ -26,10 +26,12 @@ public class CSVFormatter extends DateFormatter {
     public String getHead(Handler h) {
         StringBuilder sb = new StringBuilder();
         sb.append("Time").append(SEP);
+        sb.append("Package").append(SEP);
         sb.append("Class").append(SEP);
         sb.append("Method").append(SEP);
         sb.append("Level").append(SEP);
         sb.append("Message").append(SEP);
+        sb.append(System.lineSeparator());
         return sb.toString();
     }
 
@@ -44,7 +46,9 @@ public class CSVFormatter extends DateFormatter {
         // First the Time Stamp
         sb.append(formatTime(logRecord.getMillis())).append(SEP);
         // Then the Source Class Name.
-        sb.append(logRecord.getSourceClassName()).append(SEP);
+        String source = logRecord.getSourceClassName();
+        sb.append(source.substring(0, source.lastIndexOf("."))).append(SEP);
+        sb.append(source.substring(source.lastIndexOf(".") + 1)).append(SEP);
         // Then the Method Name, causing the log
         sb.append(logRecord.getSourceMethodName()).append(SEP);
         // The Level of the Log Message

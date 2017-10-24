@@ -29,6 +29,9 @@ import static soot.SootClass.SIGNATURES;
  */
 public class Main {
 
+	private static final Logger logger = Logger.getLogger(Main.class.getName());
+
+	private static boolean loggerSetup = false;
 
     /**
 	 * The entry point for compilation and instrumentation (that is, adding the appropriate
@@ -60,21 +63,16 @@ public class Main {
 		executeWithoutSootSetup(args, m, c);
 	}
 
-
-	// TODO: move to another package (or even project) as this kind of setup is used by the whole application, not only DA
-    public static void doSootSetup(String[] args) {
-
-        ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
-
-        // <editor-fold desc="Logger set up">
-
-        // Setting up the loggers of the different levels.
+	public static void setupLogger() {
+		if (loggerSetup) return;
+		// Setting up the loggers of the different levels.
 		// The logger for the instrumentation, is the Package Name of the BodyAnalyser.
-		Logger l1 = Logger.getLogger(BodyAnalyzer.class.getPackage().getName());
+		Logger l1 = Logger.getLogger("");
+		l1.setLevel(Level.ALL);
 
 		// Avoiding passing the Messages more up. Abd removing all standart
 		// Handlers, such that the Messages only appearing, where we want.
-		l1.setUseParentHandlers(false);
+		// l1.setUseParentHandlers(false);
 		for (Handler h : l1.getHandlers()) l1.removeHandler(h);
 
 		// Adding all Handlers, that we want. There so is the Debug Handler
@@ -87,12 +85,16 @@ public class Main {
 
 		// for the Console Handler it could be decided which Level
 		// should be used.
-		if (sootOptionsContainer.isVerbose()) {
-			h.setLevel(Level.ALL);
-		} else {
-			h.setLevel(Level.FINE);
-		}
-		// </editor-fold>
+		h.setLevel(Level.INFO);
+		loggerSetup = true;
+	}
+
+	// TODO: move to another package (or even project) as this kind of setup is used by the whole application, not only DA
+    public static void doSootSetup(String[] args) {
+
+        ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
+
+        setupLogger();
 
 
 
@@ -139,13 +141,13 @@ public class Main {
 			}
 		} else {
         	// throw new RuntimeException("Cannot get URLs needed for the soot classpath from current contextclassloader");
-			L1Logger.getLogger().warning("Cannot get URLs needed for the soot classpath from current contextclassloader.\n "
+			logger.warning("Cannot get URLs needed for the soot classpath from current contextclassloader.\n "
 										 + "(Ignore this warning when running under sbt).");
 		}
 
 		Scene.v().setSootClassPath(String.join(":", cpath) + ":" + classPath);
 
-		L1Logger.getLogger().info("Soot classpath: " + Scene.v().getSootClassPath());
+		logger.info("Soot classpath: " + Scene.v().getSootClassPath());
 
         // those are needed because of soot-magic i guess
         Scene.v().addBasicClass("analyzer.level2.HandleStmt", SIGNATURES);

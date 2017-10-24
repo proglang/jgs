@@ -31,7 +31,8 @@ public class AllFakeAnalysisTests {
     private final Controller isActive;
     private final MethodTypings<LowMediumHigh.Level> analysisResult;
     private final String[] involvedVars;
-    private Logger logger = L1Logger.getLogger();
+
+    private static final Logger logger = Logger.getLogger(AllFakeAnalysisTests.class.getName());
 
     /**
      * Create a test instance

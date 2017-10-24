@@ -25,8 +25,9 @@ public class DominatorFinder {
 	// ID-counter for identifying postdominators 
 	private static long identity;
 	// Distinguished ID to be used if the virtual postdominator at the end of a method. We use this virtual postdominator to work around the fact that Jimple does not guarantee a single return statement.
-	private final static String POSTDOM_ID_END_OF_METHOD = "" + Integer.MIN_VALUE; 
-	private static Logger logger = L1Logger.getLogger();
+	private final static String POSTDOM_ID_END_OF_METHOD = "" + Integer.MIN_VALUE;
+
+	private static final Logger logger = Logger.getLogger(DominatorFinder.class.getName());
   
 	/**
 	 * Constructor. Has only to be called once in BodyAnalyzer.

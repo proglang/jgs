@@ -16,7 +16,8 @@ import java.util.logging.Logger;
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
 	
-	private Logger logger = L1Logger.getLogger();
+	private static final Logger logger = Logger.getLogger(AnnotationValueSwitch.class.getName());
+
 	private VisitorHelper vh = new VisitorHelper();
 
 	public AnnotationValueSwitch(Stmt stmt, StmtContext cx) {

@@ -16,7 +16,7 @@ public abstract class DateFormatter extends Formatter {
      * @return A Nice Formatted String.
      */
     public String formatTime(Long millis) {
-        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
         Date rd = new Date(millis);
         return df.format(rd);
     }

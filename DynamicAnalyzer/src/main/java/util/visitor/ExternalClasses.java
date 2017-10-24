@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  */
 public class ExternalClasses {
 
-	static Logger logger = L1Logger.getLogger();
+	private static final Logger logger = Logger.getLogger(ExternalClasses.class.getName());
 
 	protected static ArrayList<String> classMap = new ArrayList<String>();
 

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class VisitorHelper {
 
-	Logger logger = L1Logger.getLogger();
+	private static final Logger logger = Logger.getLogger(VisitorHelper.class.getName());
 
 	
 	/**

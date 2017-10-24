@@ -8,6 +8,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This Class provides some Factory Methods, that may help to Create Jimple Expressions
@@ -17,6 +18,9 @@ import java.util.*;
  * @version 2.0 (18.08.17)
  */
 public class JimpleFactory {
+
+    /** The logger, that logs the messages */
+    private static final Logger logger = Logger.getLogger(JimpleFactory.class.getName());
 
     // <editor-fold desc="Cache Definitions">
     /** Defines a Cache, that allows a quick access to the Class Methods */
@@ -71,8 +75,8 @@ public class JimpleFactory {
                     Scene.v().getSootClass(reference.getName()),types);
 
             if (overloads.containsKey(key))
-                L1Logger.getLogger().fine("Overwriting ConstructorRef for: "+c.getName() + "(" + key + ")");
-            else L1Logger.getLogger().fine("Creating ConstructorRef for: "+c.getName() + "(" + key + ")");
+                logger.fine("Overwriting ConstructorRef for: "+c.getName() + "(" + key + ")");
+            else logger.fine("Creating ConstructorRef for: "+c.getName() + "(" + key + ")");
 
             overloads.put(key, cRef);
             if (!constructorCache.containsKey(c.getName()))
@@ -102,8 +106,8 @@ public class JimpleFactory {
             // Adding the calculated Method in the cache and warn/inform the user
             // for changes, that might not be wanted.
             if (overloads.containsKey(key))
-                L1Logger.getLogger().fine("Overwriting SootMethodRef for: "+m.getName() + "(" + key + ")");
-            else L1Logger.getLogger().fine("Creating SootMethodRef for: "+m.getName() + "(" + key + ")");
+                logger.fine("Overwriting SootMethodRef for: "+m.getName() + "(" + key + ")");
+            else logger.fine("Creating SootMethodRef for: "+m.getName() + "(" + key + ")");
 
             overloads.put(key, mRef);
             if (!methodCache.containsKey(m.getName()))
@@ -232,7 +236,7 @@ public class JimpleFactory {
 
                 // If no Exception is thrown, then we could assign here
                 sootMethod = entry.getValue();
-                L1Logger.getLogger().fine("Used the signature: "+entry.getKey()+
+                logger.fine("Used the signature: "+entry.getKey()+
                                           " as suitable for wanted call of "
                                           +name+"("+key+")");
             }
@@ -245,7 +249,7 @@ public class JimpleFactory {
         }
         //</editor-fold>
         else {
-            L1Logger.getLogger().fine("Used identical signature for call of "+name);
+            logger.fine("Used identical signature for call of "+name);
         }
         return sootMethod;
     }

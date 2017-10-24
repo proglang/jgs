@@ -967,7 +967,7 @@ public class JimpleInjector {
         startPos = (m.isConstructor()) ? startPos + 1 : startPos;
         startPos += m.getParameterCount();
 
-        logger.fine("Calculated start position: " + startPos + " of " +b);
+        logger.fine("Calculated start position: " + startPos + " of " + b.getMethod().getName());
         return startPos;
     }
 
