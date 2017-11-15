@@ -9,7 +9,11 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "org.apache.commons" % "commons-lang3" % "3.4",
     "org.apache.commons" % "commons-collections4" % "4.1"
-  )
+  ),
+
+  scalacOptions += "-target:jvm-1.8",
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+
 
 )
 
