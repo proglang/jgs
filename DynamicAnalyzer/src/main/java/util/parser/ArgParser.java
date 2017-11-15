@@ -33,6 +33,15 @@ public class ArgParser {
         formatter.printHelp("jgs", options);
 	}
 
+	private static String getRequiredOptionValue(CommandLine cmd, String flag) throws ParseException {
+	    if (cmd.hasOption(flag)) {
+	        return cmd.getOptionValue(flag);
+        } else {
+	        throw new ParseException("Missing required option: -" + flag);
+        }
+    }
+
+
 	// TODO: some options are unused at the moment. Clean up.
     public static ArgumentContainer getSootOptions(String[] args) {
 
@@ -55,7 +64,6 @@ public class ArgParser {
                                     "main-class",
                                     true,
                                     "the main-class of the application");
-        mainopt.setRequired(true);
         options.addOption(mainopt);
 
 
@@ -85,7 +93,6 @@ public class ArgParser {
 
 		Option output = new Option(OUTPUT_FOLDER_FLAG, "output", true,
                 "set output folder");
-		output.setRequired(true);
 		options.addOption(output);
 
 		Option filesToAdd = new Option(ADDITIONAL_FILES_FLAG, "files", true,
@@ -123,7 +130,7 @@ public class ArgParser {
             }
 
 			// m flag
-            mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
+            mainclass = getRequiredOptionValue(cmd, MAINCLASS_FLAG);
 
             // case p flag
             if (cmd.hasOption(CLASSPATH)) {
@@ -161,11 +168,7 @@ public class ArgParser {
             toJimple = cmd.hasOption(JIMPLE_FLAG);
 
             // case o flag
-            if (cmd.hasOption(OUTPUT_FOLDER_FLAG)) {
-                outputFolder = cmd.getOptionValue(OUTPUT_FOLDER_FLAG);
-            } else {
-                outputFolder = ArgumentContainer.VALUE_NOT_SET;
-            }
+            outputFolder = getRequiredOptionValue(cmd, OUTPUT_FOLDER_FLAG);
 
 			// case f flag
             if (cmd.hasOption(ADDITIONAL_FILES_FLAG)) {
@@ -192,6 +195,7 @@ public class ArgParser {
 			// if illegal input
             // TODO: handle bad options (exit) in main
 		} catch (ParseException e) {
+		    System.err.println("Error parsing command line: " + e.getMessage());
 			printHelp(options);
 			System.exit(-1);
 		} catch (MalformedURLException e) {
