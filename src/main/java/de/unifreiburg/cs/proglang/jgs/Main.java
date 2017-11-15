@@ -11,6 +11,7 @@ import util.parser.ArgParser;
 import util.parser.ArgumentContainer;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This is the main entry point for jgs.
@@ -20,6 +21,9 @@ import java.util.*;
  * -m pkg.ScratchMonomorphic_Success -s GradualConstraints/JGSTestclasses/Scratch/src/main/java/pkg/ScratchMonomorphic_Success.java -p . GradualConstraints/JGSTestclasses/Scratch/target/scala-2.11/classes GradualConstraints/JGSSupport/target/scala-2.11/classes -o sootOutput
  */
 public class Main {
+
+    private static final Logger logger = Logger.getLogger(Main.class.getCanonicalName());
+
     public static void main(String[] args) {
 
         main.Main.doSootSetup(args);
@@ -128,7 +132,7 @@ public class Main {
                     externalFields,
                     secdomain,
                     casts,
-                    L1Logger.getLogger(),
+                    logger,
                     errors,
                     sootOptionsContainer.forceMonomorphicMethods()
             );
@@ -141,7 +145,7 @@ public class Main {
 
         // Dynamic Check
         // G.reset();
-        L1Logger.getLogger().info("Start Instrumentation");
+        logger.info("Start Instrumentation");
         main.Main.executeWithoutSootSetup(args,
                                           typeCheckResult, casts);
     }

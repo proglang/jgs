@@ -39,7 +39,7 @@ public class JGS_End2EndTests {
         this.securityMonitoringEvents = securityMonitoringEvents;
     }
 
-    Logger logger = L1Logger.getLogger();
+    Logger logger = Logger.getLogger(this.getClass().getCanonicalName());
 
     /**
      * Create an Iterable for all testclasses. Arguments: String name, boolean
