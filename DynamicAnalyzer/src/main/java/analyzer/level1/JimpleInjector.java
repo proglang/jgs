@@ -411,6 +411,7 @@ public class JimpleInjector {
     public static void setLevelOfAssignStmt(Local l, Unit pos) {
         // Checking, if current Policy is NSU, before performing the NSU_Check.
         // Means: If not, then we can break up here.
+        // Todo:Move to the right place. Somewhere in HandleStmt.
         if (DynamicPolicy.selected != DynamicPolicy.Policy.NSU_POLICY) {
             logger.info("Do not use NSU Policy.");
             return;

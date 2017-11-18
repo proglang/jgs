@@ -131,7 +131,7 @@ public class LocalMap<L> {
 		} else {
 			result = localMap.get(signature);
 		}
-		logger.log(Level.INFO, "Getting label of {0}: {1}", new Object[]{ signature, result} );
+		logger.info("Getting label of " +  signature + " which is: " + result );
 		return result;
 	}
 	

@@ -14,8 +14,12 @@ import java.util.*;
  */
 public class ArgParser {
 
-    // flags
-    final static String MAINCLASS_FLAG = "m";
+    // Options
+    private static final Option MAIN = Option.builder("m").longOpt("main-class")
+                                             .desc("The main class of the Application.")
+                                             .required().hasArg().build();
+
+    private final static String MAINCLASS_FLAG = "m";
     final static String ONLY_DYNAMIC_FLAG = "onlydynamic";
     final static String FORCE_MONOMORPHIC_METHODS = "forcemonomorphic";
     final static String CLASSPATH = "cp";
@@ -34,6 +38,7 @@ public class ArgParser {
 	}
 
 	// TODO: some options are unused at the moment. Clean up.
+    // Todo: Remove redundant wrapper structures. If using Options and CommandLine, then use it!
     public static ArgumentContainer getSootOptions(String[] args) {
 
         // locals variables to hold parsing results
@@ -51,19 +56,21 @@ public class ArgParser {
         // ======== PREPARE OPTIONS =========
 		Options options = new Options();
 
-        Option mainopt = new Option(MAINCLASS_FLAG,
-                                    "main-class",
-                                    true,
+		/*
+        Option mainOpt = new Option("m","main-class",true,
                                     "the main-class of the application");
-        mainopt.setRequired(true);
-        options.addOption(mainopt);
+        mainOpt.setRequired(true);
+        mainOpt.setArgs(1);
+        options.addOption(mainOpt);
+        // Replaced by */
+		options.addOption(MAIN);
 
-
-		Option addDirsToClasspathOption = new Option(CLASSPATH, "classpath", true,
-				"set the classpath");
+ 		Option addDirsToClasspathOption = new Option("cp", "classpath", true,
+                                                     "Sets the classpath");
         addDirsToClasspathOption.setRequired(false);
         addDirsToClasspathOption.setArgs(Option.UNLIMITED_VALUES);
         options.addOption(addDirsToClasspathOption);
+
         Option addDirsToSecdomainClasspathOption =
                 new Option(SECDOMAIN_CLASSPATH, "secdomain-classpath", true,
                            "set the classpath of the security domain to be used");
@@ -79,7 +86,7 @@ public class ArgParser {
 		// options.addOption(addOtherClassesForStatic);
 
         Option format = new Option(JIMPLE_FLAG, "jimple", false,
-                "Optional: Output as Jimple instead of as compiled class");
+                "Optional: Output as Jimple instead of a compiled class");
         format.setRequired(false);
         options.addOption(format);
 
@@ -111,6 +118,7 @@ public class ArgParser {
 		help.setRequired(false);
 		options.addOption(help);
 
+		// Actually parsing...
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd;
 		try {
@@ -123,8 +131,9 @@ public class ArgParser {
             }
 
 			// m flag
-            mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
 
+            mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
+            System.out.println("MAINCLASS IS:" + mainclass);
             // case p flag
             if (cmd.hasOption(CLASSPATH)) {
                 for ( String path : cmd.getOptionValues(CLASSPATH)) {
@@ -199,6 +208,7 @@ public class ArgParser {
             System.exit(-1);
         }
 
-        throw new InternalAnalyzerException("This line must never be reached"); // compiler complains if i dont put this here?!
+        // compiler complains if i don't put this here?!
+        throw new InternalAnalyzerException("This line must never be reached");
 	}
 }
