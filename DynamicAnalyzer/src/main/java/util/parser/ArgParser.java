@@ -14,12 +14,8 @@ import java.util.*;
  */
 public class ArgParser {
 
-    // Options
-    private static final Option MAIN = Option.builder("m").longOpt("main-class")
-                                             .desc("The main class of the Application.")
-                                             .required().hasArg().build();
-
-    private final static String MAINCLASS_FLAG = "m";
+    // flags
+    final static String MAINCLASS_FLAG = "m";
     final static String ONLY_DYNAMIC_FLAG = "onlydynamic";
     final static String FORCE_MONOMORPHIC_METHODS = "forcemonomorphic";
     final static String CLASSPATH = "cp";
@@ -37,8 +33,16 @@ public class ArgParser {
         formatter.printHelp("jgs", options);
 	}
 
+	private static String getRequiredOptionValue(CommandLine cmd, String flag) throws ParseException {
+	    if (cmd.hasOption(flag)) {
+	        return cmd.getOptionValue(flag);
+        } else {
+	        throw new ParseException("Missing required option: -" + flag);
+        }
+    }
+
+
 	// TODO: some options are unused at the moment. Clean up.
-    // Todo: Remove redundant wrapper structures. If using Options and CommandLine, then use it!
     public static ArgumentContainer getSootOptions(String[] args) {
 
         // locals variables to hold parsing results
@@ -56,21 +60,18 @@ public class ArgParser {
         // ======== PREPARE OPTIONS =========
 		Options options = new Options();
 
-		/*
-        Option mainOpt = new Option("m","main-class",true,
+        Option mainopt = new Option(MAINCLASS_FLAG,
+                                    "main-class",
+                                    true,
                                     "the main-class of the application");
-        mainOpt.setRequired(true);
-        mainOpt.setArgs(1);
-        options.addOption(mainOpt);
-        // Replaced by */
-		options.addOption(MAIN);
+        options.addOption(mainopt);
 
- 		Option addDirsToClasspathOption = new Option("cp", "classpath", true,
-                                                     "Sets the classpath");
+
+		Option addDirsToClasspathOption = new Option(CLASSPATH, "classpath", true,
+				"set the classpath");
         addDirsToClasspathOption.setRequired(false);
         addDirsToClasspathOption.setArgs(Option.UNLIMITED_VALUES);
         options.addOption(addDirsToClasspathOption);
-
         Option addDirsToSecdomainClasspathOption =
                 new Option(SECDOMAIN_CLASSPATH, "secdomain-classpath", true,
                            "set the classpath of the security domain to be used");
@@ -86,13 +87,12 @@ public class ArgParser {
 		// options.addOption(addOtherClassesForStatic);
 
         Option format = new Option(JIMPLE_FLAG, "jimple", false,
-                "Optional: Output as Jimple instead of a compiled class");
+                "Optional: Output as Jimple instead of as compiled class");
         format.setRequired(false);
         options.addOption(format);
 
 		Option output = new Option(OUTPUT_FOLDER_FLAG, "output", true,
                 "set output folder");
-		output.setRequired(true);
 		options.addOption(output);
 
 		Option filesToAdd = new Option(ADDITIONAL_FILES_FLAG, "files", true,
@@ -118,7 +118,6 @@ public class ArgParser {
 		help.setRequired(false);
 		options.addOption(help);
 
-		// Actually parsing...
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd;
 		try {
@@ -131,9 +130,8 @@ public class ArgParser {
             }
 
 			// m flag
+            mainclass = getRequiredOptionValue(cmd, MAINCLASS_FLAG);
 
-            mainclass = cmd.getOptionValue(MAINCLASS_FLAG);
-            System.out.println("MAINCLASS IS:" + mainclass);
             // case p flag
             if (cmd.hasOption(CLASSPATH)) {
                 for ( String path : cmd.getOptionValues(CLASSPATH)) {
@@ -170,11 +168,7 @@ public class ArgParser {
             toJimple = cmd.hasOption(JIMPLE_FLAG);
 
             // case o flag
-            if (cmd.hasOption(OUTPUT_FOLDER_FLAG)) {
-                outputFolder = cmd.getOptionValue(OUTPUT_FOLDER_FLAG);
-            } else {
-                outputFolder = ArgumentContainer.VALUE_NOT_SET;
-            }
+            outputFolder = getRequiredOptionValue(cmd, OUTPUT_FOLDER_FLAG);
 
 			// case f flag
             if (cmd.hasOption(ADDITIONAL_FILES_FLAG)) {
@@ -201,6 +195,7 @@ public class ArgParser {
 			// if illegal input
             // TODO: handle bad options (exit) in main
 		} catch (ParseException e) {
+		    System.err.println("Error parsing command line: " + e.getMessage());
 			printHelp(options);
 			System.exit(-1);
 		} catch (MalformedURLException e) {
@@ -208,7 +203,6 @@ public class ArgParser {
             System.exit(-1);
         }
 
-        // compiler complains if i don't put this here?!
-        throw new InternalAnalyzerException("This line must never be reached");
+        throw new InternalAnalyzerException("This line must never be reached"); // compiler complains if i dont put this here?!
 	}
 }

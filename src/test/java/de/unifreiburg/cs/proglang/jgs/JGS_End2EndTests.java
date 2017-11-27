@@ -8,8 +8,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import util.logging.L1Logger;
-
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -39,7 +37,7 @@ public class JGS_End2EndTests {
         this.securityMonitoringEvents = securityMonitoringEvents;
     }
 
-    Logger logger = L1Logger.getLogger();
+    Logger logger = Logger.getLogger(this.getClass().getCanonicalName());
 
     /**
      * Create an Iterable for all testclasses. Arguments: String name, boolean
