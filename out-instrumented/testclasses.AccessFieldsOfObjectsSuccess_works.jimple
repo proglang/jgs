@@ -5,9 +5,7 @@ public class testclasses.AccessFieldsOfObjectsSuccess extends java.lang.Object
     {
         testclasses.AccessFieldsOfObjectsSuccess r0;
         analyzer.level2.HandleStmt hs;
-        java.lang.String local_for_Strings;
         java.lang.String[] local_for_String_Arrays;
-        java.lang.Object local_for_Objects;
 
         r0 := @this: testclasses.AccessFieldsOfObjectsSuccess;
 
@@ -17,7 +15,7 @@ public class testclasses.AccessFieldsOfObjectsSuccess extends java.lang.Object
 
         specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(0, 0);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: void addObjectToObjectMap(java.lang.Object)>(r0);
 
@@ -29,11 +27,10 @@ public class testclasses.AccessFieldsOfObjectsSuccess extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.lang.String[] r0, local_for_String_Arrays;
-        java.lang.String r2, local_for_Strings;
-        testclasses.util.SimpleObject $r3;
+        java.lang.String r2;
+        testclasses.utils.SimpleObject $r3;
         java.io.PrintStream $r4;
         analyzer.level2.HandleStmt hs;
-        java.lang.Object local_for_Objects;
 
         r0 := @parameter0: java.lang.String[];
 
@@ -43,67 +40,47 @@ public class testclasses.AccessFieldsOfObjectsSuccess extends java.lang.Object
 
         staticinvoke <analyzer.level2.HandleStmt: void init()>();
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(0, 0);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
 
-        local_for_Strings = "testclasses.util.SimpleObject_$r3";
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkLocalPC(java.lang.String)>("testclasses.utils.SimpleObject_$r3");
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkLocalPC(java.lang.String)>(local_for_Strings);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("testclasses.utils.SimpleObject_$r3");
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfLocal(java.lang.String)>(local_for_Strings);
+        $r3 = new testclasses.utils.SimpleObject;
 
-        $r3 = new testclasses.util.SimpleObject;
+        specialinvoke $r3.<testclasses.utils.SimpleObject: void <init>()>();
 
-        specialinvoke $r3.<testclasses.util.SimpleObject: void <init>()>();
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void pushInstanceLevelToGlobalPC(java.lang.String)>("testclasses.utils.SimpleObject_$r3");
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void pushInstanceLevelToGlobalPC(java.lang.String)>("testclasses.util.SimpleObject_$r3");
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkGlobalPC(java.lang.Object,java.lang.String)>($r3, "<testclasses.utils.SimpleObject: java.lang.String field>");
 
-        local_for_Strings = "<testclasses.util.SimpleObject: java.lang.String field>";
-
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkGlobalPC(java.lang.Object,java.lang.String)>($r3, local_for_Strings);
-
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfField(java.lang.Object,java.lang.String)>($r3, local_for_Strings);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfField(java.lang.Object,java.lang.String)>($r3, "<testclasses.utils.SimpleObject: java.lang.String field>");
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object popGlobalPC()>();
 
-        $r3.<testclasses.util.SimpleObject: java.lang.String field> = "New field value";
+        $r3.<testclasses.utils.SimpleObject: java.lang.String field> = "New field value";
 
-        local_for_Objects = $r3;
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfFieldAndAssignmentLevel(java.lang.Object,java.lang.String)>($r3, "<testclasses.utils.SimpleObject: java.lang.String field>");
 
-        local_for_Strings = "<testclasses.util.SimpleObject: java.lang.String field>";
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("testclasses.utils.SimpleObject_$r3");
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfFieldAndAssignmentLevel(java.lang.Object,java.lang.String)>(local_for_Objects, local_for_Strings);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkLocalPC(java.lang.String)>("java.lang.String_r2");
 
-        local_for_Strings = "testclasses.util.SimpleObject_$r3";
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("java.lang.String_r2");
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>(local_for_Strings);
+        r2 = $r3.<testclasses.utils.SimpleObject: java.lang.String field>;
 
-        local_for_Strings = "java.lang.String_r2";
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfFieldAndAssignmentLevel(java.lang.Object,java.lang.String)>(class "java/lang/System", "<java.lang.System: java.io.PrintStream out>");
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkLocalPC(java.lang.String)>(local_for_Strings);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkLocalPC(java.lang.String)>("java.io.PrintStream_$r4");
 
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfLocal(java.lang.String)>(local_for_Strings);
-
-        r2 = $r3.<testclasses.util.SimpleObject: java.lang.String field>;
-
-        local_for_Objects = class "java/lang/System";
-
-        local_for_Strings = "<java.lang.System: java.io.PrintStream out>";
-
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfFieldAndAssignmentLevel(java.lang.Object,java.lang.String)>(local_for_Objects, local_for_Strings);
-
-        local_for_Strings = "java.io.PrintStream_$r4";
-
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkLocalPC(java.lang.String)>(local_for_Strings);
-
-        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfLocal(java.lang.String)>(local_for_Strings);
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("java.io.PrintStream_$r4");
 
         $r4 = <java.lang.System: java.io.PrintStream out>;
 
         virtualinvoke hs.<analyzer.level2.HandleStmt: void checkThatPCLe(java.lang.String)>("LOW");
 
-        local_for_Strings = "java.lang.String_r2";
-
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkThatLe(java.lang.String,java.lang.String)>(local_for_Strings, "LOW");
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkThatLe(java.lang.String,java.lang.String)>("java.lang.String_r2", "LOW");
 
         virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r2);
 
