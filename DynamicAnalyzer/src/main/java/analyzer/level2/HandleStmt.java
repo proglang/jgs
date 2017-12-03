@@ -2,6 +2,7 @@ package analyzer.level2;
 
 import analyzer.level2.storage.LocalMap;
 import analyzer.level2.storage.ObjectMap;
+import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import util.exceptions.IllegalFlowError;
 import util.exceptions.InternalAnalyzerException;
 import util.exceptions.NSUError;
@@ -20,7 +21,7 @@ import static analyzer.level2.HandleStmtUtils.NSU_ERROR_MESSAGE;
  * @author Regina Koenig (2015)
  */
 @SuppressWarnings("ALL")
-public class HandleStmt {
+public class HandleStmt<Level> {
 
     /**
      * Logger used by the run-time enforcement. Verbose message are available by
@@ -32,6 +33,8 @@ public class HandleStmt {
     private static ObjectMap objectmap;
     private HandleStmtUtils handleStatementUtils;
     PassivController controller;
+
+    private SecDomain<Level> secDomain = CurrentSecurityDomain.getInstance();
 
     /**
      * This must be called at the beginning of every method in the analyzed
@@ -95,8 +98,8 @@ public class HandleStmt {
      * @param securityLevel The securitylevel of actual return-statement.
      * @return The new security-level.
      */
-    protected Object setActualReturnLevel(Object securityLevel) {
-        return objectmap.setActualReturnLevel(securityLevel);
+    protected void setActualReturnLevel(Object securityLevel) {
+        objectmap.setActualReturnLevel(securityLevel);
     }
 
     /**
@@ -131,8 +134,8 @@ public class HandleStmt {
     public Object addFieldToObjectMap(Object object, String signature) {
         logger.info("Add Field "+signature+" to object" + object);
         handleStatementUtils.checkIfObjectExists(object);
-        Object fieldLevel = objectmap.setField(object, signature,
-                                               CurrentSecurityDomain.bottom());
+        Level fieldLevel = secDomain.bottom();
+        objectmap.setField(object, signature, fieldLevel);
         if (!objectmap.containsField(object, signature)) {
             throw new InternalAnalyzerException("Add field " + signature
                                                 + " to ObjectMap failed");
