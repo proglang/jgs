@@ -1,45 +1,21 @@
 package analyzer.level2;
 
-
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
-
 import java.lang.reflect.InvocationTargetException;
-
 
 /**
  *
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CurrentSecurityDomain {
-	@SuppressWarnings("rawtypes")
+
 	public static final SecDomain INSTANCE;
-//	public static final SecDomain secDomain =
-//			UserDefined.lowHigh();
-			// UserDefined.aliceBobCharlie();
-	
-	/*private static Object getSecDomainResource(String name) {
-	    InputStream in = Object.class.getResourceAsStream("/secdomain/" + name);
-	    if (in == null) {
-	        throw new RuntimeException(String.format("Cannot find secdomain resource: %s", name));
-	    }
-	    try {
-	    return new ObjectInputStream(in).readObject();
-	    } catch (IOException | ClassNotFoundException e) {
-	        throw new RuntimeException(String.format("Error reading secdomain resource %s: %s", name, e));
-	    }
-	}*/
+
+	public static <Level> SecDomain<Level> getInstance() { return INSTANCE; }
+
 	static {
-	    // TODO: read secdomain from resources
-	    /*
-	        secDomain = new UserDefined((Set)getSecDomainResource("levels"), 
-	                                    (Set)getSecDomainResource("lt"),
-	                                    (Map)getSecDomainResource("lubMap"),
-	                                    (Map)getSecDomainResource("glbMap"),
-	                                    (String)getSecDomainResource("topLevel"),
-	                                    (String)getSecDomainResource("bottomLevel"));
-	                                   */
 		try {
-			INSTANCE = (SecDomain)Class.forName("de.unifreiburg.cs.proglang.jgs.rt.CurrentSecurityDomainInstance")
+			INSTANCE = (SecDomain) Class.forName("de.unifreiburg.cs.proglang.jgs.rt.CurrentSecurityDomainInstance")
                      .getMethod("get").invoke(null);
 		} catch ( IllegalAccessException
                 | NoSuchMethodException

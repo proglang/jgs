@@ -8,7 +8,7 @@
     </extension>
     <option name="MAIN_CLASS_NAME" value="main.Main" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="-m testclasses.IfStmtFail -j -o out-instrumented" />
+    <option name="PROGRAM_PARAMETERS" value="-m testclasses.AccessFieldsOfObjectsSuccess -j -o out-instrumented" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />

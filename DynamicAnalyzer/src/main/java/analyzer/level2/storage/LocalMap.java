@@ -1,6 +1,7 @@
 package analyzer.level2.storage;
 
 import analyzer.level2.CurrentSecurityDomain;
+import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import util.exceptions.InternalAnalyzerException;
 import util.logging.L2Logger;
 
@@ -20,18 +21,20 @@ import java.util.logging.Logger;
  * Any local not present in the map is not dynamically tracked (i.e. statically checked).
  * A dynamically tracked local may be "uninitialized".
  *
- * @author Regina König (2015), Nicolas Müller (2016), fennell (2017)
+ * @author Regina König (2015), Nicolas Müller (2016), fennell (2017), Karsten Fix (2017)
  *
  */
 public class LocalMap<L> {
-	
-	private Logger logger = L2Logger.getLogger();
+
+	/** The logger for the messages */
+	private static final Logger logger = Logger.getLogger(LocalMap.class.getName());
 	
 	private LinkedList<LPCDominatorPair> localPC = new LinkedList<LPCDominatorPair>();
 	private HashMap<String, L> localMap = new HashMap<>();
+	private SecDomain<L> secDomain = CurrentSecurityDomain.getInstance();
 	
 	public LocalMap() {
-		localPC.push(new LPCDominatorPair(CurrentSecurityDomain.bottom() , -1));
+		localPC.push(new LPCDominatorPair(secDomain.bottom() , -1));
 	}
 	
 	/**
