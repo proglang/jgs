@@ -5,25 +5,25 @@ package analyzer.level2.storage;
  * Class to store the local PC with its corresponding dominator. When this dominator
  * occurs in the method body, the local PC is popped from the lPC stack. postDom is the
  * identity-value for the dominator.
- * @author Regina Koenig (2016)
+ * @author Regina Koenig (2016), Karsten Fix(2017)
  *
  */
-public class LPCDominatorPair {
+// Todo: Find out, if really needed - in case not: remove it!
+public class LPCDominatorPair<Level> {
 	
+	private Level secLevel;
+	private int postDominatorIdentity;
 	
-	Object secLevel;
-	int postDominatorIdentity;
-	
-	public LPCDominatorPair(Object securityLevel, int postDominatorIdentity) {
+	public LPCDominatorPair(Level securityLevel, int postDominatorIdentity) {
 		this.secLevel = securityLevel;
 		this.postDominatorIdentity = postDominatorIdentity;
 	}
 
-	public Object getSecurityLevel() {
+	public Level getSecurityLevel() {
 		return secLevel;
 	}
 	
-	public int getPostDominatorIdentity() {
+	int getPostDominatorIdentity() {
 		return postDominatorIdentity;
 	}
 

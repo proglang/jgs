@@ -86,7 +86,7 @@ public class HandleStmt {
     public void close() {
         logger.info("Close HandleStatement");
         objectmap.popGlobalPC();
-        localmap.checkisLPCStackEmpty();
+        localmap.isEmptyLPC();
     }
 
     /**

@@ -3,15 +3,11 @@ package analyzer.level2.storage;
 import analyzer.level2.CurrentSecurityDomain;
 import de.unifreiburg.cs.proglang.jgs.constraints.SecDomain;
 import util.exceptions.InternalAnalyzerException;
-import util.logging.L2Logger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-
 
 /**
  * The LocalMap
@@ -24,126 +20,157 @@ import java.util.logging.Logger;
  * @author Regina König (2015), Nicolas Müller (2016), fennell (2017), Karsten Fix (2017)
  *
  */
-public class LocalMap<L> {
+public class LocalMap<Level> {
+
+	// <editor-fold desc="Fields">
 
 	/** The logger for the messages */
 	private static final Logger logger = Logger.getLogger(LocalMap.class.getName());
-	
-	private LinkedList<LPCDominatorPair> localPC = new LinkedList<LPCDominatorPair>();
-	private HashMap<String, L> localMap = new HashMap<>();
-	private SecDomain<L> secDomain = CurrentSecurityDomain.getInstance();
-	
+
+	/** The internal representation of the Local PC or simply LPC */
+	private LinkedList<LPCDominatorPair<Level>> localPC = new LinkedList<>();
+
+	/** The internal representation of the Local Map.
+	 *  It maps an identifier String of a Local variable to its Security Level
+	 *  */
+	private HashMap<String, Level> localMap = new HashMap<>();
+
+	/** The {@link SecDomain} instance, that is used for the calculations. */
+	private SecDomain<Level> secDomain = CurrentSecurityDomain.getInstance();
+
+	// </editor-fold>
+
+	/**
+	 * Creates a new LocalMap
+	 */
 	public LocalMap() {
-		localPC.push(new LPCDominatorPair(secDomain.bottom() , -1));
+		localPC.push(new LPCDominatorPair<>(secDomain.bottom() , -1));
 	}
-	
+
+	// <editor-fold desc="LPC Operations">
+
 	/**
 	 * Check whether the lpc stack is empty. This method is invoked at the end of every method.
 	 * If the stack is not empty, than the program is closed with an InternalAnalyzerException.
-	 * At the end there should be only one element left since there is one bottom() 
+	 * At the end there should be only one element left since there is one bottom()
 	 * element at the beginning.
 	 */
-	public void checkisLPCStackEmpty() {
+	public void isEmptyLPC() {
 		localPC.pop();
-		if (!localPC.isEmpty()) {
-			int n = localPC.size();
-			throw new InternalAnalyzerException("LocalPC stack is not empty at the "
-					+ "end of the method. There are still " 
-					+ n + " elements.");
-		}
+		if (!localPC.isEmpty())
+			throw new InternalAnalyzerException("LocalPC is not empty at the end of the method. "
+												+"There are still " + localPC.size() + " elements.");
 	}
-	
+
+    // <editor-fold desc="Putting stuff into LPC">
 	/**
-	 * @return The first element of the LPC stack without removing it.
-	 */
-	public Object getLocalPC() {
-		if (localPC == null || localPC.size() < 1) {
-			throw new InternalAnalyzerException("LocalPCStack is empty");
-		}
-		return localPC.getFirst().getSecurityLevel();
-	}
-	
-	/**
-	 * Remove first element of LPC-list if the given identity-value matches.
-	 * @param dominatorIdentity Identity of the expected first element in LPC-list.
-	 */
-	public void popLocalPC(int dominatorIdentity) {
-		int n = localPC.size();
-		if (n < 1) {
-			throw new InternalAnalyzerException("localPC-stack is empty");
-		}
-		if (!dominatorIdentityEquals(dominatorIdentity)) {
-			throw new InternalAnalyzerException(
-					"Trying to pop LPC with wrong identity");
-		}
-		localPC.pop();
-		logger.finer("Reduced stack size from " + n 
-				+ " to " + localPC.size() + " elements.");
-	}
-	
-	/**
-	 * Push a localPC and its corresponding identity-value to the LPC-stack.
+	 * Adds the given Security Level and its corresponding identity-value to the top of the LPC.
 	 * @param securityLevel New security-level for the LPC.
 	 * @param dominatorIdentity Its identity.
 	 */
-	public void pushLocalPC(Object securityLevel, int dominatorIdentity) {
-		localPC.push(new LPCDominatorPair(securityLevel, dominatorIdentity));
+	public void pushLocalPC(Level securityLevel, int dominatorIdentity) {
+		localPC.push(new LPCDominatorPair<>(securityLevel, dominatorIdentity));
 	}
-	
-	/**
-	 * Insert a new local into localMap.
-	 * @param signature The signature of the local.
-	 * @param securityLevel Its securitylevel.
-	 */
-	public void setLevel(String signature, L securityLevel) {
-		localMap.put(signature, securityLevel);
-	}
+	// </editor-fold>
+
+	// <editor-fold desc="Getting stuff from LPC">
 
 	/**
-	 * Insert a new local into localMap with default security-level.
-	 * @param signature The signature of the local.
+	 * Gets the Security Level of the LPC.
+	 * @return The first element of the LPC stack without removing it.
+	 * @throws InternalAnalyzerException If LPC is empty.
 	 */
-	public void setToBottom(String signature) {
-	    // TODO: parameterize (and un-static) "CurrentSecurityDomain" instead of casting
-		localMap.put(signature, (L)CurrentSecurityDomain.bottom());
+	public Level getLocalPC() {
+		if (localPC == null || localPC.size() < 1) throw new InternalAnalyzerException("LocalPCStack is empty");
+		return localPC.getFirst().getSecurityLevel();
 	}
 
-	public void removeLocal(String signature) {
-		localMap.remove(signature);
-	}
+	// </editor-fold>
 
+	// <editor-fold desc="Removing Stuff from LPC">
 
 	/**
-	 * Return true iff the local is tracked.
+	 * Removes the first element of LPC-stack, if the given identity-value matches.
+	 * @param dominatorIdentity Identity of the expected first element in LPC-list.
+	 * @throws InternalAnalyzerException If LPC is Empty <b>or</b> the Identity is wrong.
 	 */
-	public boolean isTracked(String signature) {
-		return localMap.containsKey(signature);
+	public void popLocalPC(int dominatorIdentity) {
+		int n = localPC.size();
+		if (n < 1) throw new InternalAnalyzerException("localPC-stack is empty");
+		if (!dominatorIdentityEquals(dominatorIdentity))
+			throw new InternalAnalyzerException("Trying to pop LPC with wrong identity");
+		localPC.pop();
+		logger.finer("Reduced stack size from " + n+ " to " + localPC.size() + " elements.");
 	}
+	// </editor-fold>
 
-	
-	/**
-	 * Get the level of a local
-	 * @param signature The signature of a local.
-	 * @return The new securitylevel.
-	 */
-	public L getLevel(String signature) {
-		L result;
-		if (!localMap.containsKey(signature)) {
-			logger.log(Level.INFO, "Local `{0}' is not tracked", signature);
-			result = (L)CurrentSecurityDomain.bottom();
-		} else {
-			result = localMap.get(signature);
-		}
-		logger.info("Getting label of " +  signature + " which is: " + result );
-		return result;
-	}
-	
+	// </editor-fold>
+
+	// <editor-fold desc="LMap Operations"
+
+    // <editor-fold desc="Putting Stuff into LMap"
+    /**
+     * Sets the security level of the given Signature to the given Level.
+     * @param signature The signature of the local, which security Level will now be tracked.
+     * @param securityLevel The security level, the Local will have now.
+     */
+    public void setLevel(String signature, Level securityLevel) {
+        localMap.put(signature, securityLevel);
+    }
+
+    /**
+     * Sets the security level of the given signature to {@link SecDomain#bottom()}.
+     * @param signature The signature of the local, which level shall be reset.
+     */
+    public void setToBottom(String signature) {
+        localMap.put(signature, secDomain.bottom());
+    }
+    // </editor-fold>
+
+    // <editor-fold desc="Getting Stuff from LMap"
+
+    /**
+     * Tells, if the given local identification is tracked by this Local Map
+     * @param signature The identification of the local, that could be tracked
+     * @return <b>true</b> if the identification is within the Local Map or <b>false</b> otherwise.
+     */
+    public boolean isTracked(String signature) {
+        return localMap.containsKey(signature);
+    }
+
+    /**
+     * Gets the security level of the given identification of a local. If the signature is <i>unknown</i>, it will
+     * create an entry for it with the default security level {@link SecDomain#bottom()}.
+     * @param signature The signature of a local, which security level is wanted.
+     * @return The security Level of the identification.
+     */
+    public Level getLevel(String signature) {
+        Level result = (localMap.containsKey(signature)) ? localMap.get(signature) : secDomain.bottom();
+        // Todo: Check, if the Bottom shall be saved... asumed yes - but was not
+        if (!localMap.containsKey(signature)) logger.fine("Local "+signature+" is not tracked!");
+        return result;
+    }
+
+    // </editor-fold>
+
+    // <editor-fold desc="Removing stuff from LMap">
+
+    /**
+     * Removes the Security Level of the given Signature. This methods stops the tracking of the
+     * given identification of a Local.
+     * @param signature The identification of a Local.
+     */
+    public void removeLocal(String signature) {
+        localMap.remove(signature);
+    }
+    // </editor-fold>
+	// </editor-fold>
 
 	/**
 	 * Print elements of localmap in a readable form.
 	 */
 	public void printElements() {
-		for (Map.Entry<String, L> entry : localMap.entrySet()) {
+		for (Map.Entry<String, Level> entry : localMap.entrySet()) {
 			System.out.println("Key " + entry.getKey() + " , Value: " 
 					+ entry.getValue());
 		}
