@@ -16,10 +16,21 @@ public class IOUtils {
      * console or an error occurred while reading.
      */
     public static String readSecret() {
-        String result = null;
         Console cons = System.console();
+        String result;
         if (cons != null) {
             result = new String(cons.readPassword("Enter a secret: "));
+        } else {
+            System.err.println("No console found. Secrets you enter are shown in clear text.");
+            try {
+                result = new BufferedReader(new InputStreamReader(System.in))
+                            .readLine();
+                if (result == null) {
+                    throw new IOException("Readline returned null");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("IO error while trying to read secret", e);
+            }
         }
         return result;
     }

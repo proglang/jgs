@@ -73,6 +73,11 @@ object JgsDemo {
     )
     run(sbtRunProcess)
 
-    Seq("java", "-cp", s"${outputDir}:${classpathRun}", classToRun).!
+
+    val runCommand = Seq("java", "-cp", s"${outputDir}:${classpathRun}", classToRun)
+    println()
+    println(runCommand.map(s => "\"" + s + "\"").mkString(" "))
+    println()
+    runCommand.run(true)
   }
 }
