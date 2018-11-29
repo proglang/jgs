@@ -1,4 +1,4 @@
-#!/usr/bin/env scala
+package de.unifreiburg.cs.proglang.jgs
 
 import sys.process._
 

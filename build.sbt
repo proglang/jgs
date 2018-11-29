@@ -57,6 +57,10 @@ lazy val jgs =
       }
     )
 
+lazy val jgsDemo =
+  (project in file("jgsDemo")).
+    settings(commonSettings:_*)
+
 lazy val DynamicAnalyzer =
   (project in file("DynamicAnalyzer")).
     dependsOn(InstrumentationSupport, JGSSupport).
