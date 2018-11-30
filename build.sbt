@@ -1,8 +1,11 @@
 lazy val setScalaVersion = scalaVersion := "2.11.11"
 
+lazy val setVersion = version := "0.1"
+
 lazy val commonSettings = Seq(
 
   setScalaVersion,
+  setVersion,
   organization := "de.unifreiburg.cs.proglang",
   unmanagedBase := file("lib"),
 
@@ -14,7 +17,6 @@ lazy val commonSettings = Seq(
   scalacOptions += "-target:jvm-1.8",
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
 
-  version := "0.1"
 )
 
 lazy val gradConstraintsDeps = Seq(
@@ -121,4 +123,5 @@ lazy val UserDefinedSecurityDomain =
 lazy val LMHSecurityDomain =
   (project in file ("LMHSecurityDomain")).
     dependsOn(InstrumentationSupport).
-    settings(setScalaVersion)
+    settings(setScalaVersion).
+    settings(setVersion)
