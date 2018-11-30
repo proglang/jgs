@@ -32,7 +32,7 @@ object JgsDemo {
     val options = nextOption(args.toList)
     val secdomainProject = options.getOrElse('secdomain, "LMHSecurityDomain")
     val secdomainCP = secdomainProject + "/target/scala-2.11/classes"
-    val secdomainJar = secdomainProject + "/target/scala-2.11/lmhsecuritydomain_2.11-0.1-SNAPSHOT.jar"
+    val secdomainJar = secdomainProject + "/target/scala-2.11/lmhsecuritydomain_2.11-0.1.jar"
     val demoProject = options.getOrElse('demo, "DemoTestclasses")
     val classpathCompile = List(
       "JGSTestclasses/Demo/target/scala-2.11/classes",
