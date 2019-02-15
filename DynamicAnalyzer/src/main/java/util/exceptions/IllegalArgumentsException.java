@@ -1,7 +1,7 @@
 package util.exceptions;
 
 /**
- * When Programm is called with illegal arguments
+ * When Program is called with illegal arguments
  * @author Nicolas Müller
  *
  */

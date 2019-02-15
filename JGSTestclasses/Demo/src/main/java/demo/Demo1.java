@@ -19,18 +19,25 @@ public class Demo1 {
     @Effects({"LOW", "?"})
     public static void main(String[] args) {
         String secret = IOUtils.readSecret(); // <- library method
-
+        /* secret has level H as it is read using readSecret() */
         IOUtils.printSecret(secret);          // <- no leak
+
+        /* secret has level H, hence println() causes an error */
         // System.out.println(secret);        // <- static leak
+
+        /* dynField has level ? and it cannot be cast to HIGH which is secret's level, hence causes an error */
         // dynField = Casts.cast("HIGH ~> ?", secret);             // <- journey through dynamic code
+
+        /* ? cannot flow into HIGH type */
         // IOUtils.printSecret(Casts.cast("? ~> HIGH", dynField)); // <-
+
+        /* ? can flow into LOW type */
         // IOUtils.printSecret(Casts.cast("? ~> LOW", dynField)); // <- dynamically detected leak
 
 
-        /*
-        staticField = secret;
-        IOUtils.printSecret(staticField);
-        */
+        /* staticField has level H like secret, so assignment and printSecret cause no error */
+        /* staticField = secret;
+        IOUtils.printSecret(staticField); */
     }
 
 }

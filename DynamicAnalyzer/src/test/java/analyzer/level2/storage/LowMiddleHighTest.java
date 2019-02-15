@@ -13,11 +13,11 @@ import org.junit.Test;
  */
 public class LowMiddleHighTest {
 	
-	@Before
+	/*@Before
 	 public void beforeMethod() {
 	     org.junit.Assume.assumeTrue(CurrentSecurityDomain.INSTANCE instanceof LowMediumHigh);
 	     // execute only if correct lattice is used
-	 }
+	 }*/
 	
 	@Test
 	public void LessThanTest() {

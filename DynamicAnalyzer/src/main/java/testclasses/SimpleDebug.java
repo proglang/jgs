@@ -1,7 +1,7 @@
 package testclasses;
 
 /**
- * Use to play arround
+ * Use to play around
  * @author Nicolas Müller
  *
  */

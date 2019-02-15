@@ -10,11 +10,11 @@ import util.staticResults.implementation.Dynamic;
 import de.unifreiburg.cs.proglang.jgs.typing.FixedTypings;
 
 /**
- * Desribe how we want the fake analysis results the be
+ * Describe how we want the fake analysis results to be
  */
 class FakeMethodTypings {
 
-    // same as ALL_DYNAMIC, except for Cx, which returns public on any reques
+    // same as ALL_DYNAMIC, except for Cx, which returns public on any request
     public static final MethodTypings<LowMediumHigh.Level> CX_PUBLIC = new MethodTypings<LowMediumHigh.Level>() {
 
 

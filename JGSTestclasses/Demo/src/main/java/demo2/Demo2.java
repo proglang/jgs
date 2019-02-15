@@ -66,3 +66,7 @@ public class Demo2 {
     }
 
 }
+
+/* missing Constraints(example3()) */
+/* Add Constraints({"0 <=LOW", "LOW ~ @0"}) */
+/* secret has level HIGH, so all Sysouts fail */

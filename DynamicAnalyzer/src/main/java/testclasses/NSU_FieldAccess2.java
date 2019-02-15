@@ -15,3 +15,5 @@ public class NSU_FieldAccess2 {
 		}
 	}
 }
+
+/* c.f with makeHigh gives error */

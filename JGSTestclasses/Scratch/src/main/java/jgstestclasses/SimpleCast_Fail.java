@@ -16,3 +16,6 @@ public class SimpleCast_Fail {
         System.out.println(Casts.cast("? ~> LOW", x));
     }
 }
+
+/* x has level H due to makeHigh(). Hence casting it to low fails */
+/* if v is assigned to x without makeHigh, then there is no error */

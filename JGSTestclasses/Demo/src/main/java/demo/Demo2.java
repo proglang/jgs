@@ -44,3 +44,7 @@ public class Demo2 {
         }
     }
 }
+
+/* If readDyn is called with false and printDyn is called with true, then it reads like 42 but prints like XX */
+/* If both are called with false, then reads and prints like 42 */
+/*--> Check with Lu : If both called with true, then reads like 42 but prints like XX */

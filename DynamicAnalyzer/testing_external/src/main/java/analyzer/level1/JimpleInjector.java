@@ -1005,7 +1005,7 @@ public class JimpleInjector {
 		paramTypes.add(RefType.v("java.lang.String"));
 		
 		String signature = getSignatureForLocal(l);
-		
+
 		Stmt assignSignature = Jimple.v().newAssignStmt(
 				local_for_Strings, StringConstant.v(signature));
 		
@@ -1113,7 +1113,7 @@ public class JimpleInjector {
 		
 		ArrayList<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("java.lang.String"));
-		
+
 		String domIdentity = DominatorFinder.getIdentityForUnit(pos);
 		logger.info("Dominator \"" + pos.toString()
 				+ "\" has identity " + domIdentity);

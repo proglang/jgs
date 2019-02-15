@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Nicolas Müller on 12.01.17.
  * This is a structured container for the arguments passed in.
- * It's purpose is to facility handeling the appropriate arguments to both soot and ant.
+ * It's purpose is to facilitate handling the appropriate arguments to both soot and ant.
  */
 public class ArgumentContainer {
 

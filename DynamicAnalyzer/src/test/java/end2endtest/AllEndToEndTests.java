@@ -31,7 +31,7 @@ public class AllEndToEndTests {
 	 * @param name
 	 *            Name of the class
 	 * @param securityMonitoringEvent
-	 *            specifiy if, and what kind of exception is expected
+	 *            specify if, and what kind of exception is expected
 	 * @param involvedVars
 	 *            variables which are expected to be involved in the exception
 	 */

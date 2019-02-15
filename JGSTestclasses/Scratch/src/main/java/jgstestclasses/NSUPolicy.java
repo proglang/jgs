@@ -29,3 +29,5 @@ public class NSUPolicy {
 	}
 
 }
+
+/* secret is a public variable, hence casting it as HIGH causes an error. Commenting it can eliminate the error. */

@@ -37,3 +37,6 @@ public class PolymorphicMethods2_Success {
         IOUtils.printSecret(String.valueOf(i));
     }
 }
+
+/* Sysout instead of printSecret causes an error as i has level H due to the condition on line 33. But it does not fail there due to NSU
+    because i was not cast */

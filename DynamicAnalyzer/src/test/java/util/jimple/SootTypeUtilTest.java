@@ -32,7 +32,7 @@ public class SootTypeUtilTest {
 
         SimpleObject[][] objects = new SimpleObject[0][85];
         assertEquals(Arrays.asList(NullType.v(), RefType.v("java.lang.String"),
-                                   ArrayType.v(RefType.v("testclasses.util.SimpleObject"), 2)),
+                                   ArrayType.v(RefType.v("testclasses.utils.SimpleObject"), 2)),
 
                      SootTypeUtil.createParameters(null, String.class, objects.getClass()));
 

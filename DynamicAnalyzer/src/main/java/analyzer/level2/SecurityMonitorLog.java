@@ -3,7 +3,7 @@ package analyzer.level2;
 /**
  * An interface to handle particular events that occur during monitoring. The
  * SecurityMonitorLog is *not* intended for security enforcement. It is only
- * intended to provided hooks to "meta-tasks" like logging and unit testing.
+ * intended to provide hooks to "meta-tasks" like logging and unit testing.
  *
  * See the SimpleSecurityMonitorLog and EventChecker for two examples.
  */

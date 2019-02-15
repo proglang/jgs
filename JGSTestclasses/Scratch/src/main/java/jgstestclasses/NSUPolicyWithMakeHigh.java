@@ -29,3 +29,5 @@ public class NSUPolicyWithMakeHigh {
 	}
 
 }
+
+/* secret has level H due to makeHigh() in line 20, this causes a NSU Failure at line 23 */

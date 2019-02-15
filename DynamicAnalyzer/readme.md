@@ -101,7 +101,7 @@ if (secret == 42) {					// PC is HIGH
 ```
 The local `y` would be upgraded from LOW to HIGH, because the high guard (`secret == 42`) sets the localPC to HIGH inside the if statement. This upgrade will not pass: An IllegalFlowException will be thrown, even though no information has yet been leaked. If the PC is HIGH, we cannot update a LOW variable and have it upgraded to HIGH. The reason for this is purely technical, and can be understood when studying the NSU policy.
 
-A working example can be found in code unter `testclasses.NSUPolicy1`.
+A working example can be found in code under `testclasses.NSUPolicy1`.
 
 ### Further example
 Consider the following code (see `testclasses.NSUPolicy2` for working example) 

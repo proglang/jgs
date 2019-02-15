@@ -23,3 +23,5 @@ public class NoNSUForUninitializedVariables {
     }
 
 }
+
+/* FAILS with NSU Error*/

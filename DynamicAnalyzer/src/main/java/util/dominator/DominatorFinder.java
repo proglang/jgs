@@ -5,7 +5,6 @@ import soot.Unit;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
 import util.exceptions.MaximumNumberExceededException;
-import util.logging.L1Logger;
 
 import java.lang.Long;
 import java.util.HashMap;
@@ -22,7 +21,7 @@ import java.util.logging.Logger;
 // TODO: it is also wasteful to use strings as ids. We should use ints (HandleStmt also should use ints)
 public class DominatorFinder {
 	private static MHGPostDominatorsFinder<Unit> pdfinder;
-	private static HashMap<Unit, String> domList;
+	private static HashMap<Unit, String> domMap;
 	
 	// ID-counter for identifying postdominators 
 	private static long identity;
@@ -37,7 +36,7 @@ public class DominatorFinder {
 	 */
 	public static void init(Body body) {
 		pdfinder = new MHGPostDominatorsFinder<>(new BriefUnitGraph(body));
-		domList = new HashMap<>();
+		domMap = new HashMap<>();
 		identity = 0;
 	}
 
@@ -46,7 +45,7 @@ public class DominatorFinder {
 	 * The unit is stored in an internal list for later analysis
 	 * (if it's not already in the list).
 	 * @param node IfStmt.
-	 * @return Hashvalue of immerdiate dominator.
+	 * @return Hashvalue of immediate dominator.
 	 */
 	public static String getImmediateDominatorIdentity(Unit node) {
 		Unit dom = pdfinder.getImmediateDominator(node);
@@ -70,7 +69,7 @@ public class DominatorFinder {
 	 *     called ifStmt.
 	 */
 	public static boolean containsStmt(Unit node) {
-		return domList.containsKey(node);
+		return domMap.containsKey(node);
 	}
 	
 	/**
@@ -79,8 +78,8 @@ public class DominatorFinder {
 	 *     called ifStmt.
 	 */
 	public static void removeStmt(Unit node) {
-		if (domList.containsKey(node)) {
-			domList.remove(node);
+		if (domMap.containsKey(node)) {
+			domMap.remove(node);
 		}
 	}
 	
@@ -89,12 +88,12 @@ public class DominatorFinder {
 	 * @return The hash-value for given object.
 	 */
 	public static String getIdentityForUnit(Unit dom) {
-		if (domList.containsKey(dom)) {
-			return domList.get(dom);
+		if (domMap.containsKey(dom)) {
+			return domMap.get(dom);
 		} else {
 			if (identity < Long.MAX_VALUE) {
 				identity++;
-				domList.put(dom, Long.toString(identity));
+				domMap.put(dom, Long.toString(identity));
 			} else {
 				new MaximumNumberExceededException("You have exceeded the maximum "
 					+ "number of allowed if-statements "
@@ -102,11 +101,11 @@ public class DominatorFinder {
 					+ Long.toString(identity));
 			}
 		}
-		return domList.get(dom);
+		return domMap.get(dom);
 	}
 	
 	public static void printDomList() {
-		System.out.println(domList.toString());
+		System.out.println(domMap.toString());
 	}
   
 }

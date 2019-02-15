@@ -29,3 +29,5 @@ public class Demo4 {
 
 
 }
+
+/* dynSecret has security level H, making level of dynField H too. But the method should produce LOW Effect and hence fails */

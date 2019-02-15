@@ -26,10 +26,10 @@ public class WriteEffectCollector {
     /** The graph, that is the base for all calculations */
     private UnitGraph graph;
 
-    /** Finds all PostDominatorS based on the graph */
+    /** Finds all PostDominators based on the graph */
     private MHGPostDominatorsFinder<Unit> postDom;
 
-    /** Finds all PreDominatorS based on the graph*/
+    /** Finds all PreDominators based on the graph*/
     private MHGDominatorsFinder<Unit> preDom;
     // </editor-fold>
 

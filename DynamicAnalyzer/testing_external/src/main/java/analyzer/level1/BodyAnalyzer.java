@@ -54,7 +54,7 @@ public class BodyAnalyzer extends BodyTransformer{
 		Chain<Unit> units;
 		
 		/*
-		 * Chain<Local> locals contains for TestProgramm Simple:
+		 * Chain<Local> locals contains for TestProgram Simple:
 		 * 
 		 * [r0, r1, $r2, r3, $r4]
 		 */

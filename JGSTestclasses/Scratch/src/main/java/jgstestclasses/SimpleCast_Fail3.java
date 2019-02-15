@@ -13,3 +13,6 @@ public class SimpleCast_Fail3 {
         System.out.println(Casts.cast("? ~> LOW", x));
     }
 }
+
+/* x has level H due to the cast, hence it cannot be cast to LOW */
+/* If the cast in line 13 is removed, then it causes an error which can be fixed by printSecret() */

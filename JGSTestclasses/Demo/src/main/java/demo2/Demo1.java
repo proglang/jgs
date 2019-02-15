@@ -58,3 +58,6 @@ public class Demo1 {
     }
 
 }
+
+
+/* missing Effects(all methods) and Constraints(example3()) */

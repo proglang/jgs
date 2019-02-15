@@ -22,7 +22,7 @@ public class PrivateVariableSuccess {
 		}
 		
 		// assign a high-sec variable to a low-sec, private one multiple times
-		// gets called multpile times: Check the output!
+		// gets called multiple times: Check the output!
 		int low = func(x,  y);
 		low = func(x,  low);
 		low = func(x,  z);

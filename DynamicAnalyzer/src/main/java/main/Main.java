@@ -73,7 +73,7 @@ public class Main {
 		Logger l1 = Logger.getLogger("");
 		l1.setLevel(Level.ALL);
 
-		// Avoiding passing the Messages more up. Abd removing all standart
+		// Avoiding passing the Messages more up. And removing all standard
 		// Handlers, such that the Messages only appearing, where we want.
 		// l1.setUseParentHandlers(false);
 		for (Handler h : l1.getHandlers()) l1.removeHandler(h);
@@ -122,8 +122,8 @@ public class Main {
         String extraCpClasses = String.join(File.pathSeparator, sootOptionsContainer.getAddClassesToClasspath());
         classPath = String.join(File.pathSeparator, extraCpDirs, classPath, extraCpClasses);
 
-        // Add the current classpath to soots classpath
-		// TODO: this is only a quick hack for testing. We should figure out precicely how the soot classpath should look.
+        // Add the current classpath to soot classpath
+		// TODO: this is only a quick hack for testing. We should figure out precisely how the soot classpath should look.
 		List<String> cpath = new ArrayList<>();
         // TODO: Lu: I'm also not sure what a "ContextClassLoader" is.
 		// (pasted from https://stackoverflow.com/questions/11613988/how-to-get-classpath-from-classloader)

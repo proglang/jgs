@@ -128,7 +128,7 @@ A multiple-If looks like this in Jimple (compare Section3, the Jimpelised If/IfE
 ======================================================
 
 
-5.1) If one if-clause creates a high context... is it nesseccary that the other clauses are high,too?
+5.1) If one if-clause creates a high context... is it necessary that the other clauses are high too?
 -----------------------------------------------------------------------------------------------------
 
 
@@ -138,7 +138,7 @@ A multiple-If looks like this in Jimple (compare Section3, the Jimpelised If/IfE
  } else if (...) {
    ...HIGH...
  } else if (...) {
-   ...LOW...    //!! IF this clause is active it means that the condition of the highclause was false
+   ...LOW...    //!! IF this clause is active it means that the condition of the high clause was false
  } else {
    ???          //!!
  }        
@@ -167,9 +167,10 @@ PROBLEM: In jimple code, we cannot determine if this was just one
  	"HandleStmt.checkCondition(String domHash, String... args"-stmt BEFORE the IfStmt.
  	-- HandleStmt.checkCondition joins the locals with the previous localPC and adds it
  		together with the domHashValue as LPCDominatorPair to a list in LocalMap.
+
  2. In the same JimpleInjector Method, the DominatorFinder computes the immediate
  	dominator for this Stmt. The dominatorFinder stores the unit in an internal list for later
- 	analysis and returns the hashvalueof the dominator. The hashvalue is needed as an
+ 	analysis and returns the hashvalue of the dominator. The hashvalue is needed as an
  	argument for checkcondition and will be used later in the LocalMap.
  	
  3. The BodyAnalyzer checks for every unit if it is stored as a dominator. If this is the case

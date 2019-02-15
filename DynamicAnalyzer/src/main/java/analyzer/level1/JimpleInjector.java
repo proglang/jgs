@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * JimpleInjector is handles the inserts of additional instructions in a methods
+ * JimpleInjector handles the inserts of additional instructions in a methods
  * body, such that the Dynamic Checking is possible.
  *
  * @author Regina Koenig (2015), Karsten Fix (2017), fennell (2017)

@@ -17,7 +17,7 @@ public class NSU_SwitchStmtFail {
 		switch (x) {
 		  case 1: 
 			  y += "Case 1"; 		// Should always NSU. However, NSU thrown only 
-			  						// if switch has just one banch
+			  						// if switch has just one branch
 			  break;
 		  // default: 				    // if default case is removed, it does throw NSU
 			  						// because then the compiler reuses the y variable

@@ -45,7 +45,7 @@ public class HandleStmt {
         objectmap = ObjectMap.getInstance();
     }
 
-    @SuppressWarnings("unused")
+    //@SuppressWarnings("unused")
     /**
      * Initialise the HandleStmtUtils. Use also to specify if, and what kind
      * of exception we expect
@@ -190,9 +190,9 @@ public class HandleStmt {
      * @param bject object
      * @return number of fields for given object
      */
-    protected int getNumberOfFieldsInObjectMap(Object bject) {
-        handleStatementUtils.checkIfObjectExists(bject);
-        return objectmap.getNumberOfFields(bject);
+    protected int getNumberOfFieldsInObjectMap(Object object) {
+        handleStatementUtils.checkIfObjectExists(object);
+        return objectmap.getNumberOfFields(object);
     }
 
     /**
@@ -428,7 +428,7 @@ public class HandleStmt {
      * localmap.
      *
      * @param dominatorIdentity identity of the postdominator.
-     * @param args              List of signatore-string of all locals.
+     * @param args              List of signature-string of all locals.
      */
     public void checkCondition(String dominatorIdentity, String... args) {
         logger.info("Check condition of ifStmt");
@@ -676,8 +676,9 @@ public class HandleStmt {
      * don't require a cast.
      */
     public void checkNonSensitiveLocalPC() {
-        logger.info("NSU check for updating public a variable");
-       if (!CurrentSecurityDomain.le(localmap.getLocalPC(),CurrentSecurityDomain.bottom())) {
+        logger.info("NSU check for updating a public variable");
+       if (!CurrentSecurityDomain.le(localmap.getLocalPC(),
+                                     CurrentSecurityDomain.bottom())) {
           handleStatementUtils.abort(new NSUError("Sensitive update to public variable"));
        }
     }

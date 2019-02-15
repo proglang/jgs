@@ -4,6 +4,7 @@ package jgstestclasses;
  * Created by Nicolas Müller on 13.03.17.
  */
 
+import de.unifreiburg.cs.proglang.jgs.support.Casts;
 import de.unifreiburg.cs.proglang.jgs.support.Constraints;
 import de.unifreiburg.cs.proglang.jgs.support.Effects;
 import de.unifreiburg.cs.proglang.jgs.support.Sec;
@@ -13,6 +14,10 @@ public class ScratchMonomorphic_Success {
     @Constraints({"LOW <= @0"})
     public static void main(String[] args) {
 
+        // Added by gaurr
+        /* System.out.println(Casts.cast("LOW ~> ?", aStaticMethod(10)));
+        System.out.println(Casts.cast("LOW ~> ?", methodWithImplicitFlows(true, false)));
+        */ // -- Both cause error
     }
 
     int answer = 42;
@@ -37,7 +42,7 @@ public class ScratchMonomorphic_Success {
     }
 
     @Constraints({"pub <= @0", "? <= @1", "@0 <= @ret", "@1 <= @ret"})
-    public int methodWithImplicitFlows(boolean i, boolean j) {
+    public static int methodWithImplicitFlows(boolean i, boolean j) {
         int z = 0;
         if (i) {
             z += 10;
@@ -50,3 +55,4 @@ public class ScratchMonomorphic_Success {
 
 }
 
+/* Ask Lu - incomplete ? */

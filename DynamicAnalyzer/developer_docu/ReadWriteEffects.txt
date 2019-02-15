@@ -23,5 +23,5 @@
 >> ARRAY REFERENCES
 
 >> RETURN VALUES
-> Standard value is HIGH (for external methodTypings). If a contant is returned,
+> Standard value is HIGH (for external methodTypings). If a constant is returned,
 	the value is LOW.

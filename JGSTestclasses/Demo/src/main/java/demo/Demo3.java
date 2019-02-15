@@ -33,7 +33,8 @@ public class Demo3 {
         String x = Casts.cast("HIGH ~> ?", secretString);
         String low = "I guess the secret is `42'";
         String tmp = null;
-        if (x != null) {
+        if (x != null) {                    // Since x has security level as H, condition on it sets level of tmp to H as well which correspondingly sets level of low to H, irrespective of
+                                            // where the condition tmp == null is met. But the println() tries to cast low to L and thus it fails.
             tmp = "secret is null";
         }
         if (tmp == null) {
@@ -54,3 +55,6 @@ public class Demo3 {
         return msg;
     }
 }
+
+/* To avoid NSU Failure
+* Cast the secretString in line 33 to LOW and define its security level as LOW in line 21 */

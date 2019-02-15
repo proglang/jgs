@@ -35,3 +35,6 @@ public class PolymorphicMethods2_Fail {
         IOUtils.printSecret(String.valueOf(i));
     }
 }
+
+/* NSU failure at line 32 as dynSecret has level H and
+   Even if the cast at line 30 is removed, dynSecret still has level H as secret has level H */

@@ -8,7 +8,7 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews.TypeView
   */
 object CTypeViews {
 
-  sealed trait CTypeView[Level]
+  sealed trait CTypeView[Level] //like enums in java
   case class Lit[Level](t : TypeView[Level]) extends CTypeView[Level]
   case class Variable[Level](v : TypeVar) extends CTypeView[Level]
 }

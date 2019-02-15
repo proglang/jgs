@@ -17,3 +17,6 @@ public class SimpleCast_Fail4 {
         System.out.println(Casts.cast("? ~> LOW", x));
     }
 }
+
+/* x has level H due to casting. Hence casting it to low fails */
+/* if v is assigned to x without the cast then there is no error */

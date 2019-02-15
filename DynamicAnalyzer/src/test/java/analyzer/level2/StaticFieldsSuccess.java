@@ -34,7 +34,7 @@ public class StaticFieldsSuccess {
 		
 		hs.setLevelOfField(this.getClass(), "int_field");
 			
-		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST STARTED");
+		LOGGER.log(Level.INFO, "INTERNAL STATIC FIELD SUCCESS TEST ENDED");
 		
 	}
 	

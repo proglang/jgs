@@ -25,3 +25,6 @@ public class Demo11 {
     }
 
 }
+
+/* secret has level H as it is read by readSecret(), hence the Cast in line 17 sets level of dynSecret as H. Hence program fails due to NSU -
+   condition on dynSecret at line 19 will set level of result from public to H */

@@ -27,18 +27,18 @@ public interface Casts<Level> {
     boolean isValueCast(Stmt s);
 
     /**
-     * Get the ValueCast for statment <code>s</code>. Throws an <code>IllegalargumentException</code> if <code>isValueCast</code> returns false.
+     * Get the ValueCast for statement <code>s</code>. Throws an <code>IllegalArgumentException</code> if <code>isValueCast</code> returns false.
      */
     ValueConversion<Level> getValueCast(Stmt s);
 
     /**
      *
-     * @return true if statment <code>s</code> starts a context casts.
+     * @return true if statement <code>s</code> starts a context casts.
      */
     boolean isCxCastStart(Stmt s);
 
     /**
-     * Get the CxCast for statement <code>s</code>. Throws an <code>IllegalargumentException</code> if <code>isCxCastStart(s)</code> returns false.
+     * Get the CxCast for statement <code>s</code>. Throws an <code>IllegalArgumentException</code> if <code>isCxCastStart(s)</code> returns false.
      */
     Conversion<Level> getCxCast(Stmt s);
 

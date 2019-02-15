@@ -2,7 +2,7 @@
                               ____________________________________________
                               
  A statement s postdominates a statement t if every path starting at t has to go through s.
- Check wheter the post-dominator set of the given if-stmt contains the given statement, 
+ Check whether the post-dominator set of the given if-stmt contains the given statement,
  ie. the given stmt is a post dominator of the ifstmt.
 
                  (stmt) -------->(stmt)
@@ -61,7 +61,7 @@ ________________________________________________________________________________
                      
               /-----(if)------\
              /                 \
- -----(ifStmt)----(else if)----( )------ as java-code ist translated into (in Jimple):
+ -----(ifStmt)----(else if)----( )------ as java-code is translated into (in Jimple):
              \                 / 
               \-----(else)----/
               
@@ -86,14 +86,14 @@ SEPARATED IFS:
            \----------- /            \---------/
               
               
- 2. If one if-clause creates a high context... is it nesseccary that the other clauses are high,too?
+ 2. If one if-clause creates a high context... is it necessary that the other clauses are high too?
  
  if (...) {
    ...LOW...
  } else if (...) {
    ...HIGH...
  } else if (...) {
-   ...LOW...    //!! IF this clause is active it means that the condition of the highclause was false
+   ...LOW...    //!! IF this clause is active it means that the condition of the high clause was false
  } else {
    ???          //!!
  }        

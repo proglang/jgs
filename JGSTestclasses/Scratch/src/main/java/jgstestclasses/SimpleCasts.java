@@ -11,10 +11,10 @@ public class SimpleCasts {
     @Effects("LOW")
     public static void main(String[] args) {
         String hello1 = null;
-        System.out.println(attemptFailingCast());
-        System.out.println(attemptFailingCastUsingMkHigh());
-        attemptNSU();
-        String hello = (aStaticMethodWithCasts(hello1)); // fails at run-time due to an bad cast in aStaticMethodWithCasts
+        System.out.println(attemptFailingCast()); // Fails as the name suggests
+        System.out.println(attemptFailingCastUsingMkHigh()); // Fails as the name suggests
+        attemptNSU(); // Fails as the name suggests
+        String hello = (aStaticMethodWithCasts(hello1)); // fails at run-time due to a bad cast in aStaticMethodWithCasts
     }
 
     @Constraints({"LOW <= @ret"})
@@ -58,6 +58,8 @@ public class SimpleCasts {
     @Effects({"LOW"})
     static String aStaticMethodWithCasts(String i) {
         String x = Casts.cast("HIGH ~> ?", i);
+        /* x has level H due to the cast, and if i is null, then converting it to LOW fails */
+        /* if i is not null, then there is no error */
         String result;
         if (i == null) {
             result =  Casts.cast("? ~> LOW", x);

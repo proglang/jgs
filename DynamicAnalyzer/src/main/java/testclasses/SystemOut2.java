@@ -3,7 +3,7 @@ package testclasses;
 import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
- * Must fail. Currently, does not fail.
+ * Must fail.
  * @author Nicolas Müller
  *
  */

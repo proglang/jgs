@@ -4,7 +4,7 @@ import de.unifreiburg.cs.proglang.jgs.support.DynamicLabel;
 
 /**
  * Behavior which is not consistent with NSU Policy.
- * Does not pose security issue. Labeled as "desired behavoir" for now.
+ * Does not pose security issue. Labeled as "desired behavior" for now.
  * @author Nicolas Müller
  *
  */

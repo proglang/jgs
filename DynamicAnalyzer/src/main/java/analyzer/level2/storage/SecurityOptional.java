@@ -10,7 +10,7 @@ import util.exceptions.InternalAnalyzerException;
  * - uninitialized locals should not carry a specific security
  * 	 value, rather they should be marked as "uninitialized"
  * 
- * The name "SecurityOptinal" is inspired by the
+ * The name "SecurityOptional" is inspired by the
  * optional of the swift programming language.
  * @author Nicolas Müller
  *

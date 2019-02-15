@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import java.io.File;
 
 /**
- * Helper Class to run a given binary class file, and see whether of not it
+ * Helper Class to run a given binary class file, and see whether or not it
  * throws the desired exception. Used by the end-to-end tests.
  * 
  * @author Regina Koenig, Nicolas Müller

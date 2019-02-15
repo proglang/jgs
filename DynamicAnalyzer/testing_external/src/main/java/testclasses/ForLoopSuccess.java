@@ -43,3 +43,7 @@ public class ForLoopSuccess {
 		return z;
 	}
 }
+
+/* should fail as String[] x has HIGH strings and so z will also get updated - NSU failure */
+/* running this code however gives not implemented - 'newarray (java.lang.String)[4] not supported as a RHS-expression yet
+' error  */

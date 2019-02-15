@@ -1,8 +1,8 @@
 In Order to communicate the LocLevel and there meanings.
 
 SEVERE:
-	The absolute highest and worst thinkable Szenario, 
-	e.g. catching (unexcepted) Exceptions.
+	The absolute highest and worst thinkable Scenario,
+	e.g. catching (unexpected) Exceptions.
 
 WARNING:
 	Some case, that may cause throwing an exception

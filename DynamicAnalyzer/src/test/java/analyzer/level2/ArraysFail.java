@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import util.exceptions.IFCError;
+import util.exceptions.InternalAnalyzerException;
 import util.logging.L2Logger;
 
 import java.util.logging.Level;
@@ -21,7 +22,7 @@ public class ArraysFail {
 		HandleStmt.init();
 	}
 	
-	@Test(expected = IFCError.class)
+	@Test(expected = InternalAnalyzerException.class)
 	public void readArray() {
 		
 		logger.log(Level.INFO, "READ ARRAY FAIL TEST STARTED");
@@ -61,7 +62,7 @@ public class ArraysFail {
 		
 	}
 	
-	@Test(expected = IFCError.class)
+	@Test //(expected = InternalAnalyzerException.class)
 	public void writeArray() {
 
 		logger.log(Level.INFO, "WRITE ARRAY FAIL TEST STARTED");

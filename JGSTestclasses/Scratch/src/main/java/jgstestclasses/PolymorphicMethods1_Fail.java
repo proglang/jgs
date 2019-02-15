@@ -28,3 +28,9 @@ public class PolymorphicMethods1_Fail {
         System.out.println(Casts.cast("? ~> LOW", result));
     }
 }
+
+/* result has level H due to the cast on line 27. Hence casting it to LOW on line 28 fails */
+
+/* If the cast is taken out on line 27, result still has level H as secret is defined with level H and it still fails */
+
+/* Direct Sysout on line 27 (with or without the cast) does not work */

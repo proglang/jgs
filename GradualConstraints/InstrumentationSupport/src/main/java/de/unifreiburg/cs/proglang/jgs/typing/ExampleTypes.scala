@@ -41,7 +41,7 @@ object ExampleTypes {
     } else if (t2 == Public()) {
       t1
     } else {
-      throw new RuntimeException(s"Types cannot be joind: ${t1}, ${t2}")
+      throw new RuntimeException(s"Types cannot be joined: ${t1}, ${t2}")
     }
   }
 

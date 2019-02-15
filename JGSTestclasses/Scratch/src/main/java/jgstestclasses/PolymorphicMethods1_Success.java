@@ -30,3 +30,6 @@ public class PolymorphicMethods1_Success {
         IOUtils.printSecret(String.valueOf(max(1, secret)));
     }
 }
+
+/* No cast, no errors */
+/* Sysout on line 30 does not work */

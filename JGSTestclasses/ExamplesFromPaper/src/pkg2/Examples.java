@@ -128,4 +128,16 @@ public class Examples {
         lowField = Casts.castDynToLow(maxMod(Casts.castLowToDyn(lowField), Casts.castHighToDyn(highField), new Erase(0)));
     }
 
+    public static void main(String args[]) {
+        m();
+        max(5, 7);
+        Logger log = new Logger();
+        maxMsg(log, 5, 7);
+        maxMsgDyn(log, 5, 7);
+        callingPolymorphicMethods();
+        logResults(log, true, "a", "b");
+        maxMod(5, 7, new Id());
+        max2(5, 8);
+    }
+
 }

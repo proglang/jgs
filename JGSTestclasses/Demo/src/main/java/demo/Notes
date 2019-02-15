@@ -1,0 +1,4 @@
+-- In Demo1, IOUtils.printSecret(Casts.cast("? ~> LOW", dynField)); works as dynField is not assigned to secret and does not have level H
+-- In Demo11, even if dynSecret is not cast, it is assigned by secret, so it indirectly affects result and casting it causes an error.
+Hence fails due to NSU(line 17) or cast issue
+-- In Demo12, there is no cast at line 17 or 24, hence does not fail

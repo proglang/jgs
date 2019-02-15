@@ -9,7 +9,7 @@ public class NSU_FieldAccess {
 
 		C b = new C();
 		C c = DynamicLabel.makeHigh(b);
-		c.f = true; // should throw an error, since we access access f through
+		c.f = true; // should throw an error, since we access f through
 					// high-sec c and PC = LOW
 	}
 }

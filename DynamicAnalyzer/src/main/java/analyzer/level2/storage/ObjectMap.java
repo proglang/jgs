@@ -16,7 +16,7 @@ import java.util.LinkedList;
  * The ObjectMap holds all objects which are created in the analyzed code. 
  * To each object belongs a HashMap with the SercurityLevel of the respective 
  * fields.
- * The ObjectMap should never used directly. For each action exists an 
+ * The ObjectMap should never be used directly. For each action exists an
  * appropriate method in {@link analyzer.level2.HandleStmt}.
  * Additionally the ObjectMap holds the SecurityLevels of the arguments and 
  * return variable of the least recently called method.
@@ -41,7 +41,7 @@ public class ObjectMap{
 	/**
 	 * Constructor.
 	 */
-	private ObjectMap() {
+	public ObjectMap() {
 		globalPC = new LinkedList<Object>();
 		globalPC.push(CurrentSecurityDomain.bottom());
 		actualReturnLevel = CurrentSecurityDomain.bottom();		// was top!?!

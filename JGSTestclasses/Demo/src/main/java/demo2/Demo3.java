@@ -1,11 +1,8 @@
 package demo2;
 
 import de.unifreiburg.cs.proglang.jgs.support.Casts;
-import de.unifreiburg.cs.proglang.jgs.support.Constraints;
 import de.unifreiburg.cs.proglang.jgs.support.Effects;
 import de.unifreiburg.cs.proglang.jgs.support.Sec;
-
-import static de.unifreiburg.cs.proglang.jgs.support.StringUtil.bits;
 
 /**
  * This is example3 of Demo0 with *gradual enforcement*
@@ -38,6 +35,9 @@ public class Demo3 {
         } else {
             x = "XXX";
         }
+
+        /* Illegal cast of LOW to x which has level HIGH */
+        /* Change LOW to HIGH below, but HIGH cannot be passed with Sysout. So pass with IOUtils.printSecret() */
         System.out.println(Casts.cast("? ~> LOW", x)); // a leak iff b == true
     }
 
@@ -52,3 +52,7 @@ public class Demo3 {
     }
 
 }
+
+
+/* missing Constraints(example3_gradual()) */
+/* Add Constraints({"0 <=?", "? ~ @0"}) */

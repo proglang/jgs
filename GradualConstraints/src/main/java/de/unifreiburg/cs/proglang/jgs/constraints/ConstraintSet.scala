@@ -110,7 +110,7 @@ abstract case class ConstraintSet[Level] (
   }
 
   /**
-    * @return the stream of constriants where assignement <code>a</code> is applied where possible.
+    * @return the stream of constraints where assignment <code>a</code> is applied where possible.
     */
   def apply(a: Assignment[Level]): Iterator[Constraint[Level]] = {
     return this.stream.map(c => c.apply(a))
@@ -182,8 +182,8 @@ abstract case class ConstraintSet[Level] (
     // TODO: this is a bad hack. Fix it by not exposing a concrete security level through the Type interface
       this match {
         case Static => types.getSecDomain.bottom()
-        case Dynamic => throw new UnsupportedOperationException("dynamic type has not level")
-        case Public => throw new UnsupportedOperationException("public type has not level")
+        case Dynamic => throw new UnsupportedOperationException("dynamic type has no level")
+        case Public => throw new UnsupportedOperationException("public type has no level")
       }
   }
 

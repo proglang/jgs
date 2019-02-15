@@ -12,7 +12,7 @@ public class testclasses.Simple extends java.lang.Object
         java.lang.Object local_for_Objects;					// Same container for objects
 
         r0 := @this: testclasses.Simple;										// The @this tag indicates what the this keyword refers to
-        specialinvoke r0.<java.lang.Object: void <init>()>();						// Specialinvode means: init constructor of Simple class
+        specialinvoke r0.<java.lang.Object: void <init>()>();						// Specialinvoke means: init constructor of Simple class
         hs = new analyzer.level2.HandleStmt;
         specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();				// Clears the objectMap in analyzer.level2.HandleStmt,
         																			// basically resets everything. On global PC stack, there 

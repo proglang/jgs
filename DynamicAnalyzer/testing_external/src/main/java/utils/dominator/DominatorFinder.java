@@ -35,7 +35,7 @@ public class DominatorFinder {
 	 * The unit is stored in an internal list for later analysis
 	 * (if it's not already in the list).
 	 * @param node IfStmt.
-	 * @return Hashvalue of immerdiate dominator.
+	 * @return Hashvalue of immediate dominator.
 	 */
 	public static String getImmediateDominatorIdentity(Unit node) {
 		Unit dom = (Unit) pdfinder.getImmediateDominator(node);

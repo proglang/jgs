@@ -13,7 +13,7 @@ public class Demo12 {
     @Effects({"LOW", "?"})
     public static void main(String[] args) {
         String secret = IOUtils.readSecret(); // <- library method
-
+        // No cast, hence statSecret level not set to HIGH
         String statSecret = secret;
         String result;
         if (statSecret.equals("42")) {
@@ -25,3 +25,5 @@ public class Demo12 {
     }
 
 }
+
+/* prints(in xxx format) Its's 42 if secret is 42 else prints It's not 42. No errors due to casting issues or NSU */

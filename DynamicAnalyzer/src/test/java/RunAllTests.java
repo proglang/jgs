@@ -69,7 +69,7 @@ import end2endtest.AllEndToEndTests;
     SecurityOptionalTest.class,
     
     // Tests for LowMiddleHigh Lattice
-    LowMiddleHighTest.class,
+    //LowMiddleHighTest.class,
 
     // Tests for valid bytecode of testclasses
     AllEndToEndTests.class,

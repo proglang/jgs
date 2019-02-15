@@ -64,7 +64,7 @@ public class ObjectMapTest {
 		assertEquals(2, m.getNumberOfElements()); 
 		// The same object should not be inserted a second time
 		m.insertNewObject(o1);
-		//assertEquals(2, m.getNumberOfElements());
+		assertEquals(2, m.getNumberOfElements());
 		
 		logger.info("INSERT NEW OBJECT TEST FINISHED");
 	}
@@ -92,6 +92,14 @@ public class ObjectMapTest {
 		m.setField(o2, f1, CurrentSecurityDomain.top());
 		m.setField(o2, f2, CurrentSecurityDomain.bottom());
 		m.addField(o2, f3);
+
+		assertSame(m.getFieldLevel(o, f1),CurrentSecurityDomain.bottom());
+		assertSame(m.getFieldLevel(o, f2),CurrentSecurityDomain.bottom());
+		assertSame(m.getFieldLevel(o, f3),CurrentSecurityDomain.top());
+
+		assertSame(m.getFieldLevel(o2, f1),CurrentSecurityDomain.top());
+		assertSame(m.getFieldLevel(o2, f2),CurrentSecurityDomain.bottom());
+		assertSame(m.getFieldLevel(o2, f3),CurrentSecurityDomain.bottom());
 
 		logger.info("FIELDS IN OBJECT MAP TEST FINISHED");
 	}

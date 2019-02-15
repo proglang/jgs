@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 /**
  * Class to run a single end to end test. We call this test "end-to-end"
- * because we compile and instrument a "real" java programm, execute it,
+ * because we compile and instrument a "real" java program, execute it,
  * and see if it throws the desired exception.
  * 
  * Note that three pieces of information need to be

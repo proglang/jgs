@@ -3,7 +3,7 @@ package testclasses;
 import testclasses.utils.C;
 
 /**
- * Test throwa a java.lang.VerifyError: (class: main/testclasses/EqualObjectsVerifySuccess, 
+ * Test throw a java.lang.VerifyError: (class: main/testclasses/EqualObjectsVerifySuccess,
  * method: main signature: ([Ljava/lang/String;)V) Incompatible argument to function
  * @author Nicolas Müller
  *
