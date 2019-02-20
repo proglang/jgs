@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs
 
+import java.nio.file.Paths
 import java.time.temporal.ChronoField
 
 import sys.process._
@@ -59,6 +60,19 @@ object JgsDemo {
     val outputDir = "out-instrumented"
     val outputJimple = "out-original"
     val classToRun = options.getOrElse('class, {printUsage() ; throw new IllegalArgumentException("No class-to-run specified ") })
+    val javaHome = System.getProperty("java.home")
+
+    // compile demo class to Jimple, if requested
+    val sootCp = classpathCompile + s":${Paths.get(javaHome, "lib", "rt.jar").toString}"
+    val sootCommand = Seq("java", "-jar", "lib/soot-trunk-2017-09-11.jar", "-f", "J","-cp", sootCp, "-d", outputJimple, classToRun)
+    if (options.get('create_jimple).isDefined) {
+      println(s"\nGenerating jimple for ${classToRun}:")
+      println(sootCommand.mkString(" "))
+      println()
+      if (Process(sootCommand).run.exitValue() != 0) {
+        println("!! ERROR generating Jimple")
+      }
+    }
 
     val sbtJgsRunCommand : String = (List(
       "runMain", "de.unifreiburg.cs.proglang.jgs.Main", "-m", classToRun, "-cp", classpathCompile, "-o", outputDir
@@ -68,7 +82,7 @@ object JgsDemo {
       options.get('force_monomorphic_methods)
       ).mkString(" ")
 
-    println(s"\nJava home: ${System.getProperty("java.home")}\n")
+    println(s"\nJava home: ${javaHome}\n")
 
     println(s"\nCompiling security domain: ${secdomainProject}")
     val compileSecdomainCommand = Seq("sbt", s"${secdomainProject}/package")
