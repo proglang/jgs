@@ -1,5 +1,7 @@
 package de.unifreiburg.cs.proglang.jgs
 
+import java.time.temporal.ChronoField
+
 import sys.process._
 
 object JgsDemo {
@@ -21,7 +23,13 @@ object JgsDemo {
     }
   }
 
-  def run(p: ProcessBuilder) : Unit = {
+  def printSbtCommand(command: Seq[String]) : Unit = {
+    println(s"${command(0)} '${command(1)}'\n")
+  }
+
+  def runSbt(command : Seq[String], env : (String, String)*) : Unit = {
+    printSbtCommand(command)
+    val p = Process(command, None, env:_*)
     if (p.! != 0) {
       println("A command failed. Exiting")
       sys.exit(-1)
@@ -32,7 +40,7 @@ object JgsDemo {
     val options = nextOption(args.toList)
     val secdomainProject = options.getOrElse('secdomain, "LMHSecurityDomain")
     val secdomainCP = secdomainProject + "/target/scala-2.11/classes"
-    val secdomainJar = secdomainProject + "/target/scala-2.11/lmhsecuritydomain_2.11-0.1.jar"
+    val secdomainJar = secdomainProject + "/target/scala-2.11/secdomain.jar"
     val demoProject = options.getOrElse('demo, "DemoTestclasses")
     val classpathCompile = List(
       "JGSTestclasses/Demo/target/scala-2.11/classes",
@@ -60,18 +68,18 @@ object JgsDemo {
       options.get('force_monomorphic_methods)
       ).mkString(" ")
 
-    println(s"Compiling: ${secdomainProject}, ${demoProject}")
-    val sbtCompileProcess =
-      Process(Seq("sbt", s"; ${secdomainProject}/package ; ${demoProject}/compile"))
-    run(sbtCompileProcess)
+    println(s"\nJava home: ${System.getProperty("java.home")}\n")
+
+    println(s"\nCompiling security domain: ${secdomainProject}")
+    val compileSecdomainCommand = Seq("sbt", s"${secdomainProject}/package")
+    runSbt(compileSecdomainCommand)
+
+    println(s"\nCompiling: ${demoProject}\n")
+    val compileDemoCommand = Seq("sbt", s"${demoProject}/compile")
+    runSbt(compileDemoCommand)
 
     println("Running sbt with: " + sbtJgsRunCommand)
-    val sbtRunProcess = Process(
-      (Seq("sbt", s"${sbtJgsRunCommand}")),
-      None,
-      "JGS_SECDOMAIN_JARS" -> secdomainJar
-    )
-    run(sbtRunProcess)
+    runSbt((Seq("sbt", s"${sbtJgsRunCommand}")), "JGS_SECDOMAIN_JARS" -> secdomainJar)
 
 
     val runCommand = Seq("java", "-cp", s"${outputDir}:${classpathRun}", classToRun)

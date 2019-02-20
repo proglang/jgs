@@ -2,6 +2,11 @@ lazy val setScalaVersion = scalaVersion := "2.11.11"
 
 lazy val setVersion = version := "0.1"
 
+// we use the same name for all security domains s.t. can be references more easily from JgsDemo
+lazy val setUnversionedJar = Seq(
+  artifactName := ((_, _, _) => "secdomain.jar")
+)
+
 lazy val commonSettings = Seq(
 
   setScalaVersion,
@@ -15,7 +20,7 @@ lazy val commonSettings = Seq(
   ),
 
   scalacOptions += "-target:jvm-1.8",
-  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
 )
 
@@ -118,10 +123,12 @@ lazy val DemoTestclasses =
 lazy val UserDefinedSecurityDomain =
   (project in file ("UserDefinedSecurityDomain")).
     dependsOn(InstrumentationSupport).
-    settings(setScalaVersion)
+    settings(setScalaVersion).
+    settings(setUnversionedJar)
 
 lazy val LMHSecurityDomain =
   (project in file ("LMHSecurityDomain")).
     dependsOn(InstrumentationSupport).
     settings(setScalaVersion).
-    settings(setVersion)
+    settings(setVersion).
+    settings(setUnversionedJar)
