@@ -3,7 +3,7 @@ package de.unifreiburg.cs.proglang.jgs.constraints
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Type
 
 /**
-  * An Alg.DT for Types. When TypeViews from Java, either use (instanceof) or implement an instance of the visitor TypeViewSwitch
+  * An Alg.DT for Types. When using TypeViews from Java, either use (instanceof) or implement an instance of the visitor TypeViewSwitch
   */
 object TypeViews {
 
