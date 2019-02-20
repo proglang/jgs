@@ -52,7 +52,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	 * Type of the right expression in an assign statement. Certain types need to
 	 * be handled in a special way. Explanation:
 	 * IGNORE This is used for arithmetic expressions. The locals in the expressions
-	 * 		are already handled, so its not neccessary to treat the expression
+	 * 		are already handled, so its not necessary to treat the expression
 	 *      in StmtSwitch
 	 * NEW_ARRAY 
 	 * NEW_UNDEF_OBJECT
@@ -92,7 +92,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	private Stmt callingStmt;
 
 	/**
-	 * It is not neccessary to treat a constant.
+	 * It is not necessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -101,7 +101,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 	
 	/**
-	 * It is not neccessary to treat a constant.
+	 * It is not necessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -110,7 +110,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat a constant.
+	 * It is not necessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -119,7 +119,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat a constant.
+	 * It is not necessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -128,7 +128,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat a constant.
+	 * It is not necessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -137,7 +137,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat a constant.
+	 * It is not necessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -146,7 +146,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat a constant.
+	 * It is not necessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -170,7 +170,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -180,7 +180,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -211,7 +211,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -221,7 +221,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -266,7 +266,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -277,7 +277,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -295,7 +295,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -306,7 +306,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -317,7 +317,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -327,7 +327,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -337,7 +337,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -432,7 +432,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	
 	/**
-	 * It is supposed that it is not neccessay to treat the length expression since
+	 * It is supposed that it is not necessary to treat the length expression since
 	 * it always comes with the corresponding array and the level of the array (which is
 	 * the same as its length level) will always be already treated.
 	 * @param v length expression
@@ -532,7 +532,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 	
 	/**
-	 * Method to handly any invoke statement
+	 * Method to handle any invoke statement
 	 * @param v
 	 */
 	private void caseMethodInvokation(InvokeExpr v) {

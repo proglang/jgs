@@ -1,0 +1,151 @@
+public class demo.Demo1 extends java.lang.Object
+{
+    static int z;
+    static java.lang.String dynField;
+    static java.lang.String staticField;
+
+    public void <init>()
+    {
+        demo.Demo1 r0;
+        analyzer.level2.HandleStmt hs;
+        java.lang.String[] local_for_String_Arrays;
+
+        r0 := @this: demo.Demo1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void addObjectToObjectMap(java.lang.Object)>(r0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0, local_for_String_Arrays;
+        int i0, i1, i2;
+        java.lang.Integer $r1, $r3, $r4, $r6;
+        java.lang.Object $r2, $r5;
+        java.lang.String $r7;
+        analyzer.level2.HandleStmt hs;
+
+        r0 := @parameter0: java.lang.String[];
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        $r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(7);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("java.lang.Object_$r2");
+
+        $r2 = staticinvoke <de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>($r1);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void setLocalFromString(java.lang.String,java.lang.String)>("java.lang.Object_$r2", "HIGH");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("java.lang.Object_$r2");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("java.lang.Integer_$r3");
+
+        $r3 = (java.lang.Integer) $r2;
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("java.lang.Integer_$r3");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("int_i0");
+
+        i0 = virtualinvoke $r3.<java.lang.Integer: int intValue()>();
+
+        $r4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(5);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("java.lang.Object_$r5");
+
+        $r5 = staticinvoke <de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>($r4);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void setLocalFromString(java.lang.String,java.lang.String)>("java.lang.Object_$r5", "HIGH");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("java.lang.Object_$r5");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("java.lang.Integer_$r6");
+
+        $r6 = (java.lang.Integer) $r5;
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("java.lang.Integer_$r6");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("int_i1");
+
+        i1 = virtualinvoke $r6.<java.lang.Integer: int intValue()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("int_i0");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("int_i1");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("int_i2");
+
+        i2 = i0 + i1;
+
+        local_for_String_Arrays = newarray (java.lang.String)[1];
+
+        local_for_String_Arrays[0] = "int_i2";
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void storeArgumentLevels(java.lang.String[])>(local_for_String_Arrays);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object joinLevelOfLocalAndAssignmentLevel(java.lang.String)>("int_i2");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("java.lang.String_$r7");
+
+        $r7 = staticinvoke <java.lang.String: java.lang.String valueOf(int)>(i2);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void setReturnLevelAfterInvokeStmt(java.lang.String)>("java.lang.String_$r7");
+
+        local_for_String_Arrays = newarray (java.lang.String)[1];
+
+        local_for_String_Arrays[0] = "java.lang.String_$r7";
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void storeArgumentLevels(java.lang.String[])>(local_for_String_Arrays);
+
+        staticinvoke <de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.String)>($r7);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        analyzer.level2.HandleStmt hs;
+        java.lang.String[] local_for_String_Arrays;
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        staticinvoke <analyzer.level2.HandleStmt: void init()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void addObjectToObjectMap(java.lang.Object)>(class "demo/Demo1");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object addFieldToObjectMap(java.lang.Object,java.lang.String)>(class "demo/Demo1", "<demo.Demo1: int z>");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object addFieldToObjectMap(java.lang.Object,java.lang.String)>(class "demo/Demo1", "<demo.Demo1: java.lang.String dynField>");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object addFieldToObjectMap(java.lang.Object,java.lang.String)>(class "demo/Demo1", "<demo.Demo1: java.lang.String staticField>");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfField(java.lang.Object,java.lang.String)>(class "demo/Demo1", "<demo.Demo1: int z>");
+
+        <demo.Demo1: int z> = 7;
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+}

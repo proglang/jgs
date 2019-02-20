@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 /**
  * The ObjectMap holds all objects which are created in the analyzed code. 
- * To each object belongs a HashMap with the SercurityLevel of the respective 
+ * To each object belongs a HashMap with the Security Level of the respective
  * fields.
  * The ObjectMap should never be used directly. For each action exists an
  * appropriate method in {@link analyzer.level2.HandleStmt}.

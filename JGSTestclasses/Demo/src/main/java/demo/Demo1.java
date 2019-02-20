@@ -9,6 +9,7 @@ import de.unifreiburg.cs.proglang.jgs.support.*;
  */
 public class Demo1 {
 
+    static int z = 7;
     @Sec("?")
     static String dynField;
 
@@ -18,6 +19,25 @@ public class Demo1 {
     @Constraints("LOW <= @0")
     @Effects({"LOW", "?"})
     public static void main(String[] args) {
+        int a = z;
+        int x = 7;
+        int e = x;
+        int y = 5;
+        int g = x + y;
+
+        String check = new String("");
+
+        int c = Casts.cast("? ~> MEDIUM", x);
+
+        Demo1 demo1 = new Demo1();
+        demo1.dynField = "2";
+        dynField = "5";
+
+        Float f = 5.0f;
+        String.valueOf(f);
+        int u = f.intValue();
+
+
         String secret = IOUtils.readSecret(); // <- library method
         /* secret has level H as it is read using readSecret() */
         IOUtils.printSecret(secret);          // <- no leak
@@ -38,6 +58,10 @@ public class Demo1 {
         /* staticField has level H like secret, so assignment and printSecret cause no error */
         /* staticField = secret;
         IOUtils.printSecret(staticField); */
+    }
+
+    public void test(){
+        this.dynField = "fgdhc";
     }
 
 }

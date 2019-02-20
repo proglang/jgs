@@ -93,7 +93,7 @@ public class JimpleInjector {
      *
      * @param pos   Statement / Unit where to insert setReturnLevelAfterInvokeStmt
      */
-    public static void setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
+    public static void  setReturnLevelAfterInvokeStmt(Local l, Unit pos) {
         Unit invoke = fac.createStmt("setReturnLevelAfterInvokeStmt", StringConstant.v(getSignatureForLocal(l)));
         // only add setReturnLevelAfterInvokeStmt if the left side is dynamic
         if ( varTyping.getAfter(instantiation, (Stmt) pos, (Local) ((JAssignStmt) pos).leftBox.getValue() ).isDynamic() ) {

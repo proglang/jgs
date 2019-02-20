@@ -21,7 +21,7 @@ public class testclasses.Simple extends java.lang.Object
         																									// eg creates a new map which will
         																									// map simple.FIELD -> SecValue
         local_for_Strings = "testclasses.Simple_r0";
-        virtualinvoke hs.<analyzer.level2.HandleStmt: void addLocal(java.lang.String)>(local_for_Strings);	// adds a the simple Class as a
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void addLocal(java.lang.String)>(local_for_Strings);	// adds a simple Class as a
         																									// Local to the one and only local
         																									// map, with default sec-value LOW
         virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
@@ -71,7 +71,7 @@ public class testclasses.Simple extends java.lang.Object
 
    
         	// this updates the sec-value of the "Hello World" string, like so: 
-        	// least Upper Bound(local Programm, sec-value of the variables) which is LOW by default
+        	// least Upper Bound(local Program, sec-value of the variables) which is LOW by default
         	// setLevelOfLocal also checks if !SecurityLevel.le(lpc, level), and if yes aborts and throws exception
         	INFO: Set level of local java.lang.String_r1 to LOW
 			INFO: Check if level of local java.lang.String_r1 (LOW) >= lpc (LOW)

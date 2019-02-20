@@ -1,0 +1,72 @@
+public class demo.Demo13 extends java.lang.Object
+{
+    static java.lang.String dynField;
+
+    public void <init>()
+    {
+        demo.Demo13 r0;
+        analyzer.level2.HandleStmt hs;
+        java.lang.String[] local_for_String_Arrays;
+
+        r0 := @this: demo.Demo13;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void addObjectToObjectMap(java.lang.Object)>(r0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0, local_for_String_Arrays;
+        analyzer.level2.HandleStmt hs;
+
+        r0 := @parameter0: java.lang.String[];
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        staticinvoke <analyzer.level2.HandleStmt: void init()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        staticinvoke <de.unifreiburg.cs.proglang.jgs.support.IOUtils: java.lang.String readSecret()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+
+    public void test()
+    {
+        demo.Demo13 r0;
+        analyzer.level2.HandleStmt hs;
+        java.lang.String[] local_for_String_Arrays;
+
+        r0 := @this: demo.Demo13;
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLevelOfField(java.lang.Object,java.lang.String)>(class "demo/Demo13", "<demo.Demo13: java.lang.String dynField>");
+
+        <demo.Demo13: java.lang.String dynField> = "fgdhc";
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+}

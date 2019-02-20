@@ -1,0 +1,146 @@
+public class demo.Demo4 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        demo.Demo4 r0;
+        analyzer.level2.HandleStmt hs;
+        java.lang.String[] local_for_String_Arrays;
+
+        r0 := @this: demo.Demo4;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void addObjectToObjectMap(java.lang.Object)>(r0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0, local_for_String_Arrays;
+        demo.Demo4 $r2;
+        analyzer.level2.HandleStmt hs;
+
+        r0 := @parameter0: java.lang.String[];
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        staticinvoke <analyzer.level2.HandleStmt: void init()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        $r2 = new demo.Demo4;
+
+        specialinvoke $r2.<demo.Demo4: void <init>()>();
+
+        local_for_String_Arrays = newarray (java.lang.String)[1];
+
+        local_for_String_Arrays[0] = "DEFAULT_LOW";
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void storeArgumentLevels(java.lang.String[])>(local_for_String_Arrays);
+
+        virtualinvoke $r2.<demo.Demo4: int multIfs(int)>(1);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return;
+    }
+
+    public int multIfs(int)
+    {
+        demo.Demo4 r0;
+        int i0;
+        byte b1;
+        analyzer.level2.HandleStmt hs;
+        java.lang.String[] local_for_String_Arrays;
+
+        r0 := @this: demo.Demo4;
+
+        i0 := @parameter0: int;
+
+        hs = new analyzer.level2.HandleStmt;
+
+        specialinvoke hs.<analyzer.level2.HandleStmt: void <init>()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void initHandleStmtUtils(boolean,int)>(false, 0);
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object assignArgumentToLocal(int,java.lang.String)>(0, "int_i0");
+
+        local_for_String_Arrays = newarray (java.lang.String)[1];
+
+        local_for_String_Arrays[0] = "int_i0";
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkCondition(java.lang.String,java.lang.String[])>("1", local_for_String_Arrays);
+
+        if i0 >= 0 goto label1;
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkNonSensitiveLocalPC()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("byte_b1");
+
+        b1 = 0;
+
+        goto label4;
+
+     label1:
+        local_for_String_Arrays = newarray (java.lang.String)[1];
+
+        local_for_String_Arrays[0] = "int_i0";
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkCondition(java.lang.String,java.lang.String[])>("1", local_for_String_Arrays);
+
+        if i0 >= 2 goto label2;
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkNonSensitiveLocalPC()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("byte_b1");
+
+        b1 = 2;
+
+        goto label4;
+
+     label2:
+        local_for_String_Arrays = newarray (java.lang.String)[1];
+
+        local_for_String_Arrays[0] = "int_i0";
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkCondition(java.lang.String,java.lang.String[])>("1", local_for_String_Arrays);
+
+        if i0 >= 4 goto label3;
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkNonSensitiveLocalPC()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("byte_b1");
+
+        b1 = 4;
+
+        goto label4;
+
+     label3:
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void checkNonSensitiveLocalPC()>();
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: java.lang.Object setLocalToCurrentAssingmentLevel(java.lang.String)>("byte_b1");
+
+        b1 = 6;
+
+     label4:
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void exitInnerScope(java.lang.String)>("1");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void returnLocal(java.lang.String)>("byte_b1");
+
+        virtualinvoke hs.<analyzer.level2.HandleStmt: void close()>();
+
+        return b1;
+    }
+}
