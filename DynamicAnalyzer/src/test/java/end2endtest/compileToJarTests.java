@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -27,7 +28,7 @@ public class compileToJarTests {
      * NSUPolicy is present only in src/main, not on external_path...
      */
     @Test
-    public void pathTest() {
+    public void pathTest() throws UnsupportedEncodingException {
         String testFile = "NSUPolicy";
 
         main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath});
@@ -44,7 +45,7 @@ public class compileToJarTests {
     }
 
     @Test
-    public void pathTestJimple() {
+    public void pathTestJimple() throws UnsupportedEncodingException {
         String testFile = "NSUPolicy";
 
         main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-j"});
@@ -64,7 +65,7 @@ public class compileToJarTests {
      * Note that the externalPath must be set individually on each computer!
      */
     @Test
-    public void pathTestP() {
+    public void pathTestP() throws UnsupportedEncodingException {
         String testFile = "NSUPolicy1";        // SHOULD BE NSUPolicy1
         File inputFile = new File(extPath.getAbsolutePath(), "/testclasses/" + testFile + ".java");
 
@@ -90,7 +91,7 @@ public class compileToJarTests {
      * NSUPolicy is present only in src/main, not on external_path...
      */
     @Test
-    public void pathTestPRelative() {
+    public void pathTestPRelative() throws UnsupportedEncodingException {
         String testFile = "NSUPolicy1";
         File inputFile = new File(extPath.getAbsolutePath(), "/testclasses/" + testFile + ".java");
 
@@ -126,12 +127,17 @@ public class compileToJarTests {
      * Super awesome test: Takes a testfile, one additional file, and a boolean hasIllegalFLow.
      * Build Jar, runs it and tests for illegalFlowException.
      */
-    private void runAndTestJar(String testFile, String additionalFile, boolean hasIllegalFlow) {
+    private void runAndTestJar(String testFile, String additionalFile, boolean hasIllegalFlow)  {
         final String TARGET_NAME = "exec";
 
         String externalPath = "testing_external";
 
-        main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", externalPath, "-f", additionalFile});
+        try {
+            main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-p", externalPath, "-f", additionalFile});
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/testclasses/" + testFile + ".class");
         File outJar = new File(outParent, outputPath + "/testclasses/" + testFile + ".jar");

@@ -13,6 +13,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import util.logging.L1Logger;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -177,7 +178,7 @@ public class AllEndToEndTests {
 	 * Runs each testfile specified above. note that the outputDir can be set to ones liking.
 	 */
 	@Test
-	public void test() {
+	public void test() throws UnsupportedEncodingException {
 		System.out.println("\n\n\n");
 		logger.info("Start of executing testclasses." + name + "");
 

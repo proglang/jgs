@@ -14,6 +14,7 @@ import util.Controller;
 import util.exceptions.SuperfluousInstrumentation.LocalPcCalledException;
 import util.logging.L1Logger;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.logging.Logger;
@@ -163,7 +164,7 @@ public class AllFakeAnalysisTests {
      * Runs each testfile specified above. note that the outputDir can be set to ones liking.
      */
     @Test
-    public void test() {
+    public void test() throws UnsupportedEncodingException {
         System.out.println("\n\n\n");
         logger.info("Start executing testclasses with fake analysis results." + name + "");
         String outputDir = "junit_fakeAnalysis";

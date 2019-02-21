@@ -7,6 +7,7 @@ import classfiletests.utils.ClassRunner;
 import org.junit.Test;
 import util.logging.L1Logger;
 
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
 /**
@@ -44,7 +45,7 @@ public class SingleEndToEndTest {
 	private static final Logger logger = Logger.getLogger(SingleEndToEndTest.class.getName());
 
 	@Test
-	public void test() {
+	public void test() throws UnsupportedEncodingException {
 		System.out.println("\n\n\n");
 		logger.info("Start of executing testclasses." + name + "");
 

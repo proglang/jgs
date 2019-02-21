@@ -1,5 +1,6 @@
 package classfiletests.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
 import analyzer.level2.storage.LowMediumHigh;
@@ -30,7 +31,7 @@ public class ClassCompiler {
 	 * @param name		name of the test
 	 * @param outputDir	subfolder of the sootOutput/ directory to put compiled binary
 	 */
-	public static void compile(String name, String outputDir) {
+	public static void compile(String name, String outputDir) throws UnsupportedEncodingException {
 
 		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started");
@@ -40,7 +41,7 @@ public class ClassCompiler {
 	}
 
 	public static void compileWithFakeTyping(String name, String outputDir,
-											 MethodTypings<LowMediumHigh.Level> methodTypings) {
+											 MethodTypings<LowMediumHigh.Level> methodTypings) throws UnsupportedEncodingException {
 
 		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started. Using fake static analysis results");
