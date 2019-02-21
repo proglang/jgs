@@ -17,20 +17,15 @@ public class Demo1 {
 
     @Constraints("LOW <= @0")
     @Effects({"LOW", "?"})
-    public static void main(String[] args) {
-        String secret = IOUtils.readSecret(); // <- library method
-
-        IOUtils.printSecret(secret);          // <- no leak
-        // System.out.println(secret);        // <- static leak
-        // dynField = Casts.cast("HIGH ~> ?", secret);             // <- journey through dynamic code
-        // IOUtils.printSecret(Casts.cast("? ~> HIGH", dynField)); // <-
-        // IOUtils.printSecret(Casts.cast("? ~> LOW", dynField)); // <- dynamically detected leak
-
-
-        /*
-        staticField = secret;
-        IOUtils.printSecret(staticField);
-        */
+    public static void main(String... args) {
+        int i;
+        boolean secret = DynamicLabel.makeHigh(true);
+        if (secret) {
+            i = 1; // NO NSU FAILURE
+        } else {
+            i = 0; // NO NSU FAILURE
+        }
+        IOUtils.printSecret(String.valueOf(i));
     }
 
 }

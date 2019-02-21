@@ -83,17 +83,19 @@ object JgsDemo {
       ).mkString(" ")
 
     println(s"\nJava home: ${javaHome}\n")
+    val sbt : String = Option(System.getenv("SBT_HOME")).map(Paths.get(_, "bin", "sbt").toString).getOrElse("sbt")
+    println(s"\nSbt command: $sbt")
 
     println(s"\nCompiling security domain: ${secdomainProject}")
-    val compileSecdomainCommand = Seq("sbt", s"${secdomainProject}/package")
+    val compileSecdomainCommand = Seq(sbt, s"${secdomainProject}/package")
     runSbt(compileSecdomainCommand)
 
     println(s"\nCompiling: ${demoProject}\n")
-    val compileDemoCommand = Seq("sbt", s"${demoProject}/compile")
+    val compileDemoCommand = Seq(sbt, s"${demoProject}/compile")
     runSbt(compileDemoCommand)
 
     println("Running sbt with: " + sbtJgsRunCommand)
-    runSbt((Seq("sbt", s"${sbtJgsRunCommand}")), "JGS_SECDOMAIN_JARS" -> secdomainJar)
+    runSbt((Seq(sbt, s"${sbtJgsRunCommand}")), "JGS_SECDOMAIN_JARS" -> secdomainJar)
 
 
     val runCommand = Seq("java", "-cp", s"${outputDir}:${classpathRun}", classToRun)

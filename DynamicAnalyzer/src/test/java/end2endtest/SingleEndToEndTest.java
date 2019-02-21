@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  */
 public class SingleEndToEndTest {
 
-	public String name = "castDyn2Static_Fail2";
+	public String name = "NoNSUForUninitializedVariables";
 
 	private SecurityMonitoringEvent securityMonitoringEvent = SecurityMonitoringEvent.ILLEGAL_FLOW;
 
