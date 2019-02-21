@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -107,27 +109,17 @@ public class Main {
         }
 
         // Setting the soot classpath
-        String classPath = Scene.v().getSootClassPath()
-                + ":.:"
-                + new File(javaHome, "lib/jce.jar").toString()
-                + ":"
-                + new File(javaHome, "lib/rt.jar").toString();
-		/*
-		String classPath = "."
-						   + ":"
-						   + new File(javaHome, "lib/jce.jar").toString()
-						   + ":"
-						   + new File(javaHome, "lib/rt.jar").toString();
-						   */
+
+        String classPath = String.join(File.pathSeparator,
+									   Arrays.asList(Scene.v().getSootClassPath(),
+													 ".",
+													 new File(javaHome, "lib/jce.jar").toString(),
+													 new File(javaHome, "lib/rt.jar").toString()));
 
         // Adding the arguments given by the user via the -p flag. See util.parser.ArgParser
-        for (String s : sootOptionsContainer.getAddDirsToClasspath()) {
-            classPath = s + ":" + classPath;
-        }
-        // TODO: why both?
-        for (String s : sootOptionsContainer.getAddClassesToClasspath()) {
-            classPath += ":" + s;
-        }
+        String extraCpDirs = String.join(File.pathSeparator, sootOptionsContainer.getAddDirsToClasspath());
+        String extraCpClasses = String.join(File.pathSeparator, sootOptionsContainer.getAddClassesToClasspath());
+        classPath = String.join(File.pathSeparator, extraCpDirs, classPath, extraCpClasses);
 
         // Add the current classpath to soots classpath
 		// TODO: this is only a quick hack for testing. We should figure out precicely how the soot classpath should look.
@@ -137,7 +129,6 @@ public class Main {
         ClassLoader cxClassloader = Thread.currentThread().getContextClassLoader();
         if (cxClassloader instanceof URLClassLoader) {
 			for (URL url : Arrays.asList(((URLClassLoader) (Thread.currentThread().getContextClassLoader())).getURLs())) {
-
 				cpath.add(url.getFile());
 			}
 		} else {
@@ -146,7 +137,7 @@ public class Main {
 										 + "(Ignore this warning when running under sbt).");
 		}
 
-		Scene.v().setSootClassPath(String.join(":", cpath) + ":" + classPath);
+		Scene.v().setSootClassPath(String.join(File.pathSeparator, cpath) + File.pathSeparator + classPath);
 
 		logger.info("Soot classpath: " + Scene.v().getSootClassPath());
 

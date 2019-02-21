@@ -1,5 +1,6 @@
 package de.unifreiburg.cs.proglang.jgs
 
+import java.io.File
 import java.nio.file.Paths
 import java.time.temporal.ChronoField
 
@@ -49,14 +50,14 @@ object JgsDemo {
       "JGSSupport/target/scala-2.11/classes",
       secdomainCP,
       "DynamicAnalyzer/target/scala-2.11/classes"
-    ).mkString(":")
+    ).mkString(File.pathSeparator)
     val classpathRun = List(
       secdomainCP,
       "DynamicAnalyzer/target/scala-2.11/classes",
       "GradualConstraints/InstrumentationSupport/target/scala-2.11/classes",
       "lib/commons-collections4-4.0.jar",
       "JGSSupport/target/scala-2.11/classes"
-    ).mkString(":")
+    ).mkString(File.pathSeparator)
     val outputDir = "out-instrumented"
     val outputJimple = "out-original"
     val classToRun = options.getOrElse('class, {printUsage() ; throw new IllegalArgumentException("No class-to-run specified ") })
@@ -83,7 +84,13 @@ object JgsDemo {
       ).mkString(" ")
 
     println(s"\nJava home: ${javaHome}\n")
-    val sbt : String = Option(System.getenv("SBT_HOME")).map(Paths.get(_, "sbt").toString).getOrElse("sbt")
+    val sbt = if (System.getProperty("os.name").startsWith("Windows")) {
+          println("I think I'm on Windows")
+          Option(System.getenv("SBT_HOME")).map(Paths.get(_, "sbt.bat").toString).getOrElse("sbt.bat")
+      } else {
+          println("I don't think I'm on Windows, assuming UNIX")
+          "sbt"
+      }
     println(s"\nSbt command: $sbt")
 
     println(s"\nCompiling security domain: ${secdomainProject}")
