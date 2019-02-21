@@ -145,11 +145,10 @@ object JgsCheck {
         log.setLevel(if (opt.verbosity == Debug) java.util.logging.Level.INFO else java.util.logging.Level.WARNING)
 
         val o: Options = Options.v()
-        o.set_soot_classpath(raw"${opt.support.getPath}:${sourcetree.getPath}:${opt.runtime}")
+        o.set_soot_classpath(Seq(opt.support.getPath, sourcetree.getPath, opt.runtime).mkString(File.pathSeparator))
         o.set_process_dir(List(sourcetree.getPath))
 
         val s: Scene = Scene.v()
-        log.info(s"Soot classpath: ${s.getSootClassPath}")
 
         try {
           s.loadNecessaryClasses()
@@ -218,7 +217,8 @@ object JgsCheck {
     o.set_main_class(mainClass)
 
     val s: Scene = Scene.v()
-    s.setSootClassPath(sootClasspath.mkString(":") ++ ":" ++ s.getSootClassPath())
+    s.setSootClassPath(sootClasspath.mkString(File.pathSeparator) ++ File.pathSeparator ++ s.getSootClassPath())
+
     log.info(s"Soot classpath: ${s.getSootClassPath}")
 
     for (c <- otherClasses) {
