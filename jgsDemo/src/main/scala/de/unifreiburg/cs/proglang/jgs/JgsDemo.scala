@@ -83,7 +83,7 @@ object JgsDemo {
       ).mkString(" ")
 
     println(s"\nJava home: ${javaHome}\n")
-    val sbt : String = Option(System.getenv("SBT_HOME")).map(Paths.get(_, "bin", "sbt").toString).getOrElse("sbt")
+    val sbt : String = Option(System.getenv("SBT_HOME")).map(Paths.get(_, "sbt").toString).getOrElse("sbt")
     println(s"\nSbt command: $sbt")
 
     println(s"\nCompiling security domain: ${secdomainProject}")
