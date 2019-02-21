@@ -105,7 +105,7 @@ object JgsDemo {
     runSbt((Seq(sbt, s"${sbtJgsRunCommand}")), "JGS_SECDOMAIN_JARS" -> secdomainJar)
 
 
-    val runCommand = Seq("java", "-cp", s"${outputDir}:${classpathRun}", classToRun)
+    val runCommand = Seq("java", "-cp", Seq(outputDir, classpathRun).mkString(File.pathSeparator), classToRun)
     println()
     println(runCommand.map(s => "\"" + s + "\"").mkString(" "))
     println()
