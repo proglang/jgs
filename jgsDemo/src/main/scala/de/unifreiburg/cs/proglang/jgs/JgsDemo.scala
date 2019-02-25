@@ -64,8 +64,8 @@ object JgsDemo {
     val javaHome = System.getProperty("java.home")
 
     // compile demo class to Jimple, if requested
-    val sootCp = classpathCompile + s":${Paths.get(javaHome, "lib", "rt.jar").toString}"
-    val sootCommand = Seq("java", "-jar", "lib/soot-trunk-2017-09-11.jar", "-f", "J","-cp", sootCp, "-d", outputJimple, classToRun)
+    val sootCp = classpathCompile + s"${File.pathSeparator}${Paths.get(javaHome, "lib", "rt.jar").toString}"
+    val sootCommand = Seq("java", "-jar", Paths.get("lib", "soot-trunk-2017-09-11.jar").toString, "-f", "J","-cp", sootCp, "-d", outputJimple, classToRun)
     if (options.get('create_jimple).isDefined) {
       println(s"\nGenerating jimple for ${classToRun}:")
       println(sootCommand.mkString(" "))
