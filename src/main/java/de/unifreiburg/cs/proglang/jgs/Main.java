@@ -10,6 +10,7 @@ import util.logging.L1Logger;
 import util.parser.ArgParser;
 import util.parser.ArgumentContainer;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -24,7 +25,7 @@ public class Main {
 
     private static final Logger logger = Logger.getLogger(Main.class.getCanonicalName());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedEncodingException {
 
         main.Main.doSootSetup(args);
         ArgumentContainer sootOptionsContainer = ArgParser.getSootOptions(args);
