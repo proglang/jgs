@@ -23,6 +23,7 @@ import util.logging.L1Logger;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.util.logging.Logger;
 import java.io.File;
 
@@ -89,9 +90,8 @@ public class ClassRunner {
 
 		logger.info("Trying to run test " + className);
 
-		String fullPath = System.getProperty("user.dir") + "/sootOutput/"
-						  + outputDir + "/" + packageDir + "/" + className
-						  + ".class";
+		String fullPath = Paths.get(System.getProperty("user.dir"),"sootOutput",
+						  outputDir, packageDir, className + ".class").toString();
 
 		if (!new File(fullPath).isFile()) {
 			logger.severe("File "
@@ -105,7 +105,7 @@ public class ClassRunner {
 		try {
 			try {
 				// TODO: deal w/ package names correctly
-				runClass(className, packageDir.replace('/', '.'), outputDir);
+				runClass(className, packageDir.replace('/', '.').replace(File.separatorChar, '.'), outputDir);
 
 				// check if we did expect and Exception
 				if (!expectedException.equals(PASSED)) {
