@@ -61,8 +61,8 @@ public class Main {
         ACasts<String> casts =
                 new CastsFromConstants<>(new TypeDomain<>(secdomain),
                         "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>",
-                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCx(java.lang.Object)>",
-                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object castCxEnd(java.lang.Object)>");
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCx(java.lang.String)>",
+                        "<de.unifreiburg.cs.proglang.jgs.support.Casts: void castCxEnd()>");
 
         // Static Check
         // TODO: parse external methods and strings from yaml file
