@@ -63,6 +63,10 @@ object BodyTypingResult {
     return r.copy(effects = r.effects.add(effects))
   }
 
+  def replaceEffects[Level](r: BodyTypingResult[Level], effects: Effects[Level]): BodyTypingResult[Level] = {
+    return r.copy(effects = effects)
+  }
+
 }
 
 case class BodyTypingResult[LevelT](
@@ -94,4 +98,5 @@ case class BodyTypingResult[LevelT](
   def finalTypeVariableOf(local: Var[_]): TypeVars.TypeVar = {
     return this.env.get(local)
   }
+
 }

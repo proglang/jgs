@@ -106,6 +106,9 @@ public class Main {
         externalMethods.put("<java.lang.String: java.lang.String valueOf(int)>",
                             new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
                                                     new String[]{}));
+        externalMethods.put("<java.lang.String: java.lang.String valueOf(java.lang.Object)>",
+                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                                                    new String[]{}));
         externalMethods.put("<java.lang.Integer: int intValue()>",
                             new JgsCheck.Annotation(new String[]{},
                                                     new String[]{}));
@@ -140,7 +143,7 @@ public class Main {
         }
 
         if(!errors.isEmpty()) {
-            System.err.println("THERE WERE ERRORS DURING TYPCHECKING. ABORTING.");
+            System.err.println("THERE WERE ERRORS DURING TYPECHECKING. ABORTING.");
             System.exit(-1);
         }
 

@@ -24,6 +24,7 @@ import soot.toolkits.scalar.SimpleLiveLocals;
 import soot.toolkits.scalar.SmartLocalDefs;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import static de.unifreiburg.cs.proglang.jgs.constraints.CTypes.literal;
 import static de.unifreiburg.cs.proglang.jgs.constraints.TypeVars.MethodTypeVars;
@@ -135,7 +136,6 @@ public class MethodBodyTyping<Level> {
         return r;
     }
 
-
     private BodyTypingResult<Level> generateResult(MethodTypeVars sTvars,
                                                    DirectedGraph<Unit> g,
                                                    LocalDefs localDefs,
@@ -163,6 +163,7 @@ public class MethodBodyTyping<Level> {
         // check for context casts a context casts
         Option<ACasts.CxCast<Level>> maybeCxCast = casts.detectContextCastStartFromStmt(s);
         if (maybeCxCast.isDefined()) {
+
             //a context cast
             ACasts.CxCast<Level> cxCast = maybeCxCast.get();
 
@@ -192,13 +193,15 @@ public class MethodBodyTyping<Level> {
 
             // Type variable for the new context
             TypeVar newPc = sTvars.forContext(s);
-            r = generateResult(sTvars, g, localDefs, postdoms, startOfCast, previous, signatures, fields, newPc, visited, Option.apply(endOfCast));
+            BodyTypingResult<Level> innerInitialResult = BodyTypingResult.replaceEffects(previous, Effects.makeEffects(cxCast.destType));
+            r = generateResult(sTvars, g, localDefs, postdoms, startOfCast, innerInitialResult, signatures, fields, newPc, visited, Option.apply(endOfCast));
 
             // add constraints: oldPc <= source, dest <= newPc, dest <= {effects}
             Constraint<Level> srcConstraint = Constraints.<Level>le(CTypes.<Level>variable(topLevelContext), literal(cxCast.sourceType));
             Constraint<Level> destConstraint = Constraints.<Level>le(literal(cxCast.destType), CTypes.<Level>variable(newPc));
             List<Constraint<Level>> additionalConstraintsList = new LinkedList<>(Arrays.asList(srcConstraint, destConstraint));
             for (TypeView<Level> e : r.getEffects()) {
+                String description = String.format("CXCAST:EFF: \n  STMT: %s\n  newPc: %s\n endOfCast: %s\n)", s.toString(), newPc, endOfCast);
                 additionalConstraintsList.add(Constraints.<Level>le(literal(cxCast.destType), literal(e)));
             }
             Map<Constraint<Level>, TypeVarTags.TypeVarTag> tagMap = new HashMap<>();
@@ -228,6 +231,7 @@ public class MethodBodyTyping<Level> {
                                        r.getFinalEnv(),
                                        r.getTags().addAll(previous.getTags()).addAll(atomic.getTags()),
                                        r.envMap().join(previous.envMap()));
+
             // if the unit is the end of a sequence, stop
             if (successors.isEmpty()) {
                 return r;

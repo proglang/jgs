@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -69,7 +70,7 @@ public class JGS_End2EndTests {
     /**
      * Runs each testfile specified above. note that the outputDir can be set to ones liking.
      */
-    public void test() {
+    public void test() throws UnsupportedEncodingException {
 
         String outputDir = "jgs_unit";
 
