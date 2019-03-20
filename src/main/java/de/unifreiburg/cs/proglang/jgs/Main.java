@@ -143,7 +143,7 @@ public class Main {
         }
 
         if(!errors.isEmpty()) {
-            System.err.println("THERE WERE ERRORS DURING TYPECHECKING. ABORTING.");
+            logger.severe("THERE WERE ERRORS DURING TYPECHECKING. ABORTING.");
             System.exit(-1);
         }
 

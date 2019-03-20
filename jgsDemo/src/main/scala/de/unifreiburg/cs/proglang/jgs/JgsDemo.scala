@@ -63,17 +63,6 @@ object JgsDemo {
     val classToRun = options.getOrElse('class, {printUsage() ; throw new IllegalArgumentException("No class-to-run specified ") })
     val javaHome = System.getProperty("java.home")
 
-    // compile demo class to Jimple, if requested
-    val sootCp = classpathCompile + s"${File.pathSeparator}${Paths.get(javaHome, "lib", "rt.jar").toString}"
-    val sootCommand = Seq("java", "-jar", Paths.get("lib", "soot-trunk-2017-09-11.jar").toString, "-f", "J","-cp", sootCp, "-d", outputJimple, classToRun)
-    if (options.get('create_jimple).isDefined) {
-      println(s"\nGenerating jimple for ${classToRun}:")
-      println(sootCommand.mkString(" "))
-      println()
-      if (Process(sootCommand).run.exitValue() != 0) {
-        println("!! ERROR generating Jimple")
-      }
-    }
 
     val sbtJgsRunCommand : String = (List(
       "runMain", "de.unifreiburg.cs.proglang.jgs.Main", "-m", classToRun, "-cp", classpathCompile, "-o", outputDir
@@ -100,6 +89,18 @@ object JgsDemo {
     println(s"\nCompiling: ${demoProject}\n")
     val compileDemoCommand = Seq(sbt, s"${demoProject}/compile")
     runSbt(compileDemoCommand)
+
+    // compile demo class to Jimple, if requested
+    val sootCp = classpathCompile + s"${File.pathSeparator}${Paths.get(javaHome, "lib", "rt.jar").toString}"
+    val sootCommand = Seq("java", "-jar", Paths.get("lib", "soot-trunk-2017-09-11.jar").toString, "-f", "J","-cp", sootCp, "-d", outputJimple, classToRun)
+    if (options.get('create_jimple).isDefined) {
+      println(s"\nGenerating jimple for ${classToRun}:")
+      println(sootCommand.mkString(" "))
+      println()
+      if (Process(sootCommand).run.exitValue() != 0) {
+        println("!! ERROR generating Jimple")
+      }
+    }
 
     println("Running sbt with: " + sbtJgsRunCommand)
     runSbt((Seq(sbt, s"${sbtJgsRunCommand}")), "JGS_SECDOMAIN_JARS" -> secdomainJar)
