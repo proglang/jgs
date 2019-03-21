@@ -98,16 +98,13 @@ public class ExternalClasses {
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
 											 + "makeLow(java.lang.Object)>", new MakeBot());
 
-        // TODO: cast methods should be read from an external spec
-		// casts
-		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.Casts: java.lang.Object cast(java.lang.String,java.lang.Object)>", new DoCast());
-
 		// Dont do anything for ValueOf... its level is determined by the
 		// method's receiver
 		instrumentationForSpecialMethods.put("<java.lang.Boolean: java.lang"
 											 + ".Boolean valueOf(boolean)>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.String valueOf(int)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: int intValue()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.List: java.util.Iterator iterator()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.Iterator: boolean hasNext()>", new DoNothing());
