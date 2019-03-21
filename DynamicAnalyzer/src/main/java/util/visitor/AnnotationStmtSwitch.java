@@ -1,6 +1,7 @@
 package util.visitor;
 
 import analyzer.level1.JimpleInjector;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import soot.Body;
 import soot.Local;
 import soot.Value;
@@ -40,9 +41,11 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	private static final Logger logger = Logger.getLogger(AnnotationStmtSwitch.class.getName());
 
 	private Body body;
+	private final Casts<?> casts;
 
-	public AnnotationStmtSwitch(Body body) {
+	public AnnotationStmtSwitch(Body body, Casts<?> casts) {
 		this.body = body;
+		this.casts = casts;
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseInvokeStmt(InvokeStmt stmt) {
 
-		AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch(stmt, StmtContext.INVOKE);
+		AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch(stmt, StmtContext.INVOKE, casts);
 
 		InvokeStmt iStmt = stmt;
 
@@ -88,7 +91,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		//*/
 
 		// Old Code to assure, that we have it.
-		AnnotationValueSwitch rightValueSwitch = new AnnotationValueSwitch(stmt, StmtContext.ASSIGNRIGHT);
+		AnnotationValueSwitch rightValueSwitch = new AnnotationValueSwitch(stmt, StmtContext.ASSIGNRIGHT, casts);
 	/*	for (int i = 0; i < stmt.getUseBoxes().size(); i++) {
 			Value val = stmt.getUseBoxes().get(i).getValue();
 			val.apply(rightValueSwitch);
@@ -143,7 +146,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 	@Override
 	public void caseIdentityStmt(IdentityStmt stmt) {
 
-		AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch(stmt, StmtContext.IDENTITY);
+		AnnotationValueSwitch valueSwitch = new AnnotationValueSwitch(stmt, StmtContext.IDENTITY, casts);
 
 		logger.fine(" > > > Identity statement identified < < <");
 

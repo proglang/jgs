@@ -1,6 +1,7 @@
 package util.visitor;
 
 import analyzer.level1.JimpleInjector;
+import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import soot.Local;
 import soot.SootMethod;
 import soot.jimple.*;
@@ -19,10 +20,12 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	private static final Logger logger = Logger.getLogger(AnnotationValueSwitch.class.getName());
 
 	private VisitorHelper vh = new VisitorHelper();
+	private final Casts<?> casts;
 
-	public AnnotationValueSwitch(Stmt stmt, StmtContext cx) {
+	public AnnotationValueSwitch(Stmt stmt, StmtContext cx, Casts<?> casts) {
 	    this.callingStmt = stmt;
 	    this.actualContext = cx;
+	    this.casts = casts;
 	}
 
 	/*
@@ -542,7 +545,23 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 			Local[] args = vh.getArgumentsForInvokedMethod(v);
 			SootMethod method = v.getMethod();
 
-			if (ExternalClasses.isSpecialMethod(method)) {
+			if (casts.isValueCast(callingStmt)) {
+				logger.info(String.format("Found value cast %s at %s", casts.getValueCast(callingStmt), callingStmt));
+				// TODO: this here is really ugly ... but we must be careful in fixing it
+				setRequiredActionForRHS(Optional.of(AnnotationValueSwitch.RequiredActionForRHS.CAST));
+				// TODO: implement context cast handling here
+			} else if (casts.isCxCastStart(callingStmt)){
+				Casts.Conversion<?> conversion = casts.getCxCast(callingStmt);
+				logger.info(String.format("Found cx cast %s at %s", conversion, callingStmt));
+
+				logger.severe("Cx cast detected but the instrumentation of cx casts is not implemented yet.");
+
+
+			} else if (casts.isCxCastEnd(callingStmt)) {
+				logger.info(String.format("Found cx cast end at %s for id %s", callingStmt, "??"));
+				logger.severe("Cx cast end detected but the instrumentation of cx casts is not implemented yet.");
+
+			} else if (ExternalClasses.isSpecialMethod(method)) {
 				logger.fine("Found special method: " + method);
 				setRequiredActionForRHS(ExternalClasses.instrumentSpecialMethod(method, callingStmt, args));
 

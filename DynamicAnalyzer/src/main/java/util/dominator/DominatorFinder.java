@@ -18,6 +18,8 @@ import java.util.logging.Logger;
  *
  */
 
+// TODO: it is not pretty that everything is static here
+// TODO: it is also wasteful to use strings as ids. We should use ints (HandleStmt also should use ints)
 public class DominatorFinder {
 	private static MHGPostDominatorsFinder<Unit> pdfinder;
 	private static HashMap<Unit, String> domList;

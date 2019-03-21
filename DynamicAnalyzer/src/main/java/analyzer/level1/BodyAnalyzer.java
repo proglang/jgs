@@ -66,7 +66,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		Chain<Unit> units  = body.getUnits();
 
-		AnnotationStmtSwitch stmtSwitch =  new AnnotationStmtSwitch(body);
+		AnnotationStmtSwitch stmtSwitch =  new AnnotationStmtSwitch(body, casts);
 		Chain<SootField> fields = sootMethod.getDeclaringClass().getFields();
 
 		// Using a copy, such that JimpleInjector could inject directly.

@@ -65,7 +65,7 @@ public abstract class ACasts<Level> implements Casts<Level> {
 
     @Override
     public boolean isCxCastEnd(Stmt s) {
-        throw new RuntimeException("Not Implemented!");
+        return detectContextCastEndFromStmt(s);
     }
 
     public static class CxCast<Level> implements Casts.Conversion<Level> {
