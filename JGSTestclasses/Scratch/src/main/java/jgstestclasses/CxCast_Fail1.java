@@ -1,8 +1,8 @@
-package demo;
+package jgstestclasses;
 
 import de.unifreiburg.cs.proglang.jgs.support.*;
 
-public class DemoCxCast {
+public class CxCast_Fail1 {
 
     @Sec("?")
     static int dynField;
@@ -19,10 +19,9 @@ public class DemoCxCast {
         staticField = 42;
         dynField = Casts.cast("HIGH ~> ?", staticField);
 
-        int zLow = Casts.cast("? ~> LOW", dynField);
         if (dynField == 42) {
+            // we are in a high-security, dynamic context, so this cxcast should fail.
             Casts.castCx("? ~> LOW");
-//            lowField = zLow;
             lowField = 5;
             Casts.castCxEnd();
         }

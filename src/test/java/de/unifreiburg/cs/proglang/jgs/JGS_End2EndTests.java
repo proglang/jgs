@@ -62,7 +62,8 @@ public class JGS_End2EndTests {
                 new Object[]{"PolymorphicMethods1_Success", SecurityMonitoringEvent.PASSED, new String[]{""}},
                 new Object[]{"PolymorphicMethods2_Success", SecurityMonitoringEvent.PASSED, new String[]{""}},
                 new Object[]{"PolymorphicMethods1_Fail", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}},
-                new Object[]{"PolymorphicMethods2_Fail", SecurityMonitoringEvent.NSU_FAILURE, new String[]{""}}
+                new Object[]{"PolymorphicMethods2_Fail", SecurityMonitoringEvent.NSU_FAILURE, new String[]{""}},
+                new Object[]{"CxCast_Fail1", SecurityMonitoringEvent.ILLEGAL_FLOW, new String[]{""}}
         );
     }
 
