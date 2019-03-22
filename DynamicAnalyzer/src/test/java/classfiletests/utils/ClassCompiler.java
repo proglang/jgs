@@ -33,7 +33,7 @@ public class ClassCompiler {
 	 */
 	public static void compile(String name, String outputDir) throws UnsupportedEncodingException {
 
-		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir, "-j"};
+		String[] args = {"-m", "testclasses." + name, "-o", "sootOutput/" + outputDir};
 		logger.info("Compilation of src file started");
 		Main.execute(args, FixedTypings.allDynamic(), casts);
 		logger.info("Compilation successful, binary put in sootOutput/"
