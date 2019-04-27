@@ -5,14 +5,18 @@ import de.unifreiburg.cs.proglang.jgs.constraints.TypeViews;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.MethodTypings;
 import soot.*;
+import soot.toolkits.graph.BriefUnitGraph;
+import soot.toolkits.graph.UnitGraph;
 import soot.util.Chain;
 import util.dominator.DominatorFinder;
-import util.logging.L1Logger;
 import util.visitor.AnnotationStmtSwitch;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This Analyzer extends the Body Transformer of the Soot Framework,
@@ -36,6 +40,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	private boolean controllerIsActive;
 	private int expectedException;
 	private Casts<Level> casts;
+
+	private List<Unit> successorStmt = new ArrayList<Unit>();
+	private List<Unit> nextSuccessorStmt = new ArrayList<Unit>();
+	private List<String> unitRhsList = new ArrayList<String>();
+	private List<String> unitStmtsListString = new ArrayList<String>();
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -66,11 +75,11 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		Chain<Unit> units  = body.getUnits();
 
-		AnnotationStmtSwitch stmtSwitch =  new AnnotationStmtSwitch(body, casts);
+		AnnotationStmtSwitch stmtSwitch = new AnnotationStmtSwitch(body, casts);
 		Chain<SootField> fields = sootMethod.getDeclaringClass().getFields();
 
 		// Using a copy, such that JimpleInjector could inject directly.
-		ArrayList<Unit> unmod = new ArrayList<>(units);
+		ArrayList<Unit> unmodifiedStmts = new ArrayList<>(units);
 
 		DominatorFinder.init(body);
 
@@ -78,6 +87,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		// In order, that the righteous body got the inserts, we have to set up the
 		// Body for the Injections.
 		JimpleInjector.setBody(body);
+
+		UnitGraph unitGraph = new BriefUnitGraph(body);
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(methodTypings.getVarTyping(sootMethod),
@@ -136,9 +147,138 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		// </editor-fold>
 
+		List<Unit> successorStmt = new ArrayList<Unit>();
+		List<String> unitRhsList = new ArrayList<String>(); // contains the RHS of the units in string
+		List<String> unitRhsListString = new ArrayList<String>(); // contains the RHS of the units in string - need separate lists to deal with separate data type params
+		List<String> unitStmtsListString = new ArrayList<String>(); // contains the units in string
+
+		for (Unit unit: unmodifiedStmts) {
+			unitStmtsListString.add(unit.toString());
+			if (unit.toString().contains("=")) {
+				unitRhsList.add(unit.toString().split("=")[1]);
+				unitRhsListString.add(unit.toString().split("=")[1]);
+			}
+			else {
+				unitRhsList.add(unit.toString());
+				unitRhsListString.add(unit.toString());
+			}
+		}
+
+		this.unitRhsList = new ArrayList<>(unitRhsList);
+		this.unitStmtsListString = new ArrayList<>(unitStmtsListString);
 
 		// Analyzing Every Statement, step by step.
-		for (Unit unit: unmod) {
+		boolean isNotStringFlag = false;
+		boolean isStringFlag = false;
+		int stmtIndex = 0;
+		for (Unit unit: unmodifiedStmts) {
+			boolean dynLabelFlag = false;
+			String unitLhsString = "";
+			String unitRhsString = "";
+
+			if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow")){
+				dynLabelFlag = true;
+			}
+
+			if(dynLabelFlag){
+				// for int, double, boolean, float, char params
+				for(int i = 0; i < unitRhsList.size(); i++) {
+					if (unitRhsList.get(i).contains("intValue") || unitRhsList.get(i).contains("doubleValue") || unitRhsList.get(i).contains("floatValue")
+							|| unitRhsList.get(i).contains("booleanValue") || unitRhsList.get(i).contains("charValue")) {
+						if(stmtIndex + 2 == i) {
+							isNotStringFlag = true;
+							isStringFlag = false;
+							unitLhsString = unitStmtsListString.get(i).split("=")[0];
+							//int index = i + 1; // to escape the following assignment statement
+							int index = i;
+							List<Unit> tempSuccessorList = new ArrayList<Unit>();
+							tempSuccessorList.add(unit);
+
+							int u = 0;
+							while(unitGraph.getSuccsOf(tempSuccessorList.get(0)).size() > 0){
+								tempSuccessorList.set(0, (unitGraph.getSuccsOf(tempSuccessorList.get(0))).get(0));
+								u += 1;
+							}
+
+							tempSuccessorList.set(0, unit);
+							// TODO: get rid of hardcoded 4 !!
+							//for (int m = 0; m < 4 && m <= unitStmtsListString.size() - 1; m++) {
+							for (int m = 0; m < 4 && m < u; m++) {
+								tempSuccessorList.set(0, (unitGraph.getSuccsOf(tempSuccessorList.get(0))).get(0));
+							}
+							if (tempSuccessorList.get(0).toString().contains("makeHigh") || tempSuccessorList.get(0).toString().contains("makeLow"))
+								index = index + 2; // to escape the following assignment and makeHigh/makeLow statements
+
+							for (int j = 0; j <= index; j++) {
+								unitRhsList.remove(0);
+								unitStmtsListString.remove(0);
+							}
+							boolean varExistsFlag = varExists(unitRhsList, unitLhsString);
+							if(!varExistsFlag){
+								JimpleInjector.dynLabelFlag = true;
+								successorStmt = unitGraph.getSuccsOf(unit);
+								this.successorStmt = successorStmt;
+							}
+							unitRhsList = new ArrayList<>(this.unitRhsList);
+							unitStmtsListString = new ArrayList<>(this.unitStmtsListString);
+							break;
+						}
+					}
+				}
+				// for string, stringbuilder, object params
+				if(!isNotStringFlag) {
+					isStringFlag = true;
+					successorStmt = unitGraph.getSuccsOf(unit);
+					this.successorStmt = successorStmt;
+					unitLhsString = successorStmt.get(0).toString().split("=")[0];
+					unitRhsString = successorStmt.get(0).toString().split("=")[1];
+					int index = unitRhsListString.indexOf(unitRhsString);
+					successorStmt = unitGraph.getSuccsOf(successorStmt.get(0));
+					if(successorStmt.get(0).toString().contains("makeHigh") || successorStmt.get(0).toString().contains("makeLow"))
+						index += 1; // to escape the following makeHigh/makeLow statement
+					for (int k = 0; k <= index; k++) {
+						unitRhsListString.remove(0);
+					}
+					boolean varExistsFlag = varExists(unitRhsListString, unitLhsString);
+					if(!varExistsFlag){
+						JimpleInjector.dynLabelFlag = true;
+					}
+				}
+			}
+
+			if(isStringFlag){
+				// check if var is used in code. If not, the tracing for the assignment statement can be skipped
+				if(this.successorStmt.size() > 0 && this.successorStmt.get(0).toString().equals(unit.toString())) {
+					unitLhsString = this.successorStmt.get(0).toString().split("=")[0];
+					boolean varExistsFlag = varExists(unitRhsListString, unitLhsString);
+					if(!varExistsFlag){
+						JimpleInjector.dynLabelFlag = true;
+					}
+				}
+			}
+			else {
+				// check if var is used in code. If not, the tracing for the assignment statement can be skipped
+				if (this.successorStmt.size() > 0 && this.successorStmt.get(0).toString().equals(unit.toString())) {
+					JimpleInjector.dynLabelFlag = true;
+					nextSuccessorStmt = unitGraph.getSuccsOf(unit);
+				}
+			}
+			// remove extra tracing for methods like intValue
+			if (nextSuccessorStmt.size() > 0 && (nextSuccessorStmt.get(0).toString().contains("intValue") || nextSuccessorStmt.get(0).toString().contains("doubleValue") || nextSuccessorStmt.get(0).toString().contains("booleanValue")
+					|| nextSuccessorStmt.get(0).toString().contains("floatValue") || nextSuccessorStmt.get(0).toString().contains("charValue"))
+					&& nextSuccessorStmt.get(0).toString().equals(unit.toString())) {
+				JimpleInjector.dynLabelFlag = true;
+				nextSuccessorStmt = unitGraph.getSuccsOf(unit);
+			}
+
+			// remove extra tracing for methods like valueOf
+			//if (nextSuccessorStmt.size() > 0 && nextSuccessorStmt.get(0).toString().contains("valueOf") && nextSuccessorStmt.get(0).toString().equals(unit.toString())) {
+			if(unit.toString().contains("valueOf"))	{
+				nextSuccessorStmt = unitGraph.getSuccsOf(unit);
+				if(nextSuccessorStmt.get(0).toString().contains("makeHigh") || nextSuccessorStmt.get(0).toString().contains("makeLow"))
+					JimpleInjector.dynLabelFlag = true;
+			}
+
 			// Check if the statements is a postdominator for an IfStmt.
 			if (DominatorFinder.containsStmt(unit)) {
 				JimpleInjector.exitInnerScope(unit);
@@ -148,11 +288,28 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 			// Add further statements using JimpleInjector.
 			unit.apply(stmtSwitch);
+			JimpleInjector.dynLabelFlag = false;
+			stmtIndex += 1;
 		}
 
 		// Apply all changes.
 		JimpleInjector.addUnitsToChain();
 		JimpleInjector.closeHS();
+	}
+
+
+	// find if the var is used again in code. If not, it does not need to be tracked explicitly
+	private static boolean varExists(List<String> unitRhsListString, String unitLhsString){
+		boolean varExistsFlag = false;
+		for(String a : unitRhsListString){    // source : https://stackoverflow.com/questions/25417363/java-string-contains-matches-exact-word
+			String pattern = "\\b"+unitLhsString.trim()+"\\b";
+			Pattern p = Pattern.compile(pattern);
+			Matcher m = p.matcher(a);
+			varExistsFlag = m.find();
+			if(varExistsFlag)
+				break;
+		}
+		return varExistsFlag;
 	}
 
 	/**
