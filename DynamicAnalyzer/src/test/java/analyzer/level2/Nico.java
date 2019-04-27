@@ -23,12 +23,12 @@ public class Nico {
 		hs.addObjectToObjectMap(this);
 		
 		hs.addLocal("int_x");
-		hs.setLocalToCurrentAssingmentLevel("int_x");
+		hs.setLocalToCurrentAssignmentLevel("int_x");
 		int x = 1;
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("int_x"));
 		
 		hs.addLocal("int_y");
-		hs.setLocalToCurrentAssingmentLevel("int_y");
+		hs.setLocalToCurrentAssignmentLevel("int_y");
 		int y = 2;
 		hs.setLocalFromString("int_y", "HIGH");
 		assertEquals(CurrentSecurityDomain.top(), hs.getLocalLevel("int_y"));

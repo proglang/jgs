@@ -24,7 +24,7 @@ public class IfStmtSuccess {
 		hs.addLocal("int_x");
 		
 		hs.checkLocalPC("int_x");
-		hs.setLocalToCurrentAssingmentLevel("int_x");
+		hs.setLocalToCurrentAssignmentLevel("int_x");
 		int x = 1;
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalLevel("int_x"));
 

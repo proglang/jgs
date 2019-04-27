@@ -621,7 +621,7 @@ public class JimpleInjector {
 		// insert setLevelOfLOcal
 		Expr invokeSetLevel = Jimple.v().newVirtualInvokeExpr(
 				hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS), 
-				"setLocalToCurrentAssingmentLevel", paramTypes,
+				"setLocalToCurrentAssignmentLevel", paramTypes,
 				Scene.v().getObjectType(),
 				false), local_for_Strings);
 		Unit invoke = Jimple.v().newInvokeStmt(invokeSetLevel);

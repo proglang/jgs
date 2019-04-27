@@ -64,7 +64,7 @@ public class ArraysSuccess {
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_a");
 		hs.addLocal("String_x");
 		hs.checkLocalPC("String_x");
-		hs.setLocalToCurrentAssingmentLevel("String_x");
+		hs.setLocalToCurrentAssignmentLevel("String_x");
 		@SuppressWarnings("unused")
 		String x = a[i];
 		

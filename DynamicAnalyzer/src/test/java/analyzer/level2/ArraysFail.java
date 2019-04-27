@@ -51,7 +51,7 @@ public class ArraysFail {
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(a, Integer.toString(i));
 		hs.joinLevelOfLocalAndAssignmentLevel("int_i");
 		hs.joinLevelOfLocalAndAssignmentLevel("String[]_a");
-		hs.setLocalToCurrentAssingmentLevel("String_x");
+		hs.setLocalToCurrentAssignmentLevel("String_x");
 		@SuppressWarnings("unused")
 		String x = a[i];
 		

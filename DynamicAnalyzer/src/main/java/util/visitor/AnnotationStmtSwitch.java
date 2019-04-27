@@ -2,10 +2,7 @@ package util.visitor;
 
 import analyzer.level1.JimpleInjector;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
-import soot.Body;
-import soot.Local;
-import soot.Value;
-import soot.ValueBox;
+import soot.*;
 import soot.jimple.AssignStmt;
 import soot.jimple.BreakpointStmt;
 import soot.jimple.CaughtExceptionRef;
@@ -77,9 +74,9 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		// Abort, if more then One Element on the LHS
 		if (stmt.getDefBoxes().size() != 1) {
 			throw new InternalAnalyzerException("Unexpected number of Elements "
-												+ "on Left Hand Side "
-												+ "of Assign statement: "
-												+ stmt.getDefBoxes().size());
+					+ "on Left Hand Side "
+					+ "of Assign statement: "
+					+ stmt.getDefBoxes().size());
 		}
 
 		// Switching the Right hand side values using the RHSInstrumentationSwitch
@@ -134,7 +131,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 					break;
 				default:
 					throw new InternalAnalyzerException("Unexpected action: "
-												  + action);
+							+ action);
 			}
 		});
 		// TODO: LHS shouldn't be executed in all cases, but currently some cases like handleCast may rely on it.
@@ -156,7 +153,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 				int posInArgList = ((ParameterRef) stmt.getRightOp())
 						.getIndex();
 				JimpleInjector.assignArgumentToLocal(posInArgList,
-                        (Local) stmt.getLeftOp());
+						(Local) stmt.getLeftOp());
 			}
 		} else if (stmt.getRightOp() instanceof ThisRef) {
 			// TODO im Grunde nicht nötig...
@@ -276,7 +273,7 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		if (val instanceof Constant) {
 			JimpleInjector.returnConstant(stmt);
 		} else if (val instanceof Local) {
-			
+
 			JimpleInjector.returnLocal((Local) val, stmt);
 		}
 	}

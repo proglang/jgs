@@ -74,7 +74,7 @@ public class SwitchStmtSuccess {
 		  case 0: 
 			  assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
 			  hs.checkLocalPC("int_x");
-			  hs.setLocalToCurrentAssingmentLevel("int_x");
+			  hs.setLocalToCurrentAssignmentLevel("int_x");
 			  hs.exitInnerScope("123");
 			  break;
 		  case 1:  

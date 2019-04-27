@@ -10,12 +10,7 @@
       <module name="jgsDemo" target="1.8" />
     </bytecodeTargetLevel>
   </component>
-  <component name="HydraSettings">
-    <option name="hydraStorePath" value="C:\Users\t_ravisha.gaur\jgs_new\JGS\.hydra\idea" />
-    <option name="noOfCores" value="2" />
-    <option name="projectRoot" value="C:\Users\t_ravisha.gaur\jgs_new\JGS" />
-    <option name="sourcePartitioner" value="auto" />
-  </component>
+  <component name="Encoding" addBOMForNewFiles="with NO BOM" />
   <component name="InspectionProjectProfileManager">
     <profile version="1.0">
       <option name="myName" value="Project Default" />
@@ -25,35 +20,25 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DemoTestclasses.iml" filepath="$PROJECT_DIR$/.idea/modules/DemoTestclasses.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DemoTestclasses-build.iml" filepath="$PROJECT_DIR$/.idea/modules/DemoTestclasses-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DynamicAnalyzer.iml" filepath="$PROJECT_DIR$/.idea/modules/DynamicAnalyzer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DynamicAnalyzer-build.iml" filepath="$PROJECT_DIR$/.idea/modules/DynamicAnalyzer-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/GradualConstraints.iml" filepath="$PROJECT_DIR$/.idea/modules/GradualConstraints.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GradualConstraints-build.iml" filepath="$PROJECT_DIR$/.idea/modules/GradualConstraints-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/GradualConstraintsTests.iml" filepath="$PROJECT_DIR$/.idea/modules/GradualConstraintsTests.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GradualConstraintsTests-build.iml" filepath="$PROJECT_DIR$/.idea/modules/GradualConstraintsTests-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/InstrumentationSupport.iml" filepath="$PROJECT_DIR$/.idea/modules/InstrumentationSupport.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/InstrumentationSupport-build.iml" filepath="$PROJECT_DIR$/.idea/modules/InstrumentationSupport-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JGSSupport.iml" filepath="$PROJECT_DIR$/.idea/modules/JGSSupport.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/JGSSupport-build.iml" filepath="$PROJECT_DIR$/.idea/modules/JGSSupport-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/LMHSecurityDomain.iml" filepath="$PROJECT_DIR$/.idea/modules/LMHSecurityDomain.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/LMHSecurityDomain-build.iml" filepath="$PROJECT_DIR$/.idea/modules/LMHSecurityDomain-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ScratchTestclasses.iml" filepath="$PROJECT_DIR$/.idea/modules/ScratchTestclasses.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ScratchTestclasses-build.iml" filepath="$PROJECT_DIR$/.idea/modules/ScratchTestclasses-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/UserDefinedSecurityDomain.iml" filepath="$PROJECT_DIR$/.idea/modules/UserDefinedSecurityDomain.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/UserDefinedSecurityDomain-build.iml" filepath="$PROJECT_DIR$/.idea/modules/UserDefinedSecurityDomain-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jgs.iml" filepath="$PROJECT_DIR$/.idea/modules/jgs.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jgs-build.iml" filepath="$PROJECT_DIR$/.idea/modules/jgs-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jgsDemo.iml" filepath="$PROJECT_DIR$/.idea/modules/jgsDemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jgsDemo-build.iml" filepath="$PROJECT_DIR$/.idea/modules/jgsDemo-build.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="jgs_8248,JGSSupport,ScratchTestclasses,LMHSecurityDomain,DemoTestclasses,UserDefinedSecurityDomain" />
-    <profile name="sbt 2" modules="GradualConstraints,GradualConstraintsTests,jgs,DynamicAnalyzer,InstrumentationSupport,jgsDemo">
+    <profile name="sbt 1" modules="DemoTestclasses,JGSSupport,LMHSecurityDomain,ScratchTestclasses,UserDefinedSecurityDomain,jgs_8494" />
+    <profile name="sbt 2" modules="DynamicAnalyzer,GradualConstraints,GradualConstraintsTests,InstrumentationSupport,jgs,jgsDemo">
       <parameters>
         <parameter value="-target:jvm-1.8" />
       </parameters>
@@ -68,29 +53,19 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/DynamicAnalyzer" />
-            <option value="$PROJECT_DIR$/DynamicAnalyzer/project" />
             <option value="$PROJECT_DIR$/GradualConstraints" />
             <option value="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport" />
-            <option value="$PROJECT_DIR$/GradualConstraints/InstrumentationSupport/project" />
             <option value="$PROJECT_DIR$/GradualConstraints/Tests" />
-            <option value="$PROJECT_DIR$/GradualConstraints/Tests/project" />
-            <option value="$PROJECT_DIR$/GradualConstraints/project" />
             <option value="$PROJECT_DIR$/JGSSupport" />
-            <option value="$PROJECT_DIR$/JGSSupport/project" />
             <option value="$PROJECT_DIR$/JGSTestclasses/Demo" />
-            <option value="$PROJECT_DIR$/JGSTestclasses/Demo/project" />
             <option value="$PROJECT_DIR$/JGSTestclasses/Scratch" />
-            <option value="$PROJECT_DIR$/JGSTestclasses/Scratch/project" />
             <option value="$PROJECT_DIR$/LMHSecurityDomain" />
-            <option value="$PROJECT_DIR$/LMHSecurityDomain/project" />
             <option value="$PROJECT_DIR$/UserDefinedSecurityDomain" />
-            <option value="$PROJECT_DIR$/UserDefinedSecurityDomain/project" />
             <option value="$PROJECT_DIR$/jgsDemo" />
-            <option value="$PROJECT_DIR$/jgsDemo/project" />
             <option value="$PROJECT_DIR$/project" />
           </set>
         </option>
-        <option name="sbtVersion" value="1.1.2" />
+        <option name="sbtVersion" value="1.2.1" />
       </SbtProjectSettings>
     </option>
   </component>

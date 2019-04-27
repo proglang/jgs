@@ -19,7 +19,7 @@ public class Demo1 {
     @Constraints("LOW <= @0")
     @Effects({"LOW", "?"})
     public static void main(String[] args) {
-        int a = z;
+       /* int a = z;
         int x = 7;
         int e = x;
         int y = 5;
@@ -35,7 +35,7 @@ public class Demo1 {
 
         Float f = 5.0f;
         String.valueOf(f);
-        int u = f.intValue();
+        int u = f.intValue();*/
 
 
         String secret = IOUtils.readSecret(); // <- library method
@@ -60,8 +60,5 @@ public class Demo1 {
         IOUtils.printSecret(staticField); */
     }
 
-    public void test(){
-        this.dynField = "fgdhc";
-    }
 
 }

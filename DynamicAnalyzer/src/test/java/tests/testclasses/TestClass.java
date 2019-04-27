@@ -56,12 +56,12 @@ public class TestClass {
     	hs.setLocalFromString("int_a2", null);
     	hs.joinLevelOfLocalAndAssignmentLevel("int_a1");
     	hs.joinLevelOfLocalAndAssignmentLevel("int_a2");
-    	hs.setLocalToCurrentAssingmentLevel("int_res");
+    	hs.setLocalToCurrentAssignmentLevel("int_res");
     	int res = a1 + a2;
     	
     	hs.joinLevelOfLocalAndAssignmentLevel("int_res");
     	hs.joinLevelOfLocalAndAssignmentLevel("int_res");
-    	hs.setLocalToCurrentAssingmentLevel("int_anotherRes");
+    	hs.setLocalToCurrentAssignmentLevel("int_anotherRes");
     	int anotherRes = res + res;
     	
     	String s;
@@ -71,7 +71,7 @@ public class TestClass {
     	s = "ghj";
     	
     	hs.joinLevelOfLocalAndAssignmentLevel("String_d");
-    	hs.setLocalToCurrentAssingmentLevel("String_s");
+    	hs.setLocalToCurrentAssignmentLevel("String_s");
     	s = d;
     	
     	ifReturnExpr();

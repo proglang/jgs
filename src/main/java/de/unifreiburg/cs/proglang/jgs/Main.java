@@ -71,58 +71,149 @@ public class Main {
         externalFields.put("<java.lang.System: java.io.PrintStream out>", "pub");
         Map<String, JgsCheck.Annotation> externalMethods = new HashMap<>();
         externalMethods.put("<java.io.PrintStream: void println(java.lang.String)>",
-                            Annotations.lowSink(1));
+                Annotations.lowSink(1));
         externalMethods.put("<java.io.PrintStream: void print(java.lang.String)>",
-                            Annotations.lowSink(1));
+                Annotations.lowSink(1));
         externalMethods.put("<java.io.PrintStream: void println()>",
-                            Annotations.lowSink(0));
+                Annotations.lowSink(0));
         externalMethods.put("<java.io.PrintStream: void println(java.lang.Object)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
-                                                    new String[]{"LOW"}));
+                new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
+                        new String[]{"LOW"}));
         externalMethods.put("<java.io.PrintStream: void println(int)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
-                                                    new String[]{"LOW"}));
+                new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
+                        new String[]{"LOW"}));
+        externalMethods.put("<java.io.PrintStream: void println(char)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= LOW"},
+                        new String[]{"LOW"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeHigh(java.lang.Object)>",
-                            new JgsCheck.Annotation(new String[]{"? <= @ret"},
-                                                    new String[]{}));
+                new JgsCheck.Annotation(new String[]{"? <= @ret"},
+                        new String[]{}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeLow(java.lang.Object)>",
-                            new JgsCheck.Annotation(new String[]{"? <= @ret", "@0 <= LOW"},
-                                                    new String[]{}));
+                new JgsCheck.Annotation(new String[]{"? <= @ret", "@0 <= LOW"},
+                        new String[]{}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.String)>",
-                            new JgsCheck.Annotation(new String[]{},
-                                                    new String[]{"LOW"}));
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{"LOW"}));
+        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{"LOW"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printPublicDynamic(java.lang.String)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= ?"},
-                                                    new String[]{"?"}));
+                new JgsCheck.Annotation(new String[]{"@0 <= ?"},
+                        new String[]{"?"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: java.lang.String readSecret()>",
-                            new JgsCheck.Annotation(new String[]{"HIGH <= @ret"},
-                                                    new String[]{"LOW"}));
+                new JgsCheck.Annotation(new String[]{"HIGH <= @ret"},
+                        new String[]{"LOW"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: java.lang.String read()>",
-                            new JgsCheck.Annotation(new String[]{},
-                                                    new String[]{"LOW"}));
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{"LOW"}));
         externalMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
-                                                    new String[]{}));
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Double: java.lang.Double valueOf(double)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Float: java.lang.Float valueOf(float)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Character: java.lang.Character valueOf(char)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
         externalMethods.put("<java.lang.String: java.lang.String valueOf(int)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
-                                                    new String[]{}));
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
+        externalMethods.put("<java.lang.String: java.lang.String valueOf(double)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
         externalMethods.put("<java.lang.String: java.lang.String valueOf(java.lang.Object)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
-                                                    new String[]{}));
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Boolean: java.lang.Boolean valueOf(boolean)>",
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
         externalMethods.put("<java.lang.Integer: int intValue()>",
-                            new JgsCheck.Annotation(new String[]{},
-                                                    new String[]{}));
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Double: int doubleValue()>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Double: double doubleValue()>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Float: float floatValue()>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
         externalMethods.put("<java.lang.String: boolean equals(java.lang.Object)>",
-                            new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
-                                                    new String[]{}));
+                new JgsCheck.Annotation(new String[]{"@0 <= @ret"},
+                        new String[]{}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.StringUtil: java.util.List bits(java.lang.String)>",
-                            Annotations.pureInputToOutput(1));
+                Annotations.pureInputToOutput(1));
         externalMethods.put("<java.util.List: java.util.Iterator iterator()>",
-                            Annotations.polymorphicGetter());
+                Annotations.polymorphicGetter());
         externalMethods.put("<java.util.Iterator: boolean hasNext()>", Annotations.polymorphicGetter());
         externalMethods.put("<java.util.Iterator: java.lang.Object next()>", Annotations.polymorphicGetter());
-        externalMethods.put("<java.lang.Boolean: boolean "
-                                             + "booleanValue()>", Annotations.polymorphicGetter());
+
+        externalMethods.put("<java.lang.Boolean: boolean booleanValue()>", Annotations.polymorphicGetter());
+        externalMethods.put("<java.lang.Character: char charValue()>", Annotations.polymorphicGetter());
+
+        externalMethods.put("<java.lang.String: void <init>()>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.String: void <init>(java.lang.String)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.String: void <init>(java.lang.StringBuilder)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+
+
+        externalMethods.put("<java.lang.StringBuilder: void <init>()>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.StringBuilder: void <init>(java.lang.String)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.StringBuilder: void <init>(int)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.StringBuilder: void <init>(java.lang.CharSequence)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+
+        externalMethods.put("<java.lang.Integer: void <init>(int)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Integer: void <init>(java.lang.String)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+
+        externalMethods.put("<java.lang.Double: void <init>(java.lang.String)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Double: void <init>(double)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+
+        externalMethods.put("<java.lang.Float: void <init>(java.lang.String)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Float: void <init>(double)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Float: void <init>(float)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+
+        externalMethods.put("<java.lang.Boolean: void <init>(java.lang.String)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+        externalMethods.put("<java.lang.Boolean: void <init>(boolean)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+
+        externalMethods.put("<java.lang.Character: void <init>(char)>",
+                new JgsCheck.Annotation(new String[]{},
+                        new String[]{}));
+
         List<String> errors = new ArrayList<>();
         MethodTypings<String> typeCheckResult;
         if (sootOptionsContainer.isOnlyDynamic()) {
@@ -151,6 +242,6 @@ public class Main {
         // G.reset();
         logger.info("Start Instrumentation");
         main.Main.executeWithoutSootSetup(args,
-                                          typeCheckResult, casts);
+                typeCheckResult, casts);
     }
 }

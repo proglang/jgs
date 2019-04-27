@@ -28,7 +28,7 @@ public class WhileStmtSuccess {
 		
 		hs.addLocal("int_x");
 		hs.checkLocalPC("int_x");
-		hs.setLocalToCurrentAssingmentLevel("int_x");
+		hs.setLocalToCurrentAssignmentLevel("int_x");
 		int x = 0;
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
@@ -39,7 +39,7 @@ public class WhileStmtSuccess {
 			assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 			
 			hs.checkLocalPC("int_x");
-			hs.setLocalToCurrentAssingmentLevel("int_x");
+			hs.setLocalToCurrentAssignmentLevel("int_x");
 			x = 1;
 			
 			hs.exitInnerScope("123");
@@ -69,7 +69,7 @@ public class WhileStmtSuccess {
 			assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
 			
 			hs.checkLocalPC("int_x");
-			hs.setLocalToCurrentAssingmentLevel("int_x");
+			hs.setLocalToCurrentAssignmentLevel("int_x");
 			x = 1;
 			
 			hs.exitInnerScope("123");

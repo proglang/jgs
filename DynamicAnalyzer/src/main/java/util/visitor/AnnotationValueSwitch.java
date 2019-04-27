@@ -1,9 +1,11 @@
 package util.visitor;
 
+import analyzer.level1.BodyAnalyzer;
 import analyzer.level1.JimpleInjector;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import soot.Local;
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.*;
 import util.exceptions.InternalAnalyzerException;
 import util.exceptions.NotSupportedStmtException;
@@ -16,59 +18,59 @@ import java.util.logging.Logger;
 
 
 public class AnnotationValueSwitch implements JimpleValueSwitch {
-	
+
 	private static final Logger logger = Logger.getLogger(AnnotationValueSwitch.class.getName());
 
 	private VisitorHelper vh = new VisitorHelper();
 	private final Casts<?> casts;
 
 	public AnnotationValueSwitch(Stmt stmt, StmtContext cx, Casts<?> casts) {
-	    this.callingStmt = stmt;
-	    this.actualContext = cx;
-	    this.casts = casts;
+		this.callingStmt = stmt;
+		this.actualContext = cx;
+		this.casts = casts;
 	}
 
 	/*
 	 * ???
-	 * UNDEF 
-	 * INVOKE 
-	 * ASSIGNRIGHT 
-	 * ASSIGNLEFT 
-	 * IDENTITY 
-	 * RETURN 
-	 * GOTO 
-	 * IF 
-	 * SWITCH 
+	 * UNDEF
+	 * INVOKE
+	 * ASSIGNRIGHT
+	 * ASSIGNLEFT
+	 * IDENTITY
+	 * RETURN
+	 * GOTO
+	 * IF
+	 * SWITCH
 	 * THROW
 	 */
-	protected enum StmtContext { 
-		UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY, 
+	protected enum StmtContext {
+		UNDEF, INVOKE, ASSIGNRIGHT, ASSIGNLEFT, IDENTITY,
 		RETURN, GOTO, IF, SWITCH, THROW
 	}
-	
+
 	private StmtContext actualContext = StmtContext.UNDEF;
-	
+
 	/*
 	 * Type of the right expression in an assign statement. Certain types need to
 	 * be handled in a special way. Explanation:
 	 * IGNORE This is used for arithmetic expressions. The locals in the expressions
-	 * 		are already handled, so its not necessary to treat the expression
+	 * 		are already handled, so its not neccessary to treat the expression
 	 *      in StmtSwitch
-	 * NEW_ARRAY 
+	 * NEW_ARRAY
 	 * NEW_UNDEF_OBJECT
-	 * INVOKE_INTERAL_METHOD 
-	 * INVOKE_EXTERNAL_METHOD 
+	 * INVOKE_INTERAL_METHOD
+	 * INVOKE_EXTERNAL_METHOD
 	 * MAKE_HIGH ?????
 	 * MAKE_LOW ?????
 	 */
 	protected enum RequiredActionForRHS {
 		NEW_ARRAY, NEW_UNDEF_OBJECT,
-		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD, 
+		INVOKE_INTERAL_METHOD, INVOKE_EXTERNAL_METHOD,
 		SET_RETURN_LEVEL,
 		MAKE_HIGH, MAKE_MEDIUM, MAKE_LOW,
-		CAST
-	} 
-	
+		CAST, CTXCAST
+	}
+
 	private Set<RequiredActionForRHS> requiredActionForRHS =
 			new HashSet<>();
 
@@ -79,7 +81,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	public Optional<RequiredActionForRHS> getRequiredActionForRHS() {
 		if (requiredActionForRHS.size() > 1) {
 			throw new IllegalStateException("More than one action was collected: "
-											+ requiredActionForRHS.toString());
+					+ requiredActionForRHS.toString());
 		}
 		return requiredActionForRHS.stream().findFirst();
 	}
@@ -92,16 +94,16 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	private Stmt callingStmt;
 
 	/**
-	 * It is not necessary to treat a constant.
+	 * It is not neccessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
 	public void caseDoubleConstant(DoubleConstant v) {
 		logger.finest("DoubleConstant identified " + callingStmt.toString());
 	}
-	
+
 	/**
-	 * It is not necessary to treat a constant.
+	 * It is not neccessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -110,7 +112,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat a constant.
+	 * It is not neccessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -119,7 +121,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat a constant.
+	 * It is not neccessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -128,7 +130,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat a constant.
+	 * It is not neccessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -137,7 +139,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat a constant.
+	 * It is not neccessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -146,7 +148,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat a constant.
+	 * It is not neccessary to treat a constant.
 	 * @param v a constant
 	 */
 	@Override
@@ -170,7 +172,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -180,7 +182,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -191,27 +193,21 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	public void caseCmpExpr(CmpExpr v) {
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			throw new NotSupportedStmtException("CmpExpr");
-		}
+		logger.finest("Cmp Expr identified " + callingStmt.toString());
 	}
 
 	@Override
 	public void caseCmpgExpr(CmpgExpr v) {
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			throw new NotSupportedStmtException("CmpgExpr");
-		}
+		logger.finest("Cmpg Expr identified " + callingStmt.toString());
 	}
 
 	@Override
 	public void caseCmplExpr(CmplExpr v) {
-		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			throw new NotSupportedStmtException("CmplExpr");
-		}
+		logger.finest("Cmpl Expr identified " + callingStmt.toString());
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -221,7 +217,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -266,7 +262,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -277,7 +273,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -295,7 +291,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -306,7 +302,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -317,7 +313,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -327,7 +323,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -337,7 +333,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 	}
 
 	/**
-	 * It is not necessary to treat arithmetic expressions. The SecurityLevels
+	 * It is not neccessary to treat arithmetic expressions. The SecurityLevels
 	 * of this expressions are treated at an other place.
 	 * @param v an arithmetic expression
 	 */
@@ -402,7 +398,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		setRequiredActionForRHS(Optional.of(RequiredActionForRHS.NEW_ARRAY));
 		logger.finest("New Array expression identified: " + callingStmt.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-		// TODO
+			// TODO
 		}
 	}
 
@@ -430,9 +426,9 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		}
 	}
 
-	
+
 	/**
-	 * It is supposed that it is not necessary to treat the length expression since
+	 * It is supposed that it is not neccessay to treat the length expression since
 	 * it always comes with the corresponding array and the level of the array (which is
 	 * the same as its length level) will always be already treated.
 	 * @param v length expression
@@ -447,7 +443,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 //
 //			new InternalAnalyzerException();
 //		} else {
-//			new InternalAnalyzerException();			
+//			new InternalAnalyzerException();
 //		}
 	}
 
@@ -467,7 +463,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
 		} else {
-			throw new InternalAnalyzerException();			
+			throw new InternalAnalyzerException();
 		}
 	}
 
@@ -481,7 +477,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
 		} else {
-			new InternalAnalyzerException();			
+			new InternalAnalyzerException();
 		}
 	}
 
@@ -495,7 +491,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(v, callingStmt);
 		} else {
-			new InternalAnalyzerException();			
+			new InternalAnalyzerException();
 		}
 	}
 
@@ -520,24 +516,26 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 
 	@Override
 	@Deprecated
-	public void caseLocal(Local l) {	
+	public void caseLocal(Local l) {
 		logger.finest("Local identified " + l.toString());
 		if (actualContext == StmtContext.ASSIGNRIGHT) {
-			JimpleInjector.addLevelInAssignStmt(l, callingStmt);
+			if(ExternalClasses.parameter != l && !JimpleInjector.dynLabelFlag)
+				JimpleInjector.addLevelInAssignStmt(l, callingStmt);
 		} else if (actualContext == StmtContext.ASSIGNLEFT) {
 			JimpleInjector.setLevelOfAssignStmt(l, callingStmt);
 		} else {
-			new InternalAnalyzerException();			
+			new InternalAnalyzerException();
 		}
+
 	}
-	
+
 	/**
-	 * Method to handle any invoke statement
+	 * Method to handly any invoke statement
 	 * @param v
 	 */
 	private void caseMethodInvokation(InvokeExpr v) {
 
-	    // TODO: this log message surely is confusing
+		// TODO: this log message surely is confusing
 		logger.finest(v.toString());
 
 		if (actualContext == StmtContext.INVOKE
@@ -552,14 +550,11 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				// TODO: implement context cast handling here
 			} else if (casts.isCxCastStart(callingStmt)){
 				Casts.Conversion<?> conversion = casts.getCxCast(callingStmt);
-				logger.info(String.format("Found cx cast %s at %s", conversion, callingStmt));
-
-				logger.severe("Cx cast detected but the instrumentation of cx casts is not implemented yet.");
-
-
+				logger.info(String.format("Found ctx cast %s at %s", conversion, callingStmt));
+				JimpleInjector.handleCtxCast(callingStmt, args);
 			} else if (casts.isCxCastEnd(callingStmt)) {
-				logger.info(String.format("Found cx cast end at %s for id %s", callingStmt, "??"));
-				logger.severe("Cx cast end detected but the instrumentation of cx casts is not implemented yet.");
+				logger.info(String.format("Found ctx cast end at %s ", callingStmt));
+				JimpleInjector.exitCtxCastScope(callingStmt);
 
 			} else if (ExternalClasses.isSpecialMethod(method)) {
 				logger.fine("Found special method: " + method);
@@ -568,9 +563,9 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 			} else {
 
 				if (v.getMethod().getDeclaringClass().isLibraryClass()) {
-					// method is not instrumented and we have no special treatment for it... 
+					// method is not instrumented and we have no special treatment for it...
 					logger.severe("====== IGNORING UNKNOWN LIBRARY METHOD " + method + " =======");
-                    // TODO: why don't we exit here? (otherwise we are not ignoring the library method)
+					// TODO: why don't we exit here? (otherwise we are not ignoring the library method)
 				}
 
 				logger.fine("Found an external class " + method);
@@ -580,7 +575,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				setRequiredActionForRHS(Optional.of(RequiredActionForRHS.SET_RETURN_LEVEL));
 
 				// aber überall noch mal checken ob nirgendwo das right element
-				// überschrieben wird, d.h. ob das hier eine eindeutige 
+				// überschrieben wird, d.h. ob das hier eine eindeutige
 				// positioin ist
 				JimpleInjector.storeArgumentLevels(callingStmt, args);	// this is where we could push a global pc
 			}
@@ -588,7 +583,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 		} else {
 			throw new InternalAnalyzerException(
 					"Unexpected Context for Invoke Expression");
-		}		
+		}
 	}
 }
 

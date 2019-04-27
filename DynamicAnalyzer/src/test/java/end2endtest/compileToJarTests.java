@@ -48,7 +48,7 @@ public class compileToJarTests {
     public void pathTestJimple() throws UnsupportedEncodingException {
         String testFile = "NSUPolicy";
 
-        main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath, "-j"});
+        main.Main.main(new String[]{"-m", "testclasses." + testFile, "-o", outputPath});
         File outParent = new File(System.getProperty("user.dir"));
         File outFile = new File(outParent, outputPath + "/testclasses." + testFile + ".jimple");
         File outJar = new File(outParent, outputPath + "/testclasses/" + testFile + ".jar");

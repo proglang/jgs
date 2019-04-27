@@ -4,6 +4,7 @@ import analyzer.level1.JimpleInjector;
 import soot.Local;
 import soot.SootMethod;
 import soot.Unit;
+import soot.jimple.Stmt;
 import util.exceptions.InternalAnalyzerException;
 import util.logging.L1Logger;
 import util.visitor.AnnotationValueSwitch.RequiredActionForRHS;
@@ -37,22 +38,31 @@ public class ExternalClasses {
 	static {
 		classMap.add("java.lang.StringBuilder"); // TODO notwendig?
 	}
-	
+
 	private static HashMap<String, Command> instrumentationForSpecialMethods = new HashMap<String,Command>();
 
+	public static Local parameter ;
+
+	/*public static Local getParameter() {
+		parameter = "r2";
+		return parameter;
+	}
+
+	Stmt stmt =*/
+
 	static {
-		
+
 		// MethodTypings where the return level is the join of the arguments levels
 		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: void <init>()>",
-											 new DoNothing());
+				new DoNothing());
 		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.StringBuilder "
-											 + "append(java.lang.String)>",
-											 new JoinLevels());
+						+ "append(java.lang.String)>",
+				new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.StringBuilder "
-											 + "append(int)>",
-											 new JoinLevels());
+						+ "append(int)>",
+				new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String "
-											 + "substring(int,int)>", new JoinLevels());
+				+ "substring(int,int)>", new JoinLevels());
 
 		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: java.lang.String toString()>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String toString()>", new JoinLevels());
@@ -60,60 +70,118 @@ public class ExternalClasses {
 
 		// MethodTypings where the argument must have LOW argument
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(java.lang.String)>",
-											 new MaxLevelAllowedForPrintOutput
-													 ("LOW"));
+				new MaxLevelAllowedForPrintOutput
+						("LOW"));
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void print(java.lang.String)>",
-											 new MaxLevelAllowedForPrintOutput("LOW"));
+				new MaxLevelAllowedForPrintOutput("LOW"));
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(int)>",
-											 new MaxLevelAllowedForPrintOutput("LOW"));
+				new MaxLevelAllowedForPrintOutput("LOW"));
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(boolean)>",
-											 new MaxLevelAllowedForPrintOutput("LOW"));
+				new MaxLevelAllowedForPrintOutput("LOW"));
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(java.lang.Object)>",
-											 new MaxLevelAllowedForPrintOutput("LOW"));
+				new MaxLevelAllowedForPrintOutput("LOW"));
 		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println()>",
-											 new MaxLevelAllowedForPrintOutput("LOW"));
+				new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<java.io.PrintStream: void println(char)>",
+				new MaxLevelAllowedForPrintOutput("LOW"));
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printPublicDynamic(java.lang.String)>",
-											 new MaxLevelAllowedForPrintOutput("LOW"));
+				new MaxLevelAllowedForPrintOutput("LOW"));
 
 		// MethodTypings where the argument must have either LOW or MEDIUM argument
 		instrumentationForSpecialMethods.put("<util.printer.SecurePrinter: void printMedium(java.lang.Object)>",
-											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
+				new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		instrumentationForSpecialMethods.put("<util.printer.SecurePrinter: void printMedium(java.lang.int)>",
-											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
+				new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		instrumentationForSpecialMethods.put("<util.printer.SecurePrinter: void printMedium(java.lang.String)>",
-											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
+				new MaxLevelAllowedForPrintOutput("MEDIUM"));
 		instrumentationForSpecialMethods.put("<util.printer.SecurePrinter: void printMedium(boolean)>",
-											 new MaxLevelAllowedForPrintOutput("MEDIUM"));
-		
+				new MaxLevelAllowedForPrintOutput("MEDIUM"));
+
 		// MethodTypings where we don't do anything
 		instrumentationForSpecialMethods.put("<java.lang.Object: void <init>()>", new DoNothing());
 
 		//
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs"
-											 + ".support.DynamicLabel: java.lang.Object "
-											 + "makeHigh(java.lang.Object)>", new MakeTop());
+				+ ".support.DynamicLabel: java.lang.Object "
+				+ "makeHigh(java.lang.Object)>", new MakeTop());
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs"
-											 + ".support.DynamicLabel: java.lang.Object "
-											 + "makeMedium(java.lang.Object)>", new MakeMedium());
+				+ ".support.DynamicLabel: java.lang.Object "
+				+ "makeMedium(java.lang.Object)>", new MakeMedium());
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object "
-											 + "makeLow(java.lang.Object)>", new MakeBot());
+				+ "makeLow(java.lang.Object)>", new MakeBot());
 
 		// Dont do anything for ValueOf... its level is determined by the
 		// method's receiver
 		instrumentationForSpecialMethods.put("<java.lang.Boolean: java.lang"
-											 + ".Boolean valueOf(boolean)>", new DoNothing());
+				+ ".Boolean valueOf(boolean)>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Boolean valueOf(integer)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Double valueOf(integer)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.Integer valueOf(int)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: java.lang.String valueOf(int)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Double: java.lang.Double valueOf(double)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Float: java.lang.Float valueOf(float)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Boolean: java.lang.Boolean valueOf(boolean)>", new JoinLevels());
+		instrumentationForSpecialMethods.put("<java.lang.Character: java.lang.Character valueOf(char)>", new JoinLevels());
 		instrumentationForSpecialMethods.put("<java.lang.Integer: int intValue()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Double: int doubleValue()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Double: double doubleValue()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Float: float floatValue()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.List: java.util.Iterator iterator()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.Iterator: boolean hasNext()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<java.util.Iterator: java.lang.Object next()>", new DoNothing());
-		instrumentationForSpecialMethods.put("<java.lang.Boolean: boolean "
-											 + "booleanValue()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Boolean: boolean booleanValue()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Character: char charValue()>", new DoNothing());
 
 		// Handling of uninstrumented methods that occur in the testcases
 		instrumentationForSpecialMethods.put("<testclasses.util.SimpleObject: void <init>()>", new DoNothing());
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
+				new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
+				new MaxLevelAllowedForPrintOutput("LOW"));
+		instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String valueOf(int)>",
+				new JoinLevels());
+
+		instrumentationForSpecialMethods.put("<java.lang.String: void <init>()>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.String: void <init>(java.lang.String)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.String: void <init>(java.lang.StringBuilder)>",
+				new DoNothing());
+
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: void <init>()>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: void <init>(java.lang.String)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: void <init>(int)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.StringBuilder: void <init>(java.lang.CharSequence)>",
+				new DoNothing());
+
+		instrumentationForSpecialMethods.put("<java.lang.Integer: void <init>(int)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Integer: void <init>(java.lang.String)>",
+				new DoNothing());
+
+		instrumentationForSpecialMethods.put("<java.lang.Double: void <init>(java.lang.String)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Double: void <init>(double)>",
+				new DoNothing());
+
+		instrumentationForSpecialMethods.put("<java.lang.Float: void <init>(java.lang.String)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Float: void <init>(double)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Float: void <init>(float)>",
+				new DoNothing());
+
+		instrumentationForSpecialMethods.put("<java.lang.Boolean: void <init>(java.lang.String)>",
+				new DoNothing());
+		instrumentationForSpecialMethods.put("<java.lang.Boolean: void <init>(boolean)>",
+				new DoNothing());
+
+		instrumentationForSpecialMethods.put("<java.lang.Character: void <init>(char)>",
+				new DoNothing());
+
 	}
 
 	public static boolean isSpecialMethod(SootMethod m) {
@@ -121,13 +189,13 @@ public class ExternalClasses {
 	}
 
 	static Optional<AnnotationValueSwitch.RequiredActionForRHS> instrumentSpecialMethod(SootMethod method,
-																			  Unit pos,
-																			  Local[] params) {
+																						Unit pos,
+																						Local[] params) {
 		return instrumentationForSpecialMethods.get(method.toString())
-											   .execute(pos, params);
+				.execute(pos, params);
 	}
-	
-	
+
+
 	interface Command {
 		Optional<RequiredActionForRHS> execute(Unit pos, Local[] params);
 	}
@@ -138,36 +206,37 @@ public class ExternalClasses {
 		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.fine("Join levels for external class arguments");
 			for (Local param : params) {
-				if (param != null) {
+				if (param != null && !JimpleInjector.dynLabelFlag) {
+					parameter = param;
 					JimpleInjector.addLevelInAssignStmt(param, pos);
 				}
 			}
 			return Optional.empty();
 		}
 	}
-	
+
 	static class MaxLevelAllowedForPrintOutput implements Command {
-		
+
 		private String level;
 		public MaxLevelAllowedForPrintOutput(String level) {
 			this.level = level;
 		}
-		
+
 		public Optional<AnnotationValueSwitch.RequiredActionForRHS> execute(Unit pos, Local[] params) {
 			logger.fine("Insert check that external class has no " + level + " arguments");
 			if (params == null || pos == null) {
 				throw new InternalAnalyzerException(
 						"Received a null-pointer as argument");
 			}
-			
+
 			// If print Statement is called, context must not be high: This, we can always check
-			JimpleInjector.checkThatPCLe(level, pos);
-			
+			JimpleInjector.checkThatPCLe(level, pos, false);
+
 			// Also, we might print in low context: If so, we mustn't print a high-sec param
 			for (Local param: params) {
 				if (param != null) {
 					JimpleInjector.checkThatLe(param, level, pos);
-					
+
 				}
 			}
 			return Optional.empty();
@@ -181,7 +250,7 @@ public class ExternalClasses {
 			return Optional.of(AnnotationValueSwitch.RequiredActionForRHS.CAST);
 		}
 	}
-	
+
 	static class DoNothing implements Command	{
 		@Override
 		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
@@ -189,7 +258,7 @@ public class ExternalClasses {
 			return Optional.empty();
 		}
 	}
-	
+
 	static class MakeTop implements Command {
 		@Override
 		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
@@ -200,7 +269,7 @@ public class ExternalClasses {
 			return Optional.of(RequiredActionForRHS.MAKE_HIGH);
 		}
 	}
-	
+
 	static class MakeMedium implements Command {
 		@Override
 		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {
@@ -208,7 +277,7 @@ public class ExternalClasses {
 			return Optional.of(RequiredActionForRHS.MAKE_MEDIUM);
 		}
 	}
-	
+
 	static class MakeBot implements Command {
 		@Override
 		public Optional<RequiredActionForRHS> execute(Unit pos, Local[] params) {

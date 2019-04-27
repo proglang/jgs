@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * The BodyAnalyzer decides for every body what shall be inserted into
  * the Body.
  * E.g for each constructor, an new Object and Field Map is inserted into the ObjectMap.
- * For each method, a HandleStmt object is inserted (which contains a local Map 
+ * For each method, a HandleStmt object is inserted (which contains a local Map
  * for the Locals and the localPC).
  * Then every Local is inserted into this map.
  * At least it iterates over all Units and calls the appropriate operation
@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class BodyAnalyzer<Level> extends BodyTransformer {
 
-    private MethodTypings<Level> methodTypings;
+	private MethodTypings<Level> methodTypings;
 	private boolean controllerIsActive;
 	private int expectedException;
 	private Casts<Level> casts;
@@ -44,10 +44,10 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	 * @param m
 	 * @param c
 	 */
-    public BodyAnalyzer(MethodTypings<Level> m, Casts<Level> c) {
-        methodTypings = m;
-        casts = c;
-    }
+	public BodyAnalyzer(MethodTypings<Level> m, Casts<Level> c) {
+		methodTypings = m;
+		casts = c;
+	}
 
 	/**
 	 * This Method is called from the Soot Framework. In this Specific Implementation
@@ -81,14 +81,14 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 
 		// hand over exactly those Maps that contain Instantiation, Statement and Locals for the currently analyzed method
 		JimpleInjector.setStaticAnalaysisResults(methodTypings.getVarTyping(sootMethod),
-                                                 methodTypings.getCxTyping(sootMethod),
-                                                 // We set the default type to dyn; our RT-system is able to handle untracked variables.
-                                                 methodTypings.getSingleInstantiation(sootMethod, new TypeViews.Dyn<>()),
-                                                 casts);
+				methodTypings.getCxTyping(sootMethod),
+				// We set the default type to dyn; our RT-system is able to handle untracked variables.
+				methodTypings.getSingleInstantiation(sootMethod, new TypeViews.Dyn<>()),
+				casts);
 
 
 
-		// invokeHS should be at the beginning of every method-body. 
+		// invokeHS should be at the beginning of every method-body.
 		// It creates a map for locals.
 		JimpleInjector.invokeHS();
 		JimpleInjector.addNeededLocals();
@@ -102,7 +102,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			JimpleInjector.initHS();
 		}
 
-        JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
+		JimpleInjector.initHandleStmtUtils(controllerIsActive, expectedException);
 
 		// <editor-fold desc="Add Fields to Object Map, either static or instance; determined by Method name">
 
@@ -113,14 +113,14 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		 */
 		if (sootMethod.getName().equals("<init>")) {
 			JimpleInjector.addInstanceObjectToObjectMap();
-						
+
 			// Add all instance fields to ObjectMap
 			for (SootField f : fields) {
 				if (!f.isStatic()) {
 					JimpleInjector.addInstanceFieldToObjectMap(f);
 				}
 			}
-						
+
 		} else if (sootMethod.getName().equals("<clinit>")) {
 
 			SootClass sc = sootMethod.getDeclaringClass();
@@ -149,7 +149,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			// Add further statements using JimpleInjector.
 			unit.apply(stmtSwitch);
 		}
-		
+
 		// Apply all changes.
 		JimpleInjector.addUnitsToChain();
 		JimpleInjector.closeHS();
@@ -163,7 +163,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 	 * @return true, iff the given Method is the first Application Method.
 	 */
 	private boolean isFirstApplicationMethodToRun(SootMethod method) {
-	    if (method.isMain()) {
+		if (method.isMain()) {
 			for (SootMethod m : method.getDeclaringClass().getMethods()) {
 				if (m.getName().equals("<clinit>")) {
 					return false;

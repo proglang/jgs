@@ -14,42 +14,43 @@ import java.util.LinkedList;
 
 /**
  * The ObjectMap holds all objects which are created in the analyzed code. 
- * To each object belongs a HashMap with the Security Level of the respective
+ * To each object belongs a HashMap with the SercurityLevel of the respective
  * fields.
- * The ObjectMap should never be used directly. For each action exists an
+ * The ObjectMap should never used directly. For each action exists an
  * appropriate method in {@link analyzer.level2.HandleStmt}.
- * Additionally the ObjectMap holds the SecurityLevels of the arguments and 
+ * Additionally the ObjectMap holds the SecurityLevels of the arguments and
  * return variable of the least recently called method.
- * 
- * If we analyze an assignment, assignmentStmtLevel accumulates the security level 
+ *
+ * If we analyze an assignment, assignmentStmtLevel accumulates the security level
  * of the right-hand-side of the current assignment.
- * 
+ *
  * @author Regina König
  * @version 1.0
  */
 public class ObjectMap{
-	
+
 	private static ReferenceIdentityMap<Object, HashMap<String, Object>> innerMap;		// maps objects to 2nd map: field -> security type
-																						// example: ob1 -> map1, and map1: this.myInt -> LOW
+	// example: ob1 -> map1, and map1: this.myInt -> LOW
 	private static LinkedList<Object> globalPC;
 	private static ObjectMap instance = null;
 	private static Object actualReturnLevel;
 	private static ArrayList<Object> actualArguments;
-	private static Object assignStmtLevel = CurrentSecurityDomain.bottom();
+	private static Object assignStmtLevel;
 
 
 	/**
 	 * Constructor.
 	 */
-	public ObjectMap() {
+	private ObjectMap() {
 		globalPC = new LinkedList<Object>();
 		globalPC.push(CurrentSecurityDomain.bottom());
 		actualReturnLevel = CurrentSecurityDomain.bottom();		// was top!?!
 		actualArguments = new ArrayList<Object>();
-		innerMap = new ReferenceIdentityMap<Object, 
+		assignStmtLevel = CurrentSecurityDomain.bottom();
+		innerMap = new ReferenceIdentityMap<Object,
 				HashMap<String, Object>>(
-				AbstractReferenceMap.ReferenceStrength.WEAK, 
-				AbstractReferenceMap.ReferenceStrength.WEAK);	
+				AbstractReferenceMap.ReferenceStrength.WEAK,
+				AbstractReferenceMap.ReferenceStrength.WEAK);
 	}
 
 	/**
@@ -69,7 +70,7 @@ public class ObjectMap{
 	 * @param args ArrayList containing the security-levels of the arguments
 	 * @return The ArrayList of currently set argument levels
 	 */
-	public ArrayList<Object> setActualArguments(ArrayList<Object> args) {		
+	public ArrayList<Object> setActualArguments(ArrayList<Object> args) {
 		if (args == null) {
 			throw new InternalAnalyzerException(
 					"Received a null pointer as argument list.");
@@ -95,12 +96,12 @@ public class ObjectMap{
 	public Object getArgLevelAt(int i) {
 		if (actualArguments.size() <= i ) {
 			throw new InternalAnalyzerException(
-				"You are trying to get argument level at position " + i 
-				+ " but the arguments have only size "
-				+ actualArguments.size() );	
+					"You are trying to get argument level at position " + i
+							+ " but the arguments have only size "
+							+ actualArguments.size() );
 		}
-	  
-		return actualArguments.get(i);	
+
+		return actualArguments.get(i);
 	}
 
 	/**
@@ -153,18 +154,18 @@ public class ObjectMap{
 	public Object getActualReturnLevel() {
 		return actualReturnLevel;
 	}
-  
+
 	/**
- 	 * Inserts a new object and creates a new map for the objects fields.
- 	 * This method should be called when a new object is created.
- 	 * @param o The Object.
- 	 */
+	 * Inserts a new object and creates a new map for the objects fields.
+	 * This method should be called when a new object is created.
+	 * @param o The Object.
+	 */
 	public void insertNewObject(Object o) {
 		if (!innerMap.containsKey(o)) {
 			innerMap.put(o, new HashMap<String, Object>());
 		}
 	}
-  
+
 	/**
 	 * Clear the Object map. This operation removes all elements from innerMap 
 	 * and globalPC stack. The stack then contains only one element 
@@ -175,14 +176,14 @@ public class ObjectMap{
 		globalPC.clear();
 		globalPC.push(CurrentSecurityDomain.bottom());
 	}
- 
-  
+
+
 	/**
 	 * Get the security-level of a field.
 	 * @param object The Object it belongs to
 	 * @param field The signature of the field
 	 * @return security-level 
-	 */ 
+	 */
 	public Object getFieldLevel(Object object, String field) {
 		if (!innerMap.containsKey(object)) {
 			insertNewObject(object);
@@ -210,7 +211,7 @@ public class ObjectMap{
 		innerMap.get(object).put(field, securityLevel);
 		return innerMap.get(object).get(field);
 	}
-	
+
 	/**
 	 * Add a new field to the objectMap.
 	 * @param object The Object it belongs to
@@ -221,7 +222,7 @@ public class ObjectMap{
 		innerMap.get(object).put(field, CurrentSecurityDomain.bottom());
 		return innerMap.get(object).get(field);
 	}
-  
+
 	/**
 	 * Count the number of elements in innerMap.
 	 * @return The number of objects contained in the map.
@@ -257,7 +258,7 @@ public class ObjectMap{
 	public int getNumberOfFields(Object object) {
 		return innerMap.get(object).size();
 	}
-  
+
 	/**
 	 * Set the security-level of the actual assign statement.
 	 * @param securityLevel the security-level
@@ -280,7 +281,7 @@ public class ObjectMap{
 	public void clearAssignmentLevel() {
 		assignStmtLevel = CurrentSecurityDomain.bottom();
 	}
-  
+
 }
 
 

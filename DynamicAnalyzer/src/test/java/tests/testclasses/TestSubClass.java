@@ -53,7 +53,7 @@ public class TestSubClass {
 		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_result");
 		
-		hs.setLocalToCurrentAssingmentLevel("int_result");
+		hs.setLocalToCurrentAssignmentLevel("int_result");
 		int result = 0;
 		
 		hs.returnLocal("int_result");
@@ -75,10 +75,10 @@ public class TestSubClass {
 		hs.assignArgumentToLocal(2, "int_c1");
 		hs.joinLevelOfLocalAndAssignmentLevel("int_b1");
 		hs.joinLevelOfLocalAndAssignmentLevel("int_c1");
-		hs.setLocalToCurrentAssingmentLevel("int_tmp");
+		hs.setLocalToCurrentAssignmentLevel("int_tmp");
 		hs.joinLevelOfLocalAndAssignmentLevel("int_tmp");
 		hs.joinLevelOfLocalAndAssignmentLevel("int_a1");
-		hs.setLocalToCurrentAssingmentLevel("int_tmp2");
+		hs.setLocalToCurrentAssignmentLevel("int_tmp2");
 		
 		hs.returnLocal("int_tmp2");
 		hs.close();
@@ -90,7 +90,7 @@ public class TestSubClass {
 		hs.initHandleStmtUtils(false, 0);
 		hs.addLocal("int_result");
 		
-		hs.setLocalToCurrentAssingmentLevel("int_result");
+		hs.setLocalToCurrentAssignmentLevel("int_result");
 		int result = 0;
 		hs.setLocalFromString("int_result", "HIGH");
 		

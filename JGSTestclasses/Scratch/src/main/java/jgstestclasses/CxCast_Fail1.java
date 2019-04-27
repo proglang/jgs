@@ -4,7 +4,32 @@ import de.unifreiburg.cs.proglang.jgs.support.*;
 
 public class CxCast_Fail1 {
 
-    @Sec("?")
+    @Sec("HIGH")
+    int a;
+
+    @Constraints("LOW <= @0")
+    @Effects({"LOW", "HIGH", "?"})
+    public static void main(String[] args) {
+       /* String s = "ffgdg";
+        s = Casts.cast("LOW ~> ?", s);
+        s = s.substring(2);
+        IOUtils.printSecret(s);*/
+
+
+        int x = Casts.cast("? ~> HIGH", 7);
+
+        while (x < 8) {
+            x++;
+        }
+
+        IOUtils.printSecret(x);
+
+
+    }
+
+
+
+    /*@Sec("?")
     static int dynField;
 
     @Sec("HIGH")
@@ -27,5 +52,5 @@ public class CxCast_Fail1 {
         }
 
         IOUtils.printSecret(String.valueOf(lowField));
-    }
+    }*/
 }

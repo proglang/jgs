@@ -38,7 +38,7 @@ public class InvokeSuccess {
 		 * 2. Add Fields to ObjectMap
 		 */
 		
-		hs.setLocalToCurrentAssingmentLevel("TestSubClass_xy");
+		hs.setLocalToCurrentAssignmentLevel("TestSubClass_xy");
 		TestSubClass xy = new TestSubClass();
 		assertTrue(hs.containsObjectInObjectMap(xy));
 		assertEquals(2, hs.getNumberOfFieldsInObjectMap(xy)); // The third field is static

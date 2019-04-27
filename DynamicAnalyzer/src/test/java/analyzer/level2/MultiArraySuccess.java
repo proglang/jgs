@@ -163,13 +163,13 @@ public class MultiArraySuccess {
 		hs.addLocal("String[]_tmp");
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(1));
 		hs.checkLocalPC("String[]_tmp");
-		hs.setLocalToCurrentAssingmentLevel("String[]_tmp");
+		hs.setLocalToCurrentAssignmentLevel("String[]_tmp");
 		String[] tmp = arr[1];
 		
 		hs.addLocal("String_x");
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(tmp, Integer.toString(0));
 		hs.checkLocalPC("String_x");
-		hs.setLocalToCurrentAssingmentLevel("String_x");
+		hs.setLocalToCurrentAssignmentLevel("String_x");
 		@SuppressWarnings("unused")
 		String x = tmp[0];
 		
@@ -229,7 +229,7 @@ public class MultiArraySuccess {
 		hs.joinLevelOfArrayFieldAndAssignmentLevel(arr, Integer.toString(0));
 		hs.addLocal("String[]_tmp");
 		hs.checkLocalPC("String[]_tmp");
-		hs.setLocalToCurrentAssingmentLevel("String[]_tmp");
+		hs.setLocalToCurrentAssignmentLevel("String[]_tmp");
 		String[] tmp = arr[0];
 		
 		hs.checkArrayWithGlobalPC(tmp, Integer.toString(0), "String[]_tmp");

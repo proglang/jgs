@@ -36,7 +36,7 @@ public class ForStmtSuccess {
 		for (int i = 0;i < 1; i++) {
 			
 			hs.checkLocalPC("int_res");
-			hs.setLocalToCurrentAssingmentLevel("int_res");
+			hs.setLocalToCurrentAssignmentLevel("int_res");
 			res = 2;
 			
 			hs.exitInnerScope("123");
