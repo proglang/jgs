@@ -176,6 +176,9 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			String unitLhsString = "";
 			String unitRhsString = "";
 
+			if(isArithmeticExpression(unit.toString()))
+				JimpleInjector.arithmeticExpressionFlag = true;
+
 			if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow")){
 				dynLabelFlag = true;
 			}
@@ -289,6 +292,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			// Add further statements using JimpleInjector.
 			unit.apply(stmtSwitch);
 			JimpleInjector.dynLabelFlag = false;
+			JimpleInjector.arithmeticExpressionFlag = false;
 			stmtIndex += 1;
 		}
 
@@ -310,6 +314,16 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 				break;
 		}
 		return varExistsFlag;
+	}
+
+	// check if the unit string is an arithmetic expression
+	private static boolean isArithmeticExpression(String s){
+
+		if(Pattern.compile("[-+*/]").matcher(s).find()){
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

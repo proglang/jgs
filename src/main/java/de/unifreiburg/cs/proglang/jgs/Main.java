@@ -91,9 +91,6 @@ public class Main {
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.DynamicLabel: java.lang.Object makeLow(java.lang.Object)>",
                 new JgsCheck.Annotation(new String[]{"? <= @ret", "@0 <= LOW"},
                         new String[]{}));
-        externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.String)>",
-                new JgsCheck.Annotation(new String[]{},
-                        new String[]{"LOW"}));
         externalMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
                 new JgsCheck.Annotation(new String[]{},
                         new String[]{"LOW"}));

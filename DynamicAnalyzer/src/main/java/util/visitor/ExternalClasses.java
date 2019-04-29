@@ -136,8 +136,6 @@ public class ExternalClasses {
 		instrumentationForSpecialMethods.put("<testclasses.util.SimpleObject: void <init>()>", new DoNothing());
 		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
 				new MaxLevelAllowedForPrintOutput("LOW"));
-		instrumentationForSpecialMethods.put("<de.unifreiburg.cs.proglang.jgs.support.IOUtils: void printSecret(java.lang.Object)>",
-				new MaxLevelAllowedForPrintOutput("LOW"));
 		instrumentationForSpecialMethods.put("<java.lang.String: java.lang.String valueOf(int)>",
 				new JoinLevels());
 

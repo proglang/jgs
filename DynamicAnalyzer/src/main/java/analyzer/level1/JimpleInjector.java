@@ -19,6 +19,7 @@ import util.logging.L1Logger;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * JimpleInjector is handles the inserts of additional instructions in a methods
@@ -53,6 +54,8 @@ public class JimpleInjector {
     private static Stack stack = new Stack();
 
     public static boolean dynLabelFlag = false;
+
+    public static boolean arithmeticExpressionFlag = false;
 
     /**
      * Stores the position of
@@ -311,7 +314,7 @@ public class JimpleInjector {
         lastPos = assignExpr;
     }
 
-    public static boolean checkForConstants(Stmt stmt){
+    /*private static boolean checkForConstants(Stmt stmt){
         boolean containsConstantFlag = false;
         List<ValueBox> valueBoxes = stmt.getUseBoxes();
         for (ValueBox valueBox : valueBoxes) {
@@ -321,7 +324,7 @@ public class JimpleInjector {
             }
         }
         return containsConstantFlag;
-    }
+    }*/
 
     // </editor-fold>
 
@@ -443,7 +446,7 @@ public class JimpleInjector {
         // insert setLocalToCurrentAssignmentLevel, which accumulates the PC and the right-hand side of the assign stmt.
         // The local's sec-value is then set to that sec-value.
         Stmt stmt = (Stmt) pos;
-        boolean containsConstantFlag = checkForConstants(stmt);
+        //boolean containsConstantFlag = checkForConstants(stmt);
         //if(!containsConstantFlag && !JimpleInjector.dynLabelFlag) {
         if(!JimpleInjector.dynLabelFlag) {
             Unit invoke = fac.createStmt("setLocalToCurrentAssignmentLevel", StringConstant.v(signature));
@@ -459,7 +462,7 @@ public class JimpleInjector {
                     if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
                         units.insertBefore(checkLocalPCExpr, pos);
                     }
-                    if(!lastPos.toString().contains("setLocalFromString"))
+                    if(!lastPos.toString().contains("setLocalFromString") && !JimpleInjector.arithmeticExpressionFlag)
                         units.insertBefore(invoke, pos);
                 }
             } else {
