@@ -179,7 +179,8 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			if(isArithmeticExpression(unit.toString()))
 				JimpleInjector.arithmeticExpressionFlag = true;
 
-			if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow")){
+
+			if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow") || Pattern.compile("\"\\\\b\"+cast+\"\\\\b\"").matcher(unit.toString()).find()){
 				dynLabelFlag = true;
 			}
 

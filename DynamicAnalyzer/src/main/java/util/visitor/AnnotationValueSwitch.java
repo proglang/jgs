@@ -565,6 +565,7 @@ public class AnnotationValueSwitch implements JimpleValueSwitch {
 				if (v.getMethod().getDeclaringClass().isLibraryClass()) {
 					// method is not instrumented and we have no special treatment for it...
 					logger.severe("====== IGNORING UNKNOWN LIBRARY METHOD " + method + " =======");
+					return;
 					// TODO: why don't we exit here? (otherwise we are not ignoring the library method)
 				}
 

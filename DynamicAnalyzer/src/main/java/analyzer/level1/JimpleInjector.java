@@ -741,7 +741,7 @@ public class JimpleInjector {
                 tmpUnitArray[i] = null;
             } else {
                 // if arguments are all constants
-                String var = "arg" + i;
+                String var = "signature" + i;
                 tmpUnitArray[i] = Jimple.v().newAssignStmt(Jimple.v().newArrayRef(
                         local_for_String_Arrays, IntConstant.v(i)), StringConstant.v(var));
                 //StringConstant.v("DEFAULT_LOW"));
