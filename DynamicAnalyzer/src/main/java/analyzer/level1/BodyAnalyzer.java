@@ -234,18 +234,20 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 					isStringFlag = true;
 					successorStmt = unitGraph.getSuccsOf(unit);
 					this.successorStmt = successorStmt;
-					unitLhsString = successorStmt.get(0).toString().split("=")[0];
-					unitRhsString = successorStmt.get(0).toString().split("=")[1];
-					int index = unitRhsListString.indexOf(unitRhsString);
-					successorStmt = unitGraph.getSuccsOf(successorStmt.get(0));
-					if(successorStmt.get(0).toString().contains("makeHigh") || successorStmt.get(0).toString().contains("makeLow"))
-						index += 1; // to escape the following makeHigh/makeLow statement
-					for (int k = 0; k <= index; k++) {
-						unitRhsListString.remove(0);
-					}
-					boolean varExistsFlag = varExists(unitRhsListString, unitLhsString);
-					if(!varExistsFlag){
-						JimpleInjector.dynLabelFlag = true;
+					if(successorStmt.get(0).toString().contains("=")) {
+						unitLhsString = successorStmt.get(0).toString().split("=")[0];
+						unitRhsString = successorStmt.get(0).toString().split("=")[1];
+						int index = unitRhsListString.indexOf(unitRhsString);
+						successorStmt = unitGraph.getSuccsOf(successorStmt.get(0));
+						if(successorStmt.get(0).toString().contains("makeHigh") || successorStmt.get(0).toString().contains("makeLow"))
+							index += 1; // to escape the following makeHigh/makeLow statement
+						for (int k = 0; k <= index; k++) {
+							unitRhsListString.remove(0);
+						}
+						boolean varExistsFlag = varExists(unitRhsListString, unitLhsString);
+						if(!varExistsFlag){
+							JimpleInjector.dynLabelFlag = true;
+						}
 					}
 				}
 			}
