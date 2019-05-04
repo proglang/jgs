@@ -35,7 +35,7 @@ public class WhileStmtFail {
 		hs.addLocal("int_y", CurrentSecurityDomain.top());
 		int y = 0;
 		
-		hs.checkCondition("123", "int_y");
+		hs.checkCondition("123");
 		while (y == 0) {
 			
 			hs.joinLevelOfLocalAndAssignmentLevel("int_x");

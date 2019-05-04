@@ -418,8 +418,7 @@ public class HandleStmt {
         // here. In Jimple, argument-to-local assignments (JIdentityStmt) are always
         // the beginning of the method, where the context is public
 
-        localmap.setLevel(signature,
-                handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
+        localmap.setLevel(signature, handleStatementUtils.joinWithLPC(objectmap.getArgLevelAt(pos)));
         return localmap.getLevel(signature);
     }
 
@@ -473,13 +472,18 @@ public class HandleStmt {
      *
      * @param arguments List of arguments
      */
-    public void storeArgumentLevels(String... arguments) {
-        logger.info("Store arguments " + Arrays.toString(arguments)
-                + " in LocalMap");
+    /*public void storeArgumentLevels(String... arguments) {
+        logger.info("Store arguments " + Arrays.toString(arguments) + " in LocalMap");
         ArrayList<Object> levelArr = new ArrayList<Object>();
         for (String el : arguments) {
             levelArr.add(localmap.getLevel(el));
         }
+        objectmap.setActualArguments(levelArr);
+    }*/
+
+    public void storeArgumentLevel(String signature, int index) {
+        ArrayList<Object> levelArr = objectmap.getActualArguments();
+        levelArr.add(index, localmap.getLevel(signature));
         objectmap.setActualArguments(levelArr);
     }
 
@@ -492,22 +496,22 @@ public class HandleStmt {
      * @param dominatorIdentity identity of the postdominator.
      * @param args              List of signatore-string of all locals.
      */
-    public void checkCondition(String dominatorIdentity, String... args) {
+   /* public void checkCondition(String dominatorIdentity, String... args) {
         logger.info("Check condition of ifStmt");
-        localmap.pushLocalPC(handleStatementUtils
-                        .joinWithLPC(handleStatementUtils
-                                .joinLocals(args)),
-                Integer
-                        .valueOf(dominatorIdentity));
-        objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap
-                .getLocalPC()));
+        localmap.pushLocalPC(handleStatementUtils.joinWithLPC(handleStatementUtils.joinLocals(args)), Integer.valueOf(dominatorIdentity));
+        objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
+        logger.info("New LPC is " + localmap.getLocalPC().toString());
+    }*/
+
+    public void checkCondition(String dominatorIdentity) {
+        logger.info("Check condition of ifStmt");
+        localmap.pushLocalPC(handleStatementUtils.joinWithLPC(objectmap.getAssignmentLevel()), Integer.valueOf(dominatorIdentity));
+        objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
         logger.info("New LPC is " + localmap.getLocalPC().toString());
     }
 
     public void ctxCastStToDyn(String dominatorIdentity, String level) {
-        //logger.info("Check condition of ifStmt");
         logger.info("level : " + level);
-        //localmap.pushLocalPC(handleStatementUtils.joinWithLPC(handleStatementUtils.joinLocalLevel(args)), Integer.valueOf(dominatorIdentity));
         localmap.pushLocalPC(handleStatementUtils.joinLocalLevel(level), Integer.valueOf(dominatorIdentity));
         objectmap.pushGlobalPC(handleStatementUtils.joinWithGPC(localmap.getLocalPC()));
         logger.info("New LPC is " + localmap.getLocalPC().toString());
@@ -542,14 +546,9 @@ public class HandleStmt {
      * @return security-level of the local.
      */
     public Object joinLevelOfLocalAndAssignmentLevel(String local) {
-
         Object localLevel = localmap.getLevel(local);
-        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(
-                objectmap.getAssignmentLevel(), localLevel));
-        logger.log(
-                Level.INFO,
-                "Set assignment-level to level "
-                        + objectmap.getAssignmentLevel() + " because of " + local);
+        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(), localLevel));
+        logger.log(Level.INFO, "Set assignment-level to level " + objectmap.getAssignmentLevel() + " because of " + local);
         return objectmap.getAssignmentLevel();
     }
 
@@ -561,16 +560,10 @@ public class HandleStmt {
      * @param field  Signature of the field.
      * @return SecurityLevel of the field.
      */
-    public Object joinLevelOfFieldAndAssignmentLevel(Object object, String
-            field) {
+    public Object joinLevelOfFieldAndAssignmentLevel(Object object, String field) {
         Object fieldLevel = objectmap.getFieldLevel(object, field);
-        logger.log(
-                Level.INFO,
-                "Set assignment-level to level {0} (which is the level of "
-                        + "local {1})",
-                new Object[]{fieldLevel, field});
-        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(
-                objectmap.getAssignmentLevel(), fieldLevel));
+        logger.log(Level.INFO, "Set assignment-level to level {0} (which is the level of " + "local {1})", new Object[]{fieldLevel, field});
+        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(), fieldLevel));
         return objectmap.getAssignmentLevel();
     }
 
@@ -581,16 +574,10 @@ public class HandleStmt {
      * @param field  Signature of the field.
      * @return SecurityLevel of the field.
      */
-    public Object joinLevelOfArrayFieldAndAssignmentLevel(Object object,
-                                                          String field) {
+    public Object joinLevelOfArrayFieldAndAssignmentLevel(Object object, String field) {
         Object fieldLevel = objectmap.getFieldLevel(object, field);
-        logger.log(
-                Level.INFO,
-                "Set assignment-level to level {0} (which is the level of "
-                        + "local {1})",
-                new Object[]{fieldLevel, field});
-        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(
-                objectmap.getAssignmentLevel(), fieldLevel));
+        logger.log(Level.INFO,  "Set assignment-level to level {0} (which is the level of " + "local {1})", new Object[]{fieldLevel, field});
+        objectmap.setAssignmentLevel(handleStatementUtils.joinLevels(objectmap.getAssignmentLevel(), fieldLevel));
         return objectmap.getAssignmentLevel();
     }
 

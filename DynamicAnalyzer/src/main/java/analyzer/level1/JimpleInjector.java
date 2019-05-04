@@ -2,9 +2,8 @@ package analyzer.level1;
 
 import analyzer.level2.CurrentSecurityDomain;
 import analyzer.level2.HandleStmt;
-import com.sun.javafx.binding.ObjectConstant;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.*;
+import scala.Int;
 import scala.Option;
 import soot.*;
 import soot.Type;
@@ -15,11 +14,9 @@ import util.dominator.DominatorFinder;
 import util.exceptions.InternalAnalyzerException;
 import util.jimple.BoolConstant;
 import util.jimple.JimpleFactory;
-import util.logging.L1Logger;
 
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * JimpleInjector is handles the inserts of additional instructions in a methods
@@ -57,6 +54,10 @@ public class JimpleInjector {
 
     public static boolean arithmeticExpressionFlag = false;
 
+    public static boolean levelOfConditionVarNotUpdated = false;
+
+    private static int count = 0;
+
     /**
      * Stores the position of
      * <ul>
@@ -71,6 +72,8 @@ public class JimpleInjector {
     // mapping to statements-to-be-inserted before, and after a given original statement, respectively
     // It Should stay, because it is easier; at least for the Moment.
     private static Unit lastPos;
+    public static Unit conditionPos;
+
 
     // </editor-fold>
 
@@ -452,21 +455,21 @@ public class JimpleInjector {
             Unit invoke = fac.createStmt("setLocalToCurrentAssignmentLevel", StringConstant.v(signature));
 
             if (!ctxCastCalledFlag) {
-                de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
-                Unit checkLocalPCExpr = typeBefore.isPublic()
-                        ? fac.createStmt("checkNonSensitiveLocalPC")
-                        : fac.createStmt("checkLocalPC", StringConstant.v(signature));
+                    de.unifreiburg.cs.proglang.jgs.instrumentation.Type typeBefore = varTyping.getBefore(instantiation, stmt, l);
+                    Unit checkLocalPCExpr = typeBefore.isPublic()
+                            ? fac.createStmt("checkNonSensitiveLocalPC")
+                            : fac.createStmt("checkLocalPC", StringConstant.v(signature));
 
-                if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
-                    // insert NSU check only if PC is dynamic!
-                    if (cxTyping.get(instantiation, (Stmt) pos).isDynamic()) {
-                        units.insertBefore(checkLocalPCExpr, pos);
+                    if (varTyping.getAfter(instantiation, (Stmt) pos, l).isDynamic()) {
+                        // insert NSU check only if PC is dynamic!
+                        if (cxTyping.get(instantiation, (Stmt) pos).isDynamic() && !levelOfConditionVarNotUpdated) {
+                            units.insertBefore(checkLocalPCExpr, pos);
+                        }
+                        if (!lastPos.toString().contains("setLocalFromString") && !JimpleInjector.arithmeticExpressionFlag)
+                            units.insertBefore(invoke, pos);
                     }
-                    if(!lastPos.toString().contains("setLocalFromString") && !JimpleInjector.arithmeticExpressionFlag)
-                        units.insertBefore(invoke, pos);
-                }
             } else {
-                Unit checkLocalPCExpr = fac.createStmt("checkLocalPC");
+                Unit checkLocalPCExpr = fac.createStmt("checkLocalPC", StringConstant.v(signature));
                 units.insertBefore(checkLocalPCExpr, pos);
                 units.insertBefore(invoke, pos);
             }
@@ -701,7 +704,7 @@ public class JimpleInjector {
     // obect map ist global erreichbar. dahin lege temporär die argumente.
     // dann beim aufruf schaut die neue local map in der neuen methode in die global
     // map und nimmt sich von da die level der gerade übergebenen argumente.
-    public static void storeArgumentLevels(Unit pos, Local... lArguments) {
+    /*public static void storeArgumentLevels(Unit pos, Local... lArguments) {
 
         logger.info("Store Arguments for next method in method " +
                 b.getMethod().getName());
@@ -770,7 +773,29 @@ public class JimpleInjector {
             lastPos = pos;
         }
 
+    }*/
+
+
+
+    public static void storeArgumentLevels(Unit pos, Local... lArguments) {
+
+        logger.info("Store Arguments for next method in method " + b.getMethod().getName());
+        for (int i = 0; i < lArguments.length; i++) {
+            String signature = "signature" + i;
+            if (lArguments[i] != null) {
+                signature = getSignatureForLocal(lArguments[i]);
+
+            } else if (lArguments[i] != null && ! varTyping.getBefore(instantiation, (Stmt) pos, lArguments[i]).isDynamic()) {
+                continue;
+            }
+            Unit invoke = fac.createStmt("storeArgumentLevel", StringConstant.v(signature), IntConstant.v(i));
+            units.insertBefore(invoke, pos);
+            lastPos = pos;
+        }
+
     }
+
+
 
     public static void checkThatLe(Local l, String level, Unit pos) {
         checkThatLe(l, level, pos, "checkThatLe");
@@ -856,50 +881,29 @@ public class JimpleInjector {
         logger.info("Check condition in method " + b.getMethod()+ " IfStmt: " + pos);
 
         int numberOfLocals = locals.length;
-        ArrayList<Type> paramTypes = new ArrayList<>();
-        paramTypes.add(RefType.v("java.lang.String"));
-        paramTypes.add(ArrayType.v(RefType.v("java.lang.String"), 1)); // here
-
         // Add hashvalue for immediate dominator
         String domIdentity = DominatorFinder.getImmediateDominatorIdentity(pos);
-        logger.info("Identity of Dominator of \"" + pos.toString()
-                + "\" is " + domIdentity);
+        logger.info("Identity of Dominator of \"" + pos.toString() + "\" is " + domIdentity);
 
+        if(numberOfLocals < 1)
+            throw new InternalAnalyzerException("Argument is null");
 
-        // Add all locals to string array
-        Expr newStringArray = Jimple.v().newNewArrayExpr(
-                RefType.v("java.lang.String"), IntConstant.v(numberOfLocals));
+        if(count != 1) {
+            Unit invokeJoin = null;
 
-        Unit assignNewArray = Jimple.v().newAssignStmt(
-                local_for_String_Arrays, newStringArray);
+            for (int i = 0; i < numberOfLocals; i++) {
+                String signature = getSignatureForLocal(locals[i]);
+                invokeJoin = fac.createStmt("joinLevelOfLocalAndAssignmentLevel", StringConstant.v(signature));
+                units.insertBefore(invokeJoin, conditionPos);
+            }
 
-        ArrayList<Unit> tmpUnitList = new ArrayList<>();
-
-        for (int i = 0; i < numberOfLocals; i++) {
-            Unit assignSignature = Jimple.v().newAssignStmt(
-                    Jimple.v().newArrayRef(local_for_String_Arrays,
-                            IntConstant.v(i)),
-                    StringConstant.v(getSignatureForLocal(locals[i])));
-            tmpUnitList.add(assignSignature);
+            lastPos = invokeJoin;
+            Unit invoke = fac.createStmt("checkCondition", StringConstant.v(domIdentity));
+            if(levelOfConditionVarNotUpdated)
+                count += 1;
+            units.insertAfter(invoke, lastPos);
+            lastPos = invoke;
         }
-
-        // Invoke HandleStmt.checkCondition(String domHash, String... locals)
-        Expr invokeCheckCondition = Jimple.v().newVirtualInvokeExpr(
-                hs, Scene.v().makeMethodRef(Scene.v().getSootClass(HANDLE_CLASS),
-                        "checkCondition", paramTypes, VoidType.v(), false),
-                StringConstant.v(domIdentity), local_for_String_Arrays);
-        Unit invokeCC = Jimple.v().newInvokeStmt(invokeCheckCondition);
-
-
-        units.insertBefore(assignNewArray, pos);
-
-        lastPos = assignNewArray;
-        for (Unit u : tmpUnitList) {
-            units.insertAfter(u, lastPos);
-            lastPos = u;
-        }
-        units.insertAfter(invokeCC, lastPos);
-        lastPos = invokeCC;
 
     }
 
@@ -982,11 +986,11 @@ public class JimpleInjector {
      * of parameters for invoked methodTypings.
      */
     // Todo: Remove, when ready
-    static void addNeededLocals() {
+    /*static void addNeededLocals() {
         locals.add(local_for_String_Arrays);
 
         b.validate();
-    }
+    }*/
 
     // <editor-fold desc="Signature Calculation Methods">
 
@@ -1187,12 +1191,8 @@ public class JimpleInjector {
         String domIdentity = String.valueOf(randomNumber.nextInt());
         stack.push(domIdentity);
 
-        Expr newStringArray = Jimple.v().newNewArrayExpr(RefType.v("java.lang.String"), IntConstant.v(1));
-
-        Unit assignNewArray = Jimple.v().newAssignStmt(local_for_String_Arrays, newStringArray);
         Unit invoke = fac.createStmt("ctxCastStToDyn", StringConstant.v(domIdentity), StringConstant.v(srcLevel));
 
-        units.insertBefore(assignNewArray, pos);
         units.insertAfter(invoke, pos);
         lastPos = invoke;
     }

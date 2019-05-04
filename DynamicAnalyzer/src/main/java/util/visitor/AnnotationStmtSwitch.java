@@ -3,27 +3,7 @@ package util.visitor;
 import analyzer.level1.JimpleInjector;
 import de.unifreiburg.cs.proglang.jgs.instrumentation.Casts;
 import soot.*;
-import soot.jimple.AssignStmt;
-import soot.jimple.BreakpointStmt;
-import soot.jimple.CaughtExceptionRef;
-import soot.jimple.Constant;
-import soot.jimple.EnterMonitorStmt;
-import soot.jimple.ExitMonitorStmt;
-import soot.jimple.GotoStmt;
-import soot.jimple.IdentityStmt;
-import soot.jimple.IfStmt;
-import soot.jimple.InvokeExpr;
-import soot.jimple.InvokeStmt;
-import soot.jimple.LookupSwitchStmt;
-import soot.jimple.NopStmt;
-import soot.jimple.ParameterRef;
-import soot.jimple.RetStmt;
-import soot.jimple.ReturnStmt;
-import soot.jimple.ReturnVoidStmt;
-import soot.jimple.StmtSwitch;
-import soot.jimple.TableSwitchStmt;
-import soot.jimple.ThisRef;
-import soot.jimple.ThrowStmt;
+import soot.jimple.*;
 import util.exceptions.InternalAnalyzerException;
 import util.exceptions.NotSupportedStmtException;
 import util.logging.L1Logger;
@@ -217,6 +197,8 @@ public class AnnotationStmtSwitch implements StmtSwitch {
 		for (int i = 0; i < localListLength; i++) {
 			arguments[i] = localList.get(i);
 		}
+
+		JimpleInjector.conditionPos = stmt;
 
 		JimpleInjector.checkCondition(stmt, arguments);
 	}

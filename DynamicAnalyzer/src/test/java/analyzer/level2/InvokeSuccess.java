@@ -65,7 +65,7 @@ public class InvokeSuccess {
 		
     	}
 	
-	@Test
+	/*@Test
 	public void invokeMethodWithArguments() {		
 		
 		logger.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");
@@ -81,13 +81,13 @@ public class InvokeSuccess {
 		hs.addLocal("int_c");
 			
 		
-		/*
+		*//*
 		 *  Invoke Method With Arguments
 		 *  1. Store argument levels in argument list
 		 *  2. Create New Local Map
 		 *  3. Add it to LocalMapStack
 		 *  4. Update gpc
-		 */
+		 *//*
 		hs.storeArgumentLevels("int_a", "int_b", "int_c");
 		xy.methodWithParams(a, b, c);
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getActualReturnLevel());
@@ -101,7 +101,7 @@ public class InvokeSuccess {
 		hs.close();
 	    
 		logger.log(Level.INFO, "INVOKE METHOD WITH ARGUMENTS TEST STARTED");		
-	}
+	}*/
 	
 	@Test
 	public void nestedMethodsTest() {

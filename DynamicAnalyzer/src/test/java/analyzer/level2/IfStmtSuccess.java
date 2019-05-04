@@ -31,14 +31,14 @@ public class IfStmtSuccess {
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getGlobalPC());
 		
-		hs.checkCondition("123", "int_x");
+		hs.checkCondition("123");
 		if (x == 1) {
 			assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 			assertEquals(CurrentSecurityDomain.bottom(), hs.getGlobalPC());
 			
 			hs.setLocalFromString("int_x", "HIGH");
 			
-			hs.checkCondition("123", "int_x");
+			hs.checkCondition("123");
 			if (x == 1) {
 
 				assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
@@ -59,7 +59,7 @@ public class IfStmtSuccess {
 		
 		hs.setLocalFromString("int_x", "HIGH");
 		
-		hs.checkCondition("123", "int_x");
+		hs.checkCondition("123");
 		if (x == 1) {
 
 			assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());
@@ -76,7 +76,7 @@ public class IfStmtSuccess {
 		hs.pushLocalPC(CurrentSecurityDomain.top(), 234);
 		hs.pushGlobalPC(CurrentSecurityDomain.top());
 		
-		hs.checkCondition("123", "int_x");
+		hs.checkCondition("123");
 		if (x == 1) {
 
 			assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());

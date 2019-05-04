@@ -32,7 +32,7 @@ public class SwitchStmtSuccess {
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 		
-		hs.checkCondition("123", "int_x");
+		hs.checkCondition("123");
 		switch (x) {
 		
 		  case 0: 
@@ -68,7 +68,7 @@ public class SwitchStmtSuccess {
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 		
-		hs.checkCondition("123","int_x");
+		hs.checkCondition("123");
 		switch (x) {
 		
 		  case 0: 

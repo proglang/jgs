@@ -33,7 +33,7 @@ public class WhileStmtSuccess {
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 		
-		hs.checkCondition("123", "int_x");
+		hs.checkCondition("123");
 		while (x == 0) {
 			
 			assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
@@ -63,7 +63,7 @@ public class WhileStmtSuccess {
 		
 		assertEquals(CurrentSecurityDomain.bottom(), hs.getLocalPC());
 		
-		hs.checkCondition("123", "int_x");
+		hs.checkCondition("123");
 		while (x == 0) {
 			
 			assertEquals(CurrentSecurityDomain.top(), hs.getLocalPC());

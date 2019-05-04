@@ -227,8 +227,8 @@ public class AssignLocalsSuccess {
 
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
 	}
-	
-	@Test
+
+	/*@Test
 	public void assignArgumentToLocal() {
 
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST STARTED");
@@ -236,9 +236,9 @@ public class AssignLocalsSuccess {
 		HandleStmt hs = new HandleStmt();
 		hs.initHandleStmtUtils(false, 0);
 		
-		/*
+		*//*
 		 * Assign argument
-		 */
+		 *//*
 		
 		hs.addLocal("int_a");
 		hs.addLocal("int_b", CurrentSecurityDomain.top());
@@ -259,7 +259,7 @@ public class AssignLocalsSuccess {
 	    
 
 		logger.log(Level.INFO, "ASSIGN METHOD RESULT TO LOCAL TEST FINISHED");
-	}
+	}*/
 	
 	@SuppressWarnings("unused")
 	@Test

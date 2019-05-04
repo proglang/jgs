@@ -32,7 +32,7 @@ public class ForStmtSuccess {
 
 		hs.setLocal("int_i", CurrentSecurityDomain.bottom());
 
-		hs.checkCondition("123", "int_i");
+		hs.checkCondition("123");
 		for (int i = 0;i < 1; i++) {
 			
 			hs.checkLocalPC("int_res");
@@ -64,7 +64,7 @@ public class ForStmtSuccess {
 
 		hs.setLocal("int_i", CurrentSecurityDomain.bottom());
 		
-		hs.checkCondition("123", "int_i");
+		hs.checkCondition("123");
 		for (i = 0;i < 1; i++) {
 			
 			hs.checkGlobalPC(this, "int_res");

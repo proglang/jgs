@@ -102,7 +102,7 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 		// invokeHS should be at the beginning of every method-body.
 		// It creates a map for locals.
 		JimpleInjector.invokeHS();
-		JimpleInjector.addNeededLocals();
+		//JimpleInjector.addNeededLocals();
 
 		// We have to initialize the run-time system at the very beginning.
 		// That is, either
@@ -176,8 +176,22 @@ public class BodyAnalyzer<Level> extends BodyTransformer {
 			String unitLhsString = "";
 			String unitRhsString = "";
 
-			if(isArithmeticExpression(unit.toString()))
-				JimpleInjector.arithmeticExpressionFlag = true;
+			if(isArithmeticExpression(unit.toString())) {
+				successorStmt = unitGraph.getSuccsOf(unit);
+				if(! successorStmt.get(0).toString().contains("return"))
+					JimpleInjector.arithmeticExpressionFlag = true;
+				successorStmt = new ArrayList<Unit>();
+			}
+
+			/*if(unit.toString().contains("goto")){
+				int index = unitStmtsListString.indexOf(unit.toString());
+				for(int i = index; i < unitStmtsListString.size(); i++){
+					if(!(unitStmtsListString.toString().contains("makeHigh") || unitStmtsListString.toString().contains("makeLow") ||
+							Pattern.compile("\"\\\\b\"+cast+\"\\\\b\"").matcher(unitStmtsListString.toString()).find())) {
+						JimpleInjector.levelOfConditionVarNotUpdated = true;
+					}
+				}
+			}*/
 
 
 			if(unit.toString().contains("makeHigh") || unit.toString().contains("makeLow") || Pattern.compile("\"\\\\b\"+cast+\"\\\\b\"").matcher(unit.toString()).find()){
