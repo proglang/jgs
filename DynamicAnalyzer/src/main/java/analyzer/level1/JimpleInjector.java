@@ -1123,11 +1123,8 @@ public class JimpleInjector {
                             + " <= "
                             + destLevel);
                     checkThatLe(rightHandLocal, destLevel.toString(), aStmt, "checkCastToStatic");
-
-                    logger.fine("Setting destination variable to: " + destLevel);
-                    makeLocal((Local) aStmt.getLeftOp(), destLevel.toString(), aStmt);
                 } else {
-                    logger.info("Source value is pubilc. Not inserting checks.");
+                    logger.info("Source value is public. Not inserting checks.");
                 }
             } else if ( !conversion.getSrcType().isDynamic() && conversion.getDestType().isDynamic()) {
                 // Initialisierung eines Security Wert: x = (H => ? ) y
